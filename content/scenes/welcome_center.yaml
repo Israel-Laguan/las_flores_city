@@ -1,0 +1,20 @@
+id: "550e8400-e29b-41d4-a716-446655440002"
+name: "Welcome Center"
+description: "The official welcome center for new arrivals in Las Flores. A sleek, modern facility designed to process and orient newcomers to the city."
+district: "Downtown"
+available_dialogues:
+  - "550e8400-e29b-41d4-a716-446655440003"
+metadata:
+  type: "starting_location"
+  accessible: true
+  npcs:
+    - "550e8400-e29b-41d4-a716-446655440004"
+    - "550e8400-e29b-41d4-a716-446655440001"
+  features:
+    - "holographic_map"
+    - "monorail_station"
+    - "information_desk"
+  ambiance:
+    - "rain_on_glass"
+    - "holographic_displays"
+    - "soft_electronic_music"

@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - OLTP (Main Game State)
+  postgres-oltp:
+    image: postgres:16-alpine
+    container_name: las-flores-postgres-oltp
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: las_flores
+      POSTGRES_USER: las_flores
+      POSTGRES_PASSWORD: las_flores_dev_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-oltp-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U las_flores"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL - OLAP (Analytics & Leaderboards)
+  postgres-olap:
+    image: postgres:16-alpine
+    container_name: las-flores-postgres-olap
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: las_flores_analytics
+      POSTGRES_USER: las_flores_analytics
+      POSTGRES_PASSWORD: las_flores_analytics_dev_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-olap-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U las_flores_analytics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Versioned Content Cache
+  redis:
+    image: redis:7-alpine
+    container_name: las-flores-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO - S3-compatible Object Storage (for Signed URLs)
+  minio:
+    image: minio/minio:latest
+    container_name: las-flores-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Server - Node.js/Express API
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: las-flores-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://las_flores:las_flores_dev_password@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@postgres-olap:5432/las_flores_analytics
+      REDIS_URL: redis://redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      JWT_SECRET: your-jwt-secret-change-in-production
+    depends_on:
+      postgres-oltp:
+        condition: service_healthy
+      postgres-olap:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./server/src:/app/src
+      - ./shared:/app/shared
+      - ./content:/app/content
+
+  # Admin Panel - Next.js
+  admin:
+    build:
+      context: .
+      dockerfile: admin/Dockerfile
+    container_name: las-flores-admin
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: development
+      API_URL: http://localhost:3000
+    depends_on:
+      - server
+    volumes:
+      - ./admin/src:/app/src
+      - ./shared:/app/shared
+
+volumes:
+  postgres-oltp-data:
+  postgres-olap-data:
+  redis-data:
+  minio-data:

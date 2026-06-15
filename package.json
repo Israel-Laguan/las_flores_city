@@ -1,0 +1,27 @@
+{
+  "name": "las-flores-2077",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "admin",
+    "shared"
+  ],
+  "scripts": {
+    "dev:client": "npm run dev --workspace=client",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:admin": "npm run dev --workspace=admin",
+    "migrate": "npm run migrate --workspace=server",
+    "validate:content": "npm run validate --workspace=server",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "test:server": "npm run test --workspace=server",
+    "test:smoke": "node scripts/heartbeat.mjs",
+    "test:final": "node scripts/sprint0-final-test.mjs",
+    "validate:sprint0": "npm run test:smoke && npm run test:server && npm run test:final"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

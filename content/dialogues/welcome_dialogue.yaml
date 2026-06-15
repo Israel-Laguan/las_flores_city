@@ -1,0 +1,139 @@
+id: "550e8400-e29b-41d4-a716-446655440003"
+name: "Welcome to Las Flores"
+description: "The initial dialogue for new players arriving in Las Flores"
+start_node_id: "start"
+nodes:
+  start:
+    id: "start"
+    type: "narrator"
+    text: "The monorail hisses to a stop. Through the rain-streaked window, you see the neon skyline of Las Flores for the first time."
+    choices:
+      - id: "look_around"
+        text: "Look around the station"
+        next_node_id: "station_overview"
+        time_block_cost:
+          amount: 1
+          description: "Getting your bearings"
+      - id: "check_phone"
+        text: "Check your phone"
+        next_node_id: "phone_introduction"
+        time_block_cost:
+          amount: 1
+          description: "Learning your interface"
+
+  station_overview:
+    id: "station_overview"
+    type: "narrator"
+    text: "The Welcome Center is sleek and modern. A holographic map of the city floats above a central pillar. Several other new arrivals mill about, looking equally lost."
+    choices:
+      - id: "approach_map"
+        text: "Examine the holographic map"
+        next_node_id: "map_intro"
+        time_block_cost:
+          amount: 1
+          description: "Studying the city layout"
+      - id: "talk_to_guard"
+        text: "Talk to the security guard"
+        next_node_id: "guard_intro"
+        time_block_cost:
+          amount: 1
+          description: "Getting directions"
+
+  phone_introduction:
+    id: "phone_introduction"
+    type: "system"
+    text: "[PHONE OS BOOTING]\n\nWelcome to your Las Flores Personal Interface.\n\nYour Time-Block balance: 12/12\n\nAvailable apps: Feed, Messages, Vault, Identity"
+    effects:
+      flag_set:
+        phone_intro_complete: true
+    choices:
+      - id: "open_feed"
+        text: "Open the Feed app"
+        next_node_id: "feed_intro"
+        time_block_cost:
+          amount: 1
+          description: "Checking the news"
+      - id: "open_messages"
+        text: "Check Messages"
+        next_node_id: "messages_intro"
+        time_block_cost:
+          amount: 1
+          description: "Reading your inbox"
+
+  map_intro:
+    id: "map_intro"
+    type: "narrator"
+    text: "The holographic map pulses with life. Districts glow in different colors: Downtown in blue, the Market in gold, the Undercity in red. A blinking dot marks your current location."
+    effects:
+      location_discovered: "welcome_center"
+    choices:
+      - id: "explore_downtown"
+        text: "Head to Downtown"
+        next_node_id: "downtown_arrival"
+        time_block_cost:
+          amount: 2
+          description: "Traveling to Downtown"
+
+  guard_intro:
+    id: "guard_intro"
+    type: "character"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
+    text: "Hey there, new face. First time in Las Flores? Stick to the main districts until you get your bearings. And keep your phone charged—you'll need it."
+    choices:
+      - id: "ask_about_districts"
+        text: "What are the districts?"
+        next_node_id: "districts_explanation"
+        time_block_cost:
+          amount: 1
+          description: "Learning about the city"
+
+  feed_intro:
+    id: "feed_intro"
+    type: "system"
+    text: "[FEED APP]\n\nYour personalized news feed is empty.\n\nVisit locations and meet people to fill your feed with stories."
+    effects:
+      app_opened: "feed"
+
+  messages_intro:
+    id: "messages_intro"
+    type: "system"
+    text: "[MESSAGES APP]\n\nYou have 1 new message from: ARIA\n\n\"Welcome to Las Flores! I'm your personal AI assistant. Type HELP anytime for guidance.\""
+    effects:
+      app_opened: "messages"
+      message_read: "aria_welcome"
+
+  districts_explanation:
+    id: "districts_explanation"
+    type: "character"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
+    text: "Downtown is where the corps have their offices. The Market is... well, the market. The Undercity is where things get interesting—and dangerous. Stay sharp."
+
+  downtown_arrival:
+    id: "downtown_arrival"
+    type: "narrator"
+    text: "The monorail glides into Downtown. Towering glass buildings reflect the perpetual rain. Holographic advertisements flicker across every surface."
+    effects:
+      location_discovered: "downtown"
+    choices:
+      - id: "explore_more"
+        text: "Continue exploring"
+        next_node_id: "explore_complete"
+        time_block_cost:
+          amount: 1
+          description: "Getting oriented"
+
+  explore_complete:
+    id: "explore_complete"
+    type: "narrator"
+    text: "You've completed your orientation. The city of Las Flores awaits. Your journey begins now."
+    effects:
+      quest_complete: "welcome_quest"
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2024-01-01"
+  tags:
+    - "tutorial"
+    - "welcome"
+    - "new_player"

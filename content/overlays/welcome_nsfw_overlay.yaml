@@ -1,0 +1,62 @@
+id: "550e8400-e29b-41d4-a716-446655440005"
+name: "Welcome Dialogue - NSFW Version"
+description: "NSFW overlay for the welcome dialogue - adds romantic/steamy content for Patreon supporters"
+target_tree_id: "550e8400-e29b-41d4-a716-446655440003"
+modifications:
+  - node_id: "station_overview"
+    action: "add_choice"
+    data:
+      id: "notice_attraction"
+      text: "Notice someone attractive"
+      next_node_id: "attraction_intro"
+      time_block_cost:
+        amount: 1
+        description: "Noticing someone special"
+      required_flags:
+        is_nsfw_unlocked: true
+
+  - node_id: "attraction_intro"
+    action: "replace"
+    data:
+      type: "narrator"
+      text: "As you look around the station, your gaze catches on someone leaning against a pillar. They're reading something on their phone, rain-wet hair falling across their face. There's something magnetic about them."
+      choices:
+        - id: "approach"
+          text: "Approach them"
+          next_node_id: "approach_intro"
+          time_block_cost:
+            amount: 2
+            description: "Making a connection"
+        - id: "watch"
+          text: "Keep watching"
+          next_node_id: "watch_intro"
+          time_block_cost:
+            amount: 1
+            description: "Observing from afar"
+
+  - node_id: "approach_intro"
+    action: "replace"
+    data:
+      type: "character"
+      speaker_id: "550e8400-e29b-41d4-a716-446655440006"
+      text: "They look up from their phone, eyes meeting yours. A small smile plays at their lips. 'New here? I can tell. You have that look—like you're seeing the future for the first time.'"
+      choices:
+        - id: "flirt_back"
+          text: "Flirt back"
+          next_node_id: "flirt_scene"
+          time_block_cost:
+            amount: 2
+            description: "Building chemistry"
+          required_flags:
+            is_nsfw_unlocked: true
+
+  - node_id: "flirt_scene"
+    action: "replace"
+    data:
+      type: "narrator"
+      text: "The conversation flows easily, like you've known each other forever. Their hand brushes yours as they point out landmarks in the rain-blurred cityscape. The air between you feels charged with possibility."
+      effects:
+        relationship_increase:
+          mysterious_stranger: 10
+        flag_set:
+          romantic_interest_met: true

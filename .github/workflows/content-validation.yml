@@ -1,0 +1,37 @@
+name: Content Validation
+
+on:
+  push:
+    paths:
+      - 'content/**'
+  pull_request:
+    paths:
+      - 'content/**'
+
+jobs:
+  validate-content:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared types
+        run: npm run build --workspace=shared
+
+      - name: Validate YAML content
+        run: npm run validate:content
+
+      - name: Check for circular dependencies
+        run: |
+          echo "Checking for circular dependencies in dialogue trees..."
+          npm run validate:content
