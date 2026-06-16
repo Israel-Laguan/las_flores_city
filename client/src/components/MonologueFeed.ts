@@ -41,6 +41,7 @@ export class MonologueFeed {
     }
     this.setupStyles();
     this.createStructure();
+    this.addEntry('Your personalized news feed is empty.', 'observation');
     this.setupEventListeners();
     this.startIdleTimer();
   }

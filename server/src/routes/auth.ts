@@ -158,7 +158,29 @@ authRouter.post('/dev-login', async (req, res) => {
     const targetUserId = userId || '00000000-0000-0000-0000-000000000001';
 
     const result = await queryOLTP(
-      'SELECT id, email, username, display_name FROM users WHERE id = $1',
+      `INSERT INTO users (id, email, username, display_name, credits, time_blocks, current_location_id, current_day)
+       VALUES ($1, $2, $3, $4, 100, 48, 'c3d4e5f6-a7b8-9012-cdef-123456789012', 1)
+       ON CONFLICT (id) DO UPDATE SET
+         email = EXCLUDED.email,
+         username = EXCLUDED.username,
+         display_name = EXCLUDED.display_name,
+         credits = EXCLUDED.credits,
+         time_blocks = EXCLUDED.time_blocks,
+         current_location_id = EXCLUDED.current_location_id,
+         current_day = EXCLUDED.current_day,
+         updated_at = NOW()
+       RETURNING id, email, username, display_name`,
+      [targetUserId, `dev-player-${targetUserId}@example.com`, `dev_${targetUserId.slice(0, 8)}`, 'Dev Player']
+    );
+
+    await queryOLTP(
+      `INSERT INTO player_states (user_id, current_location_id, current_node_id, flags)
+       VALUES ($1, 'c3d4e5f6-a7b8-9012-cdef-123456789012', NULL, '{}'::jsonb)
+       ON CONFLICT (user_id) DO UPDATE SET
+         current_location_id = EXCLUDED.current_location_id,
+         current_node_id = EXCLUDED.current_node_id,
+         flags = EXCLUDED.flags,
+         updated_at = NOW()`,
       [targetUserId]
     );
 

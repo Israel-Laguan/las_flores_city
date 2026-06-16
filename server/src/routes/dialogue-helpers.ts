@@ -1,4 +1,5 @@
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { DialogueResolver } from '../services/DialogueResolver.js';
 
 export async function getSpeaker(speakerId: string) {
   const result = await queryOLTP(
@@ -184,7 +185,7 @@ export async function initializeDialogueState(client: any, userId: string, dialo
 
 export async function getDialogState(userId: string, dialogueId: string) {
   const dialogueResult = await queryOLTP(
-    'SELECT id, name, nodes, start_node_id FROM dialogue_trees WHERE id = $1',
+    'SELECT id, name, description, start_node_id, metadata FROM dialogue_trees WHERE id = $1',
     [dialogueId]
   );
 
@@ -201,15 +202,45 @@ export async function getDialogState(userId: string, dialogueId: string) {
     return { error: 'player_not_found' as const };
   }
 
-  const dialogue = dialogueResult.rows[0];
-  const currentNodeId = userResult.rows[0].current_node_id || dialogue.start_node_id;
-  const currentNode = dialogue.nodes[currentNodeId];
+  // Resolve tree through the DialogueResolver (merges active
+  // mystery overlays for this user). The `nodes` field below
+  // carries the resolved tree, not the raw base.
+  const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogueId);
+  const currentNodeId = userResult.rows[0].current_node_id || resolved.rootId;
+  const currentNode = resolved.nodes[currentNodeId];
 
   if (!currentNode) {
     return { error: 'invalid_node' as const };
   }
 
-  return { dialogue, currentNodeId, currentNode };
+  // Compose a dialogue object with tree metadata + resolved
+  // nodes so callers (e.g. buildDialogueResponse) get the
+  // overlaid view, not the raw base.
+  const dialogue = {
+    ...dialogueResult.rows[0],
+    start_node_id: resolved.rootId,
+    nodes: resolved.nodes,
+  };
+
+  return { dialogue, currentNodeId, currentNode, nodes: resolved.nodes };
+}
+
+/**
+ * Insert a player into a mystery (the "Trigger Choice" action).
+ * Idempotent: ON CONFLICT DO NOTHING means picking the same
+ * choice twice is a no-op.
+ */
+export async function joinMystery(
+  client: any,
+  userId: string,
+  mysteryId: string
+): Promise<void> {
+  await client.query(
+    `INSERT INTO player_mysteries (user_id, mystery_id, status)
+     VALUES ($1, $2, 'INVESTIGATING')
+     ON CONFLICT (user_id, mystery_id) DO NOTHING`,
+    [userId, mysteryId]
+  );
 }
 
 export async function processChoice(

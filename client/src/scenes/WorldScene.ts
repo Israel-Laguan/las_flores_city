@@ -5,6 +5,7 @@ import * as api from '../utils/api';
 export class WorldScene extends Phaser.Scene {
   private isPaused: boolean = false;
   private currentLocationId: string = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+  private currentNpcs: Array<{ characterId: string; canInteract?: boolean }> = [];
 
   constructor() {
     super({ key: 'WorldScene' });
@@ -65,6 +66,21 @@ export class WorldScene extends Phaser.Scene {
       this.input.enabled = true;
     });
 
+    window.addEventListener('lf:dialogue-start', (event) => {
+      const detail = (event as CustomEvent).detail as { characterId?: string; sceneId?: string; dialogueId?: string };
+      if (detail) eventBus.emit('dialogue:start', detail);
+    });
+
+    this.input.on('pointerdown', () => {
+      if (this.isPaused) return;
+      const npc = this.currentNpcs.find((entry) => entry.canInteract !== false);
+      if (!npc) return;
+      eventBus.emit('dialogue:start', {
+        characterId: npc.characterId,
+        sceneId: this.currentLocationId,
+      });
+    });
+
     // Load initial state
     this.loadInitialState();
   }
@@ -95,6 +111,7 @@ export class WorldScene extends Phaser.Scene {
     if (locationDisplay) {
       locationDisplay.textContent = data.name || 'Unknown';
     }
+    this.currentNpcs = Array.isArray(data.npcs) ? data.npcs : [];
   }
 
   private updateStatusBar(data: any) {

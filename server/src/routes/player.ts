@@ -1,5 +1,5 @@
 import express from 'express';
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
 import {
@@ -7,6 +7,10 @@ import {
   assemblePlayerState,
   validateUpdateField,
   buildUpdateQuery,
+  performMoveTransaction,
+  emitMoveAnalytics,
+  performSleepTransaction,
+  emitSleepAnalytics,
 } from './player-helpers.js';
 import { assembleScenePayload } from './location.js';
 
@@ -90,8 +94,6 @@ playerRouter.post('/update', authMiddleware, async (req: AuthRequest, res) => {
 // 2.1.1: Request Validation + Access Control
 // 2.1.2: Atomic TB Deduction
 // 2.1.3: OLAP Event Emission
-const MOVEMENT_TB_COST = 1;
-
 playerRouter.post('/move', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
@@ -100,125 +102,25 @@ playerRouter.post('/move', authMiddleware, async (req: AuthRequest, res) => {
     }
     const { target_location_id } = req.body;
 
-    // 2.1.1a: Request Validation - required field
-    if (!target_location_id) {
-      return res.status(400).json({ success: false, error: 'target_location_id is required', timestamp: new Date().toISOString() });
+    const locationError = await validateMoveLocation(target_location_id);
+    if (locationError) {
+      return res.status(locationError.status).json({ ...locationError.body, timestamp: new Date().toISOString() });
     }
 
-    // 2.1.1a Check 1: Does the location exist?
-    const locationResult = await queryOLTP(
-      'SELECT id, name, metadata FROM scenes WHERE id = $1',
-      [target_location_id]
-    );
+    const result = await performMoveTransaction(userId, target_location_id);
 
-    if (locationResult.rows.length === 0) {
-      return res.status(404).json({ success: false, error: 'Location not found', timestamp: new Date().toISOString() });
-    }
-
-    // 2.1.1b: Access Control - check if location is locked
-    const metadata = locationResult.rows[0].metadata as Record<string, any> | null;
-    if (metadata?.locked) {
-      const reason = metadata.lock_reason || 'This location is currently inaccessible.';
-      return res.status(403).json({
-        success: false,
-        error: 'location_locked',
-        reason,
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    // 2.1.2: Atomic TB Deduction with same-location guard
-    const result = await withOLTPTransaction(async (client) => {
-      // Lock the player row to prevent race conditions
-      const lockResult = await client.query(
-        'SELECT time_blocks, current_location_id FROM users WHERE id = $1 FOR UPDATE',
-        [userId]
-      );
-
-      if (lockResult.rows.length === 0) {
-        throw new Error('Player not found');
-      }
-
-      const currentTB = lockResult.rows[0].time_blocks;
-      const fromLocationId = lockResult.rows[0].current_location_id;
-
-      // 2.1.1a Check 2: Already at that location?
-      if (fromLocationId === target_location_id) {
-        return { success: false, error: 'already_here' };
-      }
-
-      // 2.1.2b: Exhaustion handling
-      if (currentTB < MOVEMENT_TB_COST) {
-        return { success: false, error: 'exhausted' };
-      }
-
-      // Atomic deduction + location update in one statement
-      await client.query(
-        'UPDATE users SET time_blocks = time_blocks - $1, current_location_id = $2 WHERE id = $3',
-        [MOVEMENT_TB_COST, target_location_id, userId]
-      );
-
-      const newResult = await client.query(
-        'SELECT time_blocks FROM users WHERE id = $1',
-        [userId]
-      );
-
-      return {
-        success: true,
-        from_location_id: fromLocationId,
-        to_location_id: target_location_id,
-        tb_cost: MOVEMENT_TB_COST,
-        time_blocks_remaining: newResult.rows[0].time_blocks,
-      };
-    });
-
-    // Invalidate player state cache
     await deleteCache(userStateCacheKey(userId));
-
-    // Invalidate user-specific location caches for both old and new locations
     if (result.success) {
       await deleteCache(`user:location:${userId}:${result.from_location_id}`);
       await deleteCache(`user:location:${userId}:${result.to_location_id}`);
     }
 
-    // Handle failure responses
     if (!result.success) {
-      if (result.error === 'already_here') {
-        return res.status(400).json({
-          success: false,
-          error: 'You are already at this location.',
-          timestamp: new Date().toISOString(),
-        });
-      }
-      if (result.error === 'exhausted') {
-        return res.status(403).json({
-          success: false,
-          error: 'exhausted',
-          reason: 'You are too exhausted to move. You need to sleep.',
-          timestamp: new Date().toISOString(),
-        });
-      }
+      return res.status(result.error === 'already_here' ? 400 : 403).json(formatMoveError(result.error));
     }
 
-    // 2.1.3: OLAP Event Emission - log the move AFTER commit
-    try {
-      await queryOLAP(
-        `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
-         VALUES (gen_random_uuid(), $1, 'move', $2, $3)`,
-        [
-          userId,
-          JSON.stringify({
-            from_location_id: result.from_location_id,
-            to_location_id: result.to_location_id,
-          }),
-          result.tb_cost,
-        ]
-      );
-    } catch (eventError) {
-      console.error('Failed to emit move event to OLAP:', eventError);
-    }
+    await emitMoveAnalytics(userId, result);
 
-    // Assemble full ScenePayload for the new location
     const scenePayload = await assembleScenePayload(result.to_location_id, userId);
 
     res.json({
@@ -239,6 +141,41 @@ playerRouter.post('/move', authMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
+async function validateMoveLocation(
+  targetLocationId: string
+): Promise<{ status: number; body: Record<string, unknown> } | null> {
+  if (!targetLocationId) {
+    return { status: 400, body: { success: false, error: 'target_location_id is required' } };
+  }
+
+  const locationResult = await queryOLTP(
+    'SELECT id, name, metadata FROM scenes WHERE id = $1',
+    [targetLocationId]
+  );
+
+  if (locationResult.rows.length === 0) {
+    return { status: 404, body: { success: false, error: 'Location not found' } };
+  }
+
+  const metadata = locationResult.rows[0].metadata as Record<string, any> | null;
+  if (metadata?.locked) {
+    const reason = metadata.lock_reason || 'This location is currently inaccessible.';
+    return {
+      status: 403,
+      body: { success: false, error: 'location_locked', reason },
+    };
+  }
+
+  return null;
+}
+
+function formatMoveError(error: 'already_here' | 'exhausted') {
+  if (error === 'already_here') {
+    return { success: false, error: 'You are already at this location.' };
+  }
+  return { success: false, error: 'exhausted', reason: 'You are too exhausted to move. You need to sleep.' };
+}
+
 // POST /player/sleep - Reset TB and advance day (requires auth)
 // 2.2.2a: Location Verification
 // 2.2.2b: Atomic Reset & Date Increment
@@ -247,9 +184,6 @@ playerRouter.post('/move', authMiddleware, async (req: AuthRequest, res) => {
 // 2.2.3b: Overdraft Handling
 // 2.2.3c: Banking Ledger Logging
 // 2.2.4a: OLAP Event Logging
-
-const RENT_AMOUNT = 10;
-
 playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
@@ -257,106 +191,15 @@ playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized', timestamp: new Date().toISOString() });
     }
 
-    // 2.2.2a: Location Verification - must be at a scene with is_sleep_location: true
-    const locationCheck = await queryOLTP(
-      `SELECT u.current_location_id, s.metadata
-       FROM users u
-       LEFT JOIN scenes s ON s.id = u.current_location_id
-       WHERE u.id = $1`,
-      [userId]
-    );
-
-    if (locationCheck.rows.length === 0) {
-      return res.status(404).json({ success: false, error: 'Player not found', timestamp: new Date().toISOString() });
+    const sleepLocationError = await checkSleepLocation(userId);
+    if (sleepLocationError) {
+      return res.status(sleepLocationError.status).json({ ...sleepLocationError.body, timestamp: new Date().toISOString() });
     }
 
-    const sceneMetadata = locationCheck.rows[0].metadata as Record<string, any> | null;
-    if (!sceneMetadata?.is_sleep_location) {
-      return res.status(403).json({
-        success: false,
-        error: 'You cannot sleep here. Return to your apartment.',
-        timestamp: new Date().toISOString(),
-      });
-    }
+    const result = await performSleepTransaction(userId);
 
-    // 2.2.2b + 2.2.3a + 2.2.3b + 2.2.3c: Atomic transaction
-    const result = await withOLTPTransaction(async (client) => {
-      // Lock the player row
-      const lockResult = await client.query(
-        'SELECT time_blocks, credits, current_day FROM users WHERE id = $1 FOR UPDATE',
-        [userId]
-      );
-
-      if (lockResult.rows.length === 0) {
-        throw new Error('Player not found');
-      }
-
-      const previousDay = lockResult.rows[0].current_day;
-      const previousCredits = lockResult.rows[0].credits;
-
-      // Reset time_blocks, increment day, clear conversation state
-      await client.query(
-        `UPDATE users SET
-          time_blocks = 48,
-          current_day = current_day + 1,
-          current_node_id = NULL
-        WHERE id = $1`,
-        [userId]
-      );
-
-      // Deduct rent (allow negative balance for overdraft)
-      await client.query(
-        'UPDATE users SET credits = credits - $1 WHERE id = $2',
-        [RENT_AMOUNT, userId]
-      );
-
-      // Fetch updated state
-      const newResult = await client.query(
-        'SELECT time_blocks, credits, current_day FROM users WHERE id = $1',
-        [userId]
-      );
-
-      const newCredits = newResult.rows[0].credits;
-
-      // 2.2.3c: Banking Ledger - log the rent deduction
-      await client.query(
-        `INSERT INTO bank_transactions (user_id, transaction_type, amount, description, balance_after, reference_type)
-         VALUES ($1, 'debit', $2, 'Daily Rent - Nakamura & Morgan LTD', $3, 'rent')`,
-        [userId, RENT_AMOUNT, newCredits]
-      );
-
-      return {
-        time_blocks: newResult.rows[0].time_blocks,
-        credits: newCredits,
-        current_day: newResult.rows[0].current_day,
-        credits_deducted: RENT_AMOUNT,
-        previous_day: previousDay,
-        rent_paid: true,
-        overdraft: newCredits < 0,
-      };
-    });
-
-    // 2.2.2c: Redis Invalidation
     await deleteCache(userStateCacheKey(userId));
-
-    // 2.2.4a: OLAP Event Logging
-    try {
-      await queryOLAP(
-        `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
-         VALUES (gen_random_uuid(), $1, 'sleep', $2, 0)`,
-        [
-          userId,
-          JSON.stringify({
-            completed_day: result.previous_day,
-            credits_deducted: result.credits_deducted,
-            new_day: result.current_day,
-            overdraft: result.overdraft,
-          }),
-        ]
-      );
-    } catch (eventError) {
-      console.error('Failed to emit sleep event to OLAP:', eventError);
-    }
+    await emitSleepAnalytics(userId, result);
 
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
@@ -364,6 +207,32 @@ playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
     res.status(500).json({ success: false, error: 'Failed to sleep', timestamp: new Date().toISOString() });
   }
 });
+
+async function checkSleepLocation(
+  userId: string
+): Promise<{ status: number; body: Record<string, unknown> } | null> {
+  const locationCheck = await queryOLTP(
+    `SELECT u.current_location_id, s.metadata
+     FROM users u
+     LEFT JOIN scenes s ON s.id = u.current_location_id
+     WHERE u.id = $1`,
+    [userId]
+  );
+
+  if (locationCheck.rows.length === 0) {
+    return { status: 404, body: { success: false, error: 'Player not found' } };
+  }
+
+  const sceneMetadata = locationCheck.rows[0].metadata as Record<string, any> | null;
+  if (!sceneMetadata?.is_sleep_location) {
+    return {
+      status: 403,
+      body: { success: false, error: 'You cannot sleep here. Return to your apartment.' },
+    };
+  }
+
+  return null;
+}
 
 // POST /player/spend-time-blocks - Spend time blocks (requires auth)
 playerRouter.post('/spend-time-blocks', authMiddleware, async (req: AuthRequest, res) => {

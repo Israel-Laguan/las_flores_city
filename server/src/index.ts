@@ -9,6 +9,7 @@ import { dialogueRouter } from './routes/dialogue.js';
 import { bankRouter } from './routes/bank.js';
 import { gigsRouter } from './routes/gigs.js';
 import { commsRouter } from './routes/comms.js';
+import './routes/comms-reply.js';
 import { feedRouter } from './routes/feed.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';

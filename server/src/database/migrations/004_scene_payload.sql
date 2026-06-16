@@ -1,15 +1,4 @@
--- Triggers
--- ============================================================
-
-CREATE TRIGGER IF NOT EXISTS update_user_relationships_updated_at BEFORE UPDATE ON user_relationships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- ============================================================
-=======
--- ============================================================
--- Triggers (already created in 001_initial_schema.sql)
--- ============================================================
-
--- ============================================================Las Flores 2077 - Scene Payload Schema (Task 1.2)
+-- Las Flores 2077 - Scene Payload Schema (Task 1.2)
 -- Adds background_url, ambient_sound_url, mood to scenes if not exist
 -- Adds is_permanent, default_mood to scene_characters if not exist
 
@@ -44,7 +33,16 @@ CREATE INDEX IF NOT EXISTS idx_user_relationships_user_character ON user_relatio
 -- Triggers
 -- ============================================================
 
-CREATE TRIGGER IF NOT EXISTS update_user_relationships_updated_at BEFORE UPDATE ON user_relationships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'update_user_relationships_updated_at'
+    ) THEN
+        CREATE TRIGGER update_user_relationships_updated_at
+            BEFORE UPDATE ON user_relationships
+            FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    END IF;
+END $$;
 
 -- ============================================================
 -- Seed default scene environmental data

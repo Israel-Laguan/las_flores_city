@@ -1,5 +1,4 @@
 import express, { Response, NextFunction } from 'express';
-import { randomUUID } from 'crypto';
 import {
   AuthRequest,
   authMiddleware,
@@ -7,11 +6,10 @@ import {
 import {
   queryOLTP,
   queryOLAP,
-  withOLTPTransaction,
 } from '../database/connection.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
-import { processRelationshipChange } from './dialogue-helpers.js';
 import { userStateCacheKey } from './player-helpers.js';
+import { performStartThreadTransaction, emitStartThreadAnalytics } from './comms-start-helpers.js';
 import type {
   SMSMessage,
   SMSThreadPreview,
@@ -29,7 +27,7 @@ function inboxCacheKey(userId: string): string {
   return `${INBOX_CACHE_PREFIX}${userId}`;
 }
 
-function ok<T>(data: T) {
+export function ok<T>(data: T) {
   return {
     success: true,
     data,
@@ -37,11 +35,11 @@ function ok<T>(data: T) {
   };
 }
 
-function err(error: string, status = 400) {
+export function err(error: string, status = 400) {
   return { success: false, error, timestamp: new Date().toISOString(), status };
 }
 
-interface ThreadRow {
+export interface ThreadRow {
   id: string;
   user_id: string;
   character_id: string;
@@ -57,7 +55,7 @@ interface ThreadRow {
   romance_level: number;
 }
 
-const THREAD_BASE_SELECT = `
+export const THREAD_BASE_SELECT = `
   SELECT
     pst.id,
     pst.user_id,
@@ -78,7 +76,7 @@ const THREAD_BASE_SELECT = `
     ON ur.user_id = pst.user_id AND ur.character_id = pst.character_id
 `;
 
-async function loadThread(
+export async function loadThread(
   userId: string,
   characterId: string
 ): Promise<ThreadRow | null> {
@@ -148,7 +146,7 @@ async function loadInbox(userId: string): Promise<SMSThreadPreview[]> {
   return threads;
 }
 
-function toDetail(row: ThreadRow, choices: SMSThreadChoice[], isEnd: boolean): SMSThreadDetail {
+export function toDetail(row: ThreadRow, choices: SMSThreadChoice[], isEnd: boolean): SMSThreadDetail {
   return {
     characterId: row.character_id,
     characterName: row.character_name,
@@ -164,7 +162,7 @@ function toDetail(row: ThreadRow, choices: SMSThreadChoice[], isEnd: boolean): S
   };
 }
 
-async function findDialogueTreeForCharacter(characterId: string) {
+export async function findDialogueTreeForCharacter(characterId: string) {
   const result = await queryOLTP<{
     id: string;
     name: string;
@@ -185,7 +183,7 @@ async function findDialogueTreeForCharacter(characterId: string) {
   return result.rows.length > 0 ? result.rows[0] : null;
 }
 
-async function applyChoiceFilters(
+export async function applyChoiceFilters(
   rawChoices: any[],
   userId: string
 ): Promise<any[]> {
@@ -223,7 +221,7 @@ async function applyChoiceFilters(
   });
 }
 
-async function invalidateCaches(userId: string) {
+export async function invalidateCaches(userId: string) {
   await Promise.all([
     deleteCache(inboxCacheKey(userId)),
     deleteCache(userStateCacheKey(userId)),
@@ -269,37 +267,17 @@ commsRouter.post(
         return res.status(404).json(err('no_dialogue_for_character'));
       }
 
-      const startNode = tree.nodes[tree.start_node_id];
-      if (!startNode) {
-        return res.status(500).json(err('dialogue_missing_start_node'));
+      const createResult = await performStartThreadTransaction(userId, characterId, tree);
+      if (createResult.status !== 200 || !createResult.threadId) {
+        return res.status(createResult.status).json(createResult.payload);
       }
 
-      const firstMessage: SMSMessage = {
-        id: randomUUID(),
-        author: 'npc',
-        text: startNode.text ?? '',
-        createdAt: new Date().toISOString(),
-        nodeId: tree.start_node_id,
-      };
-
-      const insertResult = await queryOLTP<{ id: string; created_at: string; updated_at: string }>(
-        `INSERT INTO player_sms_threads
-           (user_id, character_id, current_node_id, chat_history, unread, last_npc_message_at)
-         VALUES ($1, $2, $3, $4::jsonb, TRUE, NOW())
-         RETURNING id, created_at, updated_at`,
-        [
-          userId,
-          characterId,
-          tree.start_node_id,
-          JSON.stringify([firstMessage]),
-        ]
+      await emitStartThreadAnalytics(
+        userId,
+        characterId,
+        createResult.firstMessageId!,
+        createResult.startNodeId!
       );
-
-      await queryOLAP(
-        `INSERT INTO player_events (user_id, event_type, event_data)
-         VALUES ($1, 'sms_received', $2::jsonb)`,
-        [userId, JSON.stringify({ characterId, messageId: firstMessage.id, nodeId: tree.start_node_id })]
-      ).catch((e) => console.error('OLAP sms_received write failed:', e));
 
       await invalidateCaches(userId);
 
@@ -308,6 +286,7 @@ commsRouter.post(
         return res.status(500).json(err('thread_create_failed'));
       }
 
+      const startNode = tree.nodes[tree.start_node_id];
       const choices = startNode.choices
         ? await applyChoiceFilters(startNode.choices, userId)
         : [];
@@ -364,199 +343,6 @@ commsRouter.get(
       return res.json(ok(toDetail(thread, choices, isEnd)));
     } catch (e: any) {
       console.error('comms.thread error:', e);
-      return res.status(500).json(err(e?.message ?? 'internal_error'));
-    }
-  }
-);
-
-// =========================================================================
-// POST /comms/reply - submit a choice, advance dialogue, apply effects
-// =========================================================================
-commsRouter.post(
-  '/reply',
-  authMiddleware,
-  async (req: AuthRequest, res: Response, _next: NextFunction) => {
-    const userId = req.userId!;
-    const { characterId, choiceId } = req.body ?? {};
-
-    if (!characterId || typeof characterId !== 'string') {
-      return res.status(400).json(err('characterId is required'));
-    }
-    if (!choiceId || typeof choiceId !== 'string') {
-      return res.status(400).json(err('choiceId is required'));
-    }
-
-    try {
-      const tree = await findDialogueTreeForCharacter(characterId);
-      if (!tree) {
-        return res.status(404).json(err('no_dialogue_for_character'));
-      }
-
-      const result = await withOLTPTransaction(async (client) => {
-        const lockResult = await client.query<ThreadRow>(
-          `${THREAD_BASE_SELECT}
-           WHERE pst.user_id = $1 AND pst.character_id = $2
-           FOR UPDATE OF pst`,
-          [userId, characterId]
-        );
-
-        if (lockResult.rows.length === 0) {
-          return { status: 404, payload: err('thread_not_found') };
-        }
-
-        const thread = lockResult.rows[0];
-        if (!thread.current_node_id) {
-          return { status: 400, payload: err('thread_has_no_active_node') };
-        }
-
-        const currentNode = tree.nodes[thread.current_node_id];
-        if (!currentNode) {
-          return { status: 500, payload: err('dialogue_missing_node') };
-        }
-
-        const rawChoices: any[] = currentNode.choices ?? [];
-        const allowed = await applyChoiceFilters(rawChoices, userId);
-        const chosen = allowed.find((c: any) => c.id === choiceId);
-        if (!chosen) {
-          return { status: 404, payload: err('choice_not_available') };
-        }
-
-        let timeBlocksSpent = 0;
-        if (chosen.time_block_cost && chosen.time_block_cost.amount > 0) {
-          const amount = chosen.time_block_cost.amount;
-          const tbLock = await client.query<{ time_blocks: number }>(
-            'SELECT time_blocks FROM users WHERE id = $1 FOR UPDATE',
-            [userId]
-          );
-          if (tbLock.rows.length === 0) {
-            return { status: 404, payload: err('player_not_found') };
-          }
-          const current = tbLock.rows[0].time_blocks;
-          if (current < amount) {
-            return { status: 402, payload: err('insufficient_time_blocks') };
-          }
-          await client.query(
-            'UPDATE users SET time_blocks = time_blocks - $1 WHERE id = $2',
-            [amount, userId]
-          );
-          timeBlocksSpent = amount;
-        }
-
-        if (chosen.relationship_change) {
-          await processRelationshipChange(
-            userId,
-            characterId,
-            chosen.relationship_change.stat,
-            chosen.relationship_change.amount
-          );
-        }
-
-        const now = new Date().toISOString();
-        const history: SMSMessage[] = Array.isArray(thread.chat_history)
-          ? [...thread.chat_history]
-          : [];
-
-        const playerMessage: SMSMessage = {
-          id: randomUUID(),
-          author: 'player',
-          text: chosen.text ?? '',
-          createdAt: now,
-          nodeId: thread.current_node_id,
-          choiceId: chosen.id,
-        };
-        history.push(playerMessage);
-
-        const nextNodeId: string | undefined = chosen.next_node_id;
-        const nextNode = nextNodeId ? tree.nodes[nextNodeId] : null;
-
-        let newCurrentNodeId: string | null = thread.current_node_id;
-        let isEnd = false;
-        let npcMessageId: string | null = null;
-
-        if (nextNode) {
-          newCurrentNodeId = nextNodeId!;
-          isEnd = nextNode.is_end === true || !nextNode.choices || nextNode.choices.length === 0;
-
-          if (nextNode.text) {
-            const npcMessage: SMSMessage = {
-              id: randomUUID(),
-              author: 'npc',
-              text: nextNode.text,
-              createdAt: now,
-              nodeId: nextNodeId!,
-            };
-            history.push(npcMessage);
-            npcMessageId = npcMessage.id;
-          }
-        } else {
-          isEnd = true;
-        }
-
-        await client.query(
-          `UPDATE player_sms_threads
-             SET current_node_id = $1,
-                 chat_history = $2::jsonb,
-                 unread = TRUE,
-                 last_npc_message_at = NOW(),
-                 updated_at = NOW()
-           WHERE user_id = $3 AND character_id = $4`,
-          [newCurrentNodeId, JSON.stringify(history), userId, characterId]
-        );
-
-        return {
-          status: 200,
-          payload: null,
-          detail: {
-            userId,
-            characterId,
-            thread,
-            newCurrentNodeId,
-            isEnd,
-            history,
-            npcMessageId,
-            nextNode,
-            timeBlocksSpent,
-            playerMessageId: playerMessage.id,
-            choiceId: chosen.id,
-          } as const,
-        };
-      });
-
-      if (result.status !== 200 || !('detail' in result)) {
-        return res.status(result.status).json(result.payload);
-      }
-
-      const d = result.detail!;
-
-      await Promise.all([
-        queryOLAP(
-          `INSERT INTO player_events (user_id, event_type, event_data)
-           VALUES ($1, 'sms_reply_submitted', $2::jsonb)`,
-          [userId, JSON.stringify({ characterId, choiceId: d.choiceId, fromNodeId: d.thread.current_node_id, toNodeId: d.newCurrentNodeId, timeBlocksSpent: d.timeBlocksSpent })]
-        ).catch((e) => console.error('OLAP sms_reply_submitted write failed:', e)),
-        d.npcMessageId
-          ? queryOLAP(
-              `INSERT INTO player_events (user_id, event_type, event_data)
-               VALUES ($1, 'sms_received', $2::jsonb)`,
-              [userId, JSON.stringify({ characterId, messageId: d.npcMessageId, nodeId: d.newCurrentNodeId })]
-            ).catch((e) => console.error('OLAP sms_received write failed:', e))
-          : Promise.resolve(),
-      ]);
-
-      await invalidateCaches(userId);
-
-      const reloaded = await loadThread(userId, characterId);
-      if (!reloaded) {
-        return res.status(500).json(err('thread_disappeared'));
-      }
-
-      const nextChoicesRaw: any[] =
-        d.isEnd || !d.nextNode || !d.nextNode.choices ? [] : d.nextNode.choices;
-      const nextChoices = await applyChoiceFilters(nextChoicesRaw, userId);
-
-      return res.json(ok(toDetail(reloaded, nextChoices, d.isEnd)));
-    } catch (e: any) {
-      console.error('comms.reply error:', e);
       return res.status(500).json(err(e?.message ?? 'internal_error'));
     }
   }

@@ -87,9 +87,28 @@ export class SleepOverlay {
     this.overlay.innerHTML = '';
     this.overlay.style.opacity = '0';
 
-    // Day title
+    this.overlay.appendChild(this.createDayHeader(data.current_day));
+    this.overlay.appendChild(this.createBankSummary(data));
+
+    requestAnimationFrame(() => {
+      this.overlay.style.opacity = '1';
+    });
+
+    setTimeout(() => {
+      this.hideOverlay();
+      eventBus.emit('sleep:dismissed', {
+        timeBlocks: data.time_blocks,
+        credits: data.credits,
+        currentDay: data.current_day,
+      });
+    }, 3000);
+  }
+
+  private createDayHeader(currentDay: number): HTMLDivElement {
+    const wrapper = document.createElement('div');
+
     const dayTitle = document.createElement('div');
-    dayTitle.textContent = `DAY ${data.current_day}`;
+    dayTitle.textContent = `DAY ${currentDay}`;
     dayTitle.style.color = '#00ccff';
     dayTitle.style.fontSize = '48px';
     dayTitle.style.fontWeight = 'bold';
@@ -97,9 +116,8 @@ export class SleepOverlay {
     dayTitle.style.textShadow = '0 0 20px rgba(0, 204, 255, 0.5)';
     dayTitle.style.marginBottom = '10px';
     dayTitle.style.letterSpacing = '4px';
-    this.overlay.appendChild(dayTitle);
+    wrapper.appendChild(dayTitle);
 
-    // Subtitle
     const subtitle = document.createElement('div');
     subtitle.textContent = 'of the Initiative';
     subtitle.style.color = '#666666';
@@ -107,9 +125,18 @@ export class SleepOverlay {
     subtitle.style.fontFamily = 'monospace';
     subtitle.style.marginBottom = '40px';
     subtitle.style.letterSpacing = '2px';
-    this.overlay.appendChild(subtitle);
+    wrapper.appendChild(subtitle);
 
-    // Transaction summary
+    return wrapper;
+  }
+
+  private createBankSummary(data: {
+    current_day: number;
+    credits_deducted: number;
+    time_blocks: number;
+    credits: number;
+    overdraft?: boolean;
+  }): HTMLDivElement {
     const summary = document.createElement('div');
     summary.style.border = '1px solid #00ff00';
     summary.style.padding = '20px 30px';
@@ -117,17 +144,7 @@ export class SleepOverlay {
     summary.style.backgroundColor = 'rgba(0, 20, 0, 0.8)';
     summary.style.minWidth = '280px';
     summary.style.textAlign = 'center';
-    this.overlay.appendChild(summary);
-
-    const bankTitle = document.createElement('div');
-    bankTitle.textContent = 'BANCO DE LAS FLORES';
-    bankTitle.style.color = '#00ff00';
-    bankTitle.style.fontSize = '12px';
-    bankTitle.style.letterSpacing = '2px';
-    bankTitle.style.marginBottom = '15px';
-    bankTitle.style.borderBottom = '1px solid #003300';
-    bankTitle.style.paddingBottom = '10px';
-    summary.appendChild(bankTitle);
+    summary.appendChild(this.createBankHeader());
 
     const rentLine = document.createElement('div');
     rentLine.style.display = 'flex';
@@ -150,33 +167,35 @@ export class SleepOverlay {
     balanceLine.innerHTML = `<span style="color: #888;">Balance</span><span style="color: ${balanceColor};">${data.credits} Creds</span>`;
     summary.appendChild(balanceLine);
 
-    // Overdraft warning
     if (data.overdraft) {
-      const warning = document.createElement('div');
-      warning.style.color = '#ff4444';
-      warning.style.fontSize = '11px';
-      warning.style.marginTop = '15px';
-      warning.style.padding = '8px';
-      warning.style.border = '1px solid #ff4444';
-      warning.style.borderRadius = '3px';
-      warning.textContent = 'ACCOUNT OVERDRAFT - Complete gigs to avoid contract termination.';
-      summary.appendChild(warning);
+      summary.appendChild(this.createOverdraftWarning());
     }
 
-    // Fade in the summary
-    requestAnimationFrame(() => {
-      this.overlay.style.opacity = '1';
-    });
+    return summary;
+  }
 
-    // Auto-dismiss after 3 seconds
-    setTimeout(() => {
-      this.hideOverlay();
-      eventBus.emit('sleep:dismissed', {
-        timeBlocks: data.time_blocks,
-        credits: data.credits,
-        currentDay: data.current_day,
-      });
-    }, 3000);
+  private createBankHeader(): HTMLDivElement {
+    const bankTitle = document.createElement('div');
+    bankTitle.textContent = 'BANCO DE LAS FLORES';
+    bankTitle.style.color = '#00ff00';
+    bankTitle.style.fontSize = '12px';
+    bankTitle.style.letterSpacing = '2px';
+    bankTitle.style.marginBottom = '15px';
+    bankTitle.style.borderBottom = '1px solid #003300';
+    bankTitle.style.paddingBottom = '10px';
+    return bankTitle;
+  }
+
+  private createOverdraftWarning(): HTMLDivElement {
+    const warning = document.createElement('div');
+    warning.style.color = '#ff4444';
+    warning.style.fontSize = '11px';
+    warning.style.marginTop = '15px';
+    warning.style.padding = '8px';
+    warning.style.border = '1px solid #ff4444';
+    warning.style.borderRadius = '3px';
+    warning.textContent = 'ACCOUNT OVERDRAFT - Complete gigs to avoid contract termination.';
+    return warning;
   }
 
   private hideOverlay() {

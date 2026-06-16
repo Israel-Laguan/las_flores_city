@@ -46,6 +46,11 @@ docker-compose.override.yml
 # Content build artifacts
 content/**/*.generated.*
 
+# Playwright
+client/playwright-report/
+client/test-results/
+test-results/
+
 # Temporary files
 tmp/
 temp/

@@ -11,5 +11,5 @@ export function calculateInGameTime(timeBlocks: number): string {
   const displayHour = rawHour % 12 === 0 ? 12 : rawHour % 12;
   const ampm = rawHour >= 12 ? 'PM' : 'AM';
 
-  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  return `${displayHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
 }

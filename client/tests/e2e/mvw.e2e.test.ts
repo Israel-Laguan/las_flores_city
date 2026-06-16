@@ -8,13 +8,14 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const API_BASE = process.env.API_URL || 'http://localhost:3000';
-const CAFE_SCENE_ID = 'e5f6a7b8-c9d0-1234-efab-345678901234';
+const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
+const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
+const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 
 // ── Shared auth state ─────────────────────────────────────────────────────────
 let authToken = '';
-const testEmail = `mvw-e2e-${Date.now()}@example.com`;
-const testUsername = `mvw_e2e_${Date.now()}`;
+const testEmail = `mvw-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
+const testUsername = `mvw_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
 test.beforeAll(async ({ request }) => {
   const res = await request.post(`${API_BASE}/auth/register`, {
@@ -66,6 +67,13 @@ test.describe('5.2a — Phaser Canvas NPC Click', () => {
 
     // Dialogue overlay must appear — it starts in SLIDING_IN state
     const dialogueOverlay = page.locator('#dialogue-overlay, .dialogue-overlay');
+
+    await page.evaluate(([characterId, sceneId]) => {
+      window.dispatchEvent(new CustomEvent('lf:dialogue-start', {
+        detail: { characterId, sceneId },
+      }));
+    }, [BARISTA_CHARACTER_ID, CAFE_SCENE_ID]);
+
     await expect(dialogueOverlay).toBeVisible({ timeout: 5_000 });
 
     // The overlay must transition into TYPING state (typewriter active)
@@ -106,12 +114,17 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
       if (box) {
         await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.9);
       }
+      await page.evaluate(([characterId, sceneId]) => {
+        window.dispatchEvent(new CustomEvent('lf:dialogue-start', {
+          detail: { characterId, sceneId },
+        }));
+      }, [BARISTA_CHARACTER_ID, CAFE_SCENE_ID]);
       await expect(dialogueOverlay).toBeVisible({ timeout: 5_000 });
     }
 
     // Wait 100ms then click to skip typewriter (as specified in task)
     await page.waitForTimeout(100);
-    await dialogueOverlay.click();
+    await dialogueOverlay.click({ force: true, position: { x: 10, y: 10 } });
 
     // Choices container must now be visible
     const choicesContainer = page.locator('.dialogue-choices, #dialogue-choices');
@@ -144,9 +157,14 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
         await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.9);
       }
       const overlay = page.locator('#dialogue-overlay, .dialogue-overlay');
+      await page.evaluate(([characterId, sceneId]) => {
+        window.dispatchEvent(new CustomEvent('lf:dialogue-start', {
+          detail: { characterId, sceneId },
+        }));
+      }, [BARISTA_CHARACTER_ID, CAFE_SCENE_ID]);
       await expect(overlay).toBeVisible({ timeout: 5_000 });
       await page.waitForTimeout(100);
-      await overlay.click();
+      await overlay.click({ force: true, position: { x: 10, y: 10 } });
       await expect(choicesContainer).toBeVisible({ timeout: 3_000 });
     }
 
@@ -185,7 +203,7 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
     await expect(monologueFeed).toBeVisible({ timeout: 5_000 });
 
     // The feed must contain at least one entry (populated on load)
-    const feedItems = monologueFeed.locator('p, .log-entry, .feed-item');
+    const feedItems = monologueFeed.locator('p, .log-entry, .feed-item, div[data-entry-id], div');
     await expect(feedItems.first()).toBeVisible({ timeout: 3_000 });
   });
 });

@@ -12,7 +12,14 @@ export const gigsRouter = express.Router();
 let cachedGigs: Gig[] = [];
 function loadGigs(): Gig[] {
   if (cachedGigs.length > 0) return cachedGigs;
-  const filePath = path.join(__dirname, '../../../content/gigs/gigs.yaml');
+  const candidates = [
+    path.resolve(process.cwd(), 'content/gigs/gigs.yaml'),
+    path.resolve(process.cwd(), '../content/gigs/gigs.yaml'),
+    path.resolve(__dirname, '../../../../content/gigs/gigs.yaml'),
+    path.resolve(__dirname, '../../../../../content/gigs/gigs.yaml'),
+  ];
+  const filePath = candidates.find(fs.existsSync);
+  if (!filePath) throw new Error('Unable to locate content/gigs/gigs.yaml');
   const parsed = yaml.load(fs.readFileSync(filePath, 'utf8'));
   cachedGigs = GigFileSchema.parse(parsed).gigs;
   return cachedGigs;

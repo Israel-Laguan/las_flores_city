@@ -14,7 +14,7 @@ export class TrabajandoApp {
     this.container.innerHTML = `<div class="loading-spinner">Querying local gig contracts...</div>`;
 
     try {
-      const token = localStorage.getItem('jwt');
+        const token = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
       const response = await fetch('/api/gigs', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -88,7 +88,7 @@ export class TrabajandoApp {
     overlay.style.display = 'flex';
 
     try {
-      const token = localStorage.getItem('jwt');
+        const token = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
       const response = await fetch('/api/gigs/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -99,7 +99,12 @@ export class TrabajandoApp {
       if (!response.ok) throw new Error(data.error || 'Execution failed');
 
       eventBus.emit('phaser:transition_time', { duration: 1500 });
-      phoneStore.updateState({ timeBlocks: data.newTimeBlocks });
+      const state = phoneStore.getState();
+      phoneStore.updateState({
+        timeBlocks: data.newTimeBlocks,
+        credits: state.credits + gig.credit_payout,
+      });
+      eventBus.emit('tb:updated', data.newTimeBlocks);
       this.init();
     } catch (err: any) {
       alert(`Uplink Error: ${err.message}`);

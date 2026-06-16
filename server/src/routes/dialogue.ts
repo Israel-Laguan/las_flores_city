@@ -9,14 +9,20 @@ import {
   getDialogState,
   processChoice,
   buildChooseResponse,
+  joinMystery,
 } from './dialogue-helpers.js';
 import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
+import { DialogueResolver } from '../services/DialogueResolver.js';
 
 export const dialogueRouter = express.Router();
 
 // ============================================================
 // POST /dialogue/start - Start a conversation
 // Body: { characterId, sceneId }
+//
+// Resolves the base tree, then runs the resolver to merge in
+// any active mystery overlays for this user. The merged tree
+// (with overlaid nodes) is what the client sees.
 // ============================================================
 dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -41,9 +47,15 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
       });
     }
 
-    const nodes = dialogue.nodes;
-    const rootNodeId = dialogue.start_node_id;
-    const rootNode = nodes[rootNodeId];
+    // Apply mystery overlays via the resolver (Task 3.1).
+    // Players with no active mysteries get the base tree; players
+    // investigating mysteries get the merged tree.
+    const resolved = await DialogueResolver.resolveTreeForUser(
+      userId,
+      dialogue.id
+    );
+    const rootNodeId = resolved.rootId;
+    const rootNode = resolved.nodes[rootNodeId];
 
     if (!rootNode) {
       return res.status(500).json({
@@ -61,7 +73,15 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
     const speaker = rootNode.speaker_id ? await getSpeaker(rootNode.speaker_id) : null;
     const isEnd = rootNode.is_end === true || (!rootNode.choices || rootNode.choices.length === 0);
 
-    res.status(201).json(buildDialogueResponse(dialogue, rootNode, speaker, availableChoices, isEnd, 0, 0));
+    // Build response with the resolved nodes — the client only
+    // sees overlaid content, never the raw base nodes.
+    const responseDialogue = {
+      ...dialogue,
+      start_node_id: rootNodeId,
+      nodes: resolved.nodes,
+    };
+
+    res.status(201).json(buildDialogueResponse(responseDialogue, rootNode, speaker, availableChoices, isEnd, 0, 0));
   } catch (error: any) {
     console.error('Start dialogue error:', error);
     res.status(500).json({
@@ -75,6 +95,12 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
 // ============================================================
 // POST /dialogue/choose - Advance the dialogue
 // Body: { choiceIndex: number }
+//
+// Resolves the tree through the DialogueResolver so that
+// `next_node` and any follow-up choices are pulled from the
+// overlay-merged tree. Also handles the "Trigger Choice"
+// action (`join_mystery: [uuid]`) that starts a mystery
+// mid-conversation.
 // ============================================================
 dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -98,7 +124,7 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       return res.status(400).json({ success: false, error: 'Invalid current node state', timestamp: new Date().toISOString() });
     }
 
-    const { dialogue, currentNodeId, currentNode } = state;
+    const { dialogue, currentNodeId, currentNode, nodes } = state;
 
     const availableChoices = await filterChoices(currentNode.choices || [], userId);
 
@@ -107,7 +133,7 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
     }
 
     const result = await withOLTPTransaction(async (client) => {
-      return processChoice(client, userId, id, choiceIndex, availableChoices[choiceIndex], currentNodeId, dialogue.nodes);
+      return processChoice(client, userId, id, choiceIndex, availableChoices[choiceIndex], currentNodeId, nodes);
     });
 
     if (!result.success) {
@@ -119,7 +145,22 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       }
     }
 
-    const nextNode = dialogue.nodes[availableChoices[choiceIndex].next_node_id];
+    const nextNode = nodes[availableChoices[choiceIndex].next_node_id];
+
+    // "Trigger Choice" mechanism: a YAML choice may carry a
+    // `join_mystery` action that flips the player into a new
+    // mystery state, after which the resolver will load the
+    // deep-investigation overlays for them.
+    const joinAction = (availableChoices[choiceIndex] as any).join_mystery;
+    if (joinAction) {
+      const mysteryId = Array.isArray(joinAction) ? joinAction[0] : joinAction;
+      if (mysteryId) {
+        await withOLTPTransaction(async (client) => {
+          await joinMystery(client, userId, mysteryId);
+        });
+      }
+    }
+
     const speaker = nextNode.speaker_id ? await getSpeaker(nextNode.speaker_id) : null;
     const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
     const nextChoices = isEnd ? [] : await filterChoices(nextNode.choices || [], userId);
@@ -135,6 +176,9 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
 
 // ============================================================
 // GET /dialogue/active - Get current active dialogue (for refresh recovery)
+//
+// Uses the resolver to fetch the merged tree, so a refresh
+// mid-mystery preserves the overlaid content.
 // ============================================================
 dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -152,7 +196,7 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
     const { active_dialogue_id, current_node_id } = userResult.rows[0];
 
     const dialogueResult = await queryOLTP(
-      'SELECT id, name, description, start_node_id, nodes, metadata FROM dialogue_trees WHERE id = $1',
+      'SELECT id, name, description, start_node_id, metadata FROM dialogue_trees WHERE id = $1',
       [active_dialogue_id]
     );
 
@@ -160,8 +204,13 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
       return res.json({ success: true, data: null, timestamp: new Date().toISOString() });
     }
 
-    const dialogue = dialogueResult.rows[0];
-    const currentNode = dialogue.nodes[current_node_id];
+    // Resolve tree through the DialogueResolver (merges active
+    // mystery overlays for this user).
+    const resolved = await DialogueResolver.resolveTreeForUser(
+      userId,
+      active_dialogue_id
+    );
+    const currentNode = resolved.nodes[current_node_id];
 
     if (!currentNode) {
       return res.json({ success: true, data: null, timestamp: new Date().toISOString() });
@@ -170,6 +219,14 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
     const speaker = currentNode.speaker_id ? await getSpeaker(currentNode.speaker_id) : null;
     const availableChoices = await filterChoices(currentNode.choices || [], userId);
     const isEnd = currentNode.is_end === true || (!currentNode.choices || currentNode.choices.length === 0);
+
+    // Compose response dialogue with resolved nodes so the
+    // client only sees the merged (overlay-applied) tree.
+    const dialogue = {
+      ...dialogueResult.rows[0],
+      start_node_id: resolved.rootId,
+      nodes: resolved.nodes,
+    };
 
     res.json(buildDialogueResponse(dialogue, currentNode, speaker, availableChoices, isEnd, 0, 0));
   } catch (error: any) {

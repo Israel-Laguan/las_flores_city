@@ -1,19 +1,9 @@
 import Phaser from 'phaser';
 import { eventBus } from '../utils/EventBus';
 import * as api from '../utils/api';
-
-interface NPCData {
-  characterId: string;
-  name: string;
-  portraitUrl: string;
-  currentMood: string;
-  relationship: {
-    friendship: number;
-    romance: number;
-  };
-  canInteract: boolean;
-  position_x?: number;
-}
+import { renderNPCs, NPCData } from './location/npc-renderer';
+import { applyRainEffect, applyTenseEffect, applyNeonEffect } from './location/mood-effects';
+import { createLoadingOverlay, LoadingOverlay } from './location/loading-overlay';
 
 interface SceneData {
   id: string;
@@ -39,9 +29,7 @@ export class LocationScene extends Phaser.Scene {
   private locationNameText!: Phaser.GameObjects.Text;
   private moodText!: Phaser.GameObjects.Text;
   private phoneButton!: Phaser.GameObjects.Container;
-  private loadingContainer!: Phaser.GameObjects.Container;
-  private loadingDots: Phaser.GameObjects.Text | null = null;
-  private loadingDotsTimer: Phaser.Time.TimerEvent | null = null;
+  private loadingOverlay!: LoadingOverlay;
 
   private phoneOpen: boolean = false;
 
@@ -68,6 +56,11 @@ export class LocationScene extends Phaser.Scene {
     this.createLoadingOverlay();
     this.createPhoneButton();
 
+    this.registerEventHandlers();
+    this.loadCurrentLocation();
+  }
+
+  private registerEventHandlers() {
     eventBus.on('location:loaded', (data: ScenePayload) => {
       this.loadScene(data);
     });
@@ -86,7 +79,6 @@ export class LocationScene extends Phaser.Scene {
       this.input.enabled = true;
     });
 
-    // Bridge-emitted focus-lock events (Task 2.1)
     eventBus.on('phaser:disable_inputs', () => {
       this.phoneOpen = true;
       this.input.enabled = false;
@@ -113,8 +105,6 @@ export class LocationScene extends Phaser.Scene {
         this.input.enabled = true;
       }
     });
-
-    this.loadCurrentLocation();
   }
 
   // ==================== Dynamic Asset Loading Pipeline ====================
@@ -135,7 +125,7 @@ export class LocationScene extends Phaser.Scene {
   }
 
   private async bootstrapScene(payload: ScenePayload): Promise<void> {
-    this.showLoading();
+    this.loadingOverlay.show();
 
     const assetPromises: Promise<void>[] = [];
 
@@ -151,54 +141,19 @@ export class LocationScene extends Phaser.Scene {
 
     await Promise.all(assetPromises);
 
-    this.hideLoading();
+    this.loadingOverlay.hide();
   }
 
   private createLoadingOverlay() {
-    const { width, height } = this.cameras.main;
-
-    this.loadingContainer = this.add.container(0, 0);
-    this.loadingContainer.setDepth(200);
-    this.loadingContainer.setVisible(false);
-
-    const bg = this.add.graphics();
-    bg.fillStyle(0x0a0a1a, 1);
-    bg.fillRect(0, 0, width, height);
-    this.loadingContainer.add(bg);
-
-    const title = this.add.text(width / 2, height / 2 - 30, 'LOADING SCENE', {
-      font: 'bold 16px monospace',
-      color: '#00ff00',
-    }).setOrigin(0.5);
-    this.loadingContainer.add(title);
-
-    this.loadingDots = this.add.text(width / 2, height / 2 + 5, '', {
-      font: '14px monospace',
-      color: '#666666',
-    }).setOrigin(0.5);
-    this.loadingContainer.add(this.loadingDots);
+    this.loadingOverlay = createLoadingOverlay(this);
   }
 
   private showLoading() {
-    this.loadingContainer.setVisible(true);
-
-    let dotCount = 0;
-    this.loadingDotsTimer = this.time.addEvent({
-      delay: 400,
-      loop: true,
-      callback: () => {
-        dotCount = (dotCount + 1) % 4;
-        this.loadingDots?.setText('.'.repeat(dotCount));
-      },
-    });
+    this.loadingOverlay.show();
   }
 
   private hideLoading() {
-    this.loadingContainer.setVisible(false);
-    if (this.loadingDotsTimer) {
-      this.loadingDotsTimer.destroy();
-      this.loadingDotsTimer = null;
-    }
+    this.loadingOverlay.hide();
   }
 
   // ==================== Environment & Mood Rendering ====================
@@ -234,69 +189,16 @@ export class LocationScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
 
     if (normalizedMood === 'rainy' || normalizedMood === 'rain') {
-      this.applyRainEffect(width, height);
+      this.rainEmitter = applyRainEffect(this, width, height);
     }
 
     if (normalizedMood === 'tense' || normalizedMood === 'dangerous' || normalizedMood === 'threat') {
-      this.applyTenseEffect(width, height);
+      this.moodOverlay = applyTenseEffect(this, width, height);
     }
 
     if (normalizedMood === 'neon' || normalizedMood === 'night' || normalizedMood === 'dark') {
-      this.applyNeonEffect(width, height);
+      this.moodOverlay = applyNeonEffect(this, width, height);
     }
-  }
-
-  private applyRainEffect(width: number, height: number) {
-    const rainKey = '__raindrop';
-    if (!this.textures.exists(rainKey)) {
-      const canvasTexture = this.textures.createCanvas(rainKey, 2, 8);
-      if (canvasTexture) {
-        const ctx = canvasTexture.context;
-        ctx.fillStyle = 'rgba(170,170,204,0.6)';
-        ctx.fillRect(0, 0, 2, 8);
-        canvasTexture.refresh();
-      }
-    }
-
-    this.rainEmitter = this.add.particles(0, -10, rainKey, {
-      x: { min: 0, max: width },
-      y: -10,
-      lifespan: 1200,
-      speedY: { min: 300, max: 500 },
-      speedX: { min: -30, max: -10 },
-      quantity: 3,
-      frequency: 30,
-      alpha: { start: 0.6, end: 0 },
-    });
-    this.rainEmitter.setDepth(40);
-  }
-
-  private applyTenseEffect(width: number, height: number) {
-    this.moodOverlay = this.add.graphics();
-    this.moodOverlay.setDepth(30);
-
-    this.moodOverlay.fillStyle(0xff0000, 0.08);
-    this.moodOverlay.fillRect(0, 0, width, height);
-
-    const vignette = this.add.graphics();
-    vignette.setDepth(31);
-
-    for (let i = 0; i < 8; i++) {
-      const alpha = 0.04 * (8 - i);
-      vignette.fillStyle(0x880000, alpha);
-      const inset = i * 30;
-      vignette.fillRect(inset, inset, width - inset * 2, height - inset * 2);
-    }
-
-    this.moodOverlay = vignette;
-  }
-
-  private applyNeonEffect(width: number, height: number) {
-    this.moodOverlay = this.add.graphics();
-    this.moodOverlay.setDepth(30);
-
-    this.moodOverlay.fillStyle(0x000033, 0.35);
-    this.moodOverlay.fillRect(0, 0, width, height);
   }
 
   private clearMoodEffects() {
@@ -314,101 +216,7 @@ export class LocationScene extends Phaser.Scene {
   // ==================== Interactive NPC Sprite Generation ====================
 
   private renderNPCs(npcs: NPCData[]) {
-    this.npcSprites.forEach(sprite => sprite.destroy());
-    this.npcSprites.clear();
-
-    const { width, height } = this.cameras.main;
-    const numNPCs = npcs.length;
-
-    npcs.forEach((npc, index) => {
-      let targetX: number;
-      if (npc.position_x !== undefined) {
-        targetX = npc.position_x * width;
-      } else {
-        targetX = (width / (numNPCs + 1)) * (index + 1);
-      }
-
-      const targetY = height;
-
-      const container = this.add.container(targetX, targetY);
-      container.setDepth(10);
-
-      const npcKey = `npc-${npc.characterId}`;
-      let visualElement: Phaser.GameObjects.Image | Phaser.GameObjects.Graphics | null = null;
-
-      if (this.textures.exists(npcKey)) {
-        const sprite = this.add.image(0, 0, npcKey);
-        const tex = this.textures.get(npcKey);
-        const source = tex.getSourceImage();
-        const maxH = height * 0.55;
-        const scale = maxH / source.height;
-        sprite.setScale(scale);
-        sprite.setOrigin(0.5, 1);
-        container.add(sprite);
-        visualElement = sprite;
-      } else {
-        const fallback = this.add.graphics();
-        const moodColor = this.getMoodColor(npc.currentMood);
-        fallback.fillStyle(moodColor, 1);
-        fallback.fillRoundedRect(-30, -80, 60, 80, 5);
-        fallback.lineStyle(2, 0x00ff00, 1);
-        fallback.strokeRoundedRect(-30, -80, 60, 80, 5);
-        container.add(fallback);
-
-        const label = this.add.text(0, -40, npc.name[0], {
-          font: 'bold 24px monospace',
-          color: '#00ff00',
-        }).setOrigin(0.5);
-        container.add(label);
-        visualElement = fallback;
-      }
-
-      const nameTag = this.add.text(0, -8, npc.name, {
-        font: 'bold 12px monospace',
-        color: '#ffffff',
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        padding: { x: 6, y: 3 },
-      }).setOrigin(0.5, 1);
-      container.add(nameTag);
-
-      const moodTag = this.add.text(0, 4, npc.currentMood, {
-        font: '10px monospace',
-        color: '#888888',
-        padding: { x: 4, y: 2 },
-      }).setOrigin(0.5, 0);
-      container.add(moodTag);
-
-      if (npc.canInteract) {
-        const hitArea = this.add.rectangle(0, -40, 80, 90, 0x000000, 0);
-        hitArea.setInteractive({ useHandCursor: true });
-
-        hitArea.on('pointerover', () => {
-          container.setScale(1.05);
-          if (visualElement instanceof Phaser.GameObjects.Image) {
-            visualElement.setTint(0xffffff);
-          } else if (visualElement instanceof Phaser.GameObjects.Graphics) {
-            visualElement.setAlpha(0.9);
-          }
-        });
-
-        hitArea.on('pointerout', () => {
-          container.setScale(1);
-          if (visualElement instanceof Phaser.GameObjects.Image) {
-            visualElement.clearTint();
-          } else if (visualElement instanceof Phaser.GameObjects.Graphics) {
-            visualElement.setAlpha(1);
-          }
-        });
-
-        hitArea.on('pointerdown', () => {
-          this.onNPCClick(npc);
-        });
-
-        container.add(hitArea);
-      }
-
-      this.npcSprites.set(npc.characterId, container);
-    });
+    renderNPCs(this, npcs, this.npcSprites, (npc) => this.onNPCClick(npc));
   }
 
   private onNPCClick(npc: NPCData) {
@@ -567,26 +375,5 @@ export class LocationScene extends Phaser.Scene {
     this.renderNPCs(payload.npcs);
 
     eventBus.emit('location:rendered', payload);
-  }
-
-  private getMoodColor(mood: string): number {
-    const colors: Record<string, number> = {
-      neutral: 0x333333,
-      happy: 0x006600,
-      excited: 0x009900,
-      friendly: 0x004400,
-      shy: 0x333366,
-      flirty: 0x663366,
-      blushing: 0x663333,
-      angry: 0x660000,
-      tense: 0x444400,
-      cozy: 0x333300,
-      rainy: 0x333344,
-      neon: 0x330066,
-      dangerous: 0x660000,
-      night: 0x000033,
-      dark: 0x111111,
-    };
-    return colors[mood] || 0x333333;
   }
 }

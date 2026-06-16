@@ -8,7 +8,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const API_URL = process.env.API_URL ?? 'http://localhost:3000';
+const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
 
 async function getDevToken(page: Page): Promise<string> {
   const res = await page.request.post(`${API_URL}/auth/dev-login`, {

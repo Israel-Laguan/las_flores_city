@@ -123,6 +123,11 @@ export const DialogueOverlaySchema = z.object({
 
 export type DialogueOverlay = z.infer<typeof DialogueOverlaySchema>;
 
+// Mystery Overlay Schema (Task 3.1)
+// Re-export from the dedicated overlay module for convenience.
+export { OverlaySchema, OverlayFileSchema } from './schemas/overlay.js';
+export type { Overlay, OverlayFile } from './schemas/overlay.js';
+
 // ==================== Location & Scene ====================
 
 export const LocationSchema = z.object({

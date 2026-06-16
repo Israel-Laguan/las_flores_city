@@ -12,6 +12,10 @@ export class PhoneBridge {
     this.statusBarElement = document.getElementById('phone-status-bar') as HTMLElement;
 
     this.unsubscribeStore = phoneStore.subscribe((state) => this.render(state));
+    (window as any).__phoneStore = {
+      getState: () => phoneStore.getState(),
+      setState: (patch: Partial<ReturnType<typeof phoneStore.getState>>) => phoneStore.updateState(patch),
+    };
     this.initEventBindings();
 
     // Render initial state
@@ -60,9 +64,9 @@ export class PhoneBridge {
     if (this.statusBarElement) {
       const formattedTime = calculateInGameTime(state.timeBlocks);
       this.statusBarElement.innerHTML = `
-        <span class="status-time">${formattedTime}</span>
+        <span id="phone-clock" data-testid="phone-clock" class="status-time">${formattedTime}</span>
         <div class="status-icons">
-          <span class="credits-pill">${state.credits} C$</span>
+          <span class="credits-pill credits-value" data-testid="credits-display">${state.credits} C$</span>
           <span class="battery-icon">⚡ 100%</span>
         </div>
       `;

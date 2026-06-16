@@ -1,4 +1,4 @@
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 
 export function userStateCacheKey(userId: string): string {
   return `user:state:${userId}`;
@@ -93,4 +93,167 @@ export function buildUpdateQuery(updates: { time_blocks?: number; credits?: numb
   }
 
   return { sql: updateClauses.join(', '), values };
+}
+
+export const MOVEMENT_TB_COST = 1;
+
+export type MoveResult =
+  | { success: true; from_location_id: string; to_location_id: string; tb_cost: number; time_blocks_remaining: number }
+  | { success: false; error: 'already_here' | 'exhausted' };
+
+export async function performMoveTransaction(
+  userId: string,
+  targetLocationId: string
+): Promise<MoveResult> {
+  return withOLTPTransaction(async (client) => {
+    const lockResult = await client.query(
+      'SELECT time_blocks, current_location_id FROM users WHERE id = $1 FOR UPDATE',
+      [userId]
+    );
+
+    if (lockResult.rows.length === 0) {
+      throw new Error('Player not found');
+    }
+
+    const currentTB = lockResult.rows[0].time_blocks;
+    const fromLocationId = lockResult.rows[0].current_location_id;
+
+    if (fromLocationId === targetLocationId) {
+      return { success: false, error: 'already_here' };
+    }
+
+    if (currentTB < MOVEMENT_TB_COST) {
+      return { success: false, error: 'exhausted' };
+    }
+
+    await client.query(
+      'UPDATE users SET time_blocks = time_blocks - $1, current_location_id = $2 WHERE id = $3',
+      [MOVEMENT_TB_COST, targetLocationId, userId]
+    );
+
+    const newResult = await client.query(
+      'SELECT time_blocks FROM users WHERE id = $1',
+      [userId]
+    );
+
+    return {
+      success: true,
+      from_location_id: fromLocationId,
+      to_location_id: targetLocationId,
+      tb_cost: MOVEMENT_TB_COST,
+      time_blocks_remaining: newResult.rows[0].time_blocks,
+    };
+  });
+}
+
+export async function emitMoveAnalytics(
+  userId: string,
+  result: { from_location_id: string; to_location_id: string; tb_cost: number }
+): Promise<void> {
+  try {
+    await queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
+       VALUES (gen_random_uuid(), $1, 'move', $2, $3)`,
+      [
+        userId,
+        JSON.stringify({
+          from_location_id: result.from_location_id,
+          to_location_id: result.to_location_id,
+        }),
+        result.tb_cost,
+      ]
+    );
+  } catch (eventError) {
+    console.error('Failed to emit move event to OLAP:', eventError);
+  }
+}
+
+export const RENT_AMOUNT = 10;
+
+export type SleepResult = {
+  time_blocks: number;
+  credits: number;
+  current_day: number;
+  credits_deducted: number;
+  previous_day: number;
+  rent_paid: true;
+  overdraft: boolean;
+};
+
+export async function performSleepTransaction(
+  userId: string
+): Promise<SleepResult> {
+  return withOLTPTransaction(async (client) => {
+    const lockResult = await client.query(
+      'SELECT time_blocks, credits, current_day FROM users WHERE id = $1 FOR UPDATE',
+      [userId]
+    );
+
+    if (lockResult.rows.length === 0) {
+      throw new Error('Player not found');
+    }
+
+    const previousDay = lockResult.rows[0].current_day;
+    const previousCredits = lockResult.rows[0].credits;
+
+    await client.query(
+      `UPDATE users SET
+        time_blocks = 48,
+        current_day = current_day + 1,
+        current_node_id = NULL
+      WHERE id = $1`,
+      [userId]
+    );
+
+    await client.query(
+      'UPDATE users SET credits = credits - $1 WHERE id = $2',
+      [RENT_AMOUNT, userId]
+    );
+
+    const newResult = await client.query(
+      'SELECT time_blocks, credits, current_day FROM users WHERE id = $1',
+      [userId]
+    );
+
+    const newCredits = newResult.rows[0].credits;
+
+    await client.query(
+      `INSERT INTO bank_transactions (user_id, transaction_type, amount, description, balance_after, reference_type)
+       VALUES ($1, 'debit', $2, 'Daily Rent - Nakamura & Morgan LTD', $3, 'rent')`,
+      [userId, RENT_AMOUNT, newCredits]
+    );
+
+    return {
+      time_blocks: newResult.rows[0].time_blocks,
+      credits: newCredits,
+      current_day: newResult.rows[0].current_day,
+      credits_deducted: RENT_AMOUNT,
+      previous_day: previousDay,
+      rent_paid: true,
+      overdraft: newCredits < 0,
+    };
+  });
+}
+
+export async function emitSleepAnalytics(
+  userId: string,
+  result: SleepResult
+): Promise<void> {
+  try {
+    await queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
+       VALUES (gen_random_uuid(), $1, 'sleep', $2, 0)`,
+      [
+        userId,
+        JSON.stringify({
+          completed_day: result.previous_day,
+          credits_deducted: result.credits_deducted,
+          new_day: result.current_day,
+          overdraft: result.overdraft,
+        }),
+      ]
+    );
+  } catch (eventError) {
+    console.error('Failed to emit sleep event to OLAP:', eventError);
+  }
 }
