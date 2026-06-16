@@ -48,3 +48,4 @@ content/**/*.generated.*
 tmp
 temp
 *.tmp
+.js

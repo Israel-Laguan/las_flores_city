@@ -42,7 +42,7 @@ nodes:
   handler_intro:
     id: "handler_intro"
     type: "character"
-    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Subject 7. You're awake. Good. I'm your Handler. N&M LTD has selected you for the Las Flores Urban Experience Program. You'll be living here for the duration of the study."
     choices:
       - id: "what_study"
@@ -61,7 +61,7 @@ nodes:
   explain_study:
     id: "explain_study"
     type: "character"
-    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "You'll be observed as you navigate the city. Make choices. Build relationships. We're studying human behavior in controlled urban environments. Your Time Blocks are your most valuable resource—use them wisely."
     choices:
       - id: "time_blocks"
@@ -80,7 +80,7 @@ nodes:
   explain_duration:
     id: "explain_duration"
     type: "character"
-    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Until the study concludes. Could be weeks. Could be months. depends on your progress. You have 48 Time Blocks per day. Spend them to move, talk, explore. Sleep to refresh."
     choices:
       - id: "time_blocks"
@@ -93,7 +93,7 @@ nodes:
   explain_time_blocks:
     id: "explain_time_blocks"
     type: "character"
-    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Time Blocks represent your available time each day. Moving between locations costs 1 TB. Conversations cost 1-2 TB depending on depth. When you hit zero, you must sleep. Sleep resets your TB to 48 and advances the day."
     effects:
       flag_set:
@@ -109,7 +109,7 @@ nodes:
   explain_rules:
     id: "explain_rules"
     type: "character"
-    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Simple. Explore the city. Talk to people. Make choices. Some choices have consequences. Your relationships with NPCs will affect available options. Don't waste your Time Blocks."
     effects:
       flag_set:
@@ -122,7 +122,7 @@ nodes:
   city_overview:
     id: "city_overview"
     type: "character"
-    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Las Flores has several districts. Downtown is corporate. Old Town is... traditional. The Market is where you buy and sell. The Undercity is off-limits for now. Start at the Old Town Cafe—there's a barista there who knows everyone."
     effects:
       flag_set:

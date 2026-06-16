@@ -2,26 +2,23 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy all package files
-COPY admin/package*.json ./
-COPY shared/package*.json ../shared/
+COPY package*.json ./
+COPY admin/package*.json ./admin/
+COPY shared/package*.json ./shared/
+COPY client/package*.json ./client/
+COPY server/package*.json ./server/
 
-# Install shared dependencies first (needs tsc)
-RUN cd ../shared && npm install
+RUN npm ci
 
-# Install admin dependencies
-RUN npm install
+COPY .eslintrc.json ./
+COPY tsconfig.json ./
+COPY client/ ./client/
+COPY admin/ ./admin/
+COPY server/ ./server/
+COPY shared/ ./shared/
 
-# Copy source code
-COPY admin/ .
-COPY shared/ ../shared/
-
-# Build shared types
-RUN cd ../shared && npm run build
-
-# Build admin panel
-RUN npm run build
+RUN npm run build --workspace=shared && npm run build --workspace=admin
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--workspace=admin"]

@@ -72,7 +72,37 @@ jobs:
             -f server/src/database/migrations/001_initial_schema.sql
           PGPASSWORD=las_flores_dev_password psql \
             -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/003_sprint1_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/004_scene_payload.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/005_dialogue_service.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/006_add_move_event_type.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/007_sleep_reset_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/008_add_sleep_event_type.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/009_add_user_relationships.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/010_sprint2_readiness.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/011_bank_constraints.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
             -f server/src/database/migrations/012_gigs_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/014_social_feed.sql
 
       - name: Apply OLAP schema
         run: |
@@ -177,7 +207,37 @@ jobs:
             -f server/src/database/migrations/001_initial_schema.sql
           PGPASSWORD=las_flores_dev_password psql \
             -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/003_sprint1_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/004_scene_payload.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/005_dialogue_service.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/006_add_move_event_type.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/007_sleep_reset_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/008_add_sleep_event_type.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/009_add_user_relationships.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/010_sprint2_readiness.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/011_bank_constraints.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
             -f server/src/database/migrations/012_gigs_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/014_social_feed.sql
           PGPASSWORD=las_flores_analytics_dev_password psql \
             -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
             -f server/src/database/migrations/002_analytics_schema.sql

@@ -7,6 +7,7 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@las-flores/shared$': '<rootDir>/../shared/src/index.ts',
   },
+  transformIgnorePatterns: ['/node_modules/(?!@las-flores/shared/)'],
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',

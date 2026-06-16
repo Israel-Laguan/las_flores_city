@@ -5,7 +5,6 @@ import * as yaml from 'js-yaml';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { oltpPool, queryOLAP } from '../database/connection.js';
 import { deleteCache } from '../database/redis.js';
-import { BankService } from '../services/BankService.js';
 import { GigFileSchema, Gig } from '../../../shared/src/schemas/gig.js';
 
 export const gigsRouter = express.Router();
@@ -13,7 +12,7 @@ export const gigsRouter = express.Router();
 let cachedGigs: Gig[] = [];
 function loadGigs(): Gig[] {
   if (cachedGigs.length > 0) return cachedGigs;
-  const filePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../../../content/gigs/gigs.yaml');
+  const filePath = path.join(__dirname, '../../../content/gigs/gigs.yaml');
   const parsed = yaml.load(fs.readFileSync(filePath, 'utf8'));
   cachedGigs = GigFileSchema.parse(parsed).gigs;
   return cachedGigs;
@@ -58,8 +57,24 @@ gigsRouter.post('/execute', authMiddleware, async (req: AuthRequest, res, next) 
         throw new Error('LOCATION_RESTRICTION_FAILED');
       }
 
-      // Credit payout + ledger via BankService (runs its own nested transaction)
-      await BankService.modifyBalance(userId, gig.credit_payout, 'creds', 'salary', `Completed: ${gig.title}`);
+      const balanceResult = await client.query(
+        `UPDATE users
+         SET credits = credits + $1, updated_at = NOW()
+         WHERE id = $2
+         RETURNING credits`,
+        [gig.credit_payout, userId]
+      );
+
+      if (balanceResult.rows.length === 0) {
+        throw new Error('USER_NOT_FOUND');
+      }
+
+      await client.query(
+        `INSERT INTO bank_transactions
+         (user_id, amount, currency_type, transaction_type, description, balance_after)
+         VALUES ($1, $2, 'creds', 'salary', $3, $4)`,
+        [userId, gig.credit_payout, `Completed: ${gig.title}`, balanceResult.rows[0].credits]
+      );
 
       if (gig.reputation_target && gig.reputation_reward) {
         await client.query(

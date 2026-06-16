@@ -17,7 +17,8 @@ ALTER TABLE player_events ADD CONSTRAINT player_events_event_type_check CHECK (e
     'mystery_progress',
     'move',
     'sleep',
-    'gig_completed'
+    'gig_completed',
+    'post_liked'
 ));
 
 COMMIT;

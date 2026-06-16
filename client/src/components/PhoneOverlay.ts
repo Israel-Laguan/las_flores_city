@@ -10,7 +10,7 @@ export class PhoneOverlay {
   private bridge: PhoneBridge;
 
   constructor() {
-    this.viewport = document.getElementById('phone-app-viewport') as HTMLElement;
+    this.viewport = document.getElementById('phone-app-content') as HTMLElement;
     this.navBar = document.getElementById('phone-nav-bar') as HTMLElement;
 
     // PhoneBridge owns open/close transitions and status-bar rendering
@@ -141,5 +141,11 @@ export class PhoneOverlay {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => new PhoneOverlay());
 } else {
-  new PhoneOverlay();
+  // DOM is already ready, but ensure element exists
+  if (document.getElementById('phone-app-content')) {
+    new PhoneOverlay();
+  } else {
+    // Wait for next tick to ensure element is available
+    setTimeout(() => new PhoneOverlay(), 0);
+  }
 }

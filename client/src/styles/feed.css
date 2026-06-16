@@ -1,0 +1,95 @@
+.feed-app {
+  padding: 12px;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.feed-header h2 {
+  font-size: 1.1rem;
+  color: var(--neon-cyan);
+  text-shadow: var(--border-glow);
+  margin: 0 0 2px 0;
+}
+
+.feed-scroll {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.feed-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(0, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.feed-card.system    { border-color: rgba(239, 68, 68, 0.3); }
+.feed-card.leaderboard { border-color: rgba(168, 85, 247, 0.3); }
+.feed-card.ad        { background: rgba(3, 7, 18, 0.8); border-color: rgba(255, 255, 255, 0.1); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  margin-right: 8px;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.author-name { font-size: 0.8rem; font-weight: bold; }
+
+.type-badge { font-size: 0.55rem; color: #ff3333; margin-left: 4px; }
+.feed-card.leaderboard .type-badge { color: #a855f7; }
+
+.author-handle { font-size: 0.65rem; color: #6b7280; }
+.post-time     { font-size: 0.65rem; color: #6b7280; }
+
+.card-body p {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin: 0;
+  color: #e5e7eb;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.6rem;
+}
+
+.like-button {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+}
+
+.like-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.like-button.liked { color: #ef4444; }
+
+.action-id-tag { color: #374151; }

@@ -14,6 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmit": true,
     "paths": {
       "@las-flores/shared": ["../shared/src/index.ts"]
     }

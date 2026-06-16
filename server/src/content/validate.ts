@@ -170,6 +170,13 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/scenes/') || normalizedPath.includes('\\scenes\\')) {
     return 'scene';
   }
+  if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
+    return 'gig';
+  }
+  
+  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
+    return 'gig';
+  }
   
   return null;
 }

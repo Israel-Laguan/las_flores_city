@@ -74,7 +74,14 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/scenes/') || normalizedPath.includes('\\scenes\\')) {
     return 'scene';
   }
+  if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
+    return 'gig';
+  }
   
+  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
+    return 'gig';
+  }
+
   return null;
 }
 
@@ -190,6 +197,35 @@ async function upsertScene(data: any): Promise<string> {
   return result.rows[0].id;
 }
 
+// Upsert gig
+async function upsertGig(data: any): Promise<string> {
+  const result = await queryOLTP(
+    `INSERT INTO gigs (id, title, description, time_block_cost, credit_payout, reputation_target, reputation_reward, location_restriction_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     ON CONFLICT (id) DO UPDATE SET
+       title = EXCLUDED.title,
+       description = EXCLUDED.description,
+       time_block_cost = EXCLUDED.time_block_cost,
+       credit_payout = EXCLUDED.credit_payout,
+       reputation_target = EXCLUDED.reputation_target,
+       reputation_reward = EXCLUDED.reputation_reward,
+       location_restriction_id = EXCLUDED.location_restriction_id,
+       updated_at = NOW()
+     RETURNING id`,
+    [
+      data.id,
+      data.title,
+      sanitizeText(data.description),
+      data.time_block_cost,
+      data.credit_payout,
+      data.reputation_target || null,
+      data.reputation_reward || null,
+      data.location_restriction_id || null,
+    ]
+  );
+  return result.rows[0].id;
+}
+
 // Process content file
 async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
@@ -218,6 +254,16 @@ async function processContentFile(filePath: string): Promise<AppliedMigration> {
     case 'scene':
       contentId = await upsertScene(data);
       break;
+    case 'gig':
+      // gigs.yaml has a 'gigs' array key
+      const gigs = data.gigs || [data];
+      const ids: string[] = [];
+      for (const gig of gigs) {
+        const id = await upsertGig(gig);
+        ids.push(id);
+      }
+      contentId = ids.join(',');
+      break;
     default:
       throw new Error(`Unsupported content type: ${contentType}`);
   }
@@ -232,8 +278,8 @@ async function processContentFile(filePath: string): Promise<AppliedMigration> {
 
 // Get processing order (dependency resolution)
 function getProcessingOrder(files: string[]): string[] {
-  // Characters first, then scenes, dialogues, overlays (overlays depend on dialogue trees)
-  const order: ContentType[] = ['character', 'scene', 'dialogue', 'overlay'];
+  // Characters first, then scenes, dialogues, overlays (overlays depend on dialogue trees), then gigs
+  const order: ContentType[] = ['character', 'scene', 'dialogue', 'overlay', 'gig'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);
@@ -307,7 +353,8 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
         const migration = await processContentFile(file);
         
         // Record migration
-        await recordMigration(file, checksum, migration.contentType, migration.contentId);
+        const logContentId = migration.contentId.split(',')[0];
+        await recordMigration(file, checksum, migration.contentType, logContentId);
         
         result.filesProcessed++;
         result.appliedMigrations.push(migration);
@@ -318,6 +365,10 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
         result.errors.push(`${path.relative(contentDir, file)}: ${error.message}`);
         console.error(`❌ Failed: ${path.relative(contentDir, file)} - ${error.message}`);
       }
+    }
+
+    if (result.filesFailed > 0) {
+      result.success = false;
     }
 
     console.log('\n📊 Migration Summary:');

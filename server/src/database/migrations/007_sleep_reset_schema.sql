@@ -1,5 +1,5 @@
 -- Las Flores 2077 - Sleep Reset Schema (Task 2.2)
--- Adds current_day to users, creates bank_transactions, adds 'sleep' to OLAP event_type
+-- Adds current_day to users if not exists, creates bank_transactions if not exists
 
 BEGIN;
 

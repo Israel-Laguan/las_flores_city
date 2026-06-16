@@ -348,7 +348,7 @@ export const MigrationLogSchema = z.object({
   id: z.string().uuid(),
   file_path: z.string(),
   file_checksum: z.string(),
-  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene']),
+  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig']),
   content_id: z.string().uuid(),
   applied_at: z.string().datetime(),
   applied_by: z.string().uuid().optional(),
@@ -385,7 +385,7 @@ export type PlayerEvent = z.infer<typeof PlayerEventSchema>;
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

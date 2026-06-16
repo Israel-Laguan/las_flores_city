@@ -3,8 +3,9 @@
 
 BEGIN;
 
--- Enable UUID extension
+-- Enable UUID extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- Player events table (event sourcing for analytics)
 CREATE TABLE player_events (

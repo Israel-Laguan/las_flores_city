@@ -1,7 +1,17 @@
--- Las Flores 2077 - Scene Payload Schema (Task 1.2)
--- Adds background_url, ambient_sound_url, mood to scenes
--- Adds is_permanent, default_mood to scene_characters
--- Creates user_relationships table
+-- Triggers
+-- ============================================================
+
+CREATE TRIGGER IF NOT EXISTS update_user_relationships_updated_at BEFORE UPDATE ON user_relationships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================
+=======
+-- ============================================================
+-- Triggers (already created in 001_initial_schema.sql)
+-- ============================================================
+
+-- ============================================================Las Flores 2077 - Scene Payload Schema (Task 1.2)
+-- Adds background_url, ambient_sound_url, mood to scenes if not exist
+-- Adds is_permanent, default_mood to scene_characters if not exist
 
 BEGIN;
 
@@ -21,21 +31,6 @@ ALTER TABLE scene_characters ADD COLUMN IF NOT EXISTS is_permanent BOOLEAN NOT N
 ALTER TABLE scene_characters ADD COLUMN IF NOT EXISTS default_mood VARCHAR(50) NOT NULL DEFAULT 'neutral';
 
 -- ============================================================
--- User relationships table (NPC bond tracking per player)
--- ============================================================
-
-CREATE TABLE IF NOT EXISTS user_relationships (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    character_id UUID NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
-    friendship_level INTEGER NOT NULL DEFAULT 0 CHECK (friendship_level >= 0 AND friendship_level <= 100),
-    romance_level INTEGER NOT NULL DEFAULT 0 CHECK (romance_level >= 0 AND romance_level <= 100),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(user_id, character_id)
-);
-
--- ============================================================
 -- Indexes
 -- ============================================================
 
@@ -49,7 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_user_relationships_user_character ON user_relatio
 -- Triggers
 -- ============================================================
 
-CREATE TRIGGER update_user_relationships_updated_at BEFORE UPDATE ON user_relationships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER IF NOT EXISTS update_user_relationships_updated_at BEFORE UPDATE ON user_relationships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================
 -- Seed default scene environmental data
@@ -79,7 +74,7 @@ WHERE id = 'e5f6a7b8-c9d0-1234-efab-345678901234';
 
 UPDATE scene_characters SET is_permanent = TRUE, default_mood = 'neutral'
 WHERE scene_id = 'c3d4e5f6-a7b8-9012-cdef-123456789012'
-  AND character_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+  AND character_id = '550e8400-e29b-41d4-a716-446655440004';
 
 UPDATE scene_characters SET is_permanent = TRUE, default_mood = 'neutral'
 WHERE scene_id = 'e5f6a7b8-c9d0-1234-efab-345678901234'
@@ -98,7 +93,7 @@ VALUES ('00000000-0000-0000-0000-000000000001', 'b2c3d4e5-f6a7-8901-bcde-f123456
 ON CONFLICT (user_id, character_id) DO NOTHING;
 
 INSERT INTO user_relationships (user_id, character_id, friendship_level, romance_level)
-VALUES ('00000000-0000-0000-0000-000000000001', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 5, 0)
+VALUES ('00000000-0000-0000-0000-000000000001', '550e8400-e29b-41d4-a716-446655440004', 5, 0)
 ON CONFLICT (user_id, character_id) DO NOTHING;
 
 INSERT INTO user_relationships (user_id, character_id, friendship_level, romance_level)

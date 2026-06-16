@@ -84,7 +84,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: development
       DATABASE_URL: postgresql://las_flores:las_flores_dev_password@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
@@ -101,7 +100,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./server/src:/app/src
+      - ./server/src:/app/server/src
       - ./shared:/app/shared
       - ./content:/app/content
 
@@ -115,12 +114,11 @@ services:
     ports:
       - "3001:3000"
     environment:
-      NODE_ENV: development
       API_URL: http://localhost:3000
     depends_on:
       - server
     volumes:
-      - ./admin/src:/app/src
+      - ./admin/src:/app/admin/src
       - ./shared:/app/shared
 
 volumes:

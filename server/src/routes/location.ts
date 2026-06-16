@@ -188,7 +188,7 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
   }
 
   // 2. Fetch permanent NPCs from scene_characters
-  const permanentResult = await queryOLTP(
+  let permanentResult = await queryOLTP(
     `SELECT
       sc.character_id,
       sc.is_permanent,
@@ -199,6 +199,22 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
      WHERE sc.scene_id = $1`,
     [sceneId]
   );
+
+  if (permanentResult.rows.length === 0) {
+    const sceneMetaResult = await queryOLTP('SELECT metadata FROM scenes WHERE id = $1', [sceneId]);
+    const npcIds = ((sceneMetaResult.rows[0]?.metadata as any) || {}).npcs || [];
+    if (npcIds.length > 0) {
+      permanentResult = await queryOLTP(
+        `SELECT c.id AS character_id,
+                true AS is_permanent,
+                'neutral' AS default_mood,
+                c.name AS character_name
+         FROM characters c
+         WHERE c.id = ANY($1)`,
+        [npcIds]
+      ) as any;
+    }
+  }
 
   // 3. Fetch overlay NPCs (mystery-gated)
   const overlayNpcs = await getOverlayNpcs(sceneId, userId);
