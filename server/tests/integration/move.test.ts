@@ -1,0 +1,237 @@
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import pg from 'pg';
+import express from 'express';
+import { playerRouter } from '../../src/routes/player.js';
+import { locationRouter } from '../../src/routes/location.js';
+import { generateToken } from '../../src/middleware/auth.js';
+import { closeRedis } from '../../src/database/redis.js';
+
+const { Pool } = pg;
+
+const TEST_USER_ID = '00000000-0000-0000-0000-000000000010';
+const APARTMENT_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+const WELCOME_CENTER_ID = '550e8400-e29b-41d4-a716-446655440002';
+const CAFE_ID = 'e5f6a7b8-c9d0-1234-efab-345678901234';
+const NONEXISTENT_ID = '00000000-0000-0000-0000-999999999999';
+
+const app = express();
+app.use(express.json());
+app.use('/player', playerRouter);
+app.use('/location', locationRouter);
+
+let server: any;
+let pool: pg.Pool;
+
+function authHeaders() {
+  return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
+}
+
+beforeAll(async () => {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
+    connectionTimeoutMillis: 5000,
+  });
+
+  await pool.query(
+    `INSERT INTO users (id, email, username, display_name, time_blocks, current_location_id)
+     VALUES ($1, $2, $3, $4, 48, $5)
+     ON CONFLICT (id) DO UPDATE SET
+       time_blocks = 48,
+       current_location_id = $5,
+       updated_at = NOW()`,
+    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test', APARTMENT_ID]
+  );
+
+  await new Promise<void>((resolve) => {
+    server = app.listen(0, resolve);
+  });
+});
+
+afterAll(async () => {
+  if (server) {
+    await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
+  }
+  await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await pool.end();
+  await closeRedis();
+});
+
+beforeEach(async () => {
+  await pool.query(
+    `UPDATE users SET time_blocks = 48, current_location_id = $1 WHERE id = $2`,
+    [APARTMENT_ID, TEST_USER_ID]
+  );
+});
+
+describe('POST /player/move', () => {
+  test('moves player to a new location and deducts 1 TB', async () => {
+    const port = server.address().port;
+    const res = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+    });
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data).toHaveProperty('success', true);
+    expect(data.data).toHaveProperty('from_location_id', APARTMENT_ID);
+    expect(data.data).toHaveProperty('to_location_id', WELCOME_CENTER_ID);
+    expect(data.data).toHaveProperty('tb_cost', 1);
+    expect(data.data).toHaveProperty('time_blocks_remaining', 47);
+    expect(data.data).toHaveProperty('scene');
+    expect(data.data.scene).toHaveProperty('id', WELCOME_CENTER_ID);
+    expect(data.data).toHaveProperty('npcs');
+    expect(Array.isArray(data.data.npcs)).toBe(true);
+  });
+
+  test('returns 400 when target_location_id is missing', async () => {
+    const port = server.address().port;
+    const res = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({}),
+    });
+    const data = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(data).toHaveProperty('success', false);
+    expect(data.error).toContain('target_location_id is required');
+  });
+
+  test('returns 404 for non-existent location', async () => {
+    const port = server.address().port;
+    const res = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: NONEXISTENT_ID }),
+    });
+    const data = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(data).toHaveProperty('success', false);
+    expect(data.error).toBe('Location not found');
+  });
+
+  test('returns 400 when already at the target location', async () => {
+    const port = server.address().port;
+    const res = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: APARTMENT_ID }),
+    });
+    const data = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(data).toHaveProperty('success', false);
+    expect(data.error).toContain('already at this location');
+  });
+
+  test('returns 403 when player has 0 time blocks', async () => {
+    await pool.query(
+      'UPDATE users SET time_blocks = 0 WHERE id = $1',
+      [TEST_USER_ID]
+    );
+
+    const port = server.address().port;
+    const res = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+    });
+    const data = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(data).toHaveProperty('success', false);
+    expect(data.error).toBe('exhausted');
+    expect(data.reason).toContain('exhausted');
+  });
+
+  test('deducts exactly 1 TB per move', async () => {
+    const port = server.address().port;
+
+    const move1 = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+    });
+    const data1 = await move1.json();
+    expect(data1.data.time_blocks_remaining).toBe(47);
+
+    const move2 = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: CAFE_ID }),
+    });
+    const data2 = await move2.json();
+    expect(data2.data.time_blocks_remaining).toBe(46);
+  });
+
+  test('emits move event to OLAP after successful move', async () => {
+    const port = server.address().port;
+
+    const analyticsPool = new Pool({
+      connectionString: process.env.ANALYTICS_DATABASE_URL || 'postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics',
+      connectionTimeoutMillis: 5000,
+    });
+
+    try {
+      await analyticsPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
+
+      await fetch(`http://localhost:${port}/player/move`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+      });
+
+      const result = await analyticsPool.query(
+        `SELECT event_type, event_data, time_blocks_cost
+         FROM player_events
+         WHERE user_id = $1 AND event_type = 'move'
+         ORDER BY created_at DESC LIMIT 1`,
+        [TEST_USER_ID]
+      );
+
+      expect(result.rows.length).toBe(1);
+      expect(result.rows[0].time_blocks_cost).toBe(1);
+
+      const eventData = result.rows[0].event_data;
+      expect(eventData).toHaveProperty('from_location_id', APARTMENT_ID);
+      expect(eventData).toHaveProperty('to_location_id', WELCOME_CENTER_ID);
+    } finally {
+      await analyticsPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
+      await analyticsPool.end();
+    }
+  });
+
+  test('does not deduct TB when move fails (exhausted)', async () => {
+    await pool.query(
+      'UPDATE users SET time_blocks = 0 WHERE id = $1',
+      [TEST_USER_ID]
+    );
+
+    const port = server.address().port;
+    await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+    });
+
+    const stateResult = await pool.query(
+      'SELECT time_blocks FROM users WHERE id = $1',
+      [TEST_USER_ID]
+    );
+    expect(stateResult.rows[0].time_blocks).toBe(0);
+  });
+
+  test('returns 401 without auth token', async () => {
+    const port = server.address().port;
+    const res = await fetch(`http://localhost:${port}/player/move`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+    });
+
+    expect(res.status).toBe(401);
+  });
+});

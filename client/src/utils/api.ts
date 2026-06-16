@@ -102,7 +102,7 @@ export async function updatePlayerState(data: {
 export async function movePlayer(locationId: string): Promise<any> {
   return fetchAPI('/player/move', {
     method: 'POST',
-    body: JSON.stringify({ location_id: locationId }),
+    body: JSON.stringify({ target_location_id: locationId }),
   });
 }
 

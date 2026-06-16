@@ -188,6 +188,25 @@ export const ScenePayloadSchema = z.object({
 
 export type ScenePayload = z.infer<typeof ScenePayloadSchema>;
 
+// ==================== Movement (Task 2.1) ====================
+
+export const MoveRequestSchema = z.object({
+  target_location_id: z.string().uuid(),
+});
+
+export type MoveRequest = z.infer<typeof MoveRequestSchema>;
+
+export const MoveResponseSchema = z.object({
+  from_location_id: z.string().uuid(),
+  to_location_id: z.string().uuid(),
+  tb_cost: z.number().int().min(0),
+  time_blocks_remaining: z.number().int().min(0).max(48),
+  scene: ScenePayloadSchema.shape.scene,
+  npcs: ScenePayloadSchema.shape.npcs,
+});
+
+export type MoveResponse = z.infer<typeof MoveResponseSchema>;
+
 // ==================== API Responses ====================
 
 export const ApiResponseSchema = z.object({
@@ -227,6 +246,12 @@ export const PlayerStateResponseSchema = ApiResponseSchema.extend({
 });
 
 export type PlayerStateResponse = z.infer<typeof PlayerStateResponseSchema>;
+
+export const MoveResponseWrapperSchema = ApiResponseSchema.extend({
+  data: MoveResponseSchema.optional(),
+});
+
+export type MoveResponseWrapper = z.infer<typeof MoveResponseWrapperSchema>;
 
 // ==================== YAML Content Types ====================
 
@@ -314,6 +339,7 @@ export const PlayerEventSchema = z.object({
     'item_used',
     'flag_set',
     'mystery_progress',
+    'move',
   ]),
   event_data: z.record(z.string(), z.any()),
   time_blocks_cost: z.number().int().min(0).optional(),

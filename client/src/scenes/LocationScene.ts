@@ -35,6 +35,7 @@ export class LocationScene extends Phaser.Scene {
   private npcPanel!: Phaser.GameObjects.Container;
   private travelPanel!: Phaser.GameObjects.Container;
   private isTravelMenuOpen: boolean = false;
+  private travelOverlay!: Phaser.GameObjects.Container;
 
   constructor() {
     super({ key: 'LocationScene' });
@@ -65,6 +66,9 @@ export class LocationScene extends Phaser.Scene {
 
     // Travel button
     this.createTravelButton();
+
+    // Travel overlay (shown during movement)
+    this.createTravelOverlay();
 
     // Listen for events
     eventBus.on('location:loaded', (data: ScenePayload) => {
@@ -135,6 +139,39 @@ export class LocationScene extends Phaser.Scene {
       color: '#00ff00',
     }).setOrigin(0.5, 0);
     this.travelPanel.add(menuTitle);
+  }
+
+  private createTravelOverlay() {
+    const { width, height } = this.cameras.main;
+
+    this.travelOverlay = this.add.container(0, 0);
+    this.travelOverlay.setDepth(100);
+    this.travelOverlay.setVisible(false);
+
+    const bg = this.add.graphics();
+    bg.fillStyle(0x000000, 0.85);
+    bg.fillRect(0, 0, width, height);
+    this.travelOverlay.add(bg);
+
+    const travelText = this.add.text(width / 2, height / 2 - 20, 'TRAVELING...', {
+      font: 'bold 20px monospace',
+      color: '#00ff00',
+    }).setOrigin(0.5);
+    this.travelOverlay.add(travelText);
+
+    const dots = this.add.text(width / 2, height / 2 + 15, '• • •', {
+      font: '14px monospace',
+      color: '#666666',
+    }).setOrigin(0.5);
+    this.travelOverlay.add(dots);
+  }
+
+  private showTravelOverlay() {
+    this.travelOverlay.setVisible(true);
+  }
+
+  private hideTravelOverlay() {
+    this.travelOverlay.setVisible(false);
   }
 
   private async loadCurrentLocation() {
@@ -346,24 +383,52 @@ export class LocationScene extends Phaser.Scene {
 
   private async travelTo(locationId: string) {
     try {
+      this.showTravelOverlay();
       eventBus.emit('travel:start');
 
       const result = await api.movePlayer(locationId);
 
+      this.hideTravelOverlay();
+
       if (result.success) {
+        eventBus.emit('tb:updated', result.data.time_blocks_remaining);
         eventBus.emit('travel:complete', {
-          locationId,
+          locationId: result.data.to_location_id,
+          fromLocationId: result.data.from_location_id,
           timeBlocksRemaining: result.data.time_blocks_remaining,
+          tbCost: result.data.tb_cost,
         });
 
-        await this.loadLocationById(locationId);
+        if (result.data.scene) {
+          this.loadScene({
+            scene: result.data.scene,
+            npcs: result.data.npcs,
+          });
+        } else {
+          await this.loadLocationById(locationId);
+        }
 
         this.isTravelMenuOpen = false;
       } else {
-        eventBus.emit('travel:failed', result.error);
+        const error = result.error || 'Unknown error';
+        const reason = result.reason || '';
+
+        if (error === 'exhausted') {
+          eventBus.emit('monologue:thought', 'I can barely keep my eyes open. I need to find somewhere to rest.');
+        } else if (error === 'location_locked') {
+          eventBus.emit('monologue:thought', reason || 'That path is blocked. I can\'t get through there right now.');
+        } else if (error === 'already_here') {
+          eventBus.emit('monologue:observation', 'I\'m already here. No point in pacing around.');
+        } else {
+          eventBus.emit('monologue:thought', 'Something went wrong. The city won\'t let me move.');
+        }
+
+        eventBus.emit('travel:failed', error);
       }
     } catch (error: any) {
+      this.hideTravelOverlay();
       console.error('Travel failed:', error);
+      eventBus.emit('monologue:thought', 'The network flickered. I couldn\'t get where I was going.');
       eventBus.emit('travel:failed', error.message);
     }
   }

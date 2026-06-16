@@ -159,7 +159,7 @@ async function getSceneRelationships(userId: string, characterIds: string[]): Pr
 }
 
 // Assemble the full ScenePayload
-async function assembleScenePayload(sceneId: string, userId: string) {
+export async function assembleScenePayload(sceneId: string, userId: string) {
   // 1. Fetch scene data (global, same for all users)
   let sceneData = await getCache(sceneCacheKey(sceneId));
 
