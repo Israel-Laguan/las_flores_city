@@ -70,12 +70,18 @@ jobs:
           PGPASSWORD=las_flores_dev_password psql \
             -h localhost -p 5434 -U las_flores -d las_flores \
             -f server/src/database/migrations/001_initial_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/012_gigs_schema.sql
 
       - name: Apply OLAP schema
         run: |
           PGPASSWORD=las_flores_analytics_dev_password psql \
             -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
             -f server/src/database/migrations/002_analytics_schema.sql
+          PGPASSWORD=las_flores_analytics_dev_password psql \
+            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
+            -f server/src/database/migrations/013_add_gig_event_type.sql
 
       - name: Run content migration (seed DB from /content)
         run: npm run migrate --workspace=server -- ../content
@@ -169,9 +175,15 @@ jobs:
           PGPASSWORD=las_flores_dev_password psql \
             -h localhost -p 5434 -U las_flores -d las_flores \
             -f server/src/database/migrations/001_initial_schema.sql
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/012_gigs_schema.sql
           PGPASSWORD=las_flores_analytics_dev_password psql \
             -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
             -f server/src/database/migrations/002_analytics_schema.sql
+          PGPASSWORD=las_flores_analytics_dev_password psql \
+            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
+            -f server/src/database/migrations/013_add_gig_event_type.sql
           npm run migrate --workspace=server -- ../content
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores

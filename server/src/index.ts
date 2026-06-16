@@ -7,6 +7,7 @@ import { playerRouter } from './routes/player.js';
 import { locationRouter } from './routes/location.js';
 import { dialogueRouter } from './routes/dialogue.js';
 import { bankRouter } from './routes/bank.js';
+import { gigsRouter } from './routes/gigs.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 
@@ -26,6 +27,7 @@ app.use('/player', playerRouter);
 app.use('/location', locationRouter);
 app.use('/dialogue', dialogueRouter);
 app.use('/bank', bankRouter);
+app.use('/gigs', gigsRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

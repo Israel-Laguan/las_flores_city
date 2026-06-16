@@ -1,10 +1,24 @@
 import { eventBus } from '../utils/EventBus';
+const TYPE_CONFIG = {
+    thought: { color: '#4fc3f7', prefix: 'I.I.', label: 'INTROSPECTION' },
+    observation: { color: '#78909c', prefix: 'OBS', label: 'OBSERVATION' },
+    feeling: { color: '#ce93d8', prefix: 'FEL', label: 'EMOTIONAL' },
+    warning: { color: '#ffb74d', prefix: 'N&M', label: 'SYSTEM' },
+    scan: { color: '#81c784', prefix: 'SCN', label: 'ENV_SCAN' },
+};
 export class MonologueFeed {
     container;
-    feedContainer;
+    scrollContainer;
     entries = [];
-    maxEntries = 20;
+    maxEntries = 50;
+    currentTb = 48;
+    currentSceneId = null;
+    idleThoughts = [];
     isVisible = true;
+    idleTimer = null;
+    idleIntervalMs = 20_000;
+    lastTravelTime = 0;
+    dialogueActive = false;
     constructor() {
         this.container = document.getElementById('monologue-feed');
         if (!this.container) {
@@ -13,63 +27,70 @@ export class MonologueFeed {
             document.body.appendChild(this.container);
         }
         this.setupStyles();
-        this.createFeedStructure();
+        this.createStructure();
         this.setupEventListeners();
+        this.startIdleTimer();
     }
+    // ==================== Styles ====================
     setupStyles() {
-        this.container.style.position = 'fixed';
-        this.container.style.bottom = '20px';
-        this.container.style.left = '20px';
-        this.container.style.width = '350px';
-        this.container.style.maxHeight = '200px';
-        this.container.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        this.container.style.border = '1px solid rgba(0, 255, 0, 0.3)';
-        this.container.style.borderRadius = '8px';
-        this.container.style.padding = '15px';
-        this.container.style.fontFamily = 'monospace';
-        this.container.style.zIndex = '1500';
-        this.container.style.overflow = 'hidden';
-    }
-    createFeedStructure() {
-        this.container.innerHTML = `
-      <div class="feed-header" style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-      ">
-        <span style="
-          font-size: 11px;
-          color: #00ff00;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        ">Internal Thoughts</span>
-        <button id="toggle-feed" style="
-          background: none;
-          border: none;
-          color: #888;
-          cursor: pointer;
-          font-size: 10px;
-          font-family: monospace;
-        ">[HIDE]</button>
-      </div>
-      <div class="feed-content" style="
-        max-height: 150px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: #00ff00 #0a0a1a;
-      "></div>
-    `;
-        this.feedContainer = this.container.querySelector('.feed-content');
-        // Toggle button
-        const toggleBtn = this.container.querySelector('#toggle-feed');
-        toggleBtn?.addEventListener('click', () => {
-            this.toggleVisibility();
+        Object.assign(this.container.style, {
+            position: 'fixed',
+            bottom: '16px',
+            left: '16px',
+            width: '380px',
+            maxHeight: '260px',
+            backgroundColor: 'rgba(2, 4, 8, 0.88)',
+            border: '1px solid rgba(79, 195, 247, 0.25)',
+            borderRadius: '4px',
+            fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+            fontSize: '11px',
+            lineHeight: '1.45',
+            zIndex: '1500',
+            overflow: 'hidden',
+            contain: 'content',
+            backdropFilter: 'blur(6px)',
+            boxShadow: '0 0 20px rgba(79, 195, 247, 0.06)',
         });
     }
+    createStructure() {
+        this.container.innerHTML = '';
+        const header = document.createElement('div');
+        Object.assign(header.style, {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '6px 12px',
+            borderBottom: '1px solid rgba(79, 195, 247, 0.15)',
+            userSelect: 'none',
+        });
+        header.innerHTML = `
+      <span style="color: #4fc3f7; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8;">Introspection Console</span>
+      <button id="toggle-feed" style="
+        background: none; border: none; color: #546e7a; cursor: pointer;
+        font-size: 10px; font-family: inherit; padding: 0 4px;
+      ">[MIN]</button>
+    `;
+        this.container.appendChild(header);
+        this.scrollContainer = document.createElement('div');
+        Object.assign(this.scrollContainer.style, {
+            overflowY: 'auto',
+            scrollBehavior: 'smooth',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: '220px',
+            padding: '8px 12px',
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(79, 195, 247, 0.3) transparent',
+        });
+        this.container.appendChild(this.scrollContainer);
+        const toggleBtn = header.querySelector('#toggle-feed');
+        toggleBtn.addEventListener('click', () => this.toggleVisibility());
+    }
+    // ==================== Event Listeners ====================
     setupEventListeners() {
+        eventBus.on('monologue:push', (payload) => {
+            this.addEntry(payload.text, payload.type);
+        });
         eventBus.on('monologue:thought', (text) => {
             this.addEntry(text, 'thought');
         });
@@ -87,100 +108,151 @@ export class MonologueFeed {
                 this.addEntry(node.thought, 'thought');
             }
             else if (node.type === 'character' && node.speaker) {
-                this.addEntry(`Listening to ${node.speaker.name}...`, 'observation');
+                this.addEntry(`Receiving input from ${node.speaker.name}. Cross-referencing voiceprint.`, 'scan');
             }
+        });
+        eventBus.on('dialogue:opened', () => {
+            this.dialogueActive = true;
+            this.stopIdleTimer();
+        });
+        eventBus.on('dialogue:closed', () => {
+            this.dialogueActive = false;
+            this.startIdleTimer();
+        });
+        eventBus.on('travel:start', () => {
+            this.lastTravelTime = Date.now();
         });
         eventBus.on('travel:complete', (data) => {
-            this.addEntry('The city shifts around me. New sights, new sounds.', 'observation');
+            this.addEntry('Transition complete. New environmental parameters loading.', 'scan');
         });
         eventBus.on('tb:updated', (remaining) => {
-            if (remaining <= 5) {
-                this.addEntry(`Time is running low... ${remaining} blocks left.`, 'feeling');
+            this.currentTb = remaining;
+            if (remaining <= 5 && remaining > 0) {
+                this.addEntry(`Warning: Time block allocation critical. ${remaining} units remaining.`, 'warning');
+            }
+            else if (remaining === 0) {
+                this.addEntry('Time blocks exhausted. Entering low-power mode.', 'warning');
             }
         });
+        eventBus.on('location:loaded', (data) => {
+            if (data?.scene?.id) {
+                this.currentSceneId = data.scene.id;
+            }
+            if (data?.scene?.metadata?.idle_thoughts) {
+                this.idleThoughts = data.scene.metadata.idle_thoughts;
+            }
+        });
+        eventBus.on('location:rendered', (payload) => {
+            if (payload?.scene?.metadata?.idle_thoughts) {
+                this.idleThoughts = payload.scene.metadata.idle_thoughts;
+            }
+            const mood = payload?.scene?.mood || 'unknown';
+            this.addEntry(`Scene loaded. Ambient mood: ${mood.toUpperCase()}. Monitoring.`, 'scan');
+        });
     }
+    // ==================== Entry Management ====================
     addEntry(text, type) {
         const entry = {
-            id: `entry-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            id: `mono-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             text,
             timestamp: new Date(),
             type,
         };
         this.entries.push(entry);
-        // Limit entries
-        if (this.entries.length > this.maxEntries) {
-            this.entries.shift();
-        }
+        this.pruneOldEntries();
         this.renderEntry(entry);
+        this.smartAutoScroll();
+    }
+    pruneOldEntries() {
+        while (this.entries.length > this.maxEntries) {
+            const oldest = this.entries.shift();
+            if (oldest) {
+                const el = this.scrollContainer.querySelector(`[data-entry-id="${oldest.id}"]`);
+                if (el)
+                    el.remove();
+            }
+        }
     }
     renderEntry(entry) {
-        const colors = {
-            thought: '#00ff00',
-            observation: '#888888',
-            feeling: '#ff00ff',
-        };
-        const prefixes = {
-            thought: '...',
-            observation: '•',
-            feeling: '~',
-        };
-        const entryElement = document.createElement('div');
-        entryElement.className = 'feed-entry';
-        entryElement.style.cssText = `
-      margin-bottom: 8px;
-      padding: 6px 10px;
-      background: rgba(0, 255, 0, 0.05);
-      border-left: 2px solid ${colors[entry.type]};
-      font-size: 11px;
-      color: ${colors[entry.type]};
-      line-height: 1.4;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s ease;
-    `;
-        entryElement.innerHTML = `
-      <span style="opacity: 0.6;">${prefixes[entry.type]}</span> ${entry.text}
-    `;
-        this.feedContainer.appendChild(entryElement);
-        // Animate in
+        const config = TYPE_CONFIG[entry.type];
+        const timeStr = entry.timestamp.toLocaleTimeString('en-US', { hour12: false });
+        const el = document.createElement('div');
+        el.setAttribute('data-entry-id', entry.id);
+        Object.assign(el.style, {
+            padding: '3px 0',
+            opacity: '0',
+            transform: 'translateY(4px)',
+            transition: 'opacity 0.25s ease, transform 0.25s ease',
+            wordBreak: 'break-word',
+        });
+        const prefix = document.createElement('span');
+        prefix.style.color = config.color;
+        prefix.style.opacity = '0.55';
+        prefix.textContent = `[${timeStr} // ${config.prefix} // TB: ${this.currentTb}]`;
+        const body = document.createElement('span');
+        body.style.color = entry.type === 'warning' ? config.color : '#b0bec5';
+        body.textContent = ` ${entry.text}`;
+        el.appendChild(prefix);
+        el.appendChild(body);
+        this.scrollContainer.appendChild(el);
         requestAnimationFrame(() => {
-            entryElement.style.opacity = '1';
-            entryElement.style.transform = 'translateY(0)';
-        });
-        // Scroll to bottom
-        this.feedContainer.scrollTop = this.feedContainer.scrollHeight;
-        // Fade out old entries
-        this.fadeOldEntries();
-    }
-    fadeOldEntries() {
-        const entries = this.feedContainer.querySelectorAll('.feed-entry');
-        entries.forEach((entry, index) => {
-            const age = entries.length - index;
-            if (age > 5) {
-                entry.style.opacity = '0.3';
-            }
-            if (age > 10) {
-                entry.style.opacity = '0.1';
-            }
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
         });
     }
+    // ==================== Smart Auto-Scroll ====================
+    smartAutoScroll() {
+        const el = this.scrollContainer;
+        const threshold = 60;
+        const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+        if (isNearBottom) {
+            requestAnimationFrame(() => {
+                el.scrollTop = el.scrollHeight;
+            });
+        }
+    }
+    // ==================== Idle Thought Engine ====================
+    startIdleTimer() {
+        this.stopIdleTimer();
+        this.idleTimer = setInterval(() => this.onIdleTick(), this.idleIntervalMs);
+    }
+    stopIdleTimer() {
+        if (this.idleTimer !== null) {
+            clearInterval(this.idleTimer);
+            this.idleTimer = null;
+        }
+    }
+    onIdleTick() {
+        if (this.dialogueActive)
+            return;
+        const timeSinceTravel = Date.now() - this.lastTravelTime;
+        if (timeSinceTravel < 15_000)
+            return;
+        if (this.idleThoughts.length > 0) {
+            const idx = Math.floor(Math.random() * this.idleThoughts.length);
+            this.addEntry(this.idleThoughts[idx], 'thought');
+        }
+    }
+    // ==================== Visibility Toggle ====================
     toggleVisibility() {
         this.isVisible = !this.isVisible;
-        const content = this.container.querySelector('.feed-content');
-        const toggleBtn = this.container.querySelector('#toggle-feed');
+        const btn = this.container.querySelector('#toggle-feed');
         if (this.isVisible) {
-            content.style.display = 'block';
-            if (toggleBtn)
-                toggleBtn.textContent = '[HIDE]';
+            this.scrollContainer.style.display = 'flex';
+            btn.textContent = '[MIN]';
         }
         else {
-            content.style.display = 'none';
-            if (toggleBtn)
-                toggleBtn.textContent = '[SHOW]';
+            this.scrollContainer.style.display = 'none';
+            btn.textContent = '[EXP]';
         }
     }
+    // ==================== Public API ====================
     clearFeed() {
         this.entries = [];
-        this.feedContainer.innerHTML = '';
+        this.scrollContainer.innerHTML = '';
+    }
+    destroy() {
+        this.stopIdleTimer();
+        this.clearFeed();
     }
 }

@@ -1,0 +1,153 @@
+.trabajando-app {
+  padding: 16px;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.app-header h2 {
+  font-size: 1.2rem;
+  color: var(--neon-cyan);
+  text-shadow: var(--border-glow);
+  margin: 0 0 4px 0;
+}
+
+.sub-header {
+  font-size: 0.65rem;
+  color: #4b5563;
+}
+
+.gig-list {
+  margin-top: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gig-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.gig-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.gig-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.gig-payout {
+  color: var(--neon-cyan);
+  font-weight: bold;
+}
+
+.gig-desc {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+
+.gig-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gig-time-cost {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+button.btn-accept {
+  background: transparent;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: 6px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+button.btn-accept:hover {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: var(--border-glow);
+}
+
+button.btn-disabled {
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #4b5563;
+  padding: 6px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  cursor: not-allowed;
+}
+
+.shift-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(3, 7, 18, 0.95);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-box {
+  text-align: center;
+  width: 80%;
+}
+
+.pulse-text {
+  color: var(--neon-cyan);
+  font-size: 1.1rem;
+  font-weight: bold;
+  animation: blink 1.5s infinite alternate;
+  letter-spacing: 2px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--neon-cyan);
+  animation: progress-shift 1.5s linear infinite;
+  transform-origin: left;
+}
+
+.meta-label {
+  font-size: 0.55rem;
+  color: #4b5563;
+}
+
+@keyframes progress-shift {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}

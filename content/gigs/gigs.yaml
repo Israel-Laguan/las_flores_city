@@ -1,0 +1,11 @@
+gigs:
+  - id: "880e8400-e29b-41d4-a716-446655440001"
+    title: "Old Town Noodle Washer"
+    description: "Scrub heavy grease off bowls at a local street stall. High steam, low pay, but the owner doesn't ask for registration papers."
+    time_block_cost: 16
+    credit_payout: 50
+  - id: "880e8400-e29b-41d4-a716-446655440002"
+    title: "Subcontract Courier"
+    description: "Deliver local data-packages for a Li Wei Group subcontractor. Requires moving fast through back alleys and ignoring package vibration."
+    time_block_cost: 24
+    credit_payout: 90
