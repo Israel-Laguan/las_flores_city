@@ -5,6 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Las Flores 2077</title>
+    <link rel="stylesheet" href="/src/styles/phone.css" />
     <style>
       * {
         margin: 0;
@@ -26,15 +27,7 @@
         align-items: center;
       }
       
-      #phone-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1000;
-      }
+      /* #phone-overlay is the phone-os-container; styles live in phone.css */
       
       #dialogue-overlay {
         position: fixed;
@@ -135,7 +128,15 @@
     </div>
     
     <div id="game-container"></div>
-    <div id="phone-overlay"></div>
+    <div id="phone-overlay" class="phone-os-container" style="pointer-events: none;">
+      <div class="phone-bezel">
+        <div class="phone-screen">
+          <header id="phone-status-bar" class="status-bar"></header>
+          <main id="phone-app-viewport" class="app-viewport"></main>
+          <footer id="phone-nav-bar" class="nav-bar"></footer>
+        </div>
+      </div>
+    </div>
     <div id="dialogue-overlay"></div>
     <div id="monologue-feed"></div>
     

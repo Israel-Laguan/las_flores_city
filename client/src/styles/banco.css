@@ -1,0 +1,98 @@
+.banco-app {
+  padding: 16px;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.banco-header h2 {
+  font-size: 1.1rem;
+  color: var(--neon-cyan);
+  text-shadow: var(--border-glow);
+  margin: 0 0 4px 0;
+}
+
+.secure-token {
+  font-size: 0.65rem;
+  color: #4b5563;
+}
+
+.balance-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.balance-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.balance-card.gold-creds {
+  border-color: rgba(255, 183, 0, 0.2);
+}
+
+.balance-card .label {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.balance-card .value {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.balance-card.creds .value { color: var(--neon-cyan); }
+.balance-card.gold-creds .value { color: #ffb700; }
+
+.ledger-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ledger-container h3 {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 10px 0;
+}
+
+.ledger-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ledger-row {
+  background: rgba(15, 23, 42, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 4px;
+}
+
+.ledger-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.ledger-main {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.ledger-amount.income  { color: #33ff33; }
+.ledger-amount.expense { color: #ff3333; }

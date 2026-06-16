@@ -1,0 +1,123 @@
+:root {
+  --phone-width: 420px;
+  --phone-height: 840px;
+  --neon-cyan: #00ffff;
+  --neon-blue: #0088ff;
+  --terminal-bg: rgba(6, 12, 24, 0.85);
+  --border-glow: 0 0 10px rgba(0, 136, 255, 0.4);
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.phone-os-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5%;
+  box-sizing: border-box;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(120%);
+  will-change: transform;
+}
+
+.phone-os-container.open {
+  transform: translateX(0);
+}
+
+.phone-bezel {
+  width: var(--phone-width);
+  height: var(--phone-height);
+  background: #030712;
+  border: 2px solid var(--neon-blue);
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: var(--border-glow);
+  box-sizing: border-box;
+}
+
+.phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--terminal-bg);
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--neon-cyan);
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.status-icons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.credits-pill {
+  background: rgba(0, 136, 255, 0.2);
+  border: 1px solid var(--neon-blue);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.app-viewport {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--neon-cyan);
+  font-family: monospace;
+}
+
+.nav-bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(0, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .phone-os-container {
+    padding-right: 0;
+    justify-content: center;
+  }
+  .phone-bezel {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+  }
+  .phone-screen {
+    border-radius: 0;
+    border: none;
+  }
+}

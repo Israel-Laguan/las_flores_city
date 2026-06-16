@@ -86,6 +86,24 @@ export class LocationScene extends Phaser.Scene {
       this.input.enabled = true;
     });
 
+    // Bridge-emitted focus-lock events (Task 2.1)
+    eventBus.on('phaser:disable_inputs', () => {
+      this.phoneOpen = true;
+      this.input.enabled = false;
+      this.children.each((child) => {
+        if (child instanceof Phaser.GameObjects.Sprite && child.input) {
+          child.clearTint();
+          child.setScale(1.0);
+        }
+        return true;
+      });
+    });
+
+    eventBus.on('phaser:enable_inputs', () => {
+      this.phoneOpen = false;
+      this.input.enabled = true;
+    });
+
     eventBus.on('dialogue:opened', () => {
       this.input.enabled = false;
     });
