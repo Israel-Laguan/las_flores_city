@@ -55,6 +55,16 @@ export class WorldScene extends Phaser.Scene {
       this.updateTBDisplay(remaining);
     });
 
+    eventBus.on('phaser:pause-input', () => {
+      this.isPaused = true;
+      this.input.enabled = false;
+    });
+
+    eventBus.on('phaser:resume-input', () => {
+      this.isPaused = false;
+      this.input.enabled = true;
+    });
+
     // Load initial state
     this.loadInitialState();
   }
