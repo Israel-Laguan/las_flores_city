@@ -1,0 +1,60 @@
+id: "123e4567-e89b-12d3-a456-426614174002"
+name: "First Contact"
+description: "Your first conversation with Aria at the Old Town Café"
+scene_id: "123e4567-e89b-12d3-a456-426614174001"
+character_id: "123e4567-e89b-12d3-a456-426614174000"
+start_node_id: "223e4567-e89b-12d3-a456-426614174003"
+nodes:
+  223e4567-e89b-12d3-a456-426614174003:
+    id: "223e4567-e89b-12d3-a456-426614174003"
+    type: "character"
+    speaker_id: "123e4567-e89b-12d3-a456-426614174000"
+    text: "Morning. You look a bit... stiff. First time in <important>Old Town</important>? What can I get you?"
+    thought: "Analyzing vocal patterns... Her tone is friendly but scanning me closely. I must attempt to project warmth."
+    choices:
+      - id: "reply_friendly"
+        text: "Just coffee, please. Still getting used to the <important>Las Flores</important> altitude."
+        next_node_id: "3e289bf0-410c-44bf-8a7e-123456789abc"
+        relationship_change:
+          stat: "friendship"
+          amount: 1
+      - id: "reply_flirt"
+        text: "I was distracted by the music. And maybe the barista. Just a black coffee is fine."
+        next_node_id: "4e289bf0-410c-44bf-8a7e-123456789abc"
+        relationship_change:
+          stat: "romance"
+          amount: 1
+      - id: "reply_cold"
+        text: "A standard caffeine solution. Black. No sugar."
+        next_node_id: "5e289bf0-410c-44bf-8a7e-123456789abc"
+        relationship_change:
+          stat: "friendship"
+          amount: -1
+  3e289bf0-410c-44bf-8a7e-123456789abc:
+    id: "3e289bf0-410c-44bf-8a7e-123456789abc"
+    type: "character"
+    speaker_id: "123e4567-e89b-12d3-a456-426614174000"
+    text: "Yeah, the mountain air catches people off guard. One black coffee, coming up."
+    thought: "Relationship parameters updated: Friendship increased. Visual scanning reduced. Social baseline established."
+    is_end: true
+  4e289bf0-410c-44bf-8a7e-123456789abc:
+    id: "4e289bf0-410c-44bf-8a7e-123456789abc"
+    type: "character"
+    speaker_id: "123e4567-e89b-12d3-a456-426614174000"
+    text: "Smooth talker, huh? Let's see if you can handle the coffee first. One black cup, on the house."
+    thought: "Relationship parameters updated: Romance increased. Optical analysis indicates positive facial muscle contraction."
+    is_end: true
+  5e289bf0-410c-44bf-8a7e-123456789abc:
+    id: "5e289bf0-410c-44bf-8a7e-123456789abc"
+    type: "character"
+    speaker_id: "123e4567-e89b-12d3-a456-426614174000"
+    text: "Right. 'Caffeine solution.' Coming right up."
+    thought: "Relationship parameters updated: Friendship decreased. Minor irritation detected in her vocal frequency."
+    is_end: true
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "first_contact"
+    - "tutorial"
+    - "relationship_building"

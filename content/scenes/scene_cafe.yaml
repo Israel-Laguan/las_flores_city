@@ -1,0 +1,13 @@
+id: "123e4567-e89b-12d3-a456-426614174001"
+name: "Old Town Café"
+description: "A warm, slightly worn coffee shop in the historic district of Las Flores. Smells of roasted beans and damp brick."
+district: "Old Town"
+background_url: "https://cdn.lasflores2077.com/locations/bg_old_town_cafe.png"
+mood: "cozy"
+available_dialogues:
+  - "123e4567-e89b-12d3-a456-426614174002"
+metadata:
+  idle_thoughts:
+    - "The espresso machine is releasing pressurized steam. The local grid is stable."
+    - "The music playing over the speakers is a slow, synthesized Andean melody."
+    - "I detect fine coffee grounds on the counter. The environment is highly organic."
