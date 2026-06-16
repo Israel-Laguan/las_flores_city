@@ -14,6 +14,7 @@ export async function assemblePlayerState(userId: string) {
       u.credits,
       u.gold_credits,
       u.current_node_id,
+      u.current_day,
       u.last_login,
       u.created_at,
       u.updated_at
@@ -36,6 +37,7 @@ export async function assemblePlayerState(userId: string) {
     credits: row.credits,
     goldCredits: row.gold_credits,
     currentNodeId: row.current_node_id,
+    currentDay: row.current_day,
     lastLogin: row.last_login,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

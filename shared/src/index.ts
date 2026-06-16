@@ -156,6 +156,7 @@ export const PlayerStateSchema = z.object({
   credits: z.number().int(),
   goldCredits: z.number().int().default(0),
   currentNodeId: z.string().nullable().optional(),
+  currentDay: z.number().int().min(1).default(1),
   lastLogin: z.string().datetime(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -207,6 +208,32 @@ export const MoveResponseSchema = z.object({
 
 export type MoveResponse = z.infer<typeof MoveResponseSchema>;
 
+// ==================== Sleep (Task 2.2) ====================
+
+export const SleepResponseSchema = z.object({
+  time_blocks: z.number().int().min(0).max(48),
+  credits: z.number().int(),
+  current_day: z.number().int().min(1),
+  credits_deducted: z.number().int(),
+  rent_paid: z.boolean(),
+});
+
+export type SleepResponse = z.infer<typeof SleepResponseSchema>;
+
+export const BankTransactionSchema = z.object({
+  id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  transaction_type: z.enum(['debit', 'credit', 'transfer']),
+  amount: z.number().int(),
+  description: z.string().max(200),
+  balance_after: z.number().int(),
+  reference_type: z.string().max(50).optional(),
+  reference_id: z.string().uuid().optional(),
+  created_at: z.string().datetime(),
+});
+
+export type BankTransaction = z.infer<typeof BankTransactionSchema>;
+
 // ==================== API Responses ====================
 
 export const ApiResponseSchema = z.object({
@@ -252,6 +279,12 @@ export const MoveResponseWrapperSchema = ApiResponseSchema.extend({
 });
 
 export type MoveResponseWrapper = z.infer<typeof MoveResponseWrapperSchema>;
+
+export const SleepResponseWrapperSchema = ApiResponseSchema.extend({
+  data: SleepResponseSchema.optional(),
+});
+
+export type SleepResponseWrapper = z.infer<typeof SleepResponseWrapperSchema>;
 
 // ==================== YAML Content Types ====================
 
@@ -340,6 +373,7 @@ export const PlayerEventSchema = z.object({
     'flag_set',
     'mystery_progress',
     'move',
+    'sleep',
   ]),
   event_data: z.record(z.string(), z.any()),
   time_blocks_cost: z.number().int().min(0).optional(),

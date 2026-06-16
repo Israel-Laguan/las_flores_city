@@ -3,6 +3,7 @@ import { BootScene } from './scenes/BootScene';
 import { WorldScene } from './scenes/WorldScene';
 import { LocationScene } from './scenes/LocationScene';
 import './components/PhoneOverlay';
+import './components/SleepOverlay';
 import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
 import * as api from './utils/api';

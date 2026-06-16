@@ -239,6 +239,17 @@ playerRouter.post('/move', authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // POST /player/sleep - Reset TB and advance day (requires auth)
+// 2.2.2a: Location Verification
+// 2.2.2b: Atomic Reset & Date Increment
+// 2.2.2c: Redis Invalidation
+// 2.2.3a: Rent Deduction
+// 2.2.3b: Overdraft Handling
+// 2.2.3c: Banking Ledger Logging
+// 2.2.4a: OLAP Event Logging
+
+const APARTMENT_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+const RENT_AMOUNT = 10;
+
 playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
@@ -246,30 +257,102 @@ playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized', timestamp: new Date().toISOString() });
     }
 
+    // 2.2.2a: Location Verification - must be at The Apartment
+    const locationCheck = await queryOLTP(
+      'SELECT current_location_id FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (locationCheck.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Player not found', timestamp: new Date().toISOString() });
+    }
+
+    if (locationCheck.rows[0].current_location_id !== APARTMENT_ID) {
+      return res.status(403).json({
+        success: false,
+        error: 'You cannot sleep here. Return to your apartment.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // 2.2.2b + 2.2.3a + 2.2.3b + 2.2.3c: Atomic transaction
     const result = await withOLTPTransaction(async (client) => {
-      await client.query(
-        'UPDATE users SET time_blocks = 48 WHERE id = $1',
+      // Lock the player row
+      const lockResult = await client.query(
+        'SELECT time_blocks, credits, current_day FROM users WHERE id = $1 FOR UPDATE',
         [userId]
       );
 
+      if (lockResult.rows.length === 0) {
+        throw new Error('Player not found');
+      }
+
+      const previousDay = lockResult.rows[0].current_day;
+      const previousCredits = lockResult.rows[0].credits;
+
+      // Reset time_blocks, increment day, clear conversation state
       await client.query(
-        'UPDATE users SET credits = credits - 10 WHERE id = $1 AND credits >= 10',
+        `UPDATE users SET
+          time_blocks = 48,
+          current_day = current_day + 1,
+          current_node_id = NULL
+        WHERE id = $1`,
         [userId]
       );
 
-      const userResult = await client.query(
-        'SELECT time_blocks, credits FROM users WHERE id = $1',
+      // Deduct rent (allow negative balance for overdraft)
+      await client.query(
+        'UPDATE users SET credits = credits - $1 WHERE id = $2',
+        [RENT_AMOUNT, userId]
+      );
+
+      // Fetch updated state
+      const newResult = await client.query(
+        'SELECT time_blocks, credits, current_day FROM users WHERE id = $1',
         [userId]
+      );
+
+      const newCredits = newResult.rows[0].credits;
+
+      // 2.2.3c: Banking Ledger - log the rent deduction
+      await client.query(
+        `INSERT INTO bank_transactions (user_id, transaction_type, amount, description, balance_after, reference_type)
+         VALUES ($1, 'debit', $2, 'Daily Rent - Nakamura & Morgan LTD', $3, 'rent')`,
+        [userId, RENT_AMOUNT, newCredits]
       );
 
       return {
-        time_blocks: userResult.rows[0].time_blocks,
-        credits: userResult.rows[0].credits,
-        credits_deducted: 10,
+        time_blocks: newResult.rows[0].time_blocks,
+        credits: newCredits,
+        current_day: newResult.rows[0].current_day,
+        credits_deducted: RENT_AMOUNT,
+        previous_day: previousDay,
+        rent_paid: true,
+        overdraft: newCredits < 0,
       };
     });
 
+    // 2.2.2c: Redis Invalidation
     await deleteCache(userStateCacheKey(userId));
+
+    // 2.2.4a: OLAP Event Logging
+    try {
+      await queryOLAP(
+        `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
+         VALUES (gen_random_uuid(), $1, 'sleep', $2, 0)`,
+        [
+          userId,
+          JSON.stringify({
+            completed_day: result.previous_day,
+            credits_deducted: result.credits_deducted,
+            new_day: result.current_day,
+            overdraft: result.overdraft,
+          }),
+        ]
+      );
+    } catch (eventError) {
+      console.error('Failed to emit sleep event to OLAP:', eventError);
+    }
 
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
