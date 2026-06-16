@@ -21,7 +21,8 @@ playerRouter.get('/state', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized', timestamp: new Date().toISOString() });
     }
 
-    const cached = await getCache(userId);
+    const cacheKey = userStateCacheKey(userId);
+    const cached = await getCache(cacheKey);
     if (cached) {
       return res.json({ success: true, data: cached, timestamp: new Date().toISOString() });
     }
@@ -31,7 +32,7 @@ playerRouter.get('/state', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(404).json({ success: false, error: 'Player not found', timestamp: new Date().toISOString() });
     }
 
-    await setCache(userId, state, 60);
+    await setCache(cacheKey, state, 60);
 
     res.json({ success: true, data: state, timestamp: new Date().toISOString() });
   } catch (error: any) {

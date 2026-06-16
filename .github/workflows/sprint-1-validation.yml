@@ -1,0 +1,217 @@
+name: Sprint 1 — MVW Validation
+
+on:
+  push:
+    branches: [main, develop, sprint-1]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ── Backend Integration (5.1 + 5.3 + 5.4a) ────────────────────────────────
+  integration:
+    name: Integration Tests (MVW + Anti-Cheat + Content Pipeline)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres-oltp:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: las_flores
+          POSTGRES_USER: las_flores
+          POSTGRES_PASSWORD: las_flores_dev_password
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      postgres-olap:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: las_flores_analytics
+          POSTGRES_USER: las_flores_analytics
+          POSTGRES_PASSWORD: las_flores_analytics_dev_password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared types
+        run: npm run build --workspace=shared
+
+      - name: Apply OLTP schema
+        run: |
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/001_initial_schema.sql
+
+      - name: Apply OLAP schema
+        run: |
+          PGPASSWORD=las_flores_analytics_dev_password psql \
+            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
+            -f server/src/database/migrations/002_analytics_schema.sql
+
+      - name: Run content migration (seed DB from /content)
+        run: npm run migrate --workspace=server -- ../content
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+
+      - name: 5.4a — Content Pipeline validation
+        run: npm run test:integration --workspace=server -- --testPathPattern=content-pipeline
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+
+      - name: 5.1 + 5.3 — MVW integration tests
+        run: npm run test:integration --workspace=server -- --testPathPattern=mvw.integration
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+
+      - name: Full integration suite (regression guard)
+        run: npm run test:integration --workspace=server
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+
+  # ── E2E Browser Tests (5.2) ────────────────────────────────────────────────
+  e2e:
+    name: E2E Tests — Playwright MVW Loop
+    runs-on: ubuntu-latest
+    needs: integration
+
+    services:
+      postgres-oltp:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: las_flores
+          POSTGRES_USER: las_flores
+          POSTGRES_PASSWORD: las_flores_dev_password
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      postgres-olap:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: las_flores_analytics
+          POSTGRES_USER: las_flores_analytics
+          POSTGRES_PASSWORD: las_flores_analytics_dev_password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared types
+        run: npm run build --workspace=shared
+
+      - name: Apply schemas & seed content
+        run: |
+          PGPASSWORD=las_flores_dev_password psql \
+            -h localhost -p 5434 -U las_flores -d las_flores \
+            -f server/src/database/migrations/001_initial_schema.sql
+          PGPASSWORD=las_flores_analytics_dev_password psql \
+            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
+            -f server/src/database/migrations/002_analytics_schema.sql
+          npm run migrate --workspace=server -- ../content
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+
+      - name: Start API server (background)
+        run: npm run start --workspace=server &
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+          PORT: 3000
+
+      - name: Wait for API server
+        run: |
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:3000/health && break
+            sleep 2
+          done
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: client
+
+      - name: 5.2 — MVW E2E tests
+        run: npx playwright test tests/e2e/mvw.e2e.test.ts
+        working-directory: client
+        env:
+          API_URL: http://localhost:3000
+
+      - name: Full E2E suite (regression guard)
+        run: npx playwright test
+        working-directory: client
+        env:
+          API_URL: http://localhost:3000
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: client/playwright-report/
+          retention-days: 7
