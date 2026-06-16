@@ -191,7 +191,22 @@ export class PhoneOverlay {
   }
 
   private setupEventListeners() {
-    // Listen for world events
+    eventBus.on('phone:toggle', () => {
+      if (this.container.style.pointerEvents === 'auto') {
+        this.close();
+      } else {
+        this.open();
+      }
+    });
+
+    eventBus.on('phone:open', () => {
+      this.container.style.pointerEvents = 'auto';
+    });
+
+    eventBus.on('phone:close', () => {
+      this.container.style.pointerEvents = 'none';
+    });
+
     eventBus.on('world:pause', () => {
       this.container.style.pointerEvents = 'auto';
     });
@@ -200,17 +215,14 @@ export class PhoneOverlay {
       this.container.style.pointerEvents = 'none';
     });
 
-    // Listen for TB updates
     eventBus.on('tb:updated', (remaining: number) => {
       this.updateTBDisplay(remaining);
     });
 
-    // Listen for player state (flat interface)
     eventBus.on('player:state-loaded', (data: any) => {
       this.updatePlayerInfo(data);
     });
 
-    // Close phone when clicking outside
     this.container.addEventListener('click', (e) => {
       if (e.target === this.container) {
         this.close();
@@ -254,10 +266,14 @@ export class PhoneOverlay {
 
   close() {
     this.currentApp = null;
+    this.container.style.pointerEvents = 'none';
+    eventBus.emit('phone:close');
     eventBus.emit('phone:app-closed');
   }
 
   open() {
+    this.container.style.pointerEvents = 'auto';
+    eventBus.emit('phone:open');
     if (this.currentApp) {
       this.openApp(this.currentApp);
     } else {
