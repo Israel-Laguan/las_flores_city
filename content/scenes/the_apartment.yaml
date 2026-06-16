@@ -10,8 +10,7 @@ available_dialogues:
 metadata:
   type: "starting_location"
   accessible: true
-  npcs:
-    - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  is_sleep_location: true
   features:
     - "bed"
     - "window"

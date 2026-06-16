@@ -20,7 +20,9 @@ CREATE TABLE player_events (
         'item_acquired',
         'item_used',
         'flag_set',
-        'mystery_progress'
+        'mystery_progress',
+        'move',
+        'sleep'
     )),
     event_data JSONB NOT NULL DEFAULT '{}',
     time_blocks_cost INTEGER CHECK (time_blocks_cost >= 0),

@@ -8,3 +8,4 @@ metadata:
   personality: "friendly"
   faction: "neutral"
   first_appearance: "dialogue_first_contact"
+  is_reachable_via_sms: true

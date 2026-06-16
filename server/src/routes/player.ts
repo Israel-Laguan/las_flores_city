@@ -248,7 +248,6 @@ playerRouter.post('/move', authMiddleware, async (req: AuthRequest, res) => {
 // 2.2.3c: Banking Ledger Logging
 // 2.2.4a: OLAP Event Logging
 
-const APARTMENT_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 const RENT_AMOUNT = 10;
 
 playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
@@ -258,9 +257,12 @@ playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(401).json({ success: false, error: 'Unauthorized', timestamp: new Date().toISOString() });
     }
 
-    // 2.2.2a: Location Verification - must be at The Apartment
+    // 2.2.2a: Location Verification - must be at a scene with is_sleep_location: true
     const locationCheck = await queryOLTP(
-      'SELECT current_location_id FROM users WHERE id = $1',
+      `SELECT u.current_location_id, s.metadata
+       FROM users u
+       LEFT JOIN scenes s ON s.id = u.current_location_id
+       WHERE u.id = $1`,
       [userId]
     );
 
@@ -268,7 +270,8 @@ playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(404).json({ success: false, error: 'Player not found', timestamp: new Date().toISOString() });
     }
 
-    if (locationCheck.rows[0].current_location_id !== APARTMENT_ID) {
+    const sceneMetadata = locationCheck.rows[0].metadata as Record<string, any> | null;
+    if (!sceneMetadata?.is_sleep_location) {
       return res.status(403).json({
         success: false,
         error: 'You cannot sleep here. Return to your apartment.',

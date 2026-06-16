@@ -9,8 +9,7 @@ available_dialogues:
 metadata:
   type: "starting_location"
   accessible: true
-  npcs:
-    - "3b2b8000-e29b-41d4-a716-446655440001"
+  is_sleep_location: true
   features:
     - "charging_port"
     - "terminal"

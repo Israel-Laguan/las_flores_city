@@ -12,7 +12,7 @@ const { Pool } = pg;
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
-const TEST_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004';
+const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening at WELCOME_SCENE_ID
 
 const app = express();
 app.use(express.json());

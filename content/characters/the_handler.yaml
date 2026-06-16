@@ -8,3 +8,4 @@ metadata:
   personality: "professional"
   faction: "N&M LTD"
   first_appearance: "dialogue_welcome_handler"
+  is_reachable_via_sms: true
