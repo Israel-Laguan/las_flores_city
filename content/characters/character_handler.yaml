@@ -1,0 +1,10 @@
+id: "3b2b8000-e29b-41d4-a716-446655440001"
+name: "Vance"
+title: "N&M Supervisor"
+description: "A behavioral handler from Nakamura & Morgan LTD. Professional, cold, and strictly metrics-driven."
+metadata:
+  type: "human"
+  role: "quest_giver"
+  personality: "professional"
+  faction: "Nakamura & Morgan LTD"
+  first_appearance: "dialogue_awakening"

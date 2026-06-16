@@ -1,0 +1,45 @@
+id: "c9a646d3-9c61-4cd8-bc11-657ab255b1bf"
+name: "The Awakening"
+description: "The Unit boots up and Vance initializes the behavioral protocol through the N&M App."
+start_node_id: "d8b5a3e1-e123-4567-89ab-cdef01234567"
+nodes:
+  d8b5a3e1-e123-4567-89ab-cdef01234567:
+    id: "d8b5a3e1-e123-4567-89ab-cdef01234567"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "Uplink confirmed. Do you copy, Handler? This is N&M Supervisor Vance. The calibration sequence is complete."
+    thought: "System diagnostics returning 100% integrity. The connection to the human operator is stable."
+    choices:
+      - id: "reply_copy"
+        text: "I copy, Vance. Ready to begin the <important>Nakamura & Morgan</important> trial."
+        next_node_id: "6e289bf0-410c-44bf-8a7e-123456789abc"
+      - id: "reply_confused"
+        text: "Uplink received. Explain <important>Project Synthesis</important> parameters again."
+        next_node_id: "7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d"
+
+  6e289bf0-410c-44bf-8a7e-123456789abc:
+    id: "6e289bf0-410c-44bf-8a7e-123456789abc"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "Good. Your contract is simple: guide this Unit through the city of Las Flores. It must blend in, find work, and avoid drawing corporate attention. Remember your <important>NDA</important>. Do not fail us."
+    thought: "He sounds guarded. I must proceed with caution to ensure my survival parameters are not compromised."
+    is_end: true
+
+  7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d:
+    id: "7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "You signed the contract. We provide the hardware and the apartment; you provide the human heuristics. Guide the Unit's daily life, manage its Time Blocks, and collect behavioral data. Our timeline is tight."
+    thought: "He values efficiency. I must monitor my Time Block consumption to satisfy his directives."
+    is_end: true
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2024-01-01"
+  tags:
+    - "tutorial"
+    - "onboarding"
+    - "new_player"
+    - "handler"
+  scene_id: "550e8400-e29b-41d4-a716-446655440002"
+  character_id: "3b2b8000-e29b-41d4-a716-446655440001"

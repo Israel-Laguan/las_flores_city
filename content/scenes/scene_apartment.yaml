@@ -1,0 +1,32 @@
+id: "550e8400-e29b-41d4-a716-446655440002"
+name: "Suburban Apartment"
+description: "A sterile, low-rent apartment in the Old Town suburbs of Las Flores. Standard charging port, dynamic terminal uplink, and minimal furnishings."
+district: "Old Town"
+background_url: "https://cdn.lasflores2077.com/locations/bg_apartment_interior.png"
+mood: "cozy"
+available_dialogues:
+  - "c9a646d3-9c61-4cd8-bc11-657ab255b1bf"
+metadata:
+  type: "starting_location"
+  accessible: true
+  npcs:
+    - "3b2b8000-e29b-41d4-a716-446655440001"
+  features:
+    - "charging_port"
+    - "terminal"
+    - "window"
+  ambiance:
+    - "scrubber_hum"
+    - "distant_traffic"
+    - "rain_on_window"
+  idle_thoughts:
+    - "The atmospheric scrubbers are humming at 60 Hertz. It is within normal parameters."
+    - "I can feel the humidity of the Las Flores river rising through the floorboards."
+    - "A holographic advertisement for Li Wei Logistics flickers through the window."
+    - "The terminal uplink is idle. Waiting for input I may not want to give."
+    - "Charging port status: nominal. Power flow: 12.4kW. Efficient."
+    - "The walls are thin. I can hear the neighbor's ventilation cycle. 47Hz. Different from mine."
+    - "There is a micro-fracture in the window frame. Stress pattern suggests seismic micro-tremor."
+    - "The bed is functional. Not comfortable. Comfort was not in the N&M contract."
+    - "Running background diagnostics. Everything nominal. Everything hollow."
+    - "The rain outside sounds like static on a dead channel."

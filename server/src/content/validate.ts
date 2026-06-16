@@ -200,9 +200,16 @@ export async function validateAllContent(contentDir: string): Promise<Validation
 
 // XSS protection - sanitize user-facing text
 export function sanitizeText(text: string): string {
-  // Remove HTML tags
-  let sanitized = text.replace(/<[^>]*>/g, '');
-  
+  // Preserve whitelisted tags before stripping
+  const preservedTags: string[] = [];
+  let sanitized = text.replace(/<(important|\/important)>/g, (match) => {
+    preservedTags.push(match);
+    return `__PRESERVED_TAG_${preservedTags.length - 1}__`;
+  });
+
+  // Remove all other HTML tags
+  sanitized = sanitized.replace(/<[^>]*>/g, '');
+
   // Escape special characters
   sanitized = sanitized
     .replace(/&/g, '&amp;')
@@ -210,7 +217,10 @@ export function sanitizeText(text: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
-  
+
+  // Restore whitelisted tags
+  sanitized = sanitized.replace(/__PRESERVED_TAG_(\d+)__/g, (_, index) => preservedTags[parseInt(index)]);
+
   return sanitized;
 }
 
