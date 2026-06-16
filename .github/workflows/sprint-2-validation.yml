@@ -1,15 +1,19 @@
-name: Sprint 1 — MVW Validation
+name: Sprint 2 — The Loop Validation
 
 on:
   push:
-    branches: [main, develop, sprint-1]
+    branches: [main, develop, sprint-2]
   pull_request:
     branches: [main, develop]
 
+# ── Shared service block (YAML anchor) ───────────────────────────────────────
+# GitHub Actions does not support YAML anchors in workflow files, so services
+# are repeated per job below.
+
 jobs:
-  # ── Backend Integration (5.1 + 5.3 + 5.4a) ────────────────────────────────
+  # ── Backend Integration ────────────────────────────────────────────────────
   integration:
-    name: Integration Tests (MVW + Anti-Cheat + Content Pipeline)
+    name: Integration Tests — Banking, Gigs, Comms, Feed, OLAP
     runs-on: ubuntu-latest
 
     services:
@@ -67,39 +71,25 @@ jobs:
 
       - name: Apply OLTP schema
         run: |
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/001_initial_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/003_sprint1_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/004_scene_payload.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/005_dialogue_service.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/007_sleep_reset_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/009_add_user_relationships.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/010_sprint2_readiness.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/011_bank_constraints.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/012_gigs_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/014_social_feed.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/015_player_sms_threads_v2.sql
+          for migration in \
+            001_initial_schema \
+            003_sprint1_schema \
+            004_scene_payload \
+            005_dialogue_service \
+            006_add_move_event_type \
+            007_sleep_reset_schema \
+            008_add_sleep_event_type \
+            009_add_user_relationships \
+            010_sprint2_readiness \
+            011_bank_constraints \
+            012_gigs_schema \
+            014_social_feed \
+            015_player_sms_threads_v2 \
+            016_add_sms_event_types; do
+            PGPASSWORD=las_flores_dev_password psql \
+              -h localhost -p 5434 -U las_flores -d las_flores \
+              -f server/src/database/migrations/${migration}.sql
+          done
 
       - name: Apply OLAP schema
         run: |
@@ -108,33 +98,31 @@ jobs:
             -f server/src/database/migrations/002_analytics_schema.sql
           PGPASSWORD=las_flores_analytics_dev_password psql \
             -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-            -f server/src/database/migrations/006_add_move_event_type.sql
-          PGPASSWORD=las_flores_analytics_dev_password psql \
-            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-            -f server/src/database/migrations/008_add_sleep_event_type.sql
-          PGPASSWORD=las_flores_analytics_dev_password psql \
-            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
             -f server/src/database/migrations/013_add_gig_event_type.sql
-          PGPASSWORD=las_flores_analytics_dev_password psql \
-            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-            -f server/src/database/migrations/016_add_sms_event_types.sql
 
-      - name: Run content migration (seed DB from /content)
+      - name: Run content migration
         run: npm run migrate --workspace=server -- ../content
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
 
-      - name: 5.4a — Content Pipeline validation
-        run: npm run test:integration --workspace=server -- --testPathPattern=content-pipeline
+      - name: 2.1 — Bank ledger & DB constraint tests
+        run: npm run test:integration --workspace=server -- --testPathPattern=sprint2.validation
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
 
-      - name: 5.1 + 5.3 — MVW integration tests
-        run: npm run test:integration --workspace=server -- --testPathPattern=mvw.integration
+      - name: 2.3 — Gig engine tests (atomic TB deduction + OLAP telemetry)
+        run: npm run test:integration --workspace=server -- --testPathPattern=gigs
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
+
+      - name: 2.4 — OLAP write non-blocking tests
+        run: npm run test:integration --workspace=server -- --testPathPattern=olap-write
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
@@ -147,9 +135,9 @@ jobs:
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
 
-  # ── E2E Browser Tests (5.2) ────────────────────────────────────────────────
+  # ── E2E Browser Tests ──────────────────────────────────────────────────────
   e2e:
-    name: E2E Tests — Playwright MVW Loop
+    name: E2E Tests — Phone OS Shell & App Router
     runs-on: ubuntu-latest
     needs: integration
 
@@ -208,54 +196,31 @@ jobs:
 
       - name: Apply schemas & seed content
         run: |
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/001_initial_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/003_sprint1_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/004_scene_payload.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/005_dialogue_service.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/007_sleep_reset_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/009_add_user_relationships.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/010_sprint2_readiness.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/011_bank_constraints.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/012_gigs_schema.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/014_social_feed.sql
-          PGPASSWORD=las_flores_dev_password psql \
-            -h localhost -p 5434 -U las_flores -d las_flores \
-            -f server/src/database/migrations/015_player_sms_threads_v2.sql
+          for migration in \
+            001_initial_schema \
+            003_sprint1_schema \
+            004_scene_payload \
+            005_dialogue_service \
+            006_add_move_event_type \
+            007_sleep_reset_schema \
+            008_add_sleep_event_type \
+            009_add_user_relationships \
+            010_sprint2_readiness \
+            011_bank_constraints \
+            012_gigs_schema \
+            014_social_feed \
+            015_player_sms_threads_v2 \
+            016_add_sms_event_types; do
+            PGPASSWORD=las_flores_dev_password psql \
+              -h localhost -p 5434 -U las_flores -d las_flores \
+              -f server/src/database/migrations/${migration}.sql
+          done
           PGPASSWORD=las_flores_analytics_dev_password psql \
             -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
             -f server/src/database/migrations/002_analytics_schema.sql
           PGPASSWORD=las_flores_analytics_dev_password psql \
             -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-            -f server/src/database/migrations/006_add_move_event_type.sql
-          PGPASSWORD=las_flores_analytics_dev_password psql \
-            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-            -f server/src/database/migrations/008_add_sleep_event_type.sql
-          PGPASSWORD=las_flores_analytics_dev_password psql \
-            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
             -f server/src/database/migrations/013_add_gig_event_type.sql
-          PGPASSWORD=las_flores_analytics_dev_password psql \
-            -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-            -f server/src/database/migrations/016_add_sms_event_types.sql
           npm run migrate --workspace=server -- ../content
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
@@ -277,12 +242,28 @@ jobs:
             sleep 2
           done
 
+      - name: Build client
+        run: npm run build --workspace=client
+        env:
+          VITE_API_URL: http://localhost:3000
+
+      - name: Start client (background)
+        run: npx --yes serve -s dist -l 5173 &
+        working-directory: client
+
+      - name: Wait for client
+        run: |
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:5173 && break
+            sleep 2
+          done
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
         working-directory: client
 
-      - name: 5.2 — MVW E2E tests
-        run: npx playwright test tests/e2e/mvw.e2e.test.ts
+      - name: 2.1 — Sprint 2 Phone OS E2E tests
+        run: npx playwright test tests/e2e/sprint2.phone.e2e.test.ts
         working-directory: client
         env:
           API_URL: http://localhost:3000
@@ -296,6 +277,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: sprint2-playwright-report
           path: client/playwright-report/
           retention-days: 7

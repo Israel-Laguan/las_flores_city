@@ -1,0 +1,289 @@
+/* Las Flores 2077 - Comms / SMS App
+ * Cyberpunk chat interface with neon-cyan / neon-magenta accents.
+ * Follows the same monospace dark-panel pattern as feed.css and banco.css. */
+
+.comms-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  color: #e5e7eb;
+  font-family: 'Courier New', monospace;
+}
+
+.comms-app .comms-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.comms-app .comms-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--neon-cyan);
+  text-shadow: var(--border-glow);
+  letter-spacing: 1px;
+}
+
+.comms-app .comms-back {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: var(--neon-cyan);
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.comms-app .comms-back:hover {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.comms-app .comms-conn {
+  font-size: 0.55rem;
+  color: #6b7280;
+  letter-spacing: 1px;
+}
+
+/* =========================
+ * Inbox view
+ * ========================= */
+.comms-app .inbox-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comms-app .inbox-empty {
+  margin: auto;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.comms-app .inbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.comms-app .inbox-row:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.comms-app .inbox-row.unread {
+  border-color: rgba(255, 0, 255, 0.5);
+  background: rgba(40, 8, 50, 0.5);
+}
+
+.comms-app .inbox-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1f2937;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--neon-cyan);
+  flex-shrink: 0;
+}
+
+.comms-app .inbox-row-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.comms-app .inbox-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.comms-app .inbox-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comms-app .inbox-unread-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-magenta);
+  box-shadow: 0 0 6px var(--neon-magenta);
+  margin-left: 6px;
+}
+
+.comms-app .inbox-time {
+  font-size: 0.6rem;
+  color: #6b7280;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.comms-app .inbox-preview {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comms-app .inbox-rel {
+  font-size: 0.55rem;
+  color: var(--neon-cyan);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+ * Thread view
+ * ========================= */
+.comms-app .thread-scroll {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 2px;
+  margin-bottom: 8px;
+}
+
+.comms-app .thread-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.6rem;
+  color: #6b7280;
+  padding: 0 4px 4px 4px;
+  border-bottom: 1px dashed rgba(0, 255, 255, 0.1);
+  margin-bottom: 4px;
+}
+
+.comms-app .bubble {
+  max-width: 80%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.comms-app .bubble.npc {
+  align-self: flex-start;
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  color: #d1d5db;
+}
+
+.comms-app .bubble.player {
+  align-self: flex-end;
+  background: rgba(255, 0, 255, 0.12);
+  border: 1px solid rgba(255, 0, 255, 0.3);
+  color: #fce7f3;
+}
+
+.comms-app .bubble-time {
+  display: block;
+  font-size: 0.55rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.comms-app .thread-end {
+  align-self: center;
+  font-size: 0.6rem;
+  color: #6b7280;
+  font-style: italic;
+  padding: 6px 0;
+}
+
+.comms-app .choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid rgba(0, 255, 255, 0.15);
+  padding-top: 8px;
+}
+
+.comms-app .choice-btn {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: #e5e7eb;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.comms-app .choice-btn:hover:not(:disabled) {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: var(--neon-cyan);
+}
+
+.comms-app .choice-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.comms-app .choice-btn .choice-cost {
+  display: block;
+  font-size: 0.55rem;
+  color: var(--neon-magenta);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.comms-app .no-choices {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-align: center;
+  padding: 8px;
+}
+
+.comms-app .loading-spinner,
+.comms-app .app-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.comms-app .app-error button {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: var(--neon-cyan);
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}

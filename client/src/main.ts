@@ -4,6 +4,7 @@ import { WorldScene } from './scenes/WorldScene';
 import { LocationScene } from './scenes/LocationScene';
 import './components/PhoneOverlay';
 import './components/SleepOverlay';
+import './styles/comms.css';
 import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
 import * as api from './utils/api';

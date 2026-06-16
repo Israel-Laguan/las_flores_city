@@ -3,8 +3,16 @@
   --phone-height: 840px;
   --neon-cyan: #00ffff;
   --neon-blue: #0088ff;
+  --neon-magenta: #ff00ff;
+  --neon-pink: #f0abfc;
   --terminal-bg: rgba(6, 12, 24, 0.85);
   --border-glow: 0 0 10px rgba(0, 136, 255, 0.4);
+}
+
+important {
+  color: var(--neon-magenta);
+  font-weight: bold;
+  text-shadow: 0 0 6px var(--neon-magenta);
 }
 
 canvas {

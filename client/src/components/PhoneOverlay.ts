@@ -1,6 +1,7 @@
 import { eventBus } from '../utils/EventBus';
 import { phoneStore } from '../store/PhoneStore';
 import { PhoneBridge } from '../bridge/PhoneBridge';
+import { MessagesApp } from '../ui/apps/MessagesApp';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
@@ -35,15 +36,7 @@ export class PhoneOverlay {
     this.apps.set('feed', feed);
 
     const messages = document.createElement('div');
-    messages.innerHTML = `
-      <h3 style="margin:0 0 15px;color:var(--neon-cyan);border-bottom:1px solid var(--neon-cyan);padding-bottom:5px;">MESSAGES</h3>
-      <div style="border:1px solid var(--neon-blue);padding:10px;margin-bottom:10px;border-radius:5px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-          <strong>The Handler</strong><span style="color:#888;font-size:11px;">NOW</span>
-        </div>
-        <p style="margin:0;font-size:12px;color:#aaa;">Subject 7, report to your assigned location. The experiment has begun.</p>
-      </div>
-    `;
+    new MessagesApp(messages);
     this.apps.set('messages', messages);
 
     const vault = document.createElement('div');

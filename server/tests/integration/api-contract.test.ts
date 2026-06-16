@@ -1,6 +1,7 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
+import { commsRouter } from '../../src/routes/comms.js';
 import { healthRouter } from '../../src/routes/health.js';
 import { playerRouter } from '../../src/routes/player.js';
 import { locationRouter } from '../../src/routes/location.js';
@@ -20,6 +21,7 @@ app.use('/health', healthRouter);
 app.use('/player', playerRouter);
 app.use('/location', locationRouter);
 app.use('/dialogue', dialogueRouter);
+app.use('/comms', commsRouter);
 
 let server: any;
 let pool: pg.Pool;
@@ -52,6 +54,14 @@ beforeAll(async () => {
   await pool.query(
     'ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)'
   );
+  await pool.query(
+    'DELETE FROM player_sms_threads WHERE user_id = $1',
+    [TEST_USER_ID]
+  );
+  await pool.query(
+    'DELETE FROM user_relationships WHERE user_id = $1',
+    [TEST_USER_ID]
+  );
 
   await new Promise<void>((resolve) => {
     server = app.listen(0, resolve);
@@ -64,6 +74,8 @@ afterAll(async () => {
   }
 
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
   await pool.end();
   await closeRedis();
 });
@@ -225,6 +237,206 @@ describe('API Contract Tests', () => {
       expect(data.data.next_node).toHaveProperty('text');
       expect(data.data).toHaveProperty('time_blocks_spent');
       expect(typeof data.data.time_blocks_spent).toBe('number');
+    });
+  });
+
+  describe('POST /comms/start', () => {
+    test('opens a new thread for a character with a dialogue tree', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveProperty('success', true);
+      expect(data.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(data.data).toHaveProperty('characterName');
+      expect(data.data).toHaveProperty('chatHistory');
+      expect(Array.isArray(data.data.chatHistory)).toBe(true);
+      expect(data.data.chatHistory.length).toBeGreaterThan(0);
+      expect(data.data.chatHistory[0]).toHaveProperty('author', 'npc');
+      expect(data.data.chatHistory[0]).toHaveProperty('text');
+      expect(data.data.chatHistory[0]).toHaveProperty('id');
+      expect(data.data).toHaveProperty('currentNodeId');
+      expect(data.data).toHaveProperty('isEnd');
+      expect(data.data).toHaveProperty('choices');
+      expect(Array.isArray(data.data.choices)).toBe(true);
+      expect(data.data).toHaveProperty('unread', true);
+      expect(data.data).toHaveProperty('friendshipLevel', 0);
+      expect(data.data).toHaveProperty('romanceLevel', 0);
+    });
+
+    test('is idempotent: second start returns the same thread, not a new one', async () => {
+      const port = server.address().port;
+      const first = await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+      });
+      const firstData = await jsonResponse(first);
+      const firstHistoryLen = firstData.data.chatHistory.length;
+
+      const second = await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+      });
+      const secondData = await jsonResponse(second);
+
+      expect(second.status).toBe(200);
+      expect(secondData.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(secondData.data.chatHistory.length).toBe(firstHistoryLen);
+    });
+
+    test('returns 400 when characterId is missing', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({}),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(400);
+      expect(data).toHaveProperty('success', false);
+      expect(data.error).toMatch(/characterId/);
+    });
+
+    test('returns 404 for an unknown character', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: '00000000-0000-0000-0000-deadbeefcafe' }),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(404);
+      expect(data).toHaveProperty('success', false);
+    });
+  });
+
+  describe('GET /comms/inbox', () => {
+    test('returns the user\'s active threads', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/inbox`, {
+        headers: authHeaders(),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveProperty('success', true);
+      expect(data.data).toHaveProperty('threads');
+      expect(Array.isArray(data.data.threads)).toBe(true);
+      expect(data.data.threads.length).toBeGreaterThan(0);
+
+      const vance = data.data.threads.find((t: any) => t.characterId === TEST_CHARACTER_ID);
+      expect(vance).toBeDefined();
+      expect(vance).toHaveProperty('characterName');
+      expect(vance).toHaveProperty('lastMessage');
+      expect(vance).toHaveProperty('friendshipLevel');
+      expect(vance).toHaveProperty('romanceLevel');
+      expect(vance).toHaveProperty('unread');
+    });
+  });
+
+  describe('GET /comms/thread/:characterId', () => {
+    test('returns the thread detail for the character', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/thread/${TEST_CHARACTER_ID}`, {
+        headers: authHeaders(),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveProperty('success', true);
+      expect(data.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(Array.isArray(data.data.chatHistory)).toBe(true);
+      expect(data.data.chatHistory.length).toBeGreaterThan(0);
+      expect(data.data).toHaveProperty('choices');
+      expect(Array.isArray(data.data.choices)).toBe(true);
+    });
+
+    test('returns 404 for a character with no thread', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/thread/00000000-0000-0000-0000-deadbeefcafe`, {
+        headers: authHeaders(),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(404);
+      expect(data).toHaveProperty('success', false);
+    });
+  });
+
+  describe('POST /comms/reply', () => {
+    test('appends the player message and advances the dialogue', async () => {
+      const port = server.address().port;
+      const detail = await fetch(`http://localhost:${port}/comms/thread/${TEST_CHARACTER_ID}`, {
+        headers: authHeaders(),
+      });
+      const detailData = await jsonResponse(detail);
+      const firstChoice = detailData.data.choices[0];
+      expect(firstChoice).toBeDefined();
+      expect(firstChoice).toHaveProperty('id');
+
+      const res = await fetch(`http://localhost:${port}/comms/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, choiceId: firstChoice.id }),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveProperty('success', true);
+      expect(data.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(data.data.chatHistory.length).toBeGreaterThanOrEqual(detailData.data.chatHistory.length + 1);
+      const lastMessage = data.data.chatHistory[data.data.chatHistory.length - 1];
+      expect(['npc', 'player']).toContain(lastMessage.author);
+    });
+
+    test('returns 404 for a choice the user does not qualify for', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, choiceId: 'no_such_choice_id' }),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(404);
+      expect(data).toHaveProperty('success', false);
+    });
+  });
+
+  describe('POST /comms/read', () => {
+    test('returns updated row count for the thread', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveProperty('success', true);
+      expect(data.data).toHaveProperty('updated');
+      expect(typeof data.data.updated).toBe('number');
+    });
+
+    test('subsequent /thread reflects unread=false', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/comms/thread/${TEST_CHARACTER_ID}`, {
+        headers: authHeaders(),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data.data).toHaveProperty('unread', false);
     });
   });
 });
