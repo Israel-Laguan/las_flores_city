@@ -160,13 +160,16 @@ async function upsertDialogueOverlay(data: any): Promise<string> {
 // Upsert scene
 async function upsertScene(data: any): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO scenes (id, name, description, district, image_url, available_dialogues, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO scenes (id, name, description, district, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        description = EXCLUDED.description,
        district = EXCLUDED.district,
        image_url = EXCLUDED.image_url,
+       background_url = EXCLUDED.background_url,
+       ambient_sound_url = EXCLUDED.ambient_sound_url,
+       mood = EXCLUDED.mood,
        available_dialogues = EXCLUDED.available_dialogues,
        metadata = EXCLUDED.metadata,
        updated_at = NOW()
@@ -177,6 +180,9 @@ async function upsertScene(data: any): Promise<string> {
       sanitizeText(data.description),
       data.district,
       data.image_url || null,
+      data.background_url || null,
+      data.ambient_sound_url || null,
+      data.mood || null,
       data.available_dialogues || [],
       JSON.stringify(data.metadata || {}),
     ]

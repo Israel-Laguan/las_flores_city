@@ -1,0 +1,240 @@
+id: "f6a7b8c9-d0e1-2345-fabc-456789012345"
+name: "First Contact"
+description: "Your first conversation with Marco at the Old Town Cafe"
+start_node_id: "start"
+nodes:
+  start:
+    id: "start"
+    type: "narrator"
+    text: "The bell above the door jingles as you enter. The cafe is warm, the smell of coffee rich. Behind the counter, a man in his 40s is wiping down the espresso machine. He looks up and smiles."
+    thought: "Finally, somewhere that doesn't feel like a simulation. The warmth hits my face like a memory I can't place."
+    choices:
+      - id: "approach_counter"
+        text: "Approach the counter"
+        next_node_id: "marco_greeting"
+        time_block_cost:
+          amount: 1
+          description: "Approaching the counter"
+      - id: "look_around"
+        text: "Look around first"
+        next_node_id: "observe_cafe"
+        time_block_cost:
+          amount: 1
+          description: "Taking in the atmosphere"
+
+  observe_cafe:
+    id: "observe_cafe"
+    type: "narrator"
+    text: "The walls are covered in local art. A few regulars sit at corner tables, nursing their drinks. A vinyl record plays something jazzy. It feels... real. Not like the sterile apartment."
+    thought: "The art on the walls looks hand-painted, not generated. Someone put care into this place."
+    choices:
+      - id: "approach_counter"
+        text: "Approach the counter"
+        next_node_id: "marco_greeting"
+        time_block_cost:
+          amount: 1
+          description: "Approaching the counter"
+
+  marco_greeting:
+    id: "marco_greeting"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Hey there! First time? You've got that look—like you're seeing the city for the first time. I'm Marco. What can I get you?"
+    thought: "He seems genuine. But so did the Handler, before she handed me my apartment keys and walked away."
+    choices:
+      - id: "just_water"
+        text: "Just water for now"
+        next_node_id: "water_conversation"
+        time_block_cost:
+          amount: 1
+          description: "Ordering water"
+      - id: "coffee"
+        text: "Coffee, please"
+        next_node_id: "coffee_conversation"
+        time_block_cost:
+          amount: 1
+          description: "Ordering coffee"
+      - id: "ask_about_city"
+        text: "Actually, I'm new here. Can you tell me about the city?"
+        next_node_id: "city_advice"
+        time_block_cost:
+          amount: 1
+          description: "Asking for local knowledge"
+        relationship_change:
+          stat: friendship
+          amount: 2
+
+  water_conversation:
+    id: "water_conversation"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Water it is. Here you go. So, new in town? I can always tell. You've got that wide-eyed look. Don't worry—you'll fit in soon enough."
+    thought: "He remembers faces. That's either a gift or a survival skill in a place like this."
+    choices:
+      - id: "ask_about_districts"
+        text: "What's good around here?"
+        next_node_id: "district_tips"
+        time_block_cost:
+          amount: 1
+          description: "Getting recommendations"
+      - id: "ask_about_him"
+        text: "How long have you been here?"
+        next_node_id: "marco_background"
+        time_block_cost:
+          amount: 1
+          description: "Getting to know Marco"
+
+  coffee_conversation:
+    id: "coffee_conversation"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Good choice. My special blend. Here—try it. *slides a cup across the counter* So, you're one of the new arrivals? We get a few every month. N&M LTD types, usually."
+    thought: "He knows about N&M LTD. Everyone here seems to know more than they let on."
+    choices:
+      - id: "ask_about_nnm"
+        text: "You know about N&M LTD?"
+        next_node_id: "nnm_knowledge"
+        time_block_cost:
+          amount: 1
+          description: "Learning about N&M LTD"
+        relationship_change:
+          stat: friendship
+          amount: 3
+      - id: "ask_about_districts"
+        text: "What's good around here?"
+        next_node_id: "district_tips"
+        time_block_cost:
+          amount: 1
+          description: "Getting recommendations"
+
+  city_advice:
+    id: "city_advice"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "New? Welcome! *grins* Las Flores is... complicated. Beautiful, but complicated. Downtown is all corporate. Old Town—where we are—is the heart. The Market has everything you need. And the Undercity... well, let's just say it's not for tourists."
+    thought: "The Undercity. He said it like a warning, not a recommendation."
+    effects:
+      flag_set:
+        marco_talked_about_city: true
+    choices:
+      - id: "ask_about_districts"
+        text: "Tell me more about the districts"
+        next_node_id: "district_tips"
+        time_block_cost:
+          amount: 1
+          description: "Learning more"
+      - id: "ask_about_him"
+        text: "What about you?"
+        next_node_id: "marco_background"
+        time_block_cost:
+          amount: 1
+          description: "Getting personal"
+
+  district_tips:
+    id: "district_tips"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Downtown has the best views but the worst people. Old Town has the best coffee—biased, I know. The Market is where you trade. And the Undercity... has secrets. If you're looking for something real, start here. Come back anytime."
+    thought: "He's giving me the map. The real map, not the one on the holographic display."
+    effects:
+      flag_set:
+        districts_known: true
+    choices:
+      - id: "thank_him"
+        text: "Thanks, Marco. I'll be back."
+        next_node_id: "farewell"
+        relationship_change:
+          stat: friendship
+          amount: 5
+      - id: "ask_more"
+        text: "Any other tips?"
+        next_node_id: "additional_tips"
+
+  marco_background:
+    id: "marco_background"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Me? I've been here since before N&M LTD showed up. This cafe was my father's. I've seen a lot of new faces come and go. Some stay. Some... don't. But I remember everyone who walks through that door."
+    thought: "He stayed. He chose to stay. Why?"
+    effects:
+      flag_set:
+        marco_personal_story_known: true
+    choices:
+      - id: "ask_about_nnm"
+        text: "What do you know about N&M LTD?"
+        next_node_id: "nnm_knowledge"
+        time_block_cost:
+          amount: 1
+          description: "Investigating"
+      - id: "thank_him"
+        text: "Thanks for the story, Marco."
+        next_node_id: "farewell"
+        relationship_change:
+          stat: friendship
+          amount: 5
+
+  nnm_knowledge:
+    id: "nnm_knowledge"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "N&M LTD... they're the ones running this whole thing. The 'experiment,' they call it. They bring people here, give them apartments, Time Blocks... and watch. I don't know what they're looking for, but they're always watching."
+    thought: "An experiment. We're lab rats in a city-sized cage."
+    effects:
+      flag_set:
+        nnm_suspicion: true
+    choices:
+      - id: "what_experiment"
+        text: "What kind of experiment?"
+        next_node_id: "experiment_details"
+        time_block_cost:
+          amount: 1
+          description: "Digging deeper"
+      - id: "thank_him"
+        text: "Interesting. Thanks, Marco."
+        next_node_id: "farewell"
+
+  experiment_details:
+    id: "experiment_details"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "They don't tell us much. Just that it's about 'human behavior in controlled environments.' But between you and me? Something feels off. The people who stay too long... they change. Come back tomorrow. I might know more then."
+    thought: "They change. What does that mean? What happens to people who stay too long?"
+    is_end: true
+
+  additional_tips:
+    id: "additional_tips"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "One more thing—watch your Time Blocks. When they run out, you sleep. But sleeping costs credits. It's a cycle. Also, if you need anything, come find me. I know people. And people know me."
+    thought: "Good advice. The cycle of Time Blocks and credits... it's designed to keep us moving, keep us spending."
+    effects:
+      flag_set:
+        tb_advice_received: true
+    choices:
+      - id: "thank_him_final"
+        text: "Thanks, Marco. I'll remember that."
+        next_node_id: "farewell"
+        relationship_change:
+          stat: friendship
+          amount: 3
+
+  farewell:
+    id: "farewell"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Take care! And remember—my door is always open. Well, during business hours. *winks*"
+    thought: "He's the first person here who's felt... safe. I'll come back."
+    effects:
+      flag_set:
+        marco_relationship_formed: true
+    is_end: true
+
+metadata:
+  version: "1.1"
+  author: "Las Flores Team"
+  created_at: "2024-01-01"
+  tags:
+    - "first_contact"
+    - "tutorial"
+    - "relationship_building"
+    - "barista"

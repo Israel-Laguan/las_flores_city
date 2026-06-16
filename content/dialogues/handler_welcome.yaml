@@ -1,0 +1,152 @@
+id: "d4e5f6a7-b8c9-0123-defa-234567890123"
+name: "Welcome to the Experiment"
+description: "The Handler introduces you to your assignment in Las Flores"
+start_node_id: "start"
+nodes:
+  start:
+    id: "start"
+    type: "narrator"
+    text: "The door to your apartment slides open with a hiss. A woman in a sharp black suit stands in the hallway, tablet in hand."
+    choices:
+      - id: "look_at_her"
+        text: "Look at her carefully"
+        next_node_id: "examine_handler"
+        time_block_cost:
+          amount: 1
+          description: "Assessing the situation"
+      - id: "speak_first"
+        text: "Speak first"
+        next_node_id: "speak_first"
+
+  examine_handler:
+    id: "examine_handler"
+    type: "narrator"
+    text: "She's tall, with sharp features and eyes that seem to scan everything. The N&M LTD logo is pinned to her lapel. She hasn't looked up from her tablet."
+    choices:
+      - id: "wait_for_her"
+        text: "Wait for her to speak"
+        next_node_id: "handler_intro"
+      - id: "clear_throat"
+        text: "Clear your throat"
+        next_node_id: "handler_intro"
+
+  speak_first:
+    id: "speak_first"
+    type: "narrator"
+    text: "\"Hello?\" Your voice sounds strange in the sterile apartment."
+    choices:
+      - id: "continue"
+        text: "Continue"
+        next_node_id: "handler_intro"
+
+  handler_intro:
+    id: "handler_intro"
+    type: "character"
+    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    text: "Subject 7. You're awake. Good. I'm your Handler. N&M LTD has selected you for the Las Flores Urban Experience Program. You'll be living here for the duration of the study."
+    choices:
+      - id: "what_study"
+        text: "What study?"
+        next_node_id: "explain_study"
+        time_block_cost:
+          amount: 1
+          description: "Getting briefed"
+      - id: "how_long"
+        text: "How long?"
+        next_node_id: "explain_duration"
+        time_block_cost:
+          amount: 1
+          description: "Getting briefed"
+
+  explain_study:
+    id: "explain_study"
+    type: "character"
+    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    text: "You'll be observed as you navigate the city. Make choices. Build relationships. We're studying human behavior in controlled urban environments. Your Time Blocks are your most valuable resource—use them wisely."
+    choices:
+      - id: "time_blocks"
+        text: "Time Blocks?"
+        next_node_id: "explain_time_blocks"
+        time_block_cost:
+          amount: 1
+          description: "Learning the system"
+      - id: "rules"
+        text: "What are the rules?"
+        next_node_id: "explain_rules"
+        time_block_cost:
+          amount: 1
+          description: "Learning the system"
+
+  explain_duration:
+    id: "explain_duration"
+    type: "character"
+    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    text: "Until the study concludes. Could be weeks. Could be months. depends on your progress. You have 48 Time Blocks per day. Spend them to move, talk, explore. Sleep to refresh."
+    choices:
+      - id: "time_blocks"
+        text: "Tell me about Time Blocks"
+        next_node_id: "explain_time_blocks"
+        time_block_cost:
+          amount: 1
+          description: "Learning the system"
+
+  explain_time_blocks:
+    id: "explain_time_blocks"
+    type: "character"
+    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    text: "Time Blocks represent your available time each day. Moving between locations costs 1 TB. Conversations cost 1-2 TB depending on depth. When you hit zero, you must sleep. Sleep resets your TB to 48 and advances the day."
+    effects:
+      flag_set:
+        tb_explained: true
+    choices:
+      - id: "explore_now"
+        text: "I'm ready to explore"
+        next_node_id: "explore_prompt"
+      - id: "ask_more"
+        text: "Tell me more about the city"
+        next_node_id: "city_overview"
+
+  explain_rules:
+    id: "explain_rules"
+    type: "character"
+    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    text: "Simple. Explore the city. Talk to people. Make choices. Some choices have consequences. Your relationships with NPCs will affect available options. Don't waste your Time Blocks."
+    effects:
+      flag_set:
+        rules_explained: true
+    choices:
+      - id: "explore_now"
+        text: "I understand. I'm ready"
+        next_node_id: "explore_prompt"
+
+  city_overview:
+    id: "city_overview"
+    type: "character"
+    speaker_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    text: "Las Flores has several districts. Downtown is corporate. Old Town is... traditional. The Market is where you buy and sell. The Undercity is off-limits for now. Start at the Old Town Cafe—there's a barista there who knows everyone."
+    effects:
+      flag_set:
+        city_overview_complete: true
+    choices:
+      - id: "explore_now"
+        text: "I'll head to the cafe"
+        next_node_id: "explore_prompt"
+
+  explore_prompt:
+    id: "explore_prompt"
+    type: "narrator"
+    text: "The Handler turns to leave, then pauses. \"One more thing. The cafe is a good place to start. Marco, the barista, is... friendly. Use the Travel menu to move between locations.\"\n\nShe disappears down the hallway."
+    effects:
+      flag_set:
+        intro_complete: true
+      location_discovered: "old_town_cafe"
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2024-01-01"
+  tags:
+    - "tutorial"
+    - "welcome"
+    - "new_player"
+    - "handler"

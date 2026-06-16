@@ -65,7 +65,7 @@ test.describe('Phone OS Overlay', () => {
   test('Time Blocks display shows TB balance', async ({ page }) => {
     await page.goto('/');
     
-    const timeBlocksDisplay = page.locator('#time-blocks-display');
+    const timeBlocksDisplay = page.locator('#phone-tb-display');
     await expect(timeBlocksDisplay).toBeVisible();
     await expect(timeBlocksDisplay).toContainText('TB:');
   });

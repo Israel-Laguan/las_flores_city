@@ -1,7 +1,9 @@
+import path from 'node:path';
 import Redis from 'ioredis';
 import dotenv from 'dotenv';
 
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
 // Redis connection
 export const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
@@ -19,10 +21,6 @@ redis.on('connect', () => {
 
 redis.on('error', (err) => {
   console.error('❌ Redis error:', err);
-});
-
-redis.on('close', () => {
-  console.log('🔌 Redis connection closed');
 });
 
 // Cache helpers
@@ -92,6 +90,7 @@ export async function incrementContentVersion(contentType: string, contentId: st
 
 // Close Redis connection
 export async function closeRedis(): Promise<void> {
-  await redis.quit();
-  console.log('🔌 Redis connection closed');
+  if (redis.status !== 'end') {
+    redis.disconnect();
+  }
 }

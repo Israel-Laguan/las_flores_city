@@ -1,0 +1,10 @@
+id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+name: "Marco"
+title: "Barista"
+description: "The owner of Old Town Cafe. A warm, talkative man in his 40s who remembers every customer's order. He's got a stories for every occasion and a genuine interest in people's lives."
+metadata:
+  type: "human"
+  role: "npc"
+  personality: "friendly"
+  faction: "neutral"
+  first_appearance: "dialogue_first_contact"

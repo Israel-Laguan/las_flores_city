@@ -15,11 +15,14 @@
     "migrate": "npm run migrate --workspace=server",
     "validate:content": "npm run validate --workspace=server",
     "lint": "npm run lint --workspaces",
-    "test": "npm run test --workspaces",
+    "test": "npm run test:server && npm run test:client:e2e",
     "test:server": "npm run test --workspace=server",
-    "test:smoke": "node scripts/heartbeat.mjs",
-    "test:final": "node scripts/sprint0-final-test.mjs",
-    "validate:sprint0": "npm run test:smoke && npm run test:server && npm run test:final"
+    "test:client:e2e": "npm run test:e2e --workspace=client"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

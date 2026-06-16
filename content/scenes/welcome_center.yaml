@@ -2,6 +2,9 @@ id: "550e8400-e29b-41d4-a716-446655440002"
 name: "Welcome Center"
 description: "The official welcome center for new arrivals in Las Flores. A sleek, modern facility designed to process and orient newcomers to the city."
 district: "Downtown"
+background_url: "/assets/scenes/welcome_center/background.png"
+ambient_sound_url: null
+mood: "neutral"
 available_dialogues:
   - "550e8400-e29b-41d4-a716-446655440003"
 metadata:

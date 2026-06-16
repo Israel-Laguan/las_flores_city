@@ -1,0 +1,10 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+name: "The Handler"
+title: "N&M LTD Liaison"
+description: "A mysterious corporate liaison from N&M LTD. She speaks in clipped, efficient sentences and always seems to know more than she lets on. Her eyes flick between you and a tablet she never puts down."
+metadata:
+  type: "human"
+  role: "quest_giver"
+  personality: "professional"
+  faction: "N&M LTD"
+  first_appearance: "dialogue_welcome_handler"

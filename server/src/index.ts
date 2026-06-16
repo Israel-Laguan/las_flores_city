@@ -2,10 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { healthRouter } from './routes/health.js';
+import { authRouter } from './routes/auth.js';
 import { playerRouter } from './routes/player.js';
 import { locationRouter } from './routes/location.js';
 import { dialogueRouter } from './routes/dialogue.js';
-import { testConnections, closeConnections } from './database/connection.js';
+import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(express.json());
 
 // Routes
 app.use('/health', healthRouter);
+app.use('/auth', authRouter);
 app.use('/player', playerRouter);
 app.use('/location', locationRouter);
 app.use('/dialogue', dialogueRouter);
@@ -43,12 +45,15 @@ async function initializeServer() {
     console.error('❌ Failed to connect to databases. Exiting...');
     process.exit(1);
   }
-  
+
+  await queryOLTP('ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)');
+
   // Start server
   app.listen(PORT, () => {
     console.log(`🎮 Las Flores 2077 Server running on port ${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`🎯 Player state: http://localhost:${PORT}/health/player-state`);
+    console.log(`🔐 Auth: http://localhost:${PORT}/auth/dev-login`);
+    console.log(`🎯 Player state: http://localhost:${PORT}/player/state`);
   });
 }
 

@@ -11,7 +11,7 @@ describe('Infrastructure Heartbeat', () => {
 
   beforeAll(async () => {
     oltpPool = new Pool({
-      connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5432/las_flores',
+      connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
       connectionTimeoutMillis: 5000,
     });
     olapPool = new Pool({

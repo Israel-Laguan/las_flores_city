@@ -57,11 +57,19 @@ export const DialogueNodeTypeSchema = z.enum([
 
 export type DialogueNodeType = z.infer<typeof DialogueNodeTypeSchema>;
 
+export const RelationshipChangeSchema = z.object({
+  stat: z.enum(['friendship', 'romance']),
+  amount: z.number().int(),
+});
+
+export type RelationshipChange = z.infer<typeof RelationshipChangeSchema>;
+
 export const DialogueChoiceSchema = z.object({
   id: z.string(),
   text: z.string().max(500),
   next_node_id: z.string(),
   time_block_cost: TimeBlockCostSchema.optional(),
+  relationship_change: RelationshipChangeSchema.optional(),
   required_flags: z.record(z.string(), z.boolean()).optional(),
   hidden_if: z.record(z.string(), z.boolean()).optional(),
 });
@@ -73,6 +81,8 @@ export const DialogueNodeSchema = z.object({
   type: DialogueNodeTypeSchema,
   speaker_id: z.string().optional(),
   text: z.string().max(2000),
+  thought: z.string().max(2000).optional(),
+  is_end: z.boolean().optional(),
   choices: z.array(DialogueChoiceSchema).optional(),
   effects: z.record(z.string(), z.any()).optional(),
   conditions: z.record(z.string(), z.any()).optional(),
@@ -121,6 +131,9 @@ export const LocationSchema = z.object({
   description: z.string().max(1000),
   district: z.string().max(50),
   image_url: z.string().url().optional(),
+  background_url: z.string().optional(),
+  ambient_sound_url: z.string().nullable().optional(),
+  mood: z.string().max(50).optional(),
   available_dialogues: z.array(z.string().uuid()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   created_at: z.string().datetime(),
@@ -136,21 +149,44 @@ export const PlayerFlagsSchema = z.record(z.string(), z.boolean());
 export type PlayerFlags = z.infer<typeof PlayerFlagsSchema>;
 
 export const PlayerStateSchema = z.object({
-  user_id: z.string().uuid(),
-  time_blocks: TimeBlockSchema,
-  current_location_id: z.string().uuid().optional(),
-  active_dialogue_id: z.string().uuid().optional(),
-  current_node_id: z.string().optional(),
-  flags: PlayerFlagsSchema.default({}),
-  inventory: z.array(z.string()).default([]),
-  discovered_locations: z.array(z.string().uuid()).default([]),
-  completed_dialogues: z.array(z.string().uuid()).default([]),
-  last_activity_at: z.string().datetime(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  userId: z.string().uuid(),
+  username: z.string(),
+  locationId: z.string().uuid(),
+  timeBlocks: z.number().int().min(0).max(48),
+  credits: z.number().int(),
+  goldCredits: z.number().int().default(0),
+  currentNodeId: z.string().nullable().optional(),
+  lastLogin: z.string().datetime(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
 });
 
 export type PlayerState = z.infer<typeof PlayerStateSchema>;
+
+// ==================== Scene Payload (Task 1.2) ====================
+
+export const ScenePayloadSchema = z.object({
+  scene: z.object({
+    id: z.string().uuid(),
+    title: z.string(),
+    backgroundUrl: z.string(),
+    ambientSoundUrl: z.string().nullable(),
+    mood: z.string(),
+  }),
+  npcs: z.array(z.object({
+    characterId: z.string().uuid(),
+    name: z.string(),
+    portraitUrl: z.string(),
+    currentMood: z.string(),
+    relationship: z.object({
+      friendship: z.number().int().min(0).max(100),
+      romance: z.number().int().min(0).max(100),
+    }),
+    canInteract: z.boolean(),
+  })),
+});
+
+export type ScenePayload = z.infer<typeof ScenePayloadSchema>;
 
 // ==================== API Responses ====================
 
@@ -163,6 +199,12 @@ export const ApiResponseSchema = z.object({
 
 export type ApiResponse = z.infer<typeof ApiResponseSchema>;
 
+export const ScenePayloadResponseSchema = ApiResponseSchema.extend({
+  data: ScenePayloadSchema.optional(),
+});
+
+export type ScenePayloadResponse = z.infer<typeof ScenePayloadResponseSchema>;
+
 export const LocationResponseSchema = ApiResponseSchema.extend({
   data: LocationSchema.optional(),
 });
@@ -174,6 +216,7 @@ export const DialogueResponseSchema = ApiResponseSchema.extend({
     tree: DialogueTreeSchema,
     current_node: DialogueNodeSchema,
     available_choices: z.array(DialogueChoiceSchema),
+    is_end: z.boolean().optional(),
   }).optional(),
 });
 
@@ -232,6 +275,9 @@ export const YAMLSceneSchema = z.object({
   description: z.string().max(1000),
   district: z.string().max(50),
   image_url: z.string().url().optional(),
+  background_url: z.string().optional(),
+  ambient_sound_url: z.string().nullable().optional(),
+  mood: z.string().max(50).optional(),
   available_dialogues: z.array(z.string().uuid()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 });

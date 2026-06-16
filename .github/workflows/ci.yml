@@ -75,13 +75,6 @@ jobs:
       - name: Run content migration
         run: npm run migrate
 
-      - name: Run smoke tests (Infrastructure)
-        run: npm run test:smoke
-        env:
-          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5432/las_flores
-          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
-          REDIS_URL: redis://localhost:6379
-
       - name: Run integration tests
         run: npm run test:server
         env:

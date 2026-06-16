@@ -7,6 +7,7 @@ nodes:
     id: "start"
     type: "narrator"
     text: "The monorail hisses to a stop. Through the rain-streaked window, you see the neon skyline of Las Flores for the first time."
+    thought: "This is it. The city they promised. It looks... unreal. Too perfect."
     choices:
       - id: "look_around"
         text: "Look around the station"
@@ -25,6 +26,7 @@ nodes:
     id: "station_overview"
     type: "narrator"
     text: "The Welcome Center is sleek and modern. A holographic map of the city floats above a central pillar. Several other new arrivals mill about, looking equally lost."
+    thought: "Everyone here has the same expression. Like they're trying to remember something they never knew."
     choices:
       - id: "approach_map"
         text: "Examine the holographic map"
@@ -43,6 +45,7 @@ nodes:
     id: "phone_introduction"
     type: "system"
     text: "[PHONE OS BOOTING]\n\nWelcome to your Las Flores Personal Interface.\n\nYour Time-Block balance: 12/12\n\nAvailable apps: Feed, Messages, Vault, Identity"
+    thought: "The phone feels like it's been here longer than I have. Like it was waiting for me."
     effects:
       flag_set:
         phone_intro_complete: true
@@ -64,6 +67,7 @@ nodes:
     id: "map_intro"
     type: "narrator"
     text: "The holographic map pulses with life. Districts glow in different colors: Downtown in blue, the Market in gold, the Undercity in red. A blinking dot marks your current location."
+    thought: "The Undercity is red. Red like warning lights. Red like something bleeding."
     effects:
       location_discovered: "welcome_center"
     choices:
@@ -79,6 +83,7 @@ nodes:
     type: "character"
     speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Hey there, new face. First time in Las Flores? Stick to the main districts until you get your bearings. And keep your phone charged—you'll need it."
+    thought: "He's seen a thousand new arrivals. I wonder how many he's watched leave."
     choices:
       - id: "ask_about_districts"
         text: "What are the districts?"
@@ -86,32 +91,59 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Learning about the city"
+        relationship_change:
+          stat: friendship
+          amount: 1
 
   feed_intro:
     id: "feed_intro"
     type: "system"
     text: "[FEED APP]\n\nYour personalized news feed is empty.\n\nVisit locations and meet people to fill your feed with stories."
+    thought: "Empty. Like me. For now."
     effects:
       app_opened: "feed"
+    is_end: true
 
   messages_intro:
     id: "messages_intro"
     type: "system"
     text: "[MESSAGES APP]\n\nYou have 1 new message from: ARIA\n\n\"Welcome to Las Flores! I'm your personal AI assistant. Type HELP anytime for guidance.\""
+    thought: "ARIA. Another AI watching over me. How many layers of surveillance does this city have?"
     effects:
       app_opened: "messages"
       message_read: "aria_welcome"
+    is_end: true
 
   districts_explanation:
     id: "districts_explanation"
     type: "character"
     speaker_id: "550e8400-e29b-41d4-a716-446655440004"
     text: "Downtown is where the corps have their offices. The Market is... well, the market. The Undercity is where things get interesting—and dangerous. Stay sharp."
+    thought: "Interesting and dangerous. The two things they don't want us to explore."
+    effects:
+      flag_set:
+        districts_known: true
+    choices:
+      - id: "thank_guard"
+        text: "Thanks for the heads up."
+        next_node_id: "guard_farewell"
+        relationship_change:
+          stat: friendship
+          amount: 2
+
+  guard_farewell:
+    id: "guard_farewell"
+    type: "character"
+    speaker_id: "550e8400-e29b-41d4-a716-446655440004"
+    text: "Welcome to Las Flores. Try not to get killed on your first day. *chuckles*"
+    thought: "Was that a joke? I can't tell anymore."
+    is_end: true
 
   downtown_arrival:
     id: "downtown_arrival"
     type: "narrator"
     text: "The monorail glides into Downtown. Towering glass buildings reflect the perpetual rain. Holographic advertisements flicker across every surface."
+    thought: "The buildings are too tall. The ads are too bright. Everything here is designed to overwhelm."
     effects:
       location_discovered: "downtown"
     choices:
@@ -126,11 +158,11 @@ nodes:
     id: "explore_complete"
     type: "narrator"
     text: "You've completed your orientation. The city of Las Flores awaits. Your journey begins now."
-    effects:
-      quest_complete: "welcome_quest"
+    thought: "My journey. Their experiment. Same thing, different words."
+    is_end: true
 
 metadata:
-  version: "1.0"
+  version: "1.1"
   author: "Las Flores Team"
   created_at: "2024-01-01"
   tags:

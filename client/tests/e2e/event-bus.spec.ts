@@ -4,41 +4,23 @@ test.describe('Event Bus Loopback', () => {
   test('Opening a phone app triggers world:pause event', async ({ page }) => {
     await page.goto('/');
     
-    // Listen for console logs from the EventBus
-    const logs: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.text().includes('Phone app opened:')) {
-        logs.push(msg.text());
-      }
-    });
-    
-    // Click on Feed app
     const feedTab = page.locator('button:has-text("Feed")');
     await feedTab.click();
     
-    // Wait a moment for the event to propagate
-    await page.waitForTimeout(500);
-    
-    // Verify the event was emitted
-    expect(logs.some(log => log.includes('Phone app opened: feed'))).toBeTruthy();
+    const feedContent = page.locator('#phone-app-content');
+    await expect(feedContent).toContainText('FEED');
+    await expect(feedContent).toContainText('Your personalized news feed is empty.');
   });
 
   test('Opening Messages app triggers world:pause event', async ({ page }) => {
     await page.goto('/');
     
-    const logs: string[] = [];
-    page.on('console', (msg) => {
-      if (msg.text().includes('Phone app opened:')) {
-        logs.push(msg.text());
-      }
-    });
-    
     const messagesTab = page.locator('button:has-text("Messages")');
     await messagesTab.click();
     
-    await page.waitForTimeout(500);
-    
-    expect(logs.some(log => log.includes('Phone app opened: messages'))).toBeTruthy();
+    const messagesContent = page.locator('#phone-app-content');
+    await expect(messagesContent).toContainText('MESSAGES');
+    await expect(messagesContent).toContainText('Subject 7, report to your assigned location.');
   });
 
   test('Phone overlay pointer events change on world pause/resume', async ({ page }) => {
