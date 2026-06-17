@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DialogueNodeSchema } from '../index.js';
+import { DialogueNodeSchema } from './dialogue.js';
 
 // ============================================================
 // Mystery Overlay Schema (Task 3.1)

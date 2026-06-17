@@ -8,6 +8,7 @@ import './styles/comms.css';
 import './styles/vault.css';
 import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
+import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 
@@ -73,11 +74,13 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     new DialogueUI();
     new MonologueFeed();
+    new BreakthroughAlert();
     initApp();
   });
 } else {
   new DialogueUI();
   new MonologueFeed();
+  new BreakthroughAlert();
   initApp();
 }
 

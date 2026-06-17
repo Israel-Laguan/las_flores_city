@@ -11,6 +11,7 @@ import {
   buildChooseResponse,
   joinMystery,
 } from './dialogue-helpers.js';
+import { emitBreakthroughSideEffects } from './dialogue-breakthrough-helpers.js';
 import { withOLTPTransaction, queryOLTP, queryOLAP } from '../database/connection.js';
 import { deleteCache } from '../database/redis.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
@@ -158,6 +159,13 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       ).catch((err) => console.error('Vault unlock telemetry error:', err));
     }
 
+    // Task 3.3: post-commit Breakthrough side effects (cache
+    // invalidation, OLAP event, [BREAKTHROUGH] social post for the
+    // winner). Runs even on late solves — see helper JSDoc.
+    if (result.breakthrough && result.breakthrough.kind !== 'unrelated') {
+      await emitBreakthroughSideEffects(userId, result.breakthrough);
+    }
+
     const nextNode = nodes[availableChoices[choiceIndex].next_node_id];
 
     // "Trigger Choice" mechanism: a YAML choice may carry a
@@ -189,7 +197,8 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       isEnd,
       result.timeBlocksSpent || 0,
       newTbResult.rows[0]?.time_blocks,
-      result.unlockedVaultItem
+      result.unlockedVaultItem,
+      result.mysterySolveStatus
     ));
   } catch (error: any) {
     console.error('Dialogue choose error:', error);

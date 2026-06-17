@@ -38,10 +38,11 @@ async function calculateChecksum(filePath: string): Promise<string> {
 }
 
 // Check if migration was already applied
-async function isMigrationApplied(filePath: string, checksum: string): Promise<boolean> {
+async function isMigrationApplied(filePath: string, contentDir: string, checksum: string): Promise<boolean> {
+  const relativePath = path.relative(contentDir, filePath);
   const result = await queryOLTP(
-    'SELECT id FROM migration_log WHERE file_path = $1 AND file_checksum = $2',
-    [filePath, checksum]
+    'SELECT id FROM migration_log WHERE (file_path = $1 OR file_path = $2 OR file_checksum = $3) LIMIT 1',
+    [filePath, relativePath, checksum]
   );
   return result.rows.length > 0;
 }
@@ -388,7 +389,7 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
         const checksum = await calculateChecksum(file);
 
         // Check if already applied
-        if (await isMigrationApplied(file, checksum)) {
+        if (await isMigrationApplied(file, contentDir, checksum)) {
           console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
           result.filesSkipped++;
           continue;
@@ -399,8 +400,9 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
         const migration = await processContentFile(file);
         
         // Record migration
+        const loggedFilePath = path.relative(contentDir, file);
         const logContentId = migration.contentId.split(',')[0];
-        await recordMigration(file, checksum, migration.contentType, logContentId);
+        await recordMigration(loggedFilePath, checksum, migration.contentType, logContentId);
         
         result.filesProcessed++;
         result.appliedMigrations.push(migration);

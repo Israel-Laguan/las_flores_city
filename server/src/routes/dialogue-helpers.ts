@@ -1,5 +1,9 @@
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
+import {
+  processBreakthroughSolve,
+  type BreakthroughResult,
+} from './dialogue-breakthrough-helpers.js';
 
 export async function getSpeaker(speakerId: string) {
   const result = await queryOLTP(
@@ -256,6 +260,12 @@ export async function processChoice(
   timeBlocksSpent?: number;
   error?: string;
   unlockedVaultItem?: { id: string; title: string };
+  breakthrough?: BreakthroughResult;
+  mysterySolveStatus?: {
+    mysteryId: string;
+    isBreakthrough: boolean;
+    kind: 'winner' | 'solver' | 'late';
+  };
 }> {
   let timeBlocksSpent = 0;
 
@@ -319,7 +329,13 @@ export async function processChoice(
     nextNode
   );
 
-  return { success: true, timeBlocksSpent, unlockedVaultItem };
+  // Task 3.3: detect `mystery_solve` choice and run the atomic
+  // Breakthrough state transition inside this same transaction.
+  // Side effects (broadcast, OLAP) happen post-commit in the route.
+  const { result: breakthrough, status: mysterySolveStatus } =
+    await processBreakthroughSolve(client, userId, chosenOption.mystery_solve);
+
+  return { success: true, timeBlocksSpent, unlockedVaultItem, mysterySolveStatus, breakthrough };
 }
 
 export function buildDialogueResponse(
@@ -367,7 +383,12 @@ export function buildChooseResponse(
   isEnd: boolean,
   timeBlocksSpent: number,
   timeBlocksRemaining: number,
-  unlockedVaultItem?: { id: string; title: string }
+  unlockedVaultItem?: { id: string; title: string },
+  mysterySolveStatus?: {
+    mysteryId: string;
+    isBreakthrough: boolean;
+    kind: 'winner' | 'solver' | 'late';
+  }
 ) {
   return {
     success: true,
@@ -387,6 +408,9 @@ export function buildChooseResponse(
       time_blocks_remaining: timeBlocksRemaining,
       ...(unlockedVaultItem
         ? { unlocked_vault_item: { id: unlockedVaultItem.id, title: unlockedVaultItem.title } }
+        : {}),
+      ...(mysterySolveStatus
+        ? { mystery_solve_status: mysterySolveStatus }
         : {}),
     },
     timestamp: new Date().toISOString(),

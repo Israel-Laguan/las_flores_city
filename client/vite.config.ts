@@ -8,6 +8,15 @@ export default defineConfig({
       '@shared': resolve(__dirname, '../shared'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          phaser: ['phaser'],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {

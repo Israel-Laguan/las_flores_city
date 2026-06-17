@@ -1,5 +1,6 @@
 import { eventBus } from '../utils/EventBus';
 import { phoneStore } from '../store/PhoneStore';
+import { buildDialogueHTML } from '../utils/dialogue-templates';
 import * as api from '../utils/api';
 
 enum DialogueUIState {
@@ -11,7 +12,7 @@ enum DialogueUIState {
   SLIDING_OUT = 'SLIDING_OUT',
 }
 
-interface DialogueNode {
+export interface DialogueNode {
   id: string;
   type: string;
   text: string;
@@ -200,18 +201,7 @@ export class DialogueUI {
       );
 
       if (result.success && result.data) {
-        if (result.data.next_node?.thought) {
-          eventBus.emit('monologue:thought', result.data.next_node.thought);
-        }
-
-        if (result.data.time_blocks_remaining !== undefined) {
-          eventBus.emit('tb:updated', result.data.time_blocks_remaining);
-        }
-
-        if (result.data.unlocked_vault_item) {
-          eventBus.emit('vault:new_item_unlocked', result.data.unlocked_vault_item);
-          phoneStore.updateState({ hasNewVaultItem: true });
-        }
+        this.handleDialogueResult(result.data);
 
         if (result.data.is_end) {
           this.currentDialogue.currentNode = result.data.next_node;
@@ -235,12 +225,54 @@ export class DialogueUI {
     }
   }
 
+  // --- Event emission helpers ---
+
+  private handleDialogueResult(result: any) {
+    if (result.next_node?.thought) {
+      eventBus.emit('monologue:thought', result.next_node.thought);
+    }
+
+    if (result.time_blocks_remaining !== undefined) {
+      eventBus.emit('tb:updated', result.time_blocks_remaining);
+    }
+
+    if (result.unlocked_vault_item) {
+      eventBus.emit('vault:new_item_unlocked', result.unlocked_vault_item);
+      phoneStore.updateState({ hasNewVaultItem: true });
+    }
+
+    this.handleMysterySolveStatus(result.mystery_solve_status);
+  }
+
+  private handleMysterySolveStatus(mysterySolveStatus: any) {
+    if (!mysterySolveStatus) return;
+
+    const ms = mysterySolveStatus;
+    if (ms.isBreakthrough) {
+      eventBus.emit('breakthrough:winner', { mysteryId: ms.mysteryId });
+      eventBus.emit('monologue:push', {
+        text: '[BREAKTHROUGH] Case closed. You are the first detective on the scene.',
+        type: 'warning',
+      });
+    } else if (ms.kind === 'solver') {
+      eventBus.emit('monologue:push', {
+        text: '[SYSTEM] Case data submitted. Investigation window now open for other players.',
+        type: 'warning',
+      });
+    } else if (ms.kind === 'late') {
+      eventBus.emit('monologue:push', {
+        text: '[SYSTEM] Case closed. Data submission rejected: Deadline exceeded.',
+        type: 'warning',
+      });
+    }
+  }
+
   private renderDialogue() {
     if (!this.currentDialogue) return;
 
     const { currentNode, availableChoices } = this.currentDialogue;
 
-    this.container.innerHTML = this.buildDialogueHTML(currentNode, availableChoices);
+    this.container.innerHTML = buildDialogueHTML(currentNode, availableChoices);
 
     this.dialogueTextEl = this.container.querySelector('.dialogue-text') as HTMLDivElement;
     this.choicesContainer = this.container.querySelector('.dialogue-choices') as HTMLDivElement;
@@ -355,91 +387,6 @@ export class DialogueUI {
         (btn as HTMLElement).style.opacity = '1';
       });
     }
-  }
-
-  private buildDialogueHTML(currentNode: DialogueNode, availableChoices: any[]): string {
-    const speakerName = currentNode.speaker?.name || 'Narrator';
-    const speakerTitle = currentNode.speaker?.title || '';
-
-    return `
-      <div class="dialogue-box" style="
-        width: 90%;
-        max-width: 800px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      ">
-        <div class="speaker-info" style="
-          margin-bottom: 12px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-        ">
-          <span class="speaker-name" style="
-            font-size: 16px;
-            font-weight: bold;
-            color: #00ff00;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-          ">${speakerName}</span>
-          ${speakerTitle ? `<span class="speaker-title" style="
-            font-size: 11px;
-            color: #666;
-            margin-left: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-          ">${speakerTitle}</span>` : ''}
-        </div>
-
-        <div class="dialogue-text" style="
-          font-size: 15px;
-          line-height: 1.6;
-          color: #ccc;
-          min-height: 60px;
-          margin-bottom: 15px;
-          cursor: pointer;
-        "></div>
-
-        <div class="dialogue-choices" style="
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          max-height: 120px;
-          overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: #00ff00 #0a0a1a;
-        ">
-          ${availableChoices.map((choice, index) => `
-            <button class="choice-btn" data-choice-index="${index}" style="
-              padding: 10px 16px;
-              background: rgba(0, 255, 0, 0.05);
-              border: 1px solid rgba(0, 255, 0, 0.3);
-              color: #00ff00;
-              font-family: monospace;
-              font-size: 13px;
-              text-align: left;
-              cursor: pointer;
-              border-radius: 4px;
-              transition: all 0.2s ease;
-            ">
-              ${choice.text}
-              ${choice.time_block_cost ? `<span style="color: #666; font-size: 10px; margin-left: 8px;">[${choice.time_block_cost.amount} TB]</span>` : ''}
-              ${choice.relationship_change ? `<span style="color: #ff00ff; font-size: 10px; margin-left: 8px;">[+${choice.relationship_change.amount} ${choice.relationship_change.stat}]</span>` : ''}
-            </button>
-          `).join('')}
-        </div>
-
-        ${currentNode.is_end || availableChoices.length === 0 ? `
-          <div class="end-indicator" style="
-            text-align: center;
-            color: #555;
-            font-size: 11px;
-            margin-top: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-          ">[Dialogue Complete]</div>
-        ` : ''}
-      </div>
-    `;
   }
 
   private attachChoiceButtonListeners() {

@@ -1,4 +1,19 @@
 import { z } from 'zod';
+import {
+  DialogueChoiceSchema,
+  DialogueNodeSchema,
+  DialogueNodeTypeSchema,
+  RelationshipChangeSchema,
+} from './schemas/dialogue.js';
+import type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange } from './schemas/dialogue.js';
+
+export {
+  DialogueChoiceSchema,
+  DialogueNodeSchema,
+  DialogueNodeTypeSchema,
+  RelationshipChangeSchema,
+} from './schemas/dialogue.js';
+export type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange } from './schemas/dialogue.js';
 
 // ==================== Time Block System ====================
 
@@ -44,53 +59,6 @@ export const UserEntitlementsSchema = z.object({
 });
 
 export type UserEntitlements = z.infer<typeof UserEntitlementsSchema>;
-
-// ==================== Content & Dialogue ====================
-
-export const DialogueNodeTypeSchema = z.enum([
-  'narrator',
-  'character',
-  'choice',
-  'system',
-  'monologue',
-]);
-
-export type DialogueNodeType = z.infer<typeof DialogueNodeTypeSchema>;
-
-export const RelationshipChangeSchema = z.object({
-  stat: z.enum(['friendship', 'romance']),
-  amount: z.number().int(),
-});
-
-export type RelationshipChange = z.infer<typeof RelationshipChangeSchema>;
-
-export const DialogueChoiceSchema = z.object({
-  id: z.string(),
-  text: z.string().max(500),
-  next_node_id: z.string(),
-  time_block_cost: TimeBlockCostSchema.optional(),
-  relationship_change: RelationshipChangeSchema.optional(),
-  vault_unlock: z.string().uuid().optional(),
-  required_flags: z.record(z.string(), z.boolean()).optional(),
-  hidden_if: z.record(z.string(), z.boolean()).optional(),
-});
-
-export type DialogueChoice = z.infer<typeof DialogueChoiceSchema>;
-
-export const DialogueNodeSchema = z.object({
-  id: z.string(),
-  type: DialogueNodeTypeSchema,
-  speaker_id: z.string().optional(),
-  text: z.string().max(2000),
-  thought: z.string().max(2000).optional(),
-  is_end: z.boolean().optional(),
-  choices: z.array(DialogueChoiceSchema).optional(),
-  effects: z.record(z.string(), z.any()).optional(),
-  conditions: z.record(z.string(), z.any()).optional(),
-  metadata: z.record(z.string(), z.any()).optional(),
-});
-
-export type DialogueNode = z.infer<typeof DialogueNodeSchema>;
 
 export const DialogueTreeSchema = z.object({
   id: z.string().uuid(),
