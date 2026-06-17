@@ -1,20 +1,12 @@
-import yaml from 'js-yaml';
 import fs from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
 import crypto from 'crypto';
-import {
-  YAMLCharacterSchema,
-  YAMLDialogueSchema,
-  YAMLOverlaySchema,
-  YAMLSceneSchema,
-  VaultFileSchema,
-  ContentType,
-} from '@las-flores/shared';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
-import { validateContent, sanitizeText } from './validate.js';
+import type { ContentType } from '@las-flores/shared';
+import { queryOLTP } from '../database/connection.js';
+import { validateContent } from './validate.js';
+import { processContentFile } from './upsert.js';
 
-// Migration result
 export interface MigrationResult {
   success: boolean;
   filesProcessed: number;
@@ -31,13 +23,11 @@ export interface AppliedMigration {
   action: 'created' | 'updated' | 'skipped';
 }
 
-// Calculate file checksum
 async function calculateChecksum(filePath: string): Promise<string> {
   const content = await fs.readFile(filePath);
   return crypto.createHash('sha256').update(content).digest('hex');
 }
 
-// Check if migration was already applied
 async function isMigrationApplied(filePath: string, contentDir: string, checksum: string): Promise<boolean> {
   const relativePath = path.relative(contentDir, filePath);
   const result = await queryOLTP(
@@ -47,7 +37,6 @@ async function isMigrationApplied(filePath: string, contentDir: string, checksum
   return result.rows.length > 0;
 }
 
-// Record migration
 async function recordMigration(
   filePath: string,
   checksum: string,
@@ -60,7 +49,6 @@ async function recordMigration(
   );
 }
 
-// Get content type from file path
 function getContentTypeFromPath(filePath: string): ContentType | null {
   const normalizedPath = filePath.toLowerCase();
   
@@ -82,6 +70,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
+  if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
+    return 'mystery';
+  }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
     return 'gig';
@@ -90,243 +81,8 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   return null;
 }
 
-// Upsert character
-async function upsertCharacter(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO characters (id, name, title, description, avatar_url, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name,
-       title = EXCLUDED.title,
-       description = EXCLUDED.description,
-       avatar_url = EXCLUDED.avatar_url,
-       metadata = EXCLUDED.metadata,
-       updated_at = NOW()
-     RETURNING id`,
-    [
-      data.id,
-      data.name,
-      data.title || null,
-      sanitizeText(data.description),
-      data.avatar_url || null,
-      JSON.stringify(data.metadata || {}),
-    ]
-  );
-  return result.rows[0].id;
-}
-
-// Upsert dialogue tree
-async function upsertDialogueTree(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name,
-       description = EXCLUDED.description,
-       start_node_id = EXCLUDED.start_node_id,
-       nodes = EXCLUDED.nodes,
-       metadata = EXCLUDED.metadata,
-       updated_at = NOW()
-     RETURNING id`,
-    [
-      data.id,
-      data.name,
-      data.description || null,
-      data.start_node_id,
-      JSON.stringify(data.nodes || {}),
-      JSON.stringify(data.metadata || {}),
-    ]
-  );
-  return result.rows[0].id;
-}
-
-// Upsert dialogue overlay
-async function upsertDialogueOverlay(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO dialogue_overlays (id, name, description, target_tree_id, modifications, conditions, priority, is_nsfw)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name,
-       description = EXCLUDED.description,
-       target_tree_id = EXCLUDED.target_tree_id,
-       modifications = EXCLUDED.modifications,
-       conditions = EXCLUDED.conditions,
-       priority = EXCLUDED.priority,
-       is_nsfw = EXCLUDED.is_nsfw,
-       updated_at = NOW()
-     RETURNING id`,
-    [
-      data.id,
-      data.name,
-      data.description || null,
-      data.target_tree_id,
-      JSON.stringify(data.modifications || []),
-      JSON.stringify(data.conditions || {}),
-      data.priority || 0,
-      data.is_nsfw || false,
-    ]
-  );
-  return result.rows[0].id;
-}
-
-// Upsert scene
-async function upsertScene(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO scenes (id, name, description, district, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name,
-       description = EXCLUDED.description,
-       district = EXCLUDED.district,
-       image_url = EXCLUDED.image_url,
-       background_url = EXCLUDED.background_url,
-       ambient_sound_url = EXCLUDED.ambient_sound_url,
-       mood = EXCLUDED.mood,
-       available_dialogues = EXCLUDED.available_dialogues,
-       metadata = EXCLUDED.metadata,
-       updated_at = NOW()
-     RETURNING id`,
-    [
-      data.id,
-      data.name,
-      sanitizeText(data.description),
-      data.district,
-      data.image_url || null,
-      data.background_url || null,
-      data.ambient_sound_url || null,
-      data.mood || null,
-      data.available_dialogues || [],
-      JSON.stringify(data.metadata || {}),
-    ]
-  );
-  return result.rows[0].id;
-}
-
-// Upsert gig
-async function upsertGig(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO gigs (id, title, description, time_block_cost, credit_payout, reputation_target, reputation_reward, location_restriction_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     ON CONFLICT (id) DO UPDATE SET
-       title = EXCLUDED.title,
-       description = EXCLUDED.description,
-       time_block_cost = EXCLUDED.time_block_cost,
-       credit_payout = EXCLUDED.credit_payout,
-       reputation_target = EXCLUDED.reputation_target,
-       reputation_reward = EXCLUDED.reputation_reward,
-       location_restriction_id = EXCLUDED.location_restriction_id,
-       updated_at = NOW()
-     RETURNING id`,
-    [
-      data.id,
-      data.title,
-      sanitizeText(data.description),
-      data.time_block_cost,
-      data.credit_payout,
-      data.reputation_target || null,
-      data.reputation_reward || null,
-      data.location_restriction_id || null,
-    ]
-  );
-  return result.rows[0].id;
-}
-
-// Upsert vault item
-async function upsertVaultItem(data: any): Promise<string> {
-  const requiresSignedUrl =
-    data.requires_signed_url !== undefined
-      ? data.requires_signed_url
-      : data.item_type === 'premium_cg';
-
-  const result = await queryOLTP(
-    `INSERT INTO vault_items (id, title, description, media_url, item_type, mystery_id, requires_signed_url)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     ON CONFLICT (id) DO UPDATE SET
-       title = EXCLUDED.title,
-       description = EXCLUDED.description,
-       media_url = EXCLUDED.media_url,
-       item_type = EXCLUDED.item_type,
-       mystery_id = EXCLUDED.mystery_id,
-       requires_signed_url = EXCLUDED.requires_signed_url,
-       updated_at = NOW()
-     RETURNING id`,
-    [
-      data.id,
-      data.title,
-      sanitizeText(data.description),
-      data.media_url,
-      data.item_type || 'clue',
-      data.mystery_id || null,
-      requiresSignedUrl,
-    ]
-  );
-  return result.rows[0].id;
-}
-
-// Process content file
-async function processContentFile(filePath: string): Promise<AppliedMigration> {
-  const contentType = getContentTypeFromPath(filePath);
-  if (!contentType) {
-    throw new Error(`Could not determine content type from path: ${filePath}`);
-  }
-
-  // Read and parse YAML
-  const content = await fs.readFile(filePath, 'utf-8');
-  const data = yaml.load(content) as any;
-
-  // Upsert based on type
-  let contentId: string;
-  let action: 'created' | 'updated' | 'updated';
-
-  switch (contentType) {
-    case 'character':
-      contentId = await upsertCharacter(data);
-      break;
-    case 'dialogue':
-      contentId = await upsertDialogueTree(data);
-      break;
-    case 'overlay':
-      contentId = await upsertDialogueOverlay(data);
-      break;
-    case 'scene':
-      contentId = await upsertScene(data);
-      break;
-    case 'gig':
-      // gigs.yaml has a 'gigs' array key
-      const gigs = data.gigs || [data];
-      const ids: string[] = [];
-      for (const gig of gigs) {
-        const id = await upsertGig(gig);
-        ids.push(id);
-      }
-      contentId = ids.join(',');
-      break;
-    case 'vault':
-      VaultFileSchema.parse(data);
-      const vaultItems = data.vault_items || [];
-      const vaultIds: string[] = [];
-      for (const item of vaultItems) {
-        const id = await upsertVaultItem(item);
-        vaultIds.push(id);
-      }
-      contentId = vaultIds.join(',');
-      break;
-    default:
-      throw new Error(`Unsupported content type: ${contentType}`);
-  }
-
-  return {
-    filePath: path.relative(process.cwd(), filePath),
-    contentType,
-    contentId,
-    action: 'updated', // Could be 'created' or 'updated' based on existence check
-  };
-}
-
-// Get processing order (dependency resolution)
 function getProcessingOrder(files: string[]): string[] {
-  // Characters first, then scenes, dialogues, overlays (overlays depend on dialogue trees), then gigs
-  const order: ContentType[] = ['character', 'vault', 'scene', 'dialogue', 'overlay', 'gig'];
+  const order: ContentType[] = ['character', 'vault', 'scene', 'mystery', 'dialogue', 'overlay', 'gig'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);
@@ -341,7 +97,6 @@ function getProcessingOrder(files: string[]): string[] {
   });
 }
 
-// Main migration function
 export async function migrateContent(contentDir: string): Promise<MigrationResult> {
   console.log(`🚀 Starting content migration from: ${contentDir}`);
   
@@ -355,7 +110,6 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
   };
 
   try {
-    // Validate content first
     console.log('🔍 Validating content...');
     const validationResult = await validateContent(contentDir);
     
@@ -372,34 +126,27 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
       validationResult.warnings.forEach(w => console.log(`  - ${w}`));
     }
 
-    // Find all YAML files
     const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
     const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
     let allFiles = [...yamlFiles, ...ymlFiles];
 
-    // Sort by processing order
     allFiles = getProcessingOrder(allFiles);
 
     console.log(`📁 Found ${allFiles.length} content files`);
 
-    // Process each file
     for (const file of allFiles) {
       try {
-        // Calculate checksum
         const checksum = await calculateChecksum(file);
 
-        // Check if already applied
         if (await isMigrationApplied(file, contentDir, checksum)) {
           console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
           result.filesSkipped++;
           continue;
         }
 
-        // Process file
         console.log(`📦 Processing: ${path.relative(contentDir, file)}`);
         const migration = await processContentFile(file);
         
-        // Record migration
         const loggedFilePath = path.relative(contentDir, file);
         const logContentId = migration.contentId.split(',')[0];
         await recordMigration(loggedFilePath, checksum, migration.contentType, logContentId);
@@ -438,7 +185,6 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
   }
 }
 
-// CLI entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
   const contentDir = process.argv[2] || path.join(process.cwd(), 'content');
   

@@ -1,0 +1,44 @@
+# Agent Guidelines
+
+This file captures durable agent-facing guidance for Las Flores 2077. Human-facing project docs remain in `README.md` and `docs/`.
+
+## Hard constraints
+
+- Use the existing database/cache/event patterns: `oltpPool` / `withOLTPTransaction`, `getCache` / `setCache` / `deleteCache`, and `queryOLAP(...)`. Do not introduce new pools or alternate cache layers.
+- If a task spec conflicts with established codebase patterns, follow the established pattern and surface the drift before changing behavior.
+- Verify alleged missing variables by reading the relevant file end-to-end or grepping before scheduling a fix.
+- Sudo operations require user confirmation. Present the exact command, explain the expected result, wait for the user to confirm it ran, then verify the fix.
+- Test fixtures that create rows must use a dedicated UUID or `gen_random_uuid()`, clean up in `afterAll`, and include a collision-avoidance comment.
+- Integration tests that touch `player_mysteries` must create their own test user in `beforeAll` and clean it up in `afterAll`.
+- After server code changes, rebuild and restart the server container: `docker compose build server && docker compose up -d server`. Verify with `curl http://localhost:3000/health`.
+
+## Current codebase facts
+
+- Content migration now recognizes `/mysteries/` as a content type: `server/src/content/migrate.ts:87` and `server/src/content/validate.ts:193`.
+- Dialogue overlays are stored with both `modifications` and `nodes`; `upsertDialogueOverlay()` writes both columns: `server/src/content/migrate.ts:148-178`.
+- The resolver reads `dialogue_overlays.nodes` for mystery overlays: `server/src/services/DialogueResolver.ts:146-160`.
+- Mystery overlay YAML should follow `OverlaySchema` with `nodes`: `shared/src/schemas/overlay.ts:14-38`.
+- `player_dialogue_states` tracks position with `current_node_id`; `users.active_dialogue_id` tracks the active tree.
+- OLAP `player_events` uses `event_data`, `created_at`, and `time_blocks_cost`. Do not use `data`, `occurred_at`, or `event_data->>'tb_cost'`.
+- `mysteries.status` has a CHECK constraint for `ACTIVE`, `RESOLVING`, and `ARCHIVED`; adding a new status requires rewriting the CHECK constraint: `server/src/database/migrations/021_leaderboards.sql:49-53`.
+
+## OLAP and leaderboard rules
+
+- For "sum metric per user" leaderboard queries, use one bulk OLAP query grouped by `user_id` and merge results in Node.
+- OLAP seed events for mystery windows must fall inside the solver window. Use the mystery start time plus a stable offset, not `NOW() - INTERVAL`.
+- If a no-filter probe returns the expected `tb_spent` but the worker returns `0`, suspect seed timing before changing worker logic.
+- Use a 2-minute grace period for workers that read OLAP telemetry after an OLTP deadline expires.
+
+## Known operational gotchas
+
+- Docker proxy processes on a shared host can keep stale `-container-ip` cmdline values. `docker compose restart` is not enough; use `docker compose down && docker compose up -d` or kill the stale proxy and restart the container.
+- If a host port mapping looks wrong, prefer service names in `.env` database URLs, such as `postgres-oltp:5432`, to bypass host proxy state.
+- `server/scripts/probe_leaderboard.ts` is the canonical diagnostic for distinguishing bad connection paths from bad leaderboard data.
+- When a spec says "add column", first verify the table with `\d <table>` or migrations; several columns in this project pre-existed.
+
+## Verification checklist
+
+- Content changes: `npm run validate:content`.
+- Server changes: `npm run lint --workspace=server`, `npm run build --workspace=server`, and relevant `npm run test --workspace=server` tests.
+- Client changes: `npm run lint --workspace=client` and `npm run build --workspace=client`.
+- Docker/server changes: rebuild the server container and verify health with `curl http://localhost:3000/health`.

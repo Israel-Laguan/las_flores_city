@@ -291,17 +291,35 @@ export const YAMLOverlaySchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   target_tree_id: z.string().uuid(),
+  mystery_id: z.string().uuid().optional(),
   modifications: z.array(z.object({
     node_id: z.string(),
     action: z.enum(['replace', 'add_choice', 'remove_choice', 'modify_text']),
     data: z.record(z.string(), z.any()),
-  })),
+  })).default([]),
+  nodes: z.record(z.string(), DialogueNodeSchema).optional(),
   conditions: z.record(z.string(), z.any()).optional(),
   priority: z.number().int().default(0),
   is_nsfw: z.boolean().default(false),
 });
 
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
+
+export const YAMLMysterySchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1).max(255),
+  description: z.string().min(1),
+  status: z.enum(['ACTIVE', 'RESOLVING', 'ARCHIVED']).default('ACTIVE'),
+  expires_at: z.string().datetime().optional(),
+});
+
+export type YAMLMystery = z.infer<typeof YAMLMysterySchema>;
+
+export const YAMLMysteryFileSchema = z.object({
+  mysteries: z.array(YAMLMysterySchema),
+});
+
+export type YAMLMysteryFile = z.infer<typeof YAMLMysteryFileSchema>;
 
 export const YAMLSceneSchema = z.object({
   id: z.string().uuid(),
@@ -324,7 +342,7 @@ export const MigrationLogSchema = z.object({
   id: z.string().uuid(),
   file_path: z.string(),
   file_checksum: z.string(),
-  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig']),
+  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery']),
   content_id: z.string().uuid(),
   applied_at: z.string().datetime(),
   applied_by: z.string().uuid().optional(),
@@ -374,7 +392,7 @@ export type { LeaderboardBadgeType, LeaderboardBadge, LeaderboardEntry } from '.
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

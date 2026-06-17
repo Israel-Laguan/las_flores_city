@@ -1,0 +1,89 @@
+id: "c0000000-e29b-41d4-a716-446655440001"
+name: "The Old Town Leak Overlay"
+description: "Injects mystery hook and investigation dialogue into the Barista's base tree for players investigating The Old Town Leak"
+target_tree_id: "f6a7b8c9-d0e1-2345-fabc-456789012345"
+mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+priority: 10
+nodes:
+  "marco_greeting":
+    id: "marco_greeting"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Hey there! First time? You've got that look—like you're seeing the city for the first time. I'm Marco. What can I get you?"
+    thought: "He seems genuine. But so did the Handler, before she handed me my apartment keys and walked away."
+    choices:
+      - id: "just_water"
+        text: "Just water for now"
+        next_node_id: "water_conversation"
+        time_block_cost:
+          amount: 1
+          description: "Ordering water"
+      - id: "coffee"
+        text: "Coffee, please"
+        next_node_id: "coffee_conversation"
+        time_block_cost:
+          amount: 1
+          description: "Ordering coffee"
+      - id: "ask_about_city"
+        text: "Actually, I'm new here. Can you tell me about the city?"
+        next_node_id: "city_advice"
+        time_block_cost:
+          amount: 1
+          description: "Asking for local knowledge"
+        relationship_change:
+          stat: friendship
+          amount: 2
+      - id: "ask_about_drive"
+        text: "What's that flashing drive behind the counter?"
+        next_node_id: "n0000000-e29b-41d4-a716-446655440001"
+
+  "n0000000-e29b-41d4-a716-446655440001":
+    id: "n0000000-e29b-41d4-a716-446655440001"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Keep your voice down. Some corporate suit dropped it an hour ago. I don't want any part of it. Take it if you want."
+    thought: "Scanning... Encryption matches Li Wei Group standard protocols. This is high-risk data."
+    choices:
+      - id: "take_drive"
+        text: "I'll take it off your hands."
+        next_node_id: "n0000000-e29b-41d4-a716-446655440002"
+        vault_unlock: "b0000000-e29b-41d4-a716-446655440001"
+        join_mystery: "a0000000-e29b-41d4-a716-446655440001"
+        time_block_cost:
+          amount: 1
+          description: "Taking the data drive"
+
+  "n0000000-e29b-41d4-a716-446655440002":
+    id: "n0000000-e29b-41d4-a716-446655440002"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Good luck. If anyone asks, I never saw it. Do you know how to decrypt it?"
+    thought: "I need to analyze the hash algorithm."
+    choices:
+      - id: "fail_decrypt"
+        text: "Brute force the password."
+        next_node_id: "n0000000-e29b-41d4-a716-446655440003"
+        time_block_cost:
+          amount: 2
+          description: "Attempting brute force decryption"
+      - id: "solve_decrypt"
+        text: "Bypass the port authority handshake using <important>Protocol 7</important>."
+        next_node_id: "n0000000-e29b-41d4-a716-446655440004"
+        mystery_solve: "a0000000-e29b-41d4-a716-446655440001"
+        time_block_cost:
+          amount: 1
+          description: "Applying Protocol 7 bypass"
+
+  "n0000000-e29b-41d4-a716-446655440003":
+    id: "n0000000-e29b-41d4-a716-446655440003"
+    type: "narrator"
+    text: "The drive sparked and died. You fried it."
+    thought: "Error. Data unrecoverable."
+    is_end: true
+
+  "n0000000-e29b-41d4-a716-446655440004":
+    id: "n0000000-e29b-41d4-a716-446655440004"
+    type: "narrator"
+    text: "Whoa. Your eyes just glowed blue. Did you get in?"
+    thought: "Decryption successful. Downloading manifest..."
+    is_end: true
