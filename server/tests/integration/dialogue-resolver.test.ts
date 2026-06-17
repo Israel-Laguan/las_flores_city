@@ -4,7 +4,7 @@ import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueRes
 import type { DialogueNode } from '@las-flores/shared';
 
 // ============================================================
-// Task 3.1 — Dialogue Overlay Resolver integration tests
+// Dialogue Overlay Resolver integration tests
 //
 // Exercises the deep-merge logic, the cache key shape, and the
 // route behavior for `/dialogue/start` and `/dialogue/choose`

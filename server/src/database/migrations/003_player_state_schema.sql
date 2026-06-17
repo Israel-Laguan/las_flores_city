@@ -1,5 +1,5 @@
--- Las Flores 2077 - Sprint 1 Schema Changes
--- Adds missing columns per Task 1.1 spec
+-- Las Flores 2077 - Player State Schema Changes
+-- Adds missing columns for player state tracking
 
 BEGIN;
 
@@ -81,7 +81,7 @@ INSERT INTO scene_characters (scene_id, character_id, relationship_level, relati
 VALUES ('e5f6a7b8-c9d0-1234-efab-345678901234', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', 0, 'stranger', TRUE, 'neutral')
 ON CONFLICT (scene_id, character_id) DO NOTHING;
 
--- ARIA in Welcome Center (from Sprint 0)
+-- ARIA in Welcome Center
 INSERT INTO scene_characters (scene_id, character_id, relationship_level, relationship_type, is_permanent, default_mood)
 VALUES ('550e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440001', 0, 'stranger', TRUE, 'neutral')
 ON CONFLICT (scene_id, character_id) DO NOTHING;

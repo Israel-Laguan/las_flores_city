@@ -1,4 +1,4 @@
--- Sprint 2 Readiness: metadata flags for sleep locations and SMS-reachable NPCs
+-- Metadata Readiness: metadata flags for sleep locations and SMS-reachable NPCs
 
 BEGIN;
 

@@ -1,4 +1,5 @@
 import { eventBus } from '../utils/EventBus';
+import { phoneStore } from '../store/PhoneStore';
 import * as api from '../utils/api';
 
 enum DialogueUIState {
@@ -166,11 +167,9 @@ export class DialogueUI {
     eventBus.emit('dialogue:opened');
     eventBus.emit('phaser:pause-input');
 
-    setTimeout(() => {
-      if (this.state === DialogueUIState.SLIDING_IN) {
-        this.renderDialogue();
-      }
-    }, 300);
+    // Render content immediately so click handlers are in place
+    // as soon as the slide-in transition completes.
+    this.renderDialogue();
   }
 
   private slideOut() {
@@ -207,6 +206,11 @@ export class DialogueUI {
 
         if (result.data.time_blocks_remaining !== undefined) {
           eventBus.emit('tb:updated', result.data.time_blocks_remaining);
+        }
+
+        if (result.data.unlocked_vault_item) {
+          eventBus.emit('vault:new_item_unlocked', result.data.unlocked_vault_item);
+          phoneStore.updateState({ hasNewVaultItem: true });
         }
 
         if (result.data.is_end) {
@@ -246,6 +250,10 @@ export class DialogueUI {
     if (this.choicesContainer) {
       this.choicesContainer.style.opacity = '0';
       this.choicesContainer.style.transition = 'opacity 0.3s ease';
+      // Keep container disabled if still processing a choice submission
+      if (this.state === DialogueUIState.SUBMITTING) {
+        (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
+      }
     }
 
     this.startTypewriter(currentNode.text);
@@ -327,6 +335,7 @@ export class DialogueUI {
 
   private disableButtons() {
     if (this.choicesContainer) {
+      (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
       const buttons = this.choicesContainer.querySelectorAll('.choice-btn');
       buttons.forEach(btn => {
         (btn as HTMLButtonElement).disabled = true;
@@ -338,6 +347,7 @@ export class DialogueUI {
 
   private enableButtons() {
     if (this.choicesContainer) {
+      (this.choicesContainer as HTMLElement).style.pointerEvents = 'auto';
       const buttons = this.choicesContainer.querySelectorAll('.choice-btn');
       buttons.forEach(btn => {
         (btn as HTMLButtonElement).disabled = false;

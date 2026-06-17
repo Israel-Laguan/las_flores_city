@@ -1,5 +1,5 @@
 /**
- * MVW Integration Test Suite — Task 5.1 + 5.3
+ * MVW Integration Test Suite + 5.3
  * Tests the "First Hour" gameplay loop end-to-end via HTTP against a real DB.
  *
  * 5.1a: Authentication & Onboarding
@@ -115,9 +115,9 @@ async function resetPlayer(overrides: Partial<{
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.1a: Authentication & Onboarding
+// Authentication & Onboarding
 // ─────────────────────────────────────────────────────────────────────────────
-describe('5.1a — Authentication & Onboarding', () => {
+describe('Authentication & Onboarding', () => {
   test('POST /auth/login returns JWT', async () => {
     // Register via API to get a hashed password entry
     const reg = await post('/auth/register', {
@@ -146,9 +146,9 @@ describe('5.1a — Authentication & Onboarding', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.1b: Dialogue Traversal
+// Dialogue Traversal
 // ─────────────────────────────────────────────────────────────────────────────
-describe('5.1b — Dialogue Traversal', () => {
+describe('Dialogue Traversal', () => {
   let dialogueId: string;
 
   test('POST /dialogue/:id/choose advances node and returns correct next node', async () => {
@@ -200,9 +200,9 @@ describe('5.1b — Dialogue Traversal', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.1c: State-Sync & Cache Invalidation
+// State-Sync & Cache Invalidation
 // ─────────────────────────────────────────────────────────────────────────────
-describe('5.1c — State-Sync & Cache Invalidation', () => {
+describe('State-Sync & Cache Invalidation', () => {
   test('GET /player/state returns stale-free data after a move', async () => {
     await resetPlayer({ location: APARTMENT_ID, timeBlocks: 48 });
 
@@ -222,9 +222,9 @@ describe('5.1c — State-Sync & Cache Invalidation', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.3a: Invalid Dialogue Jumps
+// Invalid Dialogue Jumps
 // ─────────────────────────────────────────────────────────────────────────────
-describe('5.3a — Invalid Dialogue Jumps', () => {
+describe(' Invalid Dialogue Jumps', () => {
   beforeAll(async () => {
     await resetPlayer({ nodeId: AWAKENING_START_NODE });
     await pool.query(
@@ -267,9 +267,9 @@ describe('5.3a — Invalid Dialogue Jumps', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.3b: Exhaustion Lock
+// Exhaustion Lock (49th move blocked)
 // ─────────────────────────────────────────────────────────────────────────────
-describe('5.3b — Exhaustion Lock (49th move blocked)', () => {
+describe(' Exhaustion Lock (49th move blocked)', () => {
   test('Move is rejected with 403 when time_blocks = 0', async () => {
     await resetPlayer({ timeBlocks: 0 });
 
@@ -304,9 +304,9 @@ describe('5.3b — Exhaustion Lock (49th move blocked)', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.3c: Illegal Sleep Locations
+// Illegal Sleep Locations
 // ─────────────────────────────────────────────────────────────────────────────
-describe('5.3c — Illegal Sleep Locations', () => {
+describe(' Illegal Sleep Locations', () => {
   test('Sleep at Café returns 403', async () => {
     await resetPlayer({ location: CAFE_ID });
 

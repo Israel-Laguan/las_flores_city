@@ -11,6 +11,7 @@ import { gigsRouter } from './routes/gigs.js';
 import { commsRouter } from './routes/comms.js';
 import './routes/comms-reply.js';
 import { feedRouter } from './routes/feed.js';
+import { vaultRouter } from './routes/vault.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 
@@ -33,6 +34,7 @@ app.use('/bank', bankRouter);
 app.use('/gigs', gigsRouter);
 app.use('/comms', commsRouter);
 app.use('/network/feed', feedRouter);
+app.use('/vault', vaultRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -6,6 +6,7 @@ import {
   YAMLDialogueSchema,
   YAMLOverlaySchema,
   YAMLSceneSchema,
+  VaultFileSchema,
   ContentType,
 } from '@las-flores/shared';
 
@@ -99,6 +100,9 @@ function validateContentByType(type: ContentType, data: any): ValidationResult {
       case 'scene':
         YAMLSceneSchema.parse(data);
         break;
+      case 'vault':
+        VaultFileSchema.parse(data);
+        break;
     }
   } catch (e: any) {
     errors.push({
@@ -172,6 +176,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   }
   if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
     return 'gig';
+  }
+  if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
+    return 'vault';
   }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {

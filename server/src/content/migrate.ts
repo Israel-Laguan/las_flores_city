@@ -8,6 +8,7 @@ import {
   YAMLDialogueSchema,
   YAMLOverlaySchema,
   YAMLSceneSchema,
+  VaultFileSchema,
   ContentType,
 } from '@las-flores/shared';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
@@ -76,6 +77,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   }
   if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
     return 'gig';
+  }
+  if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
+    return 'vault';
   }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
@@ -226,6 +230,38 @@ async function upsertGig(data: any): Promise<string> {
   return result.rows[0].id;
 }
 
+// Upsert vault item
+async function upsertVaultItem(data: any): Promise<string> {
+  const requiresSignedUrl =
+    data.requires_signed_url !== undefined
+      ? data.requires_signed_url
+      : data.item_type === 'premium_cg';
+
+  const result = await queryOLTP(
+    `INSERT INTO vault_items (id, title, description, media_url, item_type, mystery_id, requires_signed_url)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     ON CONFLICT (id) DO UPDATE SET
+       title = EXCLUDED.title,
+       description = EXCLUDED.description,
+       media_url = EXCLUDED.media_url,
+       item_type = EXCLUDED.item_type,
+       mystery_id = EXCLUDED.mystery_id,
+       requires_signed_url = EXCLUDED.requires_signed_url,
+       updated_at = NOW()
+     RETURNING id`,
+    [
+      data.id,
+      data.title,
+      sanitizeText(data.description),
+      data.media_url,
+      data.item_type || 'clue',
+      data.mystery_id || null,
+      requiresSignedUrl,
+    ]
+  );
+  return result.rows[0].id;
+}
+
 // Process content file
 async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
@@ -264,6 +300,16 @@ async function processContentFile(filePath: string): Promise<AppliedMigration> {
       }
       contentId = ids.join(',');
       break;
+    case 'vault':
+      VaultFileSchema.parse(data);
+      const vaultItems = data.vault_items || [];
+      const vaultIds: string[] = [];
+      for (const item of vaultItems) {
+        const id = await upsertVaultItem(item);
+        vaultIds.push(id);
+      }
+      contentId = vaultIds.join(',');
+      break;
     default:
       throw new Error(`Unsupported content type: ${contentType}`);
   }
@@ -279,7 +325,7 @@ async function processContentFile(filePath: string): Promise<AppliedMigration> {
 // Get processing order (dependency resolution)
 function getProcessingOrder(files: string[]): string[] {
   // Characters first, then scenes, dialogues, overlays (overlays depend on dialogue trees), then gigs
-  const order: ContentType[] = ['character', 'scene', 'dialogue', 'overlay', 'gig'];
+  const order: ContentType[] = ['character', 'vault', 'scene', 'dialogue', 'overlay', 'gig'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);

@@ -11,7 +11,8 @@ import {
   buildChooseResponse,
   joinMystery,
 } from './dialogue-helpers.js';
-import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
+import { withOLTPTransaction, queryOLTP, queryOLAP } from '../database/connection.js';
+import { deleteCache } from '../database/redis.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 
 export const dialogueRouter = express.Router();
@@ -140,9 +141,21 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       if (result.error === 'insufficient_time_blocks') {
         return res.status(403).json({ success: false, error: 'Insufficient time blocks', timestamp: new Date().toISOString() });
       }
+      if (result.error === 'invalid_vault_item') {
+        return res.status(400).json({ success: false, error: 'Invalid vault item reference', timestamp: new Date().toISOString() });
+      }
       if (result.error === 'invalid_next_node') {
         return res.status(500).json({ success: false, error: 'Choice points to invalid node', timestamp: new Date().toISOString() });
       }
+    }
+
+    if (result.unlockedVaultItem) {
+      await deleteCache(`user:vault:${userId}`);
+      queryOLAP(
+        `INSERT INTO player_events (id, user_id, event_type, event_data)
+         VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
+        [userId, JSON.stringify({ itemId: result.unlockedVaultItem.id })]
+      ).catch((err) => console.error('Vault unlock telemetry error:', err));
     }
 
     const nextNode = nodes[availableChoices[choiceIndex].next_node_id];
@@ -167,7 +180,17 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
 
     const newTbResult = await queryOLTP('SELECT time_blocks FROM users WHERE id = $1', [userId]);
 
-    res.json(buildChooseResponse(id, choiceIndex, nextNode, speaker, nextChoices, isEnd, result.timeBlocksSpent || 0, newTbResult.rows[0]?.time_blocks));
+    res.json(buildChooseResponse(
+      id,
+      choiceIndex,
+      nextNode,
+      speaker,
+      nextChoices,
+      isEnd,
+      result.timeBlocksSpent || 0,
+      newTbResult.rows[0]?.time_blocks,
+      result.unlockedVaultItem
+    ));
   } catch (error: any) {
     console.error('Dialogue choose error:', error);
     res.status(500).json({ success: false, error: 'Failed to process choice', timestamp: new Date().toISOString() });

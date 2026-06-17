@@ -35,7 +35,7 @@ authRouter.post('/register', async (req, res) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user with all Sprint 1 columns
+    // Create user with all player state columns
     const result = await queryOLTP(
       `INSERT INTO users (email, username, display_name, password_hash, credits, gold_credits, time_blocks, current_location_id, last_login)
        VALUES ($1, $2, $3, $4, 100, 0, 48, '550e8400-e29b-41d4-a716-446655440002', NOW())

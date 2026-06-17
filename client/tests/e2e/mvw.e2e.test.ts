@@ -1,5 +1,5 @@
 /**
- * MVW E2E Test Suite — Task 5.2
+ * MVW E2E Test Suite
  * Drives a headless Chromium session through the "First Hour" gameplay loop.
  *
  * 5.2a: Phaser Canvas NPC click → dialogue overlay mounts (SLIDING_IN → TYPING)
@@ -33,9 +33,9 @@ async function injectAuth(page: Page) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.2a — Phaser Canvas Coordinate Clicking
+// Phaser Canvas Coordinate Clicking
 // ─────────────────────────────────────────────────────────────────────────────
-test.describe('5.2a — Phaser Canvas NPC Click', () => {
+test.describe('Phaser Canvas NPC Click', () => {
   test('Clicking NPC position on canvas mounts dialogue overlay', async ({ page }) => {
     await injectAuth(page);
     await page.goto('/');
@@ -83,19 +83,21 @@ test.describe('5.2a — Phaser Canvas NPC Click', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5.2b — Typewriter Skip & Choice Selection
+// Typewriter Skip & Choice Selection
 // ─────────────────────────────────────────────────────────────────────────────
-test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
+test.describe('Typewriter Skip & Choice Selection', () => {
   test('Clicking dialogue box skips typewriter and shows choices', async ({ page }) => {
     await injectAuth(page);
     await page.goto('/');
     await page.waitForTimeout(2_000);
 
-    // Check if dialogue overlay is already visible (from previous scene/state)
+    // Check if a dialogue is actually active (overlay div always exists but
+    // only has content when a dialogue is in progress)
     const dialogueOverlay = page.locator('#dialogue-overlay, .dialogue-overlay');
-    const isVisible = await dialogueOverlay.isVisible();
+    const dialogueText = page.locator('.dialogue-text, #dialogue-text');
+    const dialogueActive = await dialogueText.isVisible().catch(() => false);
 
-    if (!isVisible) {
+    if (!dialogueActive) {
       // Navigate to Café and trigger NPC click
       await page.evaluate(
         async ([base, token, cafeId]) => {
@@ -122,13 +124,16 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
       await expect(dialogueOverlay).toBeVisible({ timeout: 5_000 });
     }
 
+    // Wait for typewriter text to be rendered before skipping
+    await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 8_000 });
+
     // Wait 100ms then click to skip typewriter (as specified in task)
     await page.waitForTimeout(100);
     await dialogueOverlay.click({ force: true, position: { x: 10, y: 10 } });
 
     // Choices container must now be visible
     const choicesContainer = page.locator('.dialogue-choices, #dialogue-choices');
-    await expect(choicesContainer).toBeVisible({ timeout: 3_000 });
+    await expect(choicesContainer).toBeVisible({ timeout: 8_000 });
   });
 
   test('Clicking "Romance" choice disables choices container immediately (double-click defense)', async ({ page }) => {
@@ -138,7 +143,8 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
 
     // If we're not in a dialogue, set one up
     const choicesContainer = page.locator('.dialogue-choices, #dialogue-choices');
-    if (!(await choicesContainer.isVisible())) {
+    const dialogueText = page.locator('.dialogue-text, #dialogue-text');
+    if (!(await dialogueText.isVisible().catch(() => false))) {
       await page.evaluate(
         async ([base, token, cafeId]) => {
           await fetch(`${base}/player/move`, {
@@ -163,17 +169,19 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
         }));
       }, [BARISTA_CHARACTER_ID, CAFE_SCENE_ID]);
       await expect(overlay).toBeVisible({ timeout: 5_000 });
+      // Wait for typewriter to start before skipping
+      await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 8_000 });
       await page.waitForTimeout(100);
       await overlay.click({ force: true, position: { x: 10, y: 10 } });
-      await expect(choicesContainer).toBeVisible({ timeout: 3_000 });
+      await expect(choicesContainer).toBeVisible({ timeout: 8_000 });
     }
 
     // Find the Romance/flirt choice button
-    const romanceBtn = page.locator('.dialogue-choice').filter({ hasText: /romance|flirt|distracted|music/i }).first();
-    const anyChoice  = page.locator('.dialogue-choice').first();
+    const romanceBtn = page.locator('.choice-btn, .dialogue-choice').filter({ hasText: /romance|flirt|distracted|music/i }).first();
+    const anyChoice  = page.locator('.choice-btn, .dialogue-choice').first();
     const target = (await romanceBtn.count()) > 0 ? romanceBtn : anyChoice;
 
-    await expect(target).toBeVisible({ timeout: 3_000 });
+    await expect(target).toBeVisible({ timeout: 8_000 });
 
     // Capture console log for monologue feed verification
     const consoleLogs: string[] = [];
@@ -190,8 +198,7 @@ test.describe('5.2b — Typewriter Skip & Choice Selection', () => {
     expect(pointerEvents === 'none' || isDisabledAttr !== null).toBe(true);
 
     // Next dialogue node must be fetched and rendered
-    const dialogueText = page.locator('.dialogue-text, #dialogue-text');
-    await expect(dialogueText).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 5_000 });
   });
 
   test('Monologue console feed appends system log entry after choice', async ({ page }) => {

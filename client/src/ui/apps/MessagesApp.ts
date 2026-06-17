@@ -16,7 +16,7 @@ interface Envelope<T> {
   timestamp: string;
 }
 
-const API_BASE = '/api/comms';
+const API_BASE = '/comms';
 
 export class MessagesApp {
   private container: HTMLElement;
@@ -29,14 +29,14 @@ export class MessagesApp {
     this.container = containerElement;
     this.init();
     eventBus.on('phone:app-opened', (key: string) => {
-      if (key === 'messages' && this.view === 'inbox') {
+      if (key === 'messages' && (this.view === 'inbox' || this.view === 'error')) {
         void this.loadInbox();
       }
     });
   }
 
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('jwt');
+    const token = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
     return token
       ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
       : { 'Content-Type': 'application/json' };
@@ -184,7 +184,7 @@ export class MessagesApp {
     this.container.innerHTML = `
       <div class="comms-app">
         <div class="comms-header">
-          <h2>COMMS</h2>
+          <h2>MESSAGES</h2>
           <span class="comms-conn">SECURE MESH // AES-256</span>
         </div>
         <div class="loading-spinner">${this.escapeHtml(message)}</div>
@@ -195,7 +195,7 @@ export class MessagesApp {
     this.container.innerHTML = `
       <div class="comms-app">
         <div class="comms-header">
-          <h2>COMMS</h2>
+          <h2>MESSAGES</h2>
           <span class="comms-conn">SECURE MESH // AES-256</span>
         </div>
         <div class="app-error">
@@ -214,7 +214,7 @@ export class MessagesApp {
     this.container.innerHTML = `
       <div class="comms-app">
         <div class="comms-header">
-          <h2>COMMS</h2>
+          <h2>MESSAGES</h2>
           <span class="comms-conn">SECURE MESH // AES-256</span>
         </div>
         <div class="inbox-list">${rows}</div>

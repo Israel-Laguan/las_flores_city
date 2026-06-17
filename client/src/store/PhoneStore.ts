@@ -6,6 +6,7 @@ export interface PhoneState {
   goldCredits: number;
   timeBlocks: number;
   unreadMessagesCount: number;
+  hasNewVaultItem: boolean;
   isOpen: boolean;
 }
 
@@ -49,5 +50,6 @@ export const phoneStore = new PhoneStore({
   goldCredits: 0,
   timeBlocks: 48,
   unreadMessagesCount: 0,
+  hasNewVaultItem: false,
   isOpen: false,
 });

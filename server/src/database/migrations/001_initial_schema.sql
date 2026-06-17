@@ -198,7 +198,7 @@ CREATE TABLE migration_log (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     file_path VARCHAR(500) NOT NULL,
     file_checksum VARCHAR(64) NOT NULL,
-    content_type VARCHAR(20) NOT NULL CHECK (content_type IN ('character', 'dialogue', 'overlay', 'scene', 'gig')),
+    content_type VARCHAR(20) NOT NULL CHECK (content_type IN ('character', 'dialogue', 'overlay', 'scene', 'gig', 'vault')),
     content_id UUID NOT NULL,
     applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     applied_by UUID REFERENCES users(id)

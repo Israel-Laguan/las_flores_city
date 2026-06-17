@@ -48,7 +48,8 @@ test.describe('Phone OS Overlay', () => {
     await vaultTab.click();
     
     const vaultContent = page.locator('#phone-app-content');
-    await expect(vaultContent).toContainText('VAULT');
+    await expect(vaultContent).toContainText('THE VAULT');
+    await expect(vaultContent).toContainText(/No files found in local storage|LOCAL ENCRYPTED STORAGE/);
   });
 
   test('Identity app tab is clickable and shows content', async ({ page }) => {

@@ -2,18 +2,22 @@ import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
 import { commsRouter } from '../../src/routes/comms.js';
+import '../../src/routes/comms-reply.js';
 import { healthRouter } from '../../src/routes/health.js';
 import { playerRouter } from '../../src/routes/player.js';
 import { locationRouter } from '../../src/routes/location.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
+import { vaultRouter } from '../../src/routes/vault.js';
 import { closeRedis } from '../../src/database/redis.js';
 
 const { Pool } = pg;
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
-const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening at WELCOME_SCENE_ID
+const APARTMENT_SCENE_ID = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
+const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening
+const HANDLER_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004'; // The Handler — has dialogue at Welcome Center
 
 const app = express();
 app.use(express.json());
@@ -22,6 +26,7 @@ app.use('/player', playerRouter);
 app.use('/location', locationRouter);
 app.use('/dialogue', dialogueRouter);
 app.use('/comms', commsRouter);
+app.use('/vault', vaultRouter);
 
 let server: any;
 let pool: pg.Pool;
@@ -41,15 +46,17 @@ beforeAll(async () => {
   });
 
   await pool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks)
-     VALUES ($1, $2, $3, $4, 48)
+    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id)
+     VALUES ($1, $2, $3, $4, 48, 100, $5)
      ON CONFLICT (id) DO UPDATE SET
        email = EXCLUDED.email,
        username = EXCLUDED.username,
        display_name = EXCLUDED.display_name,
        time_blocks = 48,
+       credits = 100,
+       current_location_id = EXCLUDED.current_location_id,
        updated_at = NOW()`,
-    [TEST_USER_ID, 'api-contract-test@example.com', 'api_contract_test', 'API Contract Test']
+    [TEST_USER_ID, 'api-contract-test@example.com', 'api_contract_test', 'API Contract Test', WELCOME_SCENE_ID]
   );
   await pool.query(
     'ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)'
@@ -186,7 +193,7 @@ describe('API Contract Tests', () => {
       const res = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: WELCOME_SCENE_ID }),
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const data = await jsonResponse(res);
 
@@ -218,7 +225,7 @@ describe('API Contract Tests', () => {
       const start = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: WELCOME_SCENE_ID }),
+        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const startData = await jsonResponse(start);
       const res = await fetch(`http://localhost:${port}/dialogue/${startData.data.tree.id}/choose`, {
@@ -246,13 +253,13 @@ describe('API Contract Tests', () => {
       const res = await fetch(`http://localhost:${port}/comms/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID }),
       });
       const data = await jsonResponse(res);
 
       expect(res.status).toBe(200);
       expect(data).toHaveProperty('success', true);
-      expect(data.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(data.data).toHaveProperty('characterId', HANDLER_CHARACTER_ID);
       expect(data.data).toHaveProperty('characterName');
       expect(data.data).toHaveProperty('chatHistory');
       expect(Array.isArray(data.data.chatHistory)).toBe(true);
@@ -274,7 +281,7 @@ describe('API Contract Tests', () => {
       const first = await fetch(`http://localhost:${port}/comms/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID }),
       });
       const firstData = await jsonResponse(first);
       const firstHistoryLen = firstData.data.chatHistory.length;
@@ -282,12 +289,12 @@ describe('API Contract Tests', () => {
       const second = await fetch(`http://localhost:${port}/comms/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID }),
       });
       const secondData = await jsonResponse(second);
 
       expect(second.status).toBe(200);
-      expect(secondData.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(secondData.data).toHaveProperty('characterId', HANDLER_CHARACTER_ID);
       expect(secondData.data.chatHistory.length).toBe(firstHistoryLen);
     });
 
@@ -333,27 +340,27 @@ describe('API Contract Tests', () => {
       expect(Array.isArray(data.data.threads)).toBe(true);
       expect(data.data.threads.length).toBeGreaterThan(0);
 
-      const vance = data.data.threads.find((t: any) => t.characterId === TEST_CHARACTER_ID);
-      expect(vance).toBeDefined();
-      expect(vance).toHaveProperty('characterName');
-      expect(vance).toHaveProperty('lastMessage');
-      expect(vance).toHaveProperty('friendshipLevel');
-      expect(vance).toHaveProperty('romanceLevel');
-      expect(vance).toHaveProperty('unread');
+      const handler = data.data.threads.find((t: any) => t.characterId === HANDLER_CHARACTER_ID);
+      expect(handler).toBeDefined();
+      expect(handler).toHaveProperty('characterName');
+      expect(handler).toHaveProperty('lastMessage');
+      expect(handler).toHaveProperty('friendshipLevel');
+      expect(handler).toHaveProperty('romanceLevel');
+      expect(handler).toHaveProperty('unread');
     });
   });
 
   describe('GET /comms/thread/:characterId', () => {
     test('returns the thread detail for the character', async () => {
       const port = server.address().port;
-      const res = await fetch(`http://localhost:${port}/comms/thread/${TEST_CHARACTER_ID}`, {
+      const res = await fetch(`http://localhost:${port}/comms/thread/${HANDLER_CHARACTER_ID}`, {
         headers: authHeaders(),
       });
       const data = await jsonResponse(res);
 
       expect(res.status).toBe(200);
       expect(data).toHaveProperty('success', true);
-      expect(data.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(data.data).toHaveProperty('characterId', HANDLER_CHARACTER_ID);
       expect(Array.isArray(data.data.chatHistory)).toBe(true);
       expect(data.data.chatHistory.length).toBeGreaterThan(0);
       expect(data.data).toHaveProperty('choices');
@@ -375,7 +382,15 @@ describe('API Contract Tests', () => {
   describe('POST /comms/reply', () => {
     test('appends the player message and advances the dialogue', async () => {
       const port = server.address().port;
-      const detail = await fetch(`http://localhost:${port}/comms/thread/${TEST_CHARACTER_ID}`, {
+      
+      // First, ensure thread exists
+      await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID }),
+      });
+      
+      const detail = await fetch(`http://localhost:${port}/comms/thread/${HANDLER_CHARACTER_ID}`, {
         headers: authHeaders(),
       });
       const detailData = await jsonResponse(detail);
@@ -386,13 +401,13 @@ describe('API Contract Tests', () => {
       const res = await fetch(`http://localhost:${port}/comms/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, choiceId: firstChoice.id }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID, choiceId: firstChoice.id }),
       });
       const data = await jsonResponse(res);
 
       expect(res.status).toBe(200);
       expect(data).toHaveProperty('success', true);
-      expect(data.data).toHaveProperty('characterId', TEST_CHARACTER_ID);
+      expect(data.data).toHaveProperty('characterId', HANDLER_CHARACTER_ID);
       expect(data.data.chatHistory.length).toBeGreaterThanOrEqual(detailData.data.chatHistory.length + 1);
       const lastMessage = data.data.chatHistory[data.data.chatHistory.length - 1];
       expect(['npc', 'player']).toContain(lastMessage.author);
@@ -400,10 +415,18 @@ describe('API Contract Tests', () => {
 
     test('returns 404 for a choice the user does not qualify for', async () => {
       const port = server.address().port;
+      
+      // First, ensure thread exists
+      await fetch(`http://localhost:${port}/comms/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID }),
+      });
+      
       const res = await fetch(`http://localhost:${port}/comms/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID, choiceId: 'no_such_choice_id' }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID, choiceId: 'no_such_choice_id' }),
       });
       const data = await jsonResponse(res);
 
@@ -418,7 +441,7 @@ describe('API Contract Tests', () => {
       const res = await fetch(`http://localhost:${port}/comms/read`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ characterId: TEST_CHARACTER_ID }),
+        body: JSON.stringify({ characterId: HANDLER_CHARACTER_ID }),
       });
       const data = await jsonResponse(res);
 
@@ -430,13 +453,28 @@ describe('API Contract Tests', () => {
 
     test('subsequent /thread reflects unread=false', async () => {
       const port = server.address().port;
-      const res = await fetch(`http://localhost:${port}/comms/thread/${TEST_CHARACTER_ID}`, {
+      const res = await fetch(`http://localhost:${port}/comms/thread/${HANDLER_CHARACTER_ID}`, {
         headers: authHeaders(),
       });
       const data = await jsonResponse(res);
 
       expect(res.status).toBe(200);
       expect(data.data).toHaveProperty('unread', false);
+    });
+  });
+
+  describe('GET /vault', () => {
+    test('returns valid vault inventory envelope', async () => {
+      const port = server.address().port;
+      const res = await fetch(`http://localhost:${port}/vault`, {
+        headers: authHeaders(),
+      });
+      const data = await jsonResponse(res);
+
+      expect(res.status).toBe(200);
+      expect(data).toHaveProperty('success', true);
+      expect(data).toHaveProperty('timestamp');
+      expect(Array.isArray(data.data)).toBe(true);
     });
   });
 });

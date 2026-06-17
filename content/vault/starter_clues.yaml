@@ -1,0 +1,19 @@
+vault_items:
+  - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    title: "Arrival Ticket Stub"
+    description: "A crumpled monorail ticket from your arrival. The barcode is still readable — passenger ID redacted."
+    media_url: "https://cdn.lasflores2077.com/vault/arrival_ticket.png"
+    item_type: "clue"
+
+  - id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    title: "Welcome Center Map Fragment"
+    description: "A torn section of the holographic city map. The Undercity district glows faint red even in the static image."
+    media_url: "https://cdn.lasflores2077.com/vault/map_fragment.png"
+    item_type: "clue"
+
+  - id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    title: "Classified Surveillance Still"
+    description: "A high-resolution frame from an unknown camera feed. Patreon investigators only."
+    media_url: "https://cdn.lasflores2077.com/vault/surveillance_still.png"
+    item_type: "premium_cg"
+    requires_signed_url: true

@@ -1,0 +1,144 @@
+.vault-app {
+  padding: 12px;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.vault-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vault-header h2 {
+  margin: 0;
+  color: var(--neon-cyan);
+  text-shadow: var(--border-glow);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+}
+
+.subnet-badge {
+  font-size: 0.65rem;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.vault-grid {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 15px;
+  align-content: start;
+}
+
+.vault-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.vault-card:hover,
+.vault-card:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: var(--border-glow);
+  outline: none;
+}
+
+.vault-thumb {
+  height: 100px;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.vault-title {
+  padding: 8px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empty-vault {
+  grid-column: 1 / -1;
+  color: #888;
+  text-align: center;
+  padding: 24px;
+  font-size: 0.85rem;
+}
+
+.vault-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(3, 7, 18, 0.95);
+  z-index: 100;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 50%;
+  object-fit: contain;
+  border: 1px solid var(--neon-cyan);
+  box-shadow: var(--border-glow);
+  margin-top: 30px;
+}
+
+.modal-info {
+  margin-top: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.modal-info h3 {
+  color: var(--neon-cyan);
+  margin-top: 0;
+}
+
+.modal-info p {
+  font-size: 0.85rem;
+  color: #d1d5db;
+  line-height: 1.4;
+}
+
+.btn-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.nav-unread-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
+  margin-left: 4px;
+  vertical-align: middle;
+}

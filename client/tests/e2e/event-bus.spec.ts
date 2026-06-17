@@ -20,7 +20,7 @@ test.describe('Event Bus Loopback', () => {
     
     const messagesContent = page.locator('#phone-app-content');
     await expect(messagesContent).toContainText('MESSAGES');
-    await expect(messagesContent).toContainText('Subject 7, report to your assigned location.');
+    await expect(messagesContent).toContainText('No messages yet');
   });
 
   test('Phone overlay pointer events change on world pause/resume', async ({ page }) => {

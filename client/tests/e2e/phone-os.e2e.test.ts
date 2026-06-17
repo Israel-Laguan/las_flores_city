@@ -1,10 +1,10 @@
 /**
- * Sprint 2 E2E — Phone OS Shell & App Router
+ * Phone OS Shell & App Router — E2E Tests
  *
- * 2.1a — Pointer event focus locking (Phaser canvas blocked while phone open)
- * 2.1b — Chronology engine: status bar clock at TB 48, 32, 12
- * 2.1c — App routing stability: rapid tab cycling, no double scrollbars
- * 2.1d — Unified client state store: credits + TBs update simultaneously
+ * Pointer event focus locking (Phaser canvas blocked while phone open)
+ * Chronology engine: status bar clock at TB 48, 32, 12
+ * App routing stability: rapid tab cycling, no double scrollbars
+ * Unified client state store: credits + TBs update simultaneously
  */
 import { test, expect, Page } from '@playwright/test';
 
@@ -27,9 +27,9 @@ test.beforeEach(async ({ page }) => {
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
 });
 
-// ── 2.1a — Pointer event focus locking ──────────────────────────────────────
+// ── Pointer event focus locking ──────────────────────────────────────────────
 
-test('2.1a — Phone overlay captures clicks; Phaser canvas input is disabled', async ({ page }) => {
+test('Phone overlay captures clicks; Phaser canvas input is disabled', async ({ page }) => {
   const phoneOverlay = page.locator('#phone-overlay');
   await expect(phoneOverlay).toBeVisible();
 
@@ -50,16 +50,16 @@ test('2.1a — Phone overlay captures clicks; Phaser canvas input is disabled', 
   expect(overlayZIndex).toBeGreaterThan(canvasZIndex);
 });
 
-// ── 2.1b — Chronology engine clock sync ─────────────────────────────────────
+// ── Chronology engine clock sync ─────────────────────────────────────────────
 
-test('2.1b — Status bar clock shows 08:00 AM at 48 TBs', async ({ page }) => {
+test('Status bar clock shows 08:00 AM at 48 TBs', async ({ page }) => {
   // Default seed state = 48 TBs → 08:00 AM
   const clock = page.locator('#phone-clock, [data-testid="phone-clock"]');
   await expect(clock).toBeVisible();
   await expect(clock).toContainText('08:00 AM');
 });
 
-test('2.1b — Status bar clock shows 04:00 PM at 32 TBs', async ({ page }) => {
+test('Status bar clock shows 04:00 PM at 32 TBs', async ({ page }) => {
   await page.evaluate(() => {
     // Drive the store to 32 TBs — PhoneStore must re-derive clock from TB value
     (window as any).__phoneStore?.setState?.({ timeBlocks: 32 });
@@ -69,7 +69,7 @@ test('2.1b — Status bar clock shows 04:00 PM at 32 TBs', async ({ page }) => {
   await expect(clock).toContainText('04:00 PM');
 });
 
-test('2.1b — Status bar clock shows 02:00 AM at 12 TBs', async ({ page }) => {
+test('Status bar clock shows 02:00 AM at 12 TBs', async ({ page }) => {
   await page.evaluate(() => {
     (window as any).__phoneStore?.setState?.({ timeBlocks: 12 });
   });
@@ -78,9 +78,9 @@ test('2.1b — Status bar clock shows 02:00 AM at 12 TBs', async ({ page }) => {
   await expect(clock).toContainText('02:00 AM');
 });
 
-// ── 2.1c — App routing stability ─────────────────────────────────────────────
+// ── App routing stability ────────────────────────────────────────────────────
 
-test('2.1c — Rapid tab cycling mounts/unmounts views without layout shifts or double scrollbars', async ({ page }) => {
+test('Rapid tab cycling mounts/unmounts views without layout shifts or double scrollbars', async ({ page }) => {
   const tabs = ['Messages', 'Banco', 'Trabajando'];
 
   for (const label of tabs) {
@@ -108,9 +108,9 @@ test('2.1c — Rapid tab cycling mounts/unmounts views without layout shifts or 
   expect(scrollableCount).toBeLessThanOrEqual(1);
 });
 
-// ── 2.1d — Unified client state store ────────────────────────────────────────
+// ── Unified client state store ───────────────────────────────────────────────
 
-test('2.1d — After gig execution, status bar and app view reflect updated TB and credits simultaneously', async ({ page }) => {
+test('After gig execution, status bar and app view reflect updated TB and credits simultaneously', async ({ page }) => {
   // Navigate to Trabajando
   await page.locator('button:has-text("Trabajando")').click();
   await page.waitForSelector('#phone-app-content', { state: 'visible' });

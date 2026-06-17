@@ -46,6 +46,10 @@ export class PhoneBridge {
     eventBus.on('api:notification_received', (data: { unreadCount: number }) => {
       phoneStore.updateState({ unreadMessagesCount: data.unreadCount });
     });
+
+    eventBus.on('vault:new_item_unlocked', () => {
+      phoneStore.updateState({ hasNewVaultItem: true });
+    });
   }
 
   private render(state: ReturnType<typeof phoneStore.getState>): void {

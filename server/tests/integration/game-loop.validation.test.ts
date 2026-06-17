@@ -1,13 +1,13 @@
 /**
- * Sprint 2 Integration Validation — The Loop (Time, Money & The Phone)
+ * Game Loop Integration Validation — Time, Money & The Phone
  *
  * Covers:
- *  2.1 — Bank ledger endpoint & DB match
- *  2.2 — credits/gold_credits non-negative DB constraint (code 23514)
- *  2.3 — Gig atomic execution + INSUFFICIENT_TIME_BLOCKS rollback
- *  2.4 — SMS reply cache invalidation (deleteCache on inbox key)
- *  2.5 — Feed Redis cache hit / miss after post creation
- *  2.6 — OLAP event format: gig_completed, post_liked, sms_reply_submitted
+ *   Bank ledger endpoint & DB match
+ *   credits/gold_credits non-negative DB constraint (code 23514)
+ *   Gig atomic execution + INSUFFICIENT_TIME_BLOCKS rollback
+ *   SMS reply cache invalidation (deleteCache on inbox key)
+ *   Feed Redis cache hit / miss after post creation
+ *   OLAP event format: gig_completed, post_liked, sms_reply_submitted
  */
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import pg from 'pg';
@@ -80,7 +80,7 @@ beforeAll(async () => {
   // Seed test user
   await oltpPool.query(
     `INSERT INTO users (id, email, username, display_name, time_blocks, credits, gold_credits, current_location_id, current_day)
-     VALUES ($1, 'sprint2-test@lasflores.com', 'sprint2_test', 'Sprint2 Test', 48, 500, 0, $2, 1)
+     VALUES ($1, 'game-loop-test@lasflores.com', 'game_loop_test', 'Game Loop Test', 48, 500, 0, $2, 1)
      ON CONFLICT (id) DO UPDATE
        SET time_blocks = 48, credits = 500, gold_credits = 0,
            current_location_id = $2, updated_at = NOW()`,
@@ -116,9 +116,9 @@ beforeEach(async () => {
   await oltpPool.query('DELETE FROM social_posts');
 });
 
-// ── 2.1 — Bank Ledger ────────────────────────────────────────────────────────
+// ── Bank Ledger ────────────────────────────────────────────────────────
 
-describe('2.1 — GET /bank/ledger matches database state', () => {
+describe(' GET /bank/ledger matches database state', () => {
   test('returns credits, goldCredits, and transactions array matching DB', async () => {
     const res  = await apiFetch('GET', '/bank/ledger');
     const body = await res.json() as any;
@@ -136,9 +136,9 @@ describe('2.1 — GET /bank/ledger matches database state', () => {
   });
 });
 
-// ── 2.2 — DB constraint enforcement ─────────────────────────────────────────
+// ── DB constraint enforcement ─────────────────────────────────────────
 
-describe('2.2 — PostgreSQL CHECK constraint rejects negative gold_credits', () => {
+describe(' PostgreSQL CHECK constraint rejects negative gold_credits', () => {
   test('UPDATE below 0 throws error code 23514', async () => {
     await expect(
       oltpPool.query(
@@ -148,9 +148,9 @@ describe('2.2 — PostgreSQL CHECK constraint rejects negative gold_credits', ()
   });
 });
 
-// ── 2.3 — Gig execution & rollback ───────────────────────────────────────────
+// ── Gig execution & rollback ───────────────────────────────────────────
 
-describe('2.3a — POST /gigs/execute happy path is atomic', () => {
+describe(' POST /gigs/execute happy path is atomic', () => {
   test('deducts TBs and credits payout in one transaction', async () => {
     await resetPlayer(48, 100);
 
@@ -176,7 +176,7 @@ describe('2.3a — POST /gigs/execute happy path is atomic', () => {
   });
 });
 
-describe('2.3b — POST /gigs/execute with insufficient TBs rolls back atomically', () => {
+describe(' POST /gigs/execute with insufficient TBs rolls back atomically', () => {
   test('returns INSUFFICIENT_TIME_BLOCKS and leaves DB unchanged', async () => {
     await resetPlayer(5, 100); // 5 < 16 (noodle cost)
 
@@ -201,9 +201,9 @@ describe('2.3b — POST /gigs/execute with insufficient TBs rolls back atomicall
   });
 });
 
-// ── 2.4 — SMS inbox cache invalidation ───────────────────────────────────────
+// ── SMS inbox cache invalidation ───────────────────────────────────────
 
-describe('2.4 — SMS reply invalidates inbox Redis cache', () => {
+describe(' SMS reply invalidates inbox Redis cache', () => {
   test('inbox cache key is absent after a comms reply', async () => {
     // Pre-warm the cache by calling inbox (it may 200 or 200-empty; we just need the key written)
     await apiFetch('GET', '/comms/inbox');
@@ -225,9 +225,9 @@ describe('2.4 — SMS reply invalidates inbox Redis cache', () => {
   });
 });
 
-// ── 2.5 — Feed cache hit / invalidation ──────────────────────────────────────
+// ── Feed cache hit / invalidation ──────────────────────────────────────
 
-describe('2.5 — GET /network/feed uses Redis cache', () => {
+describe(' GET /network/feed uses Redis cache', () => {
   test('second call hits cache (key present after first fetch)', async () => {
     // Clear any stale cache
     await deleteCache('global:feed');
@@ -248,7 +248,7 @@ describe('2.5 — GET /network/feed uses Redis cache', () => {
     // Direct DB insert simulates SocialFeedService.createPost's deleteCache
     await oltpPool.query(
       `INSERT INTO social_posts (author_name, author_handle, author_avatar_url, content, post_type)
-       VALUES ('Test Author', 'test_handle', 'http://example.com/avatar.png', 'Sprint 2 test post', 'lore')`
+       VALUES ('Test Author', 'test_handle', 'http://example.com/avatar.png', 'Test post content', 'lore')`
     );
     await deleteCache('global:feed');
 
@@ -261,9 +261,9 @@ describe('2.5 — GET /network/feed uses Redis cache', () => {
   });
 });
 
-// ── 2.6 — OLAP event format ───────────────────────────────────────────────────
+// ── OLAP event format ───────────────────────────────────────────────────
 
-describe('2.6 — OLAP player_events format', () => {
+describe(' OLAP player_events format', () => {
   test('gig_completed event has correct shape', async () => {
     await resetPlayer(48, 100);
     await apiFetch('POST', '/gigs/execute', { gigId: GIG_NOODLE });

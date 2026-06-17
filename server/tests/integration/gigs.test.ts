@@ -1,5 +1,5 @@
 /**
- * Gig Engine Integration Tests — Task 2.3
+ * Gig Engine Integration Tests
  *
  * 2.3a: GET /gigs returns validated gig list
  * 2.3b: POST /gigs/execute atomically deducts TBs and credits payout
@@ -94,7 +94,7 @@ afterAll(async () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-describe('2.3a — GET /gigs returns validated gig list', () => {
+describe(' GET /gigs returns validated gig list', () => {
   test('returns array with correct shape', async () => {
     const res  = await get('/gigs');
     const data = await res.json();
@@ -111,7 +111,7 @@ describe('2.3a — GET /gigs returns validated gig list', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-describe('2.3b — POST /gigs/execute happy path', () => {
+describe(' POST /gigs/execute happy path', () => {
   test('deducts TBs and pays out credits atomically', async () => {
     await resetPlayer(48, 100);
 
@@ -132,7 +132,7 @@ describe('2.3b — POST /gigs/execute happy path', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-describe('2.3c — Insufficient TBs', () => {
+describe(' Insufficient TBs', () => {
   test('returns 400 and does not mutate DB', async () => {
     await resetPlayer(10, 100); // 10 < 16 (noodle cost)
 
@@ -152,7 +152,7 @@ describe('2.3c — Insufficient TBs', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-describe('2.3d — Unknown gigId returns 404', () => {
+describe(' Unknown gigId returns 404', () => {
   test('unknown UUID returns 404', async () => {
     const res = await post('/gigs/execute', { gigId: '00000000-0000-0000-0000-000000000000' });
     expect(res.status).toBe(404);
@@ -161,7 +161,7 @@ describe('2.3d — Unknown gigId returns 404', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-describe('2.3e — OLAP telemetry', () => {
+describe(' OLAP telemetry', () => {
   test('gig_completed event is written to player_events', async () => {
     await resetPlayer(48, 100);
 

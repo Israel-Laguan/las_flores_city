@@ -5,6 +5,7 @@ import { LocationScene } from './scenes/LocationScene';
 import './components/PhoneOverlay';
 import './components/SleepOverlay';
 import './styles/comms.css';
+import './styles/vault.css';
 import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
 import * as api from './utils/api';
@@ -60,6 +61,12 @@ async function initApp() {
     console.error('Failed to initialize app:', error);
   }
 }
+
+// Bridge window CustomEvents (dispatched by E2E tests / external scripts)
+// to the internal EventEmitter3-based eventBus so DialogueUI picks them up.
+window.addEventListener('lf:dialogue-start', (e: Event) => {
+  eventBus.emit('dialogue:start', (e as CustomEvent).detail);
+});
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {

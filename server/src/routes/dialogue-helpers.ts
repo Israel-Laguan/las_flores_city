@@ -251,7 +251,12 @@ export async function processChoice(
   chosenOption: any,
   currentNodeId: string,
   nodes: any
-): Promise<{ success: boolean; timeBlocksSpent?: number; error?: string }> {
+): Promise<{
+  success: boolean;
+  timeBlocksSpent?: number;
+  error?: string;
+  unlockedVaultItem?: { id: string; title: string };
+}> {
   let timeBlocksSpent = 0;
 
   if (chosenOption.time_block_cost && chosenOption.time_block_cost.amount > 0) {
@@ -283,6 +288,25 @@ export async function processChoice(
 
   const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
 
+  let unlockedVaultItem: { id: string; title: string } | undefined;
+
+  if (chosenOption.vault_unlock) {
+    const itemResult = await client.query(
+      'SELECT id, title FROM vault_items WHERE id = $1',
+      [chosenOption.vault_unlock]
+    );
+    if (itemResult.rows.length === 0) {
+      return { success: false, error: 'invalid_vault_item' };
+    }
+    await client.query(
+      `INSERT INTO player_vault (user_id, item_id)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id, item_id) DO NOTHING`,
+      [userId, chosenOption.vault_unlock]
+    );
+    unlockedVaultItem = itemResult.rows[0];
+  }
+
   await recordChoiceAndEffects(
     client,
     userId,
@@ -295,7 +319,7 @@ export async function processChoice(
     nextNode
   );
 
-  return { success: true, timeBlocksSpent };
+  return { success: true, timeBlocksSpent, unlockedVaultItem };
 }
 
 export function buildDialogueResponse(
@@ -342,7 +366,8 @@ export function buildChooseResponse(
   nextChoices: any[],
   isEnd: boolean,
   timeBlocksSpent: number,
-  timeBlocksRemaining: number
+  timeBlocksRemaining: number,
+  unlockedVaultItem?: { id: string; title: string }
 ) {
   return {
     success: true,
@@ -360,6 +385,9 @@ export function buildChooseResponse(
       is_end: isEnd,
       time_blocks_spent: timeBlocksSpent,
       time_blocks_remaining: timeBlocksRemaining,
+      ...(unlockedVaultItem
+        ? { unlocked_vault_item: { id: unlockedVaultItem.id, title: unlockedVaultItem.title } }
+        : {}),
     },
     timestamp: new Date().toISOString(),
   };

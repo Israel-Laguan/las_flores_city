@@ -11,7 +11,7 @@ on:
 jobs:
   validate-content:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,8 +30,3 @@ jobs:
 
       - name: Validate YAML content
         run: npm run validate:content
-
-      - name: Check for circular dependencies
-        run: |
-          echo "Checking for circular dependencies in dialogue trees..."
-          npm run validate:content

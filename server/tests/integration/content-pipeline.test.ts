@@ -1,5 +1,5 @@
 /**
- * Content Pipeline Test — Task 5.4a
+ * Content Pipeline Testa
  * Validates every YAML file in /content against:
  *   - JSON schema (via Zod, using the shared validateContent pipeline)
  *   - DFS cycle detection on dialogue nodes
@@ -22,7 +22,7 @@ beforeAll(async () => {
   yamlFiles = found;
 });
 
-describe('5.4a — Content Pipeline Validation', () => {
+describe('Content Pipeline Validation', () => {
   test('Content directory contains YAML files to validate', async () => {
     expect(yamlFiles.length).toBeGreaterThan(0);
   });

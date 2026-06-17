@@ -70,6 +70,7 @@ export const DialogueChoiceSchema = z.object({
   next_node_id: z.string(),
   time_block_cost: TimeBlockCostSchema.optional(),
   relationship_change: RelationshipChangeSchema.optional(),
+  vault_unlock: z.string().uuid().optional(),
   required_flags: z.record(z.string(), z.boolean()).optional(),
   hidden_if: z.record(z.string(), z.boolean()).optional(),
 });
@@ -127,6 +128,8 @@ export type DialogueOverlay = z.infer<typeof DialogueOverlaySchema>;
 // Re-export from the dedicated overlay module for convenience.
 export { OverlaySchema, OverlayFileSchema } from './schemas/overlay.js';
 export type { Overlay, OverlayFile } from './schemas/overlay.js';
+export { VaultItemSchema, VaultFileSchema } from './schemas/vault.js';
+export type { VaultItem, VaultFile } from './schemas/vault.js';
 
 // ==================== Location & Scene ====================
 
@@ -379,6 +382,11 @@ export const PlayerEventSchema = z.object({
     'mystery_progress',
     'move',
     'sleep',
+    'gig_completed',
+    'post_liked',
+    'sms_received',
+    'sms_reply_submitted',
+    'vault_item_unlocked',
   ]),
   event_data: z.record(z.string(), z.any()),
   time_blocks_cost: z.number().int().min(0).optional(),
@@ -390,7 +398,7 @@ export type PlayerEvent = z.infer<typeof PlayerEventSchema>;
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

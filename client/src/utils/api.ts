@@ -179,3 +179,17 @@ export async function endDialogue(): Promise<any> {
     method: 'POST',
   });
 }
+
+// Vault API
+export interface VaultItem {
+  id: string;
+  title: string;
+  description: string;
+  mediaUrl: string;
+  itemType: string;
+  unlockedAt: string;
+}
+
+export async function getVaultItems(): Promise<{ success: boolean; data: VaultItem[]; timestamp?: string }> {
+  return fetchAPI('/vault');
+}

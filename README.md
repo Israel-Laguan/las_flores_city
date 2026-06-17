@@ -165,12 +165,11 @@ docker-compose exec redis redis-cli ping
 
 ## Next Steps
 
-Once Sprint 0 is complete, you can:
-1. Start implementing Sprint 1 features
-2. Create more content in the `/content` folder
-3. Build out the admin panel for content management
-4. Implement authentication and user management
-5. Add more API endpoints for game features
+Once the foundation is set up, you can:
+1. Create more content in the `/content` folder
+2. Build out the admin panel for content management
+3. Implement authentication and user management
+4. Add more API endpoints for game features
 
 ## Contributing
 

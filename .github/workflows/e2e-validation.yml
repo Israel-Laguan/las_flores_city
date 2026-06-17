@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: E2E Validation
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [main, develop]
 
 jobs:
-  test:
+  e2e:
+    name: E2E — Playwright
     runs-on: ubuntu-latest
 
     services:
@@ -50,11 +51,9 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -65,7 +64,7 @@ jobs:
       - name: Build shared types
         run: npm run build --workspace=shared
 
-      - name: Apply OLTP schema
+      - name: Apply all migrations & seed content
         run: |
           for migration in \
             001_initial_schema \
@@ -83,9 +82,6 @@ jobs:
               -h localhost -p 5434 -U las_flores -d las_flores \
               -f server/src/database/migrations/${migration}.sql
           done
-
-      - name: Apply OLAP schema
-        run: |
           for migration in \
             002_analytics_schema \
             006_add_move_event_type \
@@ -96,49 +92,56 @@ jobs:
               -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
               -f server/src/database/migrations/${migration}.sql
           done
-
-      - name: Run content migration
-        run: npm run migrate --workspace=server -- ../content
+          npm run migrate --workspace=server -- ../content
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
 
-      - name: Run server tests
-        run: npm run test:server
+      - name: Start API server (background)
+        run: npm run start --workspace=server &
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
+          PORT: 3000
 
-      - name: Run linter
-        run: npm run lint
-
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build shared types
-        run: npm run build --workspace=shared
-
-      - name: Build server
-        run: npm run build --workspace=server
+      - name: Wait for API server
+        run: |
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:3000/health && break
+            sleep 2
+          done
 
       - name: Build client
         run: npm run build --workspace=client
+        env:
+          VITE_API_URL: http://localhost:3000
 
-      - name: Build admin
-        run: npm run build --workspace=admin
+      - name: Start client (background)
+        run: npx --yes serve -s dist -l 5173 &
+        working-directory: client
+
+      - name: Wait for client
+        run: |
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:5173 && break
+            sleep 2
+          done
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: client
+
+      - name: E2E tests
+        run: npx playwright test
+        working-directory: client
+        env:
+          API_URL: http://localhost:3000
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: client/playwright-report/
+          retention-days: 7

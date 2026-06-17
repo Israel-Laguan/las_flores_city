@@ -2,11 +2,13 @@ import { eventBus } from '../utils/EventBus';
 import { phoneStore } from '../store/PhoneStore';
 import { PhoneBridge } from '../bridge/PhoneBridge';
 import { MessagesApp } from '../ui/apps/MessagesApp';
+import { VaultApp } from '../ui/apps/VaultApp';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
   private viewport: HTMLElement;
   private navBar: HTMLElement;
+  private navButtons: Map<string, HTMLButtonElement> = new Map();
   private apps: Map<string, HTMLElement> = new Map();
   private bridge: PhoneBridge;
 
@@ -85,10 +87,7 @@ export class PhoneOverlay {
     this.apps.set('trabajando', trabajando);
 
     const vault = document.createElement('div');
-    vault.innerHTML = `
-      <h3 style="margin:0 0 15px;color:var(--neon-cyan);border-bottom:1px solid var(--neon-cyan);padding-bottom:5px;">VAULT</h3>
-      <p style="color:#888;">Collect items during your adventures.</p>
-    `;
+    new VaultApp(vault);
     this.apps.set('vault', vault);
 
     const identity = document.createElement('div');
@@ -119,16 +118,36 @@ export class PhoneOverlay {
     tabs.forEach(({ label, key }) => {
       const btn = document.createElement('button');
       btn.textContent = label;
+      btn.dataset.navKey = key;
       btn.style.cssText = `
         flex:1;padding:8px;border:none;background:transparent;
         color:var(--neon-cyan);cursor:pointer;font-family:monospace;
-        font-size:11px;text-transform:uppercase;
+        font-size:11px;text-transform:uppercase;position:relative;
       `;
       btn.addEventListener('click', () => this.switchApp(key));
       btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(0,255,255,0.08)'; });
       btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
+      this.navButtons.set(key, btn);
       this.navBar.appendChild(btn);
     });
+
+    phoneStore.subscribe((state) => this.updateNavBadges(state));
+    this.updateNavBadges(phoneStore.getState());
+  }
+
+  private updateNavBadges(state: ReturnType<typeof phoneStore.getState>): void {
+    const vaultBtn = this.navButtons.get('vault');
+    if (!vaultBtn) return;
+
+    const existingDot = vaultBtn.querySelector('.nav-unread-dot');
+    existingDot?.remove();
+
+    if (state.hasNewVaultItem) {
+      const dot = document.createElement('span');
+      dot.className = 'nav-unread-dot';
+      dot.setAttribute('aria-label', 'new evidence');
+      vaultBtn.appendChild(dot);
+    }
   }
 
   private switchApp(key: string): void {
@@ -154,6 +173,10 @@ export class PhoneOverlay {
 
     eventBus.on('player:state-loaded', (data: any) => {
       this.updatePlayerInfo(data);
+    });
+
+    eventBus.on('vault:new_item_unlocked', () => {
+      phoneStore.updateState({ hasNewVaultItem: true });
     });
   }
 
