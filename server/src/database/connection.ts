@@ -43,8 +43,15 @@ export async function testConnections(): Promise<boolean> {
   }
 }
 
+let connectionsClosed = false;
+
 // Close database connections
 export async function closeConnections(): Promise<void> {
+  if (connectionsClosed) {
+    return;
+  }
+
+  connectionsClosed = true;
   await oltpPool.end();
   await olapPool.end();
   console.log('🔌 Database connections closed');

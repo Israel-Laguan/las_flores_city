@@ -364,6 +364,14 @@ export const PlayerEventSchema = z.object({
 
 export type PlayerEvent = z.infer<typeof PlayerEventSchema>;
 
+// ==================== Leaderboard (Task 3.4) ====================
+export {
+  LeaderboardBadgeTypeSchema,
+  LeaderboardBadgeSchema,
+  LeaderboardEntrySchema,
+} from './types/leaderboard.js';
+export type { LeaderboardBadgeType, LeaderboardBadge, LeaderboardEntry } from './types/leaderboard.js';
+
 // ==================== Content Validation ====================
 
 export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault']);

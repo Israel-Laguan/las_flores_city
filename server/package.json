@@ -9,9 +9,9 @@
     "start": "node dist/server/src/index.js",
     "migrate": "tsx src/content/migrate.ts ../content",
     "lint": "eslint --ext .ts src/",
-    "test": "npx --no-install jest --forceExit --detectOpenHandles",
-    "test:smoke": "npx --no-install jest tests/smoke --forceExit --detectOpenHandles",
-    "test:integration": "npx --no-install jest tests/integration --forceExit --detectOpenHandles"
+    "test": "npx --no-install jest --detectOpenHandles",
+    "test:smoke": "npx --no-install jest tests/smoke --detectOpenHandles",
+    "test:integration": "npx --no-install jest tests/integration --detectOpenHandles"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1070.0",

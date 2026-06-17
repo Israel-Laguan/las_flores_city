@@ -1,5 +1,5 @@
-import { queryOLTP, withOLTPTransaction } from '../../src/database/connection.js';
-import { getCache, deleteCache } from '../../src/database/redis.js';
+import { queryOLTP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
+import { getCache, deleteCache, closeRedis } from '../../src/database/redis.js';
 import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
 
@@ -99,26 +99,31 @@ describe('DialogueResolver', () => {
   });
 
   afterAll(async () => {
-    await queryOLTP(
-      `DELETE FROM dialogue_overlays WHERE mystery_id = $1`,
-      [TEST_MYSTERY_ID]
-    );
-    await queryOLTP(
-      `DELETE FROM player_mysteries WHERE user_id = $1 AND mystery_id = $2`,
-      [TEST_USER_ID, TEST_MYSTERY_ID]
-    );
-    await queryOLTP(
-      `DELETE FROM mysteries WHERE id = $1`,
-      [TEST_MYSTERY_ID]
-    );
-    await queryOLTP(
-      `DELETE FROM dialogue_trees WHERE id = $1`,
-      [TEST_TREE_ID]
-    );
+    try {
+      await queryOLTP(
+        `DELETE FROM dialogue_overlays WHERE mystery_id = $1`,
+        [TEST_MYSTERY_ID]
+      );
+      await queryOLTP(
+        `DELETE FROM player_mysteries WHERE user_id = $1 AND mystery_id = $2`,
+        [TEST_USER_ID, TEST_MYSTERY_ID]
+      );
+      await queryOLTP(
+        `DELETE FROM mysteries WHERE id = $1`,
+        [TEST_MYSTERY_ID]
+      );
+      await queryOLTP(
+        `DELETE FROM dialogue_trees WHERE id = $1`,
+        [TEST_TREE_ID]
+      );
 
-    // Bust any cache entries this test created.
-    await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:base:${baseUpdatedAt}`);
-    await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:${TEST_MYSTERY_ID}:${baseUpdatedAt}`);
+      // Bust any cache entries this test created.
+      await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:base:${baseUpdatedAt}`);
+      await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:${TEST_MYSTERY_ID}:${baseUpdatedAt}`);
+    } finally {
+      await closeConnections();
+      await closeRedis();
+    }
   });
 
   beforeEach(async () => {

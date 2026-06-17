@@ -14,6 +14,7 @@ import { feedRouter } from './routes/feed.js';
 import { vaultRouter } from './routes/vault.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
+import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 
 dotenv.config();
 
@@ -66,6 +67,15 @@ async function initializeServer() {
     console.log(`🔐 Auth: http://localhost:${PORT}/auth/dev-login`);
     console.log(`🎯 Player state: http://localhost:${PORT}/player/state`);
   });
+
+  // Leaderboard worker — finalize expired 24h Breakthrough windows every 5 minutes
+  const LEADERBOARD_INTERVAL_MS = 5 * 60 * 1000;
+  setInterval(() => {
+    LeaderboardWorker.processExpiredMysteries().catch((err) =>
+      console.error('[LeaderboardWorker] cron tick error:', err)
+    );
+  }, LEADERBOARD_INTERVAL_MS);
+  console.log(`🏆 LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
 }
 
 // Graceful shutdown

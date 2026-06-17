@@ -88,9 +88,25 @@ export async function incrementContentVersion(contentType: string, contentId: st
   return redis.incr(key);
 }
 
+let redisClosed = false;
+
 // Close Redis connection
 export async function closeRedis(): Promise<void> {
-  if (redis.status !== 'end') {
+  if (redisClosed) {
+    return;
+  }
+
+  redisClosed = true;
+  if (redis.status === 'ready') {
+    try {
+      await redis.quit();
+      return;
+    } catch {
+      redis.disconnect();
+    }
+  }
+
+  if (redis.status !== 'end' && redis.status !== 'close') {
     redis.disconnect();
   }
 }

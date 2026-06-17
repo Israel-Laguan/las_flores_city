@@ -1,4 +1,5 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../../src/database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
+import { closeRedis } from '../../src/database/redis.js';
 import {
   processBreakthroughSolve,
   emitBreakthroughSideEffects,
@@ -146,6 +147,9 @@ describe('BreakthroughStateMachine', () => {
     } catch (err) {
       // best-effort cleanup; do not throw
       console.error('breakthrough.test.ts cleanup error:', err);
+    } finally {
+      await closeConnections();
+      await closeRedis();
     }
   });
 

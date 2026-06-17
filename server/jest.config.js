@@ -25,4 +25,5 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   testMatch: ['**/*.test.ts'],
   testTimeout: 15000,
+  globalTeardown: '<rootDir>/tests/globalTeardown.cjs',
 };
