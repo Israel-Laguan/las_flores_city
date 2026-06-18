@@ -18,6 +18,34 @@ import { DialogueResolver } from '../services/DialogueResolver.js';
 
 export const dialogueRouter = express.Router();
 
+async function recordPostChoiceTelemetry(
+  userId: string,
+  dialogueId: string,
+  choiceIndex: number,
+  result: any
+) {
+  if (result.unlockedVaultItem) {
+    await deleteCache(`user:vault:${userId}`);
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
+      [userId, JSON.stringify({ itemId: result.unlockedVaultItem.id })]
+    ).catch((err) => console.error('Vault unlock telemetry error:', err));
+  }
+
+  if (result.timeBlocksSpent && result.timeBlocksSpent > 0) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
+       VALUES (gen_random_uuid(), $1, 'dialogue_choice', $2, $3)`,
+      [
+        userId,
+        JSON.stringify({ dialogue_tree_id: dialogueId, choice_index: choiceIndex }),
+        result.timeBlocksSpent,
+      ]
+    ).catch((err) => console.error('Dialogue choice telemetry error:', err));
+  }
+}
+
 // ============================================================
 // POST /dialogue/start - Start a conversation
 // Body: { characterId, sceneId }
@@ -150,26 +178,7 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       }
     }
 
-    if (result.unlockedVaultItem) {
-      await deleteCache(`user:vault:${userId}`);
-      queryOLAP(
-        `INSERT INTO player_events (id, user_id, event_type, event_data)
-         VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
-        [userId, JSON.stringify({ itemId: result.unlockedVaultItem.id })]
-      ).catch((err) => console.error('Vault unlock telemetry error:', err));
-    }
-
-    if (result.timeBlocksSpent && result.timeBlocksSpent > 0) {
-      queryOLAP(
-        `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
-         VALUES (gen_random_uuid(), $1, 'dialogue_choice', $2, $3)`,
-        [
-          userId,
-          JSON.stringify({ dialogue_tree_id: id, choice_index: choiceIndex }),
-          result.timeBlocksSpent,
-        ]
-      ).catch((err) => console.error('Dialogue choice telemetry error:', err));
-    }
+    await recordPostChoiceTelemetry(userId, id, choiceIndex, result);
 
     // Task 3.3: post-commit Breakthrough side effects (cache
     // invalidation, OLAP event, [BREAKTHROUGH] social post for the

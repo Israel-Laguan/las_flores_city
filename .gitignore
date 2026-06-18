@@ -35,6 +35,7 @@ yarn-error.log*
 .idea/
 *.swp
 *.swo
+.kilo/
 
 # OS
 .DS_Store
