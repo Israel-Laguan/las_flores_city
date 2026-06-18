@@ -9,6 +9,9 @@ export const GigSchema = z.object({
   reputation_target: z.string().optional(),
   reputation_reward: z.number().int().optional(),
   location_restriction_id: z.string().uuid().optional(),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
 });
 
 export const GigFileSchema = z.object({

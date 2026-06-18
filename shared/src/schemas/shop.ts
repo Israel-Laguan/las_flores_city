@@ -27,6 +27,9 @@ export const ShopItemSchema = z.object({
   currency_type: ShopCurrencySchema.default('gold_credits'),
   asset_url: z.string().url(),
   is_active: z.boolean().default(true),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
 });
 
 export type ShopItem = z.infer<typeof ShopItemSchema>;

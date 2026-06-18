@@ -272,6 +272,9 @@ export const YAMLCharacterSchema = z.object({
   description: z.string().max(1000),
   avatar_url: z.string().url().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
 });
 
 export type YAMLCharacter = z.infer<typeof YAMLCharacterSchema>;
@@ -283,6 +286,9 @@ export const YAMLDialogueSchema = z.object({
   start_node_id: z.string(),
   nodes: z.record(z.string(), DialogueNodeSchema),
   metadata: z.record(z.string(), z.any()).optional(),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
 });
 
 export type YAMLDialogue = z.infer<typeof YAMLDialogueSchema>;
@@ -299,6 +305,9 @@ export const YAMLOverlaySchema = z.object({
     data: z.record(z.string(), z.any()),
   })).default([]),
   nodes: z.record(z.string(), DialogueNodeSchema).optional(),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
   conditions: z.record(z.string(), z.any()).optional(),
   priority: z.number().int().default(0),
   is_nsfw: z.boolean().default(false),
@@ -313,6 +322,9 @@ export const YAMLMysterySchema = z.object({
   status: z.enum(['ACTIVE', 'RESOLVING', 'ARCHIVED']).default('ACTIVE'),
   expires_at: z.string().datetime().optional(),
   // Task 5.1: aftermath directives executed atomically by the
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
   // LeaderboardWorker when this mystery's Breakthrough window
   // closes. Defaults to {} so existing mystery YAMLs still parse.
   aftermath_payload: AftermathSchema.optional().default({}),
@@ -331,6 +343,9 @@ export const YAMLSceneSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(1000),
   district: z.string().max(50),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
   image_url: z.string().url().optional(),
   background_url: z.string().optional(),
   ambient_sound_url: z.string().nullable().optional(),

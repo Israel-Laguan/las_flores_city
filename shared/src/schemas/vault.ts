@@ -9,6 +9,9 @@ export const VaultItemSchema = z.object({
   item_type: z.enum(['clue', 'memento', 'premium_cg']),
   mystery_id: z.string().uuid().optional(),
   requires_signed_url: z.boolean().optional(),
+  // UGC authorship metadata. Optional so existing content parses unchanged.
+  // Future Task 5.2 will read this during migration to credit the author.
+  written_by: z.string().max(100).optional(),
 });
 
 export const VaultFileSchema = z.object({
