@@ -119,8 +119,12 @@ services:
       - "3001:3000"
     environment:
       API_URL: http://localhost:3000
+      DATABASE_URL: postgresql://las_flores:las_flores_dev_password@postgres-oltp:5432/las_flores
     depends_on:
-      - server
+      server:
+        condition: service_started
+      postgres-oltp:
+        condition: service_healthy
     volumes:
       - ./admin/src:/app/admin/src
       - ./shared:/app/shared
