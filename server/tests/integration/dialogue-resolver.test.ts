@@ -1,7 +1,10 @@
-import { queryOLTP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
 import { getCache, deleteCache, closeRedis } from '../../src/database/redis.js';
 import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
+import express from 'express';
+import { dialogueRouter } from '../../src/routes/dialogue.js';
+import { generateToken } from '../../src/middleware/auth.js';
 
 // ============================================================
 // Dialogue Overlay Resolver integration tests
@@ -24,6 +27,28 @@ const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const TEST_TREE_ID = '9e8d7c6b-5a4f-4e3d-2c1b-0a9b8c7d6e5f';
 const TEST_MYSTERY_ID = 'a1b2c3d4-1111-4111-8111-aaaaaaaaaaaa';
 let baseUpdatedAt = '';
+
+async function buildExpectedCacheSuffix(
+  userId: string,
+  mysteryIdsForPlayer: string[]
+): Promise<string> {
+  const investigating = await queryOLTP<{ mystery_id: string }>(
+    `SELECT mystery_id FROM player_mysteries
+     WHERE user_id = $1 AND status = 'INVESTIGATING'`,
+    [userId]
+  );
+  const active = await queryOLTP<{ id: string }>(
+    `SELECT id FROM mysteries WHERE status = 'ACTIVE'`
+  );
+  const allIds = [
+    ...new Set([
+      ...investigating.rows.map((r) => r.mystery_id),
+      ...active.rows.map((r) => r.id),
+      ...mysteryIdsForPlayer,
+    ]),
+  ].sort();
+  return allIds.length > 0 ? `${allIds.join('_')}:${baseUpdatedAt}` : `base:${baseUpdatedAt}`;
+}
 
 const baseNode: DialogueNode = {
   id: 'root',
@@ -163,6 +188,54 @@ describe('DialogueResolver', () => {
       const merged = deepMergeNodes(baseNodes, {});
       expect(merged).toEqual(baseNodes);
     });
+
+    it('preserves <important> tags in node text during merge', () => {
+      const baseWithTags: Record<string, DialogueNode> = {
+        root: {
+          id: 'root',
+          type: 'narrator',
+          text: 'Base text with <important>important info</important>',
+        },
+      };
+      const overlayWithTags: Record<string, DialogueNode> = {
+        root: {
+          id: 'root',
+          type: 'narrator',
+          text: 'Overlaid text with <important>new important</important> data',
+        },
+      };
+      const merged = deepMergeNodes(baseWithTags, overlayWithTags);
+      expect(merged.root.text).toBe('Overlaid text with <important>new important</important> data');
+      expect(merged.root.text).toContain('<important>');
+      expect(merged.root.text).toContain('</important>');
+    });
+
+    it('preserves <important> tags in choice text during merge', () => {
+      const baseWithTagChoices: Record<string, DialogueNode> = {
+        root: {
+          id: 'root',
+          type: 'narrator',
+          text: 'Base text',
+          choices: [
+            { id: 'c1', text: 'Use <important>Protocol 7</important>', next_node_id: 'next' },
+          ],
+        },
+      };
+      const overlayWithTagChoices: Record<string, DialogueNode> = {
+        root: {
+          id: 'root',
+          type: 'narrator',
+          text: 'Overlaid text',
+          choices: [
+            { id: 'c1', text: 'Use <important>Protocol 7</important>', next_node_id: 'mystery' },
+          ],
+        },
+      };
+      const merged = deepMergeNodes(baseWithTagChoices, overlayWithTagChoices);
+      expect(merged.root.choices![0].text).toBe('Use <important>Protocol 7</important>');
+      expect(merged.root.choices![0].text).toContain('<important>');
+      expect(merged.root.choices![0].text).toContain('</important>');
+    });
   });
 
   describe('resolveTreeForUser', () => {
@@ -220,8 +293,8 @@ describe('DialogueResolver', () => {
       // First call populates the cache.
       await DialogueResolver.resolveTreeForUser(TEST_USER_ID, TEST_TREE_ID);
 
-      // Cache key includes tree updated_at so content changes invalidate stale resolver entries.
-      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:mysteries:${TEST_MYSTERY_ID}:${baseUpdatedAt}`;
+      const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, [TEST_MYSTERY_ID]);
+      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:mysteries:${cacheSuffix}`;
       const cached = await getCache(expectedKey);
       expect(cached).toBeDefined();
       expect((cached as any).rootId).toBe('root');
@@ -247,12 +320,13 @@ describe('DialogueResolver', () => {
       expect(r1).toEqual(r2);
     });
 
-    it('uses the "base" suffix in the cache key when no mysteries are active', async () => {
+    it('uses the resolver cache suffix when no player mysteries are active', async () => {
       const result = await DialogueResolver.resolveTreeForUser(
         TEST_USER_ID,
         TEST_TREE_ID
       );
-      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:mysteries:base:${baseUpdatedAt}`;
+      const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, []);
+      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:mysteries:${cacheSuffix}`;
       const cached = await getCache(expectedKey);
       expect(cached).toBeDefined();
       expect((cached as any).nodes.root.text).toBe('Base text');
@@ -311,6 +385,117 @@ describe('DialogueResolver', () => {
         `DELETE FROM mysteries WHERE id = $1`,
         [mysteryId]
       );
+    });
+  });
+
+  describe('Dialogue choice OLAP telemetry', () => {
+    const TB_TEST_USER_ID = 'e0000000-0000-4000-8000-000000000099';
+    const TB_TEST_TREE_ID = 'f2222222-2222-4222-8222-bbbbbbbbbbbb';
+    const TB_ROOT_NODE = 'tb_root';
+    const TB_NEXT_NODE = 'tb_next';
+
+    const tbNodes = {
+      [TB_ROOT_NODE]: {
+        id: TB_ROOT_NODE,
+        type: 'narrator',
+        text: 'Pay to proceed?',
+        choices: [
+          {
+            id: 'c_paid',
+            text: 'Spend time blocks',
+            next_node_id: TB_NEXT_NODE,
+            time_block_cost: { amount: 3 },
+          },
+        ],
+      },
+      [TB_NEXT_NODE]: {
+        id: TB_NEXT_NODE,
+        type: 'narrator',
+        text: 'Done.',
+        is_end: true,
+      },
+    };
+
+    const olapApp = express();
+    olapApp.use(express.json());
+    olapApp.use('/dialogue', dialogueRouter);
+
+    let olapServer: ReturnType<typeof express.Application.listen>;
+    let olapPort: number;
+
+    beforeAll(async () => {
+      await queryOLTP(
+        `INSERT INTO users (id, email, username, display_name, time_blocks, credits)
+         VALUES ($1, 'tb-olap@test.com', 'tb_olap_test', 'TB OLAP Test', 48, 100)
+         ON CONFLICT (id) DO UPDATE SET time_blocks = 48, credits = 100`,
+        [TB_TEST_USER_ID]
+      );
+      await queryOLTP(
+        `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+        [TB_TEST_USER_ID]
+      );
+      await queryOLTP(
+        `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
+         VALUES ($1, 'TB OLAP Tree', $2, $3)
+         ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
+        [TB_TEST_TREE_ID, TB_ROOT_NODE, JSON.stringify(tbNodes)]
+      );
+      await queryOLTP(
+        `UPDATE users SET active_dialogue_id = $1, current_node_id = $2 WHERE id = $3`,
+        [TB_TEST_TREE_ID, TB_ROOT_NODE, TB_TEST_USER_ID]
+      );
+      await queryOLTP(
+        `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made)
+         VALUES ($1, $2, $3, '[]')
+         ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET current_node_id = EXCLUDED.current_node_id`,
+        [TB_TEST_USER_ID, TB_TEST_TREE_ID, TB_ROOT_NODE]
+      );
+
+      olapServer = await new Promise<ReturnType<typeof express.Application.listen>>((resolve) => {
+        const s = olapApp.listen(0, () => resolve(s));
+      });
+      olapPort = (olapServer.address() as { port: number }).port;
+    });
+
+    afterAll(async () => {
+      await queryOLTP(`DELETE FROM player_dialogue_states WHERE dialogue_tree_id = $1`, [TB_TEST_TREE_ID]);
+      await queryOLTP(`DELETE FROM dialogue_trees WHERE id = $1`, [TB_TEST_TREE_ID]);
+      await queryOLTP(`DELETE FROM users WHERE id = $1`, [TB_TEST_USER_ID]);
+      if (olapServer) {
+        await new Promise<void>((resolve) => olapServer.close(() => resolve()));
+      }
+    });
+
+    test('POST /dialogue/choose emits dialogue_choice OLAP event with time_blocks_cost', async () => {
+      const res = await fetch(`http://localhost:${olapPort}/dialogue/${TB_TEST_TREE_ID}/choose`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${generateToken(TB_TEST_USER_ID)}`,
+        },
+        body: JSON.stringify({ choiceIndex: 0 }),
+      });
+      expect(res.ok).toBe(true);
+
+      await new Promise((r) => setTimeout(r, 250));
+
+      const after = await queryOLAP<{
+        event_type: string;
+        time_blocks_cost: number;
+        event_data: { dialogue_tree_id: string; choice_index: number };
+      }>(
+        `SELECT event_type, time_blocks_cost, event_data
+         FROM player_events
+         WHERE user_id = $1 AND event_type = 'dialogue_choice'
+         ORDER BY created_at DESC LIMIT 1`,
+        [TB_TEST_USER_ID]
+      );
+
+      expect(after.rows.length).toBe(1);
+      expect(after.rows[0].event_type).toBe('dialogue_choice');
+      expect(after.rows[0].time_blocks_cost).toBe(3);
+      expect(after.rows[0].event_data.dialogue_tree_id).toBe(TB_TEST_TREE_ID);
+      expect(after.rows[0].event_data.choice_index).toBe(0);
     });
   });
 });

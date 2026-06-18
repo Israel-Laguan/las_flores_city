@@ -60,22 +60,30 @@ export class DialogueResolver {
   /**
    * Resolve the effective dialogue tree for a given user and
    * base tree id. The result is the base tree, deep-merged with
-   * any active mystery overlays for trees the player is
-   * participating in. Cached in Redis by sorted mystery IDs
-   * (deterministic key regardless of order).
+   * any active mystery overlays for this tree. ACTIVE mysteries
+   * are merged so hook choices are visible to all players.
+   * Cached in Redis by sorted mystery IDs (deterministic key
+   * regardless of order).
    */
   public static async resolveTreeForUser(
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {
-    const activeMysteryIds = await DialogueResolver.getActiveMysteryIds(userId);
+    const [investigatingIds, activeMysteryIds] = await Promise.all([
+      DialogueResolver.getActiveMysteryIds(userId),
+      DialogueResolver.getActiveMysteries(),
+    ]);
+
+    // Combine investigating + active mysteries for overlay loading.
+    // This ensures hook choices (in overlays for ACTIVE mysteries) are
+    // visible to all players, while full overlays merge for investigators.
+    const allMysteryIds = [...new Set([...investigatingIds, ...activeMysteryIds])].sort();
 
     const baseTree = await DialogueResolver.loadBaseTree(baseTreeId);
     let resolvedNodes = baseTree.nodes;
-    const rootId = baseTree.start_node_id;
     const cacheSuffix =
-      activeMysteryIds.length > 0
-        ? `${activeMysteryIds.join('_')}:${baseTree.updated_at}`
+      allMysteryIds.length > 0
+        ? `${allMysteryIds.join('_')}:${baseTree.updated_at}`
         : `base:${baseTree.updated_at}`;
     const cacheKey = `dialogue:resolved:${baseTreeId}:mysteries:${cacheSuffix}`;
 
@@ -84,19 +92,17 @@ export class DialogueResolver {
       return cachedTree;
     }
 
-    if (activeMysteryIds.length > 0) {
-      const overlays = await DialogueResolver.loadMysteryOverlays(
-        baseTreeId,
-        activeMysteryIds
-      );
-      for (const overlay of overlays) {
-        if (overlay.nodes) {
-          resolvedNodes = deepMergeNodes(resolvedNodes, overlay.nodes);
-        }
+    const overlays = await DialogueResolver.loadMysteryOverlays(
+      baseTreeId,
+      allMysteryIds
+    );
+    for (const overlay of overlays) {
+      if (overlay.nodes) {
+        resolvedNodes = deepMergeNodes(resolvedNodes, overlay.nodes);
       }
     }
 
-    const finalTree: ResolvedTree = { rootId, nodes: resolvedNodes };
+    const finalTree: ResolvedTree = { rootId: baseTree.start_node_id, nodes: resolvedNodes };
 
     await setCache(cacheKey, finalTree, CACHE_TTL_SECONDS);
 
@@ -106,7 +112,7 @@ export class DialogueResolver {
   /**
    * Get the set of mystery IDs that the user is currently
    * investigating. Returns sorted array of UUIDs (deterministic
-   * cache key regardless of insertion order).
+   * cache key regardless of order).
    */
   public static async getActiveMysteryIds(userId: string): Promise<string[]> {
     const result = await queryOLTP<{ mystery_id: string }>(
@@ -116,6 +122,17 @@ export class DialogueResolver {
       [userId]
     );
     return result.rows.map((row) => row.mystery_id).sort();
+  }
+
+  /**
+   * Get the set of ACTIVE mystery IDs for any tree (so overlays
+   * with hook choices are visible to all players).
+   */
+  public static async getActiveMysteries(): Promise<string[]> {
+    const result = await queryOLTP<{ id: string }>(
+      `SELECT id FROM mysteries WHERE status = 'ACTIVE'`
+    );
+    return result.rows.map((row) => row.id).sort();
   }
 
   /**
@@ -141,11 +158,11 @@ export class DialogueResolver {
 
   /**
    * Load all mystery overlays that apply to this tree and any
-   * of the user's active mysteries.
+   * of the provided mystery IDs.
    */
   private static async loadMysteryOverlays(
     baseTreeId: string,
-    activeMysteryIds: string[]
+    mysteryIds: string[]
   ): Promise<Array<{ nodes: Record<string, DialogueNode> }>> {
     const result = await queryOLTP<{
       nodes: Record<string, DialogueNode>;
@@ -156,7 +173,7 @@ export class DialogueResolver {
          AND mystery_id = ANY($2::uuid[])
          AND nodes IS NOT NULL 
          AND nodes != '{}'::jsonb`,
-      [baseTreeId, activeMysteryIds]
+      [baseTreeId, mysteryIds]
     );
     return result.rows;
   }

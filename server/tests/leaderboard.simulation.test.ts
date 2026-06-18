@@ -1,6 +1,8 @@
 import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../src/database/connection.js';
 import { closeRedis } from '../src/database/redis.js';
 import { LeaderboardWorker } from '../src/workers/LeaderboardWorker.js';
+import fs from 'fs';
+import path from 'path';
 
 // ============================================================
 // Sprint 3: OLAP Leaderboard Simulation (Task 3.5)
@@ -46,6 +48,18 @@ const PLAYER_IDS: Record<string, string> = {
 
 const createdUserIds: string[] = [];
 
+async function applyMigration(filename: string): Promise<void> {
+  const sql = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/database/migrations', filename),
+    'utf-8'
+  );
+  try {
+    await queryOLTP(sql);
+  } catch {
+    // Migration may already be applied
+  }
+}
+
 async function ensurePublicProfile(userId: string, username: string): Promise<void> {
   await queryOLTP(
     `INSERT INTO public_profiles (user_id, badges)
@@ -57,6 +71,9 @@ async function ensurePublicProfile(userId: string, username: string): Promise<vo
 
 describe('Sprint 3: OLAP Leaderboard Simulation', () => {
   beforeAll(async () => {
+    await applyMigration('017_mystery_state.sql');
+    await applyMigration('021_leaderboards.sql');
+
     // 1. Ensure the mystery exists in RESOLVING status with
     //    expires_at well in the past so the worker picks it up.
     await queryOLTP(

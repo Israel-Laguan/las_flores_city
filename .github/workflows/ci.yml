@@ -78,7 +78,10 @@ jobs:
             011_bank_constraints \
             012_gigs_schema \
             014_social_feed \
-            015_player_sms_threads_v2; do
+            015_player_sms_threads_v2 \
+            017_mystery_state \
+            018_vault_system \
+            021_leaderboards; do
             PGPASSWORD=las_flores_dev_password psql \
               -h localhost -p 5434 -U las_flores -d las_flores \
               -f server/src/database/migrations/${migration}.sql
@@ -91,7 +94,9 @@ jobs:
             006_add_move_event_type \
             008_add_sleep_event_type \
             013_add_gig_event_type \
-            016_add_sms_event_types; do
+            016_add_sms_event_types \
+            019_add_vault_event_type \
+            020_add_mystery_solved_event_type; do
             PGPASSWORD=las_flores_analytics_dev_password psql \
               -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
               -f server/src/database/migrations/${migration}.sql

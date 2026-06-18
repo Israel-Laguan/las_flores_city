@@ -1,4 +1,5 @@
 import { oltpPool, queryOLAP } from '../database/connection.js';
+import { invalidatePattern } from '../database/redis.js';
 import { SocialFeedService } from '../services/SocialFeedService.js';
 import type { LeaderboardBadgeType, LeaderboardEntry } from '../../../shared/src/types/leaderboard.js';
 
@@ -78,6 +79,7 @@ export class LeaderboardWorker {
       if (solvers.length === 0) {
         await this.archiveMystery(client, mysteryId);
         await client.query('COMMIT');
+        await this.invalidateDialogueCache();
         return;
       }
 
@@ -91,6 +93,7 @@ export class LeaderboardWorker {
       await this.archiveMystery(client, mysteryId);
       await client.query('COMMIT');
       await this.createLeaderboardPost(mysteryId, socialTextParts);
+      await this.invalidateDialogueCache();
     } catch (err) {
       await client.query('ROLLBACK');
       throw err;
@@ -189,6 +192,14 @@ export class LeaderboardWorker {
       );
     } catch (postErr) {
       console.error(`[LeaderboardWorker] social post failed for mystery=${mysteryId}:`, postErr);
+    }
+  }
+
+  private static async invalidateDialogueCache(): Promise<void> {
+    try {
+      await invalidatePattern('dialogue:resolved:*');
+    } catch (err) {
+      console.error('[LeaderboardWorker] dialogue cache invalidation error:', err);
     }
   }
 
