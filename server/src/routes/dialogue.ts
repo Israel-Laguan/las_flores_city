@@ -302,8 +302,15 @@ dialogueRouter.post('/end', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
 
+    // Task 5.1: also clear simulation flags so an explicit /end
+    // returns the player to the live world even mid-simulation.
     await queryOLTP(
-      'UPDATE users SET current_node_id = NULL, active_dialogue_id = NULL WHERE id = $1',
+      `UPDATE users
+          SET current_node_id = NULL,
+              active_dialogue_id = NULL,
+              is_in_simulation = FALSE,
+              simulation_mystery_id = NULL
+        WHERE id = $1`,
       [userId]
     );
 

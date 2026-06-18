@@ -188,13 +188,14 @@ async function upsertGig(data: any): Promise<string> {
 
 async function upsertMystery(data: any): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO mysteries (id, title, description, status, expires_at)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO mysteries (id, title, description, status, expires_at, aftermath_payload)
+     VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (id) DO UPDATE SET
        title = EXCLUDED.title,
        description = EXCLUDED.description,
        status = EXCLUDED.status,
-       expires_at = EXCLUDED.expires_at
+       expires_at = EXCLUDED.expires_at,
+       aftermath_payload = EXCLUDED.aftermath_payload
      RETURNING id`,
     [
       data.id,
@@ -202,6 +203,7 @@ async function upsertMystery(data: any): Promise<string> {
       sanitizeText(data.description),
       data.status || 'ACTIVE',
       data.expires_at || null,
+      JSON.stringify(data.aftermath_payload ?? {}),
     ]
   );
   return result.rows[0].id;

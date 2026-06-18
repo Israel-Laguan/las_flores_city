@@ -22,7 +22,8 @@
     "022_ai_settings.sql",
     "023_patreon_entitlements.sql",
     "024_marketplace.sql",
-    "026_vault_signed_urls.sql"
+    "026_vault_signed_urls.sql",
+    "027_aftermath.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

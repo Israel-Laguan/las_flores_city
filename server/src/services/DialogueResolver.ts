@@ -132,6 +132,47 @@ export class DialogueResolver {
   }
 
   /**
+   * Task 5.1: Resolve a dialogue tree for Archive Room legacy play.
+   *
+   * Same deep-merge as resolveTreeForUser, but loads ALL overlays
+   * for the given mystery regardless of mystery status — so an
+   * ARCHIVED mystery's investigation content stays playable for
+   * latecomers via POST /archive/start-simulation. Still honors
+   * NSFW entitlement. Cached separately under `dialogue:archive:*`
+   * so it never collides with live `dialogue:resolved:*` entries.
+   */
+  public static async resolveTreeForArchive(
+    baseTreeId: string,
+    mysteryId: string,
+    isNsfwUnlocked: boolean
+  ): Promise<ResolvedTree> {
+    const baseTree = await DialogueResolver.loadBaseTree(baseTreeId);
+    const overlays = await DialogueResolver.loadAllMysteryOverlays(baseTreeId, mysteryId);
+    const overlayFingerprint =
+      overlays.length > 0 ? buildOverlayFingerprint(overlays) : baseTree.updated_at;
+    const cacheKey = `dialogue:archive:${baseTreeId}:${mysteryId}:nsfw:${isNsfwUnlocked}:${overlayFingerprint}`;
+
+    const cachedTree = await getCache<ResolvedTree>(cacheKey);
+    if (cachedTree) {
+      return cachedTree;
+    }
+
+    let resolvedNodes = baseTree.nodes;
+    for (const overlay of overlays) {
+      if (overlay.is_nsfw && !isNsfwUnlocked) {
+        continue;
+      }
+      if (overlay.nodes) {
+        resolvedNodes = deepMergeNodes(resolvedNodes, overlay.nodes);
+      }
+    }
+
+    const finalTree: ResolvedTree = { rootId: baseTree.start_node_id, nodes: resolvedNodes };
+    await setCache(cacheKey, finalTree, CACHE_TTL_SECONDS);
+    return finalTree;
+  }
+
+  /**
    * Get the set of mystery IDs that the user is currently
    * investigating. Returns sorted array of UUIDs (deterministic
    * cache key regardless of order).
@@ -206,6 +247,27 @@ export class DialogueResolver {
          AND nodes IS NOT NULL 
          AND nodes != '{}'::jsonb`,
       [baseTreeId, mysteryIds]
+    );
+    return result.rows;
+  }
+
+  /**
+   * Task 5.1: Load every overlay for a single mystery that targets
+   * the given tree, ignoring mystery status. Used by the Archive
+   * Room for legacy playback of ARCHIVED mysteries.
+   */
+  private static async loadAllMysteryOverlays(
+    baseTreeId: string,
+    mysteryId: string
+  ): Promise<OverlayRow[]> {
+    const result = await queryOLTP<OverlayRow>(
+      `SELECT nodes, updated_at, is_nsfw
+         FROM dialogue_overlays
+        WHERE target_tree_id = $1
+          AND mystery_id = $2
+          AND nodes IS NOT NULL
+          AND nodes != '{}'::jsonb`,
+      [baseTreeId, mysteryId]
     );
     return result.rows;
   }

@@ -16,6 +16,7 @@ import { settingsRouter } from './routes/settings.js';
 import { patreonRouter } from './routes/patreon.js';
 import { shopRouter } from './routes/shop.js';
 import { paypalRouter } from './routes/paypal.js';
+import { archiveRouter } from './routes/archive.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
@@ -44,6 +45,7 @@ app.use('/settings', settingsRouter);
 app.use('/patreon', patreonRouter);
 app.use('/shop', shopRouter);
 app.use('/paypal', paypalRouter);
+app.use('/archive', archiveRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

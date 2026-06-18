@@ -6,6 +6,7 @@ import {
   RelationshipChangeSchema,
 } from './schemas/dialogue.js';
 import type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange } from './schemas/dialogue.js';
+import { AftermathSchema } from './schemas/aftermath.js';
 
 export {
   DialogueChoiceSchema,
@@ -311,6 +312,10 @@ export const YAMLMysterySchema = z.object({
   description: z.string().min(1),
   status: z.enum(['ACTIVE', 'RESOLVING', 'ARCHIVED']).default('ACTIVE'),
   expires_at: z.string().datetime().optional(),
+  // Task 5.1: aftermath directives executed atomically by the
+  // LeaderboardWorker when this mystery's Breakthrough window
+  // closes. Defaults to {} so existing mystery YAMLs still parse.
+  aftermath_payload: AftermathSchema.optional().default({}),
 });
 
 export type YAMLMystery = z.infer<typeof YAMLMysterySchema>;
@@ -430,6 +435,10 @@ export type {
   PayPalAmount,
   PayPalCaptureStatus,
 } from './schemas/shop.js';
+
+// ==================== Aftermath / Recycle Phase (Task 5.1) ====================
+export { AftermathSchema } from './schemas/aftermath.js';
+export type { Aftermath } from './schemas/aftermath.js';
 
 // ==================== Content Validation ====================
 

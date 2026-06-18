@@ -77,9 +77,10 @@ export class LeaderboardWorker {
       const solvers = await this.getSolvers(client, mysteryId);
 
       if (solvers.length === 0) {
+        await this.applyAftermath(client, mysteryId);
         await this.archiveMystery(client, mysteryId);
         await client.query('COMMIT');
-        await this.invalidateDialogueCache();
+        await this.invalidateMysteryCaches();
         return;
       }
 
@@ -90,10 +91,11 @@ export class LeaderboardWorker {
         await this.upsertLeaderboardEntry(client, mysteryId, leaderboard[i], i + 1);
       }
 
+      await this.applyAftermath(client, mysteryId);
       await this.archiveMystery(client, mysteryId);
       await client.query('COMMIT');
       await this.createLeaderboardPost(mysteryId, socialTextParts);
-      await this.invalidateDialogueCache();
+      await this.invalidateMysteryCaches();
     } catch (err) {
       await client.query('ROLLBACK');
       throw err;
@@ -122,6 +124,54 @@ export class LeaderboardWorker {
     mysteryId: string
   ): Promise<void> {
     await client.query(`UPDATE mysteries SET status = 'ARCHIVED' WHERE id = $1`, [mysteryId]);
+  }
+
+  /**
+   * Task 5.1: Execute the aftermath payload atomically inside
+   * finalizeMystery's transaction. Demotes clue items to mementos
+   * and scrubs temporary characters from live scenes. Both the
+   * `retire_vault_items` UPDATE and `remove_scene_characters`
+   * DELETE are no-ops on ids that don't exist, so a stale payload
+   * can't poison the finalization.
+   *
+   * Runs BEFORE archiveMystery so that, if any statement throws,
+   * the whole finalization rolls back, the mystery stays
+   * RESOLVING, and the worker retries next tick — matching the
+   * existing idempotency model.
+   */
+  private static async applyAftermath(
+    client: import('pg').PoolClient,
+    mysteryId: string
+  ): Promise<void> {
+    const { rows } = await client.query<{ aftermath_payload: any }>(
+      `SELECT aftermath_payload FROM mysteries WHERE id = $1`,
+      [mysteryId]
+    );
+    const payload = rows[0]?.aftermath_payload ?? {};
+
+    // 1. Clues -> Mementos. The `item_type = 'clue'` guard keeps
+    //    premium_cg items that share this mystery from being
+    //    clobbered into mementos.
+    if (Array.isArray(payload.retire_vault_items) && payload.retire_vault_items.length > 0) {
+      await client.query(
+        `UPDATE vault_items
+            SET item_type = 'memento', updated_at = NOW()
+          WHERE id = ANY($1::uuid[])
+            AND item_type = 'clue'`,
+        [payload.retire_vault_items]
+      );
+    }
+
+    // 2. Scrub temporary characters from live scenes.
+    if (Array.isArray(payload.remove_scene_characters)) {
+      for (const mapping of payload.remove_scene_characters) {
+        await client.query(
+          `DELETE FROM scene_characters
+                WHERE scene_id = $1 AND character_id = $2`,
+          [mapping.scene_id, mapping.character_id]
+        );
+      }
+    }
   }
 
   private static async upsertLeaderboardEntry(
@@ -195,11 +245,23 @@ export class LeaderboardWorker {
     }
   }
 
-  private static async invalidateDialogueCache(): Promise<void> {
+  /**
+   * Task 5.1: expanded cache invalidation. A mystery archiving is
+   * a major world-state event — NPCs drop the now-archived
+   * overlays, the Vault must re-render demoted mementos, and
+   * scrubbed characters must disappear from location payloads.
+   * All three patterns use ioredis `keys` globbing (same mechanism
+   * as dialogue-breakthrough-helpers.ts:131), so per-user keys like
+   * `user:vault:${id}:nsfw:${flag}` and `user:location:${id}:${scene}`
+   * are all caught.
+   */
+  private static async invalidateMysteryCaches(): Promise<void> {
     try {
       await invalidatePattern('dialogue:resolved:*');
+      await invalidatePattern('user:vault:*');
+      await invalidatePattern('user:location:*');
     } catch (err) {
-      console.error('[LeaderboardWorker] dialogue cache invalidation error:', err);
+      console.error('[LeaderboardWorker] mystery cache invalidation error:', err);
     }
   }
 

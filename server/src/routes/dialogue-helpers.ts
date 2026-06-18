@@ -137,8 +137,15 @@ export async function recordChoiceAndEffects(
   nextNode: any
 ): Promise<void> {
   if (isEnd) {
+    // Task 5.1: also clear simulation flags so the player
+    // returns to the live world after finishing an archive case.
     await client.query(
-      'UPDATE users SET current_node_id = NULL, active_dialogue_id = NULL WHERE id = $1',
+      `UPDATE users
+          SET current_node_id = NULL,
+              active_dialogue_id = NULL,
+              is_in_simulation = FALSE,
+              simulation_mystery_id = NULL
+        WHERE id = $1`,
       [userId]
     );
   } else {
@@ -197,8 +204,14 @@ export async function getDialogState(userId: string, dialogueId: string) {
     return { error: 'not_found' as const };
   }
 
-  const userResult = await queryOLTP(
-    'SELECT current_node_id, time_blocks FROM users WHERE id = $1',
+  const userResult = await queryOLTP<{
+    current_node_id: string | null;
+    time_blocks: number;
+    is_in_simulation: boolean;
+    simulation_mystery_id: string | null;
+  }>(
+    `SELECT current_node_id, time_blocks, is_in_simulation, simulation_mystery_id
+       FROM users WHERE id = $1`,
     [userId]
   );
 
@@ -206,11 +219,27 @@ export async function getDialogState(userId: string, dialogueId: string) {
     return { error: 'player_not_found' as const };
   }
 
-  // Resolve tree through the DialogueResolver (merges active
-  // mystery overlays for this user). The `nodes` field below
-  // carries the resolved tree, not the raw base.
-  const resolved = await DialogueResolver.resolveTreeForUser(userId, dialogueId);
-  const currentNodeId = userResult.rows[0].current_node_id || resolved.rootId;
+  const user = userResult.rows[0];
+
+  // Task 5.1: Branch to the archive resolver when the player is in
+  // simulation mode. The archive resolver force-merges ALL overlays
+  // for the mystery regardless of ARCHIVED status, so legacy play
+  // gets the full investigation tree.
+  let resolved;
+  if (user.is_in_simulation && user.simulation_mystery_id) {
+    const isNsfwUnlocked = await DialogueResolver.getUserNsfwStatus(userId);
+    resolved = await DialogueResolver.resolveTreeForArchive(
+      dialogueId,
+      user.simulation_mystery_id,
+      isNsfwUnlocked
+    );
+  } else {
+    // Live resolver: merges overlays for ACTIVE mysteries the user
+    // is investigating or that are globally active.
+    resolved = await DialogueResolver.resolveTreeForUser(userId, dialogueId);
+  }
+
+  const currentNodeId = user.current_node_id || resolved.rootId;
   const currentNode = resolved.nodes[currentNodeId];
 
   if (!currentNode) {
