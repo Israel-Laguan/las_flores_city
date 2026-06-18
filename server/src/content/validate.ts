@@ -81,8 +81,9 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
   }
 }
 
-// Validate content by type
-function validateContentByType(type: ContentType, data: any): ValidationResult {
+// Validate content by type (exported for direct use by validateContentString
+// and the future UGC submission endpoint)
+export function validateContentByType(type: ContentType, data: any): ValidationResult {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
 
@@ -118,6 +119,9 @@ function validateContentByType(type: ContentType, data: any): ValidationResult {
       case 'shop_item':
         ShopItemFileSchema.parse(data);
         break;
+      // TODO: add gig schema validation. Currently gigs fall through
+      // silently — pre-existing gap, out of scope for Task 5.2 foundations.
+      // case 'gig': GigFileSchema.parse(data); break;
     }
   } catch (e: any) {
     errors.push({
@@ -297,6 +301,46 @@ export function checkForXSS(content: any): ValidationError[] {
   
   checkValue(content, 'content');
   return errors;
+}
+
+// Validate a YAML content string directly (no file I/O).
+// Used by the UGC submission endpoint to validate request-body YAML.
+// contentType is required because there's no file path to infer it from.
+export async function validateContentString(
+  yamlString: string,
+  contentType: ContentType
+): Promise<ValidationResult> {
+  const errors: ValidationError[] = [];
+  const warnings: string[] = [];
+
+  // Parse YAML
+  let data: any;
+  try {
+    data = yaml.load(yamlString);
+  } catch (e: any) {
+    errors.push({
+      message: `YAML parse error: ${e.message}`,
+      severity: 'error',
+    });
+    return { valid: false, errors, warnings };
+  }
+
+  // Schema + cycle validation
+  const typeResult = validateContentByType(contentType, data);
+  errors.push(...typeResult.errors);
+  warnings.push(...typeResult.warnings);
+
+  // XSS check (the file-based validateYAMLFile omits this; the full
+  // validateContent CLI pipeline runs it separately. For request-body
+  // validation we run both passes here.)
+  const xssErrors = checkForXSS(data);
+  errors.push(...xssErrors);
+
+  return {
+    valid: errors.filter(e => e.severity === 'error').length === 0,
+    errors,
+    warnings,
+  };
 }
 
 // Main validation function
