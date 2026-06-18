@@ -1,3 +1,6 @@
+/// <reference lib="webworker" />
+import { preserveImportantTags } from '../../../shared/src/importantTags.js';
+
 interface RewriteRequest {
   id: string;
   type: 'rewrite_choices';
@@ -103,18 +106,3 @@ Return a strict JSON array of exactly ${originalTexts.length} strings, one for e
     self.postMessage(response_msg);
   }
 };
-
-function preserveImportantTags(original: string, rewritten: string): string {
-  const importantRegex = /<important>.*?<\/important>/gs;
-  const originalTags = original.match(importantRegex) || [];
-
-  if (originalTags.length === 0) return rewritten;
-
-  const rewrittenTags = rewritten.match(importantRegex) || [];
-  if (rewrittenTags.length === 0) return original;
-
-  let tagIndex = 0;
-  return rewritten.replace(importantRegex, () => {
-    return tagIndex < originalTags.length ? originalTags[tagIndex++] : '';
-  });
-}

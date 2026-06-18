@@ -1,4 +1,4 @@
-export type AppRoute = 'home' | 'feed' | 'messages' | 'trabajando' | 'banco' | 'myme' | 'vault';
+export type AppRoute = 'home' | 'feed' | 'messages' | 'trabajando' | 'banco' | 'myme' | 'vault' | 'settings' | 'identity';
 
 export interface PhoneState {
   currentRoute: AppRoute;

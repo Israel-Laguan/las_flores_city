@@ -403,3 +403,6 @@ export const ContentFileSchema = z.object({
 });
 
 export type ContentFile = z.infer<typeof ContentFileSchema>;
+
+// ==================== BYOK AI Presentation (Task 4.1) ====================
+export { preserveImportantTags } from './importantTags.js';

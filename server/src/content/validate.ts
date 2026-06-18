@@ -1,5 +1,6 @@
 import yaml from 'js-yaml';
 import fs from 'fs/promises';
+import path from 'path';
 import { glob } from 'glob';
 import {
   YAMLCharacterSchema,
@@ -325,7 +326,11 @@ export async function validateContent(contentDir: string): Promise<ValidationRes
 }
 
 // CLI entry point
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isCli = process.argv[1]
+  ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'validate.ts'))
+  : false;
+
+if (isCli) {
   const contentDir = process.argv[2] || '../content';
 
   validateContent(contentDir)

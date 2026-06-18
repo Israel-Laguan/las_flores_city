@@ -3,6 +3,7 @@ import { phoneStore } from '../store/PhoneStore';
 import { PhoneBridge } from '../bridge/PhoneBridge';
 import { MessagesApp } from '../ui/apps/MessagesApp';
 import { VaultApp } from '../ui/apps/VaultApp';
+import { SettingsApp } from '../ui/apps/SettingsApp';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
@@ -102,6 +103,10 @@ export class PhoneOverlay {
       <p style="color:#888;font-size:11px;margin-top:10px;border-top:1px solid #333;padding-top:10px;">Your identity is verified by N&amp;M LTD.</p>
     `;
     this.apps.set('identity', identity);
+
+    const settings = document.createElement('div');
+    new SettingsApp(settings);
+    this.apps.set('settings', settings);
   }
 
   private createNavBar(): void {
@@ -110,9 +115,10 @@ export class PhoneOverlay {
       { label: 'Feed', key: 'feed' },
       { label: 'Messages', key: 'messages' },
       { label: 'Banco', key: 'banco' },
-      { label: 'Trabajando', key: 'trabajando' },
+      { label: 'Trab', key: 'trabajando' },
       { label: 'Vault', key: 'vault' },
-      { label: 'Identity', key: 'identity' },
+      { label: 'ID', key: 'identity' },
+      { label: 'Settings', key: 'settings' },
     ];
 
     tabs.forEach(({ label, key }) => {
