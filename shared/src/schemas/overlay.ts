@@ -11,6 +11,9 @@ import { DialogueNodeSchema } from './dialogue.js';
 // version (predictable author control, no element-wise merging).
 // ============================================================
 
+export const UnlockConditionSchema = z.enum(['none', 'patreon_nsfw']);
+export type UnlockCondition = z.infer<typeof UnlockConditionSchema>;
+
 export const OverlaySchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
@@ -19,8 +22,13 @@ export const OverlaySchema = z.object({
   mystery_id: z.string().uuid().nullable().optional(),
   gate_node_id: z.string().uuid().optional().describe('Documentation: where the branch diverges'),
   priority: z.number().int().default(0),
+  is_nsfw: z.boolean().default(false),
+  unlock_condition: UnlockConditionSchema.optional(),
   nodes: z.record(z.string(), DialogueNodeSchema).default({}),
-});
+}).transform((data) => ({
+  ...data,
+  is_nsfw: data.is_nsfw || data.unlock_condition === 'patreon_nsfw',
+}));
 
 export type Overlay = z.infer<typeof OverlaySchema>;
 

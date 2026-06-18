@@ -212,3 +212,16 @@ export interface VaultItem {
 export async function getVaultItems(): Promise<{ success: boolean; data: VaultItem[]; timestamp?: string }> {
   return fetchAPI('/vault');
 }
+
+// Patreon API
+export async function getPatreonLinkUrl(): Promise<{ success: boolean; data: { url: string }; timestamp?: string }> {
+  return fetchAPI('/patreon/link');
+}
+
+export async function getPatreonStatus(): Promise<{ success: boolean; data: { linked: boolean; isNsfwUnlocked: boolean; tier: string }; timestamp?: string }> {
+  return fetchAPI('/patreon/status');
+}
+
+export async function unlinkPatreon(): Promise<{ success: boolean; data: { linked: boolean; isNsfwUnlocked: boolean; tier: string }; timestamp?: string }> {
+  return fetchAPI('/patreon/unlink', { method: 'POST' });
+}

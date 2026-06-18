@@ -32,6 +32,7 @@ interface BaseDialogueTree {
 interface OverlayRow {
   nodes: Record<string, DialogueNode>;
   updated_at: Date;
+  is_nsfw: boolean;
 }
 
 const CACHE_TTL_SECONDS = 3600; // 1 hour
@@ -83,9 +84,10 @@ export class DialogueResolver {
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {
-    const [investigatingIds, activeMysteryIds] = await Promise.all([
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked] = await Promise.all([
       DialogueResolver.getActiveMysteryIds(userId),
       DialogueResolver.getActiveMysteries(),
+      DialogueResolver.getUserNsfwStatus(userId),
     ]);
 
     // Combine investigating + active mysteries for overlay loading.
@@ -105,7 +107,7 @@ export class DialogueResolver {
       allMysteryIds.length > 0
         ? `${allMysteryIds.join('_')}:${overlayFingerprint}`
         : `base:${overlayFingerprint}`;
-    const cacheKey = `dialogue:resolved:${baseTreeId}:mysteries:${cacheSuffix}`;
+    const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:mysteries:${cacheSuffix}`;
 
     const cachedTree = await getCache<ResolvedTree>(cacheKey);
     if (cachedTree) {
@@ -113,6 +115,10 @@ export class DialogueResolver {
     }
 
     for (const overlay of overlays) {
+      // Entitlement gate: skip NSFW overlays for users without the unlock
+      if (overlay.is_nsfw && !isNsfwUnlocked) {
+        continue;
+      }
       if (overlay.nodes) {
         resolvedNodes = deepMergeNodes(resolvedNodes, overlay.nodes);
       }
@@ -152,6 +158,18 @@ export class DialogueResolver {
   }
 
   /**
+   * Get the user's NSFW unlock status from user_entitlements.
+   * Returns false if no entitlements row exists.
+   */
+  public static async getUserNsfwStatus(userId: string): Promise<boolean> {
+    const result = await queryOLTP<{ is_nsfw_unlocked: boolean }>(
+      `SELECT is_nsfw_unlocked FROM user_entitlements WHERE user_id = $1`,
+      [userId]
+    );
+    return result.rows[0]?.is_nsfw_unlocked ?? false;
+  }
+
+  /**
    * Load the base dialogue tree (raw, no overlays).
    */
   private static async loadBaseTree(
@@ -181,7 +199,7 @@ export class DialogueResolver {
     mysteryIds: string[]
   ): Promise<OverlayRow[]> {
     const result = await queryOLTP<OverlayRow>(
-      `SELECT nodes, updated_at 
+      `SELECT nodes, updated_at, is_nsfw
        FROM dialogue_overlays 
        WHERE target_tree_id = $1 
          AND mystery_id = ANY($2::uuid[])

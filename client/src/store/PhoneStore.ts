@@ -9,6 +9,7 @@ export interface PhoneState {
   hasNewVaultItem: boolean;
   isOpen: boolean;
   aiEnabled: boolean;
+  isNsfwUnlocked: boolean;
 }
 
 type Listener<T> = (state: T) => void;
@@ -54,4 +55,5 @@ export const phoneStore = new PhoneStore({
   hasNewVaultItem: false,
   isOpen: false,
   aiEnabled: false,
+  isNsfwUnlocked: false,
 });

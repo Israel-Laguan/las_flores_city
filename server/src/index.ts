@@ -13,6 +13,7 @@ import './routes/comms-reply.js';
 import { feedRouter } from './routes/feed.js';
 import { vaultRouter } from './routes/vault.js';
 import { settingsRouter } from './routes/settings.js';
+import { patreonRouter } from './routes/patreon.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
@@ -38,6 +39,7 @@ app.use('/comms', commsRouter);
 app.use('/network/feed', feedRouter);
 app.use('/vault', vaultRouter);
 app.use('/settings', settingsRouter);
+app.use('/patreon', patreonRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -61,6 +63,9 @@ async function initializeServer() {
   }
 
   await queryOLTP('ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)');
+  await queryOLTP('ALTER TABLE user_entitlements ADD COLUMN IF NOT EXISTS patreon_id VARCHAR(255)');
+  await queryOLTP('ALTER TABLE user_entitlements ADD COLUMN IF NOT EXISTS patreon_access_token TEXT');
+  await queryOLTP('ALTER TABLE user_entitlements ADD COLUMN IF NOT EXISTS patreon_refresh_token TEXT');
 
   // Start server
   app.listen(PORT, () => {

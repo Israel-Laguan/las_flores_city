@@ -17,8 +17,11 @@ export async function assemblePlayerState(userId: string) {
       u.current_day,
       u.last_login,
       u.created_at,
-      u.updated_at
+      u.updated_at,
+      ue.is_nsfw_unlocked,
+      ue.patreon_tier
     FROM users u
+    LEFT JOIN user_entitlements ue ON u.id = ue.user_id
     WHERE u.id = $1`,
     [userId]
   );
@@ -41,6 +44,8 @@ export async function assemblePlayerState(userId: string) {
     lastLogin: row.last_login,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    isNsfwUnlocked: row.is_nsfw_unlocked || false,
+    patreonTier: row.patreon_tier || 'none',
   };
 }
 

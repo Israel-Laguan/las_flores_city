@@ -4,6 +4,7 @@ import { PhoneBridge } from '../bridge/PhoneBridge';
 import { MessagesApp } from '../ui/apps/MessagesApp';
 import { VaultApp } from '../ui/apps/VaultApp';
 import { SettingsApp } from '../ui/apps/SettingsApp';
+import { IdentityApp } from '../ui/apps/IdentityApp';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
@@ -92,16 +93,7 @@ export class PhoneOverlay {
     this.apps.set('vault', vault);
 
     const identity = document.createElement('div');
-    identity.id = 'identity-app';
-    identity.innerHTML = `
-      <h3 style="margin:0 0 15px;color:var(--neon-cyan);border-bottom:1px solid var(--neon-cyan);padding-bottom:5px;">IDENTITY</h3>
-      <p style="margin:5px 0;"><strong>Status:</strong> <span style="color:var(--neon-cyan);">ACTIVE</span></p>
-      <p style="margin:5px 0;"><strong>Subject:</strong> <span id="identity-name">Test Player</span></p>
-      <p style="margin:5px 0;"><strong>Time-Blocks:</strong> <span id="identity-tb">48/48</span></p>
-      <p style="margin:5px 0;"><strong>Credits:</strong> <span id="identity-credits">100</span></p>
-      <p style="margin:5px 0;"><strong>Gold Credits:</strong> <span id="identity-gold">0</span></p>
-      <p style="color:#888;font-size:11px;margin-top:10px;border-top:1px solid #333;padding-top:10px;">Your identity is verified by N&amp;M LTD.</p>
-    `;
+    new IdentityApp(identity);
     this.apps.set('identity', identity);
 
     const settings = document.createElement('div');
@@ -115,9 +107,9 @@ export class PhoneOverlay {
       { label: 'Feed', key: 'feed' },
       { label: 'Messages', key: 'messages' },
       { label: 'Banco', key: 'banco' },
-      { label: 'Trab', key: 'trabajando' },
+      { label: 'Trabajando', key: 'trabajando' },
       { label: 'Vault', key: 'vault' },
-      { label: 'ID', key: 'identity' },
+      { label: 'Identity', key: 'identity' },
       { label: 'Settings', key: 'settings' },
     ];
 
@@ -205,6 +197,10 @@ export class PhoneOverlay {
     if (goldEl && data.goldCredits !== undefined) goldEl.textContent = data.goldCredits.toString();
 
     if (data.timeBlocks !== undefined) this.updateTBDisplay(data.timeBlocks);
+
+    if (data.isNsfwUnlocked !== undefined) {
+      phoneStore.updateState({ isNsfwUnlocked: data.isNsfwUnlocked });
+    }
   }
 }
 

@@ -9,7 +9,7 @@ import { locationRouter } from '../../src/routes/location.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { vaultRouter } from '../../src/routes/vault.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { deleteCache, closeRedis } from '../../src/database/redis.js';
 
 const { Pool } = pg;
 
@@ -58,6 +58,7 @@ beforeAll(async () => {
        updated_at = NOW()`,
     [TEST_USER_ID, 'api-contract-test@example.com', 'api_contract_test', 'API Contract Test', WELCOME_SCENE_ID]
   );
+  await deleteCache(`user:state:${TEST_USER_ID}`);
   await pool.query(
     'ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)'
   );
@@ -80,6 +81,7 @@ afterAll(async () => {
     await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
   }
 
+  await deleteCache(`user:state:${TEST_USER_ID}`);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
