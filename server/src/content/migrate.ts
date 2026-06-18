@@ -82,7 +82,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['character', 'vault', 'scene', 'mystery', 'dialogue', 'overlay', 'gig'];
+  const order: ContentType[] = ['character', 'scene', 'mystery', 'vault', 'dialogue', 'overlay', 'gig'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);

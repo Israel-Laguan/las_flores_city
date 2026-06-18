@@ -12,6 +12,12 @@ import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 
+declare global {
+  interface Window {
+    __lasFloresInitialized?: boolean;
+  }
+}
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 800,
@@ -69,19 +75,23 @@ window.addEventListener('lf:dialogue-start', (e: Event) => {
   eventBus.emit('dialogue:start', (e as CustomEvent).detail);
 });
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new DialogueUI();
-    new MonologueFeed();
-    new BreakthroughAlert();
-    initApp();
-  });
-} else {
+function initOnce() {
+  if (window.__lasFloresInitialized) {
+    return;
+  }
+
+  window.__lasFloresInitialized = true;
   new DialogueUI();
   new MonologueFeed();
   new BreakthroughAlert();
   initApp();
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initOnce);
+} else {
+  initOnce();
 }
 
 export default game;

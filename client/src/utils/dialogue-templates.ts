@@ -75,10 +75,12 @@ function buildChoiceButton(choice: ChoiceData, index: number): string {
     </button>`;
 }
 
-function buildChoicesContainer(choices: ChoiceData[]): string {
-  if (choices.length === 0) return '';
+export function buildChoiceButtons(choices: ChoiceData[]): string {
+  return choices.map((choice, i) => buildChoiceButton(choice, i)).join('');
+}
 
-  const buttonsHtml = choices.map((choice, i) => buildChoiceButton(choice, i)).join('');
+export function buildChoicesContainer(choices: ChoiceData[]): string {
+  if (choices.length === 0) return '';
 
   return `
     <div class="dialogue-choices" style="
@@ -89,7 +91,7 @@ function buildChoicesContainer(choices: ChoiceData[]): string {
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: #00ff00 #0a0a1a;
-    ">${buttonsHtml}</div>`;
+    ">${buildChoiceButtons(choices)}</div>`;
 }
 
 function buildEndIndicator(): string {

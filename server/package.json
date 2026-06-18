@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server/src/index.js",
     "migrate": "tsx src/content/migrate.ts ../content",
+    "validate": "tsx src/content/validate.ts ../content",
     "lint": "eslint --ext .ts src/",
     "test": "npx --no-install jest --detectOpenHandles",
     "test:smoke": "npx --no-install jest tests/smoke --detectOpenHandles",

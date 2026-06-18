@@ -100,7 +100,6 @@ export async function closeRedis(): Promise<void> {
   if (redis.status === 'ready') {
     try {
       await redis.quit();
-      return;
     } catch {
       redis.disconnect();
     }

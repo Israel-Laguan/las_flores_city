@@ -1,4 +1,5 @@
 import { deepMergeNodes } from '../../src/services/DialogueResolver.js';
+import { closeRedis } from '../../src/database/redis.js';
 import type { DialogueNode } from '@las-flores/shared';
 
 // ============================================================
@@ -11,6 +12,10 @@ import type { DialogueNode } from '@las-flores/shared';
 // ============================================================
 
 describe('DialogueResolver Unit Tests', () => {
+  afterAll(async () => {
+    await closeRedis();
+  });
+
   describe('deepMergeNodes', () => {
     it('merges base and overlay nodes correctly', () => {
       const baseNodes: Record<string, DialogueNode> = {

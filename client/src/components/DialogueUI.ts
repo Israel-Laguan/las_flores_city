@@ -1,7 +1,8 @@
 import { eventBus } from '../utils/EventBus';
 import { phoneStore } from '../store/PhoneStore';
-import { buildDialogueHTML } from '../utils/dialogue-templates';
+import { buildDialogueHTML, buildChoicesContainer, buildChoiceButtons } from '../utils/dialogue-templates';
 import * as api from '../utils/api';
+import { getLocalKey } from '../utils/crypto';
 
 enum DialogueUIState {
   HIDDEN = 'HIDDEN',
@@ -51,6 +52,8 @@ export class DialogueUI {
   private dialogueTextEl: HTMLDivElement | null = null;
   private choicesContainer: HTMLDivElement | null = null;
   private skipRequested: boolean = false;
+  private aiWorker: Worker | null = null;
+  private pendingRequests: Map<string, { resolve: (choices: any[]) => void; reject: (err: Error) => void }> = new Map();
 
   constructor() {
     this.container = document.getElementById('dialogue-overlay') as HTMLDivElement;
@@ -61,116 +64,93 @@ export class DialogueUI {
     }
     this.setupStyles();
     this.setupEventListeners();
+    this.initAiWorker();
+  }
+
+  private initAiWorker() {
+    try {
+      this.aiWorker = new Worker(new URL('../workers/aiWorker.ts', import.meta.url), { type: 'module' });
+      this.aiWorker.onmessage = (event) => {
+        const { id, status, choices, error } = event.data;
+        const pending = this.pendingRequests.get(id);
+        if (!pending) return;
+        this.pendingRequests.delete(id);
+        if (status === 'success') {
+          pending.resolve(choices);
+        } else {
+          pending.reject(new Error(error || 'AI rewrite failed'));
+        }
+      };
+      this.aiWorker.onerror = (err) => {
+        console.warn('[AI Worker] Error:', err);
+        for (const [id, pending] of this.pendingRequests) {
+          pending.reject(new Error('AI worker crashed'));
+          this.pendingRequests.delete(id);
+        }
+      };
+    } catch (err) {
+      console.warn('[AI Worker] Failed to initialize:', err);
+    }
   }
 
   private setupStyles() {
-    this.container.style.position = 'fixed';
-    this.container.style.bottom = '0';
-    this.container.style.left = '0';
-    this.container.style.width = '100%';
-    this.container.style.height = '30vh';
-    this.container.style.backgroundColor = 'rgba(10, 10, 30, 0.85)';
-    this.container.style.backdropFilter = 'blur(10px)';
+    Object.assign(this.container.style, {
+      position: 'fixed', bottom: '0', left: '0', width: '100%', height: '30vh',
+      backgroundColor: 'rgba(10, 10, 30, 0.85)', backdropFilter: 'blur(10px)',
+      borderTop: '1px solid rgba(0, 255, 0, 0.4)', boxShadow: '0 -4px 30px rgba(0, 255, 0, 0.1)',
+      zIndex: '2000', display: 'flex', justifyContent: 'center', alignItems: 'center',
+      fontFamily: 'monospace', transform: 'translateY(100%)', transition: 'transform 0.3s ease-out',
+      pointerEvents: 'none'
+    });
     (this.container.style as any).webkitBackdropFilter = 'blur(10px)';
-    this.container.style.borderTop = '1px solid rgba(0, 255, 0, 0.4)';
-    this.container.style.boxShadow = '0 -4px 30px rgba(0, 255, 0, 0.1)';
-    this.container.style.zIndex = '2000';
-    this.container.style.display = 'flex';
-    this.container.style.justifyContent = 'center';
-    this.container.style.alignItems = 'center';
-    this.container.style.fontFamily = 'monospace';
-    this.container.style.transform = 'translateY(100%)';
-    this.container.style.transition = 'transform 0.3s ease-out';
-    this.container.style.pointerEvents = 'none';
   }
 
   private setupEventListeners() {
     eventBus.on('dialogue:start', async (data: { dialogueId?: string; characterId?: string; sceneId?: string }) => {
-      if (data.characterId && data.sceneId) {
-        await this.startDialogueWithCharacter(data.characterId, data.sceneId);
-      } else if (data.dialogueId) {
-        await this.startDialogue(data.dialogueId);
-      }
+      if (data.characterId && data.sceneId) await this.startDialogueWithCharacter(data.characterId, data.sceneId);
+      else if (data.dialogueId) await this.startDialogue(data.dialogueId);
     });
-
-    eventBus.on('dialogue:choose', async (choiceIndex: number) => {
-      await this.makeChoice(choiceIndex);
-    });
-
-    eventBus.on('dialogue:end', () => {
-      this.slideOut();
-    });
-
-    eventBus.on('dialogue:resume', async () => {
-      await this.resumeDialogue();
-    });
-
-    this.container.addEventListener('click', (e) => {
-      if (this.state === DialogueUIState.TYPING) {
-        this.skipTyping();
-      }
-    });
+    eventBus.on('dialogue:choose', async (choiceIndex: number) => await this.makeChoice(choiceIndex));
+    eventBus.on('dialogue:end', () => this.slideOut());
+    eventBus.on('dialogue:resume', async () => await this.resumeDialogue());
+    this.container.addEventListener('click', () => { if (this.state === DialogueUIState.TYPING) this.skipTyping(); });
   }
 
-  private async startDialogue(dialogueId: string) {
+  private async loadDialogue(result: any, errorMsg: string) {
     try {
-      const result = await api.startDialogue(dialogueId);
       if (result.success && result.data) {
-        this.currentDialogue = {
-          tree: result.data.tree,
-          currentNode: result.data.current_node,
-          availableChoices: result.data.available_choices,
-        };
+        this.currentDialogue = { tree: result.data.tree, currentNode: result.data.current_node, availableChoices: result.data.available_choices };
         this.slideIn();
       }
-    } catch (error) {
-      console.error('Failed to start dialogue:', error);
-    }
+    } catch (error) { console.error(errorMsg, error); }
   }
+
+  private async startDialogue(dialogueId: string) { await this.loadDialogue(await api.startDialogue(dialogueId), 'Failed to start dialogue'); }
 
   private async startDialogueWithCharacter(characterId: string, sceneId: string) {
-    try {
-      const result = await api.startDialogueWithCharacter(characterId, sceneId);
-      if (result.success && result.data) {
-        this.currentDialogue = {
-          tree: result.data.tree,
-          currentNode: result.data.current_node,
-          availableChoices: result.data.available_choices,
-        };
-        this.slideIn();
-      }
-    } catch (error) {
-      console.error('Failed to start dialogue:', error);
-    }
+    await this.loadDialogue(await api.startDialogueWithCharacter(characterId, sceneId), 'Failed to start dialogue');
   }
 
-  private async resumeDialogue() {
-    try {
-      const result = await api.getActiveDialogue();
-      if (result.success && result.data) {
-        this.currentDialogue = {
-          tree: result.data.tree,
-          currentNode: result.data.current_node,
-          availableChoices: result.data.available_choices,
-        };
-        this.slideIn();
-      }
-    } catch (error) {
-      console.error('Failed to resume dialogue:', error);
-    }
-  }
+  private async resumeDialogue() { await this.loadDialogue(await api.getActiveDialogue(), 'Failed to resume dialogue'); }
 
   private slideIn() {
     this.state = DialogueUIState.SLIDING_IN;
     this.container.style.pointerEvents = 'auto';
     this.container.style.transform = 'translateY(0)';
-
     eventBus.emit('dialogue:opened');
     eventBus.emit('phaser:pause-input');
-
-    // Render content immediately so click handlers are in place
-    // as soon as the slide-in transition completes.
     this.renderDialogue();
+  }
+
+  private async dispatchToAiWorker(choices: DialogueNode['choices'], relationshipContext: string): Promise<NonNullable<DialogueNode['choices']>> {
+    if (!this.aiWorker || !choices?.length || !phoneStore.getState().aiEnabled || !getLocalKey() || !localStorage.getItem('auth_token'))
+      return choices || [];
+    return new Promise((resolve) => {
+      const requestId = `ai_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      this.pendingRequests.set(requestId, { resolve: (r) => resolve(r || choices), reject: () => resolve(choices) });
+      this.aiWorker!.postMessage({ id: requestId, type: 'rewrite_choices', choices: choices.map(c => ({ ...c })), relationshipContext, localKey: getLocalKey(), jwt: localStorage.getItem('auth_token') });
+      setTimeout(() => { if (this.pendingRequests.has(requestId)) { this.pendingRequests.delete(requestId); resolve(choices); } }, 5000);
+    });
   }
 
   private slideOut() {
@@ -228,188 +208,126 @@ export class DialogueUI {
   // --- Event emission helpers ---
 
   private handleDialogueResult(result: any) {
-    if (result.next_node?.thought) {
-      eventBus.emit('monologue:thought', result.next_node.thought);
-    }
-
-    if (result.time_blocks_remaining !== undefined) {
-      eventBus.emit('tb:updated', result.time_blocks_remaining);
-    }
-
-    if (result.unlocked_vault_item) {
-      eventBus.emit('vault:new_item_unlocked', result.unlocked_vault_item);
-      phoneStore.updateState({ hasNewVaultItem: true });
-    }
-
+    if (result.next_node?.thought) eventBus.emit('monologue:thought', result.next_node.thought);
+    if (result.time_blocks_remaining !== undefined) eventBus.emit('tb:updated', result.time_blocks_remaining);
+    if (result.unlocked_vault_item) { eventBus.emit('vault:new_item_unlocked', result.unlocked_vault_item); phoneStore.updateState({ hasNewVaultItem: true }); }
     this.handleMysterySolveStatus(result.mystery_solve_status);
   }
 
   private handleMysterySolveStatus(mysterySolveStatus: any) {
     if (!mysterySolveStatus) return;
-
     const ms = mysterySolveStatus;
     if (ms.isBreakthrough) {
       eventBus.emit('breakthrough:winner', { mysteryId: ms.mysteryId });
-      eventBus.emit('monologue:push', {
-        text: '[BREAKTHROUGH] Case closed. You are the first detective on the scene.',
-        type: 'warning',
-      });
-    } else if (ms.kind === 'solver') {
-      eventBus.emit('monologue:push', {
-        text: '[SYSTEM] Case data submitted. Investigation window now open for other players.',
-        type: 'warning',
-      });
-    } else if (ms.kind === 'late') {
-      eventBus.emit('monologue:push', {
-        text: '[SYSTEM] Case closed. Data submission rejected: Deadline exceeded.',
-        type: 'warning',
-      });
+    }
+    const messages: Record<string, string> = {
+      solver: '[SYSTEM] Case data submitted. Investigation window now open for other players.',
+      late: '[SYSTEM] Case closed. Data submission rejected: Deadline exceeded.',
+    };
+    if (ms.kind && messages[ms.kind]) {
+      eventBus.emit('monologue:push', { text: ms.isBreakthrough ? '[BREAKTHROUGH] Case closed. You are the first detective on the scene.' : messages[ms.kind], type: 'warning' });
     }
   }
 
   private renderDialogue() {
     if (!this.currentDialogue) return;
-
     const { currentNode, availableChoices } = this.currentDialogue;
-
     this.container.innerHTML = buildDialogueHTML(currentNode, availableChoices);
-
     this.dialogueTextEl = this.container.querySelector('.dialogue-text') as HTMLDivElement;
     this.choicesContainer = this.container.querySelector('.dialogue-choices') as HTMLDivElement;
-
     this.attachChoiceButtonListeners();
-
     if (this.choicesContainer) {
       this.choicesContainer.style.opacity = '0';
       this.choicesContainer.style.transition = 'opacity 0.3s ease';
-      // Keep container disabled if still processing a choice submission
-      if (this.state === DialogueUIState.SUBMITTING) {
-        (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
-      }
+      if (this.state === DialogueUIState.SUBMITTING) (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
     }
-
     this.startTypewriter(currentNode.text);
+    eventBus.emit('dialogue:node-rendered', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
+    if (availableChoices?.length) this.applyAiRewrites(availableChoices);
+  }
 
-    eventBus.emit('dialogue:node-rendered', {
-      type: currentNode.type,
-      speaker: currentNode.speaker,
-      thought: currentNode.thought,
-    });
+  private async applyAiRewrites(choices: DialogueNode['choices']) {
+    if (!choices?.length || !this.choicesContainer || !this.currentDialogue) return;
+    try {
+      const rewrittenChoices = await this.dispatchToAiWorker(
+        choices, 'You are a conversational AI helping a player in a dialogue. Rewrite choices to match their relationship.'
+      );
+      this.currentDialogue.availableChoices = rewrittenChoices;
+      this.choicesContainer.innerHTML = buildChoiceButtons(rewrittenChoices);
+      this.attachChoiceButtonListeners();
+      if (this.state === DialogueUIState.AWAITING_CHOICE) {
+        this.choicesContainer.style.opacity = '1';
+      }
+    } catch (err) {
+      console.warn('[AI] Rewrite failed, keeping original choices:', err);
+    }
   }
 
   private startTypewriter(text: string) {
     if (!this.dialogueTextEl) return;
-
-    this.fullText = text;
-    this.currentCharIndex = 0;
-    this.state = DialogueUIState.TYPING;
-    this.skipRequested = false;
+    this.fullText = text; this.currentCharIndex = 0;
+    this.state = DialogueUIState.TYPING; this.skipRequested = false;
     this.dialogueTextEl.innerHTML = '';
-
-    if (this.typewriterInterval) {
-      clearInterval(this.typewriterInterval);
-    }
-
+    if (this.typewriterInterval) clearInterval(this.typewriterInterval);
     this.typewriterInterval = window.setInterval(() => {
-      if (this.skipRequested) {
-        this.finishTyping();
-        return;
+      if (this.skipRequested || this.currentCharIndex >= this.fullText.length) {
+        this.finishTyping(); return;
       }
-
-      if (this.currentCharIndex >= this.fullText.length) {
-        this.finishTyping();
-        return;
-      }
-
       if (this.fullText[this.currentCharIndex] === '<') {
         const closingIndex = this.fullText.indexOf('>', this.currentCharIndex);
-        if (closingIndex !== -1) {
-          this.currentCharIndex = closingIndex + 1;
-          this.dialogueTextEl!.innerHTML = this.fullText.substring(0, this.currentCharIndex);
-          return;
-        }
-      }
-
-      this.currentCharIndex++;
+        if (closingIndex !== -1) { this.currentCharIndex = closingIndex + 1; }
+      } else { this.currentCharIndex++; }
       this.dialogueTextEl!.innerHTML = this.fullText.substring(0, this.currentCharIndex);
     }, 30);
   }
 
   private finishTyping() {
-    if (this.typewriterInterval) {
-      clearInterval(this.typewriterInterval);
-      this.typewriterInterval = null;
-    }
-
-    if (this.dialogueTextEl) {
-      this.dialogueTextEl.innerHTML = this.fullText;
-    }
-
+    if (this.typewriterInterval) { clearInterval(this.typewriterInterval); this.typewriterInterval = null; }
+    if (this.dialogueTextEl) this.dialogueTextEl.innerHTML = this.fullText;
     this.state = DialogueUIState.AWAITING_CHOICE;
-
-    if (this.choicesContainer && this.currentDialogue && this.currentDialogue.availableChoices.length > 0) {
-      this.choicesContainer.style.opacity = '1';
-    }
+    if (this.choicesContainer && this.currentDialogue?.availableChoices.length) this.choicesContainer.style.opacity = '1';
   }
 
   private clearTypewriter() {
-    if (this.typewriterInterval) {
-      clearInterval(this.typewriterInterval);
-      this.typewriterInterval = null;
-    }
+    if (this.typewriterInterval) { clearInterval(this.typewriterInterval); this.typewriterInterval = null; }
     this.skipRequested = false;
   }
 
-  private skipTyping() {
-    if (this.state !== DialogueUIState.TYPING) return;
-    this.skipRequested = true;
-  }
+  private skipTyping() { if (this.state === DialogueUIState.TYPING) this.skipRequested = true; }
 
   private disableButtons() {
-    if (this.choicesContainer) {
-      (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
-      const buttons = this.choicesContainer.querySelectorAll('.choice-btn');
-      buttons.forEach(btn => {
-        (btn as HTMLButtonElement).disabled = true;
-        (btn as HTMLElement).style.pointerEvents = 'none';
-        (btn as HTMLElement).style.opacity = '0.5';
-      });
-    }
+    if (!this.choicesContainer) return;
+    (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
+    this.choicesContainer.querySelectorAll('.choice-btn').forEach(btn => {
+      (btn as HTMLButtonElement).disabled = true;
+      Object.assign(btn as HTMLElement, { style: { pointerEvents: 'none', opacity: '0.5' } });
+    });
   }
 
   private enableButtons() {
-    if (this.choicesContainer) {
-      (this.choicesContainer as HTMLElement).style.pointerEvents = 'auto';
-      const buttons = this.choicesContainer.querySelectorAll('.choice-btn');
-      buttons.forEach(btn => {
-        (btn as HTMLButtonElement).disabled = false;
-        (btn as HTMLElement).style.pointerEvents = 'auto';
-        (btn as HTMLElement).style.opacity = '1';
-      });
-    }
+    if (!this.choicesContainer) return;
+    (this.choicesContainer as HTMLElement).style.pointerEvents = 'auto';
+    this.choicesContainer.querySelectorAll('.choice-btn').forEach(btn => {
+      (btn as HTMLButtonElement).disabled = false;
+      Object.assign(btn as HTMLElement, { style: { pointerEvents: 'auto', opacity: '1' } });
+    });
   }
 
   private attachChoiceButtonListeners() {
     if (!this.choicesContainer) return;
-
     const choiceButtons = this.choicesContainer.querySelectorAll('.choice-btn');
     choiceButtons.forEach(button => {
       button.addEventListener('click', (e) => {
         e.stopPropagation();
-        const choiceIndex = parseInt(button.getAttribute('data-choice-index') || '0', 10);
-        this.makeChoice(choiceIndex);
+        this.makeChoice(parseInt(button.getAttribute('data-choice-index') || '0', 10));
       });
-
       button.addEventListener('mouseenter', () => {
         if (!(button as HTMLButtonElement).disabled) {
-          (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.15)';
-          (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.6)';
+          Object.assign(button as HTMLElement, { style: { backgroundColor: 'rgba(0, 255, 0, 0.15)', borderColor: 'rgba(0, 255, 0, 0.6)' } });
         }
       });
-
       button.addEventListener('mouseleave', () => {
-        (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
-        (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.3)';
+        Object.assign(button as HTMLElement, { style: { backgroundColor: 'rgba(0, 255, 0, 0.05)', borderColor: 'rgba(0, 255, 0, 0.3)' } });
       });
     });
   }

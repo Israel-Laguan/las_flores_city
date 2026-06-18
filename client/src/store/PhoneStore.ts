@@ -8,6 +8,7 @@ export interface PhoneState {
   unreadMessagesCount: number;
   hasNewVaultItem: boolean;
   isOpen: boolean;
+  aiEnabled: boolean;
 }
 
 type Listener<T> = (state: T) => void;
@@ -52,4 +53,5 @@ export const phoneStore = new PhoneStore({
   unreadMessagesCount: 0,
   hasNewVaultItem: false,
   isOpen: false,
+  aiEnabled: false,
 });

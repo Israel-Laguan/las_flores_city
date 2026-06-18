@@ -1,5 +1,6 @@
+import { createHash } from 'node:crypto';
 import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
-import { getCache, deleteCache, closeRedis } from '../../src/database/redis.js';
+import { getCache, invalidatePattern, closeRedis } from '../../src/database/redis.js';
 import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
 import express from 'express';
@@ -28,6 +29,14 @@ const TEST_TREE_ID = '9e8d7c6b-5a4f-4e3d-2c1b-0a9b8c7d6e5f';
 const TEST_MYSTERY_ID = 'a1b2c3d4-1111-4111-8111-aaaaaaaaaaaa';
 let baseUpdatedAt = '';
 
+function buildOverlayFingerprint(overlays: Array<{ nodes: Record<string, DialogueNode>; updated_at: Date }>): string {
+  const fingerprints = overlays
+    .map((overlay) => `${overlay.updated_at.toISOString()}:${JSON.stringify(overlay.nodes)}`)
+    .sort();
+
+  return createHash('sha1').update(fingerprints.join('|')).digest('hex').slice(0, 16);
+}
+
 async function buildExpectedCacheSuffix(
   userId: string,
   mysteryIdsForPlayer: string[]
@@ -47,7 +56,17 @@ async function buildExpectedCacheSuffix(
       ...mysteryIdsForPlayer,
     ]),
   ].sort();
-  return allIds.length > 0 ? `${allIds.join('_')}:${baseUpdatedAt}` : `base:${baseUpdatedAt}`;
+  const overlays = await queryOLTP<{ nodes: Record<string, DialogueNode>; updated_at: Date }>(
+    `SELECT nodes, updated_at
+     FROM dialogue_overlays
+     WHERE target_tree_id = $1
+       AND mystery_id = ANY($2::uuid[])
+       AND nodes IS NOT NULL
+       AND nodes != '{}'::jsonb`,
+    [TEST_TREE_ID, allIds]
+  );
+  const overlayFingerprint = overlays.rows.length > 0 ? buildOverlayFingerprint(overlays.rows) : baseUpdatedAt;
+  return allIds.length > 0 ? `${allIds.join('_')}:${overlayFingerprint}` : `base:${overlayFingerprint}`;
 }
 
 const baseNode: DialogueNode = {
@@ -143,8 +162,7 @@ describe('DialogueResolver', () => {
       );
 
       // Bust any cache entries this test created.
-      await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:base:${baseUpdatedAt}`);
-      await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:${TEST_MYSTERY_ID}:${baseUpdatedAt}`);
+      await invalidatePattern(`dialogue:resolved:${TEST_TREE_ID}:mysteries:*`);
     } finally {
       await closeConnections();
       await closeRedis();
@@ -162,8 +180,7 @@ describe('DialogueResolver', () => {
       [TEST_MYSTERY_ID]
     );
     // Bust caches between tests.
-    await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:base:${baseUpdatedAt}`);
-    await deleteCache(`dialogue:resolved:${TEST_TREE_ID}:mysteries:${TEST_MYSTERY_ID}:${baseUpdatedAt}`);
+    await invalidatePattern(`dialogue:resolved:${TEST_TREE_ID}:mysteries:*`);
   });
 
   describe('deepMergeNodes', () => {

@@ -12,6 +12,7 @@ import { commsRouter } from './routes/comms.js';
 import './routes/comms-reply.js';
 import { feedRouter } from './routes/feed.js';
 import { vaultRouter } from './routes/vault.js';
+import { settingsRouter } from './routes/settings.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
@@ -36,6 +37,7 @@ app.use('/gigs', gigsRouter);
 app.use('/comms', commsRouter);
 app.use('/network/feed', feedRouter);
 app.use('/vault', vaultRouter);
+app.use('/settings', settingsRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

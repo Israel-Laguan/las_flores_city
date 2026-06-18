@@ -13,6 +13,7 @@
 // merging).
 // ============================================================
 
+import { createHash } from 'node:crypto';
 import { queryOLTP } from '../database/connection.js';
 import { getCache, setCache } from '../database/redis.js';
 import { DialogueNode } from '@las-flores/shared';
@@ -28,7 +29,20 @@ interface BaseDialogueTree {
   nodes: Record<string, DialogueNode>;
 }
 
+interface OverlayRow {
+  nodes: Record<string, DialogueNode>;
+  updated_at: Date;
+}
+
 const CACHE_TTL_SECONDS = 3600; // 1 hour
+
+function buildOverlayFingerprint(overlays: OverlayRow[]): string {
+  const fingerprints = overlays
+    .map((overlay) => `${overlay.updated_at.toISOString()}:${JSON.stringify(overlay.nodes)}`)
+    .sort();
+
+  return createHash('sha1').update(fingerprints.join('|')).digest('hex').slice(0, 16);
+}
 
 /**
  * Deep-merge a base nodes dict with overlay nodes.
@@ -81,10 +95,16 @@ export class DialogueResolver {
 
     const baseTree = await DialogueResolver.loadBaseTree(baseTreeId);
     let resolvedNodes = baseTree.nodes;
+    const overlays = await DialogueResolver.loadMysteryOverlays(
+      baseTreeId,
+      allMysteryIds
+    );
+    const overlayFingerprint =
+      overlays.length > 0 ? buildOverlayFingerprint(overlays) : baseTree.updated_at;
     const cacheSuffix =
       allMysteryIds.length > 0
-        ? `${allMysteryIds.join('_')}:${baseTree.updated_at}`
-        : `base:${baseTree.updated_at}`;
+        ? `${allMysteryIds.join('_')}:${overlayFingerprint}`
+        : `base:${overlayFingerprint}`;
     const cacheKey = `dialogue:resolved:${baseTreeId}:mysteries:${cacheSuffix}`;
 
     const cachedTree = await getCache<ResolvedTree>(cacheKey);
@@ -92,10 +112,6 @@ export class DialogueResolver {
       return cachedTree;
     }
 
-    const overlays = await DialogueResolver.loadMysteryOverlays(
-      baseTreeId,
-      allMysteryIds
-    );
     for (const overlay of overlays) {
       if (overlay.nodes) {
         resolvedNodes = deepMergeNodes(resolvedNodes, overlay.nodes);
@@ -163,11 +179,9 @@ export class DialogueResolver {
   private static async loadMysteryOverlays(
     baseTreeId: string,
     mysteryIds: string[]
-  ): Promise<Array<{ nodes: Record<string, DialogueNode> }>> {
-    const result = await queryOLTP<{
-      nodes: Record<string, DialogueNode>;
-    }>(
-      `SELECT nodes 
+  ): Promise<OverlayRow[]> {
+    const result = await queryOLTP<OverlayRow>(
+      `SELECT nodes, updated_at 
        FROM dialogue_overlays 
        WHERE target_tree_id = $1 
          AND mystery_id = ANY($2::uuid[])

@@ -180,6 +180,25 @@ export async function endDialogue(): Promise<any> {
   });
 }
 
+// Settings / AI Key API
+export async function getAiKeyShare(): Promise<any> {
+  return fetchAPI('/settings/ai-key-share');
+}
+
+export async function saveAiKey(ciphertext: string, iv: string, enabled: boolean): Promise<any> {
+  return fetchAPI('/settings/ai-key', {
+    method: 'POST',
+    body: JSON.stringify({ ciphertext, iv, enabled }),
+  });
+}
+
+export async function toggleAiEnabled(enabled: boolean): Promise<any> {
+  return fetchAPI('/settings/ai-enabled', {
+    method: 'PATCH',
+    body: JSON.stringify({ enabled }),
+  });
+}
+
 // Vault API
 export interface VaultItem {
   id: string;

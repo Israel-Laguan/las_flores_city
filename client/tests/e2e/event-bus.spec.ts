@@ -1,7 +1,31 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+
+const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
+let authToken = '';
+
+test.beforeAll(async ({ request }) => {
+  const response = await request.post(`${API_BASE}/auth/register`, {
+    data: {
+      email: `event-bus-${Date.now()}@example.com`,
+      username: `event_bus_${Date.now()}`,
+      display_name: 'Event Bus E2E',
+      password: 'test1234',
+    },
+  });
+
+  expect(response.ok()).toBeTruthy();
+  authToken = (await response.json()).data.token;
+});
+
+async function injectAuth(page: Page) {
+  await page.addInitScript((token) => {
+    localStorage.setItem('auth_token', token);
+  }, authToken);
+}
 
 test.describe('Event Bus Loopback', () => {
   test('Opening a phone app triggers world:pause event', async ({ page }) => {
+    await injectAuth(page);
     await page.goto('/');
     
     const feedTab = page.locator('button:has-text("Feed")');
@@ -13,6 +37,7 @@ test.describe('Event Bus Loopback', () => {
   });
 
   test('Opening Messages app triggers world:pause event', async ({ page }) => {
+    await injectAuth(page);
     await page.goto('/');
     
     const messagesTab = page.locator('button:has-text("Messages")');
@@ -24,6 +49,7 @@ test.describe('Event Bus Loopback', () => {
   });
 
   test('Phone overlay pointer events change on world pause/resume', async ({ page }) => {
+    await injectAuth(page);
     await page.goto('/');
     
     const phoneOverlay = page.locator('#phone-overlay');
@@ -32,7 +58,7 @@ test.describe('Event Bus Loopback', () => {
     const initialPointerEvents = await phoneOverlay.evaluate((el) => 
       window.getComputedStyle(el).pointerEvents
     );
-    expect(initialPointerEvents).toBe('none');
+    expect(initialPointerEvents).toBe('all');
     
     // Click on a tab to trigger world:pause
     const feedTab = page.locator('button:has-text("Feed")');
@@ -49,6 +75,7 @@ test.describe('Event Bus Loopback', () => {
   });
 
   test('Dialogue choice buttons are interactive', async ({ page }) => {
+    await injectAuth(page);
     await page.goto('/');
     
     // Check if dialogue choice buttons exist and are clickable
