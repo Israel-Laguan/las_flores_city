@@ -1,0 +1,27 @@
+shop_items:
+  - id: "a1b2c3d4-e29b-41d4-a716-446655440001"
+    name: "Hacktivist Green Theme"
+    description: "Overwrite the N&M standard UI with an encrypted green-phosphor display."
+    item_type: "ui_theme"
+    price: 500
+    currency_type: "gold_credits"
+    asset_url: "https://cdn.lasflores2077.com/cosmetics/theme_green.png"
+    is_active: true
+
+  - id: "a1b2c3d4-e29b-41d4-a716-446655440002"
+    name: "Old Town Supporter Border"
+    description: "Show your local pride on the leaderboards."
+    item_type: "avatar_border"
+    price: 1500
+    currency_type: "credits"
+    asset_url: "https://cdn.lasflores2077.com/cosmetics/border_old_town.png"
+    is_active: true
+
+  - id: "a1b2c3d4-e29b-41d4-a716-446655440003"
+    name: "Daywalker Skin"
+    description: "A pale avatar recolor for players who never sleep on the grind."
+    item_type: "character_skin"
+    price: 2500
+    currency_type: "gold_credits"
+    asset_url: "https://cdn.lasflores2077.com/cosmetics/skin_daywalker.png"
+    is_active: true

@@ -14,6 +14,8 @@ import { feedRouter } from './routes/feed.js';
 import { vaultRouter } from './routes/vault.js';
 import { settingsRouter } from './routes/settings.js';
 import { patreonRouter } from './routes/patreon.js';
+import { shopRouter } from './routes/shop.js';
+import { paypalRouter } from './routes/paypal.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
@@ -40,6 +42,8 @@ app.use('/network/feed', feedRouter);
 app.use('/vault', vaultRouter);
 app.use('/settings', settingsRouter);
 app.use('/patreon', patreonRouter);
+app.use('/shop', shopRouter);
+app.use('/paypal', paypalRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

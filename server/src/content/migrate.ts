@@ -73,6 +73,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
     return 'mystery';
   }
+  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
+    return 'shop_item';
+  }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
     return 'gig';
@@ -82,7 +85,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['character', 'scene', 'mystery', 'vault', 'dialogue', 'overlay', 'gig'];
+  const order: ContentType[] = ['character', 'scene', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);

@@ -5,14 +5,24 @@ import type { BankLedgerResponse } from '../../../shared/src/types/bank.js';
 export class BankService {
   /**
    * Atomically modifies a player's balance and writes a ledger entry.
-   * PostgreSQL CHECK (credits >= 0) rolls back on insufficient funds → code 23514.
+   * PostgreSQL CHECK (gold_credits >= 0) rolls back on insufficient funds → code 23514.
+   *
+   * `referenceType` + `referenceId` (both optional) let callers (e.g. the PayPal
+   * webhook) tag the ledger row with an external-system reference. The PayPal
+   * webhook uses `referenceType='paypal_capture'` + `referenceId=<our UUID>`
+   * so the partial UNIQUE index on
+   *   `bank_transactions(reference_id) WHERE reference_type = 'paypal_capture'`
+   * gives idempotent dedup — a redelivered webhook hits 23505 on the INSERT,
+   * the whole transaction rolls back, and no double-grant happens.
    */
   public static async modifyBalance(
     userId: string,
     amount: number,
     currencyType: 'creds' | 'gold_credits',
     transactionType: string,
-    description: string
+    description: string,
+    referenceType?: string,
+    referenceId?: string
   ): Promise<{ newBalance: number }> {
     const col = currencyType === 'gold_credits' ? 'gold_credits' : 'credits';
 
@@ -27,9 +37,9 @@ export class BankService {
 
         await client.query(
           `INSERT INTO bank_transactions
-             (user_id, amount, currency_type, transaction_type, description, balance_after)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
-          [userId, amount, currencyType, transactionType, description, r.rows[0][col]]
+             (user_id, amount, currency_type, transaction_type, description, balance_after, reference_type, reference_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [userId, amount, currencyType, transactionType, description, r.rows[0][col], referenceType ?? null, referenceId ?? null]
         );
 
         return r.rows[0][col] as number;

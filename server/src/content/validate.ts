@@ -9,6 +9,7 @@ import {
   YAMLSceneSchema,
   YAMLMysterySchema,
   VaultFileSchema,
+  ShopItemFileSchema,
   ContentType,
 } from '@las-flores/shared';
 
@@ -114,6 +115,9 @@ function validateContentByType(type: ContentType, data: any): ValidationResult {
       case 'vault':
         VaultFileSchema.parse(data);
         break;
+      case 'shop_item':
+        ShopItemFileSchema.parse(data);
+        break;
     }
   } catch (e: any) {
     errors.push({
@@ -193,6 +197,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   }
   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
     return 'mystery';
+  }
+  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
+    return 'shop_item';
   }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {

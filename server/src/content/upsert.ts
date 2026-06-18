@@ -4,6 +4,7 @@ import path from 'path';
 import {
   VaultFileSchema,
   YAMLMysterySchema,
+  ShopItemFileSchema,
 } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { sanitizeText } from './validate.js';
@@ -33,6 +34,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   }
   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
     return 'mystery';
+  }
+  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
+    return 'shop_item';
   }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
@@ -234,6 +238,34 @@ async function upsertVaultItem(data: any): Promise<string> {
   return result.rows[0].id;
 }
 
+async function upsertShopItem(data: any): Promise<string> {
+  const result = await queryOLTP(
+    `INSERT INTO shop_items (id, name, description, item_type, price, currency_type, asset_url, is_active)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
+       description = EXCLUDED.description,
+       item_type = EXCLUDED.item_type,
+       price = EXCLUDED.price,
+       currency_type = EXCLUDED.currency_type,
+       asset_url = EXCLUDED.asset_url,
+       is_active = EXCLUDED.is_active,
+       updated_at = NOW()
+     RETURNING id`,
+    [
+      data.id,
+      data.name,
+      data.description || null,
+      data.item_type,
+      data.price,
+      data.currency_type || 'gold_credits',
+      data.asset_url,
+      data.is_active === undefined ? true : data.is_active,
+    ]
+  );
+  return result.rows[0].id;
+}
+
 export async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
   if (!contentType) {
@@ -287,6 +319,16 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
         mysteryIds.push(id);
       }
       contentId = mysteryIds.join(',');
+      break;
+    case 'shop_item':
+      ShopItemFileSchema.parse(data);
+      const shopItems = data.shop_items || [];
+      const shopIds: string[] = [];
+      for (const item of shopItems) {
+        const id = await upsertShopItem(item);
+        shopIds.push(id);
+      }
+      contentId = shopIds.join(',');
       break;
     default:
       throw new Error(`Unsupported content type: ${contentType}`);

@@ -5,6 +5,7 @@ import { MessagesApp } from '../ui/apps/MessagesApp';
 import { VaultApp } from '../ui/apps/VaultApp';
 import { SettingsApp } from '../ui/apps/SettingsApp';
 import { IdentityApp } from '../ui/apps/IdentityApp';
+import { MyMeApp } from '../ui/apps/MyMeApp';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
@@ -99,6 +100,10 @@ export class PhoneOverlay {
     const settings = document.createElement('div');
     new SettingsApp(settings);
     this.apps.set('settings', settings);
+
+    const myme = document.createElement('div');
+    new MyMeApp(myme);
+    this.apps.set('myme', myme);
   }
 
   private createNavBar(): void {
@@ -107,7 +112,7 @@ export class PhoneOverlay {
       { label: 'Feed', key: 'feed' },
       { label: 'Messages', key: 'messages' },
       { label: 'Banco', key: 'banco' },
-      { label: 'Trabajando', key: 'trabajando' },
+      { label: 'MyMe', key: 'myme' },
       { label: 'Vault', key: 'vault' },
       { label: 'Identity', key: 'identity' },
       { label: 'Settings', key: 'settings' },

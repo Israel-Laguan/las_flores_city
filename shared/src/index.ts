@@ -342,7 +342,7 @@ export const MigrationLogSchema = z.object({
   id: z.string().uuid(),
   file_path: z.string(),
   file_checksum: z.string(),
-  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery']),
+  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item']),
   content_id: z.string().uuid(),
   applied_at: z.string().datetime(),
   applied_by: z.string().uuid().optional(),
@@ -373,6 +373,9 @@ export const PlayerEventSchema = z.object({
     'sms_received',
     'sms_reply_submitted',
     'vault_item_unlocked',
+    'mystery_solved',
+    'iap_completed',
+    'shop_purchase',
   ]),
   event_data: z.record(z.string(), z.any()),
   time_blocks_cost: z.number().int().min(0).optional(),
@@ -390,9 +393,47 @@ export {
 } from './types/leaderboard.js';
 export type { LeaderboardBadgeType, LeaderboardBadge, LeaderboardEntry } from './types/leaderboard.js';
 
+// ==================== Shop / Marketplace (Task 4.3) ====================
+export {
+  ShopItemSchema,
+  ShopItemFileSchema,
+  ShopItemTypeSchema,
+  ShopCurrencySchema,
+  PlayerInventoryItemSchema,
+  InventoryAcquisitionSchema,
+  ShopPurchaseRequestSchema,
+  ShopPurchaseResponseSchema,
+  EquipSlotSchema,
+  EquipRequestSchema,
+  PublicProfileSchema,
+  PayPalWebhookEventSchema,
+  PayPalResourceSchema,
+  PayPalPurchaseUnitSchema,
+  PayPalAmountSchema,
+  PayPalCaptureStatusSchema,
+} from './schemas/shop.js';
+export type {
+  ShopItem,
+  ShopItemFile,
+  ShopItemType,
+  ShopCurrency,
+  PlayerInventoryItem,
+  InventoryAcquisition,
+  ShopPurchaseRequest,
+  ShopPurchaseResponse,
+  EquipSlot,
+  EquipRequest,
+  PublicProfile,
+  PayPalWebhookEvent,
+  PayPalResource,
+  PayPalPurchaseUnit,
+  PayPalAmount,
+  PayPalCaptureStatus,
+} from './schemas/shop.js';
+
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

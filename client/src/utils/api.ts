@@ -225,3 +225,78 @@ export async function getPatreonStatus(): Promise<{ success: boolean; data: { li
 export async function unlinkPatreon(): Promise<{ success: boolean; data: { linked: boolean; isNsfwUnlocked: boolean; tier: string }; timestamp?: string }> {
   return fetchAPI('/patreon/unlink', { method: 'POST' });
 }
+
+// Shop / MyMe API
+export interface ShopItem {
+  id: string;
+  name: string;
+  description?: string;
+  item_type: 'ui_theme' | 'avatar_border' | 'character_skin';
+  price: number;
+  currency_type: 'credits' | 'gold_credits';
+  asset_url: string;
+  is_active: boolean;
+}
+
+export interface PlayerInventoryItem {
+  id: string;
+  user_id: string;
+  shop_item_id: string;
+  acquired_via: 'purchase' | 'grant' | 'iap';
+  reference_id?: string | null;
+  acquired_at: string;
+  item: ShopItem;
+}
+
+export interface PublicProfile {
+  user_id: string;
+  username: string;
+  display_name?: string | null;
+  equipped_theme?: ShopItem | null;
+  equipped_border?: ShopItem | null;
+  badges: string[];
+}
+
+export async function getShopCatalog(): Promise<{ success: boolean; data: ShopItem[]; timestamp?: string }> {
+  return fetchAPI('/shop/catalog');
+}
+
+export async function getInventory(): Promise<{ success: boolean; data: PlayerInventoryItem[]; timestamp?: string }> {
+  return fetchAPI('/shop/inventory');
+}
+
+export async function buyShopItem(shopItemId: string): Promise<{
+  success: boolean;
+  data: { inventory_item: PlayerInventoryItem; new_balance: number; currency_type: 'credits' | 'gold_credits' };
+  timestamp?: string;
+}> {
+  return fetchAPI('/shop/buy', {
+    method: 'POST',
+    body: JSON.stringify({ shop_item_id: shopItemId }),
+  });
+}
+
+export async function equipShopItem(
+  slot: 'theme' | 'border',
+  shopItemId: string | null
+): Promise<{ success: boolean; data: { slot: string; shop_item_id: string | null }; timestamp?: string }> {
+  return fetchAPI('/shop/equip', {
+    method: 'POST',
+    body: JSON.stringify({ slot, shop_item_id: shopItemId }),
+  });
+}
+
+export async function getMyMeProfile(userId: string): Promise<{ success: boolean; data: PublicProfile; timestamp?: string }> {
+  return fetchAPI(`/shop/profile/${userId}`);
+}
+
+export async function startPayPalCheckout(amountUsd: number): Promise<{
+  success: boolean;
+  data: { order_id: string; reference_id: string; approve_url: string };
+  timestamp?: string;
+}> {
+  return fetchAPI('/paypal/checkout', {
+    method: 'POST',
+    body: JSON.stringify({ amount_usd: amountUsd }),
+  });
+}
