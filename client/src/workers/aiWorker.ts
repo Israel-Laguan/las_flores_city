@@ -17,6 +17,64 @@ interface WorkerResponse {
   error?: string;
 }
 
+/** OpenAI-compatible endpoint + model. Defaults to OpenAI's public API and
+ * gpt-4o-mini, but can be pointed at any compatible gateway (Azure OpenAI,
+ * local llama.cpp server, etc.) via Vite env vars without touching the server
+ * or exposing the decrypted key outside this worker. */
+function getLLMConfig(): { completionsUrl: string; model: string } {
+  const env = (import.meta as any).env || {};
+  const apiBase = env.VITE_LLM_API_BASE || 'https://api.openai.com';
+  const model = env.VITE_LLM_MODEL || 'gpt-4o-mini';
+  return { completionsUrl: `${apiBase.replace(/\/$/, '')}/v1/chat/completions`, model };
+}
+
+/** Calls the OpenAI-compatible chat completions endpoint and returns one
+ * rewritten string per input choice, preserving order. Throws on any error. */
+async function rewriteChoices(
+  fullApiKey: string,
+  originalTexts: string[],
+  relationshipContext: string
+): Promise<string[]> {
+  const { completionsUrl, model } = getLLMConfig();
+  const systemPrompt = `You are the inner voice of an AI. Based on the following relationship context: "${relationshipContext}", rewrite the following dialogue choices to sound like natural responses that match the player's relationship with the NPC.
+CRITICAL RULE: You MUST NOT alter any words wrapped inside <important> tags. Keep the tags and their content exactly as they are.
+Return a strict JSON array of exactly ${originalTexts.length} strings, one for each choice. Do not add any extra keys.`;
+
+  const response = await fetch(completionsUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${fullApiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: JSON.stringify(originalTexts) },
+      ],
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+    }),
+  });
+
+  if (!response.ok) {
+    const errBody = await response.json().catch(() => ({}));
+    throw new Error(errBody.error?.message || `LLM API error: ${response.status}`);
+  }
+
+  const json = await response.json();
+  const content = json.choices[0].message.content;
+  const parsed = JSON.parse(content);
+  const rewrittenTexts: string[] = Array.isArray(parsed)
+    ? parsed
+    : parsed.rewritten_options || parsed.choices || [];
+
+  if (rewrittenTexts.length !== originalTexts.length) {
+    throw new Error('LLM returned wrong number of choices');
+  }
+  return rewrittenTexts;
+}
+
 self.onmessage = async (event: MessageEvent<RewriteRequest>) => {
   const { id, type, choices, relationshipContext, localKey, jwt } = event.data;
 
@@ -55,41 +113,7 @@ self.onmessage = async (event: MessageEvent<RewriteRequest>) => {
     const fullApiKey = new TextDecoder().decode(plainBuffer);
 
     const originalTexts = choices.map((c) => c.text);
-
-    const systemPrompt = `You are the inner voice of an AI. Based on the following relationship context: "${relationshipContext}", rewrite the following dialogue choices to sound like natural responses that match the player's relationship with the NPC.
-CRITICAL RULE: You MUST NOT alter any words wrapped inside <important> tags. Keep the tags and their content exactly as they are.
-Return a strict JSON array of exactly ${originalTexts.length} strings, one for each choice. Do not add any extra keys.`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${fullApiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: JSON.stringify(originalTexts) },
-        ],
-        temperature: 0.7,
-        response_format: { type: 'json_object' },
-      }),
-    });
-
-    if (!response.ok) {
-      const errBody = await response.json().catch(() => ({}));
-      throw new Error(errBody.error?.message || `LLM API error: ${response.status}`);
-    }
-
-    const json = await response.json();
-    const content = json.choices[0].message.content;
-    const parsed = JSON.parse(content);
-    const rewrittenTexts: string[] = Array.isArray(parsed) ? parsed : parsed.rewritten_options || parsed.choices || [];
-
-    if (rewrittenTexts.length !== originalTexts.length) {
-      throw new Error('LLM returned wrong number of choices');
-    }
+    const rewrittenTexts = await rewriteChoices(fullApiKey, originalTexts, relationshipContext);
 
     const safeChoices = choices.map((choice, index) => {
       const rewritten = rewrittenTexts[index] || choice.text;

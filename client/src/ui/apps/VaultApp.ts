@@ -1,15 +1,9 @@
 import { eventBus } from '../../utils/EventBus';
 import { phoneStore } from '../../store/PhoneStore';
 import * as api from '../../utils/api';
+import { VaultItem as ApiVaultItem } from '../../utils/api';
 
-export interface VaultItem {
-  id: string;
-  title: string;
-  description: string;
-  mediaUrl: string;
-  itemType: string;
-  unlockedAt: string;
-}
+export type VaultItem = ApiVaultItem;
 
 export class VaultApp {
   private container: HTMLElement;
@@ -59,7 +53,7 @@ export class VaultApp {
       .map(
         (item) => `
       <div class="vault-card" id="vault-item-${item.id}" role="button" tabindex="0" aria-label="View ${this.escapeHtml(item.title)}">
-        <div class="vault-thumb" style="background-image: url('${this.escapeHtml(item.mediaUrl)}')"></div>
+        <div class="vault-thumb" style="background-image: url('${this.escapeHtml(item.thumbnailUrl)}')"></div>
         <span class="vault-title">${this.escapeHtml(item.title)}</span>
       </div>
     `
@@ -88,11 +82,13 @@ export class VaultApp {
 
     this.items.forEach((item) => {
       const card = document.getElementById(`vault-item-${item.id}`);
-      card?.addEventListener('click', () => this.openModal(item));
+      card?.addEventListener('click', () => {
+        void this.openModal(item);
+      });
       card?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          this.openModal(item);
+          void this.openModal(item);
         }
       });
     });
@@ -103,7 +99,7 @@ export class VaultApp {
     });
   }
 
-  private openModal(item: VaultItem): void {
+  private async openModal(item: VaultItem): Promise<void> {
     const modal = document.getElementById('vault-modal');
     const image = document.getElementById('modal-image') as HTMLImageElement | null;
     const title = document.getElementById('modal-title');
@@ -111,10 +107,28 @@ export class VaultApp {
 
     if (!modal || !image || !title || !desc) return;
 
-    image.src = item.mediaUrl;
+    image.src = '';
     image.alt = item.title;
-    title.textContent = item.title;
-    desc.textContent = item.description;
+    title.textContent = 'DECRYPTING...';
+    title.style.color = '';
+    desc.textContent = '';
     modal.style.display = 'flex';
+
+    try {
+      const url = await api.fetchVaultMediaUrl(item.id);
+      image.src = url;
+      title.textContent = item.title;
+      desc.textContent = item.description;
+    } catch (err) {
+      const error = err as api.VaultMediaError;
+      title.textContent = 'UPLINK FAILURE';
+      title.style.color = '#ff3333';
+      desc.textContent =
+        error.code === 'ENTITLEMENT_REVOKED'
+          ? 'ACCESS REVOKED: External authorization required (Patreon).'
+          : error.code === 'ACCESS_DENIED_OR_NOT_OWNED'
+            ? 'FILE CORRUPTED OR UNAUTHORIZED'
+            : error.message || 'FILE CORRUPTED OR UNAUTHORIZED';
+    }
   }
 }

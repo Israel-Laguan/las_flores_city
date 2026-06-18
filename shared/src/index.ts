@@ -96,8 +96,8 @@ export type DialogueOverlay = z.infer<typeof DialogueOverlaySchema>;
 // Re-export from the dedicated overlay module for convenience.
 export { OverlaySchema, OverlayFileSchema } from './schemas/overlay.js';
 export type { Overlay, OverlayFile } from './schemas/overlay.js';
-export { VaultItemSchema, VaultFileSchema } from './schemas/vault.js';
-export type { VaultItem, VaultFile } from './schemas/vault.js';
+export { VaultItemSchema, VaultFileSchema, VaultSignedUrlResponseSchema } from './schemas/vault.js';
+export type { VaultItem, VaultFile, VaultSignedUrlResponse } from './schemas/vault.js';
 
 // ==================== Location & Scene ====================
 

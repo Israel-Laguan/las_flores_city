@@ -204,13 +204,43 @@ export interface VaultItem {
   id: string;
   title: string;
   description: string;
-  mediaUrl: string;
+  thumbnailUrl: string;
+  mediaPath: string;
   itemType: string;
+  requiresSignedUrl?: boolean;
   unlockedAt: string;
 }
 
 export async function getVaultItems(): Promise<{ success: boolean; data: VaultItem[]; timestamp?: string }> {
   return fetchAPI('/vault');
+}
+
+export async function getVaultMediaUrl(itemId: string): Promise<{ success: true; data: { url: string }; timestamp?: string }> {
+  return fetchAPI(`/vault/media/${itemId}`);
+}
+
+export class VaultMediaError extends Error {
+  code: 'ACCESS_DENIED_OR_NOT_OWNED' | 'ENTITLEMENT_REVOKED' | 'UNKNOWN';
+  constructor(code: VaultMediaError['code'], message: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
+export async function fetchVaultMediaUrl(itemId: string): Promise<string> {
+  try {
+    const result = await getVaultMediaUrl(itemId);
+    return result.data.url;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes('ENTITLEMENT_REVOKED')) {
+      throw new VaultMediaError('ENTITLEMENT_REVOKED', message);
+    }
+    if (message.includes('ACCESS_DENIED_OR_NOT_OWNED')) {
+      throw new VaultMediaError('ACCESS_DENIED_OR_NOT_OWNED', message);
+    }
+    throw new VaultMediaError('UNKNOWN', message);
+  }
 }
 
 // Patreon API

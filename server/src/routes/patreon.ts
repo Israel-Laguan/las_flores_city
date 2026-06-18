@@ -131,6 +131,9 @@ patreonRouter.get('/callback', async (req: any, res: Response) => {
     // E. Invalidate cached dialogue trees so the resolver picks up the new entitlement
     await invalidatePattern('dialogue:resolved:*');
     await invalidatePattern(`user:state:${userId}`);
+    // Vault list is cached per entitlement state; drop it so premium_cg rows
+    // appear/disappear with the new is_nsfw_unlocked flag.
+    await invalidatePattern(`user:vault:${userId}:nsfw:*`);
 
     console.log(`[Patreon] User ${userId} linked: patreon_id=${patreonId}, nsfw=${isNsfwUnlocked}, tier=${highestTier}`);
 
@@ -185,6 +188,8 @@ patreonRouter.post('/unlink', authMiddleware, async (req: AuthRequest, res: Resp
 
   await invalidatePattern('dialogue:resolved:*');
   await invalidatePattern(`user:state:${userId}`);
+  // Drop vault list cache so premium_cg metadata is no longer served after revocation.
+  await invalidatePattern(`user:vault:${userId}:nsfw:*`);
 
   res.json({
     success: true,

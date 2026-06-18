@@ -11,6 +11,7 @@ import { MonologueFeed } from './components/MonologueFeed';
 import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
+import { initThemeEngine } from './utils/themeEngine';
 
 declare global {
   interface Window {
@@ -84,6 +85,7 @@ function initOnce() {
   new DialogueUI();
   new MonologueFeed();
   new BreakthroughAlert();
+  initThemeEngine();
   initApp();
 }
 

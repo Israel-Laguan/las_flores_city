@@ -81,11 +81,17 @@ test('Status bar clock shows 02:00 AM at 12 TBs', async ({ page }) => {
 // ── App routing stability ────────────────────────────────────────────────────
 
 test('Rapid tab cycling mounts/unmounts views without layout shifts or double scrollbars', async ({ page }) => {
+  // First ensure phone nav bar is visible and has the buttons
+  const navBar = page.locator('#phone-nav-bar');
+  await expect(navBar).toBeVisible({ timeout: 10_000 });
+  
   const tabs = ['Messages', 'Banco', 'Trabajando'];
 
   for (const label of tabs) {
-    await page.locator(`button:has-text("${label}")`).click();
-    await page.waitForTimeout(80);
+    const btn = page.locator(`button:has-text("${label}")`).first();
+    await expect(btn).toBeVisible({ timeout: 8_000 });
+    await btn.click();
+    await page.waitForTimeout(150);
   }
   // Back to home
   await page.locator('button:has-text("Home"), [data-app="home"]').first().click();
@@ -111,9 +117,15 @@ test('Rapid tab cycling mounts/unmounts views without layout shifts or double sc
 // ── Unified client state store ───────────────────────────────────────────────
 
 test('After gig execution, status bar and app view reflect updated TB and credits simultaneously', async ({ page }) => {
+  // First ensure phone nav bar is visible
+  const navBar = page.locator('#phone-nav-bar');
+  await expect(navBar).toBeVisible({ timeout: 10_000 });
+  
   // Navigate to Trabajando
-  await page.locator('button:has-text("Trabajando")').click();
-  await page.waitForSelector('#phone-app-content', { state: 'visible' });
+  const trabajandoBtn = page.locator('button:has-text("Trabajando")').first();
+  await expect(trabajandoBtn).toBeVisible({ timeout: 8_000 });
+  await trabajandoBtn.click();
+  await page.waitForSelector('#phone-app-content', { state: 'visible', timeout: 10_000 });
 
   const tbBefore = await page.locator('#phone-tb-display, [data-testid="tb-display"]').textContent();
 

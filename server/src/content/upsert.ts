@@ -214,12 +214,13 @@ async function upsertVaultItem(data: any): Promise<string> {
       : data.item_type === 'premium_cg';
 
   const result = await queryOLTP(
-    `INSERT INTO vault_items (id, title, description, media_url, item_type, mystery_id, requires_signed_url)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO vault_items (id, title, description, thumbnail_url, media_path, item_type, mystery_id, requires_signed_url)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (id) DO UPDATE SET
        title = EXCLUDED.title,
        description = EXCLUDED.description,
-       media_url = EXCLUDED.media_url,
+       thumbnail_url = EXCLUDED.thumbnail_url,
+       media_path = EXCLUDED.media_path,
        item_type = EXCLUDED.item_type,
        mystery_id = EXCLUDED.mystery_id,
        requires_signed_url = EXCLUDED.requires_signed_url,
@@ -229,7 +230,8 @@ async function upsertVaultItem(data: any): Promise<string> {
       data.id,
       data.title,
       sanitizeText(data.description),
-      data.media_url,
+      data.thumbnail_url,
+      data.media_path,
       data.item_type || 'clue',
       data.mystery_id || null,
       requiresSignedUrl,

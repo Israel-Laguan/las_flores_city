@@ -92,6 +92,10 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       JWT_SECRET: your-jwt-secret-change-in-production
+      CDN_BASE_URL: ${CDN_BASE_URL:-https://cdn.lasflores2077.com}
+      CDN_KEY_PAIR_ID: ${CDN_KEY_PAIR_ID:-APKADEV00000000000000}
+      CDN_PRIVATE_KEY_PATH: ${CDN_PRIVATE_KEY_PATH:-/etc/secrets/cdn_private_key.pem}
+      SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
     depends_on:
       postgres-oltp:
         condition: service_healthy

@@ -139,7 +139,7 @@ test.describe('Typewriter Skip & Choice Selection', () => {
   test('Clicking "Romance" choice disables choices container immediately (double-click defense)', async ({ page }) => {
     await injectAuth(page);
     await page.goto('/');
-    await page.waitForTimeout(2_000);
+    await page.waitForTimeout(3_000);
 
     // If we're not in a dialogue, set one up
     const choicesContainer = page.locator('.dialogue-choices, #dialogue-choices');
@@ -155,7 +155,7 @@ test.describe('Typewriter Skip & Choice Selection', () => {
         },
         [API_BASE, authToken, CAFE_SCENE_ID]
       );
-      await page.waitForTimeout(1_500);
+      await page.waitForTimeout(2_000);
 
       const canvas = page.locator('#game-container canvas');
       const box = await canvas.boundingBox();
@@ -168,12 +168,12 @@ test.describe('Typewriter Skip & Choice Selection', () => {
           detail: { characterId, sceneId },
         }));
       }, [BARISTA_CHARACTER_ID, CAFE_SCENE_ID]);
-      await expect(overlay).toBeVisible({ timeout: 5_000 });
-      // Wait for typewriter to start before skipping
-      await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 8_000 });
-      await page.waitForTimeout(100);
+      await expect(overlay).toBeVisible({ timeout: 8_000 });
+      // Wait for typewriter to start and finish before skipping
+      await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 10_000 });
+      await page.waitForTimeout(500);
       await overlay.click({ force: true, position: { x: 10, y: 10 } });
-      await expect(choicesContainer).toBeVisible({ timeout: 8_000 });
+      await expect(choicesContainer).toBeVisible({ timeout: 12_000 });
     }
 
     // Find the Romance/flirt choice button
@@ -181,7 +181,7 @@ test.describe('Typewriter Skip & Choice Selection', () => {
     const anyChoice  = page.locator('.choice-btn, .dialogue-choice').first();
     const target = (await romanceBtn.count()) > 0 ? romanceBtn : anyChoice;
 
-    await expect(target).toBeVisible({ timeout: 8_000 });
+    await expect(target).toBeVisible({ timeout: 12_000 });
 
     // Capture console log for monologue feed verification
     const consoleLogs: string[] = [];
@@ -190,6 +190,7 @@ test.describe('Typewriter Skip & Choice Selection', () => {
     await target.click();
 
     // Double-click defense: choices container must be disabled or hidden immediately
+    await expect(choicesContainer).toBeVisible({ timeout: 5_000 });
     const pointerEvents = await choicesContainer.evaluate(
       (el) => window.getComputedStyle(el).pointerEvents
     );

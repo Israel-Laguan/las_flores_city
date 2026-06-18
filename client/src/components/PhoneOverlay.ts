@@ -112,6 +112,7 @@ export class PhoneOverlay {
       { label: 'Feed', key: 'feed' },
       { label: 'Messages', key: 'messages' },
       { label: 'Banco', key: 'banco' },
+      { label: 'Trabajando', key: 'trabajando' },
       { label: 'MyMe', key: 'myme' },
       { label: 'Vault', key: 'vault' },
       { label: 'Identity', key: 'identity' },

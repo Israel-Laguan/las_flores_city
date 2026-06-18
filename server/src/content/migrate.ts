@@ -2,10 +2,22 @@ import fs from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
 import crypto from 'crypto';
+import yaml from 'js-yaml';
 import type { ContentType } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { validateContent } from './validate.js';
 import { processContentFile } from './upsert.js';
+
+const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
+  character: 'characters',
+  dialogue: 'dialogue_trees',
+  overlay: 'dialogue_overlays',
+  scene: 'scenes',
+  gig: 'gigs',
+  mystery: 'mysteries',
+  vault: 'vault_items',
+  shop_item: 'shop_items',
+};
 
 export interface MigrationResult {
   success: boolean;
@@ -28,24 +40,118 @@ async function calculateChecksum(filePath: string): Promise<string> {
   return crypto.createHash('sha256').update(content).digest('hex');
 }
 
-async function isMigrationApplied(filePath: string, contentDir: string, checksum: string): Promise<boolean> {
+export function extractContentIds(contentType: ContentType, data: Record<string, unknown>): string[] {
+  switch (contentType) {
+    case 'mystery':
+      return ((data.mysteries as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
+    case 'vault':
+      return ((data.vault_items as Array<{ id: string }>) || []).map((item) => item.id);
+    case 'gig':
+      return ((data.gigs as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
+    case 'shop_item':
+      return ((data.shop_items as Array<{ id: string }>) || []).map((item) => item.id);
+    default:
+      return [(data as { id: string }).id];
+  }
+}
+
+async function isTargetContentPresent(contentType: ContentType, ids: string[]): Promise<boolean> {
+  if (ids.length === 0) {
+    return false;
+  }
+
+  const table = CONTENT_TYPE_TABLE[contentType];
+  const result = await queryOLTP<{ count: number }>(
+    `SELECT COUNT(*)::int AS count FROM ${table} WHERE id = ANY($1::uuid[])`,
+    [ids]
+  );
+  return result.rows[0].count === ids.length;
+}
+
+async function areContentReferencesPresent(contentType: ContentType, data: Record<string, unknown>): Promise<boolean> {
+  if (contentType === 'vault') {
+    const items = (data.vault_items as Array<{ id: string; mystery_id?: string }>) || [];
+
+    for (const item of items) {
+      if (!item.mystery_id) {
+        continue;
+      }
+
+      const mysteryResult = await queryOLTP('SELECT id FROM mysteries WHERE id = $1', [item.mystery_id]);
+      if (mysteryResult.rows.length === 0) {
+        return false;
+      }
+
+      const vaultResult = await queryOLTP<{ mystery_id: string | null }>(
+        'SELECT mystery_id FROM vault_items WHERE id = $1',
+        [item.id]
+      );
+      if (vaultResult.rows.length > 0 && vaultResult.rows[0].mystery_id !== item.mystery_id) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  if (contentType === 'overlay') {
+    const mysteryId = (data as { mystery_id?: string }).mystery_id;
+    if (!mysteryId) {
+      return true;
+    }
+
+    const result = await queryOLTP('SELECT id FROM mysteries WHERE id = $1', [mysteryId]);
+    return result.rows.length > 0;
+  }
+
+  return true;
+}
+
+async function shouldSkipMigration(filePath: string, contentDir: string, checksum: string): Promise<boolean> {
   const relativePath = path.relative(contentDir, filePath);
   const result = await queryOLTP(
     'SELECT id FROM migration_log WHERE (file_path = $1 OR file_path = $2 OR file_checksum = $3) LIMIT 1',
     [filePath, relativePath, checksum]
   );
-  return result.rows.length > 0;
+
+  if (result.rows.length === 0) {
+    return false;
+  }
+
+  const contentType = getContentTypeFromPath(filePath);
+  if (!contentType) {
+    return false;
+  }
+
+  const content = await fs.readFile(filePath, 'utf-8');
+  const data = yaml.load(content) as Record<string, unknown>;
+  const ids = extractContentIds(contentType, data);
+
+  if (await isTargetContentPresent(contentType, ids) && await areContentReferencesPresent(contentType, data)) {
+    return true;
+  }
+
+  console.warn(
+    `⚠️  Drift detected: migration_log entry exists but target row(s) missing — reprocessing ${relativePath}`
+  );
+  return false;
 }
 
 async function recordMigration(
   filePath: string,
+  contentDir: string,
   checksum: string,
   contentType: ContentType,
   contentId: string
 ): Promise<void> {
+  const relativePath = path.relative(contentDir, filePath);
+  await queryOLTP(
+    'DELETE FROM migration_log WHERE file_path = $1 OR file_path = $2',
+    [relativePath, filePath]
+  );
   await queryOLTP(
     'INSERT INTO migration_log (file_path, file_checksum, content_type, content_id) VALUES ($1, $2, $3, $4)',
-    [filePath, checksum, contentType, contentId]
+    [relativePath, checksum, contentType, contentId]
   );
 }
 
@@ -141,7 +247,7 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
       try {
         const checksum = await calculateChecksum(file);
 
-        if (await isMigrationApplied(file, contentDir, checksum)) {
+        if (await shouldSkipMigration(file, contentDir, checksum)) {
           console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
           result.filesSkipped++;
           continue;
@@ -150,9 +256,8 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
         console.log(`📦 Processing: ${path.relative(contentDir, file)}`);
         const migration = await processContentFile(file);
         
-        const loggedFilePath = path.relative(contentDir, file);
         const logContentId = migration.contentId.split(',')[0];
-        await recordMigration(loggedFilePath, checksum, migration.contentType, logContentId);
+        await recordMigration(file, contentDir, checksum, migration.contentType, logContentId);
         
         result.filesProcessed++;
         result.appliedMigrations.push(migration);
@@ -188,7 +293,11 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isCli = process.argv[1]
+  ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'migrate.ts'))
+  : false;
+
+if (isCli) {
   const contentDir = process.argv[2] || path.join(process.cwd(), 'content');
   
   migrateContent(contentDir)

@@ -2,7 +2,7 @@ import { Router, Response, NextFunction } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { queryOLTP } from '../database/connection.js';
 import { getCache, setCache } from '../database/redis.js';
-import { resolveMediaUrl, verifyCdnProxySignature, fetchCdnMedia } from '../services/StorageService.js';
+import { MediaSigner } from '../services/MediaSigner.js';
 
 export const vaultRouter = Router();
 
@@ -10,7 +10,8 @@ interface VaultRow {
   id: string;
   title: string;
   description: string;
-  media_url: string;
+  thumbnail_url: string;
+  media_path: string;
   item_type: string;
   requires_signed_url: boolean;
   unlocked_at: string;
@@ -18,9 +19,17 @@ interface VaultRow {
 
 vaultRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   const userId = req.userId!;
-  const cacheKey = `user:vault:${userId}`;
 
   try {
+    // Resolve entitlement first so the cache key bifurcates SFW vs NSFW users,
+    // preventing cache poisoning of premium_cg metadata across entitlement states.
+    const entRes = await queryOLTP<{ is_nsfw_unlocked: boolean | null }>(
+      `SELECT is_nsfw_unlocked FROM user_entitlements WHERE user_id = $1`,
+      [userId]
+    );
+    const isNsfwUnlocked = entRes.rows[0]?.is_nsfw_unlocked ?? false;
+    const cacheKey = `user:vault:${userId}:nsfw:${isNsfwUnlocked}`;
+
     const cachedVault = await getCache<unknown[]>(cacheKey);
     if (cachedVault) {
       return res.json({
@@ -32,8 +41,8 @@ vaultRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response, nex
 
     const query = `
       SELECT
-        v.id, v.title, v.description, v.media_url, v.item_type,
-        v.requires_signed_url,
+        v.id, v.title, v.description, v.thumbnail_url, v.media_path,
+        v.item_type, v.requires_signed_url,
         pv.unlocked_at
       FROM player_vault pv
       JOIN vault_items v ON pv.item_id = v.id
@@ -42,20 +51,16 @@ vaultRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response, nex
     `;
     const { rows } = await queryOLTP<VaultRow>(query, [userId]);
 
-    const items = await Promise.all(
-      rows.map(async (row) => ({
-        id: row.id,
-        title: row.title,
-        description: row.description,
-        mediaUrl: await resolveMediaUrl(row.media_url, {
-          requiresSignedUrl: row.requires_signed_url,
-          itemId: row.id,
-          userId,
-        }),
-        itemType: row.item_type,
-        unlockedAt: row.unlocked_at,
-      }))
-    );
+    const items = rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      thumbnailUrl: row.thumbnail_url,
+      mediaPath: row.media_path,
+      itemType: row.item_type,
+      requiresSignedUrl: row.requires_signed_url,
+      unlockedAt: row.unlocked_at,
+    }));
 
     await setCache(cacheKey, items, 300);
 
@@ -72,46 +77,54 @@ vaultRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response, nex
 vaultRouter.get('/media/:itemId', authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   const userId = req.userId!;
   const { itemId } = req.params;
-  const expires = parseInt(req.query.expires as string, 10);
-  const sig = req.query.sig as string;
-
-  if (!expires || !sig) {
-    return res.status(400).json({
-      success: false,
-      error: 'Missing signature parameters',
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  if (!verifyCdnProxySignature(itemId, userId, expires, sig)) {
-    return res.status(403).json({
-      success: false,
-      error: 'Invalid or expired signature',
-      timestamp: new Date().toISOString(),
-    });
-  }
 
   try {
-    const itemResult = await queryOLTP(
-      `SELECT v.media_url
-       FROM vault_items v
-       JOIN player_vault pv ON pv.item_id = v.id
-       WHERE v.id = $1 AND pv.user_id = $2 AND v.requires_signed_url = true`,
-      [itemId, userId]
-    );
+    const query = `
+      SELECT
+        v.media_path,
+        v.item_type,
+        v.requires_signed_url,
+        ue.is_nsfw_unlocked
+      FROM vault_items v
+      JOIN player_vault pv ON v.id = pv.item_id
+      LEFT JOIN user_entitlements ue ON ue.user_id = pv.user_id
+      WHERE pv.user_id = $1 AND pv.item_id = $2
+    `;
+    const { rows } = await queryOLTP<{
+      media_path: string;
+      item_type: string;
+      requires_signed_url: boolean;
+      is_nsfw_unlocked: boolean | null;
+    }>(query, [userId, itemId]);
 
-    if (itemResult.rows.length === 0) {
-      return res.status(404).json({
+    if (rows.length === 0) {
+      return res.status(403).json({
         success: false,
-        error: 'Vault item not found or not unlocked',
+        error: 'ACCESS_DENIED_OR_NOT_OWNED',
         timestamp: new Date().toISOString(),
       });
     }
 
-    const { buffer, contentType } = await fetchCdnMedia(itemResult.rows[0].media_url);
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 'private, max-age=300');
-    res.send(buffer);
+    const { media_path, item_type, requires_signed_url, is_nsfw_unlocked } = rows[0];
+
+    if (item_type === 'premium_cg' && !is_nsfw_unlocked) {
+      return res.status(403).json({
+        success: false,
+        error: 'ENTITLEMENT_REVOKED',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const shouldSign = requires_signed_url || item_type === 'premium_cg';
+    const url = shouldSign
+      ? MediaSigner.generateSecureUrl(media_path)
+      : `${process.env.CDN_BASE_URL || ''}${media_path.startsWith('/') ? media_path : `/${media_path}`}`;
+
+    res.json({
+      success: true,
+      data: { url },
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
     next(error);
   }

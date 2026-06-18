@@ -10,8 +10,8 @@ import express from 'express';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis, deleteCache } from '../../src/database/redis.js';
-import { createCdnProxyUrl } from '../../src/services/StorageService.js';
+import { closeRedis, deleteCache, invalidatePattern } from '../../src/database/redis.js';
+import { MediaSigner } from '../../src/services/MediaSigner.js';
 
 const { Pool } = pg;
 
@@ -76,14 +76,15 @@ beforeAll(async () => {
   await oltpPool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID');
 
   await oltpPool.query(
-    `INSERT INTO vault_items (id, title, description, media_url, item_type, requires_signed_url)
+    `INSERT INTO vault_items (id, title, description, thumbnail_url, media_path, item_type, requires_signed_url)
      VALUES
-       ($1, 'Arrival Ticket Stub', 'Test clue', 'https://cdn.lasflores2077.com/vault/arrival_ticket.png', 'clue', false),
-       ($2, 'Classified Surveillance Still', 'Premium clue', 'https://cdn.lasflores2077.com/vault/surveillance_still.png', 'premium_cg', true)
+       ($1, 'Arrival Ticket Stub', 'Test clue', 'https://cdn.lasflores2077.com/vault/thumb_arrival_ticket.png', '/vault/arrival_ticket.png', 'clue', false),
+       ($2, 'Classified Surveillance Still', 'Premium clue', 'https://cdn.lasflores2077.com/vault/thumb_surveillance_still.png', '/premium/surveillance_still_full.png', 'premium_cg', true)
      ON CONFLICT (id) DO UPDATE SET
        title = EXCLUDED.title,
        description = EXCLUDED.description,
-       media_url = EXCLUDED.media_url,
+       thumbnail_url = EXCLUDED.thumbnail_url,
+       media_path = EXCLUDED.media_path,
        item_type = EXCLUDED.item_type,
        requires_signed_url = EXCLUDED.requires_signed_url`,
     [ARRIVAL_TICKET_ID, PREMIUM_CG_ID]
@@ -132,6 +133,9 @@ afterAll(async () => {
 
 async function resetVaultState() {
   await oltpPool.query('DELETE FROM player_vault WHERE user_id = $1', [TEST_USER_ID]);
+  // Vault cache is bifurcated by entitlement (nsfw flag in key), so sweep both
+  // states to avoid a stale empty list from a prior test poisoning the next run.
+  await invalidatePattern(`user:vault:${TEST_USER_ID}:nsfw:*`);
   await deleteCache(`user:vault:${TEST_USER_ID}`);
   await oltpPool.query(
     `UPDATE users SET active_dialogue_id = $1, current_node_id = 'start' WHERE id = $2`,
@@ -179,10 +183,11 @@ describe('Vault API', () => {
 
     expect(vaultData.data).toHaveLength(1);
     expect(vaultData.data[0].id).toBe('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
-    expect(vaultData.data[0].mediaUrl).toBe('https://cdn.lasflores2077.com/vault/arrival_ticket.png');
+    expect(vaultData.data[0].thumbnailUrl).toBe('https://cdn.lasflores2077.com/vault/thumb_arrival_ticket.png');
+    expect(vaultData.data[0].mediaPath).toBe('/vault/arrival_ticket.png');
   });
 
-  test('premium_cg items receive signed proxy URLs', async () => {
+  test('premium_cg items expose only thumbnail in /vault grid (no signed URL leak)', async () => {
     await resetVaultState();
     await oltpPool.query(
       `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
@@ -194,9 +199,73 @@ describe('Vault API', () => {
     const data = await res.json();
 
     expect(data.data).toHaveLength(1);
-    expect(data.data[0].mediaUrl).toContain('/vault/media/');
-    expect(data.data[0].mediaUrl).toContain('expires=');
-    expect(data.data[0].mediaUrl).toContain('sig=');
+    expect(data.data[0].id).toBe(PREMIUM_CG_ID);
+    expect(data.data[0].thumbnailUrl).toContain('thumb_surveillance_still.png');
+    expect(data.data[0].mediaPath).toBe('/premium/surveillance_still_full.png');
+    expect(data.data[0].requiresSignedUrl).toBe(true);
+  });
+
+  test('GET /vault/media/:itemId returns signed URL for premium CG when entitled', async () => {
+    await resetVaultState();
+    await oltpPool.query(
+      `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [TEST_USER_ID, PREMIUM_CG_ID]
+    );
+    await oltpPool.query(
+      `INSERT INTO user_entitlements (user_id, is_nsfw_unlocked) VALUES ($1, true)
+       ON CONFLICT (user_id) DO UPDATE SET is_nsfw_unlocked = EXCLUDED.is_nsfw_unlocked`,
+      [TEST_USER_ID]
+    );
+
+    const res = await fetch(`http://localhost:${port}/vault/media/${PREMIUM_CG_ID}`, { headers: auth() });
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(typeof data.data.url).toBe('string');
+    expect(data.data.url).toContain('surveillance_still_full');
+  });
+
+  test('GET /vault/media/:itemId returns ENTITLEMENT_REVOKED for premium CG when Patreon unlinked', async () => {
+    await resetVaultState();
+    await oltpPool.query(
+      `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [TEST_USER_ID, PREMIUM_CG_ID]
+    );
+    await oltpPool.query(
+      `INSERT INTO user_entitlements (user_id, is_nsfw_unlocked) VALUES ($1, false)
+       ON CONFLICT (user_id) DO UPDATE SET is_nsfw_unlocked = EXCLUDED.is_nsfw_unlocked`,
+      [TEST_USER_ID]
+    );
+
+    const res = await fetch(`http://localhost:${port}/vault/media/${PREMIUM_CG_ID}`, { headers: auth() });
+    const data = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(data.error).toBe('ENTITLEMENT_REVOKED');
+  });
+
+  test('GET /vault/media/:itemId returns ACCESS_DENIED_OR_NOT_OWNED when item not in player_vault', async () => {
+    await resetVaultState();
+    const res = await fetch(`http://localhost:${port}/vault/media/${PREMIUM_CG_ID}`, { headers: auth() });
+    const data = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(data.error).toBe('ACCESS_DENIED_OR_NOT_OWNED');
+  });
+
+  test('GET /vault/media/:itemId returns unsigned URL for non-premium clues', async () => {
+    await resetVaultState();
+    await oltpPool.query(
+      `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [TEST_USER_ID, ARRIVAL_TICKET_ID]
+    );
+
+    const res = await fetch(`http://localhost:${port}/vault/media/${ARRIVAL_TICKET_ID}`, { headers: auth() });
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.data.url).toContain('arrival_ticket.png');
   });
 
   test('vault_item_unlocked OLAP event is written on unlock', async () => {
@@ -224,11 +293,38 @@ describe('Vault API', () => {
   });
 });
 
-describe('StorageService', () => {
-  test('createCdnProxyUrl includes signature parameters', () => {
-    const url = createCdnProxyUrl(PREMIUM_CG_ID, TEST_USER_ID, 300);
-    expect(url).toContain(`/vault/media/${PREMIUM_CG_ID}`);
-    expect(url).toContain('expires=');
-    expect(url).toContain('sig=');
+describe('MediaSigner', () => {
+  test('generateSecureUrl returns the unsigned URL when CDN private key is missing', () => {
+    const prevBase = process.env.CDN_BASE_URL;
+    const prevKeyId = process.env.CDN_KEY_PAIR_ID;
+    const prevKeyPath = process.env.CDN_PRIVATE_KEY_PATH;
+    process.env.CDN_BASE_URL = 'https://cdn.lasflores2077.com';
+    process.env.CDN_KEY_PAIR_ID = 'APKADEV00000000000000';
+    process.env.CDN_PRIVATE_KEY_PATH = '/nonexistent/key-for-test.pem';
+
+    const url = MediaSigner.generateSecureUrl('/premium/clip.mp4', 300);
+    expect(url).toBe('https://cdn.lasflores2077.com/premium/clip.mp4');
+
+    if (prevBase === undefined) delete process.env.CDN_BASE_URL;
+    else process.env.CDN_BASE_URL = prevBase;
+    if (prevKeyId === undefined) delete process.env.CDN_KEY_PAIR_ID;
+    else process.env.CDN_KEY_PAIR_ID = prevKeyId;
+    if (prevKeyPath === undefined) delete process.env.CDN_PRIVATE_KEY_PATH;
+    else process.env.CDN_PRIVATE_KEY_PATH = prevKeyPath;
+  });
+
+  test('generateSecureUrl normalizes paths without leading slash', () => {
+    const prevBase = process.env.CDN_BASE_URL;
+    const prevKeyPath = process.env.CDN_PRIVATE_KEY_PATH;
+    process.env.CDN_BASE_URL = 'https://cdn.lasflores2077.com';
+    process.env.CDN_PRIVATE_KEY_PATH = '/nonexistent/key-for-test.pem';
+
+    const url = MediaSigner.generateSecureUrl('premium/clip.mp4');
+    expect(url).toBe('https://cdn.lasflores2077.com/premium/clip.mp4');
+
+    if (prevBase === undefined) delete process.env.CDN_BASE_URL;
+    else process.env.CDN_BASE_URL = prevBase;
+    if (prevKeyPath === undefined) delete process.env.CDN_PRIVATE_KEY_PATH;
+    else process.env.CDN_PRIVATE_KEY_PATH = prevKeyPath;
   });
 });

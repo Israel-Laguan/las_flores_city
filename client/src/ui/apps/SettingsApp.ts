@@ -45,7 +45,7 @@ export class SettingsApp {
             <span id="ai-status" class="settings-value">Checking…</span>
           </p>
 
-          <label class="settings-label" for="ai-key-input">OpenAI / Anthropic API Key</label>
+          <label class="settings-label" for="ai-key-input">OpenAI-compatible API Key</label>
           <input
             id="ai-key-input"
             type="password"
