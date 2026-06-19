@@ -16,6 +16,7 @@ export class BancoFlashController {
   private lastFlashField: 'credits' | 'goldCredits' | '' = '';
   private subs: Array<[string, (...a: any[]) => void]> = [];
   private unsubStore: (() => void) | null = null;
+  private flashTimer: number | null = null;
 
   constructor() {
     const onTransaction = (data: { credits: number; goldCredits: number }) => {
@@ -59,7 +60,11 @@ export class BancoFlashController {
     el.classList.remove('flash-income', 'flash-expense');
     void el.offsetWidth; // force reflow to reset animation timeline
     el.classList.add(cls);
-    window.setTimeout(() => el.classList.remove(cls), 650);
+    if (this.flashTimer) window.clearTimeout(this.flashTimer);
+    this.flashTimer = window.setTimeout(() => {
+      el.classList.remove(cls);
+      this.flashTimer = null;
+    }, 650);
 
     eventBus.emit('audio:play_sfx', {
       key: isIncome ? 'sfx_credits_up' : 'sfx_credits_down',
@@ -73,5 +78,6 @@ export class BancoFlashController {
     for (const [e, h] of this.subs) eventBus.off(e, h);
     this.subs = [];
     if (this.unsubStore) this.unsubStore();
+    if (this.flashTimer) { window.clearTimeout(this.flashTimer); this.flashTimer = null; }
   }
 }

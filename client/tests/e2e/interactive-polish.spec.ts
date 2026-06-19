@@ -52,7 +52,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
       const store = (window as any).__phoneStore;
       if (!store) return false;
       const start = store.getState().credits;
-      store.updateState({ credits: start + 100 });
+      store.setState({ credits: start + 100 });
       // Poll for the flash class within a short window
       return new Promise<boolean>((resolve) => {
         let elapsed = 0;
@@ -106,9 +106,10 @@ test.describe('Interactive Polish (Task 6.2)', () => {
       });
     });
 
-    // Either a typing bubble showed (NPC messages present) or the thread
-    // rendered without pacing (no NPC messages). Both are valid.
-    expect(sawTyping === true || sawTyping === false).toBeTruthy();
+    // Typing bubble appearance is timing-dependent and only occurs when NPC
+    // messages are being paced. If no NPC messages exist the bubble won't show.
+    // Assert the thread at least rendered (no crash) rather than a tautology.
+    await expect(page.locator('.thread-scroll')).toBeVisible();
   });
 
   test('skip tap resolves pacing — all NPC bubbles end with text', async ({ page }) => {
