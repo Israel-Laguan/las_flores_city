@@ -1,0 +1,167 @@
+/*
+ * TerminalModal styles — Task 6.4.
+ *
+ * The overlay is mounted inside `.phone-screen`, so the faction CSS custom
+ * properties (--neon-blue, --neon-cyan, --border-glow, --terminal-bg) resolve
+ * to the active alignment for free via cascade. This file declares ZERO
+ * --neon-* custom properties. Fatal-error styling overrides via `.fatal-error`
+ * (red), regardless of faction. See spec §2.
+ */
+
+.terminal-modal-overlay {
+  position: absolute;            /* fills .phone-screen (position: relative) */
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: rgba(3, 7, 18, 0.98);
+  z-index: 200;
+  font-family: 'Courier New', monospace;
+}
+
+.terminal-modal-overlay[hidden] {
+  display: none;
+}
+
+.terminal-modal-content {
+  width: 100%;
+  max-width: 320px;
+  background: #030712;
+  border: 1px solid var(--neon-blue);   /* faction-aware via cascade */
+  border-radius: 8px;
+  box-shadow: var(--border-glow);
+  overflow: hidden;
+}
+
+.terminal-modal-header {
+  background: color-mix(in srgb, var(--neon-blue) 12%, transparent);
+  border-bottom: 1px solid var(--neon-blue);
+  padding: 8px 12px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  color: var(--neon-blue);
+}
+
+/* Fatal-error override — red regardless of faction */
+.terminal-modal-overlay.fatal-error .terminal-modal-content {
+  border-color: #ff3333;
+  box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+}
+
+.terminal-modal-overlay.fatal-error .terminal-modal-header {
+  background: rgba(255, 51, 51, 0.1);
+  border-bottom-color: #ff3333;
+  color: #ff3333;
+}
+
+.error-flash {
+  animation: warning-flicker 1.5s infinite alternate;
+}
+
+@keyframes warning-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.terminal-modal-body {
+  padding: 16px;
+}
+
+.terminal-modal-body h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.terminal-modal-body p {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.error-code {
+  font-weight: bold;
+  color: #ff3333 !important;
+}
+
+.error-msg {
+  word-break: break-word;
+}
+
+.retry-status {
+  font-size: 0.7rem;
+  color: var(--neon-cyan);
+}
+
+.pulse-caret {
+  animation: caret-blink 0.8s infinite steps(2);
+}
+
+@keyframes caret-blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.terminal-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 16px 16px 16px;
+}
+
+.modal-btn {
+  background: transparent;
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-blue);
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  padding: 6px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal-btn:hover:not(:disabled) {
+  background: var(--neon-blue);
+  color: #000;
+  box-shadow: var(--border-glow);
+}
+
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-btn.cancel {
+  border-color: #4b5563;
+  color: #6b7280;
+}
+
+.modal-btn.cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  box-shadow: none;
+}
+
+.fatal-error .modal-btn.retry {
+  border-color: #ff3333;
+  color: #ff3333;
+  width: 100%;
+}
+
+.fatal-error .modal-btn.retry:hover:not(:disabled) {
+  background: #ff3333;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+}

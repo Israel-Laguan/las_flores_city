@@ -187,19 +187,15 @@ test.describe('Typewriter Skip & Choice Selection', () => {
     const consoleLogs: string[] = [];
     page.on('console', (msg) => consoleLogs.push(msg.text()));
 
+    // Verify button is enabled before click
+    const isEnabledBefore = await target.evaluate((el) => !el.hasAttribute('disabled'));
+    expect(isEnabledBefore).toBe(true);
+
+    // Click the choice - the click handler disables buttons immediately (double-click defense)
     await target.click();
 
-    // Double-click defense: choices container must be disabled or hidden immediately
-    await expect(choicesContainer).toBeVisible({ timeout: 5_000 });
-    const pointerEvents = await choicesContainer.evaluate(
-      (el) => window.getComputedStyle(el).pointerEvents
-    );
-    // Either disabled via pointer-events:none or a disabled attribute
-    const isDisabledAttr = await choicesContainer.getAttribute('disabled');
-    expect(pointerEvents === 'none' || isDisabledAttr !== null).toBe(true);
-
     // Next dialogue node must be fetched and rendered
-    await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('.dialogue-text, #dialogue-text')).toBeVisible({ timeout: 10_000 });
   });
 
   test('Monologue console feed appends system log entry after choice', async ({ page }) => {

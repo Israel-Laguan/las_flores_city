@@ -3,9 +3,20 @@ import { eventBus } from '../../utils/EventBus.js';
 import type {
   SMSThreadPreview,
   SMSThreadDetail,
-  SMSThreadChoice,
   SMSInboxResponse,
 } from '../../../../shared/src/types/sms.js';
+import {
+  renderLoading,
+  renderError,
+  renderInbox,
+  renderThread,
+  renderBubbleContents,
+  scrollThreadToBottom,
+  setChoicesDisabled,
+  appendInlineError,
+  createBubble,
+  createChoiceButton,
+} from './MessagesApp.rendering.js';
 
 type View = 'inbox' | 'thread' | 'loading' | 'error';
 
@@ -67,7 +78,7 @@ export class MessagesApp {
   }
 
   private async loadInbox(): Promise<void> {
-    this.renderLoading('Decrypting message queue...');
+    this.container.innerHTML = renderLoading('Decrypting message queue...');
     try {
       const res = await fetch(`${API_BASE}/inbox?_t=${Date.now()}`, {
         headers: this.getAuthHeaders(),
@@ -79,16 +90,16 @@ export class MessagesApp {
       const threads = json.data.threads ?? [];
       this.updateUnreadCount(threads);
       this.view = 'inbox';
-      this.renderInbox(threads);
+      renderInbox(threads, this.container, (id) => this.openThread(id));
     } catch (e: any) {
       this.view = 'error';
-      this.renderError('Net Connection lost.', () => this.loadInbox());
+      renderError(e?.message ?? 'Net Connection lost.', () => this.loadInbox(), this.container);
     }
   }
 
   private async openThread(characterId: string): Promise<void> {
     this.activeCharacterId = characterId;
-    this.renderLoading('Establishing secure channel...');
+    this.container.innerHTML = renderLoading('Establishing secure channel...');
     try {
       const res = await fetch(`${API_BASE}/thread/${encodeURIComponent(characterId)}`, {
         headers: this.getAuthHeaders(),
@@ -102,11 +113,11 @@ export class MessagesApp {
       }
       this.activeThread = json.data;
       this.view = 'thread';
-      void this.renderThread(json.data);
+      await this.renderThreadInternal(json.data);
       void this.markRead(characterId);
     } catch (e: any) {
       this.view = 'error';
-      this.renderError(e?.message ?? 'Uplink failure.', () => this.openThread(characterId));
+      renderError(e?.message ?? 'Uplink failure.', () => this.openThread(characterId), this.container);
     }
   }
 
@@ -134,7 +145,7 @@ export class MessagesApp {
   private async sendReply(choiceId: string): Promise<void> {
     if (this.replying || !this.activeCharacterId) return;
     this.replying = true;
-    this.setChoicesDisabled(true);
+    setChoicesDisabled(this.container, true);
     try {
       const res = await fetch(`${API_BASE}/reply`, {
         method: 'POST',
@@ -155,18 +166,18 @@ export class MessagesApp {
         throw new Error(json.error ?? `HTTP ${res.status}`);
       }
       this.activeThread = json.data;
-      void this.renderThread(json.data);
+      await this.renderThreadInternal(json.data);
       void this.loadInbox();
     } catch (e: any) {
-      this.setChoicesDisabled(false);
-      this.appendInlineError(e?.message ?? 'Reply failed.');
+      setChoicesDisabled(this.container, false);
+      appendInlineError(this.container, e?.message ?? 'Reply failed.');
     } finally {
       this.replying = false;
     }
   }
 
   async startThread(characterId: string): Promise<void> {
-    this.renderLoading('Opening channel...');
+    this.container.innerHTML = renderLoading('Opening channel...');
     try {
       const res = await fetch(`${API_BASE}/start`, {
         method: 'POST',
@@ -180,11 +191,11 @@ export class MessagesApp {
       this.activeThread = json.data;
       this.activeCharacterId = characterId;
       this.view = 'thread';
-      void this.renderThread(json.data);
+      await this.renderThreadInternal(json.data);
       void this.loadInbox();
     } catch (e: any) {
       this.view = 'error';
-      this.renderError(e?.message ?? 'Channel open failed.', () => this.startThread(characterId));
+      renderError(e?.message ?? 'Channel open failed.', () => this.startThread(characterId), this.container);
     }
   }
 
@@ -192,133 +203,22 @@ export class MessagesApp {
     const unreadMessagesCount = threads.filter((t) => t.unread).length;
     const previousCount = phoneStore.getState().unreadMessagesCount;
     phoneStore.updateState({ unreadMessagesCount });
-    // Emit comms:new_message when new unread messages arrive
     if (unreadMessagesCount > previousCount) {
       eventBus.emit('comms:new_message', { count: unreadMessagesCount });
     }
   }
 
-  // ───────────────────────────────────────────────────────────────────────
-  // Rendering
-  // ───────────────────────────────────────────────────────────────────────
-
-  private renderLoading(message: string): void {
-    this.container.innerHTML = `
-      <div class="comms-app">
-        <div class="comms-header">
-          <h2>MESSAGES</h2>
-          <span class="comms-conn">SECURE MESH // AES-256</span>
-        </div>
-        <div class="loading-spinner">${this.escapeHtml(message)}</div>
-      </div>`;
-  }
-
-  private renderError(message: string, onRetry: () => void): void {
-    this.container.innerHTML = `
-      <div class="comms-app">
-        <div class="comms-header">
-          <h2>MESSAGES</h2>
-          <span class="comms-conn">SECURE MESH // AES-256</span>
-        </div>
-        <div class="app-error">
-          <p>${this.escapeHtml(message)}</p>
-          <button id="comms-retry">Reconnect</button>
-        </div>
-      </div>`;
-    this.container.querySelector('#comms-retry')?.addEventListener('click', onRetry);
-  }
-
-  private renderInbox(threads: SMSThreadPreview[]): void {
-    const rows = threads.length === 0
-      ? `<div class="inbox-empty">No messages yet. Visit a location to start a conversation.</div>`
-      : threads.map((t) => this.createInboxRow(t)).join('');
-
-    this.container.innerHTML = `
-      <div class="comms-app">
-        <div class="comms-header">
-          <h2>MESSAGES</h2>
-          <span class="comms-conn">SECURE MESH // AES-256</span>
-        </div>
-        <div class="inbox-list">${rows}</div>
-      </div>`;
-
-    threads.forEach((t) => {
-      this.container
-        .querySelector(`[data-character-id="${this.cssEscape(t.characterId)}"]`)
-        ?.addEventListener('click', () => this.openThread(t.characterId));
-    });
-  }
-
-  private createInboxRow(t: SMSThreadPreview): string {
-    const unreadClass = t.unread ? ' unread' : '';
-    const dot = t.unread ? `<span class="inbox-unread-dot" aria-label="unread"></span>` : '';
-    const initial = (t.characterName ?? '?').charAt(0).toUpperCase();
-    const previewText = t.lastMessage?.text ?? '—';
-    const preview = previewText.length > 60 ? previewText.slice(0, 57) + '...' : previewText;
-    const time = this.formatRelativeTime(t.lastNpcMessageAt);
-    const rel = `F:${t.friendshipLevel} R:${t.romanceLevel}`;
-
-    return `
-      <div class="inbox-row${unreadClass}" data-character-id="${this.escapeAttr(t.characterId)}">
-        <div class="inbox-avatar">${this.escapeHtml(initial)}</div>
-        <div class="inbox-row-body">
-          <div class="inbox-row-top">
-            <span class="inbox-name">${this.escapeHtml(t.characterName)}${dot}</span>
-            <span class="inbox-time">${this.escapeHtml(time)}</span>
-          </div>
-          <div class="inbox-preview">${this.escapeHtml(preview)}</div>
-          <div class="inbox-rel">${this.escapeHtml(rel)}</div>
-        </div>
-      </div>`;
-  }
-
-  private async renderThread(detail: SMSThreadDetail): Promise<void> {
-    const titleSuffix = detail.characterTitle ? ` <span style="opacity:0.6">// ${this.escapeHtml(detail.characterTitle)}</span>` : '';
-    const bubbles = detail.chatHistory.map((m) => this.createBubble(m)).join('');
-    const endMarker = detail.isEnd
-      ? `<div class="thread-end">— conversation ended —</div>`
-      : '';
-    const choices = (!detail.isEnd && detail.choices.length > 0)
-      ? `<div class="choices">${detail.choices.map((c) => this.createChoiceButton(c)).join('')}</div>`
-      : (!detail.isEnd ? `<div class="no-choices">No replies available right now.</div>` : '');
-    const rel = `F:${detail.friendshipLevel}  R:${detail.romanceLevel}`;
-
-    this.container.innerHTML = `
-      <div class="comms-app">
-        <div class="comms-header">
-          <div>
-            <button class="comms-back" id="comms-back">◀ INBOX</button>
-          </div>
-          <h2>${this.escapeHtml(detail.characterName)}${titleSuffix}</h2>
-          <span class="comms-conn">${this.escapeHtml(rel)}</span>
-        </div>
-        <div class="thread-scroll">${bubbles}${endMarker}</div>
-        ${choices}
-      </div>`;
-
-    detail.chatHistory.forEach((m) => {
-      const node = this.container.querySelector<HTMLElement>(
-        `[data-message-id="${this.cssEscape(m.id)}"] .bubble-text`
-      );
-      if (node) node.appendChild(this.renderBubbleContents(m.text));
-    });
-
-    this.container.querySelector('#comms-back')?.addEventListener('click', () => {
-      this.activeCharacterId = null;
-      this.activeThread = null;
-      void this.loadInbox();
-    });
-
-    detail.choices.forEach((c) => {
-      this.container
-        .querySelector(`[data-choice-id="${this.cssEscape(c.id)}"]`)
-        ?.addEventListener('click', () => this.sendReply(c.id));
-    });
-
-    // Wire skip-on-tap: click anywhere in thread-scroll to instantly complete pacing
-    const scroll = this.container.querySelector<HTMLElement>('.thread-scroll');
-    if (scroll) {
-      scroll.addEventListener('click', () => {
+  private async renderThreadInternal(detail: SMSThreadDetail): Promise<void> {
+    renderThread(
+      detail,
+      this.container,
+      () => {
+        this.activeCharacterId = null;
+        this.activeThread = null;
+        void this.loadInbox();
+      },
+      (choiceId) => this.sendReply(choiceId),
+      () => {
         this.skipRequested = true;
         if (this.activePacingTimeout) {
           window.clearTimeout(this.activePacingTimeout);
@@ -328,20 +228,13 @@ export class MessagesApp {
           this.resolveActivePacing();
           this.resolveActivePacing = null;
         }
-      });
-    }
-
+      }
+    );
     await this.pacedDelivery(detail);
-    this.scrollThreadToBottom();
+    scrollThreadToBottom(this.container);
   }
 
-  private createBubble(m: { id: string; author: 'npc' | 'player'; text: string; createdAt: string }): string {
-    const cls = m.author === 'npc' ? 'npc' : 'player';
-    const time = this.formatRelativeTime(m.createdAt);
-    return `<div class="bubble ${cls}" data-message-id="${this.escapeAttr(m.id)}"><span class="bubble-text"></span><span class="bubble-time">${this.escapeHtml(time)}</span></div>`;
-  }
-
-  // ── Task 6.2: Paced NPC message delivery ──────────────────────────────
+  // ── Paced delivery (Task 6.2) ───────────────────────────────────────────────
 
   private async pacedDelivery(detail: SMSThreadDetail): Promise<void> {
     this.isPacing = true;
@@ -355,11 +248,10 @@ export class MessagesApp {
       if (this.aborted || this.skipRequested) break;
 
       const bubbleText = scroll.querySelector<HTMLElement>(
-        `[data-message-id="${this.cssEscape(m.id)}"] .bubble-text`
+        `[data-message-id="${(window as any).CSS?.escape ? (window as any).CSS.escape(m.id) : m.id.replace(/[^a-zA-Z0-9_-]/g, '\\$&')}"] .bubble-text`
       );
       if (!bubbleText) continue;
 
-      // Hide the pre-rendered text so we can reveal it progressively
       bubbleText.textContent = '';
       const bubbleEl = bubbleText.parentElement;
 
@@ -367,10 +259,9 @@ export class MessagesApp {
         await this.showTypingBubble(scroll, bubbleEl, m.text.length);
       }
       if (this.aborted || this.skipRequested) {
-        // Restore full text and move on
         bubbleText.textContent = '';
-        bubbleText.appendChild(this.renderBubbleContents(m.text));
-        this.scrollThreadToBottom();
+        bubbleText.appendChild(renderBubbleContents(m.text));
+        scrollThreadToBottom(this.container);
         continue;
       }
 
@@ -380,17 +271,13 @@ export class MessagesApp {
     this.isPacing = false;
   }
 
-  private async showTypingBubble(
-    _container: HTMLElement,
-    bubbleEl: HTMLElement,
-    textLength: number
-  ): Promise<void> {
+  private async showTypingBubble(_container: HTMLElement, bubbleEl: HTMLElement, textLength: number): Promise<void> {
     const typing = document.createElement('div');
     typing.className = 'bubble npc typing';
     typing.innerHTML = '<div class="typing-dot"></div>'.repeat(3);
 
     bubbleEl.after(typing);
-    this.scrollThreadToBottom();
+    scrollThreadToBottom(this.container);
 
     eventBus.emit('audio:play_sfx', {
       key: 'sfx_sms_typing_loop',
@@ -411,10 +298,7 @@ export class MessagesApp {
   }
 
   private typewriterReveal(bubbleText: HTMLElement, text: string): Promise<void> {
-    // Parse into segments: plain strings and <important> tags
-    const segments: Array<
-      { type: 'plain'; text: string } | { type: 'important'; text: string }
-    > = [];
+    const segments: Array<{ type: 'plain' | 'important'; text: string }> = [];
     const re = /<important>([\s\S]*?)<\/important>/g;
     let lastIdx = 0;
     let match: RegExpExecArray | null;
@@ -441,7 +325,7 @@ export class MessagesApp {
           window.clearInterval(this.typewriterInterval!);
           this.typewriterInterval = null;
           bubbleText.textContent = '';
-          bubbleText.appendChild(this.renderBubbleContents(text));
+          bubbleText.appendChild(renderBubbleContents(text));
           resolve();
           return;
         }
@@ -475,117 +359,14 @@ export class MessagesApp {
           }
         }
 
-        // SFX every 2nd character (matches DialogueUI throttle)
         if (charsEmitted % 2 === 0) {
           eventBus.emit('audio:play_sfx', {
             key: 'sfx_mech_click',
             url: 'https://cdn.lasflores2077.com/audio/sfx_mech_click.mp3',
           });
         }
-        this.scrollThreadToBottom();
+        scrollThreadToBottom(this.container);
       }, 30);
     });
-  }
-
-  // ── End Task 6.2 pacing ────────────────────────────────────────────────
-
-  private createChoiceButton(c: SMSThreadChoice): string {
-    const relBadge = c.relationship_change
-      ? `<span class="choice-cost">${c.relationship_change.stat === 'friendship' ? '💕 +' : '💜 +'}${c.relationship_change.amount} ${c.relationship_change.stat}</span>`
-      : '';
-    const costAmount = c.time_block_cost?.amount;
-    const costBadge = costAmount && costAmount > 0
-      ? `<span class="choice-cost">🕒 -${costAmount} TB</span>`
-      : '';
-    return `
-      <button class="choice-btn" data-choice-id="${this.escapeAttr(c.id)}">
-        ${this.escapeHtml(c.text)}
-        ${relBadge}${costBadge}
-      </button>`;
-  }
-
-  private setChoicesDisabled(disabled: boolean): void {
-    this.container.querySelectorAll<HTMLButtonElement>('.choice-btn').forEach((b) => {
-      b.disabled = disabled;
-    });
-  }
-
-  private appendInlineError(message: string): void {
-    const scroll = this.container.querySelector('.thread-scroll');
-    if (!scroll) return;
-    const errEl = document.createElement('div');
-    errEl.className = 'app-error';
-    errEl.style.cssText = 'padding:8px;border:1px solid #f88;color:#f88;font-size:0.7rem;';
-    errEl.textContent = message;
-    scroll.appendChild(errEl);
-    this.scrollThreadToBottom();
-    setTimeout(() => errEl.remove(), 4000);
-  }
-
-  private scrollThreadToBottom(): void {
-    const scroll = this.container.querySelector<HTMLElement>('.thread-scroll');
-    if (scroll) scroll.scrollTop = scroll.scrollHeight;
-  }
-
-  // ───────────────────────────────────────────────────────────────────────
-  // Rich text: render <important>...</important> as styled <important> nodes
-  // Returns a DocumentFragment — appends to a bubble <div> after setting
-  // innerHTML. The CSS styles `important { color: var(--neon-magenta); ... }`.
-  // ───────────────────────────────────────────────────────────────────────
-
-  private renderBubbleContents(text: string): DocumentFragment {
-    const frag = document.createDocumentFragment();
-    const re = /<important>([\s\S]*?)<\/important>/g;
-    let lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-      if (m.index > lastIndex) {
-        frag.appendChild(document.createTextNode(text.slice(lastIndex, m.index)));
-      }
-      const imp = document.createElement('important');
-      imp.textContent = m[1];
-      frag.appendChild(imp);
-      lastIndex = re.lastIndex;
-    }
-    if (lastIndex < text.length) {
-      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
-    }
-    return frag;
-  }
-
-  // ───────────────────────────────────────────────────────────────────────
-  // Helpers
-  // ───────────────────────────────────────────────────────────────────────
-
-  private escapeHtml(s: string | null | undefined): string {
-    if (s == null) return '';
-    return s
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  private escapeAttr(s: string): string {
-    return this.escapeHtml(s);
-  }
-
-  private cssEscape(s: string): string {
-    return (window as any).CSS?.escape ? (window as any).CSS.escape(s) : s.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
-  }
-
-  private formatRelativeTime(dateString: string | null | undefined): string {
-    if (!dateString) return '';
-    const diff = Date.now() - new Date(dateString).getTime();
-    if (Number.isNaN(diff) || diff < 0) return '';
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'now';
-    if (mins < 60) return `${mins}m`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d`;
-    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 }

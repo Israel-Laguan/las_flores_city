@@ -31,51 +31,29 @@ test.describe('UX Polish Readiness', () => {
     // Wait for the app to initialize
     await page.waitForTimeout(1000);
 
-    // Intercept event bus emissions by evaluating in the page context
-    const eventsTriggered = await page.evaluate(() => {
-      return new Promise<number>((resolve) => {
-        let count = 0;
-        const bus = (window as any).__phoneStore;
-        if (!bus) { resolve(0); return; }
+    // Open phone with keyboard shortcut P
+    await page.keyboard.press('P');
+    await page.waitForTimeout(500);
 
-        // Access the global EventBus through the module scope
-        // The eventBus is available via the PhoneBridge's bindings
-        const checkEvents = () => {
-          // We listen on the DOM for custom events that the EventBus emits
-          // phaser:disable_inputs is emitted when the phone opens
-          const observer = new MutationObserver(() => {
-            // The phone container class toggling indicates phaser:disable_inputs fired
-          });
+    // Verify phone opened - phaser:disable_inputs should have fired
+    const phoneContainer = page.locator('.phone-os-container');
+    await expect(phoneContainer).toHaveClass(/open/, { timeout: 3000 });
 
-          const phoneContainer = document.querySelector('.phone-os-container');
-          if (phoneContainer) {
-            observer.observe(phoneContainer, { attributes: true, attributeFilter: ['class'] });
-          }
-        };
+    // Navigate to Banco app - phone:navigate should fire
+    const bancoTab = page.locator('button:has-text("Banco")');
+    await bancoTab.click();
+    await page.waitForTimeout(300);
 
-        checkEvents();
-
-        // Simulate opening the phone and navigating to Banco
-        // Trigger via the exposed __phoneStore
-        bus.setState({ isOpen: true, currentRoute: 'banco' });
-
-        setTimeout(() => {
-          // Verify the phone opened (phaser:disable_inputs equivalent)
-          const phoneContainer = document.querySelector('.phone-os-container');
-          const isOpen = phoneContainer?.classList.contains('open') ?? false;
-
-          // Verify navigation happened
-          const appContent = document.querySelector('#phone-app-content');
-          const hasBanco = appContent?.textContent?.includes('BANCO') ?? false;
-
-          count = (isOpen ? 1 : 0) + (hasBanco ? 1 : 0);
-          resolve(count);
-        }, 500);
-      });
+    // Verify navigation happened
+    const currentRoute = await page.evaluate(() => {
+      const store = (window as any).__phoneStore;
+      return store?.getState()?.currentRoute ?? null;
     });
 
-    // Both the input lock and the navigation events must have fired
-    expect(eventsTriggered).toBe(2);
+    expect(currentRoute).toBe('banco');
+
+    // Verify phone is still open
+    await expect(phoneContainer).toHaveClass(/open/);
   });
 
   test('dialogue:typing_finished event fires after typewriter completes', async ({ page }) => {

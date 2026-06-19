@@ -10,6 +10,7 @@ import './styles/banco.css';
 import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
 import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
+import { TerminalModal } from './components/TerminalModal';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
@@ -78,6 +79,16 @@ window.addEventListener('lf:dialogue-start', (e: Event) => {
   eventBus.emit('dialogue:start', (e as CustomEvent).detail);
 });
 
+// Bridge modal CustomEvents so the TerminalModal confirm/error paths are
+// reachable from E2E tests and external integrations without reaching into the
+// internal eventBus singleton. Mirrors the lf:dialogue-start bridge above.
+window.addEventListener('lf:show_confirm', (e: Event) => {
+  eventBus.emit('ui:show_confirm', (e as CustomEvent).detail);
+});
+window.addEventListener('lf:show_error', (e: Event) => {
+  eventBus.emit('ui:show_error', (e as CustomEvent).detail);
+});
+
 function initOnce() {
   if (window.__lasFloresInitialized) {
     return;
@@ -89,6 +100,7 @@ function initOnce() {
   new DialogueUI();
   new MonologueFeed();
   new BreakthroughAlert();
+  new TerminalModal();
   initThemeEngine();
   initApp();
 }

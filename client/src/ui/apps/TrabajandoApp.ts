@@ -107,9 +107,22 @@ export class TrabajandoApp {
       eventBus.emit('tb:updated', data.newTimeBlocks);
       this.init();
     } catch (err: any) {
-      alert(`Uplink Error: ${err.message}`);
+      this.container.innerHTML = `
+        <div class="app-error">
+          <p>Uplink Error: ${this.escapeHtml(err.message || 'Contract execution failed.')}</p>
+          <button id="btn-home-nav">Return Home</button>
+        </div>
+      `;
+      this.container.querySelector('#btn-home-nav')
+        ?.addEventListener('click', () => eventBus.emit('phone:navigate', 'home'));
     } finally {
       overlay.style.display = 'none';
     }
+  }
+
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 }

@@ -1,5 +1,8 @@
 /// <reference types="vite/client" />
 
+import { eventBus } from './EventBus';
+import type { BankLedgerResponse } from '../../../shared/src/types/bank';
+
 const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
 
 let authToken: string | null = localStorage.getItem('auth_token');
@@ -17,7 +20,21 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
+/**
+ * Decide whether a failed fetch should be intercepted into the diegetic
+ * TerminalModal recovery loop. Only true "the server is unreachable / crashed"
+ * cases qualify — 4xx are normal client errors (e.g. "not enough credits") and
+ * stay throws, preserving existing behavior. See Task 6.4 spec §3.
+ */
+function shouldIntercept(err: unknown): boolean {
+  // fetch() rejects with a TypeError on network down / DNS / CORS / timeout.
+  if (err instanceof TypeError) return true;
+  const status = (err as { status?: number })?.status;
+  return typeof status === 'number' && status >= 500;
+}
+
 async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const method = options?.method ?? 'GET';
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -26,20 +43,54 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
     headers['Authorization'] = `Bearer ${authToken}`;
   }
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      ...headers,
-      ...options?.headers,
-    },
-  });
+  const attempt = async (): Promise<T> => {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers: {
+        ...headers,
+        ...options?.headers,
+      },
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `API error: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const e = new Error(
+        errorData.error || `API error: ${response.status} ${response.statusText}`
+      ) as Error & { status?: number };
+      // Attach status so shouldIntercept() can distinguish 4xx from 5xx.
+      e.status = response.status;
+      throw e;
+    }
+
+    return response.json();
+  };
+
+  try {
+    return await attempt();
+  } catch (err) {
+    if (!shouldIntercept(err)) throw err; // 4xx etc. — unchanged behavior
+
+    // Caller's Promise<T> suspends here until the modal-driven retry resolves.
+    // Each invocation owns its own Promise + closure; no global registry, so
+    // it is impossible to resolve the wrong caller or leak one (spec §3).
+    return await new Promise<T>((resolve, reject) => {
+      eventBus.emit('ui:show_error', {
+        id:
+          typeof crypto !== 'undefined' && 'randomUUID' in crypto
+            ? crypto.randomUUID()
+            : `err_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+        signature: `${method} ${endpoint}`,
+        code: err instanceof TypeError ? 'UPLINK_BROKEN' : `SERVER_CRASH_${(err as { status?: number }).status}`,
+        message:
+          'The remote neural server failed to acknowledge the packet signature or has crashed.',
+        retry: async () => {
+          const result = await attempt(); // throws on failure → modal restarts countdown
+          resolve(result); // success: unblock the original caller
+        },
+        abort: () => reject(new Error('UPLINK_ABANDONED_BY_USER')),
+      });
+    });
   }
-
-  return response.json();
 }
 
 // Auth API
@@ -79,6 +130,16 @@ export async function register(email: string, username: string, password: string
 // Health API
 export async function getHealth(): Promise<any> {
   return fetchAPI('/health');
+}
+
+// Banco API — brings BancoApp under the same retry resilience as the rest of
+// the app (Task 6.4 §3). It previously called fetch() directly.
+export async function getBankStatement(): Promise<{
+  success: boolean;
+  data: BankLedgerResponse;
+  timestamp?: string;
+}> {
+  return fetchAPI('/bank/ledger');
 }
 
 // Player API

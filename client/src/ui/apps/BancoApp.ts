@@ -1,5 +1,6 @@
 import { phoneStore } from '../../store/PhoneStore';
 import { eventBus } from '../../utils/EventBus';
+import * as api from '../../utils/api';
 import type { BankLedgerResponse, BankTransaction } from '../../../../shared/src/types/bank';
 
 export class BancoApp {
@@ -25,12 +26,10 @@ export class BancoApp {
     this.container.innerHTML = `<div class="loading-spinner">Connecting to Banco de Las Flores...</div>`;
 
     try {
-      const response = await fetch('/api/bank/ledger', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
-      });
-      if (!response.ok) throw new Error('Failed to retrieve statement');
-
-      const { data }: { data: BankLedgerResponse } = await response.json();
+      // 5xx / network failures are intercepted by fetchAPI into the diegetic
+      // recovery modal and retried transparently; the Promise only rejects on
+      // user-abandon, which lands here as a 4xx-class inline error.
+      const { data }: { data: BankLedgerResponse } = await api.getBankStatement();
       phoneStore.updateState({ credits: data.credits, goldCredits: data.goldCredits });
       // Emit bank:transaction for polish consumers (currency flash animations)
       if (data.transactions.length > 0) {

@@ -72,6 +72,19 @@ export class MyMeApp {
     return div.innerHTML;
   }
 
+  /** Inline diegetic error surface. Replaces the previous alert() calls —
+   *  5xx/network failures never reach here (intercepted by fetchAPI into the
+   *  recovery modal), so this is only reached on 4xx or user-abandon, which
+   *  are narrative boundary conditions, not system crashes. (Task 6.4 §4.) */
+  private showInlineError(title: string, detail: string): void {
+    this.container.innerHTML = `
+      <div class="app-error">
+        <p>${this.escapeHtml(title)}</p>
+        <p style="font-size:0.75rem;color:#9ca3af;margin-top:4px;">${this.escapeHtml(detail)}</p>
+      </div>
+    `;
+  }
+
   private setTab(tab: MyMeTab): void {
     this.currentTab = tab;
     this.render();
@@ -252,6 +265,25 @@ export class MyMeApp {
   }
 
   private async handleBuy(shopItemId: string): Promise<void> {
+    const item = this.catalog.find((it) => it.id === shopItemId);
+    // Gold-credit purchases are premium currency — confirm via the diegetic
+    // modal before debiting. Also serves as the production-ready demonstrator
+    // for the ui:show_confirm path (Task 6.4 §4). Credit purchases proceed
+    // without a confirm to avoid friction on the common case.
+    if (item && item.currency_type === 'gold_credits') {
+      await new Promise<void>((resolve) => {
+        eventBus.emit('ui:show_confirm', {
+          id: `buy-${shopItemId}-${Date.now()}`,
+          title: 'CONFIRM G$ PURCHASE',
+          message: `Authorize debit of ${item.price.toLocaleString()} G$ for "${item.name}"? This transaction is non-refundable.`,
+          confirmLabel: 'AUTHORIZE',
+          cancelLabel: 'ABORT',
+          onConfirm: () => resolve(),
+          onCancel: () => resolve(),
+        });
+      });
+    }
+
     try {
       const res = await api.buyShopItem(shopItemId);
       if (!res.success) throw new Error('Buy failed');
@@ -264,7 +296,7 @@ export class MyMeApp {
       eventBus.emit('inventory:item_purchased', res.data.inventory_item);
     } catch (err) {
       console.error('[MyMe] buy error:', err);
-      alert((err as Error).message || 'Purchase failed.');
+      this.showInlineError('TRANSACTION REJECTED', (err as Error).message || 'Purchase failed.');
     } finally {
       await this.loadAll();
     }
@@ -277,7 +309,7 @@ export class MyMeApp {
       eventBus.emit('inventory:item_equipped', { slot, shop_item_id: shopItemId });
     } catch (err) {
       console.error('[MyMe] equip error:', err);
-      alert((err as Error).message || 'Equip failed.');
+      this.showInlineError('EQUIP FAILED', (err as Error).message || 'Equip failed.');
     } finally {
       await this.loadAll();
     }
@@ -290,7 +322,7 @@ export class MyMeApp {
       window.location.href = res.data.approve_url;
     } catch (err) {
       console.error('[MyMe] top-up error:', err);
-      alert((err as Error).message || 'Top-up failed.');
+      this.showInlineError('TOP-UP FAILED', (err as Error).message || 'Top-up failed.');
     }
   }
 }
