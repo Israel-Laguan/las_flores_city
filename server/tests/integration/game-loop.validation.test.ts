@@ -19,6 +19,7 @@ import { feedRouter } from '../../src/routes/feed.js';
 import { authRouter } from '../../src/routes/auth.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { getCache, deleteCache, closeRedis } from '../../src/database/redis.js';
+import { SocialFeedService } from '../../src/services/SocialFeedService.js';
 
 const { Pool } = pg;
 
@@ -251,6 +252,7 @@ describe(' GET /network/feed uses Redis cache', () => {
        VALUES ('Test Author', 'test_handle', 'http://example.com/avatar.png', 'Test post content', 'lore')`
     );
     await deleteCache('global:feed');
+    SocialFeedService.invalidateMemoryCache();
 
     expect(await getCache('global:feed')).toBeNull();
 

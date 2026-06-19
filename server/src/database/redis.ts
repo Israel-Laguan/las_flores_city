@@ -58,17 +58,40 @@ export async function deleteCache(key: string): Promise<boolean> {
   }
 }
 
+/**
+ * Safely invalidates multiple keys without blocking the Redis event loop.
+ * Uses SCAN (incremental iteration) instead of KEYS (O(N) full-block) and
+ * UNLINK (async memory reclamation, Redis 4.0+) instead of DEL (synchronous).
+ *
+ * Task 5.4: Prevents the Redis single-threaded event loop from freezing when
+ * mass-invalidating patterns like `dialogue:resolved:*` after a Breakthrough
+ * Event leaderboard finalisation.
+ */
 export async function invalidatePattern(pattern: string): Promise<number> {
+  let cursor = '0';
+  let totalDeleted = 0;
+
   try {
-    const keys = await redis.keys(pattern);
-    if (keys.length > 0) {
-      await redis.del(...keys);
-    }
-    return keys.length;
+    do {
+      // SCAN returns [nextCursor, keys[]]; COUNT 100 is a hint, not a guarantee
+      const [nextCursor, keys] = await redis.scan(
+        cursor,
+        'MATCH', pattern,
+        'COUNT', 100
+      );
+      cursor = nextCursor;
+
+      if (keys.length > 0) {
+        // UNLINK reclaims memory in a background thread — non-blocking
+        await redis.unlink(...keys);
+        totalDeleted += keys.length;
+      }
+    } while (cursor !== '0');
   } catch (error) {
     console.error('Cache invalidate error:', error);
-    return 0;
   }
+
+  return totalDeleted;
 }
 
 // Content versioning helpers

@@ -8,19 +8,23 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 const { Pool } = pg;
 
 // OLTP Database Connection (Main Game State)
+// Task 5.4: max increased to 50 to sustain 500+ concurrent VU load tests
+// without exhausting connections. Combined with PgBouncer in production.
 export const oltpPool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  max: 50,                  // Max connections in pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30s
+  connectionTimeoutMillis: 2000, // Fail if no connection available within 2s
 });
 
 // OLAP Database Connection (Analytics)
+// Task 5.4: connectionTimeoutMillis reduced to 1000ms so telemetry queries
+// fail fast instead of holding Express request threads open when OLAP is degraded.
 export const olapPool = new Pool({
   connectionString: process.env.ANALYTICS_DATABASE_URL,
-  max: 10,
+  max: 20,                  // Slightly larger headroom for background telemetry bursts
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 1000, // Fail fast — telemetry must never block gameplay
 });
 
 // Test database connections
@@ -62,8 +66,27 @@ export async function queryOLTP<T extends pg.QueryResultRow = any>(text: string,
   return oltpPool.query<T>(text, params);
 }
 
-export async function queryOLAP<T extends pg.QueryResultRow = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
-  return olapPool.query<T>(text, params);
+/**
+ * OLAP telemetry query wrapper (fire-and-forget safe).
+ *
+ * Task 5.4: Catches and logs errors internally so that controllers calling
+ * `queryOLAP(...)` without `.catch()` never produce an UnhandledPromiseRejection
+ * that would crash the Node.js process. Returns null on failure so callers can
+ * safely chain `.then()` or ignore the result.
+ */
+export async function queryOLAP<T extends pg.QueryResultRow = any>(
+  text: string,
+  params?: any[]
+): Promise<pg.QueryResult<T> | null> {
+  try {
+    return await olapPool.query<T>(text, params);
+  } catch (error) {
+    // Swallow and log — OLAP telemetry is non-critical.
+    // Controllers are expected to call this without await; an unhandled
+    // rejection here would otherwise crash the process.
+    console.error('[OLAP TELEMETRY DROPPED]', error);
+    return null;
+  }
 }
 
 // Transaction helpers

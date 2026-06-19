@@ -40,6 +40,14 @@ interface OverlayRow {
 
 const CACHE_TTL_SECONDS = 3600; // 1 hour
 
+// Task 5.4: In-flight Promise map for request coalescing (thundering herd protection).
+// When a Breakthrough Event ends and `invalidatePattern('dialogue:resolved:*')` fires,
+// thousands of concurrent requests will all miss the cache simultaneously.
+// Without deduping, each request independently hits PostgreSQL to recalculate the
+// resolved tree. With deduping, only the first request for a given cache key performs
+// the merge; all subsequent identical requests await the same Promise.
+const inflightResolutions = new Map<string, Promise<ResolvedTree>>();
+
 function buildOverlayFingerprint(overlays: OverlayRow[]): string {
   const fingerprints = overlays
     .map((overlay) => `${overlay.updated_at.toISOString()}:${JSON.stringify(overlay.nodes)}`)
@@ -84,6 +92,35 @@ export class DialogueResolver {
    * regardless of order).
    */
   public static async resolveTreeForUser(
+    userId: string,
+    baseTreeId: string
+  ): Promise<ResolvedTree> {
+    // Task 5.4: Build a dedup key early so concurrent calls with the same
+    // (userId, baseTreeId) pair coalesce onto a single in-flight resolution.
+    const dedupKey = `user:${userId}:tree:${baseTreeId}`;
+
+    const inflight = inflightResolutions.get(dedupKey);
+    if (inflight) {
+      return inflight;
+    }
+
+    const resolution = DialogueResolver._resolveTreeForUserInner(userId, baseTreeId);
+    inflightResolutions.set(dedupKey, resolution);
+
+    try {
+      const result = await resolution;
+      return result;
+    } finally {
+      // Always clean up the map entry so subsequent requests go through normally
+      inflightResolutions.delete(dedupKey);
+    }
+  }
+
+  /**
+   * Inner implementation of resolveTreeForUser, separated so the public
+   * method can wrap it with Promise deduping.
+   */
+  private static async _resolveTreeForUserInner(
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {

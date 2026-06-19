@@ -282,7 +282,7 @@ export class LeaderboardWorker {
     const olapBounds = new Date(minStarted);
     const olapBoundsEnd = new Date(maxSolved);
 
-    const { rows } = await queryOLAP<OlapUsageRow>(
+    const olapResult = await queryOLAP<OlapUsageRow>(
       `SELECT user_id,
               COALESCE(SUM(time_blocks_cost), 0)::bigint AS tb_spent
          FROM player_events
@@ -293,6 +293,10 @@ export class LeaderboardWorker {
         GROUP BY user_id`,
       [userIds, olapBounds, olapBoundsEnd]
     );
+    // Task 5.4: queryOLAP may return null when the analytics database is
+    // unreachable. Fall back to an empty rows array so the worker does not
+    // crash — leaderboard entries simply won't have tb_spent for this run.
+    const rows = olapResult?.rows ?? [];
 
     const tbByUser = new Map<string, number>();
     for (const row of rows) {
