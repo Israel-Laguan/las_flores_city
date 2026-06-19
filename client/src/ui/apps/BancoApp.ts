@@ -4,10 +4,21 @@ import type { BankLedgerResponse, BankTransaction } from '../../../../shared/src
 
 export class BancoApp {
   private container: HTMLElement;
+  private subs: Array<[string, (...a: any[]) => void]> = [];
 
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
-    this.init();
+    void this.init();
+    const onOpen = (key: string) => {
+      if (key === 'banco') void this.init();
+    };
+    this.subs.push(['phone:app-opened', onOpen]);
+    eventBus.on('phone:app-opened', onOpen);
+  }
+
+  destroy(): void {
+    for (const [e, h] of this.subs) eventBus.off(e, h);
+    this.subs = [];
   }
 
   private async init(): Promise<void> {

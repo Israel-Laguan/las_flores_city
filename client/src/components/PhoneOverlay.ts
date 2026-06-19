@@ -6,6 +6,7 @@ import { VaultApp } from '../ui/apps/VaultApp';
 import { SettingsApp } from '../ui/apps/SettingsApp';
 import { IdentityApp } from '../ui/apps/IdentityApp';
 import { MyMeApp } from '../ui/apps/MyMeApp';
+import { BancoApp } from '../ui/apps/BancoApp';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
@@ -14,6 +15,7 @@ export class PhoneOverlay {
   private navButtons: Map<string, HTMLButtonElement> = new Map();
   private apps: Map<string, HTMLElement> = new Map();
   private bridge: PhoneBridge;
+  private appInstances: Array<object> = [];
 
   constructor() {
     this.viewport = document.getElementById('phone-app-content') ?? document.body.appendChild(
@@ -44,7 +46,7 @@ export class PhoneOverlay {
     this.switchApp('feed');
   }
 
-  // ── App content builders ──────────────────────────────────────────────────
+  // ── App content builders ───────────────────────────────────────────────────
 
   private createApps(): void {
     const feed = document.createElement('div');
@@ -55,7 +57,8 @@ export class PhoneOverlay {
     this.apps.set('feed', feed);
 
     const messages = document.createElement('div');
-    new MessagesApp(messages);
+    const messagesApp = new MessagesApp(messages);
+    this.appInstances.push(messagesApp);
     this.apps.set('messages', messages);
 
     const home = document.createElement('div');
@@ -66,10 +69,8 @@ export class PhoneOverlay {
     this.apps.set('home', home);
 
     const banco = document.createElement('div');
-    banco.innerHTML = `
-      <h3 style="margin:0 0 15px;color:var(--neon-cyan);border-bottom:1px solid var(--neon-cyan);padding-bottom:5px;">BANCO</h3>
-      <p style="color:#888;">Banco de Las Flores placeholder.</p>
-    `;
+    const bancoApp = new BancoApp(banco);
+    this.appInstances.push(bancoApp);
     this.apps.set('banco', banco);
 
     const trabajando = document.createElement('div');
@@ -90,19 +91,23 @@ export class PhoneOverlay {
     this.apps.set('trabajando', trabajando);
 
     const vault = document.createElement('div');
-    new VaultApp(vault);
+    const vaultApp = new VaultApp(vault);
+    this.appInstances.push(vaultApp);
     this.apps.set('vault', vault);
 
     const identity = document.createElement('div');
-    new IdentityApp(identity);
+    const identityApp = new IdentityApp(identity);
+    this.appInstances.push(identityApp);
     this.apps.set('identity', identity);
 
     const settings = document.createElement('div');
-    new SettingsApp(settings);
+    const settingsApp = new SettingsApp(settings);
+    this.appInstances.push(settingsApp);
     this.apps.set('settings', settings);
 
     const myme = document.createElement('div');
-    new MyMeApp(myme);
+    const mymeApp = new MyMeApp(myme);
+    this.appInstances.push(mymeApp);
     this.apps.set('myme', myme);
   }
 
@@ -164,7 +169,7 @@ export class PhoneOverlay {
     phoneStore.updateState({ currentRoute: key as any });
   }
 
-  // ── Event listeners ───────────────────────────────────────────────────────
+  // ── Event listeners ───────────────────────────────────────────────────
 
   private setupEventListeners(): void {
     // Keyboard: block VN engine shortcuts while phone is open (§5.1)
@@ -209,6 +214,15 @@ export class PhoneOverlay {
     if (data.isNsfwUnlocked !== undefined) {
       phoneStore.updateState({ isNsfwUnlocked: data.isNsfwUnlocked });
     }
+  }
+
+  destroy(): void {
+    for (const instance of this.appInstances) {
+      if ('destroy' in instance && typeof (instance as any).destroy === 'function') {
+        (instance as any).destroy();
+      }
+    }
+    this.appInstances = [];
   }
 }
 

@@ -6,6 +6,7 @@ import './components/PhoneOverlay';
 import './components/SleepOverlay';
 import './styles/comms.css';
 import './styles/vault.css';
+import './styles/banco.css';
 import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
 import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
