@@ -12,7 +12,9 @@
     "lint": "eslint --ext .ts src/",
     "test": "npx --no-install jest --detectOpenHandles",
     "test:smoke": "npx --no-install jest tests/smoke --detectOpenHandles",
-    "test:integration": "npx --no-install jest tests/integration --detectOpenHandles"
+    "test:integration": "npx --no-install jest tests/integration --detectOpenHandles",
+    "test:load": "k6 run tests/load/breakthrough_rush.js",
+    "seed:load-users": "tsx scripts/seed_load_test_users.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1070.0",
