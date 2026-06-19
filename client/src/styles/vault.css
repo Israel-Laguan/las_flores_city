@@ -93,6 +93,8 @@
   flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
+  will-change: transform, opacity;
+  transform-origin: top left;
 }
 
 .modal-image {
