@@ -2,7 +2,8 @@ import express from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
-import { initializeDialogueState, filterChoices, getSpeaker, buildDialogueResponse } from './dialogue-helpers.js';
+import { initializeDialogueState, filterChoices, getSpeaker } from './dialogue-helpers.js';
+import { buildDialogueResponse } from './dialogue-response-helpers.js';
 
 // ============================================================
 // Archive Room (Task 5.1 - Legacy Play)

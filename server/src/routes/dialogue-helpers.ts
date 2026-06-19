@@ -277,6 +277,58 @@ export async function joinMystery(
   );
 }
 
+async function processVaultUnlock(
+  client: any,
+  userId: string,
+  vaultUnlockId: string
+): Promise<{ id: string; title: string } | null> {
+  const itemResult = await client.query(
+    'SELECT id, title FROM vault_items WHERE id = $1',
+    [vaultUnlockId]
+  );
+  if (itemResult.rows.length === 0) {
+    return null;
+  }
+  await client.query(
+    `INSERT INTO player_vault (user_id, item_id)
+     VALUES ($1, $2)
+     ON CONFLICT (user_id, item_id) DO NOTHING`,
+    [userId, vaultUnlockId]
+  );
+  return itemResult.rows[0];
+}
+
+async function processAlignmentChange(
+  client: any,
+  userId: string,
+  alignment: 'loyalist' | 'fugitive'
+): Promise<void> {
+  await client.query(
+    `UPDATE users SET alignment = $1 WHERE id = $2`,
+    [alignment, userId]
+  );
+}
+
+async function processRelationshipAndCheckEnd(
+  userId: string,
+  nextNode: any,
+  chosenOption: DialogueChoice
+): Promise<{ isEnd: boolean }> {
+  if (chosenOption.relationship_change) {
+    const speakerId = nextNode.speaker_id;
+    if (speakerId) {
+      await processRelationshipChange(
+        userId,
+        speakerId,
+        chosenOption.relationship_change.stat,
+        chosenOption.relationship_change.amount
+      );
+    }
+  }
+  const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
+  return { isEnd };
+}
+
 export async function processChoice(
   client: any,
   userId: string,
@@ -296,10 +348,6 @@ export async function processChoice(
     isBreakthrough: boolean;
     kind: 'winner' | 'solver' | 'late';
   };
-  // Task 5.3: meta-plot finale alignment flip. Set when the chosen
-  // option carries `alignment_change`. The route emits the OLAP
-  // `alignment_locked` event post-commit and includes the value
-  // in the response so the client can apply its theme + audio FX.
   alignmentChange?: 'loyalist' | 'fugitive';
 }> {
   let timeBlocksSpent = 0;
@@ -319,37 +367,15 @@ export async function processChoice(
     return { success: false, error: 'invalid_next_node' };
   }
 
-  if (chosenOption.relationship_change) {
-    const speakerId = nextNode.speaker_id;
-    if (speakerId) {
-      await processRelationshipChange(
-        userId,
-        speakerId,
-        chosenOption.relationship_change.stat,
-        chosenOption.relationship_change.amount
-      );
-    }
-  }
-
-  const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
+  const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
 
   let unlockedVaultItem: { id: string; title: string } | undefined;
-
   if (chosenOption.vault_unlock) {
-    const itemResult = await client.query(
-      'SELECT id, title FROM vault_items WHERE id = $1',
-      [chosenOption.vault_unlock]
-    );
-    if (itemResult.rows.length === 0) {
+    const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);
+    if (!result) {
       return { success: false, error: 'invalid_vault_item' };
     }
-    await client.query(
-      `INSERT INTO player_vault (user_id, item_id)
-       VALUES ($1, $2)
-       ON CONFLICT (user_id, item_id) DO NOTHING`,
-      [userId, chosenOption.vault_unlock]
-    );
-    unlockedVaultItem = itemResult.rows[0];
+    unlockedVaultItem = result;
   }
 
   await recordChoiceAndEffects(
@@ -364,118 +390,21 @@ export async function processChoice(
     nextNode
   );
 
-  // Task 3.3: detect `mystery_solve` choice and run the atomic
-  // Breakthrough state transition inside this same transaction.
-  // Side effects (broadcast, OLAP) happen post-commit in the route.
   const { result: breakthrough, status: mysterySolveStatus } =
     await processBreakthroughSolve(client, userId, chosenOption.mystery_solve);
 
-  // Task 5.3: apply the meta-plot finale alignment flip inside the
-  // same transaction as the rest of the choice effects. Once set,
-  // the player cannot re-choose (the resolver already gates the
-  // `loyalist_only` / `fugitive_only` overlays off neutral users,
-  // and other choices in this tree shouldn't carry alignment_change).
   let alignmentChange: 'loyalist' | 'fugitive' | undefined;
   if (chosenOption.alignment_change) {
-    await client.query(
-      `UPDATE users SET alignment = $1 WHERE id = $2`,
-      [chosenOption.alignment_change, userId]
-    );
+    await processAlignmentChange(client, userId, chosenOption.alignment_change);
     alignmentChange = chosenOption.alignment_change;
   }
 
-  return {
+return {
     success: true,
     timeBlocksSpent,
     unlockedVaultItem,
     mysterySolveStatus,
     breakthrough,
     alignmentChange,
-  };
-}
-
-export function buildDialogueResponse(
-  dialogue: any,
-  node: any,
-  speaker: any,
-  choices: any[],
-  isEnd: boolean,
-  timeBlocksSpent: number,
-  timeBlocksRemaining: number
-) {
-  return {
-    success: true,
-    data: {
-      tree: {
-        id: dialogue.id,
-        name: dialogue.name,
-        description: dialogue.description,
-        start_node_id: dialogue.start_node_id,
-        nodes: dialogue.nodes,
-        metadata: dialogue.metadata,
-      },
-      current_node: {
-        id: node.id,
-        type: node.type,
-        text: node.text,
-        thought: node.thought || null,
-        speaker,
-      },
-      available_choices: choices,
-      is_end: isEnd,
-      time_blocks_spent: timeBlocksSpent,
-      time_blocks_remaining: timeBlocksRemaining,
-    },
-    timestamp: new Date().toISOString(),
-  };
-}
-
-export function buildChooseResponse(
-  dialogueId: string,
-  choiceIndex: number,
-  nextNode: any,
-  speaker: any,
-  nextChoices: any[],
-  isEnd: boolean,
-  timeBlocksSpent: number,
-  timeBlocksRemaining: number,
-  unlockedVaultItem?: { id: string; title: string },
-  mysterySolveStatus?: {
-    mysteryId: string;
-    isBreakthrough: boolean;
-    kind: 'winner' | 'solver' | 'late';
-  },
-  // Task 5.3: surfaced to the client so the phone UI can apply
-  // its fugitive/loyalist visual treatment. Lives in `data` per
-  // the existing response shape (not at the top level).
-  alignmentChange?: 'loyalist' | 'fugitive'
-) {
-  return {
-    success: true,
-    data: {
-      dialogue_id: dialogueId,
-      choice_index: choiceIndex,
-      next_node: {
-        id: nextNode.id,
-        type: nextNode.type,
-        text: nextNode.text,
-        thought: nextNode.thought || null,
-        speaker,
-      },
-      available_choices: nextChoices,
-      is_end: isEnd,
-      time_blocks_spent: timeBlocksSpent,
-      time_blocks_remaining: timeBlocksRemaining,
-      ...(unlockedVaultItem
-        ? { unlocked_vault_item: { id: unlockedVaultItem.id, title: unlockedVaultItem.title } }
-        : {}),
-      ...(mysterySolveStatus
-        ? { mystery_solve_status: mysterySolveStatus }
-        : {}),
-      ...(alignmentChange
-        ? { alignment_change: alignmentChange }
-        : {}),
-    },
-    timestamp: new Date().toISOString(),
   };
 }

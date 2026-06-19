@@ -10,6 +10,8 @@ export class SettingsApp {
   private toggleBtn: HTMLButtonElement | null = null;
   private saveBtn: HTMLButtonElement | null = null;
   private removeBtn: HTMLButtonElement | null = null;
+  private volumeSlider: HTMLInputElement | null = null;
+  private volumeValueEl: HTMLElement | null = null;
 
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
@@ -31,6 +33,25 @@ export class SettingsApp {
           <h2>SETTINGS</h2>
           <span class="subnet-badge">LOCAL CONFIG</span>
         </div>
+
+        <section class="settings-section">
+          <h3>AUDIO CONTROL</h3>
+          <div class="settings-volume">
+            <label class="settings-label" for="volume-slider">Master Volume</label>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+              <input
+                id="volume-slider"
+                type="range"
+                min="0"
+                max="100"
+                value="80"
+                step="1"
+                style="flex:1;accent-color:var(--neon-cyan);"
+              />
+              <span id="volume-value" style="color:var(--neon-cyan);font-family:monospace;min-width:40px;">80%</span>
+            </div>
+          </div>
+        </section>
 
         <section class="settings-section">
           <h3>AI PRESENTATION LAYER (BYOK)</h3>
@@ -71,10 +92,13 @@ export class SettingsApp {
     this.toggleBtn = this.container.querySelector<HTMLButtonElement>('#ai-toggle-btn');
     this.saveBtn = this.container.querySelector<HTMLButtonElement>('#ai-save-btn');
     this.removeBtn = this.container.querySelector<HTMLButtonElement>('#ai-remove-btn');
+    this.volumeSlider = this.container.querySelector<HTMLInputElement>('#volume-slider');
+    this.volumeValueEl = this.container.querySelector<HTMLElement>('#volume-value');
 
     this.saveBtn?.addEventListener('click', () => void this.handleSave());
     this.toggleBtn?.addEventListener('click', () => void this.handleToggle());
     this.removeBtn?.addEventListener('click', () => void this.handleRemove());
+    this.volumeSlider?.addEventListener('input', (e) => this.handleVolumeChange(e));
 
     void this.refresh();
   }
@@ -187,5 +211,19 @@ export class SettingsApp {
       this.setMessage(`Remove failed: ${err?.message || 'unknown error'}`, 'error');
       this.removeBtn!.disabled = false;
     }
+  }
+
+  private handleVolumeChange(e: Event): void {
+    const slider = e.target as HTMLInputElement;
+    const volumePercent = parseInt(slider.value, 10);
+    const normalizedVolume = volumePercent / 100;
+
+    // Update the display
+    if (this.volumeValueEl) {
+      this.volumeValueEl.textContent = `${volumePercent}%`;
+    }
+
+    // Emit the volume change event to the AudioManager
+    eventBus.emit('audio:volume_change', normalizedVolume);
   }
 }

@@ -5,12 +5,11 @@ import {
   getSpeaker,
   initializeDialogueState,
   resolveDialogueTree,
-  buildDialogueResponse,
   getDialogState,
   processChoice,
-  buildChooseResponse,
   joinMystery,
 } from './dialogue-helpers.js';
+import { buildDialogueResponse, buildChooseResponse } from './dialogue-response-helpers.js';
 import { emitBreakthroughSideEffects } from './dialogue-breakthrough-helpers.js';
 import { withOLTPTransaction, queryOLTP, queryOLAP } from '../database/connection.js';
 import { deleteCache, invalidatePattern } from '../database/redis.js';
@@ -123,16 +122,34 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
   }
 });
 
-// ============================================================
-// POST /dialogue/choose - Advance the dialogue
-// Body: { choiceIndex: number }
-//
-// Resolves the tree through the DialogueResolver so that
-// `next_node` and any follow-up choices are pulled from the
-// overlay-merged tree. Also handles the "Trigger Choice"
-// action (`join_mystery: [uuid]`) that starts a mystery
-// mid-conversation.
-// ============================================================
+async function handleAlignmentSideEffects(userId: string, alignmentChange: 'loyalist' | 'fugitive' | undefined, choiceId: string, dialogueId: string) {
+  if (!alignmentChange) return;
+  queryOLAP(
+    `INSERT INTO player_events (id, user_id, event_type, event_data)
+     VALUES (gen_random_uuid(), $1, 'alignment_locked', $2)`,
+    [userId, JSON.stringify({ alignment: alignmentChange, dialogue_tree_id: dialogueId, choice_id: choiceId })],
+  ).catch((err) => console.error('Alignment lock telemetry error:', err));
+  await deleteCache(userStateCacheKey(userId));
+  await invalidatePattern('dialogue:resolved:*');
+}
+
+async function handleBreakthroughSideEffects(userId: string, breakthrough: any) {
+  if (breakthrough && breakthrough.kind !== 'unrelated') {
+    await emitBreakthroughSideEffects(userId, breakthrough);
+  }
+}
+
+async function handleJoinMystery(availableChoices: any[], userId: string, choiceIndex: number) {
+  if (!availableChoices[choiceIndex].join_mystery) return;
+  const joinAction = availableChoices[choiceIndex].join_mystery;
+  const mysteryId = Array.isArray(joinAction) ? joinAction[0] : joinAction;
+  if (!mysteryId) return;
+  await withOLTPTransaction(async (client) => {
+    await joinMystery(client, userId, mysteryId);
+  });
+  await invalidatePattern('dialogue:resolved:*');
+}
+
 dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
@@ -180,58 +197,11 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
     }
 
     await recordPostChoiceTelemetry(userId, id, choiceIndex, result);
-
-    // Task 5.3: post-commit OLAP event for the meta-plot finale
-    // alignment lock. Fire-and-forget so a slow OLAP doesn't
-    // block the dialogue response; failures are logged not
-    // raised (consistent with other dialogue telemetry here).
-    if (result.alignmentChange) {
-      queryOLAP(
-        `INSERT INTO player_events (id, user_id, event_type, event_data)
-         VALUES (gen_random_uuid(), $1, 'alignment_locked', $2)`,
-        [
-          userId,
-          JSON.stringify({
-            alignment: result.alignmentChange,
-            dialogue_tree_id: id,
-            choice_id: availableChoices[choiceIndex].id,
-          }),
-        ]
-      ).catch((err) => console.error('Alignment lock telemetry error:', err));
-
-      // Alignment is a hard cache buster: every alignment-gated
-      // overlay in `dialogue:resolved:*` may now resolve to a
-      // different tree, and `user:state:*` carries the new
-      // alignment. Invalidate both keys.
-      await deleteCache(userStateCacheKey(userId));
-      await invalidatePattern('dialogue:resolved:*');
-    }
-
-    // Task 3.3: post-commit Breakthrough side effects (cache
-    // invalidation, OLAP event, [BREAKTHROUGH] social post for the
-    // winner). Runs even on late solves — see helper JSDoc.
-    if (result.breakthrough && result.breakthrough.kind !== 'unrelated') {
-      await emitBreakthroughSideEffects(userId, result.breakthrough);
-    }
+    await handleAlignmentSideEffects(userId, result.alignmentChange, availableChoices[choiceIndex].id, id);
+    await handleBreakthroughSideEffects(userId, result.breakthrough);
 
     const nextNode = nodes[availableChoices[choiceIndex].next_node_id];
-
-    // "Trigger Choice" mechanism: a YAML choice may carry a
-    // `join_mystery` action that flips the player into a new
-    // mystery state, after which the resolver will load the
-    // deep-investigation overlays for them.
-    const joinAction = (availableChoices[choiceIndex] as any).join_mystery;
-    if (joinAction) {
-      const mysteryId = Array.isArray(joinAction) ? joinAction[0] : joinAction;
-      if (mysteryId) {
-        await withOLTPTransaction(async (client) => {
-          await joinMystery(client, userId, mysteryId);
-        });
-        // Invalidate dialogue resolver cache when player joins a mystery
-        // so subsequent requests will use the merged overlay tree
-        await invalidatePattern('dialogue:resolved:*');
-      }
-    }
+    await handleJoinMystery(availableChoices, userId, choiceIndex);
 
     const speaker = nextNode.speaker_id ? await getSpeaker(nextNode.speaker_id) : null;
     const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);

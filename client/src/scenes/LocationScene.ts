@@ -4,6 +4,7 @@ import * as api from '../utils/api';
 import { renderNPCs, NPCData } from './location/npc-renderer';
 import { applyRainEffect, applyTenseEffect, applyNeonEffect } from './location/mood-effects';
 import { createLoadingOverlay, LoadingOverlay } from './location/loading-overlay';
+import { AudioManager } from '../utils/AudioManager';
 
 interface SceneData {
   id: string;
@@ -30,6 +31,7 @@ export class LocationScene extends Phaser.Scene {
   private moodText!: Phaser.GameObjects.Text;
   private phoneButton!: Phaser.GameObjects.Container;
   private loadingOverlay!: LoadingOverlay;
+  private audioManager!: AudioManager;
 
   private phoneOpen: boolean = false;
 
@@ -40,6 +42,14 @@ export class LocationScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
     this.cameras.main.setBackgroundColor('#0a0a1a');
+
+    // Initialize the Ambient Audio Manager
+    this.audioManager = new AudioManager(this);
+
+    // Check if the browser's Web Audio context is currently suspended
+    if (this.sound.locked) {
+      this.displayAudioUnlockPrompt();
+    }
 
     this.locationNameText = this.add.text(width / 2, 30, '', {
       font: 'bold 24px monospace',
@@ -58,6 +68,24 @@ export class LocationScene extends Phaser.Scene {
 
     this.registerEventHandlers();
     this.loadCurrentLocation();
+  }
+
+  /**
+   * Displays a subtle indicator when browser autoplay policy blocks audio.
+   * Once the user interacts with the page, Phaser automatically unlocks Web Audio.
+   */
+  private displayAudioUnlockPrompt(): void {
+    // Emit an event to the Phone OS UI to display a sound-muted indicator
+    eventBus.emit('phone:audio_status', { locked: true });
+
+    // Once the user clicks anywhere, Phaser automatically unlocks Web Audio
+    this.sound.once('unlocked', () => {
+      eventBus.emit('phone:audio_status', { locked: false });
+      eventBus.emit('monologue:push', {
+        text: 'SECURE NEURAL AUDIO LINK SYNCED SUCCESSFULLY.',
+        type: 'system'
+      });
+    });
   }
 
   private registerEventHandlers() {
@@ -250,6 +278,12 @@ export class LocationScene extends Phaser.Scene {
         this.npcSprites.forEach(s => s.destroy());
         this.npcSprites.clear();
 
+        // Trigger audio cross-fade alongside the visual transition
+        if (result.data.scene.ambientSoundUrl) {
+          const trackKey = `ambient_${result.data.scene.id}`;
+          this.audioManager.transitionAmbient(trackKey, result.data.scene.ambientSoundUrl);
+        }
+
         await this.bootstrapScene(newPayload);
         this.applyScenePayload(newPayload);
 
@@ -370,6 +404,12 @@ export class LocationScene extends Phaser.Scene {
     this.clearMoodEffects();
     if (payload.scene.mood) {
       this.applyMoodEffects(payload.scene.mood);
+    }
+
+    // Trigger ambient audio cross-fade if the scene has an ambient sound
+    if (payload.scene.ambientSoundUrl) {
+      const trackKey = `ambient_${payload.scene.id}`;
+      this.audioManager.transitionAmbient(trackKey, payload.scene.ambientSoundUrl);
     }
 
     this.renderNPCs(payload.npcs);
