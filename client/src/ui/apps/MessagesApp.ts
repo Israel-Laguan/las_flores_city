@@ -24,15 +24,32 @@ export class MessagesApp {
   private activeCharacterId: string | null = null;
   private activeThread: SMSThreadDetail | null = null;
   private replying = false;
+  private typewriterInterval: number | null = null;
+  private skipRequested = false;
+  private isPacing = false;
+  private aborted = false;
+  private activePacingTimeout: number | null = null;
+  private resolveActivePacing: (() => void) | null = null;
+  private subs: Array<[string, (...a: any[]) => void]> = [];
 
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
-    this.init();
-    eventBus.on('phone:app-opened', (key: string) => {
+    void this.init();
+    const onOpen = (key: string) => {
       if (key === 'messages' && (this.view === 'inbox' || this.view === 'error')) {
         void this.loadInbox();
       }
-    });
+    };
+    this.subs.push(['phone:app-opened', onOpen]);
+    eventBus.on('phone:app-opened', onOpen);
+  }
+
+  destroy(): void {
+    this.aborted = true;
+    if (this.activePacingTimeout) window.clearTimeout(this.activePacingTimeout);
+    if (this.typewriterInterval) window.clearInterval(this.typewriterInterval);
+    for (const [e, h] of this.subs) eventBus.off(e, h);
+    this.subs = [];
   }
 
   private getAuthHeaders(): Record<string, string> {
@@ -85,7 +102,7 @@ export class MessagesApp {
       }
       this.activeThread = json.data;
       this.view = 'thread';
-      this.renderThread(json.data);
+      void this.renderThread(json.data);
       void this.markRead(characterId);
     } catch (e: any) {
       this.view = 'error';
@@ -138,7 +155,7 @@ export class MessagesApp {
         throw new Error(json.error ?? `HTTP ${res.status}`);
       }
       this.activeThread = json.data;
-      this.renderThread(json.data);
+      void this.renderThread(json.data);
       void this.loadInbox();
     } catch (e: any) {
       this.setChoicesDisabled(false);
@@ -163,7 +180,7 @@ export class MessagesApp {
       this.activeThread = json.data;
       this.activeCharacterId = characterId;
       this.view = 'thread';
-      this.renderThread(json.data);
+      void this.renderThread(json.data);
       void this.loadInbox();
     } catch (e: any) {
       this.view = 'error';
@@ -255,7 +272,7 @@ export class MessagesApp {
       </div>`;
   }
 
-  private renderThread(detail: SMSThreadDetail): void {
+  private async renderThread(detail: SMSThreadDetail): Promise<void> {
     const titleSuffix = detail.characterTitle ? ` <span style="opacity:0.6">// ${this.escapeHtml(detail.characterTitle)}</span>` : '';
     const bubbles = detail.chatHistory.map((m) => this.createBubble(m)).join('');
     const endMarker = detail.isEnd
@@ -298,6 +315,23 @@ export class MessagesApp {
         ?.addEventListener('click', () => this.sendReply(c.id));
     });
 
+    // Wire skip-on-tap: click anywhere in thread-scroll to instantly complete pacing
+    const scroll = this.container.querySelector<HTMLElement>('.thread-scroll');
+    if (scroll) {
+      scroll.addEventListener('click', () => {
+        this.skipRequested = true;
+        if (this.activePacingTimeout) {
+          window.clearTimeout(this.activePacingTimeout);
+          this.activePacingTimeout = null;
+        }
+        if (this.resolveActivePacing) {
+          this.resolveActivePacing();
+          this.resolveActivePacing = null;
+        }
+      });
+    }
+
+    await this.pacedDelivery(detail);
     this.scrollThreadToBottom();
   }
 
@@ -306,6 +340,154 @@ export class MessagesApp {
     const time = this.formatRelativeTime(m.createdAt);
     return `<div class="bubble ${cls}" data-message-id="${this.escapeAttr(m.id)}"><span class="bubble-text"></span><span class="bubble-time">${this.escapeHtml(time)}</span></div>`;
   }
+
+  // ── Task 6.2: Paced NPC message delivery ──────────────────────────────
+
+  private async pacedDelivery(detail: SMSThreadDetail): Promise<void> {
+    this.isPacing = true;
+    this.skipRequested = false;
+    const scroll = this.container.querySelector<HTMLElement>('.thread-scroll');
+    if (!scroll) { this.isPacing = false; return; }
+
+    const npcMessages = detail.chatHistory.filter((m) => m.author === 'npc');
+
+    for (const m of npcMessages) {
+      if (this.aborted || this.skipRequested) break;
+
+      const bubbleText = scroll.querySelector<HTMLElement>(
+        `[data-message-id="${this.cssEscape(m.id)}"] .bubble-text`
+      );
+      if (!bubbleText) continue;
+
+      // Hide the pre-rendered text so we can reveal it progressively
+      bubbleText.textContent = '';
+      const bubbleEl = bubbleText.parentElement;
+
+      if (bubbleEl) {
+        await this.showTypingBubble(scroll, bubbleEl, m.text.length);
+      }
+      if (this.aborted || this.skipRequested) {
+        // Restore full text and move on
+        bubbleText.textContent = '';
+        bubbleText.appendChild(this.renderBubbleContents(m.text));
+        this.scrollThreadToBottom();
+        continue;
+      }
+
+      await this.typewriterReveal(bubbleText, m.text);
+    }
+
+    this.isPacing = false;
+  }
+
+  private async showTypingBubble(
+    _container: HTMLElement,
+    bubbleEl: HTMLElement,
+    textLength: number
+  ): Promise<void> {
+    const typing = document.createElement('div');
+    typing.className = 'bubble npc typing';
+    typing.innerHTML = '<div class="typing-dot"></div>'.repeat(3);
+
+    bubbleEl.after(typing);
+    this.scrollThreadToBottom();
+
+    eventBus.emit('audio:play_sfx', {
+      key: 'sfx_sms_typing_loop',
+      url: 'https://cdn.lasflores2077.com/audio/sfx_sms_typing.mp3',
+    });
+
+    const delay = Math.max(600, Math.min(2000, textLength * 25));
+    await new Promise<void>((resolve) => {
+      this.resolveActivePacing = resolve;
+      this.activePacingTimeout = window.setTimeout(() => {
+        this.resolveActivePacing = null;
+        this.activePacingTimeout = null;
+        resolve();
+      }, delay);
+    });
+
+    typing.remove();
+  }
+
+  private typewriterReveal(bubbleText: HTMLElement, text: string): Promise<void> {
+    // Parse into segments: plain strings and <important> tags
+    const segments: Array<
+      { type: 'plain'; text: string } | { type: 'important'; text: string }
+    > = [];
+    const re = /<important>([\s\S]*?)<\/important>/g;
+    let lastIdx = 0;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(text)) !== null) {
+      if (match.index > lastIdx) {
+        segments.push({ type: 'plain', text: text.slice(lastIdx, match.index) });
+      }
+      segments.push({ type: 'important', text: match[1] });
+      lastIdx = re.lastIndex;
+    }
+    if (lastIdx < text.length) {
+      segments.push({ type: 'plain', text: text.slice(lastIdx) });
+    }
+
+    bubbleText.textContent = '';
+    let segIdx = 0;
+    let charIdx = 0;
+    let currentText: Text | null = null;
+    let charsEmitted = 0;
+
+    return new Promise<void>((resolve) => {
+      this.typewriterInterval = window.setInterval(() => {
+        if (this.skipRequested || this.aborted) {
+          window.clearInterval(this.typewriterInterval!);
+          this.typewriterInterval = null;
+          bubbleText.textContent = '';
+          bubbleText.appendChild(this.renderBubbleContents(text));
+          resolve();
+          return;
+        }
+
+        if (segIdx >= segments.length) {
+          window.clearInterval(this.typewriterInterval!);
+          this.typewriterInterval = null;
+          resolve();
+          return;
+        }
+
+        const seg = segments[segIdx];
+        if (seg.type === 'important') {
+          const el = document.createElement('important');
+          el.textContent = seg.text;
+          bubbleText.appendChild(el);
+          segIdx++;
+          charsEmitted += seg.text.length;
+        } else {
+          if (!currentText) {
+            currentText = document.createTextNode('');
+            bubbleText.appendChild(currentText);
+          }
+          currentText.textContent += seg.text[charIdx];
+          charIdx++;
+          charsEmitted++;
+          if (charIdx >= seg.text.length) {
+            segIdx++;
+            charIdx = 0;
+            currentText = null;
+          }
+        }
+
+        // SFX every 2nd character (matches DialogueUI throttle)
+        if (charsEmitted % 2 === 0) {
+          eventBus.emit('audio:play_sfx', {
+            key: 'sfx_mech_click',
+            url: 'https://cdn.lasflores2077.com/audio/sfx_mech_click.mp3',
+          });
+        }
+        this.scrollThreadToBottom();
+      }, 30);
+    });
+  }
+
+  // ── End Task 6.2 pacing ────────────────────────────────────────────────
 
   private createChoiceButton(c: SMSThreadChoice): string {
     const relBadge = c.relationship_change
