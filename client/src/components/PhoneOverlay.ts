@@ -7,6 +7,7 @@ import { SettingsApp } from '../ui/apps/SettingsApp';
 import { IdentityApp } from '../ui/apps/IdentityApp';
 import { MyMeApp } from '../ui/apps/MyMeApp';
 import { BancoApp } from '../ui/apps/BancoApp';
+import { BancoFlashController } from '../ui/apps/BancoFlashController';
 import * as api from '../utils/api';
 
 export class PhoneOverlay {
@@ -16,6 +17,7 @@ export class PhoneOverlay {
   private apps: Map<string, HTMLElement> = new Map();
   private bridge: PhoneBridge;
   private appInstances: Array<object> = [];
+  private flashController: BancoFlashController | null = null;
 
   constructor() {
     this.viewport = document.getElementById('phone-app-content') ?? document.body.appendChild(
@@ -72,6 +74,7 @@ export class PhoneOverlay {
     const bancoApp = new BancoApp(banco);
     this.appInstances.push(bancoApp);
     this.apps.set('banco', banco);
+    this.flashController = new BancoFlashController();
 
     const trabajando = document.createElement('div');
     trabajando.innerHTML = `
@@ -223,6 +226,8 @@ export class PhoneOverlay {
       }
     }
     this.appInstances = [];
+    this.flashController?.destroy();
+    this.flashController = null;
   }
 }
 

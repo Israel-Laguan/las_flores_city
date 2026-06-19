@@ -96,3 +96,28 @@
 
 .ledger-amount.income  { color: #33ff33; }
 .ledger-amount.expense { color: #ff3333; }
+
+/* ── Task 6.2: Balance flash animation ── */
+.balance-card .value {
+  will-change: transform, color, filter;
+}
+
+.balance-card .value.flash-income {
+  animation: flash-green-glow 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.balance-card .value.flash-expense {
+  animation: flash-red-glow 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes flash-green-glow {
+  0%   { transform: scale(1);    color: var(--neon-cyan); }
+  15%  { transform: scale(1.12); color: #33ff33; filter: drop-shadow(0 0 8px #33ff33); }
+  100% { transform: scale(1);    color: var(--neon-cyan); filter: none; }
+}
+
+@keyframes flash-red-glow {
+  0%   { transform: scale(1);    color: var(--neon-cyan); }
+  15%  { transform: scale(1.12); color: #ff3333; filter: drop-shadow(0 0 8px #ff3333); }
+  100% { transform: scale(1);    color: var(--neon-cyan); filter: none; }
+}
