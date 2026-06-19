@@ -176,7 +176,7 @@ canvas {
   }
   .phone-bezel {
     width: 100vw;
-    height: 100vh;
+    height: var(--viewport-height, 100vh);
     border-radius: 0;
     border: none;
     padding: 0;
@@ -185,4 +185,15 @@ canvas {
     border-radius: 0;
     border: none;
   }
+}
+
+/* Eliminate 300ms tap delay on interactive Phone OS elements */
+.phone-os-container button,
+.phone-os-container .inbox-item,
+.phone-os-container .vault-card,
+.phone-os-container input,
+.phone-os-container select,
+.phone-os-container textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
