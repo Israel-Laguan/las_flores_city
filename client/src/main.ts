@@ -12,6 +12,7 @@ import { MonologueFeed } from './components/MonologueFeed';
 import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
+import { ViewportManager } from './bridge/ViewportManager';
 import { initThemeEngine } from './utils/themeEngine';
 
 declare global {
@@ -83,6 +84,8 @@ function initOnce() {
   }
 
   window.__lasFloresInitialized = true;
+  const viewportManager = new ViewportManager();
+  (window as any).__viewportManager = viewportManager;
   new DialogueUI();
   new MonologueFeed();
   new BreakthroughAlert();
