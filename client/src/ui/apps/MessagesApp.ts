@@ -173,7 +173,12 @@ export class MessagesApp {
 
   private updateUnreadCount(threads: SMSThreadPreview[]): void {
     const unreadMessagesCount = threads.filter((t) => t.unread).length;
+    const previousCount = phoneStore.getState().unreadMessagesCount;
     phoneStore.updateState({ unreadMessagesCount });
+    // Sprint 6: emit comms:new_message when new unread messages arrive
+    if (unreadMessagesCount > previousCount) {
+      eventBus.emit('comms:new_message', { count: unreadMessagesCount });
+    }
   }
 
   // ───────────────────────────────────────────────────────────────────────

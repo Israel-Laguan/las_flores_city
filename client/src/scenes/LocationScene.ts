@@ -67,6 +67,7 @@ export class LocationScene extends Phaser.Scene {
     this.createPhoneButton();
 
     this.registerEventHandlers();
+    this.setupContextRecovery();
     this.loadCurrentLocation();
   }
 
@@ -131,6 +132,33 @@ export class LocationScene extends Phaser.Scene {
     eventBus.on('dialogue:closed', () => {
       if (!this.phoneOpen) {
         this.input.enabled = true;
+      }
+    });
+  }
+
+  // ==================== WebGL Context Recovery ====================
+
+  /**
+   * Sprint 6 Audit: Handles browser tab minimization / standby.
+   * When the tab becomes hidden, we suspend the audio context to save
+   * resources. On visibility restore, we resume audio and let Phaser
+   * re-acquire the WebGL context automatically (Phaser 3 handles
+   * context loss internally via its renderer's contextlost/contextrestored
+   * events).
+   */
+  private setupContextRecovery(): void {
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Tab hidden: suspend audio to prevent glitches on resume
+        if (this.sound.locked === false) {
+          (this.sound as any).context?.suspend?.();
+        }
+      } else {
+        // Tab restored: resume audio context and ensure it's running
+        const ctx = (this.sound as any).context as AudioContext | undefined;
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume().catch(() => { /* user gesture may be required */ });
+        }
       }
     });
   }
@@ -292,6 +320,11 @@ export class LocationScene extends Phaser.Scene {
           fromLocationId: result.data.from_location_id,
           timeBlocksRemaining: result.data.time_blocks_remaining,
           tbCost: result.data.tb_cost,
+        });
+        // Sprint 6: location:changed for camera fade, transition drone, phone clock
+        eventBus.emit('location:changed', {
+          locationId: result.data.to_location_id,
+          scene: result.data.scene,
         });
 
         await this.cameras.main.fadeIn(500, 0, 0, 0);

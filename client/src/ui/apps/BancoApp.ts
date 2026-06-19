@@ -1,4 +1,5 @@
 import { phoneStore } from '../../store/PhoneStore';
+import { eventBus } from '../../utils/EventBus';
 import type { BankLedgerResponse, BankTransaction } from '../../../../shared/src/types/bank';
 
 export class BancoApp {
@@ -20,6 +21,14 @@ export class BancoApp {
 
       const { data }: { data: BankLedgerResponse } = await response.json();
       phoneStore.updateState({ credits: data.credits, goldCredits: data.goldCredits });
+      // Sprint 6: emit bank:transaction for polish consumers (currency flash animations)
+      if (data.transactions.length > 0) {
+        eventBus.emit('bank:transaction', {
+          credits: data.credits,
+          goldCredits: data.goldCredits,
+          latestTransaction: data.transactions[0],
+        });
+      }
       this.render(data);
     } catch {
       this.container.innerHTML = `

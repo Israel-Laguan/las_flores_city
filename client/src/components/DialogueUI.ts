@@ -271,6 +271,7 @@ export class DialogueUI {
       if (this.state === DialogueUIState.SUBMITTING) (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
     }
     this.startTypewriter(currentNode.text);
+    eventBus.emit('dialogue:node_loaded', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
     eventBus.emit('dialogue:node-rendered', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
     if (availableChoices?.length) this.applyAiRewrites(availableChoices);
   }
@@ -314,6 +315,7 @@ export class DialogueUI {
     if (this.typewriterInterval) { clearInterval(this.typewriterInterval); this.typewriterInterval = null; }
     if (this.dialogueTextEl) this.dialogueTextEl.innerHTML = this.fullText;
     this.state = DialogueUIState.AWAITING_CHOICE;
+    eventBus.emit('dialogue:typing_finished');
     if (this.choicesContainer && this.currentDialogue?.availableChoices.length) this.choicesContainer.style.opacity = '1';
   }
 

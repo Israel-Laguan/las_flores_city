@@ -59,14 +59,21 @@ canvas {
   position: relative;
   width: 100%;
   height: 100%;
-  background: var(--terminal-bg);
+  background: rgba(3, 7, 18, 0.95);
   border-radius: 28px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(0, 255, 255, 0.2);
   pointer-events: auto;
+}
+
+@supports (backdrop-filter: blur(15px)) or (-webkit-backdrop-filter: blur(15px)) {
+  .phone-screen {
+    background: var(--terminal-bg);
+  }
 }
 
 .status-bar {

@@ -160,6 +160,8 @@ export class PhoneOverlay {
     this.viewport.innerHTML = '';
     this.viewport.appendChild(app);
     eventBus.emit('phone:app-opened', key);
+    eventBus.emit('phone:navigate', key);
+    phoneStore.updateState({ currentRoute: key as any });
   }
 
   // ── Event listeners ───────────────────────────────────────────────────────
