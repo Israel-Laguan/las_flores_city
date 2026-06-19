@@ -56,10 +56,20 @@ export class PhoneBridge {
     const isCurrentlyOpen = this.containerElement.classList.contains('open');
 
     if (state.isOpen && !isCurrentlyOpen) {
+      // Play slide-out mechanical sound before GPU transition kicks in
+      eventBus.emit('audio:play_sfx', {
+        key: 'sfx_phone_slide_out',
+        url: 'https://cdn.lasflores2077.com/audio/sfx_phone_slide_out.mp3',
+      });
       this.containerElement.classList.add('open');
       this.containerElement.style.pointerEvents = 'auto';
       eventBus.emit('phaser:disable_inputs');
     } else if (!state.isOpen && isCurrentlyOpen) {
+      // Play slide-in mechanical sound before GPU transition kicks in
+      eventBus.emit('audio:play_sfx', {
+        key: 'sfx_phone_slide_in',
+        url: 'https://cdn.lasflores2077.com/audio/sfx_phone_slide_in.mp3',
+      });
       this.containerElement.classList.remove('open');
       this.containerElement.style.pointerEvents = 'none';
       eventBus.emit('phaser:enable_inputs');

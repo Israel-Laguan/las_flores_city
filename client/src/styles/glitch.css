@@ -1,0 +1,89 @@
+/* ==========================================================================
+   CRT Scanline Overlay & Chromatic Aberration Glitch
+   Hardware-accelerated: only transform, opacity, clip-path, and filter used.
+   ========================================================================== */
+
+/* Scanline overlay using repeating gradients — optimized via CSS containment */
+.phone-screen::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  aspect-ratio: auto;
+  background-size: 100% 4px, 6px 100%;
+  z-index: 99;
+  pointer-events: none;
+  contain: strict;
+}
+
+/* CRT Screen Flicker — opacity-only animation (compositor thread) */
+@keyframes crt-flicker {
+  0%   { opacity: 0.985; }
+  50%  { opacity: 0.998; }
+  100% { opacity: 0.989; }
+}
+
+.phone-screen {
+  animation: crt-flicker 0.15s infinite;
+}
+
+/* Chromatic Aberration Glitch Keyframes — GPU-only: clip-path + transform */
+@keyframes glitch-slice-1 {
+  0%   { clip-path: inset(40% 0 61% 0); transform: skew(-0.3deg); }
+  20%  { clip-path: inset(92% 0  1% 0); transform: skew( 0.5deg); }
+  40%  { clip-path: inset(15% 0 80% 0); transform: skew(-0.8deg); }
+  60%  { clip-path: inset(80% 0  5% 0); transform: skew( 0.3deg); }
+  80%  { clip-path: inset( 3% 0 92% 0); transform: skew(-0.1deg); }
+  100% { clip-path: inset(40% 0 61% 0); transform: skew(-0.3deg); }
+}
+
+@keyframes glitch-slice-2 {
+  0%   { clip-path: inset(25% 0 58% 0); transform: skew( 0.8deg); }
+  20%  { clip-path: inset(70% 0 21% 0); transform: skew(-0.2deg); }
+  40%  { clip-path: inset( 5% 0 90% 0); transform: skew( 0.4deg); }
+  60%  { clip-path: inset(50% 0 35% 0); transform: skew(-0.6deg); }
+  80%  { clip-path: inset(85% 0  2% 0); transform: skew( 0.1deg); }
+  100% { clip-path: inset(25% 0 58% 0); transform: skew( 0.8deg); }
+}
+
+/* Active Glitch State — chromatic aberration pseudo-elements */
+.phone-screen.active-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--terminal-bg);
+  text-shadow: -2px 0 #ff00c8, 2px 0 #00ffff;
+  clip-path: inset(50% 0 30% 0);
+  animation: glitch-slice-1 1s infinite linear alternate-reverse;
+  z-index: 98;
+}
+
+.phone-screen.active-glitch::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--terminal-bg);
+  text-shadow: 2px 0 #00ff00, -2px 0 #ff0000;
+  clip-path: inset(10% 0 75% 0);
+  animation: glitch-slice-2 0.8s infinite linear alternate-reverse;
+  z-index: 98;
+}
+
+/* Dialogue text container — fixed dimensions to prevent layout thrashing
+   during the typewriter animation. contain:strict isolates reflows. */
+.dialogue-text {
+  height: 120px;
+  contain: strict;
+}

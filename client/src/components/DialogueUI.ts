@@ -306,7 +306,17 @@ export class DialogueUI {
       if (this.fullText[this.currentCharIndex] === '<') {
         const closingIndex = this.fullText.indexOf('>', this.currentCharIndex);
         if (closingIndex !== -1) { this.currentCharIndex = closingIndex + 1; }
-      } else { this.currentCharIndex++; }
+      } else {
+        this.currentCharIndex++;
+        // Trigger low-latency key click on every second character printed.
+        // Pacing prevents Web Audio channel saturation during rapid typing.
+        if (this.currentCharIndex % 2 === 0) {
+          eventBus.emit('audio:play_sfx', {
+            key: 'sfx_mech_click',
+            url: 'https://cdn.lasflores2077.com/audio/sfx_mech_click.mp3',
+          });
+        }
+      }
       this.dialogueTextEl!.innerHTML = this.fullText.substring(0, this.currentCharIndex);
     }, 30);
   }

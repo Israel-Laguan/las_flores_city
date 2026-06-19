@@ -12,6 +12,8 @@ export class AudioManager {
   private currentTrack: Phaser.Sound.BaseSound | null = null;
   private currentTrackKey: string | null = null;
   private masterVolume: number = 0.8;
+  // Tracks SFX keys currently in-flight to prevent channel overlap/clipping
+  private activeSfx: Set<string> = new Set();
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -91,11 +93,17 @@ export class AudioManager {
   }
 
   private async playOneShotSFX(key: string, url: string): Promise<void> {
+    // Channel overlap guard: skip if the same SFX is already playing.
+    // This prevents audio clipping from rapid typewriter clicks.
+    if (this.activeSfx.has(key)) return;
+    this.activeSfx.add(key);
+
     await loadDynamicAudio(this.scene, key, url);
     const sfx = this.scene.sound.add(key, { loop: false, volume: this.masterVolume });
     sfx.play();
     sfx.once('complete', () => {
       this.scene.sound.remove(sfx);
+      this.activeSfx.delete(key);
     });
   }
 
