@@ -1,5 +1,5 @@
 // ============================================================
-// DialogueResolver - Mystery Overlay Merging Service (Task 3.1)
+// DialogueResolver - Mystery Overlay Merging Service
 // ============================================================
 // Resolves a player's effective dialogue tree by combining a
 // base tree with any active mystery overlays. The merged tree
@@ -33,14 +33,14 @@ interface OverlayRow {
   nodes: Record<string, DialogueNode>;
   updated_at: Date;
   is_nsfw: boolean;
-  // Task 5.3: gate overlays by alignment via `unlock_condition`.
+  // Gate overlays by alignment via `unlock_condition`.
   // Nullable because older overlay rows may not have it set.
   unlock_condition?: 'none' | 'patreon_nsfw' | 'loyalist_only' | 'fugitive_only' | null;
 }
 
 const CACHE_TTL_SECONDS = 3600; // 1 hour
 
-// Task 5.4: In-flight Promise map for request coalescing (thundering herd protection).
+// In-flight Promise map for request coalescing (thundering herd protection).
 // When a Breakthrough Event ends and `invalidatePattern('dialogue:resolved:*')` fires,
 // thousands of concurrent requests will all miss the cache simultaneously.
 // Without deduping, each request independently hits PostgreSQL to recalculate the
@@ -95,7 +95,7 @@ export class DialogueResolver {
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {
-    // Task 5.4: Build a dedup key early so concurrent calls with the same
+    // Build a dedup key early so concurrent calls with the same
     // (userId, baseTreeId) pair coalesce onto a single in-flight resolution.
     const dedupKey = `user:${userId}:tree:${baseTreeId}`;
 
@@ -148,7 +148,7 @@ export class DialogueResolver {
       allMysteryIds.length > 0
         ? `${allMysteryIds.join('_')}:${overlayFingerprint}`
         : `base:${overlayFingerprint}`;
-    // Task 5.3: alignment is part of the cache key so the
+    // Alignment is part of the cache key so the
     // post-commit invalidate in /dialogue/choose forces a fresh
     // merge once a player picks the finale choice.
     const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:align:${alignment}:mysteries:${cacheSuffix}`;
@@ -163,7 +163,7 @@ export class DialogueResolver {
       if (overlay.is_nsfw && !isNsfwUnlocked) {
         continue;
       }
-      // Task 5.3: alignment gate. `loyalist_only` / `fugitive_only`
+      // Alignment gate. `loyalist_only` / `fugitive_only`
       // overlays (set in YAML via `unlock_condition`) only merge
       // for the matching faction. We don't have the unlock_condition
       // column in the SELECT above, so re-load it here — overlays
@@ -183,7 +183,7 @@ export class DialogueResolver {
   }
 
   /**
-   * Task 5.1: Resolve a dialogue tree for Archive Room legacy play.
+   * Resolve a dialogue tree for Archive Room legacy play.
    *
    * Same deep-merge as resolveTreeForUser, but loads ALL overlays
    * for the given mystery regardless of mystery status — so an
@@ -262,7 +262,7 @@ export class DialogueResolver {
   }
 
   /**
-   * Task 5.3: meta-plot finale alignment. Defaults to 'neutral'
+   * Meta-plot finale alignment. Defaults to 'neutral'
    * for users with no `users` row (shouldn't happen, but mirrors
    * the `NOT NULL DEFAULT 'neutral'` constraint on the column).
    */
@@ -316,7 +316,7 @@ export class DialogueResolver {
   }
 
   /**
-   * Task 5.1: Load every overlay for a single mystery that targets
+   * Load every overlay for a single mystery that targets
    * the given tree, ignoring mystery status. Used by the Archive
    * Room for legacy playback of ARCHIVED mysteries.
    */

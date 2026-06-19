@@ -2,7 +2,7 @@ import { describe, test, expect } from '@jest/globals';
 import { preserveImportantTags } from '@las-flores/shared';
 
 // ============================================================
-// preserveImportantTags Unit Tests (Task 4.1 §4.1)
+// preserveImportantTags Unit Tests
 //
 // The <important> tag is the safety net that keeps puzzle clue
 // text — the only clickable, server-validated hint a player gets —

@@ -138,7 +138,7 @@ export async function recordChoiceAndEffects(
   nextNode: any
 ): Promise<void> {
   if (isEnd) {
-    // Task 5.1: also clear simulation flags so the player
+    // Also clear simulation flags so the player
     // returns to the live world after finishing an archive case.
     await client.query(
       `UPDATE users
@@ -222,7 +222,7 @@ export async function getDialogState(userId: string, dialogueId: string) {
 
   const user = userResult.rows[0];
 
-  // Task 5.1: Branch to the archive resolver when the player is in
+  // Branch to the archive resolver when the player is in
   // simulation mode. The archive resolver force-merges ALL overlays
   // for the mystery regardless of ARCHIVED status, so legacy play
   // gets the full investigation tree.

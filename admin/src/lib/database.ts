@@ -3,7 +3,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 
 // ============================================================
-// Admin Database Connection (Task 5.2 Foundations)
+// Admin Database Connection
 //
 // Mirrors server/src/database/connection.ts — same contract,
 // separate process. The admin container runs its own Node/Next
@@ -12,8 +12,8 @@ import dotenv from 'dotenv';
 // withOLTPTransaction so that future admin API routes use the
 // exact same patterns as server routes.
 //
-// No auth in this slice — admin auth is deferred to Task 5.2
-// proper. Until then, port 3001 must NOT be publicly exposed.
+// No auth in this slice — admin auth is deferred to a future
+// iteration. Until then, port 3001 must NOT be publicly exposed.
 // ============================================================
 
 dotenv.config();

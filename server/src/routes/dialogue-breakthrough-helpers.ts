@@ -3,7 +3,7 @@ import { invalidatePattern } from '../database/redis.js';
 import { SocialFeedService } from '../services/SocialFeedService.js';
 
 /**
- * Atomic Breakthrough Solve (Task 3.3)
+ * Atomic Breakthrough Solve
  *
  * Runs in the caller's open `withOLTPTransaction` block.
  *
@@ -111,7 +111,7 @@ export async function processBreakthroughSolve(
 }
 
 /**
- * Post-commit side effects for a Breakthrough solve (Task 3.3).
+ * Post-commit side effects for a Breakthrough solve.
  *
  * Runs after the OLTP transaction has committed. Always:
  *   1. invalidates `dialogue:resolved:*` and `global:feed` cache

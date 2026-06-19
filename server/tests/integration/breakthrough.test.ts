@@ -6,7 +6,7 @@ import {
 } from '../../src/routes/dialogue-breakthrough-helpers.js';
 
 // ============================================================
-// Breakthrough State Machine integration tests (Task 3.3)
+// Breakthrough State Machine integration tests
 //
 // Exercises the atomic "first-to-act" winner election on the
 // `mysteries` table when N players hit `mystery_solve` at the

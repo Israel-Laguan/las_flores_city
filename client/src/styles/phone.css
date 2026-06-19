@@ -121,7 +121,7 @@ canvas {
   flex-shrink: 0;
 }
 
-/* Task 5.3: fugitive alignment theme — red/orange palette cascading
+/* Fugitive alignment theme — red/orange palette cascading
    through the existing CSS custom properties. Applied by adding
    .theme-fugitive to .phone-os-container via DialogueUI. */
 .phone-os-container.theme-fugitive {
@@ -132,7 +132,7 @@ canvas {
   --border-glow: 0 0 10px rgba(255, 34, 0, 0.5);
 }
 
-/* Task 5.3: screen-glitch keyframe — applied via .trigger-glitch
+/* Screen-glitch keyframe — applied via .trigger-glitch
    class for 800ms before settling on theme-fugitive. */
 @keyframes screen-glitch {
   0%   { transform: translateX(0); filter: none; }

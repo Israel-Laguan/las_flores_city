@@ -1,8 +1,6 @@
 /**
  * PayPal Webhook Integration Tests
  *
- * Task 4.3 (PayPal, Gold Creds, & The "MyMe" Marketplace)
- *
  * Verifies the dedup path on PAYMENT.CAPTURE.COMPLETED:
  *  - First delivery grants gold_credits + writes bank_transactions
  *  - Second redelivery (same reference_id) returns 200 OK idempotent

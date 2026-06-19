@@ -81,7 +81,7 @@ export class WorldScene extends Phaser.Scene {
       });
     });
 
-    // Task 5.3: synthesize a glitch/crash SFX via Web Audio API
+    // Synthesize a glitch/crash SFX via Web Audio API
     // when the fugitive alignment is locked. No audio assets exist
     // in the codebase, so we generate a descending-saw + noise
     // burst inline — matches the BreakthroughAlert.ts pattern.

@@ -5,7 +5,7 @@ import { closeRedis } from '../../src/database/redis.js';
 import { LeaderboardWorker } from '../../src/workers/LeaderboardWorker.js';
 
 // ============================================================
-// Task 5.1: Aftermath worker integration tests
+// Aftermath worker integration tests
 //
 // Exercises the full recycle path: when a mystery's Breakthrough
 // window expires, the LeaderboardWorker reads its
@@ -47,7 +47,7 @@ async function applyMigration(filename: string): Promise<void> {
   }
 }
 
-describe('Task 5.1: Aftermath Worker', () => {
+describe('Aftermath Worker', () => {
   beforeAll(async () => {
     await applyMigration('017_mystery_state.sql');
     await applyMigration('018_vault_system.sql');

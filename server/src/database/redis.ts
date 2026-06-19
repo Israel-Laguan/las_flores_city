@@ -63,7 +63,7 @@ export async function deleteCache(key: string): Promise<boolean> {
  * Uses SCAN (incremental iteration) instead of KEYS (O(N) full-block) and
  * UNLINK (async memory reclamation, Redis 4.0+) instead of DEL (synchronous).
  *
- * Task 5.4: Prevents the Redis single-threaded event loop from freezing when
+ * Prevents the Redis single-threaded event loop from freezing when
  * mass-invalidating patterns like `dialogue:resolved:*` after a Breakthrough
  * Event leaderboard finalisation.
  */

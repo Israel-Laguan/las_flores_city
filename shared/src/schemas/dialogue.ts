@@ -32,7 +32,7 @@ export const DialogueChoiceSchema = z.object({
   mystery_solve: z.string().uuid().optional(),
   required_flags: z.record(z.string(), z.boolean()).optional(),
   hidden_if: z.record(z.string(), z.boolean()).optional(),
-  // Task 5.3: meta-plot finale alignment directive. When set,
+  // Meta-plot finale alignment directive. When set,
   // /dialogue/choose flips the user into this faction (and emits
   // an `alignment_locked` OLAP event). Authors should only attach
   // this to one choice per tree — the finale branch.

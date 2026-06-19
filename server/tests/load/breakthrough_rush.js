@@ -1,4 +1,4 @@
-// K6 Load Test — Breakthrough Rush Simulation (Task 5.4)
+// K6 Load Test — Breakthrough Rush Simulation
 // Simulates 500 concurrent players racing through the login → state → dialogue loop
 // during a high-demand mystery Breakthrough Event window.
 //

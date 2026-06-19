@@ -3,7 +3,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { redis } from '../database/redis.js';
 
 // ============================================================
-// Rate Limiter Middleware Factory (Task 5.2 Foundations)
+// Rate Limiter Middleware Factory
 //
 // Fixed-window counter backed by the existing ioredis client.
 // Zero new dependencies — uses INCR + EXPIRE directly.

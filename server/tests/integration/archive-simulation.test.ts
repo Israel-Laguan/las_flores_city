@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 // ============================================================
-// Task 5.1: Archive Room (Legacy Play) integration tests
+// Archive Room (Legacy Play) integration tests
 //
 // Exercises the archive resolver that force-merges overlays for
 // ARCHIVED mysteries, bypassing the live resolver's status gates.
@@ -78,7 +78,7 @@ async function applyMigration(filename: string): Promise<void> {
   }
 }
 
-describe('Task 5.1: Archive Simulation', () => {
+describe('Archive Simulation', () => {
   beforeAll(async () => {
     await applyMigration('001_initial_schema.sql');
     await applyMigration('005_dialogue_service.sql');

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { DialogueNodeSchema } from './dialogue.js';
 
 // ============================================================
-// Mystery Overlay Schema (Task 3.1)
+// Mystery Overlay Schema
 // ============================================================
 // An "overlay" is a partial set of nodes that augments a base
 // dialogue tree for players actively investigating a mystery.
@@ -14,7 +14,7 @@ import { DialogueNodeSchema } from './dialogue.js';
 export const UnlockConditionSchema = z.enum([
   'none',
   'patreon_nsfw',
-  // Task 5.3: meta-plot finale overlays gate on user.alignment.
+  // Meta-plot finale overlays gate on user.alignment.
   // `loyalist_only` is visible only to players who chose the
   // loyalist finale; `fugitive_only` to those who went fugitive.
   // The DialogueResolver reads `users.alignment` and skips

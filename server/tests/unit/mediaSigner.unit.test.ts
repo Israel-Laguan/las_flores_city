@@ -4,7 +4,7 @@ import { execSync } from 'child_process';
 import { MediaSigner, __resetMediaSignerCacheForTests } from '../../src/services/MediaSigner.js';
 
 // ============================================================
-// MediaSigner Unit Tests (Task 4.4)
+// MediaSigner Unit Tests
 //
 // The signer must produce a real CloudFront-style URL with the
 // expected query params (Key-Pair-Id, Expires, Signature) when

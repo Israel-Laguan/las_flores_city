@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, jest, beforeAll } from '@jest/globals';
 
 // ============================================================
-// createRateLimiter Unit Tests (Task 5.2 Foundations)
+// createRateLimiter Unit Tests
 //
 // Mocks the redis client so no real Redis connection is needed.
 // Tests the three contract points:

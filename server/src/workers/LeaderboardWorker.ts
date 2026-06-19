@@ -31,7 +31,7 @@ type OlapUsageRow = {
 };
 
 /**
- * LeaderboardWorker (Task 3.4)
+ * LeaderboardWorker
  *
  * Finalizes mysteries whose 24h Breakthrough window has expired.
  * Runs on a setInterval cron in the Express bootstrap. The work
@@ -127,7 +127,7 @@ export class LeaderboardWorker {
   }
 
   /**
-   * Task 5.1: Execute the aftermath payload atomically inside
+   * Execute the aftermath payload atomically inside
    * finalizeMystery's transaction. Demotes clue items to mementos
    * and scrubs temporary characters from live scenes. Both the
    * `retire_vault_items` UPDATE and `remove_scene_characters`
@@ -246,7 +246,7 @@ export class LeaderboardWorker {
   }
 
   /**
-   * Task 5.1: expanded cache invalidation. A mystery archiving is
+   * Expanded cache invalidation. A mystery archiving is
    * a major world-state event — NPCs drop the now-archived
    * overlays, the Vault must re-render demoted mementos, and
    * scrubbed characters must disappear from location payloads.
@@ -293,7 +293,7 @@ export class LeaderboardWorker {
         GROUP BY user_id`,
       [userIds, olapBounds, olapBoundsEnd]
     );
-    // Task 5.4: queryOLAP may return null when the analytics database is
+    // queryOLAP may return null when the analytics database is
     // unreachable. Fall back to an empty rows array so the worker does not
     // crash — leaderboard entries simply won't have tb_spent for this run.
     const rows = olapResult?.rows ?? [];

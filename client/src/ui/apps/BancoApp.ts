@@ -21,7 +21,7 @@ export class BancoApp {
 
       const { data }: { data: BankLedgerResponse } = await response.json();
       phoneStore.updateState({ credits: data.credits, goldCredits: data.goldCredits });
-      // Sprint 6: emit bank:transaction for polish consumers (currency flash animations)
+      // Emit bank:transaction for polish consumers (currency flash animations)
       if (data.transactions.length > 0) {
         eventBus.emit('bank:transaction', {
           credits: data.credits,

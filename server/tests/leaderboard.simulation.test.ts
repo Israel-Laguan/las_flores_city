@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 // ============================================================
-// Sprint 3: OLAP Leaderboard Simulation (Task 3.5)
+// OLAP Leaderboard Simulation
 //
 // Creates 5 synthetic players with varying TB spend and solve
 // times, injects mocked telemetry into OLAP, and forces the
@@ -69,7 +69,7 @@ async function ensurePublicProfile(userId: string, username: string): Promise<vo
   );
 }
 
-describe('Sprint 3: OLAP Leaderboard Simulation', () => {
+describe('OLAP Leaderboard Simulation', () => {
   beforeAll(async () => {
     await applyMigration('017_mystery_state.sql');
     await applyMigration('021_leaderboards.sql');

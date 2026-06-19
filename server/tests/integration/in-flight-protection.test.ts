@@ -6,7 +6,7 @@ import path from 'path';
 import type { DialogueNode } from '@las-flores/shared';
 
 // ============================================================
-// Task 5.1: In-Flight Conversation Protection
+// In-Flight Conversation Protection
 //
 // Verifies that a player who is mid-conversation inside a mystery
 // overlay can continue making choices even after the mystery
@@ -82,7 +82,7 @@ async function applyMigration(filename: string): Promise<void> {
   }
 }
 
-describe('Task 5.1: In-Flight Conversation Protection', () => {
+describe('In-Flight Conversation Protection', () => {
   beforeAll(async () => {
     await applyMigration('001_initial_schema.sql');
     await applyMigration('005_dialogue_service.sql');

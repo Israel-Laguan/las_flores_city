@@ -6,9 +6,9 @@ let authToken = '';
 test.beforeAll(async ({ request }) => {
   const response = await request.post(`${API_BASE}/auth/register`, {
     data: {
-      email: `sprint6-audit-${Date.now()}@example.com`,
-      username: `sprint6_audit_${Date.now()}`,
-      display_name: 'Sprint 6 Audit',
+      email: `ux-polish-${Date.now()}@example.com`,
+      username: `ux_polish_${Date.now()}`,
+      display_name: 'UX Polish Audit',
       password: 'test1234',
     },
   });
@@ -23,7 +23,7 @@ async function injectAuth(page: Page) {
   }, authToken);
 }
 
-test.describe('Sprint 6 UX Readiness Audit', () => {
+test.describe('UX Polish Readiness', () => {
   test('Event Bus must broadcast all lifecycle states for Polish triggers', async ({ page }) => {
     await injectAuth(page);
     await page.goto('/');
@@ -120,7 +120,7 @@ test.describe('Sprint 6 UX Readiness Audit', () => {
     await page.goto('/');
     await page.waitForTimeout(1000);
 
-    // Verify that the event bus listeners for Sprint 6 polish events
+    // Verify that the event bus listeners for polish events
     // are registered by checking the MessagesApp and BancoApp are mounted
     const appsRegistered = await page.evaluate(() => {
       // MessagesApp and BancoApp register event listeners on construction

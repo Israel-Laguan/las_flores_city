@@ -93,7 +93,7 @@ export const DialogueOverlaySchema = z.object({
 
 export type DialogueOverlay = z.infer<typeof DialogueOverlaySchema>;
 
-// Mystery Overlay Schema (Task 3.1)
+// Mystery Overlay Schema
 // Re-export from the dedicated overlay module for convenience.
 export { OverlaySchema, OverlayFileSchema } from './schemas/overlay.js';
 export type { Overlay, OverlayFile } from './schemas/overlay.js';
@@ -134,7 +134,7 @@ export const PlayerStateSchema = z.object({
   goldCredits: z.number().int().default(0),
   currentNodeId: z.string().nullable().optional(),
   currentDay: z.number().int().min(1).default(1),
-  // Task 5.3: meta-plot finale alignment. Set by /dialogue/choose
+  // Meta-plot finale alignment. Set by /dialogue/choose
   // when a YAML choice carries an `alignment_change` directive;
   // once flipped away from 'neutral', the player has made their
   // finale choice and the field is effectively permanent.
@@ -146,7 +146,7 @@ export const PlayerStateSchema = z.object({
 
 export type PlayerState = z.infer<typeof PlayerStateSchema>;
 
-// ==================== Scene Payload (Task 1.2) ====================
+// ==================== Scene Payload ====================
 
 export const ScenePayloadSchema = z.object({
   scene: z.object({
@@ -171,7 +171,7 @@ export const ScenePayloadSchema = z.object({
 
 export type ScenePayload = z.infer<typeof ScenePayloadSchema>;
 
-// ==================== Movement (Task 2.1) ====================
+// ==================== Movement ====================
 
 export const MoveRequestSchema = z.object({
   target_location_id: z.string().uuid(),
@@ -190,7 +190,7 @@ export const MoveResponseSchema = z.object({
 
 export type MoveResponse = z.infer<typeof MoveResponseSchema>;
 
-// ==================== Sleep (Task 2.2) ====================
+// ==================== Sleep ====================
 
 export const SleepResponseSchema = z.object({
   time_blocks: z.number().int().min(0).max(48),
@@ -278,7 +278,6 @@ export const YAMLCharacterSchema = z.object({
   avatar_url: z.string().url().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
-  // Future Task 5.2 will read this during migration to credit the author.
   written_by: z.string().max(100).optional(),
 });
 
@@ -292,7 +291,6 @@ export const YAMLDialogueSchema = z.object({
   nodes: z.record(z.string(), DialogueNodeSchema),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
-  // Future Task 5.2 will read this during migration to credit the author.
   written_by: z.string().max(100).optional(),
 });
 
@@ -311,7 +309,6 @@ export const YAMLOverlaySchema = z.object({
   })).default([]),
   nodes: z.record(z.string(), DialogueNodeSchema).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
-  // Future Task 5.2 will read this during migration to credit the author.
   written_by: z.string().max(100).optional(),
   conditions: z.record(z.string(), z.any()).optional(),
   priority: z.number().int().default(0),
@@ -326,10 +323,9 @@ export const YAMLMysterySchema = z.object({
   description: z.string().min(1),
   status: z.enum(['ACTIVE', 'RESOLVING', 'ARCHIVED']).default('ACTIVE'),
   expires_at: z.string().datetime().optional(),
-  // Task 5.1: aftermath directives executed atomically by the
   // UGC authorship metadata. Optional so existing content parses unchanged.
-  // Future Task 5.2 will read this during migration to credit the author.
   written_by: z.string().max(100).optional(),
+  // Aftermath directives executed atomically by the
   // LeaderboardWorker when this mystery's Breakthrough window
   // closes. Defaults to {} so existing mystery YAMLs still parse.
   aftermath_payload: AftermathSchema.optional().default({}),
@@ -349,7 +345,6 @@ export const YAMLSceneSchema = z.object({
   description: z.string().max(1000),
   district: z.string().max(50),
   // UGC authorship metadata. Optional so existing content parses unchanged.
-  // Future Task 5.2 will read this during migration to credit the author.
   written_by: z.string().max(100).optional(),
   image_url: z.string().url().optional(),
   background_url: z.string().optional(),
@@ -401,7 +396,7 @@ export const PlayerEventSchema = z.object({
     'mystery_solved',
     'iap_completed',
     'shop_purchase',
-    // Task 5.3: emitted by /dialogue/choose when a YAML choice
+    // Emitted by /dialogue/choose when a YAML choice
     // applies an `alignment_change` (the meta-plot finale lock).
     // Mirrors the OLAP CHECK constraint extended in migration 028.
     'alignment_locked',
@@ -414,7 +409,7 @@ export const PlayerEventSchema = z.object({
 
 export type PlayerEvent = z.infer<typeof PlayerEventSchema>;
 
-// ==================== Leaderboard (Task 3.4) ====================
+// ==================== Leaderboard ====================
 export {
   LeaderboardBadgeTypeSchema,
   LeaderboardBadgeSchema,
@@ -422,7 +417,7 @@ export {
 } from './types/leaderboard.js';
 export type { LeaderboardBadgeType, LeaderboardBadge, LeaderboardEntry } from './types/leaderboard.js';
 
-// ==================== Shop / Marketplace (Task 4.3) ====================
+// ==================== Shop / Marketplace ====================
 export {
   ShopItemSchema,
   ShopItemFileSchema,
@@ -460,9 +455,13 @@ export type {
   PayPalCaptureStatus,
 } from './schemas/shop.js';
 
-// ==================== Aftermath / Recycle Phase (Task 5.1) ====================
+// ==================== Aftermath / Recycle Phase ====================
 export { AftermathSchema } from './schemas/aftermath.js';
 export type { Aftermath } from './schemas/aftermath.js';
+
+// ==================== Gigs ====================
+export { GigSchema, GigFileSchema } from './schemas/gig.js';
+export type { Gig } from './schemas/gig.js';
 
 // ==================== Content Validation ====================
 
@@ -478,5 +477,5 @@ export const ContentFileSchema = z.object({
 
 export type ContentFile = z.infer<typeof ContentFileSchema>;
 
-// ==================== BYOK AI Presentation (Task 4.1) ====================
+// ==================== BYOK AI Presentation ====================
 export { preserveImportantTags } from './importantTags.js';

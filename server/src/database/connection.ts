@@ -8,7 +8,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 const { Pool } = pg;
 
 // OLTP Database Connection (Main Game State)
-// Task 5.4: max increased to 50 to sustain 500+ concurrent VU load tests
+// Pool max increased to 50 to sustain 500+ concurrent VU load tests
 // without exhausting connections. Combined with PgBouncer in production.
 export const oltpPool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -18,7 +18,7 @@ export const oltpPool = new Pool({
 });
 
 // OLAP Database Connection (Analytics)
-// Task 5.4: connectionTimeoutMillis reduced to 1000ms so telemetry queries
+// connectionTimeoutMillis reduced to 1000ms so telemetry queries
 // fail fast instead of holding Express request threads open when OLAP is degraded.
 export const olapPool = new Pool({
   connectionString: process.env.ANALYTICS_DATABASE_URL,
@@ -69,7 +69,7 @@ export async function queryOLTP<T extends pg.QueryResultRow = any>(text: string,
 /**
  * OLAP telemetry query wrapper (fire-and-forget safe).
  *
- * Task 5.4: Catches and logs errors internally so that controllers calling
+ * Catches and logs errors internally so that controllers calling
  * `queryOLAP(...)` without `.catch()` never produce an UnhandledPromiseRejection
  * that would crash the Node.js process. Returns null on failure so callers can
  * safely chain `.then()` or ignore the result.

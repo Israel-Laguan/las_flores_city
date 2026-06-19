@@ -119,7 +119,7 @@ export const PlayerStateSchema = z.object({
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
 });
-// ==================== Scene Payload (Task 1.2) ====================
+// ==================== Scene Payload ====================
 export const ScenePayloadSchema = z.object({
     scene: z.object({
         id: z.string().uuid(),
@@ -140,7 +140,7 @@ export const ScenePayloadSchema = z.object({
         canInteract: z.boolean(),
     })),
 });
-// ==================== Movement (Task 2.1) ====================
+// ==================== Movement ====================
 export const MoveRequestSchema = z.object({
     target_location_id: z.string().uuid(),
 });
@@ -152,7 +152,7 @@ export const MoveResponseSchema = z.object({
     scene: ScenePayloadSchema.shape.scene,
     npcs: ScenePayloadSchema.shape.npcs,
 });
-// ==================== Sleep (Task 2.2) ====================
+// ==================== Sleep ====================
 export const SleepResponseSchema = z.object({
     time_blocks: z.number().int().min(0).max(48),
     credits: z.number().int(),

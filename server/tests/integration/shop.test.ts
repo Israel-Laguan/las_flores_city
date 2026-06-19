@@ -1,8 +1,6 @@
 /**
  * Shop / MyMe Marketplace Integration Tests
  *
- * Task 4.3 (PayPal, Gold Creds, & The "MyMe" Marketplace)
- *
  * Verifies:
  *  - GET /shop/catalog returns active items, cached
  *  - GET /shop/inventory returns the user's owned items

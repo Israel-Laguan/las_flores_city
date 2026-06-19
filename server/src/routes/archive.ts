@@ -6,7 +6,7 @@ import { initializeDialogueState, filterChoices, getSpeaker } from './dialogue-h
 import { buildDialogueResponse } from './dialogue-response-helpers.js';
 
 // ============================================================
-// Archive Room (Task 5.1 - Legacy Play)
+// Archive Room (Legacy Play)
 // ============================================================
 // ARCHIVED mysteries are dropped from the live resolver, but their
 // overlays stay in the DB. This route lets a player start a

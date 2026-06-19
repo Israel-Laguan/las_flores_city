@@ -77,7 +77,7 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
       });
     }
 
-    // Apply mystery overlays via the resolver (Task 3.1).
+    // Apply mystery overlays via the resolver.
     // Players with no active mysteries get the base tree; players
     // investigating mysteries get the merged tree.
     const resolved = await DialogueResolver.resolveTreeForUser(
@@ -300,7 +300,7 @@ dialogueRouter.post('/end', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
 
-    // Task 5.1: also clear simulation flags so an explicit /end
+    // Also clear simulation flags so an explicit /end
     // returns the player to the live world even mid-simulation.
     await queryOLTP(
       `UPDATE users

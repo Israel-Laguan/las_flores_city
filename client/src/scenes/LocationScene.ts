@@ -139,7 +139,7 @@ export class LocationScene extends Phaser.Scene {
   // ==================== WebGL Context Recovery ====================
 
   /**
-   * Sprint 6 Audit: Handles browser tab minimization / standby.
+   * Handles browser tab minimization / standby.
    * When the tab becomes hidden, we suspend the audio context to save
    * resources. On visibility restore, we resume audio and let Phaser
    * re-acquire the WebGL context automatically (Phaser 3 handles
@@ -321,7 +321,7 @@ export class LocationScene extends Phaser.Scene {
           timeBlocksRemaining: result.data.time_blocks_remaining,
           tbCost: result.data.tb_cost,
         });
-        // Sprint 6: location:changed for camera fade, transition drone, phone clock
+        // Emits location:changed for camera fade, transition drone, phone clock
         eventBus.emit('location:changed', {
           locationId: result.data.to_location_id,
           scene: result.data.scene,

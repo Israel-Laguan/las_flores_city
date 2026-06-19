@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { oltpPool } from '@/lib/database';
 
 // ============================================================
-// Admin Health Endpoint (Task 5.2 Foundations)
+// Admin Health Endpoint
 //
 // Proof-of-life: confirms the admin app can reach the OLTP
 // database. Runs SELECT 1 and returns { status: 'ok', db: true }

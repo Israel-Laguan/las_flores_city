@@ -4,7 +4,7 @@ import * as api from './api';
 
 /**
  * Theme Engine — applies equipped ui_theme cosmetics as CSS custom properties
- * on :root. Uses a hardcoded switch (per Sprint 4 decision) mapping shop item
+ * on :root. Uses a hardcoded switch mapping shop item
  * IDs to CSS variable overrides, so no schema change to shop_items is required.
  *
  * Lifecycle:
@@ -96,7 +96,7 @@ export function initThemeEngine(): void {
   // Re-apply on equip/unequip. The event carries { slot, shop_item_id }.
   eventBus.on('inventory:item_equipped', (payload: { slot: string; shop_item_id: string | null }) => {
     if (payload?.slot === 'theme') {
-      // Task 5.3: alignment takes priority over shop themes. When the
+      // Alignment takes priority over shop themes. When the
       // player has committed to loyalist or fugitive, a cosmetic shop
       // theme must not overwrite the diegetic faction identity.
       if (phoneStore.getState().alignment !== 'neutral') return;
@@ -104,7 +104,7 @@ export function initThemeEngine(): void {
     }
   });
 
-  // Task 5.3: re-apply the shop theme (or default) when alignment
+  // Re-apply the shop theme (or default) when alignment
   // returns to neutral. This path fires on page reload if the
   // player's alignment is still 'neutral' — the initial
   // applyTheme(null) above handles that, so this subscription

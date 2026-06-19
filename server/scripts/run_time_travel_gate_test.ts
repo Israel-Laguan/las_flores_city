@@ -1,5 +1,5 @@
 /**
- * Sprint 3 Manual "Time Travel" Gate Test — automated verification
+ * Manual "Time Travel" Gate Test — automated verification
  * Runs the full mystery → breakthrough → leaderboard flow via API + SQL.
  */
 import path from 'node:path';
@@ -39,7 +39,7 @@ async function api(method: string, route: string, body?: object) {
 }
 
 async function main() {
-  console.log('=== Sprint 3 Time Travel Gate Test ===\n');
+  console.log('=== Time Travel Gate Test ===\n');
 
   await queryOLTP(
     `INSERT INTO mysteries (id, title, description, status)

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // ============================================================
-// Shop Item Schema (Task 4.3)
+// Shop Item Schema
 // ============================================================
 // A `shop_item` is a cosmetic that the player can purchase with
 // either `credits` (in-game currency, can be earned) or
@@ -28,7 +28,6 @@ export const ShopItemSchema = z.object({
   asset_url: z.string().url(),
   is_active: z.boolean().default(true),
   // UGC authorship metadata. Optional so existing content parses unchanged.
-  // Future Task 5.2 will read this during migration to credit the author.
   written_by: z.string().max(100).optional(),
 });
 
@@ -132,7 +131,7 @@ export const PublicProfileSchema = z.object({
 export type PublicProfile = z.infer<typeof PublicProfileSchema>;
 
 // ============================================================
-// PayPal Webhook Payloads (Task 4.3)
+// PayPal Webhook Payloads
 // ============================================================
 // The webhook handler accepts PAYMENT.CAPTURE.COMPLETED events
 // from PayPal. The shape below mirrors the relevant fields of

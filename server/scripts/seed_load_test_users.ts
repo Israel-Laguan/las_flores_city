@@ -1,5 +1,5 @@
 /**
- * Seed Load Test Users (Task 5.4)
+ * Seed Load Test Users
  *
  * Generates N test users for K6 load testing. Each user has:
  * - UUID with predictable pattern for K6 script correlation

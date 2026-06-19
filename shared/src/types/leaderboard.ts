@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// ==================== Leaderboard (Task 3.4) ====================
+// ==================== Leaderboard ====================
 
 export const LeaderboardBadgeTypeSchema = z.enum(['breakthrough', 'diamond', 'gold']);
 export type LeaderboardBadgeType = z.infer<typeof LeaderboardBadgeTypeSchema>;

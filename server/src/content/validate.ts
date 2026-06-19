@@ -10,6 +10,7 @@ import {
   YAMLMysterySchema,
   VaultFileSchema,
   ShopItemFileSchema,
+  GigFileSchema,
   ContentType,
 } from '@las-flores/shared';
 
@@ -119,9 +120,9 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
       case 'shop_item':
         ShopItemFileSchema.parse(data);
         break;
-      // TODO: add gig schema validation. Currently gigs fall through
-      // silently — pre-existing gap, out of scope for Task 5.2 foundations.
-      // case 'gig': GigFileSchema.parse(data); break;
+      case 'gig':
+        GigFileSchema.parse(data);
+        break;
     }
   } catch (e: any) {
     errors.push({

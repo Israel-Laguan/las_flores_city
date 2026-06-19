@@ -2,7 +2,7 @@ import { describe, test, expect } from '@jest/globals';
 import { webcrypto, randomBytes } from 'node:crypto';
 
 // ============================================================
-// BYOK AES-GCM Round-Trip Unit Tests (Task 4.1 §1)
+// BYOK AES-GCM Round-Trip Unit Tests
 //
 // The client split-key crypto flow is:
 //   1. Browser generates a 256-bit AES-GCM key.

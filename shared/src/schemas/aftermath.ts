@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // ============================================================
-// Aftermath (Task 5.1 - The Recycle Phase)
+// Aftermath (The Recycle Phase)
 // ============================================================
 // Authored as part of the mystery YAML and stored on the
 // `mysteries.aftermath_payload` column. Executed atomically by

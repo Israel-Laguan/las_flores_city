@@ -42,7 +42,7 @@ export async function assemblePlayerState(userId: string) {
     goldCredits: row.gold_credits,
     currentNodeId: row.current_node_id,
     currentDay: row.current_day,
-    // Task 5.3: meta-plot finale alignment. Default 'neutral'
+    // Meta-plot finale alignment. Default 'neutral'
     // covers pre-migration users (the column is NOT NULL DEFAULT
     // 'neutral' in OLTP, so this fallback shouldn't fire, but
     // keeping it for type safety).

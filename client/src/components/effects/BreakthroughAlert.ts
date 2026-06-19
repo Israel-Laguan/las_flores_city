@@ -1,7 +1,7 @@
 import { eventBus } from '../../utils/EventBus';
 
 /**
- * BreakthroughAlert (Task 3.3)
+ * BreakthroughAlert
  *
  * Renders the global Breakthrough visual effect when a player is the
  * first to solve a mystery (isBreakthrough = true). Listens for the

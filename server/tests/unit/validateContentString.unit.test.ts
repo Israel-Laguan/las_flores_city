@@ -2,7 +2,7 @@ import { describe, test, expect } from '@jest/globals';
 import { validateContentString, validateContentByType } from '../../src/content/validate.js';
 
 // ============================================================
-// validateContentString Unit Tests (Task 5.2 Foundations)
+// validateContentString Unit Tests
 //
 // Pure tests for the new string-in validator extracted from
 // validateYAMLFile. This is the API the future UGC submit

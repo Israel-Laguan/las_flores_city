@@ -6,7 +6,7 @@ import { generateToken } from '../../src/middleware/auth.js';
 import { closeRedis } from '../../src/database/redis.js';
 
 // ============================================================
-// BYOK Settings Route Integration Tests (Task 4.1)
+// BYOK Settings Route Integration Tests
 //
 // Validates the server-side contract for split-key storage:
 //   POST   /settings/ai-key        — store ciphertext + iv
@@ -74,7 +74,7 @@ afterAll(async () => {
   await closeRedis();
 });
 
-describe('BYOK Settings Route (Task 4.1)', () => {
+describe('BYOK Settings Route', () => {
   test('POST /settings/ai-key stores ciphertext + iv and returns success', async () => {
     const port = server.address().port;
     const res = await fetch(`http://localhost:${port}/settings/ai-key`, {
