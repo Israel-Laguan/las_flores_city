@@ -79,6 +79,12 @@ export class BancoApp {
     `;
   }
 
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   private txRow(tx: BankTransaction): string {
     const isPositive = tx.amount > 0;
     const sign = isPositive ? '+' : '';
@@ -90,10 +96,10 @@ export class BancoApp {
       <div class="ledger-row">
         <div class="ledger-meta">
           <span class="ledger-date">${date}</span>
-          <span class="ledger-type">[${tx.transactionType.toUpperCase()}]</span>
+          <span class="ledger-type">[${this.escapeHtml(tx.transactionType.toUpperCase())}]</span>
         </div>
         <div class="ledger-main">
-          <span class="ledger-desc">${tx.description}</span>
+          <span class="ledger-desc">${this.escapeHtml(tx.description)}</span>
           <span class="ledger-amount ${amountClass}">${sign}${tx.amount.toLocaleString()}${suffix}</span>
         </div>
       </div>
