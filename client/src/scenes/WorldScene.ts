@@ -81,6 +81,31 @@ export class WorldScene extends Phaser.Scene {
       });
     });
 
+    // Task 5.3: synthesize a glitch/crash SFX via Web Audio API
+    // when the fugitive alignment is locked. No audio assets exist
+    // in the codebase, so we generate a descending-saw + noise
+    // burst inline — matches the BreakthroughAlert.ts pattern.
+    eventBus.on('audio:play_sfx', (data: { key: string }) => {
+      if (data.key !== 'sfx_system_crash') return;
+      try {
+        const ctx = (this.sound as any).context as AudioContext;
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.4);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } catch (err) {
+        console.warn('[audio] SFX synthesis failed:', err);
+      }
+    });
+
     // Load initial state
     this.loadInitialState();
   }

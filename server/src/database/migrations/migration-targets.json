@@ -23,14 +23,16 @@
     "023_patreon_entitlements.sql",
     "024_marketplace.sql",
     "026_vault_signed_urls.sql",
-    "027_aftermath.sql"
+    "027_aftermath.sql",
+    "028_metaplot_alignment.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",
     "002_analytics_schema.sql",
     "019_add_vault_event_type.sql",
     "020_add_mystery_solved_event_type.sql",
-    "025_marketplace_olap.sql"
+    "025_marketplace_olap.sql",
+    "028_metaplot_alignment.sql"
   ],
   "both": [
     "000_schema_migrations.sql"

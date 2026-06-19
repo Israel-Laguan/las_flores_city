@@ -1,4 +1,5 @@
 import { eventBus } from './EventBus';
+import { phoneStore } from '../store/PhoneStore';
 import * as api from './api';
 
 /**
@@ -95,7 +96,23 @@ export function initThemeEngine(): void {
   // Re-apply on equip/unequip. The event carries { slot, shop_item_id }.
   eventBus.on('inventory:item_equipped', (payload: { slot: string; shop_item_id: string | null }) => {
     if (payload?.slot === 'theme') {
+      // Task 5.3: alignment takes priority over shop themes. When the
+      // player has committed to loyalist or fugitive, a cosmetic shop
+      // theme must not overwrite the diegetic faction identity.
+      if (phoneStore.getState().alignment !== 'neutral') return;
       applyTheme(payload.shop_item_id);
+    }
+  });
+
+  // Task 5.3: re-apply the shop theme (or default) when alignment
+  // returns to neutral. This path fires on page reload if the
+  // player's alignment is still 'neutral' — the initial
+  // applyTheme(null) above handles that, so this subscription
+  // only matters if alignment changes back (which it won't in
+  // the current narrative, but keeps the contract clean).
+  phoneStore.subscribe((state) => {
+    if (state.alignment === 'neutral') {
+      void syncEquippedThemeFromProfile();
     }
   });
 

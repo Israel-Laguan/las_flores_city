@@ -4,6 +4,7 @@ import {
   processBreakthroughSolve,
   type BreakthroughResult,
 } from './dialogue-breakthrough-helpers.js';
+import type { DialogueChoice } from '@las-flores/shared';
 
 export async function getSpeaker(speakerId: string) {
   const result = await queryOLTP(
@@ -281,7 +282,7 @@ export async function processChoice(
   userId: string,
   dialogueId: string,
   choiceIndex: number,
-  chosenOption: any,
+  chosenOption: DialogueChoice,
   currentNodeId: string,
   nodes: any
 ): Promise<{
@@ -295,6 +296,11 @@ export async function processChoice(
     isBreakthrough: boolean;
     kind: 'winner' | 'solver' | 'late';
   };
+  // Task 5.3: meta-plot finale alignment flip. Set when the chosen
+  // option carries `alignment_change`. The route emits the OLAP
+  // `alignment_locked` event post-commit and includes the value
+  // in the response so the client can apply its theme + audio FX.
+  alignmentChange?: 'loyalist' | 'fugitive';
 }> {
   let timeBlocksSpent = 0;
 
@@ -364,7 +370,28 @@ export async function processChoice(
   const { result: breakthrough, status: mysterySolveStatus } =
     await processBreakthroughSolve(client, userId, chosenOption.mystery_solve);
 
-  return { success: true, timeBlocksSpent, unlockedVaultItem, mysterySolveStatus, breakthrough };
+  // Task 5.3: apply the meta-plot finale alignment flip inside the
+  // same transaction as the rest of the choice effects. Once set,
+  // the player cannot re-choose (the resolver already gates the
+  // `loyalist_only` / `fugitive_only` overlays off neutral users,
+  // and other choices in this tree shouldn't carry alignment_change).
+  let alignmentChange: 'loyalist' | 'fugitive' | undefined;
+  if (chosenOption.alignment_change) {
+    await client.query(
+      `UPDATE users SET alignment = $1 WHERE id = $2`,
+      [chosenOption.alignment_change, userId]
+    );
+    alignmentChange = chosenOption.alignment_change;
+  }
+
+  return {
+    success: true,
+    timeBlocksSpent,
+    unlockedVaultItem,
+    mysterySolveStatus,
+    breakthrough,
+    alignmentChange,
+  };
 }
 
 export function buildDialogueResponse(
@@ -417,7 +444,11 @@ export function buildChooseResponse(
     mysteryId: string;
     isBreakthrough: boolean;
     kind: 'winner' | 'solver' | 'late';
-  }
+  },
+  // Task 5.3: surfaced to the client so the phone UI can apply
+  // its fugitive/loyalist visual treatment. Lives in `data` per
+  // the existing response shape (not at the top level).
+  alignmentChange?: 'loyalist' | 'fugitive'
 ) {
   return {
     success: true,
@@ -440,6 +471,9 @@ export function buildChooseResponse(
         : {}),
       ...(mysterySolveStatus
         ? { mystery_solve_status: mysterySolveStatus }
+        : {}),
+      ...(alignmentChange
+        ? { alignment_change: alignmentChange }
         : {}),
     },
     timestamp: new Date().toISOString(),

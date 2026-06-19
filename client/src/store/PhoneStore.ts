@@ -1,3 +1,5 @@
+export type Alignment = 'neutral' | 'loyalist' | 'fugitive';
+
 export type AppRoute = 'home' | 'feed' | 'messages' | 'trabajando' | 'banco' | 'myme' | 'vault' | 'settings' | 'identity';
 
 export interface PhoneState {
@@ -10,6 +12,7 @@ export interface PhoneState {
   isOpen: boolean;
   aiEnabled: boolean;
   isNsfwUnlocked: boolean;
+  alignment: Alignment;
 }
 
 type Listener<T> = (state: T) => void;
@@ -56,4 +59,5 @@ export const phoneStore = new PhoneStore({
   isOpen: false,
   aiEnabled: false,
   isNsfwUnlocked: false,
+  alignment: 'neutral',
 });

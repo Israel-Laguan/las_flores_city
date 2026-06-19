@@ -15,6 +15,7 @@ import { emitBreakthroughSideEffects } from './dialogue-breakthrough-helpers.js'
 import { withOLTPTransaction, queryOLTP, queryOLAP } from '../database/connection.js';
 import { deleteCache, invalidatePattern } from '../database/redis.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
+import { userStateCacheKey } from './player-helpers.js';
 
 export const dialogueRouter = express.Router();
 
@@ -180,6 +181,32 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
 
     await recordPostChoiceTelemetry(userId, id, choiceIndex, result);
 
+    // Task 5.3: post-commit OLAP event for the meta-plot finale
+    // alignment lock. Fire-and-forget so a slow OLAP doesn't
+    // block the dialogue response; failures are logged not
+    // raised (consistent with other dialogue telemetry here).
+    if (result.alignmentChange) {
+      queryOLAP(
+        `INSERT INTO player_events (id, user_id, event_type, event_data)
+         VALUES (gen_random_uuid(), $1, 'alignment_locked', $2)`,
+        [
+          userId,
+          JSON.stringify({
+            alignment: result.alignmentChange,
+            dialogue_tree_id: id,
+            choice_id: availableChoices[choiceIndex].id,
+          }),
+        ]
+      ).catch((err) => console.error('Alignment lock telemetry error:', err));
+
+      // Alignment is a hard cache buster: every alignment-gated
+      // overlay in `dialogue:resolved:*` may now resolve to a
+      // different tree, and `user:state:*` carries the new
+      // alignment. Invalidate both keys.
+      await deleteCache(userStateCacheKey(userId));
+      await invalidatePattern('dialogue:resolved:*');
+    }
+
     // Task 3.3: post-commit Breakthrough side effects (cache
     // invalidation, OLAP event, [BREAKTHROUGH] social post for the
     // winner). Runs even on late solves — see helper JSDoc.
@@ -222,7 +249,8 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       result.timeBlocksSpent || 0,
       newTbResult.rows[0]?.time_blocks,
       result.unlockedVaultItem,
-      result.mysterySolveStatus
+      result.mysterySolveStatus,
+      result.alignmentChange
     ));
   } catch (error: any) {
     console.error('Dialogue choose error:', error);

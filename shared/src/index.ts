@@ -134,6 +134,11 @@ export const PlayerStateSchema = z.object({
   goldCredits: z.number().int().default(0),
   currentNodeId: z.string().nullable().optional(),
   currentDay: z.number().int().min(1).default(1),
+  // Task 5.3: meta-plot finale alignment. Set by /dialogue/choose
+  // when a YAML choice carries an `alignment_change` directive;
+  // once flipped away from 'neutral', the player has made their
+  // finale choice and the field is effectively permanent.
+  alignment: z.enum(['neutral', 'loyalist', 'fugitive']).default('neutral'),
   lastLogin: z.string().datetime(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -396,6 +401,10 @@ export const PlayerEventSchema = z.object({
     'mystery_solved',
     'iap_completed',
     'shop_purchase',
+    // Task 5.3: emitted by /dialogue/choose when a YAML choice
+    // applies an `alignment_change` (the meta-plot finale lock).
+    // Mirrors the OLAP CHECK constraint extended in migration 028.
+    'alignment_locked',
   ]),
   event_data: z.record(z.string(), z.any()),
   time_blocks_cost: z.number().int().min(0).optional(),

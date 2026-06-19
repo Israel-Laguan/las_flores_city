@@ -6,7 +6,7 @@ export function userStateCacheKey(userId: string): string {
 
 export async function assemblePlayerState(userId: string) {
   const result = await queryOLTP(
-    `SELECT 
+    `SELECT
       u.id,
       u.username,
       u.current_location_id,
@@ -15,6 +15,7 @@ export async function assemblePlayerState(userId: string) {
       u.gold_credits,
       u.current_node_id,
       u.current_day,
+      u.alignment,
       u.last_login,
       u.created_at,
       u.updated_at,
@@ -41,6 +42,11 @@ export async function assemblePlayerState(userId: string) {
     goldCredits: row.gold_credits,
     currentNodeId: row.current_node_id,
     currentDay: row.current_day,
+    // Task 5.3: meta-plot finale alignment. Default 'neutral'
+    // covers pre-migration users (the column is NOT NULL DEFAULT
+    // 'neutral' in OLTP, so this fallback shouldn't fire, but
+    // keeping it for type safety).
+    alignment: row.alignment || 'neutral',
     lastLogin: row.last_login,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

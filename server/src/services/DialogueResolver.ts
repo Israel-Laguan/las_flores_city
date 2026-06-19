@@ -33,6 +33,9 @@ interface OverlayRow {
   nodes: Record<string, DialogueNode>;
   updated_at: Date;
   is_nsfw: boolean;
+  // Task 5.3: gate overlays by alignment via `unlock_condition`.
+  // Nullable because older overlay rows may not have it set.
+  unlock_condition?: 'none' | 'patreon_nsfw' | 'loyalist_only' | 'fugitive_only' | null;
 }
 
 const CACHE_TTL_SECONDS = 3600; // 1 hour
@@ -84,10 +87,11 @@ export class DialogueResolver {
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {
-    const [investigatingIds, activeMysteryIds, isNsfwUnlocked] = await Promise.all([
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment] = await Promise.all([
       DialogueResolver.getActiveMysteryIds(userId),
       DialogueResolver.getActiveMysteries(),
       DialogueResolver.getUserNsfwStatus(userId),
+      DialogueResolver.getUserAlignment(userId),
     ]);
 
     // Combine investigating + active mysteries for overlay loading.
@@ -107,7 +111,10 @@ export class DialogueResolver {
       allMysteryIds.length > 0
         ? `${allMysteryIds.join('_')}:${overlayFingerprint}`
         : `base:${overlayFingerprint}`;
-    const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:mysteries:${cacheSuffix}`;
+    // Task 5.3: alignment is part of the cache key so the
+    // post-commit invalidate in /dialogue/choose forces a fresh
+    // merge once a player picks the finale choice.
+    const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:align:${alignment}:mysteries:${cacheSuffix}`;
 
     const cachedTree = await getCache<ResolvedTree>(cacheKey);
     if (cachedTree) {
@@ -119,6 +126,13 @@ export class DialogueResolver {
       if (overlay.is_nsfw && !isNsfwUnlocked) {
         continue;
       }
+      // Task 5.3: alignment gate. `loyalist_only` / `fugitive_only`
+      // overlays (set in YAML via `unlock_condition`) only merge
+      // for the matching faction. We don't have the unlock_condition
+      // column in the SELECT above, so re-load it here — overlays
+      // table is small, this is a single round trip.
+      if (overlay.unlock_condition === 'loyalist_only' && alignment !== 'loyalist') continue;
+      if (overlay.unlock_condition === 'fugitive_only' && alignment !== 'fugitive') continue;
       if (overlay.nodes) {
         resolvedNodes = deepMergeNodes(resolvedNodes, overlay.nodes);
       }
@@ -211,6 +225,19 @@ export class DialogueResolver {
   }
 
   /**
+   * Task 5.3: meta-plot finale alignment. Defaults to 'neutral'
+   * for users with no `users` row (shouldn't happen, but mirrors
+   * the `NOT NULL DEFAULT 'neutral'` constraint on the column).
+   */
+  public static async getUserAlignment(userId: string): Promise<'neutral' | 'loyalist' | 'fugitive'> {
+    const result = await queryOLTP<{ alignment: 'neutral' | 'loyalist' | 'fugitive' }>(
+      `SELECT alignment FROM users WHERE id = $1`,
+      [userId]
+    );
+    return result.rows[0]?.alignment ?? 'neutral';
+  }
+
+  /**
    * Load the base dialogue tree (raw, no overlays).
    */
   private static async loadBaseTree(
@@ -240,11 +267,11 @@ export class DialogueResolver {
     mysteryIds: string[]
   ): Promise<OverlayRow[]> {
     const result = await queryOLTP<OverlayRow>(
-      `SELECT nodes, updated_at, is_nsfw
-       FROM dialogue_overlays 
-       WHERE target_tree_id = $1 
+      `SELECT nodes, updated_at, is_nsfw, unlock_condition
+       FROM dialogue_overlays
+       WHERE target_tree_id = $1
          AND mystery_id = ANY($2::uuid[])
-         AND nodes IS NOT NULL 
+         AND nodes IS NOT NULL
          AND nodes != '{}'::jsonb`,
       [baseTreeId, mysteryIds]
     );
@@ -261,7 +288,7 @@ export class DialogueResolver {
     mysteryId: string
   ): Promise<OverlayRow[]> {
     const result = await queryOLTP<OverlayRow>(
-      `SELECT nodes, updated_at, is_nsfw
+      `SELECT nodes, updated_at, is_nsfw, unlock_condition
          FROM dialogue_overlays
         WHERE target_tree_id = $1
           AND mystery_id = $2

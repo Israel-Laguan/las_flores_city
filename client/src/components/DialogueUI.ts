@@ -212,6 +212,35 @@ export class DialogueUI {
     if (result.time_blocks_remaining !== undefined) eventBus.emit('tb:updated', result.time_blocks_remaining);
     if (result.unlocked_vault_item) { eventBus.emit('vault:new_item_unlocked', result.unlocked_vault_item); phoneStore.updateState({ hasNewVaultItem: true }); }
     this.handleMysterySolveStatus(result.mystery_solve_status);
+
+    // Task 5.3: meta-plot finale alignment flip. The server puts
+    // `alignment_change` in `data` (not top-level). On fugitive
+    // we play a glitch SFX, apply the visual theme swap, and
+    // push a system warning. On loyalist we just push a warning.
+    if (result.alignment_change) {
+      phoneStore.updateState({ alignment: result.alignment_change });
+
+      if (result.alignment_change === 'fugitive') {
+        eventBus.emit('audio:play_sfx', { key: 'sfx_system_crash' });
+        const phoneContainer = document.querySelector('.phone-os-container');
+        if (phoneContainer) {
+          phoneContainer.classList.add('trigger-glitch');
+          setTimeout(() => {
+            phoneContainer.classList.remove('trigger-glitch');
+            phoneContainer.classList.add('theme-fugitive');
+          }, 800);
+        }
+        eventBus.emit('monologue:push', {
+          text: '[SYSTEM INTEGRITY BREACH] Faction protocols overridden. Network identity scrambled. You are a ghost now.',
+          type: 'warning',
+        });
+      } else {
+        eventBus.emit('monologue:push', {
+          text: '[ALIGNMENT LOCKED] Faction allegiance registered: LOYALIST. Network protocols updated.',
+          type: 'warning',
+        });
+      }
+    }
   }
 
   private handleMysterySolveStatus(mysterySolveStatus: any) {

@@ -114,6 +114,36 @@ canvas {
   flex-shrink: 0;
 }
 
+/* Task 5.3: fugitive alignment theme — red/orange palette cascading
+   through the existing CSS custom properties. Applied by adding
+   .theme-fugitive to .phone-os-container via DialogueUI. */
+.phone-os-container.theme-fugitive {
+  --neon-cyan: #ff4444;
+  --neon-blue: #ff2200;
+  --neon-magenta: #ff6600;
+  --terminal-bg: rgba(30, 4, 4, 0.92);
+  --border-glow: 0 0 10px rgba(255, 34, 0, 0.5);
+}
+
+/* Task 5.3: screen-glitch keyframe — applied via .trigger-glitch
+   class for 800ms before settling on theme-fugitive. */
+@keyframes screen-glitch {
+  0%   { transform: translateX(0); filter: none; }
+  10%  { transform: translateX(-3px); filter: hue-rotate(90deg); }
+  20%  { transform: translateX(4px) skewX(1deg); filter: saturate(3); }
+  30%  { transform: translateX(-2px); filter: hue-rotate(-45deg) brightness(1.5); }
+  40%  { transform: translateX(0); filter: none; }
+  50%  { transform: translateX(5px) skewX(-2deg); filter: contrast(2); }
+  60%  { transform: translateX(-4px); filter: hue-rotate(180deg) saturate(2); }
+  70%  { transform: translateX(2px); filter: brightness(0.5); }
+  80%  { transform: translateX(0) skewX(0); filter: none; }
+  100% { transform: translateX(0); filter: none; }
+}
+
+.trigger-glitch {
+  animation: screen-glitch 0.8s ease-in-out forwards;
+}
+
 @media (max-width: 768px) {
   .phone-os-container {
     padding-right: 0;

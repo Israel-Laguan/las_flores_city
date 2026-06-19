@@ -11,7 +11,17 @@ import { DialogueNodeSchema } from './dialogue.js';
 // version (predictable author control, no element-wise merging).
 // ============================================================
 
-export const UnlockConditionSchema = z.enum(['none', 'patreon_nsfw']);
+export const UnlockConditionSchema = z.enum([
+  'none',
+  'patreon_nsfw',
+  // Task 5.3: meta-plot finale overlays gate on user.alignment.
+  // `loyalist_only` is visible only to players who chose the
+  // loyalist finale; `fugitive_only` to those who went fugitive.
+  // The DialogueResolver reads `users.alignment` and skips
+  // overlays whose gate the user does not satisfy.
+  'loyalist_only',
+  'fugitive_only',
+]);
 export type UnlockCondition = z.infer<typeof UnlockConditionSchema>;
 
 export const OverlaySchema = z.object({

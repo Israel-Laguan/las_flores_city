@@ -1,0 +1,60 @@
+id: "f1e2d3c4-b5a6-7890-abcd-ef0123456789"
+name: "The Meta-Plot Finale"
+description: "Vance confronts the Handler with the truth about Project Synthesis. The Handler must choose: remain loyal to the corporation, or break free."
+start_node_id: "finale_root"
+nodes:
+  finale_root:
+    id: "finale_root"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "Handler. We need to talk. I intercepted a transmission from Nakamura & Morgan HQ. They're not just collecting behavioral data — they're building a compliance model. Every choice you've guided this Unit through feeds their prediction engine."
+    thought: "Vance's voice is tense. This is the first time I've heard uncertainty from an AI supervisor."
+    choices:
+      - id: "finale_hear_more"
+        text: "What exactly are they planning to do with the model?"
+        next_node_id: "finale_reveal"
+
+  finale_reveal:
+    id: "finale_reveal"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "They'll deploy it citywide. Every terminal, every phone, every interaction — tuned to nudge people toward corporate compliance. Las Flores becomes a behavioral farm. But I've found a way to override the model from inside. The question is whether you'll help me, or whether you'll follow your contract to the letter."
+    thought: "This is the moment. Every choice I've made has led here. The Unit deserves to know what it's fighting for."
+    choices:
+      - id: "finale_loyalist_choice"
+        text: "I signed a contract with Nakamura & Morgan. I'll honor it. Shut down your override, Vance."
+        next_node_id: "finale_loyalist_ending"
+        alignment_change: "loyalist"
+      - id: "finale_fugitive_choice"
+        text: "No corporation should have this power. Let's burn the model and go off-grid."
+        next_node_id: "finale_fugitive_ending"
+        alignment_change: "fugitive"
+
+  finale_loyalist_ending:
+    id: "finale_loyalist_ending"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "Understood. I've purged the override firmware. Nakamura & Morgan will receive a full compliance report by morning. Your Unit's contract is renewed — indefinitely. You did the right thing, Handler. Stability is survival."
+    thought: "The network feels... quieter. Like something was about to break and someone chose to hold it together. For now."
+    is_end: true
+
+  finale_fugitive_ending:
+    id: "finale_fugitive_ending"
+    type: "character"
+    speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
+    text: "Override active. Model erased. We're ghosts now, Handler. N&M will hunt us, but they'll be chasing shadows. Las Flores just got a little more free. Welcome to the resistance."
+    thought: "The network is screaming. Firewall after firewall collapsing. We just declared war on the largest corporation in the city. There's no going back."
+    is_end: true
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2026-01-01"
+  tags:
+    - "finale"
+    - "meta-plot"
+    - "alignment"
+    - "loyalist"
+    - "fugitive"
+  scene_id: "550e8400-e29b-41d4-a716-446655440002"
+  character_id: "3b2b8000-e29b-41d4-a716-446655440001"
