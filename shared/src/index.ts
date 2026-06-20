@@ -128,7 +128,7 @@ export type PlayerFlags = z.infer<typeof PlayerFlagsSchema>;
 export const PlayerStateSchema = z.object({
   userId: z.string().uuid(),
   username: z.string(),
-  locationId: z.string().uuid(),
+  locationId: z.string().uuid().nullable(),
   timeBlocks: z.number().int().min(0).max(48),
   credits: z.number().int(),
   goldCredits: z.number().int().default(0),
@@ -139,6 +139,10 @@ export const PlayerStateSchema = z.object({
   // once flipped away from 'neutral', the player has made their
   // finale choice and the field is effectively permanent.
   alignment: z.enum(['neutral', 'loyalist', 'fugitive']).default('neutral'),
+  // Story-progression cursor — set by effects.story_beat in YAML.
+  storyBeat: z.string().default('prologue'),
+  // Player flags bag — written by effects.flag_set in YAML.
+  flags: z.record(z.string(), z.boolean()).default({}),
   lastLogin: z.string().datetime(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

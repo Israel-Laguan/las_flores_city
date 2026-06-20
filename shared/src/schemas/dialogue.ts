@@ -41,6 +41,21 @@ export const DialogueChoiceSchema = z.object({
 
 export type DialogueChoice = z.infer<typeof DialogueChoiceSchema>;
 
+// Strict effects schema: reject undocumented properties during content
+// migration so YAML authors get feedback immediately.
+export const EffectsSchema = z.object({
+  // Established pattern: nested flag bag (see recordChoiceAndEffects)
+  flag_set: z.record(z.string(), z.boolean()).optional(),
+  // Story-progression cursor (STORY_PROGRESSION_CONTEXT.md)
+  story_beat: z.string().max(100).optional(),
+  // Parsed content-side; retained for compatibility
+  location_discovered: z.string().max(100).optional(),
+  app_opened: z.string().max(50).optional(),
+  message_read: z.string().max(100).optional(),
+}).strict();
+
+export type Effects = z.infer<typeof EffectsSchema>;
+
 export const DialogueNodeSchema = z.object({
   id: z.string(),
   type: DialogueNodeTypeSchema,
@@ -49,7 +64,7 @@ export const DialogueNodeSchema = z.object({
   thought: z.string().max(2000).optional(),
   is_end: z.boolean().optional(),
   choices: z.array(DialogueChoiceSchema).optional(),
-  effects: z.record(z.string(), z.any()).optional(),
+  effects: EffectsSchema.optional(),
   conditions: z.record(z.string(), z.any()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 });
