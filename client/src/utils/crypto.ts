@@ -12,7 +12,7 @@ export function clearLocalKey(): void {
   localStorage.removeItem(LOCAL_KEY_STORAGE);
 }
 
-export async function setupSplitKey(plainApiKey: string, jwt: string): Promise<void> {
+export async function setupSplitKey(plainApiKey: string): Promise<void> {
   const key = await crypto.subtle.generateKey(
     { name: 'AES-GCM', length: 256 },
     true,
@@ -34,13 +34,13 @@ export async function setupSplitKey(plainApiKey: string, jwt: string): Promise<v
 
   localStorage.setItem(LOCAL_KEY_STORAGE, localKeyBase64);
 
-  const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
-  const response = await fetch(`${API_BASE}/settings/ai-key`, {
+  // Auth is handled by HttpOnly cookie (credentials:'same-origin').
+  const response = await fetch('/api/settings/ai-key', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwt}`,
     },
+    credentials: 'same-origin',
     body: JSON.stringify({ ciphertext, iv: ivBase64, enabled: true }),
   });
 
@@ -50,14 +50,14 @@ export async function setupSplitKey(plainApiKey: string, jwt: string): Promise<v
   }
 }
 
-export async function removeSplitKey(jwt: string): Promise<void> {
-  const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
-  await fetch(`${API_BASE}/settings/ai-key`, {
+export async function removeSplitKey(): Promise<void> {
+  // Auth is handled by HttpOnly cookie (credentials:'same-origin').
+  await fetch('/api/settings/ai-key', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwt}`,
     },
+    credentials: 'same-origin',
     body: JSON.stringify({ ciphertext: null, iv: null, enabled: false }),
   });
   clearLocalKey();

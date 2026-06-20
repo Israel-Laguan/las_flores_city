@@ -143,12 +143,13 @@ export class DialogueUI {
   }
 
   private async dispatchToAiWorker(choices: DialogueNode['choices'], relationshipContext: string): Promise<NonNullable<DialogueNode['choices']>> {
-    if (!this.aiWorker || !choices?.length || !phoneStore.getState().aiEnabled || !getLocalKey() || !localStorage.getItem('auth_token'))
+    // Auth is handled by HttpOnly cookie; no client-side token check needed.
+    if (!this.aiWorker || !choices?.length || !phoneStore.getState().aiEnabled || !getLocalKey())
       return choices || [];
     return new Promise((resolve) => {
       const requestId = `ai_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       this.pendingRequests.set(requestId, { resolve: (r) => resolve(r || choices), reject: () => resolve(choices) });
-      this.aiWorker!.postMessage({ id: requestId, type: 'rewrite_choices', choices: choices.map(c => ({ ...c })), relationshipContext, localKey: getLocalKey(), jwt: localStorage.getItem('auth_token') });
+      this.aiWorker!.postMessage({ id: requestId, type: 'rewrite_choices', choices: choices.map(c => ({ ...c })), relationshipContext, localKey: getLocalKey() });
       setTimeout(() => { if (this.pendingRequests.has(requestId)) { this.pendingRequests.delete(requestId); resolve(choices); } }, 5000);
     });
   }

@@ -7,7 +7,6 @@ interface RewriteRequest {
   choices: Array<{ id: string; text: string; next_node_id: string; [key: string]: any }>;
   relationshipContext: string;
   localKey: string;
-  jwt: string;
 }
 
 interface WorkerResponse {
@@ -76,15 +75,15 @@ Return a strict JSON array of exactly ${originalTexts.length} strings, one for e
 }
 
 self.onmessage = async (event: MessageEvent<RewriteRequest>) => {
-  const { id, type, choices, relationshipContext, localKey, jwt } = event.data;
+  const { id, type, choices, relationshipContext, localKey } = event.data;
 
   if (type !== 'rewrite_choices') return;
 
   try {
-    const API_BASE = self.location.origin || 'http://localhost:3000';
-
-    const res = await fetch(`${API_BASE}/settings/ai-key-share`, {
-      headers: { Authorization: `Bearer ${jwt}` },
+    // Web Workers share the browser's cookie jar — credentials:'same-origin'
+    // sends the HttpOnly session cookie automatically.
+    const res = await fetch('/api/settings/ai-key-share', {
+      credentials: 'same-origin',
     });
 
     if (!res.ok) {

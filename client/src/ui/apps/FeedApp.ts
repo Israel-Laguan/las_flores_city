@@ -12,7 +12,7 @@ export class FeedApp {
     this.container.innerHTML = `<div class="loading-spinner">Interacting with decentralized mesh network...</div>`;
     try {
       const response = await fetch('/api/network/feed', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` },
+        credentials: 'same-origin',
       });
       if (!response.ok) throw new Error('Uplink failed');
       const feed: SocialPost[] = await response.json();
@@ -86,8 +86,8 @@ export class FeedApp {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
         },
+        credentials: 'same-origin',
         body: JSON.stringify({ postId }),
       });
     } catch (err) {

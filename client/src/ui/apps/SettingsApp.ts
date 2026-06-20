@@ -150,15 +150,11 @@ export class SettingsApp {
       this.setMessage('Paste an API key first.', 'error');
       return;
     }
-    const jwt = api.getAuthToken() || localStorage.getItem('jwt') || localStorage.getItem('auth_token');
-    if (!jwt) {
-      this.setMessage('Not authenticated. Log in first.', 'error');
-      return;
-    }
+    // Auth is handled by HttpOnly cookie; no client-side token check needed.
     this.saveBtn!.disabled = true;
     this.setMessage('Generating local key and encrypting…');
     try {
-      await setupSplitKey(raw, jwt);
+      await setupSplitKey(raw);
       this.keyInput!.value = '';
       setLocalKey(localStorage.getItem('ai_local_key') || '');
       phoneStore.updateState({ aiEnabled: true });
@@ -172,11 +168,7 @@ export class SettingsApp {
   }
 
   private async handleToggle(): Promise<void> {
-    const jwt = api.getAuthToken() || localStorage.getItem('jwt') || localStorage.getItem('auth_token');
-    if (!jwt) {
-      this.setMessage('Not authenticated.', 'error');
-      return;
-    }
+    // Auth is handled by HttpOnly cookie; no client-side token check needed.
     const next = !phoneStore.getState().aiEnabled;
     this.toggleBtn!.disabled = true;
     try {
@@ -196,14 +188,10 @@ export class SettingsApp {
   }
 
   private async handleRemove(): Promise<void> {
-    const jwt = api.getAuthToken() || localStorage.getItem('jwt') || localStorage.getItem('auth_token');
-    if (!jwt) {
-      this.setMessage('Not authenticated.', 'error');
-      return;
-    }
+    // Auth is handled by HttpOnly cookie; no client-side token check needed.
     this.removeBtn!.disabled = true;
     try {
-      await removeSplitKey(jwt);
+      await removeSplitKey();
       phoneStore.updateState({ aiEnabled: false });
       this.setMessage('Key removed.');
       void this.refresh();

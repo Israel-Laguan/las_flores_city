@@ -64,10 +64,8 @@ export class MessagesApp {
   }
 
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
-    return token
-      ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
-      : { 'Content-Type': 'application/json' };
+    // Auth is handled by HttpOnly cookie (credentials:'same-origin' on fetch).
+    return { 'Content-Type': 'application/json' };
   }
 
   private async init(): Promise<void> {

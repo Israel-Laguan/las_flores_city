@@ -3,22 +3,7 @@
 import { eventBus } from './EventBus';
 import type { BankLedgerResponse } from '../../../shared/src/types/bank';
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
-
-let authToken: string | null = localStorage.getItem('auth_token');
-
-export function setAuthToken(token: string | null) {
-  authToken = token;
-  if (token) {
-    localStorage.setItem('auth_token', token);
-  } else {
-    localStorage.removeItem('auth_token');
-  }
-}
-
-export function getAuthToken(): string | null {
-  return authToken;
-}
+const API_BASE = '/api';
 
 /**
  * Decide whether a failed fetch should be intercepted into the diegetic
@@ -39,10 +24,6 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
     'Content-Type': 'application/json',
   };
 
-  if (authToken) {
-    headers['Authorization'] = `Bearer ${authToken}`;
-  }
-
   const attempt = async (): Promise<T> => {
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
@@ -50,6 +31,7 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
         ...headers,
         ...options?.headers,
       },
+      credentials: 'same-origin',
     });
 
     if (!response.ok) {
@@ -99,9 +81,7 @@ export async function devLogin(userId?: string): Promise<any> {
     method: 'POST',
     body: JSON.stringify({ userId }),
   });
-  if (result.success && result.data?.token) {
-    setAuthToken(result.data.token);
-  }
+  // No setAuthToken — cookie is set by the server's Set-Cookie header.
   return result;
 }
 
@@ -110,9 +90,7 @@ export async function login(email: string, password: string): Promise<any> {
     method: 'POST',
     body: JSON.stringify({ email, password }),
   });
-  if (result.success && result.data?.token) {
-    setAuthToken(result.data.token);
-  }
+  // No setAuthToken — cookie is set by the server's Set-Cookie header.
   return result;
 }
 
@@ -121,9 +99,7 @@ export async function register(email: string, username: string, password: string
     method: 'POST',
     body: JSON.stringify({ email, username, password, display_name: displayName }),
   });
-  if (result.success && result.data?.token) {
-    setAuthToken(result.data.token);
-  }
+  // No setAuthToken — cookie is set by the server's Set-Cookie header.
   return result;
 }
 

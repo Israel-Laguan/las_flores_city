@@ -46,15 +46,8 @@ const game = new Phaser.Game(config);
 
 // Initialize components
 async function initApp() {
-  // Auto-login for development
+  // Try loading player state first. If 401 (no session cookie), dev-login then retry.
   try {
-    const token = api.getAuthToken();
-    if (!token) {
-      console.log('No auth token found, attempting dev login...');
-      await api.devLogin();
-    }
-
-    // Load initial player state (flat interface)
     const state = await api.getPlayerState();
     if (state.success) {
       console.log('Player state loaded:', state.data);
@@ -68,8 +61,27 @@ async function initApp() {
         }
       }
     }
-  } catch (error) {
-    console.error('Failed to initialize app:', error);
+  } catch (error: any) {
+    const isUnauthorized = error?.message?.includes('401');
+    if (isUnauthorized) {
+      console.log('No session cookie found, attempting dev login...');
+      await api.devLogin();
+      // Retry state load after dev-login sets the cookie
+      const state = await api.getPlayerState();
+      if (state.success) {
+        console.log('Player state loaded after dev login:', state.data);
+        eventBus.emit('player:state-loaded', state.data);
+
+        if (state.data.locationId) {
+          const location = await api.getLocation(state.data.locationId);
+          if (location.success) {
+            eventBus.emit('location:loaded', location.data);
+          }
+        }
+      }
+    } else {
+      console.error('Failed to initialize app:', error);
+    }
   }
 }
 

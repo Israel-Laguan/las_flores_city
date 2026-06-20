@@ -73,8 +73,6 @@ export function applyTheme(shopItemId: string | null): void {
 /** Fetch the player's equipped theme on boot and apply it. */
 async function syncEquippedThemeFromProfile(): Promise<void> {
   try {
-    const token = api.getAuthToken();
-    if (!token) return;
     const state = await api.getPlayerState();
     if (!state.success || !state.data?.userId) return;
     const profile = await api.getMyMeProfile(state.data.userId);

@@ -8,8 +8,6 @@ import { IdentityApp } from '../ui/apps/IdentityApp';
 import { MyMeApp } from '../ui/apps/MyMeApp';
 import { BancoApp } from '../ui/apps/BancoApp';
 import { BancoFlashController } from '../ui/apps/BancoFlashController';
-import * as api from '../utils/api';
-
 export class PhoneOverlay {
   private viewport: HTMLElement;
   private navBar: HTMLElement;
@@ -40,9 +38,10 @@ export class PhoneOverlay {
     this.createNavBar();
     this.setupEventListeners();
 
+    // Auth is managed by HttpOnly cookie; devLogin() runs before any user interaction,
+    // so the overlay is always interactive by the time the player sees it.
     const overlay = document.getElementById('phone-overlay');
-    const hasAuthToken = Boolean(localStorage.getItem('auth_token') || localStorage.getItem('jwt'));
-    if (overlay) overlay.style.pointerEvents = hasAuthToken ? 'all' : 'none';
+    if (overlay) overlay.style.pointerEvents = 'all';
 
     // Mount default app
     this.switchApp('feed');

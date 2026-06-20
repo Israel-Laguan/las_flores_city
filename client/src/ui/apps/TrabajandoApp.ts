@@ -14,9 +14,8 @@ export class TrabajandoApp {
     this.container.innerHTML = `<div class="loading-spinner">Querying local gig contracts...</div>`;
 
     try {
-        const token = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
       const response = await fetch('/api/gigs', {
-        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'same-origin',
       });
       if (!response.ok) throw new Error('Network response failed');
       const gigs: Gig[] = await response.json();
@@ -88,10 +87,10 @@ export class TrabajandoApp {
     overlay.style.display = 'flex';
 
     try {
-        const token = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
       const response = await fetch('/api/gigs/execute', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ gigId: gig.id }),
       });
 
