@@ -371,6 +371,21 @@ export class PlayerStateRepository {
   }
 
   /**
+   * Set alignment on player_states (loyalist | fugitive | neutral).
+   */
+  static async setAlignment(
+    client: pg.PoolClient,
+    userId: string,
+    alignment: string
+  ): Promise<void> {
+    await client.query(
+      `UPDATE player_states SET alignment = $1, updated_at = NOW()
+       WHERE user_id = $2`,
+      [alignment, userId]
+    );
+  }
+
+  /**
    * Merge boolean flags into the player_states flags JSONB bag.
    */
   static async mergeFlags(

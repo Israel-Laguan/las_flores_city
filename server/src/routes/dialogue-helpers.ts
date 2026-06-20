@@ -4,6 +4,7 @@ import {
   processBreakthroughSolve,
   type BreakthroughResult,
 } from './dialogue-breakthrough-helpers.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { DialogueChoice } from '@las-flores/shared';
 
 export async function getSpeaker(speakerId: string) {
@@ -46,14 +47,7 @@ export async function resolveDialogueTree(characterId: string, sceneId: string) 
 export async function filterChoices(choices: any[], userId: string) {
   if (!choices || choices.length === 0) return [];
 
-  const playerResult = await queryOLTP(
-    `SELECT credits, flags FROM users u
-     LEFT JOIN player_states ps ON u.id = ps.user_id
-     WHERE u.id = $1`,
-    [userId]
-  );
-
-  const player = playerResult.rows[0];
+  const player = await PlayerStateRepository.getForChoiceFilter(userId);
   if (!player) return choices;
 
   const flags = player.flags || {};
@@ -85,26 +79,10 @@ export async function processTimeBlockCost(
   amount: number
 ): Promise<{ success: boolean; error?: string; spent?: number }> {
   const tbResult = await withOLTPTransaction(async (client) => {
-    const lockResult = await client.query(
-      'SELECT time_blocks FROM users WHERE id = $1 FOR UPDATE',
-      [userId]
-    );
-
-    if (lockResult.rows.length === 0) {
-      throw new Error('Player not found');
-    }
-
-    const currentTB = lockResult.rows[0].time_blocks;
-
-    if (currentTB < amount) {
+    const result = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
+    if (!result.success) {
       return { success: false as const, error: 'insufficient_blocks' as const };
     }
-
-    await client.query(
-      'UPDATE users SET time_blocks = time_blocks - $1 WHERE id = $2',
-      [amount, userId]
-    );
-
     return { success: true as const, spent: amount };
   });
 
@@ -138,21 +116,17 @@ export async function recordChoiceAndEffects(
   nextNode: any
 ): Promise<void> {
   if (isEnd) {
-    // Also clear simulation flags so the player
+    // Clear dialogue cursor + simulation flags so the player
     // returns to the live world after finishing an archive case.
-    await client.query(
-      `UPDATE users
-          SET current_node_id = NULL,
-              active_dialogue_id = NULL,
-              is_in_simulation = FALSE,
-              simulation_mystery_id = NULL
-        WHERE id = $1`,
-      [userId]
-    );
+    await PlayerStateRepository.clearDialogueAndSimulation(client, userId);
   } else {
-    await client.query(
-      'UPDATE users SET current_node_id = $1 WHERE id = $2',
-      [nextNodeId, userId]
+    // Advance the dialogue cursor; preserve active_dialogue_id.
+    const cursor = await PlayerStateRepository.getDialogueCursor(userId);
+    await PlayerStateRepository.setDialogueCursor(
+      client,
+      userId,
+      nextNodeId,
+      cursor?.active_dialogue_id ?? dialogueId
     );
   }
 
@@ -170,19 +144,19 @@ export async function recordChoiceAndEffects(
     ]
   );
 
-  if (nextNode.effects?.flag_set) {
-    await client.query(
-      'UPDATE player_states SET flags = flags || $1 WHERE user_id = $2',
-      [JSON.stringify(nextNode.effects.flag_set), userId]
-    );
+  // Apply EffectsSchema-validated effects to player_states.
+  // No gating logic here — story progression is a deferred feature.
+  const effects = nextNode.effects;
+  if (effects?.flag_set) {
+    await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
+  }
+  if (effects?.story_beat) {
+    await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
   }
 }
 
 export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string) {
-  await client.query(
-    'UPDATE users SET current_node_id = $1, active_dialogue_id = $2 WHERE id = $3',
-    [rootNodeId, dialogueId, userId]
-  );
+  await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogueId);
 
   await client.query(
     `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made)
@@ -205,33 +179,29 @@ export async function getDialogState(userId: string, dialogueId: string) {
     return { error: 'not_found' as const };
   }
 
-  const userResult = await queryOLTP<{
-    current_node_id: string | null;
-    time_blocks: number;
-    is_in_simulation: boolean;
-    simulation_mystery_id: string | null;
-  }>(
-    `SELECT current_node_id, time_blocks, is_in_simulation, simulation_mystery_id
-       FROM users WHERE id = $1`,
-    [userId]
-  );
+  const cursor = await PlayerStateRepository.getDialogueCursor(userId);
 
-  if (userResult.rows.length === 0) {
+  if (!cursor) {
     return { error: 'player_not_found' as const };
   }
 
-  const user = userResult.rows[0];
+  const {
+    current_node_id,
+    time_blocks: _time_blocks,
+    is_in_simulation,
+    simulation_mystery_id,
+  } = cursor;
 
   // Branch to the archive resolver when the player is in
   // simulation mode. The archive resolver force-merges ALL overlays
   // for the mystery regardless of ARCHIVED status, so legacy play
   // gets the full investigation tree.
   let resolved;
-  if (user.is_in_simulation && user.simulation_mystery_id) {
+  if (is_in_simulation && simulation_mystery_id) {
     const isNsfwUnlocked = await DialogueResolver.getUserNsfwStatus(userId);
     resolved = await DialogueResolver.resolveTreeForArchive(
       dialogueId,
-      user.simulation_mystery_id,
+      simulation_mystery_id,
       isNsfwUnlocked
     );
   } else {
@@ -240,7 +210,7 @@ export async function getDialogState(userId: string, dialogueId: string) {
     resolved = await DialogueResolver.resolveTreeForUser(userId, dialogueId);
   }
 
-  const currentNodeId = user.current_node_id || resolved.rootId;
+  const currentNodeId = current_node_id || resolved.rootId;
   const currentNode = resolved.nodes[currentNodeId];
 
   if (!currentNode) {
@@ -303,10 +273,7 @@ async function processAlignmentChange(
   userId: string,
   alignment: 'loyalist' | 'fugitive'
 ): Promise<void> {
-  await client.query(
-    `UPDATE users SET alignment = $1 WHERE id = $2`,
-    [alignment, userId]
-  );
+  await PlayerStateRepository.setAlignment(client, userId, alignment);
 }
 
 async function processRelationshipAndCheckEnd(

@@ -15,6 +15,7 @@ import { withOLTPTransaction, queryOLTP, queryOLAP } from '../database/connectio
 import { deleteCache, invalidatePattern } from '../database/redis.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { userStateCacheKey } from './player-helpers.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 export const dialogueRouter = express.Router();
 
@@ -207,7 +208,7 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
     const isEnd = nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
     const nextChoices = isEnd ? [] : await filterChoices(nextNode.choices || [], userId);
 
-    const newTbResult = await queryOLTP('SELECT time_blocks FROM users WHERE id = $1', [userId]);
+    const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
 
     res.json(buildChooseResponse(
       id,
@@ -217,7 +218,7 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
       nextChoices,
       isEnd,
       result.timeBlocksSpent || 0,
-      newTbResult.rows[0]?.time_blocks,
+      tbCursor?.time_blocks ?? 0,
       result.unlockedVaultItem,
       result.mysterySolveStatus,
       result.alignmentChange
@@ -238,16 +239,13 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
 
-    const userResult = await queryOLTP(
-      'SELECT active_dialogue_id, current_node_id FROM users WHERE id = $1',
-      [userId]
-    );
+    const cursor = await PlayerStateRepository.getDialogueCursor(userId);
 
-    if (!userResult.rows[0]?.active_dialogue_id || !userResult.rows[0]?.current_node_id) {
+    if (!cursor?.active_dialogue_id || !cursor?.current_node_id) {
       return res.json({ success: true, data: null, timestamp: new Date().toISOString() });
     }
 
-    const { active_dialogue_id, current_node_id } = userResult.rows[0];
+    const { active_dialogue_id, current_node_id } = cursor;
 
     const dialogueResult = await queryOLTP(
       'SELECT id, name, description, start_node_id, metadata FROM dialogue_trees WHERE id = $1',
@@ -300,17 +298,11 @@ dialogueRouter.post('/end', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
 
-    // Also clear simulation flags so an explicit /end
+    // Clear dialogue cursor + simulation flags so an explicit /end
     // returns the player to the live world even mid-simulation.
-    await queryOLTP(
-      `UPDATE users
-          SET current_node_id = NULL,
-              active_dialogue_id = NULL,
-              is_in_simulation = FALSE,
-              simulation_mystery_id = NULL
-        WHERE id = $1`,
-      [userId]
-    );
+    await withOLTPTransaction(async (client) => {
+      await PlayerStateRepository.clearDialogueAndSimulation(client, userId);
+    });
 
     res.json({
       success: true,
