@@ -6,13 +6,13 @@ import {
   userStateCacheKey,
   assemblePlayerState,
   validateUpdateField,
-  buildUpdateQuery,
   performMoveTransaction,
   emitMoveAnalytics,
   performSleepTransaction,
   emitSleepAnalytics,
 } from './player-helpers.js';
 import { assembleScenePayload } from './location.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 export const playerRouter = express.Router();
 
@@ -70,14 +70,19 @@ playerRouter.post('/update', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(400).json({ success: false, error: gcValidation.error, timestamp: new Date().toISOString() });
     }
 
-    const { sql: updates, values } = buildUpdateQuery({ time_blocks, credits, gold_credits, current_location_id, current_node_id });
+    // Build the partial-update object (only include defined fields)
+    const patch: Record<string, any> = {};
+    if (time_blocks !== undefined) patch.time_blocks = time_blocks;
+    if (credits !== undefined) patch.credits = credits;
+    if (gold_credits !== undefined) patch.gold_credits = gold_credits;
+    if (current_location_id !== undefined) patch.current_location_id = current_location_id;
+    if (current_node_id !== undefined) patch.current_node_id = current_node_id;
 
-    if (updates.length === 0) {
+    if (Object.keys(patch).length === 0) {
       return res.status(400).json({ success: false, error: 'No updates provided', timestamp: new Date().toISOString() });
     }
 
-    values.push(userId);
-    await queryOLTP(`UPDATE users SET ${updates} WHERE id = $${values.length}`, values);
+    await PlayerStateRepository.partialUpdate(userId, patch);
 
     await deleteCache(userStateCacheKey(userId));
 
@@ -211,19 +216,25 @@ playerRouter.post('/sleep', authMiddleware, async (req: AuthRequest, res) => {
 async function checkSleepLocation(
   userId: string
 ): Promise<{ status: number; body: Record<string, unknown> } | null> {
-  const locationCheck = await queryOLTP(
-    `SELECT u.current_location_id, s.metadata
-     FROM users u
-     LEFT JOIN scenes s ON s.id = u.current_location_id
-     WHERE u.id = $1`,
-    [userId]
-  );
+  const locationRow = await PlayerStateRepository.getCurrentLocation(userId);
 
-  if (locationCheck.rows.length === 0) {
+  if (!locationRow) {
     return { status: 404, body: { success: false, error: 'Player not found' } };
   }
 
-  const sceneMetadata = locationCheck.rows[0].metadata as Record<string, any> | null;
+  if (!locationRow.current_location_id) {
+    return {
+      status: 403,
+      body: { success: false, error: 'You cannot sleep here. Return to your apartment.' },
+    };
+  }
+
+  const sceneResult = await queryOLTP(
+    'SELECT metadata FROM scenes WHERE id = $1',
+    [locationRow.current_location_id]
+  );
+
+  const sceneMetadata = sceneResult.rows[0]?.metadata as Record<string, any> | null;
   if (!sceneMetadata?.is_sleep_location) {
     return {
       status: 403,
@@ -248,36 +259,17 @@ playerRouter.post('/spend-time-blocks', authMiddleware, async (req: AuthRequest,
     }
 
     const result = await withOLTPTransaction(async (client) => {
-      const lockResult = await client.query(
-        'SELECT time_blocks FROM users WHERE id = $1 FOR UPDATE',
-        [userId]
-      );
+      const tbResult = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
 
-      if (lockResult.rows.length === 0) {
-        throw new Error('Player not found');
-      }
-
-      const currentTB = lockResult.rows[0].time_blocks;
-
-      if (currentTB < amount) {
+      if (!tbResult.success) {
         return { success: false, error: 'insufficient_blocks' };
       }
-
-      await client.query(
-        'UPDATE users SET time_blocks = time_blocks - $1 WHERE id = $2',
-        [amount, userId]
-      );
-
-      const newResult = await client.query(
-        'SELECT time_blocks FROM users WHERE id = $1',
-        [userId]
-      );
 
       return {
         success: true,
         spent: amount,
         description,
-        remaining: newResult.rows[0].time_blocks,
+        remaining: tbResult.remaining,
       };
     });
 
@@ -307,10 +299,9 @@ playerRouter.post('/set-flag', authMiddleware, async (req: AuthRequest, res) => 
       return res.status(400).json({ success: false, error: 'key is required', timestamp: new Date().toISOString() });
     }
 
-    await queryOLTP(
-      'UPDATE player_states SET flags = flags || $1 WHERE user_id = $2',
-      [JSON.stringify({ [key]: value }), userId]
-    );
+    await withOLTPTransaction(async (client) => {
+      await PlayerStateRepository.mergeFlags(client, userId, { [key]: value });
+    });
 
     res.json({ success: true, data: { key, value }, timestamp: new Date().toISOString() });
   } catch (error: any) {
