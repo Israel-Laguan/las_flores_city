@@ -62,7 +62,9 @@ async function initApp() {
       }
     }
   } catch (error: any) {
-    const isUnauthorized = error?.message?.includes('401');
+    // fetchAPI attaches `status` to the thrown error (api.ts:43), so reading it
+    // directly is more robust than substring-matching the message text.
+    const isUnauthorized = error?.status === 401;
     if (isUnauthorized) {
       console.log('No session cookie found, attempting dev login...');
       await api.devLogin();

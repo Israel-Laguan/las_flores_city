@@ -1,49 +1,94 @@
-import { test, expect } from '@playwright/test';
+/**
+ * API Contract E2E — Cookie Authentication (Task 6.5 migration)
+ *
+ * This is a pure-API contract suite: it verifies the server's endpoint shapes
+ * directly against :3000, with no browser/page. It was migrated from the
+ * legacy Bearer-token pattern (`Authorization: Bearer <token>`) to cookie auth
+ * so that our primary contract test exercises the production auth pathway
+ * (HttpOnly `jwt_session` cookie) rather than a dev fallback.
+ *
+ * Mechanism: a browserless `playwright.request.newContext()` performs login,
+ * captures the resulting `Set-Cookie` via `storageState()`, and seeds a second
+ * long-lived context with it. Every subsequent request then carries the cookie
+ * automatically — exactly how a real API client behaves. See Task 6.5 spec
+ * §E2E migration.
+ *
+ * NOTE on origin scoping: unlike the browser-flow specs (which route through
+ * the Vite /api proxy on :5173 so the cookie is scoped to the page's origin),
+ * this suite talks to :3000 directly. That is intentional — we are testing the
+ * raw server contract, so the cookie is correctly scoped to :3000 here.
+ */
+import { test, expect, APIRequestContext } from '@playwright/test';
 
 const API_BASE = process.env.API_URL || 'http://localhost:3000';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const TEST_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004';
-const TEST_EMAIL = `e2e-${Date.now()}@example.com`;
-let authToken = '';
+const TEST_EMAIL = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
+const TEST_USERNAME = `e2e_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
-test.beforeAll(async ({ request }) => {
-  const response = await request.post(`${API_BASE}/auth/register`, {
+// Long-lived authenticated context, seeded in beforeAll. Every test reuses it
+// so the HttpOnly cookie rides along on each request with no per-test setup.
+let apiContext: APIRequestContext;
+
+test.beforeAll(async ({ playwright }) => {
+  // 1. Register the user via a throwaway context. We don't reuse this context's
+  //    cookie — we login separately below to mirror the canonical browser flow.
+  const regContext = await playwright.request.newContext({ baseURL: API_BASE });
+  const regRes = await regContext.post('/auth/register', {
     data: {
       email: TEST_EMAIL,
-      username: `e2e_${Date.now()}`,
+      username: TEST_USERNAME,
       display_name: 'E2E Player',
       password: 'password123',
     },
   });
+  expect(regRes.ok()).toBeTruthy();
+  await regContext.dispose();
 
-  expect(response.ok()).toBeTruthy();
-  const data = await response.json();
-  authToken = data.data.token;
+  // 2. Login in a fresh context — Playwright captures the Set-Cookie header
+  //    into this context's cookie jar automatically.
+  const loginContext = await playwright.request.newContext({ baseURL: API_BASE });
+  const loginRes = await loginContext.post('/auth/login', {
+    data: { email: TEST_EMAIL, password: 'password123' },
+  });
+  expect(loginRes.ok()).toBeTruthy();
+
+  // 3. Export the authenticated storage state (cookies) and seed the final
+  //    context with it. This is the context every test will use.
+  const storageState = await loginContext.storageState();
+  apiContext = await playwright.request.newContext({
+    baseURL: API_BASE,
+    storageState,
+  });
+  await loginContext.dispose();
 });
 
-function authHeaders() {
-  return { Authorization: `Bearer ${authToken}` };
-}
+test.afterAll(async () => {
+  await apiContext?.dispose();
+});
 
 test.describe('API Contract E2E', () => {
-  test('GET /health returns valid response', async ({ request }) => {
-    const response = await request.get(`${API_BASE}/health`);
+  test('GET /health returns valid response', async () => {
+    const response = await apiContext.get('/health');
     expect(response.ok()).toBeTruthy();
-    
+
     const data = await response.json();
     expect(data.success).toBe(true);
     expect(data.data.status).toBe('healthy');
     expect(data.data.service).toBe('las-flores-server');
   });
 
-  test('GET /player/state returns valid player state', async ({ request }) => {
-    const response = await request.get(`${API_BASE}/player/state`, {
-      headers: authHeaders(),
-    });
+  test('GET /player/state returns valid player state under cookie auth', async () => {
+    // No Authorization header — the cookie carries auth, proving the contract
+    // works under the production pathway.
+    const response = await apiContext.get('/player/state');
     expect(response.ok()).toBeTruthy();
-    
+
     const data = await response.json();
     expect(data.success).toBe(true);
+    // Contract invariant: the response must NOT leak a raw token now that auth
+    // is cookie-based. See Task 6.5 spec invariant 1.
+    expect(data.data.token).toBeUndefined();
     expect(data.data.userId).toBeTruthy();
     expect(data.data.username).toBeTruthy();
     expect(data.data.timeBlocks).toBeDefined();
@@ -52,12 +97,10 @@ test.describe('API Contract E2E', () => {
     expect(data.data.goldCredits).toBeDefined();
   });
 
-  test('GET /location/welcome_center returns valid scene payload', async ({ request }) => {
-    const response = await request.get(`${API_BASE}/location/${WELCOME_SCENE_ID}`, {
-      headers: authHeaders(),
-    });
+  test('GET /location/welcome_center returns valid scene payload', async () => {
+    const response = await apiContext.get(`/location/${WELCOME_SCENE_ID}`);
     expect(response.ok()).toBeTruthy();
-    
+
     const data = await response.json();
     expect(data.success).toBe(true);
 
@@ -82,13 +125,12 @@ test.describe('API Contract E2E', () => {
     });
   });
 
-  test('POST /dialogue/start returns valid dialogue tree', async ({ request }) => {
-    const response = await request.post(`${API_BASE}/dialogue/start`, {
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+  test('POST /dialogue/start returns valid dialogue tree', async () => {
+    const response = await apiContext.post('/dialogue/start', {
       data: { characterId: TEST_CHARACTER_ID, sceneId: WELCOME_SCENE_ID },
     });
     expect(response.ok()).toBeTruthy();
-    
+
     const data = await response.json();
     expect(data.success).toBe(true);
     expect(data.data.tree).toBeDefined();
