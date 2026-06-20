@@ -17,18 +17,25 @@ export function generateToken(userId: string): string {
 }
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  // 1. Prefer the secure HttpOnly cookie.
+  let token = (req as any).cookies?.jwt_session;
+
+  // 2. Fall back to the Authorization header for tests / curl / transitional clients.
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+  }
+
+  if (!token) {
     return res.status(401).json({
       success: false,
       error: 'No token provided',
       timestamp: new Date().toISOString(),
     });
   }
-  
-  const token = authHeader.split(' ')[1];
-  
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     req.userId = decoded.userId;
@@ -43,20 +50,25 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
 }
 
 export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  let token = (req as any).cookies?.jwt_session;
+
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+  }
+
+  if (!token) {
     return next();
   }
-  
-  const token = authHeader.split(' ')[1];
-  
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     req.userId = decoded.userId;
   } catch (error) {
     // Token invalid, continue without auth
   }
-  
+
   next();
 }

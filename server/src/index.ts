@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { cookieParserMiddleware } from './utils/cookies.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
 import { playerRouter } from './routes/player.js';
@@ -26,8 +27,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// Cookie parser — populates req.cookies from the Cookie header (no cookie-parser dep)
+app.use(cookieParserMiddleware);
+
+// CORS — env-driven allowlist; true = reflect request origin (dev / same-domain prod)
+const corsOrigins = process.env.CLIENT_ORIGIN_URL
+  ? process.env.CLIENT_ORIGIN_URL.split(',').map((s: string) => s.trim())
+  : null;
+app.use(cors({
+  origin: corsOrigins ?? true,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes

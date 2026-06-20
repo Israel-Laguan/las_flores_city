@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { queryOLTP } from '../database/connection.js';
 import { generateToken } from '../middleware/auth.js';
+import { setSessionCookie, clearSessionCookie } from '../utils/cookies.js';
 
 export const authRouter = express.Router();
 
@@ -60,11 +61,13 @@ authRouter.post('/register', async (req, res) => {
     // Generate token
     const token = generateToken(user.id);
 
+    // Set HttpOnly cookie — token no longer exposed in the response body
+    setSessionCookie(res, token);
+
     res.status(201).json({
       success: true,
       data: {
         user,
-        token,
       },
       timestamp: new Date().toISOString(),
     });
@@ -128,6 +131,9 @@ authRouter.post('/login', async (req, res) => {
     // Generate token
     const token = generateToken(user.id);
 
+    // Set HttpOnly cookie — token no longer exposed in the response body
+    setSessionCookie(res, token);
+
     // Remove password_hash from response
     const { password_hash, ...userWithoutPassword } = user;
 
@@ -135,7 +141,6 @@ authRouter.post('/login', async (req, res) => {
       success: true,
       data: {
         user: userWithoutPassword,
-        token,
       },
       timestamp: new Date().toISOString(),
     });
@@ -202,11 +207,13 @@ authRouter.post('/dev-login', async (req, res) => {
 
     const token = generateToken(user.id);
 
+    // Set HttpOnly cookie — token no longer exposed in the response body
+    setSessionCookie(res, token);
+
     res.json({
       success: true,
       data: {
         user,
-        token,
       },
       timestamp: new Date().toISOString(),
     });
@@ -218,4 +225,13 @@ authRouter.post('/dev-login', async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
+});
+
+// POST /auth/logout - Clear session cookie
+authRouter.post('/logout', (_req, res) => {
+  clearSessionCookie(res);
+  res.json({
+    success: true,
+    timestamp: new Date().toISOString(),
+  });
 });
