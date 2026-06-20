@@ -89,6 +89,23 @@ async function positionUserForSolve(userId: string): Promise<void> {
 async function setupTestFixtures(): Promise<string[]> {
   const userIds = generateTestUserIds();
 
+  // Apply migrations needed for mystery status constraint
+  const fs = await import('fs');
+  const path = await import('path');
+  const applyMigration = async (filename: string) => {
+    const sql = fs.readFileSync(
+      path.resolve(process.cwd(), 'src/database/migrations', filename),
+      'utf-8'
+    );
+    try {
+      await queryOLTP(sql);
+    } catch {
+      // Column may already exist
+    }
+  };
+  await applyMigration('017_mystery_state.sql');
+  await applyMigration('021_leaderboards.sql');
+
   await seedDialogueTree();
 
   for (const userId of userIds) {

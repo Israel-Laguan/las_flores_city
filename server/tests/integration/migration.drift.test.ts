@@ -12,6 +12,21 @@ const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
 
+async function applyMigration(filename: string): Promise<void> {
+  const fs = await import('fs');
+  const path = await import('path');
+  const { queryOLTP } = await import('../../src/database/connection.js');
+  const sql = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/database/migrations', filename),
+    'utf-8'
+  );
+  try {
+    await queryOLTP(sql);
+  } catch {
+    // Column may already exist
+  }
+}
+
 describe('Migration drift guard', () => {
   beforeAll(async () => {
     pool = new Pool({
@@ -19,6 +34,10 @@ describe('Migration drift guard', () => {
         process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
       connectionTimeoutMillis: 5000,
     });
+    // Apply migrations needed for vault_items columns
+    await applyMigration('017_mystery_state.sql');
+    await applyMigration('018_vault_system.sql');
+    await applyMigration('026_vault_signed_urls.sql');
   });
 
   afterAll(async () => {

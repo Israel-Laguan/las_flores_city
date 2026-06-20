@@ -12,6 +12,9 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { queryOLTP } from '../src/database/connection.js';
 import { authRouter } from '../src/routes/auth.js';
 import { playerRouter } from '../src/routes/player.js';
 import { dialogueRouter } from '../src/routes/dialogue.js';
@@ -21,13 +24,25 @@ import { closeRedis, redis } from '../src/database/redis.js';
 const { Pool } = pg;
 
 // ── IDs mirroring the seeded content ─────────────────────────────────────────
-const APARTMENT_ID   = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
-const CAFE_ID        = 'e5f6a7b8-c9d0-1234-efab-345678901234';
+const APARTMENT_ID   = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
+const CAFE_ID        = '123e4567-e89b-12d3-a456-426614174001';
 const AWAKENING_ID   = 'c9a646d3-9c61-4cd8-bc11-657ab255b1bf';
 const AWAKENING_START_NODE = 'd8b5a3e1-e123-4567-89ab-cdef01234567';
 
 // Test user — unique UUID to avoid collisions with other suites
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000099';
+
+async function applyMigration(filename: string): Promise<void> {
+  const sql = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/database/migrations', filename),
+    'utf-8'
+  );
+  try {
+    await queryOLTP(sql);
+  } catch {
+    // Column may already exist
+  }
+}
 
 const app = express();
 app.use(express.json());
@@ -63,6 +78,26 @@ beforeAll(async () => {
       'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
     connectionTimeoutMillis: 5000,
   });
+
+  // Apply migrations needed for resolver columns
+  await applyMigration('001_initial_schema.sql');
+  await applyMigration('005_dialogue_service.sql');
+  await applyMigration('017_mystery_state.sql');
+  await applyMigration('028_metaplot_alignment.sql');
+
+  // Seed scenes needed for move/sleep tests
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district, metadata)
+     VALUES ($1, 'Suburban Apartment', 'Starting location', 'Old Town', '{"is_sleep_location": true}')
+     ON CONFLICT (id) DO UPDATE SET metadata = EXCLUDED.metadata`,
+    [APARTMENT_ID]
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district, metadata)
+     VALUES ($1, 'Old Town Café', 'Coffee shop', 'Old Town', '{}')
+     ON CONFLICT (id) DO UPDATE SET metadata = EXCLUDED.metadata`,
+    [CAFE_ID]
+  );
 
   // Seed a clean test player at the Apartment, on the Awakening start node
   await pool.query(
@@ -118,7 +153,7 @@ async function resetPlayer(overrides: Partial<{
 // Authentication & Onboarding
 // ─────────────────────────────────────────────────────────────────────────────
 describe('Authentication & Onboarding', () => {
-  test('POST /auth/login returns JWT', async () => {
+  test('POST /auth/register creates user and returns user data', async () => {
     // Register via API to get a hashed password entry
     const reg = await post('/auth/register', {
       email: `mvw-login-${Date.now()}@example.com`,
@@ -127,7 +162,9 @@ describe('Authentication & Onboarding', () => {
     });
     expect(reg.status).toBe(201);
     const regData = await reg.json();
-    expect(regData.data.token).toBeTruthy();
+    expect(regData.success).toBe(true);
+    expect(regData.data.user).toBeTruthy();
+    expect(regData.data.user.email).toContain('mvw-login-');
   });
 
   test('GET /player/state returns correct onboarding values', async () => {

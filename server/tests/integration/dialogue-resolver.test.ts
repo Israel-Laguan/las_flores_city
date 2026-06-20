@@ -103,6 +103,26 @@ const overlayNodes: Record<string, DialogueNode> = {
 
 describe('DialogueResolver', () => {
   beforeAll(async () => {
+    // Apply schema migrations for columns the resolver needs
+    const fs = await import('fs');
+    const path = await import('path');
+    const { queryOLTP } = await import('../../src/database/connection.js');
+    const applyMigration = async (filename: string) => {
+      const sql = fs.readFileSync(
+        path.resolve(process.cwd(), 'src/database/migrations', filename),
+        'utf-8'
+      );
+      try {
+        await queryOLTP(sql);
+      } catch {
+        // Column may already exist
+      }
+    };
+    await applyMigration('001_initial_schema.sql');
+    await applyMigration('005_dialogue_service.sql');
+    await applyMigration('017_mystery_state.sql');
+    await applyMigration('028_metaplot_alignment.sql');
+
     // Ensure TEST_USER_ID exists in users (api-contract.test.ts
     // deletes it in its afterAll; we need it for FK constraints
     // on player_mysteries).

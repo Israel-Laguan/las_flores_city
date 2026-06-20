@@ -33,6 +33,8 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 
 - Docker proxy processes on a shared host can keep stale `-container-ip` cmdline values. `docker compose restart` is not enough; use `docker compose down && docker compose up -d` or kill the stale proxy and restart the container.
 - If a host port mapping looks wrong, prefer service names in `.env` database URLs, such as `postgres-oltp:5432`, to bypass host proxy state.
+- **Stuck port cleanup**: When containers fail to start due to "address already in use", stale docker-proxy processes may hold ports without responding. Kill them with `pkill -9 docker-proxy` or specific PIDs, then run `docker compose down && docker compose up -d server`.
+- When destroying stale containers, also check for orphaned host Postgres/Redis processes with `ps aux | grep -E 'postgres|redis-server'` and kill them if needed (`sudo pkill -9 -u postgres` / `sudo pkill -9 redis-server`).
 - `server/scripts/probe_leaderboard.ts` is the canonical diagnostic for distinguishing bad connection paths from bad leaderboard data.
 - When a spec says "add column", first verify the table with `\d <table>` or migrations; several columns in this project pre-existed.
 
@@ -41,4 +43,19 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - Content changes: `npm run validate:content`.
 - Server changes: `npm run lint --workspace=server`, `npm run build --workspace=server`, and relevant `npm run test --workspace=server` tests.
 - Client changes: `npm run lint --workspace=client` and `npm run build --workspace=client`.
-- Docker/server changes: rebuild the server container and verify health with `curl http://localhost:3000/health`.
+- Docker/server changes: rebuild the server container and verify health with `curl http://localhost:3000/health`. If ports are stuck, kill stale proxies (`pkill -9 docker-proxy`) and host processes (`sudo pkill -9 -u postgres; sudo pkill -9 redis-server`), then run `./scripts/apply-migrations.sh both` before starting.
+
+## Clean shutdown pattern
+
+To avoid stuck ports on shared hosts, always perform full teardown:
+```bash
+docker compose down            # stops containers but preserves volumes
+docker compose down --volumes  # also removes volumes (fresh DB)
+```
+
+After code changes, rebuild and verify:
+```bash
+docker compose build server && docker compose up -d server
+./scripts/apply-migrations.sh both  # if DB was recreated
+curl http://localhost:3000/health
+```

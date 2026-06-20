@@ -51,6 +51,7 @@ describe('Aftermath Worker', () => {
   beforeAll(async () => {
     await applyMigration('017_mystery_state.sql');
     await applyMigration('018_vault_system.sql');
+    await applyMigration('026_vault_signed_urls.sql');
     await applyMigration('021_leaderboards.sql');
     await applyMigration('027_aftermath.sql');
 

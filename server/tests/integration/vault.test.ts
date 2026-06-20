@@ -58,6 +58,11 @@ beforeAll(async () => {
 
   await applyMigration(oltpPool, '018_vault_system.sql');
   try {
+    await applyMigration(oltpPool, '026_vault_signed_urls.sql');
+  } catch {
+    // Migration may already be applied
+  }
+  try {
     await applyMigration(olapPool, '019_add_vault_event_type.sql');
   } catch {
     // OLAP migration may already be applied with compatible constraint

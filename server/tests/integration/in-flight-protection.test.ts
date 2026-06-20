@@ -87,6 +87,7 @@ describe('In-Flight Conversation Protection', () => {
     await applyMigration('001_initial_schema.sql');
     await applyMigration('005_dialogue_service.sql');
     await applyMigration('017_mystery_state.sql');
+    await applyMigration('028_metaplot_alignment.sql');
 
     // Seed test user.
     await queryOLTP(

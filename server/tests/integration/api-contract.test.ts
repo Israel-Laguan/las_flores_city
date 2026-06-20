@@ -1,6 +1,9 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { queryOLTP, closeConnections } from '../../src/database/connection.js';
 import { commsRouter } from '../../src/routes/comms.js';
 import '../../src/routes/comms-reply.js';
 import { healthRouter } from '../../src/routes/health.js';
@@ -12,6 +15,18 @@ import { vaultRouter } from '../../src/routes/vault.js';
 import { deleteCache, closeRedis } from '../../src/database/redis.js';
 
 const { Pool } = pg;
+
+async function applyMigration(filename: string): Promise<void> {
+  const sql = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/database/migrations', filename),
+    'utf-8'
+  );
+  try {
+    await queryOLTP(sql);
+  } catch {
+    // Migration may already be applied
+  }
+}
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
@@ -44,6 +59,14 @@ beforeAll(async () => {
     connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
     connectionTimeoutMillis: 5000,
   });
+
+  // Apply migrations needed for resolver columns
+  await applyMigration('001_initial_schema.sql');
+  await applyMigration('005_dialogue_service.sql');
+  await applyMigration('017_mystery_state.sql');
+  await applyMigration('028_metaplot_alignment.sql');
+  await applyMigration('018_vault_system.sql');
+  await applyMigration('026_vault_signed_urls.sql');
 
   await pool.query(
     `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id)
