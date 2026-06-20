@@ -6,23 +6,22 @@
  * App routing stability: rapid tab cycling, no double scrollbars
  * Unified client state store: credits + TBs update simultaneously
  */
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
-
-async function getDevToken(page: Page): Promise<string> {
-  const res = await page.request.post(`${API_URL}/auth/dev-login`, {
+/**
+ * Seed the browser's cookie jar with an HttpOnly session cookie by calling
+ * dev-login through the Vite /api proxy (scoped to :5173, the same origin as
+ * the page). HttpOnly cookies are origin-scoped, so the login MUST go through
+ * /api — not directly to :3000 — or the cookie would never reach the page's
+ * in-page fetches. Playwright shares cookies between page.request and page.
+ *
+ * This replaced the old `addInitScript(localStorage.setItem)` pattern, which
+ * cannot set HttpOnly cookies. See Task 6.5 spec §E2E migration.
+ */
+test.beforeEach(async ({ page }) => {
+  await page.request.post('/api/auth/dev-login', {
     data: { userId: '550e8400-e29b-41d4-a716-446655440001' },
   });
-  const body = await res.json();
-  return body.data?.token ?? '';
-}
-
-test.beforeEach(async ({ page }) => {
-  const token = await getDevToken(page);
-  await page.addInitScript((t) => {
-    localStorage.setItem('auth_token', t);
-  }, token);
   await page.goto('/');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
 });

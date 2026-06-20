@@ -8,28 +8,36 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
 const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 
 // ── Shared auth state ─────────────────────────────────────────────────────────
-let authToken = '';
 const testEmail = `mvw-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
 const testUsername = `mvw_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
 test.beforeAll(async ({ request }) => {
-  const res = await request.post(`${API_BASE}/auth/register`, {
+  // Register creates the user. We don't need the cookie from this call to
+  // persist — injectAuth() logs in per-page below to scope the cookie to :5173.
+  const res = await request.post(`${API_URL}/auth/register`, {
     data: { email: testEmail, username: testUsername, display_name: 'MVW E2E', password: 'test1234' },
   });
   expect(res.ok()).toBeTruthy();
-  authToken = (await res.json()).data.token;
 });
 
-/** Inject the auth token into localStorage so the client picks it up automatically */
+/**
+ * Authenticate the page's cookie jar by logging in through the Vite /api proxy
+ * (scoped to :5173, the same origin as the page). HttpOnly cookies are
+ * origin-scoped, so the login MUST go through /api — not directly to :3000 —
+ * or the cookie would never reach the page's in-page fetches. Playwright
+ * shares cookies between page.request and page. This replaced the old
+ * `addInitScript(localStorage.setItem)` pattern, which cannot set HttpOnly
+ * cookies. See Task 6.5 spec §E2E migration.
+ */
 async function injectAuth(page: Page) {
-  await page.addInitScript((token) => {
-    localStorage.setItem('auth_token', token);
-  }, authToken);
+  await page.request.post('/api/auth/login', {
+    data: { email: testEmail, password: 'test1234' },
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -44,16 +52,18 @@ test.describe('Phaser Canvas NPC Click', () => {
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible({ timeout: 10_000 });
 
-    // Navigate to the Café scene via API so there is an NPC to interact with
+    // Navigate to the Café scene via API so there is an NPC to interact with.
+    // The in-page fetch carries the HttpOnly cookie via credentials:'include'.
     await page.evaluate(
-      async ([base, token, cafeId]) => {
-        await fetch(`${base}/player/move`, {
+      async ([cafeId]) => {
+        await fetch('/api/player/move', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ target_location_id: cafeId }),
         });
       },
-      [API_BASE, authToken, CAFE_SCENE_ID]
+      [CAFE_SCENE_ID]
     );
 
     // Allow the scene transition to settle
@@ -100,14 +110,15 @@ test.describe('Typewriter Skip & Choice Selection', () => {
     if (!dialogueActive) {
       // Navigate to Café and trigger NPC click
       await page.evaluate(
-        async ([base, token, cafeId]) => {
-          await fetch(`${base}/player/move`, {
+        async ([cafeId]) => {
+          await fetch('/api/player/move', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ target_location_id: cafeId }),
           });
         },
-        [API_BASE, authToken, CAFE_SCENE_ID]
+        [CAFE_SCENE_ID]
       );
       await page.waitForTimeout(1_500);
 
@@ -146,14 +157,15 @@ test.describe('Typewriter Skip & Choice Selection', () => {
     const dialogueText = page.locator('.dialogue-text, #dialogue-text');
     if (!(await dialogueText.isVisible().catch(() => false))) {
       await page.evaluate(
-        async ([base, token, cafeId]) => {
-          await fetch(`${base}/player/move`, {
+        async ([cafeId]) => {
+          await fetch('/api/player/move', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ target_location_id: cafeId }),
           });
         },
-        [API_BASE, authToken, CAFE_SCENE_ID]
+        [CAFE_SCENE_ID]
       );
       await page.waitForTimeout(2_000);
 
@@ -220,13 +232,13 @@ test.describe('Full First Hour Loop', () => {
     await injectAuth(page);
 
     // 1. Verify starting health
-    const healthRes = await page.request.get(`${API_BASE}/health`);
+    const healthRes = await page.request.get(`${API_URL}/health`);
     expect(healthRes.ok()).toBeTruthy();
 
-    // 2. Move to Café
-    const moveRes = await page.request.post(`${API_BASE}/player/move`, {
+    // 2. Move to Café — go through the /api proxy so the page's HttpOnly
+    // session cookie (scoped to :5173) rides along.
+    const moveRes = await page.request.post('/api/player/move', {
       data: { target_location_id: CAFE_SCENE_ID },
-      headers: { Authorization: `Bearer ${authToken}` },
     });
     expect(moveRes.ok()).toBeTruthy();
     const moveData = await moveRes.json();
@@ -235,24 +247,20 @@ test.describe('Full First Hour Loop', () => {
 
     // 3. Start a dialogue at the Café
     const baristaId = '123e4567-e89b-12d3-a456-426614174000';
-    const startRes = await page.request.post(`${API_BASE}/dialogue/start`, {
+    const startRes = await page.request.post('/api/dialogue/start', {
       data: { characterId: baristaId, sceneId: CAFE_SCENE_ID },
-      headers: { Authorization: `Bearer ${authToken}` },
     });
     // 201 = started fresh, or 404 = no dialogue seeded yet; both are acceptable non-crash states
     expect([200, 201, 404]).toContain(startRes.status());
 
     // 4. Move back to Apartment for sleep
-    const returnRes = await page.request.post(`${API_BASE}/player/move`, {
+    const returnRes = await page.request.post('/api/player/move', {
       data: { target_location_id: 'c3d4e5f6-a7b8-9012-cdef-123456789012' },
-      headers: { Authorization: `Bearer ${authToken}` },
     });
     expect(returnRes.ok()).toBeTruthy();
 
     // 5. Sleep — advances day, resets TB
-    const sleepRes = await page.request.post(`${API_BASE}/player/sleep`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
+    const sleepRes = await page.request.post('/api/player/sleep');
     expect(sleepRes.ok()).toBeTruthy();
     const sleepData = await sleepRes.json();
     expect(sleepData.data.time_blocks).toBe(48);
