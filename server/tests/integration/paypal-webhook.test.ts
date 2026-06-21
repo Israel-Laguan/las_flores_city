@@ -98,7 +98,7 @@ afterAll(async () => {
   } catch {
     // already closed
   }
-  await oltpPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
+  await olapPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
@@ -108,7 +108,7 @@ afterAll(async () => {
 });
 
 async function resetPayPalState() {
-  await oltpPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
+  await olapPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query(
     `UPDATE player_states SET gold_credits = 0 WHERE user_id = $1`,

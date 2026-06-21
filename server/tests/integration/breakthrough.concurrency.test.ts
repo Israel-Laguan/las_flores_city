@@ -71,13 +71,6 @@ async function seedDialogueTree(): Promise<void> {
 
 async function positionUserForSolve(userId: string): Promise<void> {
   await queryOLTP(
-    `UPDATE users
-        SET active_dialogue_id = $1,
-            current_node_id = $2
-      WHERE id = $3`,
-    [TEST_TREE_ID, SOLVE_NODE_ID, userId]
-  );
-  await queryOLTP(
     `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made)
      VALUES ($1, $2, $3, '[]')
      ON CONFLICT (user_id, dialogue_tree_id) DO UPDATE SET

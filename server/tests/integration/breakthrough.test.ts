@@ -136,7 +136,7 @@ async function cleanupFixtures(): Promise<void> {
     `DELETE FROM mysteries WHERE id IN ($1, $2)`,
     [TEST_MYSTERY_ID, TEST_MYSTERY_ARCHIVED_ID]
   );
-  await queryOLTP(
+  await queryOLAP(
     `DELETE FROM player_events
      WHERE event_type = 'mystery_solved'
        AND event_data->>'mysteryId' IN ($1, $2)`,

@@ -272,52 +272,55 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
       }
     }
 
-    // ---- AOT Chunk Compilation ----
-    // Runs after all content is upserted (including overlays, which
-    // upsert after trees per getProcessingOrder). Compiles every
-    // dialogue tree into ≤15-node chunks. Non-fatal: a compiler bug
-    // must not block content shipping.
-    try {
-      console.log('🔄 Compiling dialogue chunks...');
-      const compileResult = await compileAllDialogueTrees();
-      console.log(`   ${compileResult.trees} trees → ${compileResult.chunks} chunks (${compileResult.failed} failed)`);
-      if (compileResult.failed > 0) {
-        result.errors.push(`Chunk compiler: ${compileResult.failed} tree(s) failed to compile`);
-      }
-    } catch (error: any) {
-      console.error('❌ Chunk compilation failed (non-fatal):', error.message);
-      result.errors.push(`Chunk compilation failed: ${error.message}`);
-    }
-
-    // Clear stale dialogue caches (covers dialogue:resolved:*,
-    // dialogue:archive:*, and future dialogue:chunk:* keys).
-    try {
-      await invalidatePattern('dialogue:*');
-      console.log('🗑️  Cleared dialogue caches');
-    } catch (error: any) {
-      console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
-    }
-
-    if (result.filesFailed > 0) {
-      result.success = false;
-    }
-
-    console.log('\n📊 Migration Summary:');
-    console.log(`  ✅ Processed: ${result.filesProcessed}`);
-    console.log(`  ⏭️  Skipped: ${result.filesSkipped}`);
-    console.log(`  ❌ Failed: ${result.filesFailed}`);
-
-    if (result.errors.length > 0) {
-      console.log('\n❌ Errors:');
-      result.errors.forEach(e => console.log(`  - ${e}`));
-    }
-
+    await runPostMigrationTasks(result);
     return result;
   } catch (error: any) {
     result.success = false;
     result.errors.push(`Migration failed: ${error.message}`);
     console.error('❌ Migration failed:', error);
     return result;
+  }
+}
+
+async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
+  console.log('\n📊 Migration Summary:');
+  console.log(`  ✅ Processed: ${result.filesProcessed}`);
+  console.log(`  ⏭️  Skipped: ${result.filesSkipped}`);
+  console.log(`  ❌ Failed: ${result.filesFailed}`);
+
+  if (result.errors.length > 0) {
+    console.log('\n❌ Errors:');
+    result.errors.forEach(e => console.log(`  - ${e}`));
+  }
+
+  // ---- AOT Chunk Compilation ----
+  // Runs after all content is upserted (including overlays, which
+  // upsert after trees per getProcessingOrder). Compiles every
+  // dialogue tree into ≤15-node chunks. Non-fatal: a compiler bug
+  // must not block content shipping.
+  try {
+    console.log('\n🔄 Compiling dialogue chunks...');
+    const compileResult = await compileAllDialogueTrees();
+    console.log(`   ${compileResult.trees} trees → ${compileResult.chunks} chunks (${compileResult.failed} failed)`);
+    if (compileResult.failed > 0) {
+      result.errors.push(`Chunk compiler: ${compileResult.failed} tree(s) failed to compile`);
+    }
+  } catch (error: any) {
+    console.error('❌ Chunk compilation failed (non-fatal):', error.message);
+    result.errors.push(`Chunk compilation failed: ${error.message}`);
+  }
+
+  // Clear stale dialogue caches (covers dialogue:resolved:*,
+  // dialogue:archive:*, and future dialogue:chunk:* keys).
+  try {
+    await invalidatePattern('dialogue:*');
+    console.log('🗑️  Cleared dialogue caches');
+  } catch (error: any) {
+    console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
+  }
+
+if (result.filesFailed > 0) {
+    result.success = false;
   }
 }
 
