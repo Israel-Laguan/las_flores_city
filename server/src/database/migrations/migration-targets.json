@@ -25,7 +25,8 @@
     "026_vault_signed_urls.sql",
     "027_aftermath.sql",
     "028_metaplot_alignment.sql",
-    "029_player_state_decoupling.sql"
+    "029_player_state_decoupling.sql",
+    "030_dialogue_chunks.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",
