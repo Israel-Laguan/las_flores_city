@@ -5,8 +5,10 @@ import crypto from 'crypto';
 import yaml from 'js-yaml';
 import type { ContentType } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
+import { invalidatePattern } from '../database/redis.js';
 import { validateContent } from './validate.js';
 import { processContentFile } from './upsert.js';
+import { compileAllDialogueTrees } from './compiler.js';
 
 const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   character: 'characters',
@@ -268,6 +270,32 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
         result.errors.push(`${path.relative(contentDir, file)}: ${error.message}`);
         console.error(`❌ Failed: ${path.relative(contentDir, file)} - ${error.message}`);
       }
+    }
+
+    // ---- AOT Chunk Compilation ----
+    // Runs after all content is upserted (including overlays, which
+    // upsert after trees per getProcessingOrder). Compiles every
+    // dialogue tree into ≤15-node chunks. Non-fatal: a compiler bug
+    // must not block content shipping.
+    try {
+      console.log('🔄 Compiling dialogue chunks...');
+      const compileResult = await compileAllDialogueTrees();
+      console.log(`   ${compileResult.trees} trees → ${compileResult.chunks} chunks (${compileResult.failed} failed)`);
+      if (compileResult.failed > 0) {
+        result.errors.push(`Chunk compiler: ${compileResult.failed} tree(s) failed to compile`);
+      }
+    } catch (error: any) {
+      console.error('❌ Chunk compilation failed (non-fatal):', error.message);
+      result.errors.push(`Chunk compilation failed: ${error.message}`);
+    }
+
+    // Clear stale dialogue caches (covers dialogue:resolved:*,
+    // dialogue:archive:*, and future dialogue:chunk:* keys).
+    try {
+      await invalidatePattern('dialogue:*');
+      console.log('🗑️  Cleared dialogue caches');
+    } catch (error: any) {
+      console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
     }
 
     if (result.filesFailed > 0) {
