@@ -78,11 +78,6 @@ async function initializeServer() {
     process.exit(1);
   }
 
-  await queryOLTP('ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)');
-  await queryOLTP('ALTER TABLE user_entitlements ADD COLUMN IF NOT EXISTS patreon_id VARCHAR(255)');
-  await queryOLTP('ALTER TABLE user_entitlements ADD COLUMN IF NOT EXISTS patreon_access_token TEXT');
-  await queryOLTP('ALTER TABLE user_entitlements ADD COLUMN IF NOT EXISTS patreon_refresh_token TEXT');
-
   // Start server
   app.listen(PORT, () => {
     console.log(`🎮 Las Flores 2077 Server running on port ${PORT}`);

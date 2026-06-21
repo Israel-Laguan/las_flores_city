@@ -69,22 +69,26 @@ beforeAll(async () => {
   await applyMigration('026_vault_signed_urls.sql');
 
   await pool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id)
-     VALUES ($1, $2, $3, $4, 48, 100, $5)
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
      ON CONFLICT (id) DO UPDATE SET
        email = EXCLUDED.email,
        username = EXCLUDED.username,
        display_name = EXCLUDED.display_name,
+       updated_at = NOW()`,
+    [TEST_USER_ID, 'api-contract-test@example.com', 'api_contract_test', 'API Contract Test']
+  );
+  await pool.query(
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
        time_blocks = 48,
        credits = 100,
-       current_location_id = EXCLUDED.current_location_id,
+       current_location_id = $2,
        updated_at = NOW()`,
-    [TEST_USER_ID, 'api-contract-test@example.com', 'api_contract_test', 'API Contract Test', WELCOME_SCENE_ID]
+    [TEST_USER_ID, WELCOME_SCENE_ID]
   );
   await deleteCache(`user:state:${TEST_USER_ID}`);
-  await pool.query(
-    'ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID REFERENCES dialogue_trees(id)'
-  );
   await pool.query(
     'DELETE FROM player_sms_threads WHERE user_id = $1',
     [TEST_USER_ID]
@@ -105,6 +109,7 @@ afterAll(async () => {
   }
 
   await deleteCache(`user:state:${TEST_USER_ID}`);
+  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);

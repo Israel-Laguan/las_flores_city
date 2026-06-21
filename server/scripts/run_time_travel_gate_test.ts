@@ -56,16 +56,18 @@ async function main() {
   );
 
   await queryOLTP(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id, current_day)
-     VALUES ($1, 'gate-test@lasflores.com', 'gate_test_user', 'Gate Test', 48, 100, $2, 1)
-     ON CONFLICT (id) DO UPDATE SET
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, 'gate-test@lasflores.com', 'gate_test_user', 'Gate Test')
+     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
+    [USER_ID]
+  );
+  await queryOLTP(
+    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, current_location_id, current_node_id, active_dialogue_id, story_beat, flags, alignment)
+     VALUES ($1, 48, 100, 0, 1, $2, NULL, NULL, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
        time_blocks = 48, credits = 100, current_location_id = $2,
        current_node_id = NULL, active_dialogue_id = NULL, current_day = 1`,
     [USER_ID, CAFE_ID]
-  );
-  await queryOLTP(
-    `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
-    [USER_ID]
   );
   await queryOLTP(
     `INSERT INTO public_profiles (user_id, badges) VALUES ($1, '[]'::jsonb)

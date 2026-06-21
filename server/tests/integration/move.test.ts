@@ -33,13 +33,22 @@ beforeAll(async () => {
   });
 
   await pool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, current_location_id)
-     VALUES ($1, $2, $3, $4, 48, $5)
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
      ON CONFLICT (id) DO UPDATE SET
-       time_blocks = 48,
-       current_location_id = $5,
+       email = EXCLUDED.email,
+       username = EXCLUDED.username,
        updated_at = NOW()`,
-    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test', APARTMENT_ID]
+    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test']
+  );
+  await pool.query(
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
+       time_blocks = 48,
+       current_location_id = $2,
+       updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID]
   );
 
   await new Promise<void>((resolve) => {
@@ -51,6 +60,7 @@ afterAll(async () => {
   if (server) {
     await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
   }
+  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.end();
   await closeRedis();
@@ -58,7 +68,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await pool.query(
-    `UPDATE users SET time_blocks = 48, current_location_id = $1 WHERE id = $2`,
+    `UPDATE player_states SET time_blocks = 48, current_location_id = $1 WHERE user_id = $2`,
     [APARTMENT_ID, TEST_USER_ID]
   );
 });
@@ -129,7 +139,7 @@ describe('POST /player/move', () => {
 
   test('returns 403 when player has 0 time blocks', async () => {
     await pool.query(
-      'UPDATE users SET time_blocks = 0 WHERE id = $1',
+      'UPDATE player_states SET time_blocks = 0 WHERE user_id = $1',
       [TEST_USER_ID]
     );
 
@@ -206,7 +216,7 @@ describe('POST /player/move', () => {
 
   test('does not deduct TB when move fails (exhausted)', async () => {
     await pool.query(
-      'UPDATE users SET time_blocks = 0 WHERE id = $1',
+      'UPDATE player_states SET time_blocks = 0 WHERE user_id = $1',
       [TEST_USER_ID]
     );
 
@@ -218,7 +228,7 @@ describe('POST /player/move', () => {
     });
 
     const stateResult = await pool.query(
-      'SELECT time_blocks FROM users WHERE id = $1',
+      'SELECT time_blocks FROM player_states WHERE user_id = $1',
       [TEST_USER_ID]
     );
     expect(stateResult.rows[0].time_blocks).toBe(0);

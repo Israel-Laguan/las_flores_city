@@ -40,25 +40,25 @@ async function seedUsers(): Promise<void> {
     const displayName = `Load Test ${i}`;
 
     await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, password_hash, credits, time_blocks, current_location_id, alignment)
-       VALUES ($1, $2, $3, $4, $5, 100, 48, '550e8400-e29b-41d4-a716-446655440002', 'neutral')
+      `INSERT INTO users (id, email, username, display_name, password_hash)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (id) DO UPDATE SET
          email = EXCLUDED.email,
          username = EXCLUDED.username,
          display_name = EXCLUDED.display_name,
          password_hash = EXCLUDED.password_hash,
-         credits = EXCLUDED.credits,
-         time_blocks = EXCLUDED.time_blocks,
-         current_location_id = EXCLUDED.current_location_id,
-         alignment = EXCLUDED.alignment,
          updated_at = NOW()`,
       [userId, email, username, displayName, passwordHash]
     );
 
     await queryOLTP(
-      `INSERT INTO player_states (user_id, current_location_id)
-       VALUES ($1, '550e8400-e29b-41d4-a716-446655440002')
-       ON CONFLICT (user_id) DO NOTHING`,
+      `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+       VALUES ($1, '550e8400-e29b-41d4-a716-446655440002', 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+       ON CONFLICT (user_id) DO UPDATE SET
+         current_location_id = EXCLUDED.current_location_id,
+         time_blocks = 48,
+         credits = 100,
+         alignment = 'neutral'`,
       [userId]
     );
 

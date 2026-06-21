@@ -35,15 +35,24 @@ beforeAll(async () => {
   });
 
   await pool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id, current_day)
-     VALUES ($1, $2, $3, $4, 48, 100, $5, 1)
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
      ON CONFLICT (id) DO UPDATE SET
+       email = EXCLUDED.email,
+       username = EXCLUDED.username,
+       updated_at = NOW()`,
+    [TEST_USER_ID, 'sleep-test@example.com', 'sleep_test', 'Sleep Test']
+  );
+  await pool.query(
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
        time_blocks = 48,
        credits = 100,
-       current_location_id = $5,
+       current_location_id = $2,
        current_day = 1,
        updated_at = NOW()`,
-    [TEST_USER_ID, 'sleep-test@example.com', 'sleep_test', 'Sleep Test', APARTMENT_ID]
+    [TEST_USER_ID, APARTMENT_ID]
   );
 
   await new Promise<void>((resolve) => {
@@ -56,6 +65,7 @@ afterAll(async () => {
     await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
   }
   await pool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await analyticsPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await pool.end();
@@ -65,7 +75,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await pool.query(
-    `UPDATE users SET time_blocks = 48, credits = 100, current_location_id = $1, current_day = 1, current_node_id = NULL WHERE id = $2`,
+    `UPDATE player_states SET time_blocks = 48, credits = 100, current_location_id = $1, current_day = 1, current_node_id = NULL WHERE user_id = $2`,
     [APARTMENT_ID, TEST_USER_ID]
   );
   await pool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
@@ -103,7 +113,7 @@ describe('POST /player/sleep', () => {
 
   test('returns 403 when not at apartment', async () => {
     await pool.query(
-      'UPDATE users SET current_location_id = $1 WHERE id = $2',
+      'UPDATE player_states SET current_location_id = $1 WHERE user_id = $2',
       [CAFE_ID, TEST_USER_ID]
     );
 
@@ -121,7 +131,7 @@ describe('POST /player/sleep', () => {
 
   test('allows negative credits (overdraft)', async () => {
     await pool.query(
-      'UPDATE users SET credits = 5 WHERE id = $1',
+      'UPDATE player_states SET credits = 5 WHERE user_id = $1',
       [TEST_USER_ID]
     );
 
@@ -162,7 +172,7 @@ describe('POST /player/sleep', () => {
 
   test('clears current_node_id', async () => {
     await pool.query(
-      'UPDATE users SET current_node_id = $1 WHERE id = $2',
+      'UPDATE player_states SET current_node_id = $1 WHERE user_id = $2',
       ['some-node-id', TEST_USER_ID]
     );
 
@@ -173,7 +183,7 @@ describe('POST /player/sleep', () => {
     });
 
     const result = await pool.query(
-      'SELECT current_node_id FROM users WHERE id = $1',
+      'SELECT current_node_id FROM player_states WHERE user_id = $1',
       [TEST_USER_ID]
     );
 

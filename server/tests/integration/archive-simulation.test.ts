@@ -88,9 +88,15 @@ describe('Archive Simulation', () => {
 
     // Seed test user.
     await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, time_blocks)
-       VALUES ($1, 'archive@test.com', 'archive_player', 'Archive Player', 48)
+      `INSERT INTO users (id, email, username, display_name)
+       VALUES ($1, 'archive@test.com', 'archive_player', 'Archive Player')
        ON CONFLICT (id) DO NOTHING`,
+      [TEST_USER_ID]
+    );
+    await queryOLTP(
+      `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+       VALUES ($1, 48, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+       ON CONFLICT (user_id) DO NOTHING`,
       [TEST_USER_ID]
     );
 
@@ -124,9 +130,12 @@ describe('Archive Simulation', () => {
       // Clear simulation state first (FK order matters).
       await queryOLTP(
         `UPDATE users
-            SET is_in_simulation = FALSE, simulation_mystery_id = NULL,
-                current_node_id = NULL, active_dialogue_id = NULL
+            SET is_in_simulation = FALSE, simulation_mystery_id = NULL
           WHERE id = $1`,
+        [TEST_USER_ID]
+      );
+      await queryOLTP(
+        `UPDATE player_states SET current_node_id = NULL, active_dialogue_id = NULL WHERE user_id = $1`,
         [TEST_USER_ID]
       );
       await queryOLTP(
@@ -185,12 +194,17 @@ describe('Archive Simulation', () => {
     await withOLTPTransaction(async (client) => {
       await client.query(
         `UPDATE users
+            SET is_in_simulation = TRUE,
+                simulation_mystery_id = $1
+          WHERE id = $2`,
+        [ARCHIVED_MYSTERY_ID, TEST_USER_ID]
+      );
+      await client.query(
+        `UPDATE player_states
             SET current_node_id = 'root',
-                active_dialogue_id = $1,
-                is_in_simulation = TRUE,
-                simulation_mystery_id = $2
-          WHERE id = $3`,
-        [BASE_TREE_ID, ARCHIVED_MYSTERY_ID, TEST_USER_ID]
+                active_dialogue_id = $1
+          WHERE user_id = $2`,
+        [BASE_TREE_ID, TEST_USER_ID]
       );
       await client.query(
         `INSERT INTO player_dialogue_states (user_id, dialogue_tree_id, current_node_id, choices_made)
@@ -215,11 +229,16 @@ describe('Archive Simulation', () => {
     // Simulate reaching an end node (mirrors recordChoiceAndEffects).
     await queryOLTP(
       `UPDATE users
-          SET current_node_id = NULL,
-              active_dialogue_id = NULL,
-              is_in_simulation = FALSE,
+          SET is_in_simulation = FALSE,
               simulation_mystery_id = NULL
         WHERE id = $1`,
+      [TEST_USER_ID]
+    );
+    await queryOLTP(
+      `UPDATE player_states
+          SET current_node_id = NULL,
+              active_dialogue_id = NULL
+        WHERE user_id = $1`,
       [TEST_USER_ID]
     );
 
@@ -229,7 +248,10 @@ describe('Archive Simulation', () => {
       simulation_mystery_id: string | null;
       current_node_id: string | null;
     }>(
-      `SELECT is_in_simulation, simulation_mystery_id, current_node_id FROM users WHERE id = $1`,
+      `SELECT u.is_in_simulation, u.simulation_mystery_id, ps.current_node_id
+       FROM users u
+       JOIN player_states ps ON ps.user_id = u.id
+       WHERE u.id = $1`,
       [TEST_USER_ID]
     );
     expect(clearedRows[0].is_in_simulation).toBe(false);

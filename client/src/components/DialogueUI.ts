@@ -107,6 +107,7 @@ export class DialogueUI {
 
   private setupEventListeners() {
     eventBus.on('dialogue:start', async (data: { dialogueId?: string; characterId?: string; sceneId?: string }) => {
+      if (this.state !== DialogueUIState.HIDDEN) return;
       if (data.characterId && data.sceneId) await this.startDialogueWithCharacter(data.characterId, data.sceneId);
       else if (data.dialogueId) await this.startDialogue(data.dialogueId);
     });
@@ -188,6 +189,7 @@ export class DialogueUI {
           this.currentDialogue.currentNode = result.data.next_node;
           this.currentDialogue.availableChoices = [];
           this.renderDialogue();
+          this.container.style.pointerEvents = 'none';
           setTimeout(() => this.slideOut(), 3000);
           return;
         }
@@ -269,7 +271,7 @@ export class DialogueUI {
     if (this.choicesContainer) {
       this.choicesContainer.style.opacity = '0';
       this.choicesContainer.style.transition = 'opacity 0.3s ease';
-      if (this.state === DialogueUIState.SUBMITTING) (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
+      this.choicesContainer.style.pointerEvents = 'none';
     }
     this.startTypewriter(currentNode.text);
     eventBus.emit('dialogue:node_loaded', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
@@ -327,7 +329,10 @@ export class DialogueUI {
     if (this.dialogueTextEl) this.dialogueTextEl.innerHTML = this.fullText;
     this.state = DialogueUIState.AWAITING_CHOICE;
     eventBus.emit('dialogue:typing_finished');
-    if (this.choicesContainer && this.currentDialogue?.availableChoices.length) this.choicesContainer.style.opacity = '1';
+    if (this.choicesContainer && this.currentDialogue?.availableChoices.length) {
+      this.choicesContainer.style.opacity = '1';
+      this.choicesContainer.style.pointerEvents = 'auto';
+    }
   }
 
   private clearTypewriter() {
@@ -365,11 +370,13 @@ export class DialogueUI {
       });
       button.addEventListener('mouseenter', () => {
         if (!(button as HTMLButtonElement).disabled) {
-          Object.assign(button as HTMLElement, { style: { backgroundColor: 'rgba(0, 255, 0, 0.15)', borderColor: 'rgba(0, 255, 0, 0.6)' } });
+          (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.15)';
+          (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.6)';
         }
       });
       button.addEventListener('mouseleave', () => {
-        Object.assign(button as HTMLElement, { style: { backgroundColor: 'rgba(0, 255, 0, 0.05)', borderColor: 'rgba(0, 255, 0, 0.3)' } });
+        (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
+        (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.3)';
       });
     });
   }

@@ -45,10 +45,11 @@ beforeAll(async () => {
   });
 
   // Dedicated UUID (collision-avoidance) — not shared with other integration tests.
+  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, ai_enabled)
-     VALUES ($1, $2, $3, $4, 48, 100, FALSE)
+    `INSERT INTO users (id, email, username, display_name, ai_enabled)
+     VALUES ($1, $2, $3, $4, FALSE)
      ON CONFLICT (id) DO UPDATE SET
        email = EXCLUDED.email,
        username = EXCLUDED.username,
@@ -58,6 +59,12 @@ beforeAll(async () => {
        ai_enabled = FALSE,
        updated_at = NOW()`,
     [TEST_USER_ID, TEST_USER_EMAIL, TEST_USER_USERNAME, 'BYOK Settings Test']
+  );
+  await pool.query(
+    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO NOTHING`,
+    [TEST_USER_ID]
   );
 
   await new Promise<void>((resolve) => {
@@ -69,6 +76,7 @@ afterAll(async () => {
   if (server) {
     await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
   }
+  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.end();
   await closeRedis();

@@ -263,12 +263,12 @@ export class DialogueResolver {
 
   /**
    * Meta-plot finale alignment. Defaults to 'neutral'
-   * for users with no `users` row (shouldn't happen, but mirrors
+   * for users with no player_states row (shouldn't happen, but mirrors
    * the `NOT NULL DEFAULT 'neutral'` constraint on the column).
    */
   public static async getUserAlignment(userId: string): Promise<'neutral' | 'loyalist' | 'fugitive'> {
     const result = await queryOLTP<{ alignment: 'neutral' | 'loyalist' | 'fugitive' }>(
-      `SELECT alignment FROM users WHERE id = $1`,
+      `SELECT alignment FROM player_states WHERE user_id = $1`,
       [userId]
     );
     return result.rows[0]?.alignment ?? 'neutral';

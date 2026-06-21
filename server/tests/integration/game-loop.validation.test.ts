@@ -59,7 +59,7 @@ async function apiFetch(method: 'GET' | 'POST', path: string, body?: object) {
 
 async function resetPlayer(timeBlocks: number, credits: number) {
   await oltpPool.query(
-    'UPDATE users SET time_blocks = $1, credits = $2, updated_at = NOW() WHERE id = $3',
+    'UPDATE player_states SET time_blocks = $1, credits = $2, updated_at = NOW() WHERE user_id = $3',
     [timeBlocks, credits, TEST_USER_ID]
   );
 }
@@ -80,16 +80,19 @@ beforeAll(async () => {
 
   // Seed test user
   await oltpPool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, gold_credits, current_location_id, current_day)
-     VALUES ($1, 'game-loop-test@lasflores.com', 'game_loop_test', 'Game Loop Test', 48, 500, 0, $2, 1)
-     ON CONFLICT (id) DO UPDATE
-       SET time_blocks = 48, credits = 500, gold_credits = 0,
-           current_location_id = $2, updated_at = NOW()`,
-    [TEST_USER_ID, APARTMENT_ID]
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, 'game-loop-test@lasflores.com', 'game_loop_test', 'Game Loop Test')
+     ON CONFLICT (id) DO UPDATE SET
+       email = EXCLUDED.email, username = EXCLUDED.username, updated_at = NOW()`,
+    [TEST_USER_ID]
   );
   await oltpPool.query(
-    'INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING',
-    [TEST_USER_ID]
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 500, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE
+       SET time_blocks = 48, credits = 500, gold_credits = 0,
+           current_location_id = $2, current_day = 1, updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID]
   );
 
   server = await new Promise<ReturnType<typeof app.listen>>(resolve => {
@@ -131,7 +134,7 @@ describe(' GET /bank/ledger matches database state', () => {
     expect(Array.isArray(body.data.transactions)).toBe(true);
 
     const dbRow = await oltpPool.query(
-      'SELECT credits FROM users WHERE id = $1', [TEST_USER_ID]
+      'SELECT credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]
     );
     expect(body.data.credits).toBe(dbRow.rows[0].credits);
   });
@@ -143,7 +146,7 @@ describe(' PostgreSQL CHECK constraint rejects negative gold_credits', () => {
   test('UPDATE below 0 throws error code 23514', async () => {
     await expect(
       oltpPool.query(
-        'UPDATE users SET gold_credits = -1 WHERE id = $1', [TEST_USER_ID]
+        'UPDATE player_states SET gold_credits = -1 WHERE user_id = $1', [TEST_USER_ID]
       )
     ).rejects.toMatchObject({ code: '23514' });
   });
@@ -163,7 +166,7 @@ describe(' POST /gigs/execute happy path is atomic', () => {
     expect(body.newTimeBlocks).toBe(32); // 48 - 16
 
     const row = await oltpPool.query(
-      'SELECT time_blocks, credits FROM users WHERE id = $1', [TEST_USER_ID]
+      'SELECT time_blocks, credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]
     );
     expect(row.rows[0].time_blocks).toBe(32);
     expect(row.rows[0].credits).toBe(150); // 100 + 50 payout
@@ -188,7 +191,7 @@ describe(' POST /gigs/execute with insufficient TBs rolls back atomically', () =
     expect(body.error).toBe('INSUFFICIENT_TIME_BLOCKS');
 
     const row = await oltpPool.query(
-      'SELECT time_blocks, credits FROM users WHERE id = $1', [TEST_USER_ID]
+      'SELECT time_blocks, credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]
     );
     expect(row.rows[0].time_blocks).toBe(5);
     expect(row.rows[0].credits).toBe(100);

@@ -105,9 +105,15 @@ describe('Aftermath Worker', () => {
 
     // Seed a player (needed for leaderboard flow, though no-solvers path also works).
     await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, time_blocks)
-       VALUES ($1, 'aftermath@test.com', 'aftermath_player', 'Aftermath Player', 48)
+      `INSERT INTO users (id, email, username, display_name)
+       VALUES ($1, 'aftermath@test.com', 'aftermath_player', 'Aftermath Player')
        ON CONFLICT (id) DO NOTHING`,
+      [PLAYER_ID]
+    );
+    await queryOLTP(
+      `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+       VALUES ($1, 48, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+       ON CONFLICT (user_id) DO NOTHING`,
       [PLAYER_ID]
     );
   });
@@ -118,6 +124,7 @@ describe('Aftermath Worker', () => {
       await queryOLTP(`DELETE FROM characters WHERE id = $1`, [CHARACTER_ID]);
       await queryOLTP(`DELETE FROM scenes WHERE id = $1`, [SCENE_ID]);
       await queryOLTP(`DELETE FROM vault_items WHERE id = ANY($1::uuid[])`, [CLUE_VAULT_ITEM_ID, PREMIUM_CG_ITEM_ID]);
+      await queryOLTP(`DELETE FROM player_states WHERE user_id = $1`, [PLAYER_ID]);
       await queryOLTP(`DELETE FROM users WHERE id = $1`, [PLAYER_ID]);
       await queryOLTP(`DELETE FROM leaderboards WHERE mystery_id = $1`, [MYSTERY_ID]);
       await queryOLTP(`DELETE FROM player_mysteries WHERE mystery_id = $1`, [MYSTERY_ID]);

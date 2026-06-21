@@ -91,9 +91,15 @@ describe('In-Flight Conversation Protection', () => {
 
     // Seed test user.
     await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, time_blocks)
-       VALUES ($1, 'inflight@test.com', 'inflight_player', 'InFlight Player', 48)
+      `INSERT INTO users (id, email, username, display_name)
+       VALUES ($1, 'inflight@test.com', 'inflight_player', 'InFlight Player')
        ON CONFLICT (id) DO NOTHING`,
+      [TEST_USER_ID]
+    );
+    await queryOLTP(
+      `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+       VALUES ($1, 48, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+       ON CONFLICT (user_id) DO NOTHING`,
       [TEST_USER_ID]
     );
 
@@ -129,7 +135,7 @@ describe('In-Flight Conversation Protection', () => {
   afterAll(async () => {
     try {
       await queryOLTP(
-        `UPDATE users SET current_node_id = NULL, active_dialogue_id = NULL WHERE id = $1`,
+        `UPDATE player_states SET current_node_id = NULL, active_dialogue_id = NULL WHERE user_id = $1`,
         [TEST_USER_ID]
       );
       await queryOLTP(
@@ -156,8 +162,8 @@ describe('In-Flight Conversation Protection', () => {
     // 1. Start conversation and advance into an overlay-only node.
     await withOLTPTransaction(async (client) => {
       await client.query(
-        `UPDATE users SET current_node_id = 'overlay_mid', active_dialogue_id = $1
-         WHERE id = $2`,
+        `UPDATE player_states SET current_node_id = 'overlay_mid', active_dialogue_id = $1
+         WHERE user_id = $2`,
         [BASE_TREE_ID, TEST_USER_ID]
       );
       await client.query(

@@ -4,13 +4,21 @@
 BEGIN;
 
 -- 4 test users (deterministic UUIDs)
-INSERT INTO users (id, email, username, display_name, time_blocks, credits, gold_credits, current_day)
+INSERT INTO users (id, email, username, display_name)
 VALUES
-  ('11111111-1111-1111-1111-111111111111', 'solver_a@test', 'solver_a', 'Solver A', 0, 0, 0, 1),
-  ('22222222-2222-2222-2222-222222222222', 'solver_b@test', 'solver_b', 'Solver B', 0, 0, 0, 1),
-  ('33333333-3333-3333-3333-333333333333', 'solver_c@test', 'solver_c', 'Solver C', 0, 0, 0, 1),
-  ('44444444-4444-4444-4444-444444444444', 'solver_d@test', 'solver_d', 'Solver D', 0, 0, 0, 1)
+  ('11111111-1111-1111-1111-111111111111', 'solver_a@test', 'solver_a', 'Solver A'),
+  ('22222222-2222-2222-2222-222222222222', 'solver_b@test', 'solver_b', 'Solver B'),
+  ('33333333-3333-3333-3333-333333333333', 'solver_c@test', 'solver_c', 'Solver C'),
+  ('44444444-4444-4444-4444-444444444444', 'solver_d@test', 'solver_d', 'Solver D')
 ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+VALUES
+  ('11111111-1111-1111-1111-111111111111', 0, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral'),
+  ('22222222-2222-2222-2222-222222222222', 0, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral'),
+  ('33333333-3333-3333-3333-333333333333', 0, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral'),
+  ('44444444-4444-4444-4444-444444444444', 0, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+ON CONFLICT (user_id) DO NOTHING;
 
 INSERT INTO public_profiles (user_id, cosmetics, badges, display_settings)
 VALUES

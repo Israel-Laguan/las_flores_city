@@ -101,19 +101,22 @@ beforeAll(async () => {
 
   // Seed a clean test player at the Apartment, on the Awakening start node
   await pool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id, current_node_id, current_day)
-     VALUES ($1, $2, $3, $4, 48, 100, $5, $6, 1)
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
      ON CONFLICT (id) DO UPDATE SET
-       time_blocks = 48, credits = 100,
-       current_location_id = $5, current_node_id = $6,
-       current_day = 1, updated_at = NOW()`,
-    [TEST_USER_ID, 'mvw-test@example.com', 'mvw_test', 'MVW Test', APARTMENT_ID, AWAKENING_START_NODE]
+       email = EXCLUDED.email, username = EXCLUDED.username, updated_at = NOW()`,
+    [TEST_USER_ID, 'mvw-test@example.com', 'mvw_test', 'MVW Test']
   );
 
-  // Ensure player_states row exists
+  // Ensure player_states row exists with starting values
   await pool.query(
-    `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
-    [TEST_USER_ID]
+    `INSERT INTO player_states (user_id, current_location_id, current_node_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, $3, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
+       time_blocks = 48, credits = 100,
+       current_location_id = $2, current_node_id = $3,
+       current_day = 1, updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID, AWAKENING_START_NODE]
   );
 
   server = await new Promise<ReturnType<typeof app.listen>>((resolve) => {
@@ -141,8 +144,8 @@ async function resetPlayer(overrides: Partial<{
   const tb   = overrides.timeBlocks ?? 48;
   const node = 'nodeId' in overrides ? overrides.nodeId! : null;
   await pool.query(
-    `UPDATE users SET time_blocks = $1, current_location_id = $2,
-      current_node_id = $3, active_dialogue_id = NULL WHERE id = $4`,
+    `UPDATE player_states SET time_blocks = $1, current_location_id = $2,
+      current_node_id = $3, active_dialogue_id = NULL WHERE user_id = $4`,
     [tb, loc, node, TEST_USER_ID]
   );
   // Flush cached player state so every route reads fresh DB values
@@ -192,7 +195,7 @@ describe('Dialogue Traversal', () => {
     // Prime the user to be mid-dialogue
     await resetPlayer({ nodeId: AWAKENING_START_NODE });
     await pool.query(
-      `UPDATE users SET active_dialogue_id = $1 WHERE id = $2`,
+      `UPDATE player_states SET active_dialogue_id = $1 WHERE user_id = $2`,
       [AWAKENING_ID, TEST_USER_ID]
     );
     await pool.query(
@@ -217,7 +220,7 @@ describe('Dialogue Traversal', () => {
 
   test('current_node_id is NULL in DB after is_end node', async () => {
     const row = await pool.query(
-      'SELECT current_node_id FROM users WHERE id = $1',
+      'SELECT current_node_id FROM player_states WHERE user_id = $1',
       [TEST_USER_ID]
     );
     expect(row.rows[0].current_node_id).toBeNull();
@@ -265,7 +268,7 @@ describe(' Invalid Dialogue Jumps', () => {
   beforeAll(async () => {
     await resetPlayer({ nodeId: AWAKENING_START_NODE });
     await pool.query(
-      `UPDATE users SET active_dialogue_id = $1 WHERE id = $2`,
+      `UPDATE player_states SET active_dialogue_id = $1 WHERE user_id = $2`,
       [AWAKENING_ID, TEST_USER_ID]
     );
     await pool.query(
@@ -279,7 +282,7 @@ describe(' Invalid Dialogue Jumps', () => {
 
   test('Out-of-bounds choiceIndex returns 400 and does not mutate DB', async () => {
     const nodeIdBefore = (
-      await pool.query('SELECT current_node_id FROM users WHERE id = $1', [TEST_USER_ID])
+      await pool.query('SELECT current_node_id FROM player_states WHERE user_id = $1', [TEST_USER_ID])
     ).rows[0].current_node_id;
 
     const res  = await post(`/dialogue/${AWAKENING_ID}/choose`, { choiceIndex: 999 });
@@ -289,7 +292,7 @@ describe(' Invalid Dialogue Jumps', () => {
     expect(data.success).toBe(false);
 
     const nodeIdAfter = (
-      await pool.query('SELECT current_node_id FROM users WHERE id = $1', [TEST_USER_ID])
+      await pool.query('SELECT current_node_id FROM player_states WHERE user_id = $1', [TEST_USER_ID])
     ).rows[0].current_node_id;
 
     // DB state must be unchanged
@@ -322,7 +325,7 @@ describe(' Exhaustion Lock (49th move blocked)', () => {
     await resetPlayer({ timeBlocks: 0 });
     await post('/player/move', { target_location_id: CAFE_ID });
 
-    const row = await pool.query('SELECT time_blocks FROM users WHERE id = $1', [TEST_USER_ID]);
+    const row = await pool.query('SELECT time_blocks FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(row.rows[0].time_blocks).toBe(0);
   });
 
@@ -360,7 +363,7 @@ describe(' Illegal Sleep Locations', () => {
     await post('/player/sleep', {});
 
     const row = await pool.query(
-      'SELECT current_location_id, time_blocks FROM users WHERE id = $1',
+      'SELECT current_location_id, time_blocks FROM player_states WHERE user_id = $1',
       [TEST_USER_ID]
     );
     expect(row.rows[0].current_location_id).toBe(CAFE_ID);

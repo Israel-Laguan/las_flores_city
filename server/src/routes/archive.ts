@@ -4,6 +4,7 @@ import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { initializeDialogueState, filterChoices, getSpeaker } from './dialogue-helpers.js';
 import { buildDialogueResponse } from './dialogue-response-helpers.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 // ============================================================
 // Archive Room (Legacy Play)
@@ -103,14 +104,12 @@ async function startSimulation(
   //    state so /dialogue/choose can advance the conversation
   //    through the archive resolver.
   await withOLTPTransaction(async (client) => {
-    await client.query(
-      `UPDATE users
-          SET current_node_id = $1,
-              active_dialogue_id = $2,
-              is_in_simulation = TRUE,
-              simulation_mystery_id = $3
-        WHERE id = $4`,
-      [rootNodeId, baseTreeId, mysteryId, userId]
+    await PlayerStateRepository.enterSimulation(
+      client,
+      userId,
+      rootNodeId,
+      baseTreeId,
+      mysteryId
     );
     await initializeDialogueState(client, userId, baseTreeId, rootNodeId);
   });

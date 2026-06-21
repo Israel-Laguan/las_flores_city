@@ -70,12 +70,17 @@ beforeAll(async () => {
 
   // Dedicated test user (auth NOT used — webhook is unauthenticated —
   // but the user must exist for the FK on bank_transactions.user_id
-  // and the UPDATE on users to succeed).
+  // and the UPDATE on player_states to succeed).
   await oltpPool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, gold_credits)
-     VALUES ($1, 'paypal-test@example.com', 'paypal_test', 'PayPal Test', 48, 0, 0)
-     ON CONFLICT (id) DO UPDATE SET
-       time_blocks = 48, credits = 0, gold_credits = 0, updated_at = NOW()`,
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, 'paypal-test@example.com', 'paypal_test', 'PayPal Test')
+     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
+    [TEST_USER_ID]
+  );
+  await oltpPool.query(
+    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, 48, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET gold_credits = 0`,
     [TEST_USER_ID]
   );
 
@@ -95,6 +100,7 @@ afterAll(async () => {
   }
   await oltpPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
+  await oltpPool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await oltpPool.end();
   await olapPool.end();
@@ -105,7 +111,7 @@ async function resetPayPalState() {
   await oltpPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query(
-    `UPDATE users SET gold_credits = 0, updated_at = NOW() WHERE id = $1`,
+    `UPDATE player_states SET gold_credits = 0 WHERE user_id = $1`,
     [TEST_USER_ID]
   );
   await deleteCache(`user:state:${TEST_USER_ID}`);
@@ -151,7 +157,7 @@ describe('PayPal webhook (PAYMENT.CAPTURE.COMPLETED)', () => {
     expect(data.data.gold_credits_granted).toBe(500);
 
     // Verify balance was granted
-    const userRes = await oltpPool.query('SELECT gold_credits FROM users WHERE id = $1', [TEST_USER_ID]);
+    const userRes = await oltpPool.query('SELECT gold_credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(userRes.rows[0].gold_credits).toBe(500);
 
     // Verify bank_transactions row exists with our UUID as reference_id
@@ -194,7 +200,7 @@ describe('PayPal webhook (PAYMENT.CAPTURE.COMPLETED)', () => {
     expect(data.reference_id).toBe(referenceId);
 
     // Balance should still be 10 USD × 100 = 1000 G$ — NOT 2000
-    const userRes = await oltpPool.query('SELECT gold_credits FROM users WHERE id = $1', [TEST_USER_ID]);
+    const userRes = await oltpPool.query('SELECT gold_credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(userRes.rows[0].gold_credits).toBe(1000);
 
     // bank_transactions should still have only ONE paypal_capture row
@@ -224,7 +230,7 @@ describe('PayPal webhook (PAYMENT.CAPTURE.COMPLETED)', () => {
     expect(data.processed).toBe(false);
 
     // No balance change, no bank_transactions row
-    const userRes = await oltpPool.query('SELECT gold_credits FROM users WHERE id = $1', [TEST_USER_ID]);
+    const userRes = await oltpPool.query('SELECT gold_credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(userRes.rows[0].gold_credits).toBe(0);
   });
 
@@ -259,7 +265,7 @@ describe('PayPal webhook (PAYMENT.CAPTURE.COMPLETED)', () => {
     expect(data.received).toBe(true);
     expect(data.processed).toBe(false);
 
-    const userRes = await oltpPool.query('SELECT gold_credits FROM users WHERE id = $1', [TEST_USER_ID]);
+    const userRes = await oltpPool.query('SELECT gold_credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(userRes.rows[0].gold_credits).toBe(0);
   });
 });

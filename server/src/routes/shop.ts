@@ -9,6 +9,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
 import { userStateCacheKey } from './player-helpers.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { recordIapCompletedEvent, recordShopPurchaseEvent } from '../services/MarketplaceEvents.js';
 
 export const shopRouter = express.Router();
@@ -101,25 +102,22 @@ async function buyShopItem(userId: string, shopItemId: string): Promise<ShopPurc
       return { error: 'ALREADY_OWNED' as const };
     }
 
-    const userRes = await client.query(
-      `SELECT credits, gold_credits FROM users WHERE id = $1 FOR UPDATE`,
-      [userId]
+    const currencyCol = item.currency_type === 'gold_credits' ? 'gold_credits' : 'credits';
+    const newBalance = await PlayerStateRepository.chargeCurrency(
+      client,
+      userId,
+      currencyCol,
+      item.price
     );
-    if (userRes.rows.length === 0) {
-      return { error: 'USER_NOT_FOUND' as const };
-    }
-    const balanceCol = item.currency_type === 'gold_credits' ? 'gold_credits' : 'credits';
-    const currentBalance = userRes.rows[0][balanceCol] as number;
-    if (currentBalance < item.price) {
+    if (newBalance === null) {
+      // getBalances returned null (no player_states row) OR insufficient funds.
+      // Distinguish: if the row exists but funds insufficient -> INSUFFICIENT_FUNDS.
+      const balances = await PlayerStateRepository.getBalances(client, userId);
+      if (!balances) {
+        return { error: 'USER_NOT_FOUND' as const };
+      }
       return { error: 'INSUFFICIENT_FUNDS' as const };
     }
-
-    const updateRes = await client.query(
-      `UPDATE users SET ${balanceCol} = ${balanceCol} - $1, updated_at = NOW()
-       WHERE id = $2 RETURNING ${balanceCol}`,
-      [item.price, userId]
-    );
-    const newBalance = updateRes.rows[0][balanceCol] as number;
 
     await client.query(
       `INSERT INTO bank_transactions

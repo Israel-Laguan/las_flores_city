@@ -9,6 +9,7 @@ import {
 } from '../database/connection.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
 import { userStateCacheKey } from './player-helpers.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { performStartThreadTransaction, emitStartThreadAnalytics } from './comms-start-helpers.js';
 import type {
   SMSMessage,
@@ -189,17 +190,9 @@ export async function applyChoiceFilters(
 ): Promise<any[]> {
   if (!rawChoices || rawChoices.length === 0) return [];
 
-  const playerResult = await queryOLTP<{ credits: number; flags: Record<string, boolean> }>(
-    `SELECT u.credits, ps.flags
-     FROM users u
-     LEFT JOIN player_states ps ON u.id = ps.user_id
-     WHERE u.id = $1`,
-    [userId]
-  );
+  const player = await PlayerStateRepository.getForChoiceFilter(userId);
+  if (!player) return rawChoices;
 
-  if (playerResult.rows.length === 0) return rawChoices;
-
-  const player = playerResult.rows[0];
   const credits = player.credits ?? 0;
   const flags = player.flags ?? {};
 

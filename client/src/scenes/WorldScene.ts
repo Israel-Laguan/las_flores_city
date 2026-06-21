@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { eventBus } from '../utils/EventBus';
-import * as api from '../utils/api';
 
 export class WorldScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -66,6 +65,15 @@ export class WorldScene extends Phaser.Scene {
       this.input.enabled = true;
     });
 
+    eventBus.on('player:state-loaded', (data: any) => {
+      if (data.timeBlocks !== undefined) {
+        this.updateTBDisplay(data.timeBlocks);
+      }
+      if (data.credits !== undefined) {
+        this.updateCreditsDisplay(data.credits);
+      }
+    });
+
     window.addEventListener('lf:dialogue-start', (event) => {
       const detail = (event as CustomEvent).detail as { characterId?: string; sceneId?: string; dialogueId?: string };
       if (detail) eventBus.emit('dialogue:start', detail);
@@ -105,30 +113,6 @@ export class WorldScene extends Phaser.Scene {
         console.warn('[audio] SFX synthesis failed:', err);
       }
     });
-
-    // Load initial state
-    this.loadInitialState();
-  }
-
-  private async loadInitialState() {
-    try {
-      const stateResult = await api.getPlayerState();
-      if (stateResult.success && stateResult.data) {
-        // PlayerState uses flat interface: timeBlocks, credits, locationId
-        this.updateTBDisplay(stateResult.data.timeBlocks || 48);
-        this.updateCreditsDisplay(stateResult.data.credits || 100);
-
-        if (stateResult.data.locationId) {
-          this.currentLocationId = stateResult.data.locationId;
-          const location = await api.getLocation(stateResult.data.locationId);
-          if (location.success) {
-            this.updateLocationDisplay(location.data);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load initial state:', error);
-    }
   }
 
   private updateLocationDisplay(data: any) {

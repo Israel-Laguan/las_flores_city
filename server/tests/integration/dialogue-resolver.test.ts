@@ -127,10 +127,16 @@ describe('DialogueResolver', () => {
     // deletes it in its afterAll; we need it for FK constraints
     // on player_mysteries).
     await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, time_blocks)
-       VALUES ($1, $2, $3, $4, 48)
+      `INSERT INTO users (id, email, username, display_name)
+       VALUES ($1, $2, $3, $4)
        ON CONFLICT (id) DO NOTHING`,
       [TEST_USER_ID, 'resolver-test@example.com', 'resolver_test', 'Resolver Test']
+    );
+    await queryOLTP(
+      `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+       VALUES ($1, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+       ON CONFLICT (user_id) DO NOTHING`,
+      [TEST_USER_ID]
     );
 
     // Seed a known tree shape so the resolver tests have a
@@ -462,13 +468,15 @@ describe('DialogueResolver', () => {
 
     beforeAll(async () => {
       await queryOLTP(
-        `INSERT INTO users (id, email, username, display_name, time_blocks, credits)
-         VALUES ($1, 'tb-olap@test.com', 'tb_olap_test', 'TB OLAP Test', 48, 100)
-         ON CONFLICT (id) DO UPDATE SET time_blocks = 48, credits = 100`,
+        `INSERT INTO users (id, email, username, display_name)
+         VALUES ($1, 'tb-olap@test.com', 'tb_olap_test', 'TB OLAP Test')
+         ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
         [TB_TEST_USER_ID]
       );
       await queryOLTP(
-        `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+        `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+         VALUES ($1, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+         ON CONFLICT (user_id) DO NOTHING`,
         [TB_TEST_USER_ID]
       );
       await queryOLTP(
@@ -478,7 +486,7 @@ describe('DialogueResolver', () => {
         [TB_TEST_TREE_ID, TB_ROOT_NODE, JSON.stringify(tbNodes)]
       );
       await queryOLTP(
-        `UPDATE users SET active_dialogue_id = $1, current_node_id = $2 WHERE id = $3`,
+        `UPDATE player_states SET active_dialogue_id = $1, current_node_id = $2 WHERE user_id = $3`,
         [TB_TEST_TREE_ID, TB_ROOT_NODE, TB_TEST_USER_ID]
       );
       await queryOLTP(
@@ -497,6 +505,7 @@ describe('DialogueResolver', () => {
     afterAll(async () => {
       await queryOLTP(`DELETE FROM player_dialogue_states WHERE dialogue_tree_id = $1`, [TB_TEST_TREE_ID]);
       await queryOLTP(`DELETE FROM dialogue_trees WHERE id = $1`, [TB_TEST_TREE_ID]);
+      await queryOLTP(`DELETE FROM player_states WHERE user_id = $1`, [TB_TEST_USER_ID]);
       await queryOLTP(`DELETE FROM users WHERE id = $1`, [TB_TEST_USER_ID]);
       if (olapServer) {
         await new Promise<void>((resolve) => olapServer.close(() => resolve()));

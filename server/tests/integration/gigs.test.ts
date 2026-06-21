@@ -49,7 +49,7 @@ async function get(path: string) {
 
 async function resetPlayer(timeBlocks: number, credits: number) {
   await oltpPool.query(
-    `UPDATE users SET time_blocks = $1, credits = $2, updated_at = NOW() WHERE id = $3`,
+    `UPDATE player_states SET time_blocks = $1, credits = $2, updated_at = NOW() WHERE user_id = $3`,
     [timeBlocks, credits, TEST_USER_ID]
   );
 }
@@ -65,14 +65,16 @@ beforeAll(async () => {
   });
 
   await oltpPool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, current_location_id, current_day)
-     VALUES ($1, 'gig-test@example.com', 'gig_test', 'Gig Test', 48, 100, $2, 1)
-     ON CONFLICT (id) DO UPDATE SET time_blocks = 48, credits = 100, current_location_id = $2, updated_at = NOW()`,
-    [TEST_USER_ID, APARTMENT_ID]
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, 'gig-test@example.com', 'gig_test', 'Gig Test')
+     ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, username = EXCLUDED.username, updated_at = NOW()`,
+    [TEST_USER_ID]
   );
   await oltpPool.query(
-    `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
-    [TEST_USER_ID]
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET time_blocks = 48, credits = 100, current_location_id = $2, updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID]
   );
 
   server = await new Promise<ReturnType<typeof app.listen>>(resolve => {
@@ -123,7 +125,7 @@ describe(' POST /gigs/execute happy path', () => {
     expect(data.newTimeBlocks).toBe(48 - 16); // 32
 
     const row = await oltpPool.query(
-      'SELECT time_blocks, credits FROM users WHERE id = $1',
+      'SELECT time_blocks, credits FROM player_states WHERE user_id = $1',
       [TEST_USER_ID]
     );
     expect(row.rows[0].time_blocks).toBe(32);
@@ -143,7 +145,7 @@ describe(' Insufficient TBs', () => {
     expect(data.error).toBe('INSUFFICIENT_TIME_BLOCKS');
 
     const row = await oltpPool.query(
-      'SELECT time_blocks, credits FROM users WHERE id = $1',
+      'SELECT time_blocks, credits FROM player_states WHERE user_id = $1',
       [TEST_USER_ID]
     );
     expect(row.rows[0].time_blocks).toBe(10);

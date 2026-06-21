@@ -31,10 +31,16 @@ async function ensureUser(
   displayName: string
 ): Promise<void> {
   await queryOLTP(
-    `INSERT INTO users (id, email, username, display_name, time_blocks)
-     VALUES ($1, $2, $3, $4, 48)
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
      ON CONFLICT (id) DO NOTHING`,
     [id, email, username, displayName]
+  );
+  await queryOLTP(
+    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, 48, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO NOTHING`,
+    [id]
   );
 }
 

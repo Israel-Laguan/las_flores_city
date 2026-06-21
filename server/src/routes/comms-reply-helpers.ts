@@ -3,6 +3,7 @@ import type { PoolClient } from 'pg';
 import { withOLTPTransaction, queryOLAP } from '../database/connection.js';
 import { processRelationshipChange } from './dialogue-helpers.js';
 import { THREAD_BASE_SELECT, ThreadRow, applyChoiceFilters } from './comms.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { SMSMessage } from '../../../shared/src/types/sms.js';
 
 export interface ReplyTransactionDetail {
@@ -110,21 +111,15 @@ async function deductTimeBlocksIfNeeded(
     return { error: null, spent: 0 };
   }
 
-  const tbLock = await client.query(
-    'SELECT time_blocks FROM users WHERE id = $1 FOR UPDATE',
-    [userId]
-  );
-  if (tbLock.rows.length === 0) {
+  let tbResult;
+  try {
+    tbResult = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
+  } catch {
     return { error: makeError(404, 'player_not_found'), spent: 0 };
   }
-  const current = (tbLock.rows[0] as { time_blocks: number }).time_blocks;
-  if (current < amount) {
+  if (!tbResult.success) {
     return { error: makeError(402, 'insufficient_time_blocks'), spent: 0 };
   }
-  await client.query(
-    'UPDATE users SET time_blocks = time_blocks - $1 WHERE id = $2',
-    [amount, userId]
-  );
   return { error: null, spent: amount };
 }
 

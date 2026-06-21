@@ -99,8 +99,6 @@ export class SettingsApp {
     this.toggleBtn?.addEventListener('click', () => void this.handleToggle());
     this.removeBtn?.addEventListener('click', () => void this.handleRemove());
     this.volumeSlider?.addEventListener('input', (e) => this.handleVolumeChange(e));
-
-    void this.refresh();
   }
 
   private async refresh(): Promise<void> {

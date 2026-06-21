@@ -110,9 +110,9 @@ async function setupTestFixtures(): Promise<string[]> {
 
   for (const userId of userIds) {
     await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, time_blocks, credits)
-       VALUES ($1, $2, $3, $4, 48, 100)
-       ON CONFLICT (id) DO UPDATE SET time_blocks = 48, credits = 100`,
+      `INSERT INTO users (id, email, username, display_name)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, username = EXCLUDED.username`,
       [
         userId,
         `${userId}@test.com`,
@@ -121,7 +121,9 @@ async function setupTestFixtures(): Promise<string[]> {
       ]
     );
     await queryOLTP(
-      `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+      `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+       VALUES ($1, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+       ON CONFLICT (user_id) DO UPDATE SET time_blocks = 48, credits = 100`,
       [userId]
     );
   }

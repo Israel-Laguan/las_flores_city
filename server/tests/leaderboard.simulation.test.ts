@@ -91,10 +91,16 @@ describe('OLAP Leaderboard Simulation', () => {
       createdUserIds.push(uid);
 
       await queryOLTP(
-        `INSERT INTO users (id, email, username, display_name, time_blocks)
-         VALUES ($1, $2, $3, $4, 48)
+        `INSERT INTO users (id, email, username, display_name)
+         VALUES ($1, $2, $3, $4)
          ON CONFLICT (id) DO NOTHING`,
         [uid, p.email, p.name.toLowerCase(), p.name]
+      );
+      await queryOLTP(
+        `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+         VALUES ($1, 48, 0, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+         ON CONFLICT (user_id) DO NOTHING`,
+        [uid]
       );
 
       await ensurePublicProfile(uid, p.name.toLowerCase());
@@ -149,6 +155,9 @@ describe('OLAP Leaderboard Simulation', () => {
            AND event_data->>'simulation' = 'true'`,
         [MYSTERY_ID]
       );
+      for (const uid of createdUserIds) {
+        await queryOLTP(`DELETE FROM player_states WHERE user_id = $1`, [uid]);
+      }
       await queryOLTP(
         `DELETE FROM users WHERE id = ANY($1::uuid[])`,
         [createdUserIds]

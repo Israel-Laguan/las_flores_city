@@ -69,16 +69,17 @@ beforeAll(async () => {
   }
 
   await oltpPool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits)
-     VALUES ($1, 'vault-test@example.com', 'vault_test', 'Vault Test', 48, 100)
-     ON CONFLICT (id) DO UPDATE SET time_blocks = 48, credits = 100, updated_at = NOW()`,
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, 'vault-test@example.com', 'vault_test', 'Vault Test')
+     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
     [TEST_USER_ID]
   );
   await oltpPool.query(
-    `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO NOTHING`,
     [TEST_USER_ID]
   );
-  await oltpPool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS active_dialogue_id UUID');
 
   await oltpPool.query(
     `INSERT INTO vault_items (id, title, description, thumbnail_url, media_path, item_type, requires_signed_url)
@@ -143,7 +144,7 @@ async function resetVaultState() {
   await invalidatePattern(`user:vault:${TEST_USER_ID}:nsfw:*`);
   await deleteCache(`user:vault:${TEST_USER_ID}`);
   await oltpPool.query(
-    `UPDATE users SET active_dialogue_id = $1, current_node_id = 'start' WHERE id = $2`,
+    `UPDATE player_states SET active_dialogue_id = $1, current_node_id = 'start' WHERE user_id = $2`,
     [WELCOME_DIALOGUE_ID, TEST_USER_ID]
   );
   await oltpPool.query(

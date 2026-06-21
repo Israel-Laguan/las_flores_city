@@ -5,6 +5,7 @@ import * as yaml from 'js-yaml';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { oltpPool, queryOLAP } from '../database/connection.js';
 import { deleteCache } from '../database/redis.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { GigFileSchema, Gig } from '../../../shared/src/schemas/gig.js';
 
 export const gigsRouter = express.Router();
@@ -45,42 +46,34 @@ gigsRouter.post('/execute', authMiddleware, async (req: AuthRequest, res, next) 
     try {
       await client.query('BEGIN');
 
-      // Atomically deduct TBs — fails silently if insufficient
-      const updateResult = await client.query(
-        `UPDATE users
-         SET time_blocks = time_blocks - $1, updated_at = NOW()
-         WHERE id = $2 AND time_blocks >= $1
-         RETURNING time_blocks, current_location_id`,
-        [gig.time_block_cost, userId]
+      // Atomically deduct TBs — fails if insufficient
+      const tbResult = await PlayerStateRepository.spendTimeBlocksWithLocation(
+        client,
+        userId,
+        gig.time_block_cost
       );
 
-      if (updateResult.rows.length === 0) {
+      if (!tbResult) {
         throw new Error('INSUFFICIENT_TIME_BLOCKS');
       }
 
-      const { time_blocks: newTimeBlocks, current_location_id: currentLocationId } = updateResult.rows[0];
+      const { time_blocks: newTimeBlocks, current_location_id: currentLocationId } = tbResult;
 
       if (gig.location_restriction_id && gig.location_restriction_id !== currentLocationId) {
         throw new Error('LOCATION_RESTRICTION_FAILED');
       }
 
-      const balanceResult = await client.query(
-        `UPDATE users
-         SET credits = credits + $1, updated_at = NOW()
-         WHERE id = $2
-         RETURNING credits`,
-        [gig.credit_payout, userId]
+      const newBalances = await PlayerStateRepository.modifyBalance(
+        client,
+        userId,
+        gig.credit_payout
       );
-
-      if (balanceResult.rows.length === 0) {
-        throw new Error('USER_NOT_FOUND');
-      }
 
       await client.query(
         `INSERT INTO bank_transactions
          (user_id, amount, currency_type, transaction_type, description, balance_after)
          VALUES ($1, $2, 'creds', 'salary', $3, $4)`,
-        [userId, gig.credit_payout, `Completed: ${gig.title}`, balanceResult.rows[0].credits]
+        [userId, gig.credit_payout, `Completed: ${gig.title}`, newBalances.credits]
       );
 
       if (gig.reputation_target && gig.reputation_reward) {

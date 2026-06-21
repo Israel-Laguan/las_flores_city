@@ -1,5 +1,6 @@
 import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
 import { deleteCache } from '../database/redis.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { BankLedgerResponse } from '../../../shared/src/types/bank.js';
 
 export class BankService {
@@ -24,28 +25,34 @@ export class BankService {
     referenceType?: string,
     referenceId?: string
   ): Promise<{ newBalance: number }> {
-    const col = currencyType === 'gold_credits' ? 'gold_credits' : 'credits';
+    const goldDelta = currencyType === 'gold_credits' ? amount : undefined;
+    const creditsDelta = currencyType !== 'gold_credits' ? amount : undefined;
 
     try {
-      const newBalance = await withOLTPTransaction(async (client) => {
-        const r = await client.query(
-          `UPDATE users SET ${col} = ${col} + $1, updated_at = NOW()
-           WHERE id = $2 RETURNING ${col}`,
-          [amount, userId]
+      const newBalances = await withOLTPTransaction(async (client) => {
+        const balances = await PlayerStateRepository.modifyBalance(
+          client,
+          userId,
+          creditsDelta,
+          goldDelta
         );
-        if (r.rows.length === 0) throw new Error('User record not found');
 
         await client.query(
           `INSERT INTO bank_transactions
              (user_id, amount, currency_type, transaction_type, description, balance_after, reference_type, reference_id)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-          [userId, amount, currencyType, transactionType, description, r.rows[0][col], referenceType ?? null, referenceId ?? null]
+          [userId, amount, currencyType, transactionType, description,
+           currencyType === 'gold_credits' ? balances.gold_credits : balances.credits,
+           referenceType ?? null, referenceId ?? null]
         );
 
-        return r.rows[0][col] as number;
+        return balances;
       });
 
       await deleteCache(`user:state:${userId}`);
+      const newBalance = currencyType === 'gold_credits'
+        ? newBalances.gold_credits
+        : newBalances.credits;
       return { newBalance };
     } catch (error: any) {
       if (error.code === '23514') throw new Error('INSUFFICIENT_FUNDS');
@@ -55,7 +62,7 @@ export class BankService {
 
   public static async getLedger(userId: string): Promise<BankLedgerResponse> {
     const [balanceRes, ledgerRes] = await Promise.all([
-      queryOLTP('SELECT credits, gold_credits FROM users WHERE id = $1', [userId]),
+      PlayerStateRepository.getBalancesForLedger(userId),
       queryOLTP(
         `SELECT id, amount,
                 COALESCE(currency_type, 'creds') AS "currencyType",
@@ -70,11 +77,11 @@ export class BankService {
       ),
     ]);
 
-    if (balanceRes.rows.length === 0) throw new Error('User not found');
+    if (!balanceRes) throw new Error('User not found');
 
     return {
-      credits: balanceRes.rows[0].credits,
-      goldCredits: balanceRes.rows[0].gold_credits,
+      credits: balanceRes.credits,
+      goldCredits: balanceRes.gold_credits,
       transactions: ledgerRes.rows,
     };
   }

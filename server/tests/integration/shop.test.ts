@@ -82,14 +82,15 @@ beforeAll(async () => {
 
   // Create the dedicated test user with 200 credits, 0 gold_credits.
   await oltpPool.query(
-    `INSERT INTO users (id, email, username, display_name, time_blocks, credits, gold_credits)
-     VALUES ($1, 'shop-test@example.com', 'shop_test', 'Shop Test', 48, 200, 0)
-     ON CONFLICT (id) DO UPDATE SET
-       time_blocks = 48, credits = 200, gold_credits = 0, updated_at = NOW()`,
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, 'shop-test@example.com', 'shop_test', 'Shop Test')
+     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
     [TEST_USER_ID]
   );
   await oltpPool.query(
-    `INSERT INTO player_states (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`,
+    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, 48, 200, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET credits = 200, gold_credits = 0`,
     [TEST_USER_ID]
   );
 
@@ -146,7 +147,7 @@ async function resetShopState() {
   await oltpPool.query('DELETE FROM player_inventory WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query(
-    `UPDATE users SET credits = 200, gold_credits = 0, updated_at = NOW() WHERE id = $1`,
+    `UPDATE player_states SET credits = 200, gold_credits = 0 WHERE user_id = $1`,
     [TEST_USER_ID]
   );
   await deleteCache(`user:state:${TEST_USER_ID}`);
@@ -196,7 +197,7 @@ describe('Shop API', () => {
     expect(data.data.inventory_item.shop_item_id).toBe(THEME_ITEM_ID);
 
     // Verify balance was actually debited
-    const userRes = await oltpPool.query('SELECT credits FROM users WHERE id = $1', [TEST_USER_ID]);
+    const userRes = await oltpPool.query('SELECT credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(userRes.rows[0].credits).toBe(150);
 
     // Verify inventory row exists
@@ -245,7 +246,7 @@ describe('Shop API', () => {
     expect(data.error).toBe('INSUFFICIENT_FUNDS');
 
     // Verify balance was NOT debited
-    const userRes = await oltpPool.query('SELECT credits FROM users WHERE id = $1', [TEST_USER_ID]);
+    const userRes = await oltpPool.query('SELECT credits FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
     expect(userRes.rows[0].credits).toBe(200);
   });
 

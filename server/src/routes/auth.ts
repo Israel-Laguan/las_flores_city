@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import { queryOLTP } from '../database/connection.js';
 import { generateToken } from '../middleware/auth.js';
 import { setSessionCookie, clearSessionCookie } from '../utils/cookies.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
+
+const START_LOCATION_ID = '550e8400-e29b-41d4-a716-446655440002';
 
 export const authRouter = express.Router();
 
@@ -36,21 +39,18 @@ authRouter.post('/register', async (req, res) => {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user with all player state columns
+    // Create user (no volatile gameplay columns — those live in player_states)
     const result = await queryOLTP(
-      `INSERT INTO users (email, username, display_name, password_hash, credits, gold_credits, time_blocks, current_location_id, last_login)
-       VALUES ($1, $2, $3, $4, 100, 0, 48, '550e8400-e29b-41d4-a716-446655440002', NOW())
-       RETURNING id, email, username, display_name, credits, gold_credits, time_blocks`,
+      `INSERT INTO users (email, username, display_name, password_hash, last_login)
+       VALUES ($1, $2, $3, $4, NOW())
+       RETURNING id, email, username, display_name`,
       [email, username, display_name || username, passwordHash]
     );
 
     const user = result.rows[0];
 
-    // Create player_state
-    await queryOLTP(
-      'INSERT INTO player_states (user_id, current_location_id) VALUES ($1, $2)',
-      [user.id, '550e8400-e29b-41d4-a716-446655440002']
-    );
+    // Create player_state with starting values
+    await PlayerStateRepository.createForNewUser(user.id, START_LOCATION_ID);
 
     // Create user_entitlements
     await queryOLTP(
@@ -163,30 +163,28 @@ authRouter.post('/dev-login', async (req, res) => {
     const targetUserId = userId || '00000000-0000-0000-0000-000000000001';
 
     const result = await queryOLTP(
-      `INSERT INTO users (id, email, username, display_name, credits, time_blocks, current_location_id, current_day)
-       VALUES ($1, $2, $3, $4, 100, 48, 'c3d4e5f6-a7b8-9012-cdef-123456789012', 1)
+      `INSERT INTO users (id, email, username, display_name)
+       VALUES ($1, $2, $3, $4)
        ON CONFLICT (id) DO UPDATE SET
          email = EXCLUDED.email,
          username = EXCLUDED.username,
          display_name = EXCLUDED.display_name,
-         credits = EXCLUDED.credits,
-         time_blocks = EXCLUDED.time_blocks,
-         current_location_id = EXCLUDED.current_location_id,
-         current_day = EXCLUDED.current_day,
          updated_at = NOW()
        RETURNING id, email, username, display_name`,
       [targetUserId, `dev-player-${targetUserId}@example.com`, `dev_${targetUserId.slice(0, 8)}`, 'Dev Player']
     );
 
+    // Ensure player_states row exists (idempotent via ON CONFLICT)
+    const DEV_START_LOCATION = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
     await queryOLTP(
-      `INSERT INTO player_states (user_id, current_location_id, current_node_id, flags)
-       VALUES ($1, 'c3d4e5f6-a7b8-9012-cdef-123456789012', NULL, '{}'::jsonb)
+      `INSERT INTO player_states (user_id, current_location_id, current_node_id, flags, time_blocks, credits, gold_credits, current_day, story_beat, alignment)
+       VALUES ($1, $2, NULL, '{}'::jsonb, 48, 100, 0, 1, 'prologue', 'neutral')
        ON CONFLICT (user_id) DO UPDATE SET
          current_location_id = EXCLUDED.current_location_id,
          current_node_id = EXCLUDED.current_node_id,
          flags = EXCLUDED.flags,
          updated_at = NOW()`,
-      [targetUserId]
+      [targetUserId, DEV_START_LOCATION]
     );
 
     if (result.rows.length === 0) {

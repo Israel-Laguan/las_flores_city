@@ -16,28 +16,44 @@ ALTER TABLE player_states
     CHECK (alignment IN ('neutral','loyalist','fugitive'));
 
 -- 2. Backfill: copy current values from users -> player_states (idempotent)
+--    Only proceed if users still has the columns to copy from
 --    COALESCE keeps the player_states copy when one was already written by
 --    dev-login, else falls back to the users value.
-UPDATE player_states ps
-SET time_blocks           = u.time_blocks,
-    credits               = u.credits,
-    gold_credits          = u.gold_credits,
-    current_day           = u.current_day,
-    alignment             = COALESCE(u.alignment, 'neutral'),
-    current_node_id       = COALESCE(ps.current_node_id, u.current_node_id),
-    active_dialogue_id    = COALESCE(ps.active_dialogue_id, u.active_dialogue_id),
-    current_location_id   = COALESCE(ps.current_location_id, u.current_location_id)
-FROM users u
-WHERE ps.user_id = u.id;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'time_blocks') THEN
+    UPDATE player_states ps
+    SET time_blocks           = u.time_blocks,
+        credits               = u.credits,
+        gold_credits          = u.gold_credits,
+        current_day           = u.current_day,
+        alignment             = COALESCE(u.alignment, 'neutral'),
+        current_node_id       = COALESCE(ps.current_node_id, u.current_node_id),
+        active_dialogue_id    = COALESCE(ps.active_dialogue_id, u.active_dialogue_id),
+        current_location_id   = COALESCE(ps.current_location_id, u.current_location_id)
+    FROM users u
+    WHERE ps.user_id = u.id;
+  END IF;
+END $$;
 
 -- 3. Ensure every user has a player_states row (defensive, for legacy users)
-INSERT INTO player_states (user_id, current_location_id)
-SELECT u.id, u.current_location_id
-FROM users u
-LEFT JOIN player_states ps ON ps.user_id = u.id
-WHERE ps.user_id IS NULL;
+--    Only proceed if users still has current_location_id (column exists means migration incomplete)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'current_location_id') THEN
+    INSERT INTO player_states (user_id, current_location_id)
+    SELECT u.id, u.current_location_id
+    FROM users u
+    LEFT JOIN player_states ps ON ps.user_id = u.id
+    WHERE ps.user_id IS NULL;
+  END IF;
+END $$;
 
 -- 4. Drop volatile columns + their now-pointless indexes from users
+--    Must drop FK constraints before dropping columns they reference
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_active_dialogue_id_fkey;
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_current_location_id_fkey;
+
 DROP INDEX IF EXISTS idx_users_current_node;
 DROP INDEX IF EXISTS idx_users_current_location;
 DROP INDEX IF EXISTS idx_users_current_day;

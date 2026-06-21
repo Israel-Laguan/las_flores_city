@@ -53,22 +53,25 @@ async function initApp() {
       console.log('Player state loaded:', state.data);
       eventBus.emit('player:state-loaded', state.data);
 
-      // Load initial location (flat interface uses locationId)
+      // Load initial location
       if (state.data.locationId) {
         const location = await api.getLocation(state.data.locationId);
         if (location.success) {
-          eventBus.emit('location:loaded', location.data);
+          // Flatten scene data for UI compatibility
+          const flatLocation = {
+            id: location.data.scene?.id,
+            name: location.data.scene?.title || 'Unknown',
+            npcs: location.data.npcs,
+          };
+          eventBus.emit('location:loaded', flatLocation);
         }
       }
     }
   } catch (error: any) {
-    // fetchAPI attaches `status` to the thrown error (api.ts:43), so reading it
-    // directly is more robust than substring-matching the message text.
     const isUnauthorized = error?.status === 401;
     if (isUnauthorized) {
       console.log('No session cookie found, attempting dev login...');
       await api.devLogin();
-      // Retry state load after dev-login sets the cookie
       const state = await api.getPlayerState();
       if (state.success) {
         console.log('Player state loaded after dev login:', state.data);
@@ -77,7 +80,12 @@ async function initApp() {
         if (state.data.locationId) {
           const location = await api.getLocation(state.data.locationId);
           if (location.success) {
-            eventBus.emit('location:loaded', location.data);
+            const flatLocation = {
+              id: location.data.scene?.id,
+              name: location.data.scene?.title || 'Unknown',
+              npcs: location.data.npcs,
+            };
+            eventBus.emit('location:loaded', flatLocation);
           }
         }
       }
