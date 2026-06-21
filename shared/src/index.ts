@@ -13,8 +13,9 @@ export {
   DialogueNodeSchema,
   DialogueNodeTypeSchema,
   RelationshipChangeSchema,
+  EffectsSchema,
 } from './schemas/dialogue.js';
-export type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange } from './schemas/dialogue.js';
+export type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange, Effects } from './schemas/dialogue.js';
 
 // ==================== Time Block System ====================
 
@@ -483,3 +484,8 @@ export type ContentFile = z.infer<typeof ContentFileSchema>;
 
 // ==================== BYOK AI Presentation ====================
 export { preserveImportantTags } from './importantTags.js';
+
+// ==================== AOT Dialogue Chunks (Task 7.2) ====================
+export { ChunkSchema, FreeLeafSchema, GuardedLeafSchema, LeafSchema, BoundaryReasonSchema } from './schemas/chunk.js';
+export type { Chunk, FreeLeaf, GuardedLeaf, Leaf, BoundaryReason } from './schemas/chunk.js';
+export { evaluateBoundary } from './schemas/chunk.js';
