@@ -218,7 +218,7 @@ describe('API Contract Tests', () => {
   });
 
   describe('POST /dialogue/start', () => {
-    test('returns valid dialogue tree', async () => {
+    test('returns valid dialogue chunk response', async () => {
       const port = server.address().port;
       const res = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
@@ -229,28 +229,29 @@ describe('API Contract Tests', () => {
 
       expect(res.status).toBe(201);
       expect(data).toHaveProperty('success', true);
-      expect(data.data).toHaveProperty('tree');
-      expect(data.data).toHaveProperty('current_node');
+      // New chunk-based response format
+      expect(data.data).toHaveProperty('chunk');
+      expect(data.data).toHaveProperty('current_chunk_id');
+      expect(data.data).toHaveProperty('current_node_id');
       expect(data.data).toHaveProperty('available_choices');
       expect(Array.isArray(data.data.available_choices)).toBe(true);
-      expect(data.data.available_choices.length).toBeGreaterThan(0);
 
-      const tree = data.data.tree;
-      expect(tree).toHaveProperty('id');
-      expect(tree).toHaveProperty('name');
-      expect(tree).toHaveProperty('start_node_id');
-      expect(tree).toHaveProperty('nodes');
-      expect(typeof tree.nodes).toBe('object');
+      const chunk = data.data.chunk;
+      expect(chunk).toHaveProperty('id');
+      expect(chunk).toHaveProperty('chunk_key');
+      expect(chunk).toHaveProperty('nodes');
+      expect(typeof chunk.nodes).toBe('object');
+      expect(chunk).toHaveProperty('leaves');
 
-      const currentNode = data.data.current_node;
-      expect(currentNode).toHaveProperty('id');
-      expect(currentNode).toHaveProperty('type');
-      expect(currentNode).toHaveProperty('text');
+      // current_node_id should point to a node in the chunk
+      const currentNodeId = data.data.current_node_id;
+      expect(currentNodeId).toBeTruthy();
+      expect(chunk.nodes).toHaveProperty(currentNodeId);
     });
   });
 
   describe('POST /dialogue/:id/choose', () => {
-    test('returns valid choice response', async () => {
+    test('returns valid choice response using chunk-based API', async () => {
       const port = server.address().port;
       const start = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
@@ -258,20 +259,30 @@ describe('API Contract Tests', () => {
         body: JSON.stringify({ characterId: TEST_CHARACTER_ID, sceneId: APARTMENT_SCENE_ID }),
       });
       const startData = await jsonResponse(start);
-      const res = await fetch(`http://localhost:${port}/dialogue/${startData.data.tree.id}/choose`, {
+      expect(start.status).toBe(201);
+
+      const currentChunkId = startData.data.current_chunk_id;
+      // Use the dialogue_id (tree UUID) for the route parameter; chunk.id is the chunk UUID
+      const treeId = startData.data.dialogue_id ?? startData.data.chunk.id;
+
+      // Find the first available choice from the start response
+      const choices = startData.data.available_choices;
+      expect(choices.length).toBeGreaterThan(0);
+      const firstChoice = choices[0];
+      expect(firstChoice).toHaveProperty('id');
+
+      // Make choice using chunk-based API with choice_id
+      const res = await fetch(`http://localhost:${port}/dialogue/${treeId}/choose`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ choiceIndex: 0 }),
+        body: JSON.stringify({ current_chunk_id: currentChunkId, choice_id: firstChoice.id }),
       });
       const data = await jsonResponse(res);
 
       expect(res.status).toBe(200);
       expect(data).toHaveProperty('success', true);
-      expect(data.data).toHaveProperty('dialogue_id', startData.data.tree.id);
-      expect(data.data).toHaveProperty('choice_index', 0);
-      expect(data.data).toHaveProperty('next_node');
-      expect(data.data.next_node).toHaveProperty('id');
-      expect(data.data.next_node).toHaveProperty('text');
+      expect(data.data).toHaveProperty('dialogue_id');
+      expect(data.data).toHaveProperty('choice_id', firstChoice.id);
       expect(data.data).toHaveProperty('time_blocks_spent');
       expect(typeof data.data.time_blocks_spent).toBe('number');
     });

@@ -63,6 +63,8 @@ export {
   spendTimeBlocksWithLocation,
   spendTimeBlocks,
   setDialogueCursor,
+  setDialogueChunkCursor,
+  initDialogueChunkState,
   clearDialogueAndSimulation,
   move,
   sleep,
@@ -92,6 +94,8 @@ export class PlayerStateRepository {
   static spendTimeBlocksWithLocation = writeMethods.spendTimeBlocksWithLocation;
   static spendTimeBlocks = writeMethods.spendTimeBlocks;
   static setDialogueCursor = writeMethods.setDialogueCursor;
+  static setDialogueChunkCursor = writeMethods.setDialogueChunkCursor;
+  static initDialogueChunkState = writeMethods.initDialogueChunkState;
   static clearDialogueAndSimulation = writeMethods.clearDialogueAndSimulation;
   static move = writeMethods.move;
   static sleep = writeMethods.sleep;

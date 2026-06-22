@@ -3,7 +3,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { initializeDialogueState, filterChoices, getSpeaker } from './dialogue-helpers.js';
-import { buildDialogueResponse } from './dialogue-response-helpers.js';
+import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 // ============================================================
@@ -47,9 +47,18 @@ archiveRouter.post('/start-simulation', authMiddleware, async (req: AuthRequest,
       });
     }
 
+    // TODO (task 6): replace with resolveChunkForUser — for now build a
+    // ChunkPayload from the tree-resolved data so the response format is correct.
+    const chunkPayload: ChunkPayload = {
+      id: result.dialogue.id,
+      chunk_key: result.dialogue.start_node_id,
+      nodes: result.dialogue.nodes,
+      leaves: {},
+    };
+
     res
       .status(201)
-      .json(buildDialogueResponse(result.dialogue, result.rootNode, result.speaker, result.choices, result.isEnd, 0, 0));
+      .json(buildDialogueResponse(chunkPayload, result.dialogue.id, result.dialogue.start_node_id, result.choices, result.isEnd, 0, 0));
   } catch (error: any) {
     console.error('Archive start-simulation error:', error);
     res.status(500).json({

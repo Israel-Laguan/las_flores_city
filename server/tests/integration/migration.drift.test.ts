@@ -2,6 +2,7 @@ import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import path from 'path';
 import pg from 'pg';
 import { migrateContent, extractContentIds } from '../../src/content/migrate.js';
+import { closeRedis } from '../../src/database/redis.js';
 
 const { Pool } = pg;
 
@@ -42,6 +43,7 @@ describe('Migration drift guard', () => {
 
   afterAll(async () => {
     await pool.end();
+    await closeRedis();
   });
 
   test('extractContentIds parses multi-entity YAML shapes', () => {

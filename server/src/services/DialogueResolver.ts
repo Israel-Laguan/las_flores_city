@@ -16,17 +16,37 @@
 import { createHash } from 'node:crypto';
 import { queryOLTP } from '../database/connection.js';
 import { getCache, setCache } from '../database/redis.js';
-import { DialogueNode } from '@las-flores/shared';
+import { DialogueNode, Leaf } from '@las-flores/shared';
 
 export interface ResolvedTree {
   rootId: string;
   nodes: Record<string, DialogueNode>;
 }
 
+export interface ResolvedChunk {
+  chunk: {
+    id: string;
+    chunk_key: string;
+    tree_id: string;
+    nodes: Record<string, DialogueNode>;
+    leaves: Record<string, Leaf>;
+  };
+  currentNodeId: string;
+  mergedNodes: Record<string, DialogueNode>;
+}
+
 interface BaseDialogueTree {
   start_node_id: string;
   updated_at: string;
   nodes: Record<string, DialogueNode>;
+}
+
+interface BaseDialogueChunkRow {
+  id: string;
+  tree_id: string;
+  chunk_key: string;
+  nodes: Record<string, DialogueNode>;
+  leaves: Record<string, Leaf>;
 }
 
 interface OverlayRow {
@@ -334,5 +354,140 @@ export class DialogueResolver {
       [baseTreeId, mysteryId]
     );
     return result.rows;
+  }
+
+  // ============================================================
+  // Chunk-based Resolution (Task 7.4)
+  // ============================================================
+
+  /**
+   * Resolve a chunk for a user, merging base chunk nodes with any
+   * active mystery overlays. Uses the same fingerprinting and
+   * caching pattern as resolveTreeForUser.
+   *
+   * Requirements: 7.1, 7.2, 7.3, 7.4
+   */
+  public static async resolveChunkForUser(
+    userId: string,
+    chunkId: string,
+    chunkKey: string
+  ): Promise<ResolvedChunk> {
+    // 1. Load base chunk from dialogue_chunks using chunkId
+    const chunkRow = await DialogueResolver.loadBaseChunk(chunkId);
+
+    // 2. Load user context (mirrors resolveTreeForUser pattern)
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment] = await Promise.all([
+      DialogueResolver.getActiveMysteryIds(userId),
+      DialogueResolver.getActiveMysteries(),
+      DialogueResolver.getUserNsfwStatus(userId),
+      DialogueResolver.getUserAlignment(userId),
+    ]);
+
+    const allMysteryIds = [...new Set([...investigatingIds, ...activeMysteryIds])].sort();
+
+    // 3. Load overlays for this chunk's tree
+    const overlays = await DialogueResolver.loadMysteryOverlays(chunkRow.tree_id, allMysteryIds);
+
+    // 4. Build cache fingerprint (same pattern as resolveTreeForUser)
+    const overlayFingerprint =
+      overlays.length > 0 ? buildOverlayFingerprint(overlays) : chunkKey;
+    const cacheSuffix =
+      allMysteryIds.length > 0
+        ? `${allMysteryIds.join('_')}:${overlayFingerprint}`
+        : `base:${overlayFingerprint}`;
+    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:mysteries:${cacheSuffix}`;
+
+    const cachedChunk = await getCache<ResolvedChunk>(cacheKey);
+    if (cachedChunk) {
+      return cachedChunk;
+    }
+
+    // 5. Merge overlays into base nodes (same entitlement gates as resolveTreeForUser)
+    let mergedNodes: Record<string, DialogueNode> = { ...chunkRow.nodes };
+    for (const overlay of overlays) {
+      if (overlay.is_nsfw && !isNsfwUnlocked) {
+        continue;
+      }
+      if (overlay.unlock_condition === 'loyalist_only' && alignment !== 'loyalist') continue;
+      if (overlay.unlock_condition === 'fugitive_only' && alignment !== 'fugitive') continue;
+      if (overlay.nodes) {
+        mergedNodes = deepMergeNodes(mergedNodes, overlay.nodes);
+      }
+    }
+
+    // 6. Build resolved chunk — currentNodeId is the chunk's entry point (chunk_key)
+    const resolvedChunk: ResolvedChunk = {
+      chunk: {
+        id: chunkRow.id,
+        chunk_key: chunkRow.chunk_key,
+        tree_id: chunkRow.tree_id,
+        nodes: chunkRow.nodes,
+        leaves: chunkRow.leaves,
+      },
+      currentNodeId: chunkRow.chunk_key,
+      mergedNodes,
+    };
+
+    await setCache(cacheKey, resolvedChunk, CACHE_TTL_SECONDS);
+
+    return resolvedChunk;
+  }
+
+  /**
+   * Resolve the next chunk when crossing a chunk boundary.
+   * Looks up the chunk by (tree_id, targetChunkKey), then merges
+   * overlays using the same pattern as resolveChunkForUser.
+   *
+   * Requirements: 4.1, 4.2
+   */
+  public static async resolveNextChunk(
+    userId: string,
+    targetChunkKey: string
+  ): Promise<ResolvedChunk> {
+    // Load the target chunk by chunk_key (across all trees — first match wins,
+    // which is safe because chunk_key values encode the entry node id and are
+    // unique within a tree; callers typically know the tree but we look up by
+    // key for flexibility in boundary transitions).
+    const chunkRow = await DialogueResolver.loadBaseChunkByKey(targetChunkKey);
+
+    return DialogueResolver.resolveChunkForUser(userId, chunkRow.id, chunkRow.chunk_key);
+  }
+
+  /**
+   * Load a base chunk from dialogue_chunks by its UUID id.
+   */
+  private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
+    const result = await queryOLTP<BaseDialogueChunkRow>(
+      `SELECT id, tree_id, chunk_key, nodes, leaves
+         FROM dialogue_chunks
+        WHERE id = $1`,
+      [chunkId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error(`Dialogue chunk not found: ${chunkId}`);
+    }
+
+    return result.rows[0];
+  }
+
+  /**
+   * Load a base chunk from dialogue_chunks by its chunk_key.
+   * Used by resolveNextChunk when crossing boundaries.
+   */
+  private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
+    const result = await queryOLTP<BaseDialogueChunkRow>(
+      `SELECT id, tree_id, chunk_key, nodes, leaves
+         FROM dialogue_chunks
+        WHERE chunk_key = $1
+        LIMIT 1`,
+      [chunkKey]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error(`Dialogue chunk not found for key: ${chunkKey}`);
+    }
+
+    return result.rows[0];
   }
 }

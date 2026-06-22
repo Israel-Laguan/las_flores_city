@@ -10,7 +10,7 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - Sudo operations require user confirmation. Present the exact command, explain the expected result, wait for the user to confirm it ran, then verify the fix.
 - Test fixtures that create rows must use a dedicated UUID or `gen_random_uuid()`, clean up in `afterAll`, and include a collision-avoidance comment.
 - Integration tests that touch `player_mysteries` must create their own test user in `beforeAll` and clean it up in `afterAll`.
-- After server code changes, rebuild and restart the server container: `docker compose build server && docker compose up -d server`. Verify with `curl http://localhost:3000/health`.
+- After server code changes, rebuild and restart the server container: `docker compose build server && docker compose up -d server`. Verify with `docker exec las-flores-server wget -qO- http://localhost:3000/health` (not curl — see health check gotcha below).
 
 ## Current codebase facts
 
@@ -37,13 +37,14 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - When destroying stale containers, also check for orphaned host Postgres/Redis processes with `ps aux | grep -E 'postgres|redis-server'` and kill them if needed (`sudo pkill -9 -u postgres` / `sudo pkill -9 redis-server`).
 - `server/scripts/probe_leaderboard.ts` is the canonical diagnostic for distinguishing bad connection paths from bad leaderboard data.
 - When a spec says "add column", first verify the table with `\d <table>` or migrations; several columns in this project pre-existed.
+- **Health check from host may silently fail (curl exit 56)**: The server image (node:18-alpine) does not include `curl`, and stale docker-proxy state on a shared host can cause `curl http://localhost:3000/health` from the host to return exit code 56 (failure to receive data) even when the container is healthy. Always verify health from *inside* the container using `wget`: `docker exec las-flores-server wget -qO- http://localhost:3000/health`. A `{"success":true}` response from that command is the authoritative health check. Do not treat host-side curl exit 56 as a server failure without first confirming with the in-container wget.
 
 ## Verification checklist
 
 - Content changes: `npm run validate:content`.
 - Server changes: `npm run lint --workspace=server`, `npm run build --workspace=server`, and relevant `npm run test --workspace=server` tests.
 - Client changes: `npm run lint --workspace=client` and `npm run build --workspace=client`.
-- Docker/server changes: rebuild the server container and verify health with `curl http://localhost:3000/health`. If ports are stuck, kill stale proxies (`pkill -9 docker-proxy`) and host processes (`sudo pkill -9 -u postgres; sudo pkill -9 redis-server`), then run `./scripts/apply-migrations.sh both` before starting.
+- Docker/server changes: rebuild the server container and verify health with `docker exec las-flores-server wget -qO- http://localhost:3000/health` (use in-container wget — the alpine image has no curl, and host-side curl can return exit 56 due to stale docker-proxy state even when the server is healthy). If ports are stuck, kill stale proxies (`pkill -9 docker-proxy`) and host processes (`sudo pkill -9 -u postgres; sudo pkill -9 redis-server`), then run `./scripts/apply-migrations.sh both` before starting.
 
 ## Clean shutdown pattern
 
@@ -57,5 +58,8 @@ After code changes, rebuild and verify:
 ```bash
 docker compose build server && docker compose up -d server
 ./scripts/apply-migrations.sh both  # if DB was recreated
-curl http://localhost:3000/health
+docker exec las-flores-server wget -qO- http://localhost:3000/health
+# Do NOT use: curl http://localhost:3000/health
+# The alpine image has no curl, and host-side curl can return exit 56
+# due to stale docker-proxy state even when the server is healthy.
 ```
