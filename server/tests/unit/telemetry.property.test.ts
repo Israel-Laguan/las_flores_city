@@ -373,6 +373,45 @@ describe('Property 9: Telemetry includes chunk context', () => {
     );
   });
 
+  // ── Requirement 15.5: round-trip serialisation property ──────
+  //
+  // For ALL valid (dialogueTreeId, choiceId, chunkId,
+  // isChunkBoundaryCrossing, leafType) inputs, the output of
+  // buildChoiceTelemetryEventData must deeply equal the object
+  // produced by JSON.parse(JSON.stringify(output)).
+  //
+  // This is the dedicated property referenced in Requirement 15.5.
+  // (Property 9d above also covers this; this test makes the
+  // 15.5 contract explicit for CI traceability.)
+  it('15.5 — round-trip: JSON.parse(JSON.stringify(result)) deeply equals original', () => {
+    fc.assert(
+      fc.property(
+        uuidArb(),
+        choiceIdArb(),
+        uuidArb(),
+        fc.boolean(),
+        leafTypeArb(),
+        (dialogueTreeId, choiceId, chunkId, isChunkBoundaryCrossing, leafType) => {
+          const original = buildChoiceTelemetryEventData(
+            dialogueTreeId,
+            choiceId,
+            chunkId,
+            isChunkBoundaryCrossing,
+            leafType,
+          );
+
+          const roundTripped = JSON.parse(
+            JSON.stringify(original),
+          ) as ChoiceTelemetryEventData;
+
+          // Deep equality: every field must survive JSON round-trip unchanged
+          expect(roundTripped).toStrictEqual(original);
+        },
+      ),
+      { numRuns: 200, verbose: false },
+    );
+  });
+
   // ── Boundary: boundary crossing true/false symmetry ──────────
   it('9i-symmetry — is_chunk_boundary_crossing is true when input is true', () => {
     fc.assert(

@@ -53,17 +53,25 @@ async function initApp() {
       console.log('Player state loaded:', state.data);
       eventBus.emit('player:state-loaded', state.data);
 
-      // Load initial location
-      if (state.data.locationId) {
-        const location = await api.getLocation(state.data.locationId);
-        if (location.success) {
-          // Flatten scene data for UI compatibility
-          const flatLocation = {
-            id: location.data.scene?.id,
-            name: location.data.scene?.title || 'Unknown',
-            npcs: location.data.npcs,
-          };
-          eventBus.emit('location:loaded', flatLocation);
+      // 7.5.2 — Onboarding Lock: if the player is mid-dialogue, lock the
+      // phone apps and resume the conversation immediately.
+      if (state.data.currentNodeId !== null) {
+        eventBus.emit('ui:lock-phone-apps', true);
+        eventBus.emit('dialogue:resume');
+      } else {
+        eventBus.emit('ui:lock-phone-apps', false);
+
+        // Load initial location only when not locked in dialogue
+        if (state.data.locationId) {
+          const location = await api.getLocation(state.data.locationId);
+          if (location.success) {
+            const flatLocation = {
+              id: location.data.scene?.id,
+              name: location.data.scene?.title || 'Unknown',
+              npcs: location.data.npcs,
+            };
+            eventBus.emit('location:loaded', flatLocation);
+          }
         }
       }
     }
@@ -77,15 +85,23 @@ async function initApp() {
         console.log('Player state loaded after dev login:', state.data);
         eventBus.emit('player:state-loaded', state.data);
 
-        if (state.data.locationId) {
-          const location = await api.getLocation(state.data.locationId);
-          if (location.success) {
-            const flatLocation = {
-              id: location.data.scene?.id,
-              name: location.data.scene?.title || 'Unknown',
-              npcs: location.data.npcs,
-            };
-            eventBus.emit('location:loaded', flatLocation);
+        // 7.5.2 — Onboarding Lock (post-dev-login path)
+        if (state.data.currentNodeId !== null) {
+          eventBus.emit('ui:lock-phone-apps', true);
+          eventBus.emit('dialogue:resume');
+        } else {
+          eventBus.emit('ui:lock-phone-apps', false);
+
+          if (state.data.locationId) {
+            const location = await api.getLocation(state.data.locationId);
+            if (location.success) {
+              const flatLocation = {
+                id: location.data.scene?.id,
+                name: location.data.scene?.title || 'Unknown',
+                npcs: location.data.npcs,
+              };
+              eventBus.emit('location:loaded', flatLocation);
+            }
           }
         }
       }

@@ -108,6 +108,25 @@ services:
       - ./shared:/app/shared
       - ./content:/app/content
 
+  # Playwright E2E
+  playwright:
+    build:
+      context: .
+      dockerfile: client/Dockerfile.e2e
+    container_name: las-flores-playwright
+    depends_on:
+      server:
+        condition: service_started
+    environment:
+      API_URL: http://server:3000
+      PLAYWRIGHT_BASE_URL: http://localhost:5173
+    volumes:
+      - ./client:/app/client
+      - ./shared:/app/shared
+      - /app/client/node_modules
+    working_dir: /app/client
+    command: npx playwright test --config playwright.docker.config.ts
+
   # Admin Panel - Next.js
   admin:
     build:

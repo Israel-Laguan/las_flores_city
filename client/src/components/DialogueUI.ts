@@ -1,6 +1,8 @@
 import { eventBus } from '../utils/EventBus';
 import { phoneStore } from '../store/PhoneStore';
-import { buildDialogueHTML, buildChoicesContainer, buildChoiceButtons } from '../utils/dialogue-templates';
+import { buildDialogueHTML, buildChoiceButtons } from '../utils/dialogue-templates';
+import { Typewriter } from '../utils/Typewriter';
+import { disableChoiceButtons, enableChoiceButtons, attachChoiceButtonListeners } from '../utils/dialogueButtons';
 import * as api from '../utils/api';
 import { getLocalKey } from '../utils/crypto';
 
@@ -37,7 +39,8 @@ export interface DialogueNode {
 }
 
 interface DialogueState {
-  tree: any;
+  chunk?: any;
+  tree?: any;
   currentNode: DialogueNode;
   availableChoices: any[];
 }
@@ -46,12 +49,9 @@ export class DialogueUI {
   private container: HTMLDivElement;
   private state: DialogueUIState = DialogueUIState.HIDDEN;
   private currentDialogue: DialogueState | null = null;
-  private typewriterInterval: number | null = null;
-  private fullText: string = '';
-  private currentCharIndex: number = 0;
+  private typewriter: Typewriter | null = null;
   private dialogueTextEl: HTMLDivElement | null = null;
   private choicesContainer: HTMLDivElement | null = null;
-  private skipRequested: boolean = false;
   private aiWorker: Worker | null = null;
   private pendingRequests: Map<string, { resolve: (choices: any[]) => void; reject: (err: Error) => void }> = new Map();
 
@@ -114,25 +114,45 @@ export class DialogueUI {
     eventBus.on('dialogue:choose', async (choiceIndex: number) => await this.makeChoice(choiceIndex));
     eventBus.on('dialogue:end', () => this.slideOut());
     eventBus.on('dialogue:resume', async () => await this.resumeDialogue());
-    this.container.addEventListener('click', () => { if (this.state === DialogueUIState.TYPING) this.skipTyping(); });
+    this.container.addEventListener('click', () => {
+      if (this.state === DialogueUIState.TYPING && this.typewriter) this.typewriter.skip();
+    });
   }
 
   private async loadDialogue(result: any, errorMsg: string) {
     try {
       if (result.success && result.data) {
-        this.currentDialogue = { tree: result.data.tree, currentNode: result.data.current_node, availableChoices: result.data.available_choices };
+        const currentNode = result.data.chunk
+          ? result.data.chunk.nodes[result.data.current_node_id]
+          : result.data.current_node;
+
+        this.currentDialogue = {
+          chunk: result.data.chunk,
+          tree: result.data.tree,
+          currentNode,
+          availableChoices: result.data.available_choices
+        };
+
+        if (this.currentDialogue.chunk) {
+          this.prefetchFreeLeaves(this.currentDialogue.chunk);
+        }
+
         this.slideIn();
       }
     } catch (error) { console.error(errorMsg, error); }
   }
 
-  private async startDialogue(dialogueId: string) { await this.loadDialogue(await api.startDialogue(dialogueId), 'Failed to start dialogue'); }
+  private async startDialogue(dialogueId: string) {
+    await this.loadDialogue(await api.startDialogue(dialogueId), 'Failed to start dialogue');
+  }
 
   private async startDialogueWithCharacter(characterId: string, sceneId: string) {
     await this.loadDialogue(await api.startDialogueWithCharacter(characterId, sceneId), 'Failed to start dialogue');
   }
 
-  private async resumeDialogue() { await this.loadDialogue(await api.getActiveDialogue(), 'Failed to resume dialogue'); }
+  private async resumeDialogue() {
+    await this.loadDialogue(await api.getActiveDialogue(), 'Failed to resume dialogue');
+  }
 
   private slideIn() {
     this.state = DialogueUIState.SLIDING_IN;
@@ -144,7 +164,6 @@ export class DialogueUI {
   }
 
   private async dispatchToAiWorker(choices: DialogueNode['choices'], relationshipContext: string): Promise<NonNullable<DialogueNode['choices']>> {
-    // Auth is handled by HttpOnly cookie; no client-side token check needed.
     if (!this.aiWorker || !choices?.length || !phoneStore.getState().aiEnabled || !getLocalKey())
       return choices || [];
     return new Promise((resolve) => {
@@ -158,9 +177,7 @@ export class DialogueUI {
   private slideOut() {
     this.state = DialogueUIState.SLIDING_OUT;
     this.container.style.transform = 'translateY(100%)';
-
-    this.clearTypewriter();
-
+    if (this.typewriter) this.typewriter.clear();
     setTimeout(() => {
       this.container.style.pointerEvents = 'none';
       this.currentDialogue = null;
@@ -170,56 +187,129 @@ export class DialogueUI {
     }, 300);
   }
 
+  private prefetchFreeLeaves(chunk: any): void {
+    const leaves = chunk?.leaves ?? {};
+    for (const leaf of Object.values(leaves) as any[]) {
+      const isFree = (leaf.tb_cost ?? 0) === 0 && (!leaf.conditions || leaf.conditions.length === 0);
+      if (isFree && leaf.target_chunk) {
+        // @ts-ignore
+        import('../utils/ChunkCache').then(m => m.chunkCache.prefetch(leaf.target_chunk));
+      }
+    }
+  }
+
+  private renderChunk(chunk: any, currentNodeId: string, availableChoices: any[]) {
+    this.currentDialogue = {
+      chunk,
+      currentNode: chunk.nodes[currentNodeId],
+      availableChoices,
+    };
+    this.prefetchFreeLeaves(chunk);
+    this.renderDialogue();
+  }
+
   private async makeChoice(choiceIndex: number) {
     if (!this.currentDialogue || this.state === DialogueUIState.SUBMITTING) return;
 
+    const choice = this.currentDialogue.availableChoices[choiceIndex];
+    if (!choice) return;
+
     this.state = DialogueUIState.SUBMITTING;
-    this.disableButtons();
+    disableChoiceButtons(this.choicesContainer);
 
     try {
-      const result = await api.makeDialogueChoice(
-        this.currentDialogue.tree.id,
-        choiceIndex
-      );
+      const currentChunk = this.currentDialogue.chunk;
 
-      if (result.success && result.data) {
-        this.handleDialogueResult(result.data);
+      if (currentChunk) {
+        const leaf = currentChunk.leaves[choice.id];
+        if (leaf && leaf.target_chunk) {
+          // @ts-ignore
+          const m = await import('../utils/ChunkCache');
+          if (m.chunkCache.has(leaf.target_chunk)) {
+            const cached = m.chunkCache.get(leaf.target_chunk)!;
+            const nextNodeId = cached.chunk_key;
+            const nextNode = cached.nodes[nextNodeId];
+            const isEnd = !nextNode || nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
 
-        if (result.data.is_end) {
-          this.currentDialogue.currentNode = result.data.next_node;
-          this.currentDialogue.availableChoices = [];
-          this.renderDialogue();
-          this.container.style.pointerEvents = 'none';
-          setTimeout(() => this.slideOut(), 3000);
-          return;
+            this.handleDialogueResult({ time_blocks_remaining: undefined });
+
+            if (isEnd) {
+              this.currentDialogue.currentNode = nextNode;
+              this.currentDialogue.availableChoices = [];
+              this.renderDialogue();
+              this.container.style.pointerEvents = 'none';
+              setTimeout(() => this.slideOut(), 3000);
+              api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
+              return;
+            }
+
+            this.renderChunk(cached, nextNodeId, nextNode.choices || []);
+            api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
+            return;
+          }
         }
 
-        this.currentDialogue.currentNode = result.data.next_node;
-        this.currentDialogue.availableChoices = result.data.available_choices;
-        this.renderDialogue();
+        const result = await api.makeDialogueChoice(currentChunk.id, choice.id);
+
+        if (result.success && result.data) {
+          this.handleDialogueResult(result.data);
+
+          if (result.data.is_end) {
+            this.currentDialogue.currentNode = result.data.next_chunk.nodes[result.data.current_node_id];
+            this.currentDialogue.availableChoices = [];
+            this.renderDialogue();
+            this.container.style.pointerEvents = 'none';
+            setTimeout(() => this.slideOut(), 3000);
+            return;
+          }
+
+          this.renderChunk(result.data.next_chunk, result.data.current_node_id, result.data.available_choices);
+        } else {
+          this.state = DialogueUIState.AWAITING_CHOICE;
+          enableChoiceButtons(this.choicesContainer);
+        }
       } else {
-        this.state = DialogueUIState.AWAITING_CHOICE;
-        this.enableButtons();
+        const result = await api.makeDialogueChoice(
+          this.currentDialogue.tree.id,
+          choiceIndex as any
+        );
+
+        if (result.success && result.data) {
+          this.handleDialogueResult(result.data);
+
+          if (result.data.is_end) {
+            this.currentDialogue.currentNode = result.data.next_node;
+            this.currentDialogue.availableChoices = [];
+            this.renderDialogue();
+            this.container.style.pointerEvents = 'none';
+            setTimeout(() => this.slideOut(), 3000);
+            return;
+          }
+
+          this.currentDialogue.currentNode = result.data.next_node;
+          this.currentDialogue.availableChoices = result.data.available_choices;
+          this.renderDialogue();
+        } else {
+          this.state = DialogueUIState.AWAITING_CHOICE;
+          enableChoiceButtons(this.choicesContainer);
+        }
       }
     } catch (error) {
       console.error('Failed to make choice:', error);
       this.state = DialogueUIState.AWAITING_CHOICE;
-      this.enableButtons();
+      enableChoiceButtons(this.choicesContainer);
     }
   }
-
-  // --- Event emission helpers ---
 
   private handleDialogueResult(result: any) {
     if (result.next_node?.thought) eventBus.emit('monologue:thought', result.next_node.thought);
     if (result.time_blocks_remaining !== undefined) eventBus.emit('tb:updated', result.time_blocks_remaining);
-    if (result.unlocked_vault_item) { eventBus.emit('vault:new_item_unlocked', result.unlocked_vault_item); phoneStore.updateState({ hasNewVaultItem: true }); }
+    if (result.unlocked_vault_item) {
+      eventBus.emit('vault:new_item_unlocked', result.unlocked_vault_item);
+      phoneStore.updateState({ hasNewVaultItem: true });
+    }
     this.handleMysterySolveStatus(result.mystery_solve_status);
 
-    // Meta-plot finale alignment flip. The server puts
-    // `alignment_change` in `data` (not top-level). On fugitive
-    // we play a glitch SFX, apply the visual theme swap, and
-    // push a system warning. On loyalist we just push a warning.
     if (result.alignment_change) {
       phoneStore.updateState({ alignment: result.alignment_change });
 
@@ -257,17 +347,21 @@ export class DialogueUI {
       late: '[SYSTEM] Case closed. Data submission rejected: Deadline exceeded.',
     };
     if (ms.kind && messages[ms.kind]) {
-      eventBus.emit('monologue:push', { text: ms.isBreakthrough ? '[BREAKTHROUGH] Case closed. You are the first detective on the scene.' : messages[ms.kind], type: 'warning' });
+      eventBus.emit('monologue:push', {
+        text: ms.isBreakthrough ? '[BREAKTHROUGH] Case closed. You are the first detective on the scene.' : messages[ms.kind],
+        type: 'warning'
+      });
     }
   }
 
   private renderDialogue() {
     if (!this.currentDialogue) return;
     const { currentNode, availableChoices } = this.currentDialogue;
-    this.container.innerHTML = buildDialogueHTML(currentNode, availableChoices);
+    const { timeBlocks } = phoneStore.getState();
+    this.container.innerHTML = buildDialogueHTML(currentNode, availableChoices, timeBlocks);
     this.dialogueTextEl = this.container.querySelector('.dialogue-text') as HTMLDivElement;
     this.choicesContainer = this.container.querySelector('.dialogue-choices') as HTMLDivElement;
-    this.attachChoiceButtonListeners();
+    attachChoiceButtonListeners(this.choicesContainer, (idx) => this.makeChoice(idx));
     if (this.choicesContainer) {
       this.choicesContainer.style.opacity = '0';
       this.choicesContainer.style.transition = 'opacity 0.3s ease';
@@ -275,7 +369,7 @@ export class DialogueUI {
     }
     this.startTypewriter(currentNode.text);
     eventBus.emit('dialogue:node_loaded', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
-    eventBus.emit('dialogue:node-rendered', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
+    eventBus.emit('dialogue:node_rendered', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
     if (availableChoices?.length) this.applyAiRewrites(availableChoices);
   }
 
@@ -286,8 +380,9 @@ export class DialogueUI {
         choices, 'You are a conversational AI helping a player in a dialogue. Rewrite choices to match their relationship.'
       );
       this.currentDialogue.availableChoices = rewrittenChoices;
-      this.choicesContainer.innerHTML = buildChoiceButtons(rewrittenChoices);
-      this.attachChoiceButtonListeners();
+      const { timeBlocks } = phoneStore.getState();
+      this.choicesContainer.innerHTML = buildChoiceButtons(rewrittenChoices, timeBlocks);
+      attachChoiceButtonListeners(this.choicesContainer, (idx) => this.makeChoice(idx));
       if (this.state === DialogueUIState.AWAITING_CHOICE) {
         this.choicesContainer.style.opacity = '1';
       }
@@ -298,86 +393,26 @@ export class DialogueUI {
 
   private startTypewriter(text: string) {
     if (!this.dialogueTextEl) return;
-    this.fullText = text; this.currentCharIndex = 0;
-    this.state = DialogueUIState.TYPING; this.skipRequested = false;
-    this.dialogueTextEl.innerHTML = '';
-    if (this.typewriterInterval) clearInterval(this.typewriterInterval);
-    this.typewriterInterval = window.setInterval(() => {
-      if (this.skipRequested || this.currentCharIndex >= this.fullText.length) {
-        this.finishTyping(); return;
-      }
-      if (this.fullText[this.currentCharIndex] === '<') {
-        const closingIndex = this.fullText.indexOf('>', this.currentCharIndex);
-        if (closingIndex !== -1) { this.currentCharIndex = closingIndex + 1; }
-      } else {
-        this.currentCharIndex++;
-        // Trigger low-latency key click on every second character printed.
-        // Pacing prevents Web Audio channel saturation during rapid typing.
-        if (this.currentCharIndex % 2 === 0) {
+    this.state = DialogueUIState.TYPING;
+    this.typewriter = new Typewriter(
+      this.dialogueTextEl,
+      () => {
+        this.state = DialogueUIState.AWAITING_CHOICE;
+        eventBus.emit('dialogue:typing_finished');
+        if (this.choicesContainer && this.currentDialogue?.availableChoices.length) {
+          this.choicesContainer.style.opacity = '1';
+          this.choicesContainer.style.pointerEvents = 'auto';
+        }
+      },
+      (charIndex) => {
+        if (charIndex % 2 === 0) {
           eventBus.emit('audio:play_sfx', {
             key: 'sfx_mech_click',
             url: 'https://cdn.lasflores2077.com/audio/sfx_mech_click.mp3',
           });
         }
       }
-      this.dialogueTextEl!.innerHTML = this.fullText.substring(0, this.currentCharIndex);
-    }, 30);
-  }
-
-  private finishTyping() {
-    if (this.typewriterInterval) { clearInterval(this.typewriterInterval); this.typewriterInterval = null; }
-    if (this.dialogueTextEl) this.dialogueTextEl.innerHTML = this.fullText;
-    this.state = DialogueUIState.AWAITING_CHOICE;
-    eventBus.emit('dialogue:typing_finished');
-    if (this.choicesContainer && this.currentDialogue?.availableChoices.length) {
-      this.choicesContainer.style.opacity = '1';
-      this.choicesContainer.style.pointerEvents = 'auto';
-    }
-  }
-
-  private clearTypewriter() {
-    if (this.typewriterInterval) { clearInterval(this.typewriterInterval); this.typewriterInterval = null; }
-    this.skipRequested = false;
-  }
-
-  private skipTyping() { if (this.state === DialogueUIState.TYPING) this.skipRequested = true; }
-
-  private disableButtons() {
-    if (!this.choicesContainer) return;
-    (this.choicesContainer as HTMLElement).style.pointerEvents = 'none';
-    this.choicesContainer.querySelectorAll('.choice-btn').forEach(btn => {
-      (btn as HTMLButtonElement).disabled = true;
-      Object.assign(btn as HTMLElement, { style: { pointerEvents: 'none', opacity: '0.5' } });
-    });
-  }
-
-  private enableButtons() {
-    if (!this.choicesContainer) return;
-    (this.choicesContainer as HTMLElement).style.pointerEvents = 'auto';
-    this.choicesContainer.querySelectorAll('.choice-btn').forEach(btn => {
-      (btn as HTMLButtonElement).disabled = false;
-      Object.assign(btn as HTMLElement, { style: { pointerEvents: 'auto', opacity: '1' } });
-    });
-  }
-
-  private attachChoiceButtonListeners() {
-    if (!this.choicesContainer) return;
-    const choiceButtons = this.choicesContainer.querySelectorAll('.choice-btn');
-    choiceButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.makeChoice(parseInt(button.getAttribute('data-choice-index') || '0', 10));
-      });
-      button.addEventListener('mouseenter', () => {
-        if (!(button as HTMLButtonElement).disabled) {
-          (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.15)';
-          (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.6)';
-        }
-      });
-      button.addEventListener('mouseleave', () => {
-        (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
-        (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.3)';
-      });
-    });
+    );
+    this.typewriter.start(text);
   }
 }

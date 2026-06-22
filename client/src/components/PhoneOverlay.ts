@@ -16,6 +16,7 @@ export class PhoneOverlay {
   private bridge: PhoneBridge;
   private appInstances: Array<object> = [];
   private flashController: BancoFlashController | null = null;
+  private lockedApps: Set<string> = new Set();
 
   constructor() {
     this.viewport = document.getElementById('phone-app-content') ?? document.body.appendChild(
@@ -135,7 +136,11 @@ export class PhoneOverlay {
         color:var(--neon-cyan);cursor:pointer;font-family:monospace;
         font-size:11px;text-transform:uppercase;position:relative;
       `;
-      btn.addEventListener('click', () => this.switchApp(key));
+      btn.addEventListener('click', () => {
+        // 7.5.2: block navigation to locked apps
+        if (this.lockedApps.has(key)) return;
+        this.switchApp(key);
+      });
       btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(0,255,255,0.08)'; });
       btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
       this.navButtons.set(key, btn);
@@ -191,6 +196,30 @@ export class PhoneOverlay {
     eventBus.on('vault:new_item_unlocked', () => {
       phoneStore.updateState({ hasNewVaultItem: true });
     });
+
+    // 7.5.2 — Onboarding Lock: lock/unlock specific nav apps
+    eventBus.on('ui:lock-phone-apps', (locked: boolean) => {
+      this.setAppsDisabled(['myme', 'trabajando'], locked);
+    });
+  }
+
+  // 7.5.2 — Disable/enable a set of nav app buttons and track lock state
+  private setAppsDisabled(appKeys: string[], disabled: boolean): void {
+    for (const key of appKeys) {
+      const btn = this.navButtons.get(key);
+      if (!btn) continue;
+      if (disabled) {
+        this.lockedApps.add(key);
+        btn.style.opacity = '0.35';
+        btn.style.cursor = 'not-allowed';
+        btn.title = 'Unavailable during onboarding';
+      } else {
+        this.lockedApps.delete(key);
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.title = '';
+      }
+    }
   }
 
   private updateTBDisplay(remaining: number): void {

@@ -218,7 +218,8 @@ describe('API Contract Tests', () => {
   });
 
   describe('POST /dialogue/start', () => {
-    test('returns valid dialogue chunk response', async () => {
+    // Requirement 15.1: full chunk-based envelope contract
+    test('returns full chunk-based envelope (Req 15.1)', async () => {
       const port = server.address().port;
       const res = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
@@ -229,30 +230,68 @@ describe('API Contract Tests', () => {
 
       expect(res.status).toBe(201);
       expect(data).toHaveProperty('success', true);
-      // New chunk-based response format
-      expect(data.data).toHaveProperty('chunk');
-      expect(data.data).toHaveProperty('current_chunk_id');
-      expect(data.data).toHaveProperty('current_node_id');
-      expect(data.data).toHaveProperty('available_choices');
-      expect(Array.isArray(data.data.available_choices)).toBe(true);
 
-      const chunk = data.data.chunk;
-      expect(chunk).toHaveProperty('id');
-      expect(chunk).toHaveProperty('chunk_key');
-      expect(chunk).toHaveProperty('nodes');
+      // ── Top-level envelope fields (Req 15.1) ──────────────────
+      const d = data.data;
+      expect(d).toHaveProperty('current_chunk_id');
+      expect(typeof d.current_chunk_id).toBe('string');
+      expect(d.current_chunk_id).toBeTruthy();
+
+      expect(d).toHaveProperty('current_node_id');
+      expect(typeof d.current_node_id).toBe('string');
+      expect(d.current_node_id).toBeTruthy();
+
+      expect(d).toHaveProperty('available_choices');
+      expect(Array.isArray(d.available_choices)).toBe(true);
+
+      expect(d).toHaveProperty('is_end');
+      expect(typeof d.is_end).toBe('boolean');
+
+      expect(d).toHaveProperty('time_blocks_spent');
+      expect(typeof d.time_blocks_spent).toBe('number');
+
+      expect(d).toHaveProperty('time_blocks_remaining');
+      expect(typeof d.time_blocks_remaining).toBe('number');
+
+      // ── chunk sub-object (Req 15.1) ───────────────────────────
+      const chunk = d.chunk;
+      expect(chunk).toBeDefined();
+      expect(typeof chunk.id).toBe('string');
+      expect(chunk.id).toBeTruthy();
+      expect(typeof chunk.chunk_key).toBe('string');
+      expect(chunk.chunk_key).toBeTruthy();
+      expect(chunk.nodes).toBeDefined();
       expect(typeof chunk.nodes).toBe('object');
-      expect(chunk).toHaveProperty('leaves');
+      expect(chunk.leaves).toBeDefined();
+      expect(typeof chunk.leaves).toBe('object');
 
-      // current_node_id should point to a node in the chunk
-      const currentNodeId = data.data.current_node_id;
-      expect(currentNodeId).toBeTruthy();
-      expect(chunk.nodes).toHaveProperty(currentNodeId);
+      // current_node_id must point to a node inside the chunk
+      expect(chunk.nodes).toHaveProperty(d.current_node_id);
+      expect(d.current_chunk_id).toBe(chunk.id);
+
+      // ── Payload-stripping: no GUARDED leaf may expose target_chunk ──
+      // (Requirement 9.5 / Requirement 15.1 hardening)
+      for (const [, leaf] of Object.entries(chunk.leaves as Record<string, any>)) {
+        if (leaf.type === 'GUARDED') {
+          expect(leaf).not.toHaveProperty('target_chunk');
+        }
+        if (leaf.type === 'FREE') {
+          expect(leaf).toHaveProperty('target_chunk');
+        }
+      }
+
+      // ── Requirement 15.3: no legacy tree-format fields ────────
+      expect(d.tree).toBeUndefined();
+      expect(d.nodes).toBeUndefined();
     });
   });
 
   describe('POST /dialogue/:id/choose', () => {
-    test('returns valid choice response using chunk-based API', async () => {
+    // Requirement 15.2: full chunk-based choose envelope contract
+    test('returns full chunk-based choose envelope (Req 15.2)', async () => {
       const port = server.address().port;
+
+      // ── Start a fresh dialogue ─────────────────────────────────
       const start = await fetch(`http://localhost:${port}/dialogue/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
@@ -262,16 +301,17 @@ describe('API Contract Tests', () => {
       expect(start.status).toBe(201);
 
       const currentChunkId = startData.data.current_chunk_id;
-      // Use the dialogue_id (tree UUID) for the route parameter; chunk.id is the chunk UUID
-      const treeId = startData.data.dialogue_id ?? startData.data.chunk.id;
 
-      // Find the first available choice from the start response
+      // Requirement 15.2: the route param must be the dialogue/tree UUID, not the chunk UUID
+      const treeId = startData.data.dialogue_id ?? startData.data.chunk.id;
+      expect(typeof treeId).toBe('string');
+
       const choices = startData.data.available_choices;
       expect(choices.length).toBeGreaterThan(0);
       const firstChoice = choices[0];
       expect(firstChoice).toHaveProperty('id');
 
-      // Make choice using chunk-based API with choice_id
+      // ── Make the choice ────────────────────────────────────────
       const res = await fetch(`http://localhost:${port}/dialogue/${treeId}/choose`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
@@ -281,10 +321,69 @@ describe('API Contract Tests', () => {
 
       expect(res.status).toBe(200);
       expect(data).toHaveProperty('success', true);
-      expect(data.data).toHaveProperty('dialogue_id');
-      expect(data.data).toHaveProperty('choice_id', firstChoice.id);
-      expect(data.data).toHaveProperty('time_blocks_spent');
-      expect(typeof data.data.time_blocks_spent).toBe('number');
+
+      const d = data.data;
+
+      // ── Required top-level fields (Req 15.2) ──────────────────
+      expect(d).toHaveProperty('dialogue_id');
+      expect(typeof d.dialogue_id).toBe('string');
+
+      expect(d).toHaveProperty('choice_id', firstChoice.id);
+
+      expect(d).toHaveProperty('current_chunk_id');
+      expect(typeof d.current_chunk_id).toBe('string');
+      expect(d.current_chunk_id).toBeTruthy();
+
+      expect(d).toHaveProperty('current_node_id');
+      expect(typeof d.current_node_id).toBe('string');
+      expect(d.current_node_id).toBeTruthy();
+
+      expect(d).toHaveProperty('available_choices');
+      expect(Array.isArray(d.available_choices)).toBe(true);
+
+      expect(d).toHaveProperty('is_end');
+      expect(typeof d.is_end).toBe('boolean');
+
+      expect(d).toHaveProperty('time_blocks_spent');
+      expect(typeof d.time_blocks_spent).toBe('number');
+
+      expect(d).toHaveProperty('time_blocks_remaining');
+      expect(typeof d.time_blocks_remaining).toBe('number');
+
+      expect(d).toHaveProperty('is_chunk_boundary_crossing');
+      expect(typeof d.is_chunk_boundary_crossing).toBe('boolean');
+
+      // ── next_chunk sub-object (Req 15.2) ──────────────────────
+      const nextChunk = d.next_chunk;
+      expect(nextChunk).toBeDefined();
+      expect(typeof nextChunk.id).toBe('string');
+      expect(nextChunk.id).toBeTruthy();
+      expect(typeof nextChunk.chunk_key).toBe('string');
+      expect(nextChunk.chunk_key).toBeTruthy();
+      expect(nextChunk.nodes).toBeDefined();
+      expect(typeof nextChunk.nodes).toBe('object');
+      expect(nextChunk.leaves).toBeDefined();
+      expect(typeof nextChunk.leaves).toBe('object');
+
+      // current_node_id must point to a node inside next_chunk
+      expect(nextChunk.nodes).toHaveProperty(d.current_node_id);
+      expect(d.current_chunk_id).toBe(nextChunk.id);
+
+      // ── Payload-stripping: no GUARDED leaf may expose target_chunk ──
+      // (Requirement 9.5 / Requirement 15.2 hardening)
+      for (const [, leaf] of Object.entries(nextChunk.leaves as Record<string, any>)) {
+        if (leaf.type === 'GUARDED') {
+          expect(leaf).not.toHaveProperty('target_chunk');
+        }
+        if (leaf.type === 'FREE') {
+          expect(leaf).toHaveProperty('target_chunk');
+        }
+      }
+
+      // ── Requirement 15.3: no legacy tree-format fields ────────
+      expect(d.tree).toBeUndefined();
+      expect(d.nodes).toBeUndefined();
+      expect(d.next_node).toBeUndefined();
     });
   });
 

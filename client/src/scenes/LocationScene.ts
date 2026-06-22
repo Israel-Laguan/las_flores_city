@@ -34,6 +34,8 @@ export class LocationScene extends Phaser.Scene {
   private audioManager!: AudioManager;
 
   private phoneOpen: boolean = false;
+  /** Set to true while the WorldScene onboarding lock is active (Req 12.1). */
+  private navigationLocked: boolean = false;
 
   constructor() {
     super({ key: 'LocationScene' });
@@ -133,6 +135,15 @@ export class LocationScene extends Phaser.Scene {
       if (!this.phoneOpen) {
         this.input.enabled = true;
       }
+    });
+
+    // Track navigation lock state from WorldScene (Req 12.1).
+    eventBus.on('navigation:locked', () => {
+      this.navigationLocked = true;
+    });
+
+    eventBus.on('navigation:unlocked', () => {
+      this.navigationLocked = false;
     });
   }
 
@@ -286,6 +297,16 @@ export class LocationScene extends Phaser.Scene {
   // ==================== Camera Transitions & Travel Bridge ====================
 
   private async travelTo(locationId: string) {
+    // Gate travel behind the onboarding lock (Req 12.1, 12.4).
+    // Emit a request event first; WorldScene will emit `navigation:blocked`
+    // if the lock is active, which we detect via the flag synced above.
+    eventBus.emit('navigation:request');
+    if (this.navigationLocked) {
+      // WorldScene will have shown the diegetic HUD notice in response to
+      // `navigation:request`. Nothing further to do here.
+      return;
+    }
+
     await this.cameras.main.fadeOut(500, 0, 0, 0);
     eventBus.emit('travel:start');
 

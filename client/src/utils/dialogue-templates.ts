@@ -50,16 +50,24 @@ function buildDialogueText(): string {
     "></div>`;
 }
 
-function buildChoiceButton(choice: ChoiceData, index: number): string {
-  const timeBlockLabel = choice.time_block_cost
-    ? `<span style="color: #666; font-size: 10px; margin-left: 8px;">[${choice.time_block_cost.amount} TB]</span>`
+function buildChoiceButton(choice: ChoiceData, index: number, currentTimeBlocks: number): string {
+  const tbCost = choice.time_block_cost?.amount ?? 0;
+  const canAfford = tbCost === 0 || currentTimeBlocks >= tbCost;
+
+  // 7.5.3: Leading cost prefix (empty string when free)
+  const costPrefix = tbCost > 0
+    ? `<span class="tb-cost-label ${canAfford ? 'tb-affordable' : 'tb-unaffordable'}">[-${tbCost} TB] </span>`
     : '';
+
   const relationshipLabel = choice.relationship_change
     ? `<span style="color: #ff00ff; font-size: 10px; margin-left: 8px;">[+${choice.relationship_change.amount} ${choice.relationship_change.stat}]</span>`
     : '';
 
+  const disabledAttr = !canAfford ? 'disabled' : '';
+  const disabledClass = !canAfford ? 'choice-btn btn-disabled-red' : 'choice-btn';
+
   return `
-    <button class="choice-btn" data-choice-index="${index}" style="
+    <button class="${disabledClass}" data-choice-index="${index}" ${disabledAttr} style="
       padding: 10px 16px;
       background: rgba(0, 255, 0, 0.05);
       border: 1px solid rgba(0, 255, 0, 0.3);
@@ -71,15 +79,15 @@ function buildChoiceButton(choice: ChoiceData, index: number): string {
       border-radius: 4px;
       transition: all 0.2s ease;
     ">
-      ${choice.text}${timeBlockLabel}${relationshipLabel}
+      ${costPrefix}${choice.text}${relationshipLabel}
     </button>`;
 }
 
-export function buildChoiceButtons(choices: ChoiceData[]): string {
-  return choices.map((choice, i) => buildChoiceButton(choice, i)).join('');
+export function buildChoiceButtons(choices: ChoiceData[], currentTimeBlocks: number = 999): string {
+  return choices.map((choice, i) => buildChoiceButton(choice, i, currentTimeBlocks)).join('');
 }
 
-export function buildChoicesContainer(choices: ChoiceData[]): string {
+export function buildChoicesContainer(choices: ChoiceData[], currentTimeBlocks: number = 999): string {
   if (choices.length === 0) return '';
 
   return `
@@ -91,7 +99,7 @@ export function buildChoicesContainer(choices: ChoiceData[]): string {
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: #00ff00 #0a0a1a;
-    ">${buildChoiceButtons(choices)}</div>`;
+    ">${buildChoiceButtons(choices, currentTimeBlocks)}</div>`;
 }
 
 function buildEndIndicator(): string {
@@ -110,14 +118,15 @@ function buildEndIndicator(): string {
 
 export function buildDialogueHTML(
   currentNode: DialogueNode,
-  availableChoices: ChoiceData[]
+  availableChoices: ChoiceData[],
+  currentTimeBlocks: number = 999
 ): string {
   const speakerName = currentNode.speaker?.name || 'Narrator';
   const speakerTitle = currentNode.speaker?.title || '';
 
   const speakerHtml = buildSpeakerInfo(speakerName, speakerTitle);
   const textHtml = buildDialogueText();
-  const choicesHtml = buildChoicesContainer(availableChoices);
+  const choicesHtml = buildChoicesContainer(availableChoices, currentTimeBlocks);
   const endHtml = currentNode.is_end || availableChoices.length === 0
     ? buildEndIndicator()
     : '';

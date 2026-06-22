@@ -778,4 +778,129 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
     });
   });
 
+  // ──────────────────────────────────────────────────────────
+  // GET /dialogue/chunk/:chunkId — Radar Prefetch Endpoint
+  //
+  // The :chunkId route parameter is actually a chunk_key string
+  // (e.g. 'free_target'), not a UUID. The resolver looks up the
+  // chunk by chunk_key across all trees.
+  //
+  // Requirements: 8.2, 8.3, 8.4 (404), 8.1 (auth)
+  //               9.5 (payload-stripping on FREE-only response)
+  //               15.1 / 15.2 (chunk envelope hardening)
+  //               15.4 (fixture cleanup verification)
+  // ──────────────────────────────────────────────────────────
+  describe('GET /dialogue/chunk/:chunkId', () => {
+    beforeEach(resetDialogueState);
+
+    // Requirement 8.2 / Req 15.1: FREE-only chunk returns HTTP 200
+    // with full { id, chunk_key, nodes, leaves } envelope.
+    // No GUARDED leaf in data.leaves may expose target_chunk (Req 9.5).
+    test('returns HTTP 200 with chunk envelope for a FREE-only chunk', async () => {
+      // 'free_target' is a terminal node with no outbound leaves (is_end: true).
+      // Its leaves record is empty, satisfying the "no gated leaves" condition.
+      const res = await fetch(
+        `http://localhost:${port}/dialogue/chunk/free_target`,
+        { headers: authHeaders() },
+      );
+      const body = await res.json() as any;
+
+      // HTTP 200 with success envelope (Requirement 8.2)
+      expect(res.status).toBe(200);
+      expect(body.success).toBe(true);
+
+      // Full { id, chunk_key, nodes, leaves } shape (Req 15.1 hardening)
+      const d = body.data;
+      expect(typeof d.id).toBe('string');
+      expect(d.id).toBeTruthy();
+      expect(d.id).toBe(freeChunkId);
+      expect(typeof d.chunk_key).toBe('string');
+      expect(d.chunk_key).toBe('free_target');
+      expect(d.nodes).toBeDefined();
+      expect(typeof d.nodes).toBe('object');
+      expect(d.leaves).toBeDefined();
+      expect(typeof d.leaves).toBe('object');
+
+      // Payload-stripping invariant (Requirement 9.5):
+      // No GUARDED leaf may expose target_chunk; FREE leaves keep it.
+      for (const [, leaf] of Object.entries(d.leaves as Record<string, any>)) {
+        if (leaf.type === 'GUARDED') {
+          expect(leaf).not.toHaveProperty('target_chunk');
+        }
+        if (leaf.type === 'FREE') {
+          expect(leaf).toHaveProperty('target_chunk');
+        }
+      }
+    });
+
+    // Requirement 8.3: chunk whose leaves contain one or more GUARDED
+    // entries returns HTTP 403. The 'chunk_start' chunk has both GUARDED
+    // and FREE leaves so the endpoint must refuse it.
+    test('returns HTTP 403 for a chunk that contains GUARDED leaves', async () => {
+      // chunk_start contains a GUARDED leaf (c_pay, 2 TB cost) so
+      // the prefetch endpoint must reject it.
+      const res = await fetch(
+        `http://localhost:${port}/dialogue/chunk/chunk_start`,
+        { headers: authHeaders() },
+      );
+      const body = await res.json() as any;
+
+      // HTTP 403 with descriptive error (Requirement 8.3)
+      expect(res.status).toBe(403);
+      expect(body.success).toBe(false);
+      expect(body.error).toMatch(/gated content/i);
+    });
+
+    // Requirement 8.4: non-existent chunk key returns HTTP 404
+    test('returns HTTP 404 for a chunk key that does not exist', async () => {
+      const res = await fetch(
+        `http://localhost:${port}/dialogue/chunk/absolutely_nonexistent_chunk_key_xyz`,
+        { headers: authHeaders() },
+      );
+      const body = await res.json() as any;
+
+      expect(res.status).toBe(404);
+      expect(body.success).toBe(false);
+    });
+
+    // Requirement 8.1: endpoint requires a valid auth token
+    test('returns HTTP 401 when no auth token is provided', async () => {
+      const res = await fetch(
+        `http://localhost:${port}/dialogue/chunk/free_target`,
+        // deliberately omit auth headers
+      );
+
+      expect(res.status).toBe(401);
+    });
+
+    // Requirement 15.4: player_dialogue_states rows are created with
+    // dedicated UUID constants (collision-avoidance) and are cleaned
+    // up by afterAll. This test verifies the fixture strategy.
+    test('player_dialogue_states rows use dedicated UUID fixtures', async () => {
+      // Kick off a dialogue so player_dialogue_states is populated
+      const { res: startRes, body: startBody } = await startDialogue();
+      expect(startRes.status).toBe(201);
+
+      // Query using the same dedicated TEST_USER_ID (prefixed dca1…)
+      // per this file's collision-avoidance convention.
+      const dbRow = await queryOLTP<{ user_id: string; current_chunk_id: string }>(
+        `SELECT user_id, current_chunk_id
+         FROM player_dialogue_states
+         WHERE user_id = $1`,
+        [TEST_USER_ID],
+      );
+
+      expect(dbRow.rows).toHaveLength(1);
+
+      // Must use the fixture UUID (not a random runtime-generated one)
+      expect(dbRow.rows[0].user_id).toBe(TEST_USER_ID);
+
+      // UUID format sanity: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      expect(dbRow.rows[0].user_id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      );
+      expect(dbRow.rows[0].current_chunk_id).toBe(startBody.data.current_chunk_id);
+    });
+  });
+
 });

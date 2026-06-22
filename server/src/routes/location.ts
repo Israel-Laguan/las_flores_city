@@ -2,6 +2,7 @@ import express from 'express';
 import { queryOLTP } from '../database/connection.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
+import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 export const locationRouter = express.Router();
 
@@ -374,17 +375,34 @@ locationRouter.get('/:id/dialogues', authMiddleware, async (req: AuthRequest, re
 });
 
 // GET /location - Get all locations (requires auth)
+// 7.5.1: Filters by player story_beat using scenes.metadata.required_story_beat.
+// Scenes with no required_story_beat are always visible (backwards-compatible).
 locationRouter.get('/', authMiddleware, async (req: AuthRequest, res) => {
   try {
+    const userId = req.userId!;
+
+    // Fetch player's current story beat
+    const playerRow = await PlayerStateRepository.getFullState(userId);
+    const storyBeat = playerRow?.story_beat || 'prologue';
+
+    // Fetch all scenes including metadata for gating check
     const result = await queryOLTP(
-      'SELECT id, name, description, district, image_url FROM scenes ORDER BY name'
+      'SELECT id, name, description, district, image_url, metadata FROM scenes ORDER BY name'
     );
+
+    // Filter by story_beat gating, then strip metadata from the response
+    const locations = result.rows
+      .filter(scene => {
+        const required = (scene.metadata as any)?.required_story_beat;
+        if (!required) return true; // no gate — always visible
+        if (Array.isArray(required)) return required.includes(storyBeat);
+        return required === storyBeat;
+      })
+      .map(({ metadata: _meta, ...rest }) => rest);
 
     res.json({
       success: true,
-      data: {
-        locations: result.rows,
-      },
+      data: { locations },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

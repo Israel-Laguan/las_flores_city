@@ -1,6 +1,36 @@
 import type { DialogueNode, DialogueChoice, Leaf } from '@las-flores/shared';
 
 // ============================================================
+// stripGuardedTargetChunks — Payload Stripping (Requirement 9)
+//
+// Removes the `target_chunk` field from every GUARDED leaf in a
+// leaves record before the record is included in an API response.
+// FREE leaves are returned unchanged (clients need target_chunk
+// for cache-key lookups in the Radar Prefetcher).
+//
+// This is a pure helper: it accepts a record of leaves and returns
+// a new record — the input is never mutated.
+//
+// Requirements: 9.1, 9.2, 9.3, 9.4, 9.5; 8.5
+// ============================================================
+
+export function stripGuardedTargetChunks(
+  leaves: Record<string, Leaf>,
+): Record<string, Leaf> {
+  const result: Record<string, Leaf> = {};
+  for (const [key, leaf] of Object.entries(leaves)) {
+    if (leaf.type === 'GUARDED') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { target_chunk: _stripped, ...rest } = leaf as Leaf & { target_chunk: string };
+      result[key] = rest as Leaf;
+    } else {
+      result[key] = leaf;
+    }
+  }
+  return result;
+}
+
+// ============================================================
 // ChunkPayload — the shape of the `chunk` field in API responses
 //
 // This is a subset of ResolvedChunk.chunk, stripped of tree_id
@@ -42,7 +72,7 @@ export function buildDialogueResponse(
         id: chunk.id,
         chunk_key: chunk.chunk_key,
         nodes: chunk.nodes,
-        leaves: chunk.leaves,
+        leaves: stripGuardedTargetChunks(chunk.leaves),
       },
       current_chunk_id: currentChunkId,
       current_node_id: currentNodeId,
@@ -144,7 +174,7 @@ export function buildChooseResponse(
         id: nextChunk.id,
         chunk_key: nextChunk.chunk_key,
         nodes: nextChunk.nodes,
-        leaves: nextChunk.leaves,
+        leaves: stripGuardedTargetChunks(nextChunk.leaves),
       },
       current_chunk_id: currentChunkId,
       current_node_id: currentNodeId,

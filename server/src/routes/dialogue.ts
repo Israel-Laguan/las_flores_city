@@ -5,7 +5,7 @@ import { handleChoose } from './dialogue-choose.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
-import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
+import { buildDialogueResponse, stripGuardedTargetChunks, type ChunkPayload } from './dialogue-response-helpers.js';
 import { filterChoices, initializeDialogueState } from './dialogue-helpers.js';
 
 export const dialogueRouter = express.Router();
@@ -39,6 +39,47 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
 // ============================================================
 dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res) => {
   return handleChoose(req, res);
+});
+
+// ============================================================
+// GET /dialogue/chunk/:chunkId - Radar Prefetcher (Task 7.5.4)
+//
+// Lightweight endpoint that returns a chunk by chunk_key ONLY IF
+// it contains no gated leaves.
+// ============================================================
+dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId!;
+    const chunkKey = req.params.chunkId;
+
+    let resolvedChunk;
+    try {
+      resolvedChunk = await DialogueResolver.resolveNextChunk(userId, chunkKey);
+    } catch (err) {
+      return res.status(404).json({ success: false, error: 'Chunk not found' });
+    }
+
+    // Safety check: only serve chunks with no gated leaves
+    const hasGatedLeaves = Object.values(resolvedChunk.chunk.leaves ?? {}).some(
+      (leaf: any) => (leaf.tb_cost ?? 0) > 0 || (leaf.conditions && leaf.conditions.length > 0)
+    );
+
+    if (hasGatedLeaves) {
+      return res.status(403).json({ success: false, error: 'Chunk contains gated content' });
+    }
+
+    const chunkPayload: ChunkPayload = {
+      id: resolvedChunk.chunk.id,
+      chunk_key: resolvedChunk.chunk.chunk_key,
+      nodes: resolvedChunk.mergedNodes,
+      leaves: stripGuardedTargetChunks(resolvedChunk.chunk.leaves),
+    };
+
+    res.json({ success: true, data: chunkPayload });
+  } catch (error: any) {
+    console.error('Get dialogue chunk error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch chunk' });
+  }
 });
 
 // ============================================================

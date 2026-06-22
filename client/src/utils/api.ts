@@ -198,12 +198,20 @@ export async function startDialogueWithCharacter(
 }
 
 export async function makeDialogueChoice(
-  dialogueId: string,
-  choiceIndex: number
+  dialogueOrChunkId: string,
+  choiceIdOrIndex: string | number
 ): Promise<any> {
-  return fetchAPI(`/dialogue/${dialogueId}/choose`, {
+  const body: any = {};
+  if (typeof choiceIdOrIndex === 'number') {
+    body.choiceIndex = choiceIdOrIndex;
+  } else {
+    body.current_chunk_id = dialogueOrChunkId;
+    body.choice_id = choiceIdOrIndex;
+  }
+  
+  return fetchAPI(`/dialogue/${dialogueOrChunkId}/choose`, {
     method: 'POST',
-    body: JSON.stringify({ choiceIndex }),
+    body: JSON.stringify(body),
   });
 }
 
@@ -215,6 +223,77 @@ export async function endDialogue(): Promise<any> {
   return fetchAPI('/dialogue/end', {
     method: 'POST',
   });
+}
+
+// 7.5.4 — Radar Prefetcher: fetch a single FREE chunk for the local cache
+export async function getDialogueChunk(chunkId: string): Promise<any> {
+  return fetchAPI(`/dialogue/chunk/${chunkId}`);
+}
+
+// 7.5.4 / Req 10 — Fire-and-forget server sync for instant-transition cache hits.
+//
+// The function is void and returns immediately (Req 10.7). An inner async IIFE
+// carries out the POST without blocking the calling render path.
+//
+// On success the DialogueUI is NOT interrupted — the transition already
+// appeared instantaneous to the player (Req 10.6).
+//
+// On network error (TypeError) or 5xx the `ui:show_error` event is emitted so
+// the Diegetic Error Modal can drive the retry/abort loop (Req 10.2).
+// Non-interceptable errors (4xx, etc.) are silently ignored — they are
+// programming bugs, not transient uplink failures.
+export function makeDialogueChoiceBackground(
+  currentChunkId: string,
+  choiceId: string
+): void {
+  void (async () => {
+    const endpoint = `/dialogue/${currentChunkId}/choose`;
+    const body = JSON.stringify({ current_chunk_id: currentChunkId, choice_id: choiceId });
+
+    const attempt = () =>
+      fetchAPI(endpoint, {
+        method: 'POST',
+        body,
+      });
+
+    try {
+      await attempt();
+      // Success — no event emitted; UI continues uninterrupted (Req 10.6).
+    } catch (err) {
+      if (!shouldIntercept(err)) {
+        // 4xx / programming-level error — not a transient uplink failure; ignore.
+        return;
+      }
+
+      // Transient uplink failure: surface the diegetic recovery modal (Req 10.2).
+      eventBus.emit('ui:show_error', {
+        id:
+          typeof crypto !== 'undefined' && 'randomUUID' in crypto
+            ? crypto.randomUUID()
+            : `err_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+        signature: `POST ${endpoint}`,
+        code: err instanceof TypeError
+          ? 'UPLINK_BROKEN'
+          : (`SERVER_CRASH_${(err as { status?: number }).status}` as const),
+        message:
+          'Uplink Broken — Retrying…',
+        retry: async () => {
+          // Re-attempt the same POST; throws on failure so the modal can
+          // restart its countdown (Req 10.4).
+          await attempt();
+        },
+        abort: () => {
+          // Player chose to abandon the sync (Req 10.5).
+          // Background call is fire-and-forget so there is no outer Promise to
+          // reject; we emit a monologue warning to surface the abandonment.
+          eventBus.emit('monologue:push', {
+            text: '[UPLINK ABANDONED] Server sync skipped. Save state may be out of sync.',
+            type: 'warning',
+          });
+        },
+      });
+    }
+  })();
 }
 
 // Settings / AI Key API

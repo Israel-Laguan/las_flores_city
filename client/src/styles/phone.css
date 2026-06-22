@@ -197,3 +197,29 @@ canvas {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* 7.5.3 — Diegetic Time Block cost labels on dialogue choice buttons */
+.tb-cost-label {
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.tb-affordable {
+  color: #ffaa00;
+  text-shadow: 0 0 4px rgba(255, 170, 0, 0.4);
+}
+
+.tb-unaffordable {
+  color: #ff3333;
+  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
+}
+
+.btn-disabled-red {
+  opacity: 0.45 !important;
+  border-color: rgba(255, 51, 51, 0.4) !important;
+  color: #ff3333 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
