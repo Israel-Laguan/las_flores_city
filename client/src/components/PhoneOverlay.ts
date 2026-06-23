@@ -39,12 +39,7 @@ export class PhoneOverlay {
     this.createNavBar();
     this.setupEventListeners();
 
-    // Auth is managed by HttpOnly cookie; devLogin() runs before any user interaction,
-    // so the overlay is always interactive by the time the player sees it.
-    const overlay = document.getElementById('phone-overlay');
-    if (overlay) overlay.style.pointerEvents = 'all';
-
-    // Mount default app
+// Mount default app
     this.switchApp('feed');
   }
 

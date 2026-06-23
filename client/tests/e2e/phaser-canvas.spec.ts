@@ -31,13 +31,8 @@ test.describe('Phaser Canvas', () => {
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible();
     
-    // The phone overlay should not block canvas interactions
+    // Wait for overlay to settle to none (closed state) before asserting
     const phoneOverlay = page.locator('#phone-overlay');
-    const pointerEvents = await phoneOverlay.evaluate((el) => 
-      window.getComputedStyle(el).pointerEvents
-    );
-    
-    // Initially, pointer events should be none so canvas is interactive
-    expect(pointerEvents).toBe('none');
+    await expect(phoneOverlay).toHaveCSS('pointer-events', 'none', { timeout: 5_000 });
   });
 });

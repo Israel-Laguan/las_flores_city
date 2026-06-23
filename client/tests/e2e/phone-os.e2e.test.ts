@@ -28,15 +28,19 @@ test.beforeEach(async ({ page }) => {
 
 // ── Pointer event focus locking ──────────────────────────────────────────────
 
-test('Phone overlay captures clicks; Phaser canvas input is disabled', async ({ page }) => {
+test('Phone overlay pointer-events become all when open', async ({ page }) => {
   const phoneOverlay = page.locator('#phone-overlay');
   await expect(phoneOverlay).toBeVisible();
 
-  // The phone overlay must sit above the canvas (pointer-events: all)
-  const phoneEvents = await phoneOverlay.evaluate((el) =>
-    window.getComputedStyle(el).pointerEvents
-  );
-  expect(phoneEvents).toBe('all');
+  // Initially closed — overlay does not block canvas interaction
+  await expect(phoneOverlay).toHaveCSS('pointer-events', 'none');
+
+  // Open phone via keyboard shortcut
+  await page.keyboard.press('KeyP');
+  await page.waitForTimeout(400);
+
+  // When open, the overlay captures clicks (PhoneBridge sets pointer-events to auto)
+  await expect(phoneOverlay).toHaveCSS('pointer-events', 'auto', { timeout: 3_000 });
 
   // The Phaser canvas must have pointer-events blocked by the overlay
   const canvas = page.locator('canvas').first();

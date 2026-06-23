@@ -31,13 +31,27 @@ const testUsername = `cookie_${Date.now()}_${Math.random().toString(36).slice(2,
 // 1 & 2. Register response shape + Set-Cookie header
 // ─────────────────────────────────────────────────────────────────────────────
 
+test.beforeAll(async ({ request }) => {
+  const res = await request.post(`${AUTH_BASE}/auth/register`, {
+    data: {
+      email: testEmail,
+      username: testUsername,
+      display_name: 'Cookie E2E',
+      password: 'test1234',
+    },
+  });
+  expect(res.ok()).toBeTruthy();
+});
+
 test.describe('Auth cookie — register & login shape', () => {
   test('register sets HttpOnly cookie and omits token from body', async ({ request }) => {
+    // Register a second user to verify the HTTP response shape (first was created in beforeAll)
+    const probeEmail = `probe-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
     const res = await request.post(`${AUTH_BASE}/auth/register`, {
       data: {
-        email: testEmail,
-        username: testUsername,
-        display_name: 'Cookie E2E',
+        email: probeEmail,
+        username: `probe_${Date.now()}`,
+        display_name: 'Probe E2E',
         password: 'test1234',
       },
     });
@@ -45,20 +59,17 @@ test.describe('Auth cookie — register & login shape', () => {
     expect(res.ok()).toBeTruthy();
     const body = await res.json();
 
-    // Invariant 1: no token in response body
     expect(body.data).toBeDefined();
     expect(body.data.token).toBeUndefined();
 
-    // Invariant 2: Set-Cookie header present with HttpOnly + jwt_session
     const setCookie = res.headers()['set-cookie'];
     expect(setCookie).toBeTruthy();
     expect(setCookie).toContain('jwt_session=');
     expect(setCookie.toLowerCase()).toContain('httponly');
   });
 
-  test('login sets HttpOnly cookie and omits token from body', async ({ request, page }) => {
-    // Login via the page's cookie jar so the cookie persists for follow-up
-    // authenticated requests in the next test block.
+  test('login sets HttpOnly cookie and omits token from body', async ({ page }) => {
+    await page.goto('/');
     const res = await page.request.post(`${AUTH_BASE}/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
@@ -82,7 +93,7 @@ test.describe('Auth cookie — register & login shape', () => {
 
 test.describe('Auth cookie — session propagation', () => {
   test('authenticated endpoint returns 200 with cookie only, no Authorization header', async ({ page }) => {
-    // Seed the browser cookie jar via login. No addInitScript / localStorage.
+    await page.goto('/');
     const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
@@ -100,24 +111,22 @@ test.describe('Auth cookie — session propagation', () => {
   });
 
   test('client app boots and loads player state via cookie auth', async ({ page }) => {
-    // Real browser flow: login via the server → navigate to app → app's own
-    // fetch('/api/player/state') must succeed because the cookie rides along.
+    // Seed the cookie jar via login, then reload so the app boot picks it up.
+    await page.goto('/');
     const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
     expect(loginRes.ok()).toBeTruthy();
 
-    await page.goto('/');
-
-    // The client init flow (main.ts) calls getPlayerState() on boot. If the
-    // cookie auth is broken, it would fall back to devLogin and emit a console
-    // log about "No session cookie found". We assert that never happens.
     const sawNoCookieFallback: string[] = [];
     page.on('console', (msg) => {
       if (msg.text().includes('No session cookie found')) {
         sawNoCookieFallback.push(msg.text());
       }
     });
+
+    // Reload — the app's boot fetch(/api/player/state) will now carry the cookie.
+    await page.reload();
 
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible({ timeout: 10_000 });
@@ -135,6 +144,7 @@ test.describe('Auth cookie — session propagation', () => {
 
 test.describe('Auth cookie — logout', () => {
   test('logout clears the session cookie and revokes access', async ({ page }) => {
+    await page.goto('/');
     // Establish a session.
     const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
       data: { email: testEmail, password: 'test1234' },

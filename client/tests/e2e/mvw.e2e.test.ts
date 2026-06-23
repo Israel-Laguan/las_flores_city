@@ -8,7 +8,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
 const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 
@@ -19,7 +19,7 @@ const testUsername = `mvw_${Date.now()}_${Math.random().toString(36).slice(2, 6)
 test.beforeAll(async ({ request }) => {
   // Register creates the user. We don't need the cookie from this call to
   // persist — injectAuth() logs in per-page below to scope the cookie to :5173.
-  const res = await request.post(`${API_URL}/auth/register`, {
+  const res = await request.post(`${API_URL}/api/auth/register`, {
     data: { email: testEmail, username: testUsername, display_name: 'MVW E2E', password: 'test1234' },
   });
   expect(res.ok()).toBeTruthy();
@@ -232,7 +232,7 @@ test.describe('Full First Hour Loop', () => {
     await injectAuth(page);
 
     // 1. Verify starting health
-    const healthRes = await page.request.get(`${API_URL}/health`);
+    const healthRes = await page.request.get('/api/health');
     expect(healthRes.ok()).toBeTruthy();
 
     // 2. Move to Café — go through the /api proxy so the page's HttpOnly

@@ -13,14 +13,12 @@
  * automatically — exactly how a real API client behaves. See Task 6.5 spec
  * §E2E migration.
  *
- * NOTE on origin scoping: unlike the browser-flow specs (which route through
- * the Vite /api proxy on :5173 so the cookie is scoped to the page's origin),
- * this suite talks to :3000 directly. That is intentional — we are testing the
- * raw server contract, so the cookie is correctly scoped to :3000 here.
+ * NOTE on origin scoping: this suite talks to the Vite dev server at :5173
+ * through the /api proxy, so the cookie is correctly scoped to :5173.
  */
 import { test, expect, APIRequestContext } from '@playwright/test';
 
-const API_BASE = process.env.API_URL || 'http://localhost:3000';
+const API_BASE = process.env.API_URL || 'http://localhost:5173';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const TEST_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004';
 const TEST_EMAIL = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
@@ -31,10 +29,9 @@ const TEST_USERNAME = `e2e_${Date.now()}_${Math.random().toString(36).slice(2, 6
 let apiContext: APIRequestContext;
 
 test.beforeAll(async ({ playwright }) => {
-  // 1. Register the user via a throwaway context. We don't reuse this context's
-  //    cookie — we login separately below to mirror the canonical browser flow.
+  // 1. Register the user via a throwaway context through the Vite /api proxy.
   const regContext = await playwright.request.newContext({ baseURL: API_BASE });
-  const regRes = await regContext.post('/auth/register', {
+  const regRes = await regContext.post('/api/auth/register', {
     data: {
       email: TEST_EMAIL,
       username: TEST_USERNAME,
@@ -48,7 +45,7 @@ test.beforeAll(async ({ playwright }) => {
   // 2. Login in a fresh context — Playwright captures the Set-Cookie header
   //    into this context's cookie jar automatically.
   const loginContext = await playwright.request.newContext({ baseURL: API_BASE });
-  const loginRes = await loginContext.post('/auth/login', {
+  const loginRes = await loginContext.post('/api/auth/login', {
     data: { email: TEST_EMAIL, password: 'password123' },
   });
   expect(loginRes.ok()).toBeTruthy();
@@ -69,7 +66,7 @@ test.afterAll(async () => {
 
 test.describe('API Contract E2E', () => {
   test('GET /health returns valid response', async () => {
-    const response = await apiContext.get('/health');
+    const response = await apiContext.get('/api/health');
     expect(response.ok()).toBeTruthy();
 
     const data = await response.json();
@@ -81,7 +78,7 @@ test.describe('API Contract E2E', () => {
   test('GET /player/state returns valid player state under cookie auth', async () => {
     // No Authorization header — the cookie carries auth, proving the contract
     // works under the production pathway.
-    const response = await apiContext.get('/player/state');
+    const response = await apiContext.get('/api/player/state');
     expect(response.ok()).toBeTruthy();
 
     const data = await response.json();
@@ -98,7 +95,7 @@ test.describe('API Contract E2E', () => {
   });
 
   test('GET /location/welcome_center returns valid scene payload', async () => {
-    const response = await apiContext.get(`/location/${WELCOME_SCENE_ID}`);
+    const response = await apiContext.get(`/api/location/${WELCOME_SCENE_ID}`);
     expect(response.ok()).toBeTruthy();
 
     const data = await response.json();
@@ -125,19 +122,22 @@ test.describe('API Contract E2E', () => {
     });
   });
 
-  test('POST /dialogue/start returns valid dialogue tree', async () => {
-    const response = await apiContext.post('/dialogue/start', {
+  test('POST /dialogue/start returns valid dialogue chunk', async () => {
+    const response = await apiContext.post('/api/dialogue/start', {
       data: { characterId: TEST_CHARACTER_ID, sceneId: WELCOME_SCENE_ID },
     });
     expect(response.ok()).toBeTruthy();
 
     const data = await response.json();
     expect(data.success).toBe(true);
-    expect(data.data.tree).toBeDefined();
-    expect(data.data.tree.name).toBeTruthy();
-    expect(data.data.tree.start_node_id).toBeTruthy();
-    expect(data.data.tree.nodes).toBeDefined();
-    expect(data.data.current_node).toBeDefined();
+
+    // chunk-based response (replaces old tree-based response)
+    expect(data.data.chunk).toBeDefined();
+    expect(data.data.chunk.id).toBeTruthy();
+    expect(data.data.chunk.chunk_key).toBeTruthy();
+    expect(data.data.chunk.nodes).toBeDefined();
+    expect(data.data.current_chunk_id).toBeDefined();
+    expect(data.data.current_node_id).toBeDefined();
     expect(data.data.available_choices).toBeDefined();
     expect(data.data.available_choices.length).toBeGreaterThan(0);
   });

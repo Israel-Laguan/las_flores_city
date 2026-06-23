@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 
 // Shared credentials — beforeAll registers the user; injectAuth() logs in
 // per-page to scope the HttpOnly cookie to :5173 (the page's origin).
@@ -8,7 +8,7 @@ const testEmail = `ux-polish-${Date.now()}-${Math.random().toString(36).slice(2,
 const testUsername = `ux_polish_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
 test.beforeAll(async ({ request }) => {
-  const response = await request.post(`${API_BASE}/auth/register`, {
+  const response = await request.post(`${API_BASE}/api/auth/register`, {
     data: {
       email: testEmail,
       username: testUsername,

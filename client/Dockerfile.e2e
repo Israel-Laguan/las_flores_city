@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/playwright:v1.61.0-jammy
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY client/package*.json ./client/
+COPY shared/package*.json ./shared/
+
+RUN npm ci
+
+COPY client/ ./client/
+COPY shared/ ./shared/
+
+RUN npm run build --workspace=shared
+
+WORKDIR /app/client
+
+CMD ["npx", "playwright", "test", "--config", "playwright.docker.config.ts"]

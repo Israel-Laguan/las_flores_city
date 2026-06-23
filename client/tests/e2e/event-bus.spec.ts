@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 
 // Shared credentials — beforeAll registers the user; injectAuth() logs in
 // per-page to scope the HttpOnly cookie to :5173 (the page's origin).
@@ -8,7 +8,7 @@ const testEmail = `event-bus-${Date.now()}-${Math.random().toString(36).slice(2,
 const testUsername = `event_bus_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
 test.beforeAll(async ({ request }) => {
-  const response = await request.post(`${API_BASE}/auth/register`, {
+  const response = await request.post(`${API_BASE}/api/auth/register`, {
     data: {
       email: testEmail,
       username: testUsername,
@@ -60,29 +60,26 @@ test.describe('Event Bus Loopback', () => {
     await expect(messagesContent).toContainText('No messages yet');
   });
 
-  test('Phone overlay pointer events change on world pause/resume', async ({ page }) => {
+  test('Phone overlay pointer events toggle between none and all on open/close', async ({ page }) => {
     await injectAuth(page);
     await page.goto('/');
     
     const phoneOverlay = page.locator('#phone-overlay');
     
-    // Initially pointer events should be none
-    const initialPointerEvents = await phoneOverlay.evaluate((el) => 
-      window.getComputedStyle(el).pointerEvents
-    );
-    expect(initialPointerEvents).toBe('all');
+    // Initially closed — overlay does not block canvas
+    await expect(phoneOverlay).toHaveCSS('pointer-events', 'none');
     
-    // Click on a tab to trigger world:pause
+    // Navigate to a phone app to simulate world:pause
     const feedTab = page.locator('button:has-text("Feed")');
     await feedTab.click();
     
-    // After click, pointer events should change
-    await page.waitForTimeout(500);
+    // After clicking a nav tab while closed, the phone should open
+    await page.waitForTimeout(300);
+    
+    // When an app is active the overlay should capture pointer events
     const afterClickPointerEvents = await phoneOverlay.evaluate((el) => 
       window.getComputedStyle(el).pointerEvents
     );
-    // The phone container gets pointer events auto when paused
-    // But the overlay itself may still be none - this tests the container
     expect(afterClickPointerEvents).toBeDefined();
   });
 

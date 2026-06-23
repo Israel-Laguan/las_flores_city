@@ -20,6 +20,7 @@ import { paypalRouter } from './routes/paypal.js';
 import { archiveRouter } from './routes/archive.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
+import { runAllMigrations } from './database/migrate.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 
 dotenv.config();
@@ -75,6 +76,14 @@ async function initializeServer() {
   const dbConnected = await testConnections();
   if (!dbConnected) {
     console.error('❌ Failed to connect to databases. Exiting...');
+    process.exit(1);
+  }
+
+  // Run pending schema + content migrations
+  try {
+    await runAllMigrations();
+  } catch (err) {
+    console.error('❌ Migration failed. Exiting...', err);
     process.exit(1);
   }
 
