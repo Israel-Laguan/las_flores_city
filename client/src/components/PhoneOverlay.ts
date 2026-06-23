@@ -254,14 +254,3 @@ export class PhoneOverlay {
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => new PhoneOverlay());
-} else {
-  // DOM is already ready, but ensure element exists
-  if (document.getElementById('phone-app-content')) {
-    new PhoneOverlay();
-  } else {
-    // Wait for next tick to ensure element is available
-    setTimeout(() => new PhoneOverlay(), 0);
-  }
-}

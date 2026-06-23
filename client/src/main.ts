@@ -2,8 +2,6 @@ import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene';
 import { WorldScene } from './scenes/WorldScene';
 import { LocationScene } from './scenes/LocationScene';
-import './components/PhoneOverlay';
-import './components/SleepOverlay';
 import './styles/comms.css';
 import './styles/vault.css';
 import './styles/banco.css';
@@ -11,10 +9,17 @@ import { DialogueUI } from './components/DialogueUI';
 import { MonologueFeed } from './components/MonologueFeed';
 import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
 import { TerminalModal } from './components/TerminalModal';
+import { PhoneOverlay } from './components/PhoneOverlay';
+import { SleepOverlay } from './components/SleepOverlay';
+import { LoginMenu } from './components/LoginMenu';
+import { MainMenu } from './components/MainMenu';
+import { SettingsView } from './components/SettingsView';
+import { GalleryView } from './components/GalleryView';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
 import { initThemeEngine } from './utils/themeEngine';
+import { registerRoute, navigateTo, startRouter } from './router';
 
 declare global {
   interface Window {
@@ -42,73 +47,141 @@ const config: Phaser.Types.Core.GameConfig = {
   },
 };
 
-const game = new Phaser.Game(config);
+let gameInstance: Phaser.Game | null = null;
+let phoneOverlayInstance: PhoneOverlay | null = null;
+let sleepOverlayInstance: SleepOverlay | null = null;
+let currentView: { destroy: () => void } | null = null;
+let isAuthenticated = false;
 
-// Initialize components
-async function initApp() {
-  // Try loading player state first. If 401 (no session cookie), dev-login then retry.
-  try {
-    const state = await api.getPlayerState();
-    if (state.success) {
-      console.log('Player state loaded:', state.data);
-      eventBus.emit('player:state-loaded', state.data);
+function destroyGame(): void {
+  if (phoneOverlayInstance) {
+    phoneOverlayInstance.destroy();
+    phoneOverlayInstance = null;
+  }
+  if (sleepOverlayInstance) {
+    sleepOverlayInstance.destroy();
+    sleepOverlayInstance = null;
+  }
+  if (gameInstance) {
+    gameInstance.destroy(true);
+    gameInstance = null;
+  }
+}
 
-      // 7.5.2 — Onboarding Lock: if the player is mid-dialogue, lock the
-      // phone apps and resume the conversation immediately.
-      if (state.data.currentNodeId !== null) {
-        eventBus.emit('ui:lock-phone-apps', true);
-        eventBus.emit('dialogue:resume');
-      } else {
-        eventBus.emit('ui:lock-phone-apps', false);
+function destroyCurrentView(): void {
+  if (currentView) {
+    currentView.destroy();
+    currentView = null;
+  }
+}
 
-        // Load initial location only when not locked in dialogue
-        if (state.data.locationId) {
-          const location = await api.getLocation(state.data.locationId);
-          if (location.success) {
-            const flatLocation = {
-              id: location.data.scene?.id,
-              name: location.data.scene?.title || 'Unknown',
-              npcs: location.data.npcs,
-            };
-            eventBus.emit('location:loaded', flatLocation);
-          }
-        }
+function hideAllContainers(): void {
+  document.getElementById('login-menu')!.style.display = 'none';
+  document.getElementById('view-container')!.style.display = 'none';
+  document.getElementById('game-container')!.style.display = 'none';
+}
+
+async function fetchPlayerData(): Promise<void> {
+  const state = await api.getPlayerState();
+  if (!state.success) return;
+  eventBus.emit('player:state-loaded', state.data);
+
+  if (state.data.currentNodeId !== null) {
+    eventBus.emit('ui:lock-phone-apps', true);
+    eventBus.emit('dialogue:resume');
+  } else {
+    eventBus.emit('ui:lock-phone-apps', false);
+
+    if (state.data.locationId) {
+      const location = await api.getLocation(state.data.locationId);
+      if (location.success) {
+        const flatLocation = {
+          id: location.data.scene?.id,
+          name: location.data.scene?.title || 'Unknown',
+          npcs: location.data.npcs,
+        };
+        eventBus.emit('location:loaded', flatLocation);
       }
-    }
-  } catch (error: any) {
-    const isUnauthorized = error?.status === 401;
-    if (isUnauthorized) {
-      console.log('No session cookie found, attempting dev login...');
-      await api.devLogin();
-      const state = await api.getPlayerState();
-      if (state.success) {
-        console.log('Player state loaded after dev login:', state.data);
-        eventBus.emit('player:state-loaded', state.data);
-
-        // 7.5.2 — Onboarding Lock (post-dev-login path)
-        if (state.data.currentNodeId !== null) {
-          eventBus.emit('ui:lock-phone-apps', true);
-          eventBus.emit('dialogue:resume');
-        } else {
-          eventBus.emit('ui:lock-phone-apps', false);
-
-          if (state.data.locationId) {
-            const location = await api.getLocation(state.data.locationId);
-            if (location.success) {
-              const flatLocation = {
-                id: location.data.scene?.id,
-                name: location.data.scene?.title || 'Unknown',
-                npcs: location.data.npcs,
-              };
-              eventBus.emit('location:loaded', flatLocation);
-            }
-          }
-        }
-      }
-    } else {
-      console.error('Failed to initialize app:', error);
     }
   }
+}
+
+function startGame(): void {
+  hideAllContainers();
+  document.getElementById('game-container')!.style.display = 'flex';
+
+  destroyGame();
+
+  gameInstance = new Phaser.Game(config);
+  sleepOverlayInstance = new SleepOverlay();
+  phoneOverlayInstance = new PhoneOverlay();
+  initThemeEngine();
+}
+
+function registerRoutes(): void {
+  registerRoute('/', () => {
+    destroyGame();
+    destroyCurrentView();
+    hideAllContainers();
+    document.getElementById('login-menu')!.style.display = 'flex';
+  });
+
+  registerRoute('/main', () => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyGame();
+    destroyCurrentView();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    currentView = new MainMenu(container);
+  });
+
+  registerRoute('/main/settings', () => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyCurrentView();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    currentView = new SettingsView(container);
+  });
+
+  registerRoute('/main/gallery', () => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyCurrentView();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    currentView = new GalleryView(container);
+  });
+
+  registerRoute('/main/new', () => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyCurrentView();
+    startGame();
+    fetchPlayerData();
+  });
+
+  registerRoute('/main/continue', () => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyCurrentView();
+    startGame();
+    fetchPlayerData();
+  });
 }
 
 // Bridge window CustomEvents (dispatched by E2E tests / external scripts)
@@ -139,8 +212,48 @@ function initOnce() {
   new MonologueFeed();
   new BreakthroughAlert();
   new TerminalModal();
-  initThemeEngine();
-  initApp();
+
+  registerRoutes();
+  startRouter();
+
+  eventBus.on('auth:logout', () => {
+    isAuthenticated = false;
+    destroyGame();
+    destroyCurrentView();
+    navigateTo('/', true);
+  });
+
+  eventBus.on('game:start', (payload: { isNew: boolean }) => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyCurrentView();
+    startGame();
+    fetchPlayerData();
+  });
+
+  // Show login menu immediately for fast visual feedback
+  new LoginMenu();
+  hideAllContainers();
+  document.getElementById('login-menu')!.style.display = 'flex';
+  const initialPath = window.location.pathname;
+  navigateTo('/', true);
+
+  // Then check session in background
+  void (async () => {
+    try {
+      const state = await api.getPlayerState();
+      if (state.success) {
+        isAuthenticated = true;
+        navigateTo(initialPath !== '/' ? initialPath : '/main', true);
+      }
+    } catch (error: any) {
+      if (error?.status !== 401) {
+        console.error('Session restore failed:', error);
+      }
+    }
+  })();
 }
 
 // Initialize when DOM is ready
@@ -149,5 +262,3 @@ if (document.readyState === 'loading') {
 } else {
   initOnce();
 }
-
-export default game;

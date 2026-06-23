@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
 
 const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 
@@ -38,7 +39,7 @@ async function injectAuth(page: Page) {
 test.describe('Event Bus Loopback', () => {
   test('Opening a phone app triggers world:pause event', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     
     const feedTab = page.locator('button:has-text("Feed")');
     await feedTab.click();
@@ -50,7 +51,7 @@ test.describe('Event Bus Loopback', () => {
 
   test('Opening Messages app triggers world:pause event', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     
     const messagesTab = page.locator('button:has-text("Messages")');
     await messagesTab.click();
@@ -62,7 +63,7 @@ test.describe('Event Bus Loopback', () => {
 
   test('Phone overlay pointer events toggle between none and all on open/close', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     
     const phoneOverlay = page.locator('#phone-overlay');
     
@@ -85,7 +86,7 @@ test.describe('Event Bus Loopback', () => {
 
   test('Dialogue choice buttons are interactive', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     
     // Check if dialogue choice buttons exist and are clickable
     const choiceButtons = page.locator('.dialogue-choice');

@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
 
 const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 
@@ -38,7 +39,7 @@ async function injectAuth(page: Page) {
 test.describe('Interactive Polish (Task 6.2)', () => {
   test('Banco tab shows live balance (not placeholder)', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Banco")').click();
@@ -53,7 +54,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
   test('balance flash class applies on credits change', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Banco")').click();
@@ -87,7 +88,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
   test('typing bubble appears during NPC thread load', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Messages")').click();
@@ -126,7 +127,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
   test('skip tap resolves pacing — all NPC bubbles end with text', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Messages")').click();
@@ -148,7 +149,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
   test('Vault modal FLIP transform is non-identity during open', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Vault")').click();
@@ -175,7 +176,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
   test('Vault modal reaches identity transform after animation', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Vault")').click();
@@ -207,7 +208,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
   test('Vault modal closes on Escape', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Vault")').click();

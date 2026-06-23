@@ -1,8 +1,32 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
+
+const rand = Math.random().toString(36).slice(2, 8);
+const testEmail = `viewport-${Date.now()}-${rand}@example.com`;
+const testUsername = `viewport_${Date.now()}_${rand}`;
+
+test.beforeAll(async ({ request }) => {
+  const res = await request.post('/api/auth/register', {
+    data: {
+      email: testEmail,
+      username: testUsername,
+      display_name: 'Viewport Tuning E2E',
+      password: 'test1234',
+    },
+  });
+  expect(res.ok()).toBeTruthy();
+});
+
+async function injectAuth(page: Page) {
+  await page.request.post('/api/auth/login', {
+    data: { email: testEmail, password: 'test1234' },
+  });
+}
 
 test.describe('Viewport Tuning (Task 6.3)', () => {
   test('CSS custom properties are injected on :root after page load', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     await page.waitForTimeout(500);
 
     const viewportHeight = await page.evaluate(() => {
@@ -18,7 +42,8 @@ test.describe('Viewport Tuning (Task 6.3)', () => {
   });
 
   test('touch-action: manipulation is applied to interactive phone elements', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     await page.waitForTimeout(500);
 
     // Open the phone so interactive elements are rendered.
@@ -41,7 +66,8 @@ test.describe('Viewport Tuning (Task 6.3)', () => {
   });
 
   test('viewport meta does not disable zoom (accessibility)', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
 
     const metaContent = await page.evaluate(() => {
       const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');

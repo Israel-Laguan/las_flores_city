@@ -103,6 +103,12 @@ export async function register(email: string, username: string, password: string
   return result;
 }
 
+export async function logout(): Promise<any> {
+  return fetchAPI('/auth/logout', {
+    method: 'POST',
+  });
+}
+
 // Health API
 export async function getHealth(): Promise<any> {
   return fetchAPI('/health');

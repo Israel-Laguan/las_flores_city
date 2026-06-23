@@ -19,6 +19,7 @@
  * seeds the browser cookie jar exactly like a real browser flow.
  */
 import { test, expect } from '@playwright/test';
+import { startNewGame } from './helpers';
 
 // baseURL is :5173 (the Vite dev server). We use relative /api paths so the
 // HttpOnly cookie is scoped to :5173 — the same origin as the client app.
@@ -111,8 +112,7 @@ test.describe('Auth cookie — session propagation', () => {
   });
 
   test('client app boots and loads player state via cookie auth', async ({ page }) => {
-    // Seed the cookie jar via login, then reload so the app boot picks it up.
-    await page.goto('/');
+    // Seed the cookie jar via login, then start a new game.
     const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
@@ -125,11 +125,10 @@ test.describe('Auth cookie — session propagation', () => {
       }
     });
 
-    // Reload — the app's boot fetch(/api/player/state) will now carry the cookie.
-    await page.reload();
-
-    const canvas = page.locator('#game-container canvas');
-    await expect(canvas).toBeVisible({ timeout: 10_000 });
+    // Navigate to /main/new — the app's boot fetch(/api/player/state) will
+    // carry the cookie and the main.ts auth-success callback redirects to
+    // /main/new to start the game.
+    await startNewGame(page);
 
     // Give the init flow time to complete. If the cookie worked, the player
     // state loaded without the devLogin fallback.

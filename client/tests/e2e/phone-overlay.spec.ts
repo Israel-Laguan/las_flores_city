@@ -1,15 +1,40 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
+
+const rand = Math.random().toString(36).slice(2, 8);
+const testEmail = `overlay-${Date.now()}-${rand}@example.com`;
+const testUsername = `overlay_${Date.now()}_${rand}`;
+
+test.beforeAll(async ({ request }) => {
+  const res = await request.post('/api/auth/register', {
+    data: {
+      email: testEmail,
+      username: testUsername,
+      display_name: 'Phone Overlay E2E',
+      password: 'test1234',
+    },
+  });
+  expect(res.ok()).toBeTruthy();
+});
+
+async function injectAuth(page: Page) {
+  await page.request.post('/api/auth/login', {
+    data: { email: testEmail, password: 'test1234' },
+  });
+}
 
 test.describe('Phone OS Overlay', () => {
   test('Phone overlay is visible on page load', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const phoneOverlay = page.locator('#phone-overlay');
     await expect(phoneOverlay).toBeVisible();
   });
 
   test('Phone overlay has correct z-index (above Phaser canvas)', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const phoneOverlay = page.locator('#phone-overlay');
     const zIndex = await phoneOverlay.evaluate((el) => 
@@ -19,7 +44,8 @@ test.describe('Phone OS Overlay', () => {
   });
 
   test('Feed app tab is clickable and shows content', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const feedTab = page.locator('button:has-text("Feed")');
     await expect(feedTab).toBeVisible();
@@ -30,7 +56,8 @@ test.describe('Phone OS Overlay', () => {
   });
 
   test('Messages app tab is clickable and shows content', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const messagesTab = page.locator('button:has-text("Messages")');
     await expect(messagesTab).toBeVisible();
@@ -41,7 +68,8 @@ test.describe('Phone OS Overlay', () => {
   });
 
   test('Vault app tab is clickable and shows content', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const vaultTab = page.locator('button:has-text("Vault")');
     await expect(vaultTab).toBeVisible();
@@ -53,7 +81,8 @@ test.describe('Phone OS Overlay', () => {
   });
 
   test('Identity app tab is clickable and shows content', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const identityTab = page.locator('button:has-text("Identity")');
     await expect(identityTab).toBeVisible();
@@ -64,7 +93,8 @@ test.describe('Phone OS Overlay', () => {
   });
 
   test('Time Blocks display shows TB balance', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const timeBlocksDisplay = page.locator('#phone-tb-display');
     await expect(timeBlocksDisplay).toBeVisible();

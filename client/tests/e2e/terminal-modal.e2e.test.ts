@@ -25,14 +25,17 @@ import { test, expect, Page } from '@playwright/test';
  */
 test.beforeEach(async ({ page }) => {
   await page.request.post('/api/auth/dev-login', {
-    data: { userId: '550e8400-e29b-41d4-a716-446655440099' },
+    data: { userId: '660e8400-e29b-41d4-a716-446655440099' },
   });
-  await page.goto('/');
+  await page.goto('/main/new');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
 });
 
 async function openBanco(page: Page): Promise<void> {
-  await page.locator('button:has-text("Banco")').first().click();
+  // The terminal modal may appear and overlay the nav during the click,
+  // which is the expected behavior (the fetch is aborted). force: true
+  // bypasses actionability checks so the click-through works.
+  await page.locator('button:has-text("Banco")').first().click({ force: true });
 }
 
 // ── DoD: catches network timeouts and 5xx; countdown runs ──────────────────
@@ -107,7 +110,9 @@ test('user ABORT rejects caller; app shows inline .app-error', async ({ page }) 
   await page.keyboard.press('Escape');
 
   await expect(overlay).toBeHidden({ timeout: 5_000 });
-  await expect(page.locator('#phone-app-content .app-error')).toBeVisible({ timeout: 5_000 });
+  // Wait for the async Promise rejection to propagate through fetchAPI → BancoApp.catch
+  await page.waitForTimeout(300);
+  await page.waitForSelector('#phone-app-content .app-error', { timeout: 8_000 });
 });
 
 // ── DoD: rapid errors overwrite cleanly, no leak / no stack ─────────────────

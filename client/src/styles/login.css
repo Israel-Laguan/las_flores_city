@@ -1,0 +1,145 @@
+#login-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0a0a1a;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+.login-terminal {
+  background: rgba(6, 12, 24, 0.95);
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 30px rgba(0, 255, 0, 0.03);
+  padding: 40px 48px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-terminal h1 {
+  color: #00ff00;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.login-terminal .login-subtitle {
+  color: #00cccc;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+  padding-bottom: 16px;
+}
+
+.login-terminal .login-error {
+  color: #ff4444;
+  font-size: 12px;
+  margin-bottom: 16px;
+  min-height: 18px;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  padding: 8px 12px;
+  display: none;
+}
+
+.login-terminal .login-error.visible {
+  display: block;
+}
+
+.login-terminal .login-form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.login-terminal .login-form-group label {
+  display: block;
+  color: #00cc66;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.login-terminal .login-form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(0, 20, 0, 0.6);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  color: #00ff00;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.login-terminal .login-form-group input:focus {
+  border-color: #00ff00;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+}
+
+.login-terminal .login-form-group input::placeholder {
+  color: rgba(0, 255, 0, 0.25);
+}
+
+.login-terminal button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  color: #00ff00;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.login-terminal button:hover:not(:disabled) {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ff00;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.2);
+}
+
+.login-terminal button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.login-terminal .login-btn-text {
+  border: none;
+  color: #008866;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  background: none;
+  text-transform: none;
+}
+
+.login-terminal .login-btn-text:hover:not(:disabled) {
+  color: #00ff88;
+  background: none;
+  box-shadow: none;
+}
+
+.login-terminal .register-form {
+  display: none;
+  margin-top: 8px;
+}
+
+.login-terminal .register-form.visible {
+  display: block;
+}
+
+.login-terminal .login-form {
+  display: block;
+}
+
+.login-terminal .login-form.hidden {
+  display: none;
+}

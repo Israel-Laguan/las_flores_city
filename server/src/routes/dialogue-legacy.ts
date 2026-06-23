@@ -1,4 +1,4 @@
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import {
   filterChoices,
   getDialogState,
@@ -108,7 +108,7 @@ async function buildLegacyResponse(
   const tbCursor = await PlayerStateRepository.getDialogueCursor(userId);
 
   if (choiceResult.timeBlocksSpent && choiceResult.timeBlocksSpent > 0) {
-    queryOLTP(
+    queryOLAP(
       `INSERT INTO player_events (id, user_id, event_type, event_data, time_blocks_cost)
        VALUES (gen_random_uuid(), $1, 'dialogue_choice', $2, $3)`,
       [
@@ -121,7 +121,7 @@ async function buildLegacyResponse(
 
   if (choiceResult.unlockedVaultItem) {
     await deleteCache(`user:vault:${userId}`);
-    queryOLTP(
+    queryOLAP(
       `INSERT INTO player_events (id, user_id, event_type, event_data)
        VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
       [userId, JSON.stringify({ itemId: choiceResult.unlockedVaultItem.id })]

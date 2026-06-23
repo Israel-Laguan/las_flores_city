@@ -6,6 +6,7 @@ import type { BankLedgerResponse, BankTransaction } from '../../../../shared/src
 export class BancoApp {
   private container: HTMLElement;
   private subs: Array<[string, (...a: any[]) => void]> = [];
+  private initGen = 0;
 
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
@@ -23,6 +24,7 @@ export class BancoApp {
   }
 
   private async init(): Promise<void> {
+    const gen = ++this.initGen;
     this.container.innerHTML = `<div class="loading-spinner">Connecting to Banco de Las Flores...</div>`;
 
     try {
@@ -30,6 +32,7 @@ export class BancoApp {
       // recovery modal and retried transparently; the Promise only rejects on
       // user-abandon, which lands here as a 4xx-class inline error.
       const { data }: { data: BankLedgerResponse } = await api.getBankStatement();
+      if (gen !== this.initGen) return;
       phoneStore.updateState({ credits: data.credits, goldCredits: data.goldCredits });
       // Emit bank:transaction for polish consumers (currency flash animations)
       if (data.transactions.length > 0) {
@@ -41,6 +44,7 @@ export class BancoApp {
       }
       this.render(data);
     } catch {
+      if (gen !== this.initGen) return;
       this.container.innerHTML = `
         <div class="app-error">
           <p>Uplink Error: Secure financial connection refused.</p>

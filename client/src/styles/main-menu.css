@@ -1,0 +1,63 @@
+#view-container {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0a0a1a;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+.main-menu-terminal {
+  background: rgba(6, 12, 24, 0.95);
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 30px rgba(0, 255, 0, 0.03);
+  padding: 40px 48px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.main-menu-terminal h1 {
+  color: #00ff00;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.main-menu-terminal .menu-subtitle {
+  color: #00cccc;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+  padding-bottom: 16px;
+}
+
+.main-menu-terminal .menu-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  color: #00ff00;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.main-menu-terminal .menu-btn:hover:not(:disabled) {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ff00;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.2);
+}
+
+.main-menu-terminal .menu-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

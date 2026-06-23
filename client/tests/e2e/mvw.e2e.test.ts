@@ -7,6 +7,7 @@
  * Full loop: Apartment → Move → Dialogue → Sleep
  */
 import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
 
 const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
@@ -46,7 +47,7 @@ async function injectAuth(page: Page) {
 test.describe('Phaser Canvas NPC Click', () => {
   test('Clicking NPC position on canvas mounts dialogue overlay', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
 
     // Wait for Phaser to fully render the canvas
     const canvas = page.locator('#game-container canvas');
@@ -98,7 +99,7 @@ test.describe('Phaser Canvas NPC Click', () => {
 test.describe('Typewriter Skip & Choice Selection', () => {
   test('Clicking dialogue box skips typewriter and shows choices', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(2_000);
 
     // Check if a dialogue is actually active (overlay div always exists but
@@ -149,7 +150,7 @@ test.describe('Typewriter Skip & Choice Selection', () => {
 
   test('Clicking "Romance" choice disables choices container immediately (double-click defense)', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(3_000);
 
     // If we're not in a dialogue, set one up
@@ -212,7 +213,7 @@ test.describe('Typewriter Skip & Choice Selection', () => {
 
   test('Monologue console feed appends system log entry after choice', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1_000);
 
     const monologueFeed = page.locator('.introspection-console, #monologue-feed, .monologue-feed');
@@ -267,7 +268,7 @@ test.describe('Full First Hour Loop', () => {
     expect(sleepData.data.current_day).toBeGreaterThanOrEqual(2);
 
     // 6. Final UI check — page must still be alive
-    await page.goto('/');
+    await startNewGame(page);
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible({ timeout: 10_000 });
   });

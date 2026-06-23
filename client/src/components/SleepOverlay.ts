@@ -211,13 +211,9 @@ export class SleepOverlay {
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  destroy(): void {
+    this.container.remove();
+  }
 }
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new SleepOverlay();
-  });
-} else {
-  new SleepOverlay();
-}

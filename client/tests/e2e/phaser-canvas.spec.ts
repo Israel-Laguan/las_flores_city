@@ -1,8 +1,32 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
+
+const rand = Math.random().toString(36).slice(2, 8);
+const testEmail = `phaser-${Date.now()}-${rand}@example.com`;
+const testUsername = `phaser_${Date.now()}_${rand}`;
+
+test.beforeAll(async ({ request }) => {
+  const res = await request.post('/api/auth/register', {
+    data: {
+      email: testEmail,
+      username: testUsername,
+      display_name: 'Phaser Canvas E2E',
+      password: 'test1234',
+    },
+  });
+  expect(res.ok()).toBeTruthy();
+});
+
+async function injectAuth(page: Page) {
+  await page.request.post('/api/auth/login', {
+    data: { email: testEmail, password: 'test1234' },
+  });
+}
 
 test.describe('Phaser Canvas', () => {
   test('Game canvas is rendered', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const gameContainer = page.locator('#game-container');
     await expect(gameContainer).toBeVisible();
@@ -13,7 +37,8 @@ test.describe('Phaser Canvas', () => {
   });
 
   test('Canvas has correct dimensions', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible();
@@ -26,7 +51,8 @@ test.describe('Phaser Canvas', () => {
   });
 
   test('Phone overlay does not block canvas when closed', async ({ page }) => {
-    await page.goto('/');
+    await injectAuth(page);
+    await startNewGame(page);
     
     const canvas = page.locator('#game-container canvas');
     await expect(canvas).toBeVisible();

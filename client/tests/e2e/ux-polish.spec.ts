@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { startNewGame } from './helpers';
 
 const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
 
@@ -38,7 +39,7 @@ async function injectAuth(page: Page) {
 test.describe('UX Polish Readiness', () => {
   test('Event Bus must broadcast all lifecycle states for Polish triggers', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
 
     // Wait for the app to initialize
     await page.waitForTimeout(1000);
@@ -70,7 +71,7 @@ test.describe('UX Polish Readiness', () => {
 
   test('dialogue:typing_finished event fires after typewriter completes', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     // Verify that the DialogueUI emits dialogue:typing_finished
@@ -89,7 +90,7 @@ test.describe('UX Polish Readiness', () => {
 
   test('phone:navigate event fires when switching apps', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     // Click on the Banco tab and verify phone:navigate fires
@@ -107,7 +108,7 @@ test.describe('UX Polish Readiness', () => {
 
   test('comms:new_message and bank:transaction hooks are registered', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     // Verify that the event bus listeners for polish events
@@ -126,7 +127,7 @@ test.describe('UX Polish Readiness', () => {
 
   test('CSS backdrop-filter has solid fallback for Safari/iOS', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(500);
 
     // Verify the phone screen has a solid background fallback
@@ -146,7 +147,7 @@ test.describe('UX Polish Readiness', () => {
 
   test('Monologue Feed DOM pruning is active (max 50 entries)', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(500);
 
     // Verify the monologue feed container exists and has pruning logic
@@ -160,7 +161,7 @@ test.describe('UX Polish Readiness', () => {
 
   test('WebGL context recovery: visibilitychange handler is registered', async ({ page }) => {
     await injectAuth(page);
-    await page.goto('/');
+    await startNewGame(page);
     await page.waitForTimeout(1000);
 
     // Verify that the Phaser canvas exists and the app handles tab visibility

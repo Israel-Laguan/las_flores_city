@@ -19,11 +19,18 @@ import { test, expect } from '@playwright/test';
  * cannot set HttpOnly cookies. See Task 6.5 spec §E2E migration.
  */
 test.beforeEach(async ({ page }) => {
-  await page.request.post('/api/auth/dev-login', {
-    data: { userId: '550e8400-e29b-41d4-a716-446655440001' },
+  const userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
-  await page.goto('/');
+  await page.request.post('/api/auth/dev-login', {
+    data: { userId },
+  });
+  await page.goto('/main/new');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
+  // Wait for the game to fully start (Phaser canvas + fetchPlayerData settles)
+  await page.waitForSelector('#game-container canvas', { state: 'visible', timeout: 15_000 });
+  await expect(page.locator('#phone-clock')).toContainText('08:00 AM', { timeout: 10_000 });
 });
 
 // ── Pointer event focus locking ──────────────────────────────────────────────

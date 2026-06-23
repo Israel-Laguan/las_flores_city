@@ -272,6 +272,8 @@ export class TerminalModal {
     if (this.mode === 'idle' || this.overlay.hidden) return;
     if (e.key !== 'Escape') return;
 
+    e.stopPropagation();
+
     if (this.mode === 'confirm' && this.activeConfirm) {
       this.activeConfirm.config.onCancel?.();
       this.dismissConfirm();
@@ -316,7 +318,7 @@ export class TerminalModal {
     this.overlay.hidden = true;
     this.overlay.classList.remove('fatal-error');
     this.contentBox.innerHTML = '';
-    if (this.lastFocused && typeof this.lastFocused.focus === 'function') {
+    if (this.lastFocused?.isConnected && typeof this.lastFocused.focus === 'function') {
       this.lastFocused.focus();
     }
   }

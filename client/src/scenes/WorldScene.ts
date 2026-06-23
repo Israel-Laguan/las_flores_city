@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { eventBus } from '../utils/EventBus';
-import * as api from '../utils/api';
 
 export class WorldScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -32,7 +31,6 @@ export class WorldScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.createUplinkNotice();
-    this.checkOnboardingLock();
     eventBus.emit('world:ready');
     this.setupEventListeners();
   }
@@ -151,18 +149,6 @@ export class WorldScene extends Phaser.Scene {
     this.navigationLocked = false;
     if (this.uplinkNoticeEl) this.uplinkNoticeEl.style.display = 'none';
     eventBus.emit('navigation:unlocked');
-  }
-
-  private async checkOnboardingLock(): Promise<void> {
-    try {
-      const result = await api.getPlayerState();
-      if (result?.success && result.data?.currentNodeId) {
-        this.engageNavigationLock();
-        eventBus.emit('dialogue:resume');
-      }
-    } catch (err) {
-      console.warn('[WorldScene] Could not check onboarding lock:', err);
-    }
   }
 
   private updateLocationDisplay(data: any) {
