@@ -1,11 +1,10 @@
 import '../styles/view.css';
+import '../styles/themes.css';
 import { navigateTo } from '../router';
 import * as api from '../utils/api';
 import { getInventory, PlayerInventoryItem, equipShopItem, getMyMeProfile, updateDisplayName, changePassword } from '../utils/api';
 import { eventBus } from '../utils/EventBus';
-
-const INPUT_STYLE = 'width:100%;padding:10px;background:rgba(0,20,0,0.6);border:1px solid rgba(0,255,0,0.3);color:#00ff00;font-family:monospace;margin-bottom:8px;';
-const BTN_STYLE = 'width:100%;padding:10px;background:transparent;border:1px solid rgba(0,255,0,0.5);color:#00ff00;cursor:pointer;font-family:monospace;font-size:12px;letter-spacing:1px;margin-bottom:4px;';
+import { WHITE_HIGH_CONTRAST_ID, TERMINAL_DARK_ID, applyTheme } from '../utils/themeEngine';
 
 export class SettingsView {
   private container: HTMLDivElement;
@@ -16,10 +15,10 @@ export class SettingsView {
   private newPasswordInput: HTMLInputElement | null = null;
   private passwordStatus: HTMLDivElement | null = null;
   private themeSelect: HTMLSelectElement | null = null;
+  private themeStatus: HTMLDivElement | null = null;
   private themeItems: PlayerInventoryItem[] = [];
   private currentDisplayName: string = '';
   private boundClick: ((e: MouseEvent) => void) | null = null;
-  private boundThemeChange: (() => void) | null = null;
 
   constructor(container: HTMLDivElement) {
     this.container = container;
@@ -36,28 +35,30 @@ export class SettingsView {
 
       <div class="view-section">
         <div class="view-section-label">> DISPLAY NAME</div>
-        <div class="current-display-name" style="color:#008800;font-size:11px;margin-bottom:6px;padding:6px 10px;background:rgba(0,40,0,0.3);border:1px solid rgba(0,255,0,0.15);"></div>
-        <input type="text" class="display-name-input" placeholder="NEW DISPLAY NAME" style="${INPUT_STYLE}">
-        <button class="view-action-btn" data-action="save-display-name" style="${BTN_STYLE}border-color:rgba(0,255,0,0.6);">> SAVE DISPLAY NAME</button>
-        <div class="status-text display-name-status" style="font-size:10px;min-height:14px;color:#008800;"></div>
+        <div class="current-display-name"></div>
+        <input type="text" class="theme-input display-name-input" placeholder="NEW DISPLAY NAME">
+        <button class="theme-btn view-action-btn" data-action="save-display-name" style="border-color:rgba(0,255,0,0.6);">> SAVE DISPLAY NAME</button>
+        <div class="status-text display-name-status"></div>
       </div>
 
       <div class="view-section">
         <div class="view-section-label">> CHANGE PASSWORD</div>
-        <input type="password" class="current-password-input" placeholder="CURRENT PASSWORD" style="${INPUT_STYLE}">
-        <input type="password" class="new-password-input" placeholder="NEW PASSWORD" style="${INPUT_STYLE}">
-        <button class="view-action-btn" data-action="change-password" style="${BTN_STYLE}border-color:rgba(200,200,0,0.5);">> CHANGE PASSWORD</button>
-        <div class="status-text password-status" style="font-size:10px;min-height:14px;color:#008800;"></div>
+        <input type="password" class="theme-input current-password-input" placeholder="CURRENT PASSWORD">
+        <input type="password" class="theme-input new-password-input" placeholder="NEW PASSWORD">
+        <button class="theme-btn view-action-btn" data-action="change-password" style="border-color:rgba(200,200,0,0.5);">> CHANGE PASSWORD</button>
+        <div class="status-text password-status"></div>
       </div>
 
       <div class="view-section">
         <div class="view-section-label">> THEME SELECTION</div>
-        <select class="theme-select" style="width:100%;padding:10px;background:rgba(0,20,0,0.6);border:1px solid rgba(0,255,0,0.3);color:#00ff00;font-family:monospace;"></select>
+        <select class="theme-select"></select>
+        <button class="theme-btn view-action-btn" data-action="apply-theme">> APPLY THEME</button>
+        <div class="status-text theme-status"></div>
       </div>
 
       <div class="view-section">
         <div class="view-section-label">> AI KEY MANAGEMENT</div>
-        <button class="manage-ai-key-btn" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(0,255,0,0.5);color:#00ff00;cursor:pointer;">MANAGE AI KEY</button>
+        <button class="theme-btn manage-ai-key-btn">MANAGE AI KEY</button>
       </div>
 
       <button class="view-back-btn" data-action="back">> BACK</button>
@@ -74,6 +75,7 @@ export class SettingsView {
     this.newPasswordInput = this.container.querySelector('.new-password-input') as HTMLInputElement;
     this.passwordStatus = this.container.querySelector('.password-status') as HTMLDivElement;
     this.themeSelect = this.container.querySelector('.theme-select') as HTMLSelectElement;
+    this.themeStatus = this.container.querySelector('.theme-status') as HTMLDivElement;
 
     const inventory = await getInventory();
     if (inventory.success) {
@@ -93,8 +95,12 @@ export class SettingsView {
           this.displayNameInput.value = this.currentDisplayName;
         }
         if (profile.data.equipped_theme) {
-          const themeId = profile.data.equipped_theme.id;
-          this.themeSelect!.value = themeId || '';
+          this.themeSelect!.value = profile.data.equipped_theme.id;
+        } else {
+          const storedTheme = localStorage.getItem('preferred-theme');
+          if (storedTheme === WHITE_HIGH_CONTRAST_ID || storedTheme === TERMINAL_DARK_ID) {
+            this.themeSelect!.value = storedTheme;
+          }
         }
       }
     }
@@ -104,7 +110,18 @@ export class SettingsView {
 
   private populateThemes(): void {
     if (!this.themeSelect) return;
-    this.themeSelect.innerHTML = '<option value="">DEFAULT THEME</option>';
+    this.themeSelect.innerHTML = '<option value="">—</option>';
+
+    const tdOption = document.createElement('option');
+    tdOption.value = TERMINAL_DARK_ID;
+    tdOption.textContent = 'N&M Standard (Terminal Dark)';
+    this.themeSelect.appendChild(tdOption);
+
+    const whcOption = document.createElement('option');
+    whcOption.value = WHITE_HIGH_CONTRAST_ID;
+    whcOption.textContent = 'White High Contrast';
+    this.themeSelect.appendChild(whcOption);
+
     for (const item of this.themeItems) {
       const option = document.createElement('option');
       option.value = item.item.id;
@@ -116,8 +133,10 @@ export class SettingsView {
   private setStatus(el: HTMLDivElement | null, msg: string, isError: boolean): void {
     if (!el) return;
     el.textContent = msg;
-    el.style.color = isError ? '#ff4444' : '#00cc66';
-    if (!isError) {
+    if (isError) {
+      el.style.color = '#ff4444';
+    } else {
+      el.style.color = '';
       setTimeout(() => { if (el.textContent === msg) { el.textContent = ''; } }, 3000);
     }
   }
@@ -187,20 +206,33 @@ export class SettingsView {
         void this.saveDisplayName();
       } else if (action === 'change-password') {
         void this.handleChangePassword();
+      } else if (action === 'apply-theme') {
+        void this.handleApplyTheme();
       }
     };
     this.container.addEventListener('click', this.boundClick);
-
-    this.boundThemeChange = () => {
-      const shopItemId = this.themeSelect!.value || null;
-      void this.equipTheme(shopItemId);
-    };
-    this.themeSelect?.addEventListener('change', this.boundThemeChange);
   }
 
   private async equipTheme(shopItemId: string | null): Promise<void> {
-    await equipShopItem('theme', shopItemId);
+    if (shopItemId === WHITE_HIGH_CONTRAST_ID || shopItemId === TERMINAL_DARK_ID) {
+      await equipShopItem('theme', null);
+      localStorage.setItem('preferred-theme', shopItemId);
+    } else {
+      localStorage.removeItem('preferred-theme');
+      await equipShopItem('theme', shopItemId);
+    }
     eventBus.emit('inventory:item_equipped', { slot: 'theme', shop_item_id: shopItemId });
+    applyTheme(shopItemId);
+  }
+
+  private async handleApplyTheme(): Promise<void> {
+    try {
+      const shopItemId = this.themeSelect!.value || null;
+      await this.equipTheme(shopItemId);
+      this.setStatus(this.themeStatus, 'THEME APPLIED', false);
+    } catch (err: any) {
+      this.setStatus(this.themeStatus, err.message || 'Failed to apply theme', true);
+    }
   }
 
   private async handleLogout(): Promise<void> {
@@ -215,7 +247,6 @@ export class SettingsView {
 
   destroy(): void {
     if (this.boundClick) this.container.removeEventListener('click', this.boundClick);
-    if (this.boundThemeChange && this.themeSelect) this.themeSelect.removeEventListener('change', this.boundThemeChange);
     this.container.innerHTML = '';
   }
 }

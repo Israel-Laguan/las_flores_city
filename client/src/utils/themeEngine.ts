@@ -24,8 +24,19 @@ const DEFAULT_PALETTE: Record<string, string> = {
   '--border-glow': '0 0 10px rgba(0, 136, 255, 0.4)',
 };
 
+export const WHITE_HIGH_CONTRAST_ID = 'theme-white-high-contrast';
+export const TERMINAL_DARK_ID = 'terminal-dark';
+
 /** Hardcoded theme id → CSS variable overrides. Add new themes here. */
 const THEME_OVERRIDES: Record<string, Record<string, string>> = {
+  [TERMINAL_DARK_ID]: {
+    '--neon-cyan': '#00ff00',
+    '--neon-blue': '#00cc44',
+    '--neon-magenta': '#00ff66',
+    '--neon-pink': '#44ff88',
+    '--terminal-bg': 'rgba(6, 12, 24, 0.85)',
+    '--border-glow': '0 0 10px rgba(0, 255, 0, 0.4)',
+  },
   // Hacktivist Green Theme — green-phosphor display overwriting the N&M standard UI.
   'a1b2c3d4-e29b-41d4-a716-446655440001': {
     '--neon-cyan': '#00ff66',
@@ -34,6 +45,14 @@ const THEME_OVERRIDES: Record<string, Record<string, string>> = {
     '--neon-pink': '#aaffaa',
     '--terminal-bg': 'rgba(4, 16, 8, 0.85)',
     '--border-glow': '0 0 10px rgba(0, 255, 102, 0.4)',
+  },
+  [WHITE_HIGH_CONTRAST_ID]: {
+    '--neon-cyan': '#000000',
+    '--neon-blue': '#1a1a1a',
+    '--neon-magenta': '#000000',
+    '--neon-pink': '#2a2a2a',
+    '--terminal-bg': 'rgba(248, 248, 248, 0.98)',
+    '--border-glow': '0 0 6px rgba(0, 0, 0, 0.25)',
   },
 };
 
@@ -51,8 +70,18 @@ function clearPalette(): void {
   }
 }
 
+function setBodyThemeClass(themeId: string | null): void {
+  const body = document.body;
+  body.className = body.className.replace(/\btheme-\S+/g, '').trim();
+  if (themeId) {
+    const normalized = themeId.startsWith('theme-') ? themeId.slice(6) : themeId;
+    body.classList.add(`theme-${normalized}`);
+  }
+}
+
 /** Apply the equipped theme by shop item id, or restore defaults when null. */
 export function applyTheme(shopItemId: string | null): void {
+  setBodyThemeClass(shopItemId);
   if (!shopItemId) {
     clearPalette();
     applyPalette(DEFAULT_PALETTE);
@@ -79,7 +108,14 @@ async function syncEquippedThemeFromProfile(): Promise<void> {
     if (profile.success && profile.data?.equipped_theme?.id) {
       applyTheme(profile.data.equipped_theme.id);
     } else {
-      applyTheme(null);
+      const storedTheme = localStorage.getItem('preferred-theme');
+      if (storedTheme === WHITE_HIGH_CONTRAST_ID) {
+        applyTheme(WHITE_HIGH_CONTRAST_ID);
+      } else if (storedTheme === TERMINAL_DARK_ID) {
+        applyTheme(TERMINAL_DARK_ID);
+      } else {
+        applyTheme(null);
+      }
     }
   } catch (err) {
     console.warn('[themeEngine] Could not load equipped theme:', err);

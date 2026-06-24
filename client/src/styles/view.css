@@ -1,7 +1,7 @@
 .view-terminal {
-  background: rgba(6, 12, 24, 0.95);
-  border: 1px solid rgba(0, 255, 0, 0.4);
-  box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 30px rgba(0, 255, 0, 0.03);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--color-glow);
   padding: 32px 40px;
   width: 100%;
   height: 100%;
@@ -10,12 +10,12 @@
 }
 
 .view-terminal h2 {
-  color: #00ff00;
+  color: var(--color-text);
   font-size: 18px;
   letter-spacing: 2px;
   margin-bottom: 20px;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+  text-shadow: 0 0 10px var(--color-text);
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 12px;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .view-terminal .view-section-label {
-  color: #00cc66;
+  color: var(--color-accent);
   font-size: 11px;
   letter-spacing: 1px;
   margin-bottom: 8px;
@@ -34,8 +34,8 @@
   margin-top: 24px;
   padding: 10px 16px;
   background: transparent;
-  border: 1px solid rgba(0, 255, 0, 0.5);
-  color: #00ff00;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
   font-size: 12px;
   letter-spacing: 1px;
@@ -44,8 +44,60 @@
 }
 
 .view-terminal .view-back-btn:hover {
-  background: rgba(0, 255, 0, 0.1);
-  border-color: #00ff00;
+  background: var(--color-hover-bg);
+  border-color: var(--color-text);
+}
+
+.view-terminal .theme-input {
+  width: 100%;
+  padding: 10px;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: monospace;
+  margin-bottom: 8px;
+}
+
+.view-terminal .theme-btn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.view-terminal .theme-btn:hover {
+  background: var(--color-hover-bg);
+}
+
+.view-terminal .theme-select {
+  width: 100%;
+  padding: 10px;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: monospace;
+  margin-bottom: 8px;
+}
+
+.view-terminal .current-display-name {
+  color: var(--color-text);
+  font-size: 11px;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
+}
+
+.view-terminal .status-text {
+  font-size: 10px;
+  min-height: 14px;
+  color: var(--color-accent);
 }
 
 .gallery-grid {
