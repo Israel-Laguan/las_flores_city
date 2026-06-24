@@ -155,7 +155,15 @@ authRouter.post('/login', async (req, res) => {
 });
 
 // POST /auth/dev-login - Quick dev login (no password required)
-authRouter.post('/dev-login', async (req, res) => {
+export async function handleDevLogin(req: express.Request, res: express.Response): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    res.status(403).json({
+      success: false,
+      error: 'Dev login is not available in production',
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
   try {
     const { userId } = req.body;
 
@@ -188,11 +196,12 @@ authRouter.post('/dev-login', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         error: 'User not found',
         timestamp: new Date().toISOString(),
       });
+      return;
     }
 
     const user = result.rows[0];
@@ -223,7 +232,9 @@ authRouter.post('/dev-login', async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-});
+}
+
+authRouter.post('/dev-login', handleDevLogin);
 
 // POST /auth/logout - Clear session cookie
 authRouter.post('/logout', (_req, res) => {

@@ -34,7 +34,7 @@ export class LoginMenu {
       <div class="login-subtitle">INITIATIVE TERMINAL v2.0</div>
       <div class="login-error"></div>
 
-      <button class="login-btn-dev">> DEV LOGIN</button>
+      ${import.meta.env.DEV ? '<button class="login-btn-dev">> DEV LOGIN</button>' : ''}
 
       <div class="login-form">
         <div class="login-form-group">

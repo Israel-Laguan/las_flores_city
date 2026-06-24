@@ -16,6 +16,10 @@ export class MainMenu {
   private buildTerminal(): HTMLDivElement {
     const terminal = document.createElement('div');
     terminal.className = 'main-menu-terminal';
+    const aboutUrl = import.meta.env.VITE_ABOUT_US_URL as string | undefined;
+    const aboutBtn = aboutUrl
+      ? `<button class="menu-btn" data-action="about">> ABOUT US</button>`
+      : '';
     terminal.innerHTML = `
       <h1>LAS FLORES 2077</h1>
       <div class="menu-subtitle">MAIN TERMINAL v2.0</div>
@@ -24,6 +28,7 @@ export class MainMenu {
       <button class="menu-btn" data-action="gallery">> GALLERY</button>
       <button class="menu-btn" data-action="new">> NEW GAME</button>
       <button class="menu-btn" data-action="continue">> CONTINUE</button>
+      ${aboutBtn}
       <button class="menu-btn" data-action="logout">> LOGOUT</button>
     `;
     return terminal;
@@ -52,6 +57,9 @@ export class MainMenu {
       case 'continue':
         this.startContinueGame();
         break;
+      case 'about':
+        this.handleAbout();
+        break;
       case 'logout':
         await this.handleLogout();
         break;
@@ -64,6 +72,13 @@ export class MainMenu {
 
   private startContinueGame(): void {
     eventBus.emit('game:start', { isNew: false });
+  }
+
+  private handleAbout(): void {
+    const url = import.meta.env.VITE_ABOUT_US_URL as string;
+    if (url) {
+      window.open(url, '_blank');
+    }
   }
 
   private async handleLogout(): Promise<void> {
