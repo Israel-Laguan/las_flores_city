@@ -5,30 +5,54 @@
 body.theme-terminal-dark {
   --color-text: #00ff00;
   --color-bg: rgba(6, 12, 24, 0.95);
+  --color-page-bg: #0a0a1a;
   --color-border: rgba(0, 255, 0, 0.4);
   --color-accent: #00cc66;
   --color-glow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 30px rgba(0, 255, 0, 0.03);
   --color-input-bg: rgba(0, 20, 0, 0.6);
   --color-hover-bg: rgba(0, 255, 0, 0.1);
+  --status-bar-bg: rgba(0, 0, 0, 0.8);
+  --status-bar-border: rgba(0, 255, 0, 0.3);
+  --status-bar-text: #00ff00;
+  --status-bar-accent: #888888;
+  --scene-bg: #0a0a1a;
+  --scene-title: #00ff00;
+  --scene-muted: #888888;
 }
 
 body.theme-white-high-contrast {
   --color-text: #000000;
   --color-bg: #ffffff;
+  --color-page-bg: #ffffff;
   --color-border: #1a1a1a;
   --color-accent: #000000;
   --color-glow: 0 0 6px rgba(0, 0, 0, 0.25);
   --color-input-bg: #f0f0f0;
   --color-hover-bg: #e0e0e0;
+  --status-bar-bg: #ffffff;
+  --status-bar-border: #1a1a1a;
+  --status-bar-text: #000000;
+  --status-bar-accent: #333333;
+  --scene-bg: #ffffff;
+  --scene-title: #000000;
+  --scene-muted: #333333;
 }
 
 /* Fallback when no body theme class is present (also matches default) */
 body:not([class*="theme-"]) {
   --color-text: #00ff00;
   --color-bg: rgba(6, 12, 24, 0.95);
+  --color-page-bg: #0a0a1a;
   --color-border: rgba(0, 255, 0, 0.4);
   --color-accent: #00cc66;
   --color-glow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 30px rgba(0, 255, 0, 0.03);
   --color-input-bg: rgba(0, 20, 0, 0.6);
   --color-hover-bg: rgba(0, 255, 0, 0.1);
+  --status-bar-bg: rgba(0, 0, 0, 0.8);
+  --status-bar-border: rgba(0, 255, 0, 0.3);
+  --status-bar-text: #00ff00;
+  --status-bar-accent: #888888;
+  --scene-bg: #0a0a1a;
+  --scene-title: #00ff00;
+  --scene-muted: #888888;
 }

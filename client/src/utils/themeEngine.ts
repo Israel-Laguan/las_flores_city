@@ -122,10 +122,19 @@ async function syncEquippedThemeFromProfile(): Promise<void> {
   }
 }
 
+/** Restore persisted built-in theme from localStorage (synchronous, for non-game routes). */
+export function restorePersistedTheme(): void {
+  const storedTheme = localStorage.getItem('preferred-theme');
+  if (storedTheme === WHITE_HIGH_CONTRAST_ID || storedTheme === TERMINAL_DARK_ID) {
+    applyTheme(storedTheme);
+  } else {
+    applyTheme(null);
+  }
+}
+
 /** Wire up the theme engine. Call once on client boot. */
 export function initThemeEngine(): void {
-  // Apply defaults immediately so the phone renders with the base palette.
-  applyTheme(null);
+  restorePersistedTheme();
 
   // Re-apply on equip/unequip. The event carries { slot, shop_item_id }.
   eventBus.on('inventory:item_equipped', (payload: { slot: string; shop_item_id: string | null }) => {

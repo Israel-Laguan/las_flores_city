@@ -18,7 +18,7 @@ import { GalleryView } from './components/GalleryView';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
-import { initThemeEngine } from './utils/themeEngine';
+import { initThemeEngine, restorePersistedTheme } from './utils/themeEngine';
 import { registerRoute, navigateTo, startRouter } from './router';
 
 declare global {
@@ -135,6 +135,7 @@ function registerRoutes(): void {
     destroyGame();
     destroyCurrentView();
     hideAllContainers();
+    restorePersistedTheme();
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     currentView = new MainMenu(container, cachedPlayerState);
