@@ -52,6 +52,7 @@ let phoneOverlayInstance: PhoneOverlay | null = null;
 let sleepOverlayInstance: SleepOverlay | null = null;
 let currentView: { destroy: () => void } | null = null;
 let isAuthenticated = false;
+let cachedPlayerState: any = null;
 
 function destroyGame(): void {
   if (phoneOverlayInstance) {
@@ -136,7 +137,7 @@ function registerRoutes(): void {
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
-    currentView = new MainMenu(container);
+    currentView = new MainMenu(container, cachedPlayerState);
   });
 
   registerRoute('/main/settings', () => {
@@ -249,6 +250,7 @@ function initOnce() {
     try {
       const state = await api.getPlayerState();
       if (state.success) {
+        cachedPlayerState = state.data;
         isAuthenticated = true;
         navigateTo(initialPath !== '/' ? initialPath : '/main', true);
       }

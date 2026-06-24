@@ -2,17 +2,58 @@ import '../styles/main-menu.css';
 import { navigateTo } from '../router';
 import * as api from '../utils/api';
 import { eventBus } from '../utils/EventBus';
+import type { PlayerState } from '../../../shared/src';
+
+// Deliberately no persistent "CONTINUE" vs "NEW GAME" preference — the action
+// is a single "START GAME" button that dynamically labels itself based on
+// current player activity. Once a time block is spent the story is committed;
+// there is no undo. This is marketed as a feature: truly important decisions
+// cannot be reversed.
+function hasActivity(state: PlayerState): boolean {
+  return (
+    state.storyBeat !== 'prologue' ||
+    state.currentDay > 1 ||
+    state.timeBlocks < 48 ||
+    state.currentNodeId != null ||
+    Object.keys(state.flags).length > 0
+  );
+}
 
 export class MainMenu {
   private container: HTMLDivElement;
   private boundClick: (e: MouseEvent) => void;
+  private buttonLabel: string = 'NEW GAME';
+  private startBtn: HTMLButtonElement | null = null;
 
-  constructor(container: HTMLDivElement) {
+  constructor(container: HTMLDivElement, playerState?: PlayerState) {
     this.container = container;
     this.container.innerHTML = '';
     this.boundClick = this.onClick.bind(this);
+
+    if (playerState) {
+      this.buttonLabel = hasActivity(playerState) ? 'CONTINUE' : 'NEW GAME';
+    }
+
     this.container.appendChild(this.buildTerminal());
     this.container.addEventListener('click', this.boundClick);
+
+    if (!playerState) {
+      this.resolveState();
+    }
+  }
+
+  private async resolveState(): Promise<void> {
+    try {
+      const res = await api.getPlayerState();
+      if (res.success && hasActivity(res.data)) {
+        this.buttonLabel = 'CONTINUE';
+        if (this.startBtn) {
+          this.startBtn.textContent = `> ${this.buttonLabel}`;
+        }
+      }
+    } catch {
+      // Stay on NEW GAME
+    }
   }
 
   private buildTerminal(): HTMLDivElement {
@@ -26,13 +67,13 @@ export class MainMenu {
       <h1>LAS FLORES 2077</h1>
       <div class="menu-subtitle">MAIN TERMINAL v2.0</div>
 
+      <button class="menu-btn" data-action="start-game">> ${this.buttonLabel}</button>
       <button class="menu-btn" data-action="settings">> SETTINGS</button>
       <button class="menu-btn" data-action="gallery">> GALLERY</button>
-      <button class="menu-btn" data-action="new">> NEW GAME</button>
-      <button class="menu-btn" data-action="continue">> CONTINUE</button>
       ${aboutBtn}
       <button class="menu-btn" data-action="logout">> LOGOUT</button>
     `;
+    this.startBtn = terminal.querySelector('.menu-btn[data-action="start-game"]');
     return terminal;
   }
 
@@ -51,11 +92,8 @@ export class MainMenu {
       case 'gallery':
         navigateTo('/main/gallery');
         break;
-      case 'new':
-        this.startNewGame();
-        break;
-      case 'continue':
-        this.startContinueGame();
+      case 'start-game':
+        this.startGame();
         break;
       case 'about':
         this.handleAbout();
@@ -66,12 +104,8 @@ export class MainMenu {
     }
   }
 
-  private startNewGame(): void {
+  private startGame(): void {
     eventBus.emit('game:start', { isNew: true });
-  }
-
-  private startContinueGame(): void {
-    eventBus.emit('game:start', { isNew: false });
   }
 
   private handleAbout(): void {
