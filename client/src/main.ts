@@ -216,6 +216,10 @@ function initOnce() {
   registerRoutes();
   startRouter();
 
+  eventBus.on('auth:login', () => {
+    isAuthenticated = true;
+  });
+
   eventBus.on('auth:logout', () => {
     isAuthenticated = false;
     destroyGame();

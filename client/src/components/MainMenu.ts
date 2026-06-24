@@ -5,12 +5,14 @@ import { eventBus } from '../utils/EventBus';
 
 export class MainMenu {
   private container: HTMLDivElement;
+  private boundClick: (e: MouseEvent) => void;
 
   constructor(container: HTMLDivElement) {
     this.container = container;
     this.container.innerHTML = '';
+    this.boundClick = this.onClick.bind(this);
     this.container.appendChild(this.buildTerminal());
-    this.bindEvents();
+    this.container.addEventListener('click', this.boundClick);
   }
 
   private buildTerminal(): HTMLDivElement {
@@ -34,13 +36,11 @@ export class MainMenu {
     return terminal;
   }
 
-  private bindEvents(): void {
-    this.container.addEventListener('click', (e: MouseEvent) => {
-      const btn = (e.target as HTMLElement).closest('.menu-btn');
-      if (!btn) return;
-      const action = btn.getAttribute('data-action');
-      this.handleAction(action!);
-    });
+  private onClick(e: MouseEvent): void {
+    const btn = (e.target as HTMLElement).closest('.menu-btn');
+    if (!btn) return;
+    const action = btn.getAttribute('data-action');
+    this.handleAction(action!);
   }
 
   private async handleAction(action: string): Promise<void> {
@@ -92,6 +92,7 @@ export class MainMenu {
   }
 
   destroy(): void {
+    this.container.removeEventListener('click', this.boundClick);
     this.container.innerHTML = '';
   }
 }

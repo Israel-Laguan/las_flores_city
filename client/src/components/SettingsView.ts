@@ -9,6 +9,8 @@ export class SettingsView {
   private displayNameInput: HTMLInputElement | null = null;
   private themeSelect: HTMLSelectElement | null = null;
   private themeItems: PlayerInventoryItem[] = [];
+  private boundClick: ((e: MouseEvent) => void) | null = null;
+  private boundThemeChange: (() => void) | null = null;
 
   constructor(container: HTMLDivElement) {
     this.container = container;
@@ -78,7 +80,7 @@ export class SettingsView {
   }
 
   private bindEvents(): void {
-    this.container.addEventListener('click', (e: MouseEvent) => {
+    this.boundClick = (e: MouseEvent) => {
       const btn = (e.target as HTMLElement).closest('button');
       if (!btn) return;
       const action = btn.getAttribute('data-action');
@@ -87,12 +89,14 @@ export class SettingsView {
       } else if (action === 'logout') {
         this.handleLogout();
       }
-    });
+    };
+    this.container.addEventListener('click', this.boundClick);
 
-    this.themeSelect?.addEventListener('change', () => {
+    this.boundThemeChange = () => {
       const shopItemId = this.themeSelect!.value || null;
       void this.equipTheme(shopItemId);
-    });
+    };
+    this.themeSelect?.addEventListener('change', this.boundThemeChange);
   }
 
   private async equipTheme(shopItemId: string | null): Promise<void> {
@@ -111,6 +115,8 @@ export class SettingsView {
   }
 
   destroy(): void {
+    if (this.boundClick) this.container.removeEventListener('click', this.boundClick);
+    if (this.boundThemeChange && this.themeSelect) this.themeSelect.removeEventListener('change', this.boundThemeChange);
     this.container.innerHTML = '';
   }
 }

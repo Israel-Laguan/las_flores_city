@@ -117,6 +117,7 @@ export class LoginMenu {
     try {
       const result = await api.devLogin();
       if (result.success !== false) {
+        eventBus.emit('auth:login');
         navigateTo('/main');
       } else {
         this.showError(result.error || 'Dev login failed');
@@ -139,6 +140,7 @@ export class LoginMenu {
     try {
       const result = await api.login(email, password);
       if (result.success !== false) {
+        eventBus.emit('auth:login');
         navigateTo('/main');
       } else {
         this.showError(result.error || 'Login failed');
@@ -163,6 +165,7 @@ export class LoginMenu {
     try {
       const result = await api.register(email, username, password);
       if (result.success !== false) {
+        eventBus.emit('auth:login');
         navigateTo('/main');
       } else {
         this.showError(result.error || 'Registration failed');

@@ -30,5 +30,24 @@ test.describe('Main menu — normal operations', () => {
 
       expect(popup.url()).toBe(ABOUT_US_URL);
     });
+
+    test('clicking ABOUT US opens exactly one tab even after navigating away and back', async ({ page }) => {
+      await page.request.post(`${AUTH_BASE}/auth/dev-login`);
+      await page.goto('/main');
+
+      for (let i = 0; i < 3; i++) {
+        await page.locator('.menu-btn[data-action="settings"]').click();
+        await page.locator('.view-back-btn[data-action="back"]').click();
+        await page.locator('.menu-btn[data-action="about"]').waitFor();
+      }
+
+      let popupCount = 0;
+      page.on('popup', () => popupCount++);
+
+      await page.locator('.menu-btn[data-action="about"]').click();
+
+      await page.waitForTimeout(500);
+      expect(popupCount).toBe(1);
+    });
   });
 });
