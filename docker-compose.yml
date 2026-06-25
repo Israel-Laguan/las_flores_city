@@ -94,6 +94,15 @@ services:
       CDN_KEY_PAIR_ID: ${CDN_KEY_PAIR_ID:-APKADEV00000000000000}
       CDN_PRIVATE_KEY_PATH: ${CDN_PRIVATE_KEY_PATH:-/etc/secrets/cdn_private_key.pem}
       SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
+      
+
+      # Integración de Patreon
+      PATREON_CLIENT_ID: ${PATREON_CLIENT_ID}
+      PATREON_CLIENT_SECRET: ${PATREON_CLIENT_SECRET}
+      PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI:-http://localhost:3000/patreon/callback}
+      PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS:-}
+      CLIENT_BASE_URL: ${CLIENT_BASE_URL:-http://localhost:5173}
+
     depends_on:
       postgres-oltp:
         condition: service_healthy
@@ -111,6 +120,7 @@ services:
       - ./server/src:/app/server/src
       - ./shared:/app/shared
       - ./content:/app/content
+      
 
   # Playwright E2E
   playwright:

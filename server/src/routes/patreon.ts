@@ -85,7 +85,8 @@ patreonRouter.get('/callback', async (req: any, res: Response) => {
     });
 
     if (!tokenRes.ok) {
-      console.error('[Patreon] Token exchange failed:', tokenRes.status);
+      const errorBody = await tokenRes.text();
+      console.error('[Patreon] Token exchange failed:', tokenRes.status, errorBody);
       return res.redirect(`${CLIENT_BASE_URL}?patreon_linked=false`);
     }
 
@@ -96,13 +97,22 @@ patreonRouter.get('/callback', async (req: any, res: Response) => {
     const { access_token, refresh_token } = tokenData;
 
     // B. Fetch user identity + memberships
+    // Patreon v2: 'id' is always returned automatically, do NOT request it in fields[].
+    // Use URLSearchParams so brackets are encoded correctly.
+    const identityParams = new URLSearchParams();
+    identityParams.append('include', 'memberships,memberships.currently_entitled_tiers');
+    identityParams.append('fields[user]', 'email,full_name');
+    identityParams.append('fields[member]', 'patron_status,currently_entitled_amount_cents');
+    identityParams.append('fields[tier]', 'title');
+
     const identityRes = await fetch(
-      'https://www.patreon.com/api/oauth2/v2/identity?include=memberships.currently_entitled_tiers&fields[tier]=id',
+      `https://www.patreon.com/api/oauth2/v2/identity?${identityParams.toString()}`,
       { headers: { Authorization: `Bearer ${access_token}` } }
     );
 
     if (!identityRes.ok) {
-      console.error('[Patreon] Identity fetch failed:', identityRes.status);
+      const errBody = await identityRes.text();
+      console.error('[Patreon] Identity fetch failed:', identityRes.status, errBody);
       return res.redirect(`${CLIENT_BASE_URL}?patreon_linked=false`);
     }
 
