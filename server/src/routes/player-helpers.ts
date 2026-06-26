@@ -86,8 +86,8 @@ export type MoveResult =
   | { success: true; from_location_id: string; to_location_id: string; tb_cost: number; time_blocks_remaining: number }
   | { success: false; error: 'already_here' | 'exhausted' };
 
-async function getTravelCost(fromLocationId: string, toLocationId: string): Promise<number> {
-  const result = await queryOLTP(
+async function getTravelCost(client: any, fromLocationId: string, toLocationId: string): Promise<number> {
+  const result = await client.query(
     `SELECT sqrt(pow(fd.x - td.x, 2) + pow(fd.y - td.y, 2)) as distance
      FROM scenes fs
      JOIN districts fd ON fs.district_id = fd.id
@@ -116,7 +116,7 @@ export async function performMoveTransaction(
 
     const tbCost = fromLocationId === targetLocationId
       ? 0
-      : await getTravelCost(fromLocationId, targetLocationId);
+      : await getTravelCost(client, fromLocationId, targetLocationId);
 
     const result = await PlayerStateRepository.move(client, userId, targetLocationId, tbCost);
     return result;

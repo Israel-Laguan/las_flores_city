@@ -10,7 +10,7 @@ export function registerRoute(path: string, handler: RouteHandler): void {
 
 function resolveHandler(path: string): RouteHandler | undefined {
   return routes[path] || Object.entries(routes)
-    .filter(([key]) => path.startsWith(key))
+    .filter(([key]) => path === key || (path.startsWith(key) && (key.endsWith('/') || path[key.length] === '/')))
     .sort(([a], [b]) => b.length - a.length)[0]?.[1]
     || routes['/404'];
 }

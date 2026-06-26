@@ -127,6 +127,11 @@ async function upsertDialogueOverlay(data: any): Promise<string> {
 }
 
 async function upsertScene(data: any): Promise<string> {
+  const districtName = data.district || 'Unknown';
+  await queryOLTP(
+    `INSERT INTO districts (name, slug, x, y) VALUES ($1, lower(regexp_replace($1, '\\s+', '-', 'g')), 0, 0) ON CONFLICT (name) DO NOTHING`,
+    [districtName]
+  );
   const result = await queryOLTP(
     `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
      VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10)

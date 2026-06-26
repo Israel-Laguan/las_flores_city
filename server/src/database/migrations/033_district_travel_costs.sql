@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS districts (
 -- Link scenes to districts
 ALTER TABLE scenes ADD COLUMN IF NOT EXISTS district_id UUID REFERENCES districts(id);
 
+-- Auto-create a default district for null/empty districts
+INSERT INTO districts (name, slug, x, y)
+VALUES ('Unknown', 'unknown', 0, 0)
+ON CONFLICT (name) DO NOTHING;
+
 -- Auto-create a district row for every district name found in scenes, so the
 -- backfill always succeeds. Default coords (0,0) are replaced by the seed script.
 INSERT INTO districts (name, slug, x, y)
@@ -33,7 +38,7 @@ WHERE s.district IS NOT NULL
 -- Backfill district_id from the old district string column
 UPDATE scenes s SET district_id = d.id
 FROM districts d
-WHERE s.district = d.name AND s.district_id IS NULL;
+WHERE (s.district = d.name OR (s.district IS NULL AND d.name = 'Unknown')) AND s.district_id IS NULL;
 
 -- Make district_id NOT NULL after backfill
 ALTER TABLE scenes ALTER COLUMN district_id SET NOT NULL;
