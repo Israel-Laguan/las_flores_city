@@ -103,7 +103,8 @@ jobs:
             016_add_sms_event_types \
             019_add_vault_event_type \
             020_add_mystery_solved_event_type \
-            025_marketplace_olap; do
+            025_marketplace_olap \
+            028_metaplot_alignment; do
             PGPASSWORD=las_flores_analytics_dev_password psql \
               -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
               -f server/src/database/migrations/${migration}.sql
