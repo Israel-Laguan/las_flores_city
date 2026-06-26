@@ -128,10 +128,15 @@ async function upsertDialogueOverlay(data: any): Promise<string> {
 
 async function upsertScene(data: any): Promise<string> {
   const districtName = data.district || 'Unknown';
+  const districtSlug = districtName.toLowerCase().replace(/\s+/g, '-');
   await queryOLTP(
-    `INSERT INTO districts (name, slug, x, y) VALUES ($1, lower(regexp_replace($1, '\\s+', '-', 'g')), 0, 0) ON CONFLICT (name) DO NOTHING`,
-    [districtName]
+    `INSERT INTO districts (name, slug, x, y) VALUES ($1, $2, 0, 0) ON CONFLICT (name) DO NOTHING`,
+    [districtName, districtSlug]
   );
+  const availableDialogues = data.available_dialogues || [];
+  const dialogArray = availableDialogues.length > 0
+    ? `{${availableDialogues.join(',')}}`
+    : '{}';
   const result = await queryOLTP(
     `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
      VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10)
@@ -156,7 +161,7 @@ async function upsertScene(data: any): Promise<string> {
       data.background_url || null,
       data.ambient_sound_url || null,
       data.mood || null,
-      data.available_dialogues || [],
+      dialogArray,
       JSON.stringify(data.metadata || {}),
     ]
   );
