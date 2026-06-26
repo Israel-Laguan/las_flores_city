@@ -1,7 +1,10 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
+// API base URL: use full backend URL in CI, local proxy in dev
+const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? (process.env.CI 
+  ? 'http://localhost:3000'  // Direct to backend in CI
+  : 'http://localhost:5173'); // Local dev with Vite proxy
 
 // Shared credentials — beforeAll registers the user; injectAuth() logs in
 // per-page to scope the HttpOnly cookie to :5173 (the page's origin).

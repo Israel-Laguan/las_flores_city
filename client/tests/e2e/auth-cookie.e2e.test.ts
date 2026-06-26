@@ -21,9 +21,11 @@
 import { test, expect } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-// baseURL is :5173 (the Vite dev server). We use relative /api paths so the
-// HttpOnly cookie is scoped to :5173 — the same origin as the client app.
-const AUTH_BASE = '/api';
+// baseURL configuration: use /api proxy in local dev, direct URL in CI
+// HttpOnly cookies are origin-scoped, so in CI we need the full backend URL
+const AUTH_BASE = process.env.CI 
+  ? 'http://localhost:3000'  // Direct to backend in CI (static serve)
+  : '/api';                   // Vite proxy in local dev
 
 const testEmail = `cookie-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
 const testUsername = `cookie_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;

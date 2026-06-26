@@ -81,6 +81,8 @@ jobs:
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
           PORT: 3000
+          CLIENT_ORIGIN_URL: http://localhost:5173
+          NODE_ENV: development
 
       - name: Wait for API server
         run: |
@@ -101,7 +103,7 @@ jobs:
           VITE_API_URL: http://localhost:3000
 
       - name: Start client (background)
-        run: npx --yes serve -s dist -l 5173 &
+        run: npx --yes serve -s dist -l 5173 > /tmp/client.log 2>&1 &
         working-directory: client
 
       - name: Wait for client
@@ -114,6 +116,7 @@ jobs:
             sleep 2
           done
           echo "::error::Client failed to start within 40 seconds"
+          cat /tmp/client.log 2>/dev/null || true
           exit 1
 
       - name: Install Playwright browsers
@@ -124,7 +127,9 @@ jobs:
         run: npx playwright test
         working-directory: client
         env:
+          CI: 'true'
           API_URL: http://localhost:3000
+          CLIENT_ORIGIN_URL: http://localhost:5173
 
       - uses: actions/upload-artifact@v4
         if: failure()

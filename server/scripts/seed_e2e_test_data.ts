@@ -10,6 +10,7 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
 import { queryOLTP, closeConnections } from '../src/database/connection.js';
+import { VAULT_ITEM_IDS, ARIA_CHARACTER_ID, SMS_CHAT_HISTORY } from '../src/database/seedFixtures.js';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
@@ -18,36 +19,6 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 const E2E_USER_IDS = [
   '00000000-0000-0000-0000-000000000001',
   '660e8400-e29b-41d4-a716-446655440099',
-];
-
-// References existing vault_items rows from content migration
-const VAULT_ITEM_IDS = [
-  'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-  'c3d4e5f6-a7b8-9012-cdef-123456789012',
-];
-
-// Aria the barista — confirmed character_id from content/characters/character_barista.yaml
-const ARIA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
-
-const TS_BASE = '2077-01-15T08:00:00.000Z';
-const TS_PLUS_1S = '2077-01-15T08:00:01.000Z';
-
-const SMS_CHAT_HISTORY = [
-  {
-    id: '00000000-0000-0000-0000-000000000001',
-    author: 'npc',
-    text: 'Welcome to Las Flores, new arrival. Your orientation packet is ready.',
-    createdAt: TS_BASE,
-    nodeId: 'msg_1',
-  },
-  {
-    id: '00000000-0000-0000-0000-000000000002',
-    author: 'npc',
-    text: 'Please report to the Welcome Center at your earliest convenience.',
-    createdAt: TS_PLUS_1S,
-    nodeId: 'msg_1',
-  },
 ];
 
 async function seedE2EData(): Promise<void> {

@@ -1,35 +1,11 @@
 import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { queryOLTP } from '../database/connection.js';
+import { VAULT_ITEM_IDS, ARIA_CHARACTER_ID, SMS_CHAT_HISTORY } from '../database/seedFixtures.js';
 
 export const devRouter = Router();
 
 const isDev = () => process.env.NODE_ENV !== 'production';
-
-const VAULT_ITEM_IDS = [
-  'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-  'b2c3d4e5-f6a7-8901-bcde-f12345678901',
-  'c3d4e5f6-a7b8-9012-cdef-123456789012',
-];
-
-const ARIA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
-
-const SMS_CHAT_HISTORY = [
-  {
-    id: '00000000-0000-0000-0000-000000000001',
-    author: 'npc',
-    text: 'Welcome to Las Flores, new arrival. Your orientation packet is ready.',
-    createdAt: '2077-01-15T08:00:00.000Z',
-    nodeId: 'msg_1',
-  },
-  {
-    id: '00000000-0000-0000-0000-000000000002',
-    author: 'npc',
-    text: 'Please report to the Welcome Center at your earliest convenience.',
-    createdAt: '2077-01-15T08:00:01.000Z',
-    nodeId: 'msg_1',
-  },
-];
 
 // POST /dev/seed — seed vault + SMS data for the authenticated user
 devRouter.post('/seed', authMiddleware, async (req: AuthRequest, res: Response) => {

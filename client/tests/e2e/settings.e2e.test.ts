@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-const AUTH_BASE = '/api';
+// API base URL: use full backend URL in CI, local proxy in dev
+const AUTH_BASE = process.env.CI 
+  ? 'http://localhost:3000'  // Direct to backend in CI
+  : '/api';                   // Vite proxy in local dev
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
