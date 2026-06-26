@@ -82,20 +82,4 @@ UPDATE scene_characters SET is_permanent = TRUE, default_mood = 'neutral'
 WHERE scene_id = '550e8400-e29b-41d4-a716-446655440002'
   AND character_id = '550e8400-e29b-41d4-a716-446655440001';
 
--- ============================================================
--- Seed test relationships for the dev user
--- ============================================================
-
-INSERT INTO user_relationships (user_id, character_id, friendship_level, romance_level)
-VALUES ('00000000-0000-0000-0000-000000000001', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', 15, 0)
-ON CONFLICT (user_id, character_id) DO NOTHING;
-
-INSERT INTO user_relationships (user_id, character_id, friendship_level, romance_level)
-VALUES ('00000000-0000-0000-0000-000000000001', '550e8400-e29b-41d4-a716-446655440004', 5, 0)
-ON CONFLICT (user_id, character_id) DO NOTHING;
-
-INSERT INTO user_relationships (user_id, character_id, friendship_level, romance_level)
-VALUES ('00000000-0000-0000-0000-000000000001', '550e8400-e29b-41d4-a716-446655440001', 10, 0)
-ON CONFLICT (user_id, character_id) DO NOTHING;
-
 COMMIT;

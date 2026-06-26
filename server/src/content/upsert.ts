@@ -128,12 +128,12 @@ async function upsertDialogueOverlay(data: any): Promise<string> {
 
 async function upsertScene(data: any): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO scenes (id, name, description, district, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
+     VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        description = EXCLUDED.description,
-       district = EXCLUDED.district,
+       district_id = (SELECT id FROM districts WHERE name = $4),
        image_url = EXCLUDED.image_url,
        background_url = EXCLUDED.background_url,
        ambient_sound_url = EXCLUDED.ambient_sound_url,
@@ -294,6 +294,15 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       break;
     case 'scene':
       contentId = await upsertScene(data);
+      const npcIds: string[] = data.metadata?.npcs || [];
+      for (const charId of npcIds) {
+        await queryOLTP(
+          `INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood)
+           VALUES ($1, $2, true, 'neutral')
+           ON CONFLICT (scene_id, character_id) DO NOTHING`,
+          [contentId, charId]
+        );
+      }
       break;
     case 'gig':
       const gigs = data.gigs || [data];

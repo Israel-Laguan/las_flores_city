@@ -24,22 +24,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.cameras.main;
     const colors = getThemeColors();
-
     this.cameras.main.setBackgroundColor(colors.sceneBg);
-
-    this.add.text(width / 2, 30, 'Las Flores 2077', {
-      font: 'bold 28px monospace', color: colors.sceneTitle, align: 'center',
-    }).setOrigin(0.5);
-
-    this.add.text(width / 2, 65, 'The Minimum Viable World', {
-      font: '14px monospace', color: colors.sceneMuted, align: 'center',
-    }).setOrigin(0.5);
-
-    this.add.text(width / 2, height - 50, 'Press [SPACE] to interact • Use Travel menu to move', {
-      font: '12px monospace', color: colors.sceneMuted, align: 'center',
-    }).setOrigin(0.5);
 
     this.createUplinkNotice();
     eventBus.emit('world:ready');

@@ -26,7 +26,7 @@ test.beforeEach(async ({ page }) => {
   await page.request.post('/api/auth/dev-login', {
     data: { userId },
   });
-  await page.goto('/main/new');
+  await page.goto('/city/loc/c3d4e5f6-a7b8-9012-cdef-123456789012');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
   // Wait for the game to fully start (Phaser canvas + fetchPlayerData settles)
   await page.waitForSelector('#game-container canvas', { state: 'visible', timeout: 15_000 });

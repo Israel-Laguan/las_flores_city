@@ -125,9 +125,9 @@ test.describe('Auth cookie — session propagation', () => {
       }
     });
 
-    // Navigate to /main/new — the app's boot fetch(/api/player/state) will
+    // Navigate to /city — the app's boot fetch(/api/player/state) will
     // carry the cookie and the main.ts auth-success callback redirects to
-    // /main/new to start the game.
+    // /city to start the game.
     await startNewGame(page);
 
     // Give the init flow time to complete. If the cookie worked, the player

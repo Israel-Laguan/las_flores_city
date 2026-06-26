@@ -15,6 +15,7 @@ import { LoginMenu } from './components/LoginMenu';
 import { MainMenu } from './components/MainMenu';
 import { SettingsView } from './components/SettingsView';
 import { GalleryView } from './components/GalleryView';
+import { CityNav } from './components/CityNav';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
@@ -165,25 +166,62 @@ function registerRoutes(): void {
     currentView = new GalleryView(container);
   });
 
-  registerRoute('/main/new', () => {
+  registerRoute('/city', () => {
     if (!isAuthenticated) {
       navigateTo('/', true);
       return;
     }
+    destroyGame();
     destroyCurrentView();
-    startGame();
-    fetchPlayerData();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    currentView = new CityNav(container, cachedPlayerState);
   });
 
-  registerRoute('/main/continue', () => {
+  registerRoute('/city/loc/', (params) => {
     if (!isAuthenticated) {
       navigateTo('/', true);
       return;
     }
+    const locationId = extractLocationId();
+    if (!locationId) {
+      navigateTo('/city', true);
+      return;
+    }
     destroyCurrentView();
-    startGame();
-    fetchPlayerData();
+    if (gameInstance) {
+      eventBus.emit('city:travel-to', { locationId });
+    } else {
+      startGameForLocation(locationId);
+    }
   });
+}
+
+function extractLocationId(): string | null {
+  const match = window.location.pathname.match(/^\/city\/loc\/(.+)$/);
+  return match ? match[1] : null;
+}
+
+function startGameForLocation(locationId: string): void {
+  hideAllContainers();
+  document.getElementById('game-container')!.style.display = 'flex';
+
+  destroyGame();
+
+  gameInstance = new Phaser.Game(config);
+  sleepOverlayInstance = new SleepOverlay();
+  phoneOverlayInstance = new PhoneOverlay();
+  initThemeEngine();
+
+  const waitForReady = () => {
+    if (gameInstance?.scene.isActive('LocationScene')) {
+      eventBus.emit('city:travel-to', { locationId });
+    } else {
+      requestAnimationFrame(waitForReady);
+    }
+  };
+  waitForReady();
 }
 
 // Bridge window CustomEvents (dispatched by E2E tests / external scripts)
@@ -218,6 +256,46 @@ function initOnce() {
   registerRoutes();
   startRouter();
 
+  // Root-level HUD status bar listeners (work with and without Phaser)
+  eventBus.on('tb:updated', (remaining: number) => {
+    const tbEl = document.getElementById('tb-display');
+    if (tbEl) {
+      tbEl.textContent = `${remaining}/48`;
+      const color = remaining <= 5 ? '#ff0000' : remaining <= 10 ? '#ffff00' : '';
+      if (color) tbEl.style.color = color;
+    }
+  });
+
+  eventBus.on('player:state-loaded', (data: any) => {
+    const tbEl = document.getElementById('tb-display');
+    if (tbEl && data.timeBlocks !== undefined) {
+      tbEl.textContent = `${data.timeBlocks}/48`;
+    }
+    const creditsEl = document.getElementById('credits-display');
+    if (creditsEl && data.credits !== undefined) {
+      creditsEl.textContent = data.credits.toString();
+    }
+    const locationEl = document.getElementById('location-display');
+    if (locationEl && data.locationId) {
+      locationEl.textContent = data.locationName || 'Unknown';
+    }
+  });
+
+  // Sync Phaser travel to URL
+  eventBus.on('travel:complete', (data: any) => {
+    if (data.locationId) {
+      navigateTo(`/city/loc/${data.locationId}`, true);
+    }
+  });
+
+  // Handle Phaser-internal travel triggered from URL
+  eventBus.on('city:travel-to', async (data: { locationId: string }) => {
+    const scene = gameInstance?.scene.getScene('LocationScene');
+    if (scene && typeof (scene as any).travelTo === 'function') {
+      (scene as any).travelTo(data.locationId);
+    }
+  });
+
   eventBus.on('auth:login', () => {
     isAuthenticated = true;
   });
@@ -229,14 +307,13 @@ function initOnce() {
     navigateTo('/', true);
   });
 
-  eventBus.on('game:start', (payload: { isNew: boolean }) => {
+  eventBus.on('game:start', () => {
     if (!isAuthenticated) {
       navigateTo('/', true);
       return;
     }
     destroyCurrentView();
-    startGame();
-    fetchPlayerData();
+    navigateTo('/city');
   });
 
   // Show login menu immediately for fast visual feedback

@@ -27,7 +27,7 @@ test.beforeEach(async ({ page }) => {
   await page.request.post('/api/auth/dev-login', {
     data: { userId: '660e8400-e29b-41d4-a716-446655440099' },
   });
-  await page.goto('/main/new');
+  await page.goto('/city/loc/c3d4e5f6-a7b8-9012-cdef-123456789012');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
 });
 

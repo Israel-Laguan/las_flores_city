@@ -6,6 +6,7 @@ jest.mock('../../src/database/connection.js', () => ({
 
 jest.mock('../../src/middleware/auth.js', () => ({
   generateToken: jest.fn(() => 'mock-token'),
+  authMiddleware: jest.fn((_req: any, _res: any, next: any) => next()),
 }));
 
 jest.mock('../../src/utils/cookies.js', () => ({

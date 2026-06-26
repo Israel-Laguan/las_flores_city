@@ -105,7 +105,7 @@ export class MainMenu {
   }
 
   private startGame(): void {
-    eventBus.emit('game:start', { isNew: true });
+    navigateTo('/city');
   }
 
   private handleAbout(): void {

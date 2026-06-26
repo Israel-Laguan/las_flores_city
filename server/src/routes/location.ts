@@ -387,7 +387,12 @@ locationRouter.get('/', authMiddleware, async (req: AuthRequest, res) => {
 
     // Fetch all scenes including metadata for gating check
     const result = await queryOLTP(
-      'SELECT id, name, description, district, image_url, metadata FROM scenes ORDER BY name'
+      `SELECT s.id, s.name, s.description, s.image_url, s.metadata,
+              d.id as district_id, d.name as district, d.slug as district_slug,
+              d.x as district_x, d.y as district_y
+       FROM scenes s
+       JOIN districts d ON s.district_id = d.id
+       ORDER BY s.name`
     );
 
     // Filter by story_beat gating, then strip metadata from the response

@@ -108,7 +108,7 @@ const chunkPayloadArb = () =>
     const keys = Object.keys(nodes);
     return fc.record({
       id: uuidArb(),
-      chunk_key: fc.constantFrom(...keys),
+      chunk_key: keys.length > 0 ? fc.constantFrom(...keys) : fc.constant(keys[0] ?? 'fallback'),
       nodes: fc.constant(nodes),
       leaves: leavesArb(),
     });

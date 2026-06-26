@@ -54,6 +54,25 @@ describe('Aftermath Worker', () => {
     await applyMigration('026_vault_signed_urls.sql');
     await applyMigration('021_leaderboards.sql');
     await applyMigration('027_aftermath.sql');
+    await applyMigration('033_district_travel_costs.sql');
+
+    // Seed districts table (required for scenes foreign key)
+    await queryOLTP(
+      `CREATE TABLE IF NOT EXISTS districts (
+         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+         name VARCHAR(50) NOT NULL UNIQUE,
+         slug VARCHAR(50) NOT NULL UNIQUE,
+         description TEXT,
+         minimap_asset_url VARCHAR(500),
+         x INTEGER NOT NULL,
+         y INTEGER NOT NULL
+       )`
+    );
+    await queryOLTP(
+      `INSERT INTO districts (id, name, slug, description, x, y) VALUES
+       ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0)
+       ON CONFLICT (name) DO NOTHING`
+    );
 
     // Seed a RESOLVING mystery with the aftermath payload.
     await queryOLTP(
@@ -85,8 +104,8 @@ describe('Aftermath Worker', () => {
     // Seed a scene + character mapping to be scrubbed.
     // scenes is created via 001_initial_schema; scene_characters too.
     await queryOLTP(
-      `INSERT INTO scenes (id, name, description, district)
-       VALUES ($1, 'Aftermath Test Scene', 'Test', 'old_town')
+      `INSERT INTO scenes (id, name, description, district_id)
+       VALUES ($1, 'Aftermath Test Scene', 'Test', (SELECT id FROM districts WHERE name = 'Downtown'))
        ON CONFLICT (id) DO NOTHING`,
       [SCENE_ID]
     );

@@ -122,10 +122,23 @@ async function applySQLMigrations(): Promise<void> {
   }
 }
 
+async function seedDistricts(): Promise<void> {
+  const seedPath = path.resolve(__dirname, '../../../server/scripts/seed_districts.sql');
+  try {
+    const sql = await fs.readFile(seedPath, 'utf-8');
+    await queryOLTP(sql);
+    console.log('[migrate] Districts seeded');
+  } catch (err: any) {
+    console.warn(`[migrate] District seeding skipped: ${err.message}`);
+  }
+}
+
 export async function runAllMigrations(): Promise<void> {
   console.log('[migrate] Running database schema migrations...');
   await applySQLMigrations();
   console.log('[migrate] Database schema migrations complete');
+
+  await seedDistricts();
 
   console.log('[migrate] Running content migration...');
   const result = await migrateContent(CONTENT_DIR);
