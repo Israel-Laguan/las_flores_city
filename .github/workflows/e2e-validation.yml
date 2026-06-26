@@ -83,8 +83,11 @@ jobs:
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
 
+      - name: Build server
+        run: npm run build --workspace=server
+
       - name: Start API server (background)
-        run: npm run start --workspace=server &
+        run: npm run start --workspace=server > /tmp/server.log 2>&1 &
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
@@ -93,10 +96,16 @@ jobs:
 
       - name: Wait for API server
         run: |
-          for i in $(seq 1 20); do
-            curl -sf http://localhost:3000/health && break
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health > /dev/null 2>&1; then
+              echo "API server is ready"
+              exit 0
+            fi
             sleep 2
           done
+          echo "::error::API server failed to start within 60 seconds"
+          cat /tmp/server.log 2>/dev/null || true
+          exit 1
 
       - name: Build client
         run: npm run build --workspace=client
@@ -110,9 +119,14 @@ jobs:
       - name: Wait for client
         run: |
           for i in $(seq 1 20); do
-            curl -sf http://localhost:5173 && break
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              echo "Client is ready"
+              exit 0
+            fi
             sleep 2
           done
+          echo "::error::Client failed to start within 40 seconds"
+          exit 1
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
