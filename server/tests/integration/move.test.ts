@@ -31,9 +31,12 @@ async function applyMigration(filename: string): Promise<void> {
   );
   try {
     await pool.query(sql);
-  } catch (err) {
-    // Column may already exist — log unexpected failures for diagnosis
-    console.warn(`applyMigration(${filename}) ignored error:`, (err as Error).message);
+  } catch (err: any) {
+    if (err.code === '42P07' || err.code === '42701') {
+      console.warn(`applyMigration(${filename}) ignored idempotent error:`, err.message);
+      return;
+    }
+    throw err;
   }
 }
 

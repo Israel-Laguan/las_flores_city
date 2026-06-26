@@ -5,34 +5,56 @@ const AUTH_BASE = '/api';
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 test.describe('Settings — Display Name', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.request.post(`${AUTH_BASE}/auth/dev-login`);
+  const testPassword = 'DisplayPass1!';
+
+  async function createUser(page: any): Promise<string> {
+    const email = `dn-e2e-${uid()}@example.com`;
+    const username = `dn_e2e_${uid()}`;
+    const res = await page.request.post(`${AUTH_BASE}/auth/register`, {
+      data: { email, username, display_name: 'E2E Display User', password: testPassword },
+    });
+    expect(res.ok()).toBeTruthy();
+    return email;
+  }
+
+  async function loginAndGoToSettings(page: any, email: string): Promise<void> {
+    const res = await page.request.post(`${AUTH_BASE}/auth/login`, {
+      data: { email, password: testPassword },
+    });
+    expect(res.ok()).toBeTruthy();
     await page.goto('/main');
     await page.locator('.menu-btn[data-action="settings"]').click();
     await page.locator('.display-name-input').waitFor({ state: 'visible' });
-    // Wait for async loadSettings to populate the input
     await expect(page.locator('.display-name-input')).not.toHaveValue('');
-  });
+  }
 
   test('shows current display name as reference text and pre-populates input', async ({ page }) => {
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email);
     await expect(page.locator('.current-display-name')).toBeVisible();
     await expect(page.locator('.current-display-name')).not.toBeEmpty();
-    await expect(page.locator('.display-name-input')).toHaveValue(/dev/i);
+    await expect(page.locator('.display-name-input')).toHaveValue(/display/i);
   });
 
   test('saving a new display name shows saved status', async ({ page }) => {
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email);
     await page.locator('.display-name-input').fill('E2E Updated Name');
     await page.locator('button[data-action="save-display-name"]').click();
     await expect(page.locator('.display-name-status')).toContainText('SAVED');
   });
 
   test('shows error when saving empty display name', async ({ page }) => {
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email);
     await page.locator('.display-name-input').fill('');
     await page.locator('button[data-action="save-display-name"]').click();
     await expect(page.locator('.display-name-status')).toContainText('Display name cannot be empty');
   });
 
   test('persists display name across page navigation', async ({ page }) => {
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email);
     const uniqueName = `Unique-${uid()}`;
     await page.locator('.display-name-input').fill(uniqueName);
     await page.locator('button[data-action="save-display-name"]').click();

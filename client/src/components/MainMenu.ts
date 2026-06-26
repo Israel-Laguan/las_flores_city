@@ -15,7 +15,7 @@ function hasActivity(state: PlayerState): boolean {
     state.currentDay > 1 ||
     state.timeBlocks < 48 ||
     state.currentNodeId != null ||
-    Object.keys(state.flags).length > 0
+    Object.keys(state.flags ?? {}).length > 0
   );
 }
 

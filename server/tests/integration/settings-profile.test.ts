@@ -183,8 +183,7 @@ describe('Settings Profile Route', () => {
 describe('Change Password Route', () => {
   const NEW_PASSWORD = 'NewPass456!';
 
-  beforeAll(async () => {
-    // Reset password_hash to the known test password
+  beforeEach(async () => {
     const passwordHash = await bcrypt.hash(TEST_PASSWORD, 10);
     await pool.query(
       'UPDATE users SET password_hash = $1 WHERE id = $2',
@@ -228,7 +227,7 @@ describe('Change Password Route', () => {
     const res = await fetch(`http://localhost:${port}/auth/change-password`, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({ current_password: NEW_PASSWORD, new_password: '12345' }),
+      body: JSON.stringify({ current_password: TEST_PASSWORD, new_password: '12345' }),
     });
     const data = await res.json();
     expect(res.status).toBe(400);
