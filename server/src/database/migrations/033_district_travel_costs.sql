@@ -24,23 +24,29 @@ INSERT INTO districts (name, slug, x, y)
 VALUES ('Unknown', 'unknown', 0, 0)
 ON CONFLICT (name) DO NOTHING;
 
--- Auto-create a district row for every district name found in scenes, so the
--- backfill always succeeds. Default coords (0,0) are replaced by the seed script.
-INSERT INTO districts (name, slug, x, y)
-SELECT DISTINCT
-    s.district,
-    lower(regexp_replace(s.district, '\s+', '-', 'g')),
-    0, 0
-FROM scenes s
-WHERE s.district IS NOT NULL
-  AND NOT EXISTS (SELECT 1 FROM districts d WHERE d.name = s.district);
+-- Only migrate from old string column if it still exists (idempotent re-run)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='scenes' AND column_name='district') THEN
 
--- Backfill district_id from the old district string column
-UPDATE scenes s SET district_id = d.id
-FROM districts d
-WHERE (s.district = d.name OR (s.district IS NULL AND d.name = 'Unknown')) AND s.district_id IS NULL;
+    INSERT INTO districts (name, slug, x, y)
+    SELECT DISTINCT
+        s.district,
+        lower(regexp_replace(s.district, '\s+', '-', 'g')),
+        0, 0
+    FROM scenes s
+    WHERE s.district IS NOT NULL
+      AND NOT EXISTS (SELECT 1 FROM districts d WHERE d.name = s.district);
 
--- Make district_id NOT NULL after backfill
+    UPDATE scenes s SET district_id = d.id
+    FROM districts d
+    WHERE (s.district = d.name OR (s.district IS NULL AND d.name = 'Unknown')) AND s.district_id IS NULL;
+
+  END IF;
+END
+$$;
+
+-- Make district_id NOT NULL after backfill (safe to run repeatedly)
 ALTER TABLE scenes ALTER COLUMN district_id SET NOT NULL;
 
 -- Drop the old string district column
