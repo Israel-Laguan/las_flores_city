@@ -18,6 +18,7 @@ import { patreonRouter } from './routes/patreon.js';
 import { shopRouter } from './routes/shop.js';
 import { paypalRouter } from './routes/paypal.js';
 import { archiveRouter } from './routes/archive.js';
+import { devRouter } from './routes/dev.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
@@ -56,6 +57,7 @@ app.use('/settings', settingsRouter);
 app.use('/patreon', patreonRouter);
 app.use('/shop', shopRouter);
 app.use('/paypal', paypalRouter);
+app.use('/dev', devRouter);
 app.use('/archive', archiveRouter);
 
 // Error handling middleware

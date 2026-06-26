@@ -24,6 +24,7 @@ export class SettingsView {
     this.container = container;
     this.container.innerHTML = '';
     this.container.appendChild(this.buildView());
+    this.bindEvents();
     void this.loadSettings();
   }
 
@@ -105,7 +106,6 @@ export class SettingsView {
       }
     }
 
-    this.bindEvents();
   }
 
   private populateThemes(): void {
