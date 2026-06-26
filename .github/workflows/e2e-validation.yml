@@ -65,19 +65,7 @@ jobs:
         run: npm run build --workspace=shared
 
       - name: Apply all migrations & seed content
-        run: |
-          set -euo pipefail
-          jq -r '.oltp[]' server/src/database/migrations/migration-targets.json | while read migration; do
-            PGPASSWORD=las_flores_dev_password psql -v ON_ERROR_STOP=1 \
-              -h localhost -p 5434 -U las_flores -d las_flores \
-              -f "server/src/database/migrations/${migration}"
-          done
-          jq -r '.olap[]' server/src/database/migrations/migration-targets.json | while read migration; do
-            PGPASSWORD=las_flores_analytics_dev_password psql -v ON_ERROR_STOP=1 \
-              -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-              -f "server/src/database/migrations/${migration}"
-          done
-          npm run migrate --workspace=server -- ../content
+        run: npm run schema:migrate --workspace=server
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
