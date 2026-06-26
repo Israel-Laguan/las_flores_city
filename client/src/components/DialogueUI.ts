@@ -144,6 +144,7 @@ export class DialogueUI {
 
   private slideIn() {
     this.state = DialogueUIState.SLIDING_IN;
+    this.container.style.pointerEvents = '';
     this.container.classList.add('open');
     eventBus.emit('dialogue:opened');
     eventBus.emit('phaser:pause-input');

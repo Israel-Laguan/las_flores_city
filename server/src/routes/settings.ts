@@ -101,6 +101,14 @@ settingsRouter.patch('/profile', authMiddleware, async (req: AuthRequest, res) =
       [trimmed, userId]
     );
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     res.json({
       success: true,
       data: result.rows[0],

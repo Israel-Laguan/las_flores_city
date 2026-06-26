@@ -111,7 +111,7 @@ export class MainMenu {
   private handleAbout(): void {
     const url = import.meta.env.VITE_ABOUT_US_URL as string;
     if (url) {
-      window.open(url, '_blank');
+      window.open(url, '_blank', 'noopener,noreferrer');
     }
   }
 

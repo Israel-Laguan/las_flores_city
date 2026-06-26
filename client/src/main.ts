@@ -191,6 +191,8 @@ function registerRoutes(): void {
     }
     destroyCurrentView();
     if (gameInstance) {
+      hideAllContainers();
+      document.getElementById('game-container')!.style.display = 'flex';
       eventBus.emit('city:travel-to', { locationId });
     } else {
       startGameForLocation(locationId);
@@ -214,11 +216,16 @@ function startGameForLocation(locationId: string): void {
   phoneOverlayInstance = new PhoneOverlay();
   initThemeEngine();
 
+  let attempts = 0;
+  const maxAttempts = 600;
   const waitForReady = () => {
     if (gameInstance?.scene.isActive('LocationScene')) {
       eventBus.emit('city:travel-to', { locationId });
-    } else {
+    } else if (++attempts < maxAttempts) {
       requestAnimationFrame(waitForReady);
+    } else {
+      console.warn('[main] LocationScene did not become active, falling back to /city');
+      navigateTo('/city', true);
     }
   };
   waitForReady();
@@ -261,8 +268,7 @@ function initOnce() {
     const tbEl = document.getElementById('tb-display');
     if (tbEl) {
       tbEl.textContent = `${remaining}/48`;
-      const color = remaining <= 5 ? '#ff0000' : remaining <= 10 ? '#ffff00' : '';
-      if (color) tbEl.style.color = color;
+      tbEl.style.color = remaining <= 5 ? '#ff0000' : remaining <= 10 ? '#ffff00' : '';
     }
   });
 

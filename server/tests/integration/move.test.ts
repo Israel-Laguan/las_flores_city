@@ -31,8 +31,9 @@ async function applyMigration(filename: string): Promise<void> {
   );
   try {
     await pool.query(sql);
-  } catch {
-    // Column may already exist
+  } catch (err) {
+    // Column may already exist — log unexpected failures for diagnosis
+    console.warn(`applyMigration(${filename}) ignored error:`, (err as Error).message);
   }
 }
 

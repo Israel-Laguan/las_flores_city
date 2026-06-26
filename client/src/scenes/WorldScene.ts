@@ -3,7 +3,7 @@ import { eventBus } from '../utils/EventBus';
 import '../styles/themes.css';
 
 function getThemeColors() {
-  const computed = getComputedStyle(document.documentElement);
+  const computed = getComputedStyle(document.body);
   return {
     sceneBg: computed.getPropertyValue('--scene-bg').trim() || '#0a0a1a',
     sceneTitle: computed.getPropertyValue('--scene-title').trim() || '#00ff00',
@@ -33,6 +33,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private setupEventListeners() {
+    eventBus.on('theme:changed', () => {
+      const colors = getThemeColors();
+      this.cameras.main.setBackgroundColor(colors.sceneBg);
+    });
+
     eventBus.on('location:loaded', (data: any) => {
       this.currentLocationId = data.id;
       this.updateLocationDisplay(data);
@@ -120,7 +125,8 @@ export class WorldScene extends Phaser.Scene {
     el.id = 'uplink-notice';
     Object.assign(el.style, {
       position: 'fixed', top: '60px', left: '50%', transform: 'translateX(-50%)',
-      background: 'rgba(0, 0, 0, 0.85)', border: `1px solid ${colors.sceneTitle}`,
+      background: colors.sceneBg === '#0a0a1a' ? 'rgba(0, 0, 0, 0.85)' : `rgba(248, 248, 248, 0.95)`,
+      border: `1px solid ${colors.sceneTitle}`,
       borderRadius: '4px', color: colors.sceneTitle, fontFamily: 'monospace', fontSize: '13px',
       padding: '8px 16px', zIndex: '3000', display: 'none', pointerEvents: 'none',
       textAlign: 'center', whiteSpace: 'nowrap',

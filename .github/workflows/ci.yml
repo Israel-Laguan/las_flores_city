@@ -67,16 +67,18 @@ jobs:
 
       - name: Apply OLTP schema
         run: |
+          set -euo pipefail
           jq -r '.oltp[]' server/src/database/migrations/migration-targets.json | while read migration; do
-            PGPASSWORD=las_flores_dev_password psql \
+            PGPASSWORD=las_flores_dev_password psql -v ON_ERROR_STOP=1 \
               -h localhost -p 5434 -U las_flores -d las_flores \
               -f "server/src/database/migrations/${migration}"
           done
 
       - name: Apply OLAP schema
         run: |
+          set -euo pipefail
           jq -r '.olap[]' server/src/database/migrations/migration-targets.json | while read migration; do
-            PGPASSWORD=las_flores_analytics_dev_password psql \
+            PGPASSWORD=las_flores_analytics_dev_password psql -v ON_ERROR_STOP=1 \
               -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
               -f "server/src/database/migrations/${migration}"
           done

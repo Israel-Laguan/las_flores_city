@@ -1,3 +1,4 @@
+import type { PoolClient } from 'pg';
 import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
@@ -86,7 +87,7 @@ export type MoveResult =
   | { success: true; from_location_id: string; to_location_id: string; tb_cost: number; time_blocks_remaining: number }
   | { success: false; error: 'already_here' | 'exhausted' };
 
-async function getTravelCost(client: any, fromLocationId: string, toLocationId: string): Promise<number> {
+async function getTravelCost(client: PoolClient, fromLocationId: string, toLocationId: string): Promise<number> {
   const result = await client.query(
     `SELECT sqrt(pow(fd.x - td.x, 2) + pow(fd.y - td.y, 2)) as distance
      FROM scenes fs

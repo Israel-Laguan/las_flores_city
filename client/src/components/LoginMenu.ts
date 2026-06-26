@@ -8,7 +8,7 @@ export class LoginMenu {
   private errorEl: HTMLDivElement;
   private loginForm: HTMLDivElement;
   private registerForm: HTMLDivElement;
-  private devBtn: HTMLButtonElement;
+  private devBtn: HTMLButtonElement | null;
   private submitBtn: HTMLButtonElement;
   private registerBtn: HTMLButtonElement;
   private submitting = false;
@@ -20,7 +20,7 @@ export class LoginMenu {
     this.errorEl = this.container.querySelector('.login-error') as HTMLDivElement;
     this.loginForm = this.container.querySelector('.login-form') as HTMLDivElement;
     this.registerForm = this.container.querySelector('.register-form') as HTMLDivElement;
-    this.devBtn = this.container.querySelector('.login-btn-dev') as HTMLButtonElement;
+    this.devBtn = this.container.querySelector('.login-btn-dev');
     this.submitBtn = this.container.querySelector('.login-btn-submit') as HTMLButtonElement;
     this.registerBtn = this.container.querySelector('.login-btn-register') as HTMLButtonElement;
     this.bindEvents();
@@ -70,7 +70,7 @@ export class LoginMenu {
   }
 
   private bindEvents(): void {
-    this.devBtn.addEventListener('click', () => this.handleDevLogin());
+    this.devBtn?.addEventListener('click', () => this.handleDevLogin());
     this.submitBtn.addEventListener('click', () => this.handleLogin());
     this.registerBtn.addEventListener('click', () => this.handleRegister());
 
@@ -105,7 +105,7 @@ export class LoginMenu {
 
   private setSubmitting(v: boolean): void {
     this.submitting = v;
-    this.devBtn.disabled = v;
+    if (this.devBtn) this.devBtn.disabled = v;
     this.submitBtn.disabled = v;
     this.registerBtn.disabled = v;
   }

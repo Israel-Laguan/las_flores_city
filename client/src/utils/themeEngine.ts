@@ -80,23 +80,32 @@ function setBodyThemeClass(themeId: string | null): void {
 }
 
 /** Apply the equipped theme by shop item id, or restore defaults when null. */
+function emitThemeChanged(): void {
+  eventBus.emit('theme:changed');
+}
+
 export function applyTheme(shopItemId: string | null): void {
-  setBodyThemeClass(shopItemId);
   if (!shopItemId) {
+    setBodyThemeClass(null);
     clearPalette();
     applyPalette(DEFAULT_PALETTE);
+    emitThemeChanged();
     return;
   }
   const overrides = THEME_OVERRIDES[shopItemId];
   if (!overrides) {
     // Unknown theme: fall back to defaults rather than leaving a partial override.
+    setBodyThemeClass(null);
     clearPalette();
     applyPalette(DEFAULT_PALETTE);
+    emitThemeChanged();
     return;
   }
+  setBodyThemeClass(shopItemId);
   // Reset to defaults first so removed variables don't linger from a prior theme.
   clearPalette();
   applyPalette({ ...DEFAULT_PALETTE, ...overrides });
+  emitThemeChanged();
 }
 
 /** Fetch the player's equipped theme on boot and apply it. */

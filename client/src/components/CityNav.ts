@@ -8,7 +8,6 @@ interface LocationInfo {
   name: string;
   description: string;
   district: string;
-  image_url: string | null;
 }
 
 export class CityNav {

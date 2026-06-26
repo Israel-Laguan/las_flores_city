@@ -48,40 +48,39 @@ test.describe('Settings — Display Name', () => {
 });
 
 test.describe('Settings — Password Change', () => {
-  const testEmail = `pw-e2e-${uid()}@example.com`;
-  const testUsername = `pw_e2e_${uid()}`;
   const testPassword = 'SettingsPass1!';
 
-  test.beforeAll(async ({ browser }) => {
-    const ctx = await browser.newContext();
-    const page = await ctx.newPage();
+  async function createUser(page: any): Promise<string> {
+    const email = `pw-e2e-${uid()}@example.com`;
+    const username = `pw_e2e_${uid()}`;
     const res = await page.request.post(`${AUTH_BASE}/auth/register`, {
-      data: { email: testEmail, username: testUsername, display_name: 'E2E Password User', password: testPassword },
+      data: { email, username, display_name: 'E2E Password User', password: testPassword },
     });
     expect(res.ok()).toBeTruthy();
-    await ctx.close();
-  });
+    return email;
+  }
 
-  async function loginAndGoToSettings(page: any, password: string): Promise<void> {
+  async function loginAndGoToSettings(page: any, email: string, password: string): Promise<void> {
     const res = await page.request.post(`${AUTH_BASE}/auth/login`, {
-      data: { email: testEmail, password },
+      data: { email, password },
     });
     expect(res.ok()).toBeTruthy();
     await page.goto('/main');
     await page.locator('.menu-btn[data-action="settings"]').click();
     await page.locator('.current-password-input').waitFor({ state: 'visible' });
-    // Wait for async loadSettings to complete (event listeners attached)
     await expect(page.locator('.current-display-name')).not.toBeEmpty();
   }
 
   test('shows error when both password fields are empty', async ({ page }) => {
-    await loginAndGoToSettings(page, testPassword);
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email, testPassword);
     await page.locator('button[data-action="change-password"]').click();
     await expect(page.locator('.password-status')).toContainText('Both password fields are required');
   });
 
   test('shows error for short new password', async ({ page }) => {
-    await loginAndGoToSettings(page, testPassword);
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email, testPassword);
     await page.locator('.current-password-input').fill(testPassword);
     await page.locator('.new-password-input').fill('12345');
     await page.locator('button[data-action="change-password"]').click();
@@ -89,7 +88,8 @@ test.describe('Settings — Password Change', () => {
   });
 
   test('shows error for wrong current password', async ({ page }) => {
-    await loginAndGoToSettings(page, testPassword);
+    const email = await createUser(page);
+    await loginAndGoToSettings(page, email, testPassword);
     await page.locator('.current-password-input').fill('WrongPassword1!');
     await page.locator('.new-password-input').fill('NewPass123!');
     await page.locator('button[data-action="change-password"]').click();
@@ -97,35 +97,38 @@ test.describe('Settings — Password Change', () => {
   });
 
   test('changes password successfully and clears inputs', async ({ page }) => {
-    await loginAndGoToSettings(page, testPassword);
+    const email = await createUser(page);
+    const newPassword = 'NewSettingsPass2!';
+    await loginAndGoToSettings(page, email, testPassword);
     await page.locator('.current-password-input').fill(testPassword);
-    await page.locator('.new-password-input').fill('NewSettingsPass2!');
+    await page.locator('.new-password-input').fill(newPassword);
     await page.locator('button[data-action="change-password"]').click();
 
     await expect(page.locator('.password-status')).toContainText('PASSWORD CHANGED');
     await expect(page.locator('.current-password-input')).toHaveValue('');
     await expect(page.locator('.new-password-input')).toHaveValue('');
 
-    // Reset password back so other tests in this describe can login
-    await loginAndGoToSettings(page, 'NewSettingsPass2!');
-    await page.locator('.current-password-input').fill('NewSettingsPass2!');
+    // Verify re-login with new password works
+    await loginAndGoToSettings(page, email, newPassword);
+    await page.locator('.current-password-input').fill(newPassword);
     await page.locator('.new-password-input').fill(testPassword);
     await page.locator('button[data-action="change-password"]').click();
     await expect(page.locator('.password-status')).toContainText('PASSWORD CHANGED');
   });
 
   test('works after re-login with new password', async ({ page }) => {
-    // This test is fully self-contained: change password, re-login, change back
-    await loginAndGoToSettings(page, testPassword);
+    const email = await createUser(page);
+    const newPassword = 'NewSettingsPass3!';
+    await loginAndGoToSettings(page, email, testPassword);
     await page.locator('.current-password-input').fill(testPassword);
-    await page.locator('.new-password-input').fill('NewSettingsPass3!');
+    await page.locator('.new-password-input').fill(newPassword);
     await page.locator('button[data-action="change-password"]').click();
     await expect(page.locator('.password-status')).toContainText('PASSWORD CHANGED');
 
     await page.locator('.view-back-btn[data-action="back"]').click();
-    await loginAndGoToSettings(page, 'NewSettingsPass3!');
+    await loginAndGoToSettings(page, email, newPassword);
 
-    await page.locator('.current-password-input').fill('NewSettingsPass3!');
+    await page.locator('.current-password-input').fill(newPassword);
     await page.locator('.new-password-input').fill(testPassword);
     await page.locator('button[data-action="change-password"]').click();
     await expect(page.locator('.password-status')).toContainText('PASSWORD CHANGED');

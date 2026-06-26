@@ -151,7 +151,7 @@ async function upsertScene(data: any): Promise<string> {
       data.id,
       data.name,
       sanitizeText(data.description),
-      data.district,
+      districtName,
       data.image_url || null,
       data.background_url || null,
       data.ambient_sound_url || null,
@@ -297,7 +297,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'overlay':
       contentId = await upsertDialogueOverlay(data);
       break;
-    case 'scene':
+    case 'scene': {
       contentId = await upsertScene(data);
       const npcIds: string[] = data.metadata?.npcs || [];
       for (const charId of npcIds) {
@@ -309,7 +309,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
         );
       }
       break;
-    case 'gig':
+    }
+    case 'gig': {
       const gigs = data.gigs || [data];
       const ids: string[] = [];
       for (const gig of gigs) {
@@ -318,7 +319,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = ids.join(',');
       break;
-    case 'vault':
+    }
+    case 'vault': {
       VaultFileSchema.parse(data);
       const vaultItems = data.vault_items || [];
       const vaultIds: string[] = [];
@@ -328,7 +330,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = vaultIds.join(',');
       break;
-    case 'mystery':
+    }
+    case 'mystery': {
       const mysteries = data.mysteries || [data];
       const mysteryIds: string[] = [];
       for (const mystery of mysteries) {
@@ -338,7 +341,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = mysteryIds.join(',');
       break;
-    case 'shop_item':
+    }
+    case 'shop_item': {
       ShopItemFileSchema.parse(data);
       const shopItems = data.shop_items || [];
       const shopIds: string[] = [];
@@ -348,6 +352,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = shopIds.join(',');
       break;
+    }
     default:
       throw new Error(`Unsupported content type: ${contentType}`);
   }
