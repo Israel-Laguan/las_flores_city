@@ -66,31 +66,16 @@ jobs:
 
       - name: Apply all migrations & seed content
         run: |
-          for migration in \
-            001_initial_schema \
-            003_player_state_schema \
-            004_scene_payload \
-            005_dialogue_service \
-            007_sleep_reset_schema \
-            009_add_user_relationships \
-            010_metadata_readiness \
-            011_bank_constraints \
-            012_gigs_schema \
-            014_social_feed \
-            015_player_sms_threads_v2; do
-            PGPASSWORD=las_flores_dev_password psql \
+          set -euo pipefail
+          jq -r '.oltp[]' server/src/database/migrations/migration-targets.json | while read migration; do
+            PGPASSWORD=las_flores_dev_password psql -v ON_ERROR_STOP=1 \
               -h localhost -p 5434 -U las_flores -d las_flores \
-              -f server/src/database/migrations/${migration}.sql
+              -f "server/src/database/migrations/${migration}"
           done
-          for migration in \
-            002_analytics_schema \
-            006_add_move_event_type \
-            008_add_sleep_event_type \
-            013_add_gig_event_type \
-            016_add_sms_event_types; do
-            PGPASSWORD=las_flores_analytics_dev_password psql \
+          jq -r '.olap[]' server/src/database/migrations/migration-targets.json | while read migration; do
+            PGPASSWORD=las_flores_analytics_dev_password psql -v ON_ERROR_STOP=1 \
               -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-              -f server/src/database/migrations/${migration}.sql
+              -f "server/src/database/migrations/${migration}"
           done
           npm run migrate --workspace=server -- ../content
         env:
