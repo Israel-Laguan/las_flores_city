@@ -18,12 +18,15 @@ import { test, expect } from '@playwright/test';
  * This replaced the old `addInitScript(localStorage.setItem)` pattern, which
  * cannot set HttpOnly cookies. See Task 6.5 spec §E2E migration.
  */
+// API base URL: use full backend URL in CI, local proxy in dev
+const API_BASE = process.env.CI ? 'http://localhost:3000' : '/api';
+
 test.beforeEach(async ({ page }) => {
   const userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = Math.random() * 16 | 0;
     return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
-  await page.request.post('/api/auth/dev-login', {
+  await page.request.post(`${API_BASE}/auth/dev-login`, {
     data: { userId },
   });
   await page.goto('/city/loc/c3d4e5f6-a7b8-9012-cdef-123456789012');

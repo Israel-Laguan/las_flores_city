@@ -34,7 +34,7 @@ test.beforeAll(async ({ request }) => {
  * cookies. See Task 6.5 spec §E2E migration.
  */
 async function injectAuth(page: Page) {
-  await page.request.post('/api/auth/login', {
+  await page.request.post(`${API_BASE}/api/auth/login`, {
     data: { email: testEmail, password: 'test1234' },
   });
 }

@@ -9,7 +9,10 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
+// API base URL: use full backend URL in CI, local proxy in dev
+const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? (process.env.CI 
+  ? 'http://localhost:3000'  // Direct to backend in CI
+  : 'http://localhost:5173'); // Local dev with Vite proxy
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
 const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 
@@ -36,7 +39,7 @@ test.beforeAll(async ({ request }) => {
  * cookies. See Task 6.5 spec §E2E migration.
  */
 async function injectAuth(page: Page) {
-  await page.request.post('/api/auth/login', {
+  await page.request.post(`${API_URL}/api/auth/login`, {
     data: { email: testEmail, password: 'test1234' },
   });
 }
@@ -229,16 +232,28 @@ test.describe('Typewriter Skip & Choice Selection', () => {
 // Full "First Hour" Loop: Apartment → Move → Dialogue → Sleep
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('Full First Hour Loop', () => {
+  const loopTestEmail = `mvw-loop-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
+  const loopTestUsername = `mvw_loop_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+
+  test.beforeAll(async ({ request }) => {
+    const res = await request.post(`${API_URL}/api/auth/register`, {
+      data: { email: loopTestEmail, username: loopTestUsername, display_name: 'MVW Loop E2E', password: 'test1234' },
+    });
+    expect(res.ok()).toBeTruthy();
+  });
+
   test('Apartment → Move → Dialogue → Sleep completes without crash', async ({ page }) => {
-    await injectAuth(page);
+    await page.request.post(`${API_URL}/api/auth/login`, {
+      data: { email: loopTestEmail, password: 'test1234' },
+    });
 
     // 1. Verify starting health
-    const healthRes = await page.request.get('/api/health');
+    const healthRes = await page.request.get(`${API_URL}/api/health`);
     expect(healthRes.ok()).toBeTruthy();
 
     // 2. Move to Café — go through the /api proxy so the page's HttpOnly
     // session cookie (scoped to :5173) rides along.
-    const moveRes = await page.request.post('/api/player/move', {
+    const moveRes = await page.request.post(`${API_URL}/api/player/move`, {
       data: { target_location_id: CAFE_SCENE_ID },
     });
     expect(moveRes.ok()).toBeTruthy();
@@ -248,20 +263,20 @@ test.describe('Full First Hour Loop', () => {
 
     // 3. Start a dialogue at the Café
     const baristaId = '123e4567-e89b-12d3-a456-426614174000';
-    const startRes = await page.request.post('/api/dialogue/start', {
+    const startRes = await page.request.post(`${API_URL}/api/dialogue/start`, {
       data: { characterId: baristaId, sceneId: CAFE_SCENE_ID },
     });
     // 201 = started fresh, or 404 = no dialogue seeded yet; both are acceptable non-crash states
     expect([200, 201, 404]).toContain(startRes.status());
 
     // 4. Move back to Apartment for sleep
-    const returnRes = await page.request.post('/api/player/move', {
+    const returnRes = await page.request.post(`${API_URL}/api/player/move`, {
       data: { target_location_id: 'c3d4e5f6-a7b8-9012-cdef-123456789012' },
     });
     expect(returnRes.ok()).toBeTruthy();
 
     // 5. Sleep — advances day, resets TB
-    const sleepRes = await page.request.post('/api/player/sleep');
+    const sleepRes = await page.request.post(`${API_URL}/api/player/sleep`);
     expect(sleepRes.ok()).toBeTruthy();
     const sleepData = await sleepRes.json();
     expect(sleepData.data.time_blocks).toBe(48);
