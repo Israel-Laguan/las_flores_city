@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && cp -r src/database/migrations dist/server/src/database/migrations",
     "start": "node dist/server/src/index.js",
     "migrate": "tsx src/content/migrate.ts ../content",
     "validate": "tsx src/content/validate.ts ../content",
