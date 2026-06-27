@@ -106,6 +106,7 @@ jobs:
         working-directory: client
         env:
           VITE_API_PROXY_TARGET: http://localhost:3000
+          VITE_ABOUT_US_URL: https://example.com/about-us
 
       - name: Wait for client
         run: |
