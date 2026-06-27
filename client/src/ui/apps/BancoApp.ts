@@ -10,7 +10,6 @@ export class BancoApp {
 
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
-    void this.init();
     const onOpen = (key: string) => {
       if (key === 'banco') void this.init();
     };

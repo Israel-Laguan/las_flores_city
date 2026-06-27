@@ -1,5 +1,15 @@
 import Phaser from 'phaser';
 import { eventBus } from '../utils/EventBus';
+import '../styles/themes.css';
+
+function getThemeColors() {
+  const computed = getComputedStyle(document.body);
+  return {
+    sceneBg: computed.getPropertyValue('--scene-bg').trim() || '#0a0a1a',
+    sceneTitle: computed.getPropertyValue('--scene-title').trim() || '#00ff00',
+    sceneMuted: computed.getPropertyValue('--scene-muted').trim() || '#888888',
+  };
+}
 
 export class WorldScene extends Phaser.Scene {
   private isPaused: boolean = false;
@@ -14,21 +24,8 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
-    const { width, height } = this.cameras.main;
-
-    this.cameras.main.setBackgroundColor('#0a0a1a');
-
-    this.add.text(width / 2, 30, 'Las Flores 2077', {
-      font: 'bold 28px monospace', color: '#00ff00', align: 'center',
-    }).setOrigin(0.5);
-
-    this.add.text(width / 2, 65, 'The Minimum Viable World', {
-      font: '14px monospace', color: '#888888', align: 'center',
-    }).setOrigin(0.5);
-
-    this.add.text(width / 2, height - 50, 'Press [SPACE] to interact • Use Travel menu to move', {
-      font: '12px monospace', color: '#666666', align: 'center',
-    }).setOrigin(0.5);
+    const colors = getThemeColors();
+    this.cameras.main.setBackgroundColor(colors.sceneBg);
 
     this.createUplinkNotice();
     eventBus.emit('world:ready');
@@ -36,6 +33,11 @@ export class WorldScene extends Phaser.Scene {
   }
 
   private setupEventListeners() {
+    eventBus.on('theme:changed', () => {
+      const colors = getThemeColors();
+      this.cameras.main.setBackgroundColor(colors.sceneBg);
+    });
+
     eventBus.on('location:loaded', (data: any) => {
       this.currentLocationId = data.id;
       this.updateLocationDisplay(data);
@@ -118,12 +120,14 @@ export class WorldScene extends Phaser.Scene {
       this.uplinkNoticeEl = existing as HTMLDivElement;
       return;
     }
+    const colors = getThemeColors();
     const el = document.createElement('div');
     el.id = 'uplink-notice';
     Object.assign(el.style, {
       position: 'fixed', top: '60px', left: '50%', transform: 'translateX(-50%)',
-      background: 'rgba(0, 0, 0, 0.85)', border: '1px solid rgba(0, 255, 0, 0.6)',
-      borderRadius: '4px', color: '#00ff00', fontFamily: 'monospace', fontSize: '13px',
+      background: colors.sceneBg === '#0a0a1a' ? 'rgba(0, 0, 0, 0.85)' : `rgba(248, 248, 248, 0.95)`,
+      border: `1px solid ${colors.sceneTitle}`,
+      borderRadius: '4px', color: colors.sceneTitle, fontFamily: 'monospace', fontSize: '13px',
       padding: '8px 16px', zIndex: '3000', display: 'none', pointerEvents: 'none',
       textAlign: 'center', whiteSpace: 'nowrap',
     });
@@ -165,9 +169,14 @@ export class WorldScene extends Phaser.Scene {
     const tbDisplay = document.getElementById('tb-display');
     if (!tbDisplay) return;
     tbDisplay.textContent = `${remaining}/48`;
-    if (remaining <= 5) tbDisplay.style.color = '#ff0000';
-    else if (remaining <= 10) tbDisplay.style.color = '#ffff00';
-    else tbDisplay.style.color = '#00ff00';
+    const computed = getComputedStyle(document.documentElement);
+    if (remaining <= 5) {
+      tbDisplay.style.color = '#ff0000';
+    } else if (remaining <= 10) {
+      tbDisplay.style.color = '#ffff00';
+    } else {
+      tbDisplay.style.color = computed.getPropertyValue('--neon-cyan').trim() || '#00ff00';
+    }
   }
 
   private updateCreditsDisplay(credits: number) {

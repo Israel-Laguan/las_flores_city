@@ -1,3 +1,4 @@
+import type { PoolClient } from 'pg';
 import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
@@ -86,12 +87,39 @@ export type MoveResult =
   | { success: true; from_location_id: string; to_location_id: string; tb_cost: number; time_blocks_remaining: number }
   | { success: false; error: 'already_here' | 'exhausted' };
 
+async function getTravelCost(client: PoolClient, fromLocationId: string, toLocationId: string): Promise<number> {
+  const result = await client.query(
+    `SELECT sqrt(pow(fd.x - td.x, 2) + pow(fd.y - td.y, 2)) as distance
+     FROM scenes fs
+     JOIN districts fd ON fs.district_id = fd.id
+     JOIN scenes ts ON ts.id = $2
+     JOIN districts td ON ts.district_id = td.id
+     WHERE fs.id = $1`,
+    [fromLocationId, toLocationId]
+  );
+  const dist = parseFloat(result.rows[0]?.distance || '0');
+  if (result.rows.length === 0 || isNaN(dist)) return MOVEMENT_TB_COST;
+  if (dist === 0) return 0;
+  return Math.floor(dist / 2) + 1;
+}
+
 export async function performMoveTransaction(
   userId: string,
   targetLocationId: string
 ): Promise<MoveResult> {
   return withOLTPTransaction(async (client) => {
-    const result = await PlayerStateRepository.move(client, userId, targetLocationId, MOVEMENT_TB_COST);
+    const fromResult = await client.query(
+      'SELECT current_location_id FROM player_states WHERE user_id = $1',
+      [userId]
+    );
+    if (fromResult.rows.length === 0) throw new Error('Player not found');
+    const fromLocationId = fromResult.rows[0].current_location_id;
+
+    const tbCost = fromLocationId === targetLocationId
+      ? 0
+      : await getTravelCost(client, fromLocationId, targetLocationId);
+
+    const result = await PlayerStateRepository.move(client, userId, targetLocationId, tbCost);
     return result;
   });
 }

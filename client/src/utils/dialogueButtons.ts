@@ -27,15 +27,5 @@ export function attachChoiceButtonListeners(
       e.stopPropagation();
       onChoice(parseInt(button.getAttribute('data-choice-index') || '0', 10));
     });
-    button.addEventListener('mouseenter', () => {
-      if (!(button as HTMLButtonElement).disabled) {
-        (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.15)';
-        (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.6)';
-      }
-    });
-    button.addEventListener('mouseleave', () => {
-      (button as HTMLElement).style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
-      (button as HTMLElement).style.borderColor = 'rgba(0, 255, 0, 0.3)';
-    });
   });
 }

@@ -21,9 +21,7 @@
 import { test, expect } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-// baseURL is :5173 (the Vite dev server). We use relative /api paths so the
-// HttpOnly cookie is scoped to :5173 — the same origin as the client app.
-const AUTH_BASE = '/api';
+const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
 const testEmail = `cookie-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
 const testUsername = `cookie_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
@@ -33,7 +31,7 @@ const testUsername = `cookie_${Date.now()}_${Math.random().toString(36).slice(2,
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.beforeAll(async ({ request }) => {
-  const res = await request.post(`${AUTH_BASE}/auth/register`, {
+  const res = await request.post(`${AUTH_BASE}/api/auth/register`, {
     data: {
       email: testEmail,
       username: testUsername,
@@ -48,7 +46,7 @@ test.describe('Auth cookie — register & login shape', () => {
   test('register sets HttpOnly cookie and omits token from body', async ({ request }) => {
     // Register a second user to verify the HTTP response shape (first was created in beforeAll)
     const probeEmail = `probe-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
-    const res = await request.post(`${AUTH_BASE}/auth/register`, {
+    const res = await request.post(`${AUTH_BASE}/api/auth/register`, {
       data: {
         email: probeEmail,
         username: `probe_${Date.now()}`,
@@ -71,7 +69,7 @@ test.describe('Auth cookie — register & login shape', () => {
 
   test('login sets HttpOnly cookie and omits token from body', async ({ page }) => {
     await page.goto('/');
-    const res = await page.request.post(`${AUTH_BASE}/auth/login`, {
+    const res = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
 
@@ -95,7 +93,7 @@ test.describe('Auth cookie — register & login shape', () => {
 test.describe('Auth cookie — session propagation', () => {
   test('authenticated endpoint returns 200 with cookie only, no Authorization header', async ({ page }) => {
     await page.goto('/');
-    const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
+    const loginRes = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
     expect(loginRes.ok()).toBeTruthy();
@@ -103,7 +101,7 @@ test.describe('Auth cookie — session propagation', () => {
     // The browser context now holds the HttpOnly cookie. A fetch from the
     // page (or another page.request call) automatically sends it. We do NOT
     // set an Authorization header — proving the cookie is the auth vector.
-    const stateRes = await page.request.get(`${AUTH_BASE}/player/state`);
+    const stateRes = await page.request.get(`${AUTH_BASE}/api/player/state`);
 
     expect(stateRes.ok()).toBeTruthy();
     const stateBody = await stateRes.json();
@@ -113,7 +111,7 @@ test.describe('Auth cookie — session propagation', () => {
 
   test('client app boots and loads player state via cookie auth', async ({ page }) => {
     // Seed the cookie jar via login, then start a new game.
-    const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
+    const loginRes = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
     expect(loginRes.ok()).toBeTruthy();
@@ -125,9 +123,9 @@ test.describe('Auth cookie — session propagation', () => {
       }
     });
 
-    // Navigate to /main/new — the app's boot fetch(/api/player/state) will
+    // Navigate to /city — the app's boot fetch(/api/player/state) will
     // carry the cookie and the main.ts auth-success callback redirects to
-    // /main/new to start the game.
+    // /city to start the game.
     await startNewGame(page);
 
     // Give the init flow time to complete. If the cookie worked, the player
@@ -145,17 +143,17 @@ test.describe('Auth cookie — logout', () => {
   test('logout clears the session cookie and revokes access', async ({ page }) => {
     await page.goto('/');
     // Establish a session.
-    const loginRes = await page.request.post(`${AUTH_BASE}/auth/login`, {
+    const loginRes = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
       data: { email: testEmail, password: 'test1234' },
     });
     expect(loginRes.ok()).toBeTruthy();
 
     // Confirm we are authenticated before logout.
-    const beforeLogout = await page.request.get(`${AUTH_BASE}/player/state`);
+    const beforeLogout = await page.request.get(`${AUTH_BASE}/api/player/state`);
     expect(beforeLogout.ok()).toBeTruthy();
 
     // Logout must return a Set-Cookie that clears jwt_session.
-    const logoutRes = await page.request.post(`${AUTH_BASE}/auth/logout`);
+    const logoutRes = await page.request.post(`${AUTH_BASE}/api/auth/logout`);
     expect(logoutRes.ok()).toBeTruthy();
     const logoutBody = await logoutRes.json();
     expect(logoutBody.success).toBe(true);
@@ -163,7 +161,7 @@ test.describe('Auth cookie — logout', () => {
     // The server's clearSessionCookie() emits a Set-Cookie with Max-Age=0 /
     // Expires in the past. The cookie jar updates, so the next request has
     // no session cookie and must be rejected (401/403, NOT 200).
-    const afterLogout = await page.request.get(`${AUTH_BASE}/player/state`);
+    const afterLogout = await page.request.get(`${AUTH_BASE}/api/player/state`);
     expect(afterLogout.ok()).toBeFalsy();
     expect([401, 403]).toContain(afterLogout.status());
   });

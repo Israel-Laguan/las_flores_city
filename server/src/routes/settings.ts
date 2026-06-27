@@ -72,6 +72,58 @@ settingsRouter.get('/ai-key-share', authMiddleware, async (req: AuthRequest, res
   }
 });
 
+// PATCH /settings/profile - Update display name
+settingsRouter.patch('/profile', authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId!;
+    const { display_name } = req.body;
+
+    if (!display_name || typeof display_name !== 'string' || !display_name.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Display name is required',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const trimmed = display_name.trim();
+    if (trimmed.length > 50) {
+      return res.status(400).json({
+        success: false,
+        error: 'Display name must be at most 50 characters',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const result = await queryOLTP(
+      `UPDATE users SET display_name = $1 WHERE id = $2
+       RETURNING id, email, username, display_name`,
+      [trimmed, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.rows[0],
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update profile',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // PATCH /settings/ai-enabled - Toggle AI rewrite on/off without re-uploading the key
 settingsRouter.patch('/ai-enabled', authMiddleware, async (req: AuthRequest, res) => {
   try {

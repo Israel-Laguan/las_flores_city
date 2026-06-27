@@ -8,6 +8,13 @@ export function registerRoute(path: string, handler: RouteHandler): void {
   routes[path] = handler;
 }
 
+function resolveHandler(path: string): RouteHandler | undefined {
+  return routes[path] || Object.entries(routes)
+    .filter(([key]) => path === key || (path.startsWith(key) && (key.endsWith('/') || path[key.length] === '/')))
+    .sort(([a], [b]) => b.length - a.length)[0]?.[1]
+    || routes['/404'];
+}
+
 export function navigateTo(path: string, replace: boolean = false): void {
   if (replace) {
     history.replaceState({}, '', path);
@@ -15,7 +22,7 @@ export function navigateTo(path: string, replace: boolean = false): void {
     history.pushState({}, '', path);
   }
   eventBus.emit('route:changed', path);
-  const handler = routes[path] || routes['/404'];
+  const handler = resolveHandler(path);
   if (handler) {
     handler({});
   }
@@ -29,7 +36,7 @@ export function startRouter(): void {
   window.addEventListener('popstate', () => {
     const path = getCurrentPath();
     eventBus.emit('route:changed', path);
-    const handler = routes[path] || routes['/404'];
+    const handler = resolveHandler(path);
     if (handler) {
       handler({});
     }

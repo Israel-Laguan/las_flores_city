@@ -7,10 +7,13 @@ export class GalleryView {
   private container: HTMLDivElement;
   private items: VaultItem[] = [];
 
+  private boundClick: ((e: MouseEvent) => void) | null = null;
+
   constructor(container: HTMLDivElement) {
     this.container = container;
     this.container.innerHTML = '';
     this.container.appendChild(this.buildView());
+    this.bindEvents();
     void this.loadGallery();
   }
 
@@ -59,6 +62,18 @@ export class GalleryView {
     }
   }
 
+  private bindEvents(): void {
+    this.boundClick = (e: MouseEvent) => {
+      const btn = (e.target as HTMLElement).closest('button');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      if (action === 'back') {
+        navigateTo('/main');
+      }
+    };
+    this.container.addEventListener('click', this.boundClick);
+  }
+
   private async openItem(item: VaultItem): Promise<void> {
     try {
       const url = await api.fetchVaultMediaUrl(item.id);
@@ -69,6 +84,9 @@ export class GalleryView {
   }
 
   destroy(): void {
+    if (this.boundClick) {
+      this.container.removeEventListener('click', this.boundClick);
+    }
     this.container.innerHTML = '';
   }
 }

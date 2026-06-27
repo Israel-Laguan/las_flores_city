@@ -1,5 +1,6 @@
 import { eventBus } from '../utils/EventBus';
 import { phoneStore } from '../store/PhoneStore';
+import '../styles/dialogue.css';
 import { buildDialogueHTML, buildChoiceButtons } from '../utils/dialogue-templates';
 import { Typewriter } from '../utils/Typewriter';
 import { disableChoiceButtons, enableChoiceButtons, attachChoiceButtonListeners } from '../utils/dialogueButtons';
@@ -62,7 +63,6 @@ export class DialogueUI {
       this.container.id = 'dialogue-overlay';
       document.body.appendChild(this.container);
     }
-    this.setupStyles();
     this.setupEventListeners();
     this.initAiWorker();
   }
@@ -91,18 +91,6 @@ export class DialogueUI {
     } catch (err) {
       console.warn('[AI Worker] Failed to initialize:', err);
     }
-  }
-
-  private setupStyles() {
-    Object.assign(this.container.style, {
-      position: 'fixed', bottom: '0', left: '0', width: '100%', height: '30vh',
-      backgroundColor: 'rgba(10, 10, 30, 0.85)', backdropFilter: 'blur(10px)',
-      borderTop: '1px solid rgba(0, 255, 0, 0.4)', boxShadow: '0 -4px 30px rgba(0, 255, 0, 0.1)',
-      zIndex: '2000', display: 'flex', justifyContent: 'center', alignItems: 'center',
-      fontFamily: 'monospace', transform: 'translateY(100%)', transition: 'transform 0.3s ease-out',
-      pointerEvents: 'none'
-    });
-    (this.container.style as any).webkitBackdropFilter = 'blur(10px)';
   }
 
   private setupEventListeners() {
@@ -156,8 +144,8 @@ export class DialogueUI {
 
   private slideIn() {
     this.state = DialogueUIState.SLIDING_IN;
-    this.container.style.pointerEvents = 'auto';
-    this.container.style.transform = 'translateY(0)';
+    this.container.style.pointerEvents = '';
+    this.container.classList.add('open');
     eventBus.emit('dialogue:opened');
     eventBus.emit('phaser:pause-input');
     this.renderDialogue();
@@ -176,10 +164,9 @@ export class DialogueUI {
 
   private slideOut() {
     this.state = DialogueUIState.SLIDING_OUT;
-    this.container.style.transform = 'translateY(100%)';
+    this.container.classList.remove('open');
     if (this.typewriter) this.typewriter.clear();
     setTimeout(() => {
-      this.container.style.pointerEvents = 'none';
       this.currentDialogue = null;
       this.state = DialogueUIState.HIDDEN;
       eventBus.emit('dialogue:closed');

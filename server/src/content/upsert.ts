@@ -127,13 +127,23 @@ async function upsertDialogueOverlay(data: any): Promise<string> {
 }
 
 async function upsertScene(data: any): Promise<string> {
+  const districtName = data.district || 'Unknown';
+  const districtSlug = districtName.toLowerCase().replace(/\s+/g, '-');
+  await queryOLTP(
+    `INSERT INTO districts (name, slug, x, y) VALUES ($1, $2, 0, 0) ON CONFLICT (name) DO NOTHING`,
+    [districtName, districtSlug]
+  );
+  const availableDialogues = data.available_dialogues || [];
+  const dialogArray = availableDialogues.length > 0
+    ? `{${availableDialogues.join(',')}}`
+    : '{}';
   const result = await queryOLTP(
-    `INSERT INTO scenes (id, name, description, district, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
+     VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        description = EXCLUDED.description,
-       district = EXCLUDED.district,
+       district_id = (SELECT id FROM districts WHERE name = $4),
        image_url = EXCLUDED.image_url,
        background_url = EXCLUDED.background_url,
        ambient_sound_url = EXCLUDED.ambient_sound_url,
@@ -146,12 +156,12 @@ async function upsertScene(data: any): Promise<string> {
       data.id,
       data.name,
       sanitizeText(data.description),
-      data.district,
+      districtName,
       data.image_url || null,
       data.background_url || null,
       data.ambient_sound_url || null,
       data.mood || null,
-      data.available_dialogues || [],
+      dialogArray,
       JSON.stringify(data.metadata || {}),
     ]
   );
@@ -292,10 +302,20 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'overlay':
       contentId = await upsertDialogueOverlay(data);
       break;
-    case 'scene':
+    case 'scene': {
       contentId = await upsertScene(data);
+      const npcIds: string[] = data.metadata?.npcs || [];
+      for (const charId of npcIds) {
+        await queryOLTP(
+          `INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood)
+           VALUES ($1, $2, true, 'neutral')
+           ON CONFLICT (scene_id, character_id) DO NOTHING`,
+          [contentId, charId]
+        );
+      }
       break;
-    case 'gig':
+    }
+    case 'gig': {
       const gigs = data.gigs || [data];
       const ids: string[] = [];
       for (const gig of gigs) {
@@ -304,7 +324,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = ids.join(',');
       break;
-    case 'vault':
+    }
+    case 'vault': {
       VaultFileSchema.parse(data);
       const vaultItems = data.vault_items || [];
       const vaultIds: string[] = [];
@@ -314,7 +335,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = vaultIds.join(',');
       break;
-    case 'mystery':
+    }
+    case 'mystery': {
       const mysteries = data.mysteries || [data];
       const mysteryIds: string[] = [];
       for (const mystery of mysteries) {
@@ -324,7 +346,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = mysteryIds.join(',');
       break;
-    case 'shop_item':
+    }
+    case 'shop_item': {
       ShopItemFileSchema.parse(data);
       const shopItems = data.shop_items || [];
       const shopIds: string[] = [];
@@ -334,6 +357,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       }
       contentId = shopIds.join(',');
       break;
+    }
     default:
       throw new Error(`Unsupported content type: ${contentType}`);
   }

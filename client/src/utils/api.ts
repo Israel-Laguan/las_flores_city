@@ -321,6 +321,21 @@ export async function toggleAiEnabled(enabled: boolean): Promise<any> {
   });
 }
 
+// Settings / Profile API
+export async function updateDisplayName(displayName: string): Promise<any> {
+  return fetchAPI('/settings/profile', {
+    method: 'PATCH',
+    body: JSON.stringify({ display_name: displayName }),
+  });
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<any> {
+  return fetchAPI('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  });
+}
+
 // Vault API
 export interface VaultItem {
   id: string;
