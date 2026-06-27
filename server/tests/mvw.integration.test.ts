@@ -84,18 +84,40 @@ beforeAll(async () => {
   await applyMigration('005_dialogue_service.sql');
   await applyMigration('017_mystery_state.sql');
   await applyMigration('028_metaplot_alignment.sql');
+  await applyMigration('033_district_travel_costs.sql');
+
+  // Seed districts table (required for coordinate-based TB calculation)
+  await pool.query(
+    `CREATE TABLE IF NOT EXISTS districts (
+       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+       name VARCHAR(50) NOT NULL UNIQUE,
+       slug VARCHAR(50) NOT NULL UNIQUE,
+       description TEXT,
+       minimap_asset_url VARCHAR(500),
+       x INTEGER NOT NULL,
+       y INTEGER NOT NULL
+     )`
+  );
+  await pool.query(
+    `INSERT INTO districts (id, name, slug, description, x, y) VALUES
+     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
+     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
+     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
+     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
+     ON CONFLICT (name) DO NOTHING`
+  );
 
   // Seed scenes needed for move/sleep tests
   await pool.query(
-    `INSERT INTO scenes (id, name, description, district, metadata)
-     VALUES ($1, 'Suburban Apartment', 'Starting location', 'Old Town', '{"is_sleep_location": true}')
-     ON CONFLICT (id) DO UPDATE SET metadata = EXCLUDED.metadata`,
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, 'Suburban Apartment', 'Starting location', (SELECT id FROM districts WHERE name = 'Downtown'), '{"is_sleep_location": true}')
+     ON CONFLICT (id) DO UPDATE SET district_id = (SELECT id FROM districts WHERE name = 'Downtown'), metadata = EXCLUDED.metadata`,
     [APARTMENT_ID]
   );
   await pool.query(
-    `INSERT INTO scenes (id, name, description, district, metadata)
-     VALUES ($1, 'Old Town Café', 'Coffee shop', 'Old Town', '{}')
-     ON CONFLICT (id) DO UPDATE SET metadata = EXCLUDED.metadata`,
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, 'Old Town Café', 'Coffee shop', (SELECT id FROM districts WHERE name = 'Old Town'), '{}')
+     ON CONFLICT (id) DO UPDATE SET district_id = (SELECT id FROM districts WHERE name = 'Old Town'), metadata = EXCLUDED.metadata`,
     [CAFE_ID]
   );
 

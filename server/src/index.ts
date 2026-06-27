@@ -18,6 +18,7 @@ import { patreonRouter } from './routes/patreon.js';
 import { shopRouter } from './routes/shop.js';
 import { paypalRouter } from './routes/paypal.js';
 import { archiveRouter } from './routes/archive.js';
+import { devRouter } from './routes/dev.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
@@ -41,6 +42,16 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Accept /api prefix on all routes — used by test direct-backend calls in CI
+// and by production reverse proxies. The Vite dev server strips /api before
+// forwarding, so this middleware is a no-op when running behind Vite.
+app.use((req, _res, next) => {
+  if (req.url.startsWith('/api/')) {
+    req.url = req.url.slice(4);
+  }
+  next();
+});
+
 // Routes
 app.use('/health', healthRouter);
 app.use('/auth', authRouter);
@@ -56,6 +67,7 @@ app.use('/settings', settingsRouter);
 app.use('/patreon', patreonRouter);
 app.use('/shop', shopRouter);
 app.use('/paypal', paypalRouter);
+app.use('/dev', devRouter);
 app.use('/archive', archiveRouter);
 
 // Error handling middleware

@@ -207,19 +207,19 @@ canvas {
 }
 
 .tb-affordable {
-  color: #ffaa00;
-  text-shadow: 0 0 4px rgba(255, 170, 0, 0.4);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 4px var(--neon-cyan);
 }
 
 .tb-unaffordable {
-  color: #ff3333;
-  text-shadow: 0 0 4px rgba(255, 51, 51, 0.4);
+  color: var(--neon-magenta);
+  text-shadow: 0 0 4px var(--neon-magenta);
 }
 
 .btn-disabled-red {
   opacity: 0.45 !important;
-  border-color: rgba(255, 51, 51, 0.4) !important;
-  color: #ff3333 !important;
+  border-color: var(--neon-magenta) !important;
+  color: var(--neon-magenta) !important;
   cursor: not-allowed !important;
   pointer-events: none;
 }

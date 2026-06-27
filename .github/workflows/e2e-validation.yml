@@ -65,69 +65,61 @@ jobs:
         run: npm run build --workspace=shared
 
       - name: Apply all migrations & seed content
-        run: |
-          for migration in \
-            001_initial_schema \
-            003_player_state_schema \
-            004_scene_payload \
-            005_dialogue_service \
-            007_sleep_reset_schema \
-            009_add_user_relationships \
-            010_metadata_readiness \
-            011_bank_constraints \
-            012_gigs_schema \
-            014_social_feed \
-            015_player_sms_threads_v2; do
-            PGPASSWORD=las_flores_dev_password psql \
-              -h localhost -p 5434 -U las_flores -d las_flores \
-              -f server/src/database/migrations/${migration}.sql
-          done
-          for migration in \
-            002_analytics_schema \
-            006_add_move_event_type \
-            008_add_sleep_event_type \
-            013_add_gig_event_type \
-            016_add_sms_event_types; do
-            PGPASSWORD=las_flores_analytics_dev_password psql \
-              -h localhost -p 5433 -U las_flores_analytics -d las_flores_analytics \
-              -f server/src/database/migrations/${migration}.sql
-          done
-          npm run migrate --workspace=server -- ../content
+        run: npm run schema:migrate --workspace=server
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
 
+      - name: Build server
+        run: npm run build --workspace=server
+
       - name: Start API server (background)
-        run: npm run start --workspace=server &
+        run: npm run start --workspace=server > /tmp/server.log 2>&1 &
         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
           PORT: 3000
+          CLIENT_ORIGIN_URL: http://localhost:5173
+          NODE_ENV: development
 
       - name: Wait for API server
         run: |
-          for i in $(seq 1 20); do
-            curl -sf http://localhost:3000/health && break
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health > /dev/null 2>&1; then
+              echo "API server is ready"
+              exit 0
+            fi
             sleep 2
           done
+          echo "::error::API server failed to start within 60 seconds"
+          cat /tmp/server.log 2>/dev/null || true
+          exit 1
 
-      - name: Build client
-        run: npm run build --workspace=client
-        env:
-          VITE_API_URL: http://localhost:3000
-
-      - name: Start client (background)
-        run: npx --yes serve -s dist -l 5173 &
+      - name: Build client (types only, skip Vite build — dev server proxies)
+        run: npx tsc --noEmit
         working-directory: client
+
+      - name: Start Vite dev server (background)
+        run: npm run dev > /tmp/client.log 2>&1 &
+        working-directory: client
+        env:
+          VITE_API_PROXY_TARGET: http://localhost:3000
+          VITE_ABOUT_US_URL: https://example.com/about-us
 
       - name: Wait for client
         run: |
-          for i in $(seq 1 20); do
-            curl -sf http://localhost:5173 && break
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              echo "Client is ready"
+              exit 0
+            fi
             sleep 2
           done
+          echo "::error::Client failed to start within 60 seconds"
+          cat /tmp/client.log 2>/dev/null || true
+          exit 1
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -137,7 +129,9 @@ jobs:
         run: npx playwright test
         working-directory: client
         env:
-          API_URL: http://localhost:3000
+          CI: 'true'
+          API_URL: http://localhost:5173
+          CLIENT_ORIGIN_URL: http://localhost:5173
 
       - uses: actions/upload-artifact@v4
         if: failure()

@@ -1,5 +1,7 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import pg from 'pg';
+import fs from 'fs';
+import path from 'path';
 import express from 'express';
 import { playerRouter } from '../../src/routes/player.js';
 import { locationRouter } from '../../src/routes/location.js';
@@ -21,6 +23,22 @@ app.use('/location', locationRouter);
 
 let server: any;
 let pool: pg.Pool;
+
+async function applyMigration(filename: string): Promise<void> {
+  const sql = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/database/migrations', filename),
+    'utf-8'
+  );
+  try {
+    await pool.query(sql);
+  } catch (err: any) {
+    if (err.code === '42P07' || err.code === '42701') {
+      console.warn(`applyMigration(${filename}) ignored idempotent error:`, err.message);
+      return;
+    }
+    throw err;
+  }
+}
 
 function authHeaders() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
@@ -51,6 +69,29 @@ beforeAll(async () => {
     [TEST_USER_ID, APARTMENT_ID]
   );
 
+  // Seed districts table (required for coordinate-based TB calculation)
+  await pool.query(
+    `CREATE TABLE IF NOT EXISTS districts (
+       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+       name VARCHAR(50) NOT NULL UNIQUE,
+       slug VARCHAR(50) NOT NULL UNIQUE,
+       description TEXT,
+       minimap_asset_url VARCHAR(500),
+       x INTEGER NOT NULL,
+       y INTEGER NOT NULL
+     )`
+  );
+  await pool.query(
+    `INSERT INTO districts (id, name, slug, description, x, y) VALUES
+     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
+     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
+     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
+     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
+     ON CONFLICT (name) DO NOTHING`
+  );
+
+  await applyMigration('033_district_travel_costs.sql');
+
   await new Promise<void>((resolve) => {
     server = app.listen(0, resolve);
   });
@@ -74,7 +115,8 @@ beforeEach(async () => {
 });
 
 describe('POST /player/move', () => {
-  test('moves player to a new location and deducts 1 TB', async () => {
+  test('moves player to a new location and deducts TB based on district distance', async () => {
+    // Apartment (Downtown) → Welcome Center (Downtown): same district = 0 TB
     const port = server.address().port;
     const res = await fetch(`http://localhost:${port}/player/move`, {
       method: 'POST',
@@ -87,8 +129,9 @@ describe('POST /player/move', () => {
     expect(data).toHaveProperty('success', true);
     expect(data.data).toHaveProperty('from_location_id', APARTMENT_ID);
     expect(data.data).toHaveProperty('to_location_id', WELCOME_CENTER_ID);
-    expect(data.data).toHaveProperty('tb_cost', 1);
-    expect(data.data).toHaveProperty('time_blocks_remaining', 47);
+    // Downtown → Downtown = 0 TB
+    expect(data.data).toHaveProperty('tb_cost', 0);
+    expect(data.data).toHaveProperty('time_blocks_remaining', 48);
     expect(data.data).toHaveProperty('scene');
     expect(data.data.scene).toHaveProperty('id', WELCOME_CENTER_ID);
     expect(data.data).toHaveProperty('npcs');
@@ -137,7 +180,7 @@ describe('POST /player/move', () => {
     expect(data.error).toContain('already at this location');
   });
 
-  test('returns 403 when player has 0 time blocks', async () => {
+  test('returns 403 when player has 0 time blocks and moving to another district', async () => {
     await pool.query(
       'UPDATE player_states SET time_blocks = 0 WHERE user_id = $1',
       [TEST_USER_ID]
@@ -147,7 +190,7 @@ describe('POST /player/move', () => {
     const res = await fetch(`http://localhost:${port}/player/move`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+      body: JSON.stringify({ target_location_id: CAFE_ID }),
     });
     const data = await res.json();
 
@@ -157,24 +200,26 @@ describe('POST /player/move', () => {
     expect(data.reason).toContain('exhausted');
   });
 
-  test('deducts exactly 1 TB per move', async () => {
+  test('deducts correct TB per move based on district distance', async () => {
     const port = server.address().port;
 
+    // Apartment (Downtown) → Welcome Center (Downtown): same district = 0 TB
     const move1 = await fetch(`http://localhost:${port}/player/move`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
     });
     const data1 = await move1.json();
-    expect(data1.data.time_blocks_remaining).toBe(47);
+    expect(data1.data.time_blocks_remaining).toBe(48);
 
+    // Welcome Center (Downtown) → Cafe (Old Town): different district = 1 TB
     const move2 = await fetch(`http://localhost:${port}/player/move`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ target_location_id: CAFE_ID }),
     });
     const data2 = await move2.json();
-    expect(data2.data.time_blocks_remaining).toBe(46);
+    expect(data2.data.time_blocks_remaining).toBe(47);
   });
 
   test('emits move event to OLAP after successful move', async () => {
@@ -203,7 +248,7 @@ describe('POST /player/move', () => {
       );
 
       expect(result.rows.length).toBe(1);
-      expect(result.rows[0].time_blocks_cost).toBe(1);
+      expect(result.rows[0].time_blocks_cost).toBe(0);
 
       const eventData = result.rows[0].event_data;
       expect(eventData).toHaveProperty('from_location_id', APARTMENT_ID);
@@ -224,7 +269,7 @@ describe('POST /player/move', () => {
     await fetch(`http://localhost:${port}/player/move`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify({ target_location_id: WELCOME_CENTER_ID }),
+      body: JSON.stringify({ target_location_id: CAFE_ID }),
     });
 
     const stateResult = await pool.query(

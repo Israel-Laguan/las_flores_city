@@ -11,6 +11,8 @@ metadata:
   type: "starting_location"
   accessible: true
   is_sleep_location: true
+  npcs:
+    - "550e8400-e29b-41d4-a716-446655440004"
   features:
     - "bed"
     - "window"

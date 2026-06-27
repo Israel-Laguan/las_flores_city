@@ -24,7 +24,9 @@
     "029_player_state_decoupling.sql",
     "030_dialogue_chunks.sql",
     "031_allow_player_state_credit_overdraft.sql",
-    "032_dialogue_chunk_tracking.sql"
+    "032_dialogue_chunk_tracking.sql",
+    "033_district_travel_costs.sql",
+    "034_seed_districts.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

@@ -1,0 +1,113 @@
+/* Dialogue overlay bar */
+#dialogue-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30vh;
+  background: var(--terminal-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--neon-blue);
+  box-shadow: var(--border-glow);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: monospace;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+  pointer-events: none;
+}
+
+#dialogue-overlay.open {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Dialogue inner box */
+.dialogue-box {
+  width: 90%;
+  max-width: 800px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Speaker info */
+.speaker-info {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--neon-blue);
+}
+
+.speaker-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.speaker-title {
+  font-size: 11px;
+  color: var(--neon-pink);
+  margin-left: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Dialogue body text */
+.dialogue-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--neon-cyan);
+  min-height: 60px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+/* Choices container */
+.dialogue-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-cyan) transparent;
+}
+
+/* Choice buttons */
+.choice-btn {
+  padding: 10px 16px;
+  background: rgba(128, 128, 128, 0.05);
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-cyan);
+  font-family: monospace;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.choice-btn:hover:not(:disabled) {
+  background: rgba(128, 128, 128, 0.12);
+  border-color: var(--neon-cyan);
+}
+
+.choice-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* End indicator */
+.end-indicator {
+  text-align: center;
+  color: var(--neon-pink);
+  font-size: 11px;
+  margin-top: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

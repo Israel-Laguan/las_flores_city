@@ -1,12 +1,14 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
+import { seedE2EUser, cleanupE2EUser } from './e2e-seed';
 
-const API_BASE = process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:5173';
+const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
 // Shared credentials — beforeAll registers the user; injectAuth() logs in
 // per-page to scope the HttpOnly cookie to :5173 (the page's origin).
 const testEmail = `polish-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
 const testUsername = `polish_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+const testPassword = 'test1234';
 
 test.beforeAll(async ({ request }) => {
   const response = await request.post(`${API_BASE}/api/auth/register`, {
@@ -14,11 +16,18 @@ test.beforeAll(async ({ request }) => {
       email: testEmail,
       username: testUsername,
       display_name: 'Interactive Polish',
-      password: 'test1234',
+      password: testPassword,
     },
   });
 
   expect(response.ok()).toBeTruthy();
+
+  // Seed vault + SMS test data for the registered user
+  await seedE2EUser(request, testEmail, testPassword);
+});
+
+test.afterAll(async ({ request }) => {
+  await cleanupE2EUser(request, testEmail, testPassword);
 });
 
 /**
@@ -31,7 +40,7 @@ test.beforeAll(async ({ request }) => {
  * cookies. See Task 6.5 spec §E2E migration.
  */
 async function injectAuth(page: Page) {
-  await page.request.post('/api/auth/login', {
+  await page.request.post(`${API_BASE}/api/auth/login`, {
     data: { email: testEmail, password: 'test1234' },
   });
 }
@@ -92,15 +101,7 @@ test.describe('Interactive Polish (Task 6.2)', () => {
     await page.waitForTimeout(1000);
 
     await page.locator('button:has-text("Messages")').click();
-    // If there's an inbox thread, open the first one
     const firstThread = page.locator('.inbox-row').first();
-    const threadCount = await firstThread.count();
-    if (threadCount === 0) {
-      // No seeded threads — skip rather than fail
-      test.skip(true, 'no NPC threads available to test pacing');
-      return;
-    }
-
     await firstThread.click();
 
     // A typing bubble should appear if the thread has NPC messages being paced
@@ -132,10 +133,6 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
     await page.locator('button:has-text("Messages")').click();
     const firstThread = page.locator('.inbox-row').first();
-    if ((await firstThread.count()) === 0) {
-      test.skip(true, 'no NPC threads available');
-      return;
-    }
     await firstThread.click();
 
     // Tap the thread-scroll to skip any in-progress pacing
@@ -154,14 +151,9 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
     await page.locator('button:has-text("Vault")').click();
     const firstCard = page.locator('.vault-card').first();
-    if ((await firstCard.count()) === 0) {
-      test.skip(true, 'no vault items available');
-      return;
-    }
+    await firstCard.click();
 
     // Snapshot the modal transform immediately after click — before the
-    // 400ms animation can complete, the transform should be non-identity.
-    await firstCard.click();
     const transformDuringAnimation = await page.evaluate(() => {
       const modal = document.getElementById('vault-modal');
       if (!modal) return null;
@@ -181,11 +173,6 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
     await page.locator('button:has-text("Vault")').click();
     const firstCard = page.locator('.vault-card').first();
-    if ((await firstCard.count()) === 0) {
-      test.skip(true, 'no vault items available');
-      return;
-    }
-
     await firstCard.click();
 
     // After the 400ms open animation + buffer, transform should be identity
@@ -213,11 +200,6 @@ test.describe('Interactive Polish (Task 6.2)', () => {
 
     await page.locator('button:has-text("Vault")').click();
     const firstCard = page.locator('.vault-card').first();
-    if ((await firstCard.count()) === 0) {
-      test.skip(true, 'no vault items available');
-      return;
-    }
-
     await firstCard.click();
     // Wait for open to settle
     await page.waitForTimeout(600);

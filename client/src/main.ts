@@ -15,10 +15,11 @@ import { LoginMenu } from './components/LoginMenu';
 import { MainMenu } from './components/MainMenu';
 import { SettingsView } from './components/SettingsView';
 import { GalleryView } from './components/GalleryView';
+import { CityNav } from './components/CityNav';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
-import { initThemeEngine } from './utils/themeEngine';
+import { initThemeEngine, restorePersistedTheme } from './utils/themeEngine';
 import { registerRoute, navigateTo, startRouter } from './router';
 
 declare global {
@@ -52,6 +53,7 @@ let phoneOverlayInstance: PhoneOverlay | null = null;
 let sleepOverlayInstance: SleepOverlay | null = null;
 let currentView: { destroy: () => void } | null = null;
 let isAuthenticated = false;
+let cachedPlayerState: any = null;
 
 function destroyGame(): void {
   if (phoneOverlayInstance) {
@@ -134,9 +136,10 @@ function registerRoutes(): void {
     destroyGame();
     destroyCurrentView();
     hideAllContainers();
+    restorePersistedTheme();
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
-    currentView = new MainMenu(container);
+    currentView = new MainMenu(container, cachedPlayerState);
   });
 
   registerRoute('/main/settings', () => {
@@ -163,25 +166,69 @@ function registerRoutes(): void {
     currentView = new GalleryView(container);
   });
 
-  registerRoute('/main/new', () => {
+  registerRoute('/city', () => {
     if (!isAuthenticated) {
       navigateTo('/', true);
       return;
     }
+    destroyGame();
     destroyCurrentView();
-    startGame();
-    fetchPlayerData();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    currentView = new CityNav(container, cachedPlayerState);
   });
 
-  registerRoute('/main/continue', () => {
+  registerRoute('/city/loc/', (params) => {
     if (!isAuthenticated) {
       navigateTo('/', true);
       return;
     }
+    const locationId = extractLocationId();
+    if (!locationId) {
+      navigateTo('/city', true);
+      return;
+    }
     destroyCurrentView();
-    startGame();
-    fetchPlayerData();
+    if (gameInstance) {
+      hideAllContainers();
+      document.getElementById('game-container')!.style.display = 'flex';
+      eventBus.emit('city:travel-to', { locationId });
+    } else {
+      startGameForLocation(locationId);
+    }
   });
+}
+
+function extractLocationId(): string | null {
+  const match = window.location.pathname.match(/^\/city\/loc\/(.+)$/);
+  return match ? match[1] : null;
+}
+
+function startGameForLocation(locationId: string): void {
+  hideAllContainers();
+  document.getElementById('game-container')!.style.display = 'flex';
+
+  destroyGame();
+
+  gameInstance = new Phaser.Game(config);
+  sleepOverlayInstance = new SleepOverlay();
+  phoneOverlayInstance = new PhoneOverlay();
+  initThemeEngine();
+
+  let attempts = 0;
+  const maxAttempts = 600;
+  const waitForReady = () => {
+    if (gameInstance?.scene.isActive('LocationScene')) {
+      eventBus.emit('city:travel-to', { locationId });
+    } else if (++attempts < maxAttempts) {
+      requestAnimationFrame(waitForReady);
+    } else {
+      console.warn('[main] LocationScene did not become active, falling back to /city');
+      navigateTo('/city', true);
+    }
+  };
+  waitForReady();
 }
 
 // Bridge window CustomEvents (dispatched by E2E tests / external scripts)
@@ -216,6 +263,49 @@ function initOnce() {
   registerRoutes();
   startRouter();
 
+  // Root-level HUD status bar listeners (work with and without Phaser)
+  eventBus.on('tb:updated', (remaining: number) => {
+    const tbEl = document.getElementById('tb-display');
+    if (tbEl) {
+      tbEl.textContent = `${remaining}/48`;
+      tbEl.style.color = remaining <= 5 ? '#ff0000' : remaining <= 10 ? '#ffff00' : '';
+    }
+  });
+
+  eventBus.on('player:state-loaded', (data: any) => {
+    const tbEl = document.getElementById('tb-display');
+    if (tbEl && data.timeBlocks !== undefined) {
+      tbEl.textContent = `${data.timeBlocks}/48`;
+    }
+    const creditsEl = document.getElementById('credits-display');
+    if (creditsEl && data.credits !== undefined) {
+      creditsEl.textContent = data.credits.toString();
+    }
+    const locationEl = document.getElementById('location-display');
+    if (locationEl && data.locationId) {
+      locationEl.textContent = data.locationName || 'Unknown';
+    }
+  });
+
+  // Sync Phaser travel to URL
+  eventBus.on('travel:complete', (data: any) => {
+    if (data.locationId) {
+      navigateTo(`/city/loc/${data.locationId}`, true);
+    }
+  });
+
+  // Handle Phaser-internal travel triggered from URL
+  eventBus.on('city:travel-to', async (data: { locationId: string }) => {
+    const scene = gameInstance?.scene.getScene('LocationScene');
+    if (scene && typeof (scene as any).travelTo === 'function') {
+      (scene as any).travelTo(data.locationId);
+    }
+  });
+
+  eventBus.on('auth:login', () => {
+    isAuthenticated = true;
+  });
+
   eventBus.on('auth:logout', () => {
     isAuthenticated = false;
     destroyGame();
@@ -223,14 +313,13 @@ function initOnce() {
     navigateTo('/', true);
   });
 
-  eventBus.on('game:start', (payload: { isNew: boolean }) => {
+  eventBus.on('game:start', () => {
     if (!isAuthenticated) {
       navigateTo('/', true);
       return;
     }
     destroyCurrentView();
-    startGame();
-    fetchPlayerData();
+    navigateTo('/city');
   });
 
   // Show login menu immediately for fast visual feedback
@@ -245,6 +334,7 @@ function initOnce() {
     try {
       const state = await api.getPlayerState();
       if (state.success) {
+        cachedPlayerState = state.data;
         isAuthenticated = true;
         navigateTo(initialPath !== '/' ? initialPath : '/main', true);
       }

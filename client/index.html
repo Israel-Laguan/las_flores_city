@@ -15,7 +15,7 @@
       }
       
       body {
-        background-color: #0a0a1a;
+        background-color: var(--color-page-bg, #0a0a1a);
         overflow: hidden;
         font-family: monospace;
       }
@@ -30,56 +30,6 @@
       
       /* #phone-overlay is the phone-os-container; styles live in phone.css */
       
-      #dialogue-overlay {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 30vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: rgba(10, 10, 30, 0.85);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-top: 1px solid rgba(0, 255, 0, 0.4);
-        box-shadow: 0 -4px 30px rgba(0, 255, 0, 0.1);
-        z-index: 2000;
-        font-family: monospace;
-        transform: translateY(100%);
-        transition: transform 0.3s ease-out;
-        pointer-events: none;
-      }
-
-      #dialogue-overlay important {
-        color: #00ffff;
-        font-weight: bold;
-        text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-        animation: dialogue-flicker 1.5s infinite alternate;
-      }
-
-      @keyframes dialogue-flicker {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.85; }
-      }
-      
-      #monologue-feed {
-        position: fixed;
-        bottom: 16px;
-        left: 16px;
-        width: 380px;
-        max-height: 260px;
-        background: rgba(2, 4, 8, 0.88);
-        border: 1px solid rgba(79, 195, 247, 0.25);
-        border-radius: 4px;
-        font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-        font-size: 11px;
-        z-index: 1500;
-        overflow: hidden;
-        contain: content;
-        backdrop-filter: blur(6px);
-      }
-      
       #status-bar {
         position: fixed;
         top: 10px;
@@ -87,12 +37,12 @@
         display: flex;
         gap: 20px;
         padding: 10px 15px;
-        background: rgba(0, 0, 0, 0.8);
-        border: 1px solid rgba(0, 255, 0, 0.3);
+        background: var(--status-bar-bg);
+        border: 1px solid var(--status-bar-border);
         border-radius: 5px;
         font-family: monospace;
         font-size: 12px;
-        color: #00ff00;
+        color: var(--status-bar-text);
         z-index: 1500;
       }
       
@@ -103,12 +53,29 @@
       }
       
       #status-bar .stat-label {
-        color: #888;
+        color: var(--status-bar-accent);
       }
       
       #status-bar .stat-value {
-        color: #00ff00;
+        color: var(--status-bar-text);
         font-weight: bold;
+      }
+      
+      #monologue-feed {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        width: 380px;
+        max-height: 260px;
+        background: var(--color-bg);
+        border: 1px solid var(--neon-blue);
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+        font-size: 11px;
+        z-index: 1500;
+        overflow: hidden;
+        contain: content;
+        backdrop-filter: blur(6px);
       }
     </style>
   </head>

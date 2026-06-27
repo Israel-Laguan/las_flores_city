@@ -18,7 +18,7 @@
  */
 import { test, expect, APIRequestContext } from '@playwright/test';
 
-const API_BASE = process.env.API_URL || 'http://localhost:5173';
+const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const TEST_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004';
 const TEST_EMAIL = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;

@@ -23,11 +23,13 @@ import { test, expect, Page } from '@playwright/test';
  * This replaced the old `addInitScript(localStorage.setItem)` pattern, which
  * cannot set HttpOnly cookies. See Task 6.5 spec §E2E migration.
  */
+const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
+
 test.beforeEach(async ({ page }) => {
-  await page.request.post('/api/auth/dev-login', {
+  await page.request.post(`${API_BASE}/api/auth/dev-login`, {
     data: { userId: '660e8400-e29b-41d4-a716-446655440099' },
   });
-  await page.goto('/main/new');
+  await page.goto('/city/loc/c3d4e5f6-a7b8-9012-cdef-123456789012');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
 });
 
