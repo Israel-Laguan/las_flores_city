@@ -5,11 +5,10 @@ const rand = Math.random().toString(36).slice(2, 8);
 const testEmail = `phaser-${Date.now()}-${rand}@example.com`;
 const testUsername = `phaser_${Date.now()}_${rand}`;
 
-// API base URL: use full backend URL in CI, local proxy in dev
-const API_BASE = process.env.CI ? 'http://localhost:3000' : '/api';
+const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
 test.beforeAll(async ({ request }) => {
-  const res = await request.post(`${API_BASE}/auth/register`, {
+  const res = await request.post(`${API_BASE}/api/auth/register`, {
     data: {
       email: testEmail,
       username: testUsername,
@@ -21,7 +20,7 @@ test.beforeAll(async ({ request }) => {
 });
 
 async function injectAuth(page: Page) {
-  await page.request.post(`${API_BASE}/auth/login`, {
+  await page.request.post(`${API_BASE}/api/auth/login`, {
     data: { email: testEmail, password: 'test1234' },
   });
 }

@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// API base URL: use full backend URL in CI, local proxy in dev
-const AUTH_BASE = process.env.CI 
-  ? 'http://localhost:3000'  // Direct to backend in CI
-  : '/api';                   // Vite proxy in local dev
+const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
@@ -13,7 +10,7 @@ test.describe('Settings — Display Name', () => {
   async function createUser(page: any): Promise<string> {
     const email = `dn-e2e-${uid()}@example.com`;
     const username = `dn_e2e_${uid()}`;
-    const res = await page.request.post(`${AUTH_BASE}/auth/register`, {
+    const res = await page.request.post(`${AUTH_BASE}/api/auth/register`, {
       data: { email, username, display_name: 'E2E Display User', password: testPassword },
     });
     expect(res.ok()).toBeTruthy();
@@ -21,7 +18,7 @@ test.describe('Settings — Display Name', () => {
   }
 
   async function loginAndGoToSettings(page: any, email: string): Promise<void> {
-    const res = await page.request.post(`${AUTH_BASE}/auth/login`, {
+    const res = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
       data: { email, password: testPassword },
     });
     expect(res.ok()).toBeTruthy();
@@ -78,7 +75,7 @@ test.describe('Settings — Password Change', () => {
   async function createUser(page: any): Promise<string> {
     const email = `pw-e2e-${uid()}@example.com`;
     const username = `pw_e2e_${uid()}`;
-    const res = await page.request.post(`${AUTH_BASE}/auth/register`, {
+    const res = await page.request.post(`${AUTH_BASE}/api/auth/register`, {
       data: { email, username, display_name: 'E2E Password User', password: testPassword },
     });
     expect(res.ok()).toBeTruthy();
@@ -86,7 +83,7 @@ test.describe('Settings — Password Change', () => {
   }
 
   async function loginAndGoToSettings(page: any, email: string, password: string): Promise<void> {
-    const res = await page.request.post(`${AUTH_BASE}/auth/login`, {
+    const res = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
       data: { email, password },
     });
     expect(res.ok()).toBeTruthy();

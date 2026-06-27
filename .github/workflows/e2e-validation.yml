@@ -97,25 +97,26 @@ jobs:
           cat /tmp/server.log 2>/dev/null || true
           exit 1
 
-      - name: Build client
-        run: npm run build --workspace=client
-        env:
-          VITE_API_URL: http://localhost:3000
-
-      - name: Start client (background)
-        run: npx --yes serve -s dist -l 5173 > /tmp/client.log 2>&1 &
+      - name: Build client (types only, skip Vite build — dev server proxies)
+        run: npx tsc --noEmit
         working-directory: client
+
+      - name: Start Vite dev server (background)
+        run: npm run dev > /tmp/client.log 2>&1 &
+        working-directory: client
+        env:
+          VITE_API_PROXY_TARGET: http://localhost:3000
 
       - name: Wait for client
         run: |
-          for i in $(seq 1 20); do
+          for i in $(seq 1 30); do
             if curl -sf http://localhost:5173 > /dev/null 2>&1; then
               echo "Client is ready"
               exit 0
             fi
             sleep 2
           done
-          echo "::error::Client failed to start within 40 seconds"
+          echo "::error::Client failed to start within 60 seconds"
           cat /tmp/client.log 2>/dev/null || true
           exit 1
 
@@ -128,7 +129,7 @@ jobs:
         working-directory: client
         env:
           CI: 'true'
-          API_URL: http://localhost:3000
+          API_URL: http://localhost:5173
           CLIENT_ORIGIN_URL: http://localhost:5173
 
       - uses: actions/upload-artifact@v4

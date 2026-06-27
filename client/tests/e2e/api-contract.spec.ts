@@ -18,10 +18,7 @@
  */
 import { test, expect, APIRequestContext } from '@playwright/test';
 
-// API base URL: use full backend URL in CI, local proxy in dev
-const API_BASE = process.env.API_URL || (process.env.CI 
-  ? 'http://localhost:3000'  // Direct to backend in CI
-  : 'http://localhost:5173'); // Local dev with Vite proxy
+const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const TEST_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004';
 const TEST_EMAIL = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;

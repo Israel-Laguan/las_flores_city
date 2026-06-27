@@ -9,10 +9,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-// API base URL: use full backend URL in CI, local proxy in dev
-const API_URL = process.env.API_URL ?? process.env.VITE_API_URL ?? (process.env.CI 
-  ? 'http://localhost:3000'  // Direct to backend in CI
-  : 'http://localhost:5173'); // Local dev with Vite proxy
+const API_URL = process.env.API_URL ?? 'http://localhost:5173';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
 const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 
