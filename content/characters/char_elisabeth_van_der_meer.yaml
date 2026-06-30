@@ -1,0 +1,9 @@
+id: "c3000011-e29b-41d4-a716-446655440011"
+name: "Elisabeth van der Meer"
+title: "Political Figure"
+description: "A Dutch Van der Meer who married Carlos Alberto Hernandez in 2038. Trapped between her family's integrity, her husband's corruption, and her own desire for comfort, she navigates the treacherous waters of Las Flores politics."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "dutch_interest"
+  personality: "conflicted_alliance"

@@ -280,6 +280,75 @@ async function upsertShopItem(data: any): Promise<string> {
   return result.rows[0].id;
 }
 
+async function processCharacterData(data: any): Promise<string> {
+  return upsertCharacter(data);
+}
+
+async function processDialogueData(data: any): Promise<string> {
+  return upsertDialogueTree(data);
+}
+
+async function processOverlayData(data: any): Promise<string> {
+  return upsertDialogueOverlay(data);
+}
+
+async function processSceneData(data: any): Promise<string> {
+  const contentId = await upsertScene(data);
+  const npcIds: string[] = data.metadata?.npcs || [];
+  for (const charId of npcIds) {
+    await queryOLTP(
+      `INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood)
+       VALUES ($1, $2, true, 'neutral')
+       ON CONFLICT (scene_id, character_id) DO NOTHING`,
+      [contentId, charId]
+    );
+  }
+  return contentId;
+}
+
+async function processGigData(data: any): Promise<string> {
+  const gigs = data.gigs || [data];
+  const ids: string[] = [];
+  for (const gig of gigs) {
+    const id = await upsertGig(gig);
+    ids.push(id);
+  }
+  return ids.join(',');
+}
+
+async function processVaultData(data: any): Promise<string> {
+  VaultFileSchema.parse(data);
+  const vaultItems = data.vault_items || [];
+  const vaultIds: string[] = [];
+  for (const item of vaultItems) {
+    const id = await upsertVaultItem(item);
+    vaultIds.push(id);
+  }
+  return vaultIds.join(',');
+}
+
+async function processMysteryData(data: any): Promise<string> {
+  const mysteries = data.mysteries || [data];
+  const mysteryIds: string[] = [];
+  for (const mystery of mysteries) {
+    YAMLMysterySchema.parse(mystery);
+    const id = await upsertMystery(mystery);
+    mysteryIds.push(id);
+  }
+  return mysteryIds.join(',');
+}
+
+async function processShopItemData(data: any): Promise<string> {
+  ShopItemFileSchema.parse(data);
+  const shopItems = data.shop_items || [];
+  const shopIds: string[] = [];
+  for (const item of shopItems) {
+    const id = await upsertShopItem(item);
+    shopIds.push(id);
+  }
+  return shopIds.join(',');
+}
+
 export async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
   if (!contentType) {
@@ -290,74 +359,32 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
   const data = yaml.load(content) as any;
 
   let contentId: string;
-  let action: 'created' | 'updated' | 'updated';
 
   switch (contentType) {
     case 'character':
-      contentId = await upsertCharacter(data);
+      contentId = await processCharacterData(data);
       break;
     case 'dialogue':
-      contentId = await upsertDialogueTree(data);
+      contentId = await processDialogueData(data);
       break;
     case 'overlay':
-      contentId = await upsertDialogueOverlay(data);
+      contentId = await processOverlayData(data);
       break;
-    case 'scene': {
-      contentId = await upsertScene(data);
-      const npcIds: string[] = data.metadata?.npcs || [];
-      for (const charId of npcIds) {
-        await queryOLTP(
-          `INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood)
-           VALUES ($1, $2, true, 'neutral')
-           ON CONFLICT (scene_id, character_id) DO NOTHING`,
-          [contentId, charId]
-        );
-      }
+    case 'scene':
+      contentId = await processSceneData(data);
       break;
-    }
-    case 'gig': {
-      const gigs = data.gigs || [data];
-      const ids: string[] = [];
-      for (const gig of gigs) {
-        const id = await upsertGig(gig);
-        ids.push(id);
-      }
-      contentId = ids.join(',');
+    case 'gig':
+      contentId = await processGigData(data);
       break;
-    }
-    case 'vault': {
-      VaultFileSchema.parse(data);
-      const vaultItems = data.vault_items || [];
-      const vaultIds: string[] = [];
-      for (const item of vaultItems) {
-        const id = await upsertVaultItem(item);
-        vaultIds.push(id);
-      }
-      contentId = vaultIds.join(',');
+    case 'vault':
+      contentId = await processVaultData(data);
       break;
-    }
-    case 'mystery': {
-      const mysteries = data.mysteries || [data];
-      const mysteryIds: string[] = [];
-      for (const mystery of mysteries) {
-        YAMLMysterySchema.parse(mystery);
-        const id = await upsertMystery(mystery);
-        mysteryIds.push(id);
-      }
-      contentId = mysteryIds.join(',');
+    case 'mystery':
+      contentId = await processMysteryData(data);
       break;
-    }
-    case 'shop_item': {
-      ShopItemFileSchema.parse(data);
-      const shopItems = data.shop_items || [];
-      const shopIds: string[] = [];
-      for (const item of shopItems) {
-        const id = await upsertShopItem(item);
-        shopIds.push(id);
-      }
-      contentId = shopIds.join(',');
+    case 'shop_item':
+      contentId = await processShopItemData(data);
       break;
-    }
     default:
       throw new Error(`Unsupported content type: ${contentType}`);
   }

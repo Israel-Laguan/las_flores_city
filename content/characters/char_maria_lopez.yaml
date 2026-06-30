@@ -1,0 +1,11 @@
+id: "fb203e26-da8c-4180-96a4-9a59ca6886b0"
+name: "Maria Lopez"
+title: "Leader, GreenWatch Las Flores"
+description: "A renowned biologist and leader of GreenWatch Las Flores. She leverages scientific data and international networks to pressure authorities into adopting sustainable practices."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "civil_society"
+  personality: "analytical_environmentalist"
+  organization: "GreenWatch"
+  lore_doc: "organizations/greenwatch.md"

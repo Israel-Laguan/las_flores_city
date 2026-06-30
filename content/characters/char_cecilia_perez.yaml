@@ -1,0 +1,9 @@
+id: "a57b0025-75d1-4e0d-9bb3-f7c8d9e2a380"
+name: "Cecilia Perez"
+title: "Safety Auditor & Independent Researcher"
+description: "Hired by Minera Estrella as a safety auditor in her early twenties, she documented structural weaknesses in the containment systems that were suppressed by LW Group. She then pivoted to independent research, obtaining a university grant under a cover proposal to study plant resilience in lithium-contaminated soil. Her data proved pre-leak contamination. Murdered in 2049, weeks from publishing."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "courageous_investigator"

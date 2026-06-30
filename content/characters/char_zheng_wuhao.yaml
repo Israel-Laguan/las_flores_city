@@ -1,0 +1,9 @@
+id: "c1000005-e29b-41d4-a716-446655440005"
+name: "Zheng Wuhao"
+title: "Facility Supervisor, Minera Estrella"
+description: "The first responder to the Great Lithium Leak who downplayed the severity in initial reports, enabling the cover-up."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "conflicted_supervisor"

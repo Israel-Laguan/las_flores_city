@@ -1,0 +1,9 @@
+id: "c1000001-e29b-41d4-a716-446655440001"
+name: "Evelyn Ruthenberg"
+title: "Former Engineer, Luz del Rio"
+description: "A former engineer turned whistleblower. She holds damning evidence of the Great Lithium Leak cover-up and fights for justice from the shadows."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "determined_investigator"

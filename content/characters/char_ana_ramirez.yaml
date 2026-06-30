@@ -1,0 +1,12 @@
+id: "12d45902-c579-4520-b341-96bee23a5fda"
+name: "Ana Ramirez"
+title: "Leader, CJS"
+description: "A passionate indigenous political leader who heads La Coalición por la Justicia Social. She champions the rights of marginalized communities and fights against environmental destruction."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "civil_society"
+  personality: "fiery_activist"
+  organization: "CJS"
+  lore_doc: "organizations/cjs.md"
+  district_affiliation: "South"

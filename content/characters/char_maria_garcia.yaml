@@ -1,0 +1,9 @@
+id: "c2000002-e29b-41d4-a716-446655440002"
+name: "Maria Garcia"
+title: "Flower Farmer"
+description: "A loving mother who tended the Garcia family's flower fields. She died from complications of lithium contamination after rescuing her daughter Isabella from the poisoned river."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "devoted_mother"

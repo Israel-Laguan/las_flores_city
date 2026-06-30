@@ -1,0 +1,9 @@
+id: "c1000006-e29b-41d4-a716-446655440006"
+name: "Dr. Wei Zhang"
+title: "Environmental Scientist"
+description: "Collaborated with Evelyn Ruthenberg on the phytoremediation plan, then betrayed the cause by defecting to Minera Estrella in late 2059."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "brilliant_traitor"

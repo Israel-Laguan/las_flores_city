@@ -1,0 +1,9 @@
+id: "c3000016-e29b-41d4-a716-446655440016"
+name: "Alicia Quevedo"
+title: "Governor of Las Flores"
+description: "Became Governor after Juan Pablo Ramos completed his two terms. Governed during the buildup to the Great Lithium Leak and faced the challenge of managing foreign mining interests while maintaining the city's economic boom."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "consolidating_leader"

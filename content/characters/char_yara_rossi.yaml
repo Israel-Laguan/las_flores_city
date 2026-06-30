@@ -1,0 +1,9 @@
+id: "c1000002-e29b-41d4-a716-446655440002"
+name: "Yara Rossi"
+title: "Businesswoman & Environmental Activist"
+description: "A successful businesswoman who championed the lithium leak restoration project and fought to reopen the trial. Assassinated in 2059."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "charismatic_advocate"

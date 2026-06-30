@@ -1,0 +1,9 @@
+id: "c1000012-e29b-41d4-a716-446655440012"
+name: "Karla"
+title: "Activist"
+description: "An activist murdered in February 2053. Before dying, she passed crucial evidence to Evelyn Ruthenberg and asked her to find Nubia."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "brave_casualty"

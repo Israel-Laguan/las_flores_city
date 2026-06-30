@@ -1,0 +1,9 @@
+id: "c1000010-e29b-41d4-a716-446655440010"
+name: "Javier Mendoza"
+title: "Former Safety Inspector, Minera Estrella"
+description: "A former safety inspector who initially agreed to testify about Minera Estrella's negligence, then retracted his statement under pressure."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "intimidated_witness"

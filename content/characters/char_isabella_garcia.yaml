@@ -1,0 +1,9 @@
+id: "c2000004-e29b-41d4-a716-446655440004"
+name: "Isabella Garcia"
+title: "Contamination Survivor"
+description: "The middle Garcia child who fell into the poisoned river as a child, leaving her with chronic respiratory problems. She copes through painting and writing."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "resilient_artist"

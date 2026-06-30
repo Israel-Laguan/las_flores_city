@@ -1,0 +1,12 @@
+id: "0ba818ba-9c5f-4725-8f92-6f102edeecff"
+name: "Ricardo Chen"
+title: "Senator"
+description: "A prominent figure in Las Flores' political landscape, known for his ability to bridge Chinese interests with local policies. He facilitates regulatory approvals for Chinese investments."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "government"
+  personality: "political_broker"
+  organization: "LW Group"
+  lore_doc: "companies/lw_group/overview.md"
+  district_affiliation: "City"

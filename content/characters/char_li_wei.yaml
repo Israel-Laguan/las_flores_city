@@ -1,0 +1,9 @@
+id: "d848a4a6-e764-45c0-96ce-0bfe36d6762f"
+name: "Li Wei"
+title: "Founding Investor, LW Group"
+description: "A respected businessman with extensive connections in China's corporate world. Now in his 90s, he has transitioned to an advisory role, leveraging his vast networks."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "elder_statesman"

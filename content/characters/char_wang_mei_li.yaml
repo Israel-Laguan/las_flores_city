@@ -1,0 +1,9 @@
+id: "50a37ec0-60af-41c1-b8e7-42f9fe604b6b"
+name: "Wang Mei Li"
+title: "Founder, Dragon Phoenix Trading"
+description: "An intrepid entrepreneur who founded an import/export empire in Barrio Chino. She is a beacon of support for women entrepreneurs and a bridge between Chinese and local cultures."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "dragon_phoenix"
+  personality: "cultural_bridge_builder"

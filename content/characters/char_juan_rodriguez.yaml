@@ -1,0 +1,9 @@
+id: "58c250ec-0a05-44d9-a739-5949d6a25c4e"
+name: "Juan Rodríguez"
+title: "Editor-in-Chief, El Informador"
+description: "Managing Director of El Informador de Las Flores. He has deep roots in the indigenous communities and a personal commitment to giving a voice to the marginalized."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "media"
+  personality: "principled_journalist"

@@ -1,0 +1,9 @@
+id: "c3000013-e29b-41d4-a716-446655440013"
+name: "Pieter van der Meer"
+title: "Dutch Consortium Leader"
+description: "Husband of Annabella, Pieter orchestrated the Free City initiative to counterbalance Chinese dominance in Las Flores. A strategic pragmatist who secured Dutch control of the south and airport through negotiation and political maneuvering."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "dutch_interest"
+  personality: "strategic_pragmatist"
