@@ -1,0 +1,32 @@
+id: "c1000014-e29b-41d4-a716-446655440014"
+name: "Daiyu Liu"
+title: "International Relations Student at UILF, Chinese Cultural Purist"
+description: |
+  Daiyu Liu is a highly intelligent and ambitious woman in her mid-20s, born in China but moved to Las Flores with her family at a young age. Growing up in an affluent neighborhood near the Universidad Internacional de Las Flores (UILF) campus, she developed a sophisticated worldview and strong sense of her cultural identity.
+  
+  Currently pursuing a degree in International Relations at UILF on a full scholarship, Daiyu hopes to enter diplomacy or international business after graduation. She has a sharp wit and isn't afraid to speak her mind, often engaging in lively debates about geopolitical affairs and cultural superiority.
+  
+  Despite her academic accomplishments and social standing, Daiyu carries an air of arrogance and can come across as condescending to others, particularly those from different backgrounds or lower economic statuses. She holds strong, albeit misguided, views on race and culture, firmly believing in the superiority of Chinese culture and looking down upon other ethnicities, including those within her own community who have adapted to Western lifestyles.
+  
+  Daiyu enjoys playing the guqin (a traditional seven-string zither) and practicing calligraphy, activities that connect her to her heritage. She frequents exclusive social events and clubs at UILF that cater to wealthy international students, where she can network with like-minded individuals.
+  
+  Currently living in an upscale apartment complex near the UILF campus with a group of like-minded friends, Daiyu struggles to balance her studies, social life, and volunteer work at a local organization that promotes Chinese cultural heritage. Her growing interest in politics and geopolitical affairs, especially concerning China's global influence, often dominates her conversations and social media presence.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "uem_affiche"
+  personality: "intelligent_ambitious_arrogant"
+  age: 25
+  gender: "Female"
+  ethnicity: "Chinese"
+  nationality: "Chinese"
+  occupation: "International Relations Student"
+  background: "born in China, moved to Las Flores as child, grew up in affluent neighborhood near UILF campus, full scholarship student"
+  education: "International Relations degree in progress at Universidad Internacional de Las Flores (UILF)"
+  residence: "upscale apartment complex near UILF campus"
+  organization: "UILF student, volunteer at Chinese cultural heritage organization"
+  allies: "wealthy international students at UILF, like-minded Chinese expatriates, exclusive social clubs members"
+  mannerisms: "speaks her mind sharply, engages in intellectual debates, plays guqin, practices calligraphy, attends exclusive social events"
+  motivations: "enter diplomacy or international business, promote Chinese cultural superiority, maintain social status among elite, balance academic and social life"
+  quote: "True culture cannot be diluted by assimilation. The strength of our heritage is what makes us exceptional."
+  methods: "academic debate, cultural preservation, networking, social media influence, volunteer work"
