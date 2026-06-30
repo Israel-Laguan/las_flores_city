@@ -30,9 +30,9 @@ For a comprehensive overview of the City District, see: [City District](../../di
 
 ## Northeast District
 - [Colegio Chino-Latino](northeast/colegio_chino_latino.md) ✅
-- [Meadowbrook Estates](northeast/meadowbrook_estates.md)
-- [Universidad del Valle](northeast/universidad_del_valle.md)
-- [Vista Del Sol](northeast/vista_del_sol.md)
+- [Meadowbrook Estates](northeast/meadowbrook_estates.md) ✅
+- [Universidad del Valle](northeast/universidad_del_valle.md) ❌
+- [Vista Del Sol](northeast/vista_del_sol.md) ❌
 
 ## North District
 - [Electric Vehicle Zone](north/electric_vehicle_zone.md) ✅
