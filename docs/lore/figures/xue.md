@@ -14,7 +14,7 @@ When no call to return ever came, Xue gradually realized her assignment had been
 ## Relationship with Kusi
 Among her regular customers was an indigenous man in his fifties who became a fixture in her life. Their bond was unconventional: she gave him chores, slipped extra money into his pay, and called him her "pet." What began as a power dynamic evolved into genuine companionship.
 
-In 2059, at age 59, Xue received official notice releasing her from military duty. That same day, she asked Kusi to marry her. Their relationship defies simple labels — a cross-cultural bond forged in unlikeliest of circumstances.
+In 2059, at age 59, Xue received official notice releasing her from military duty. That same day, she asked Kusi to marry her. Their relationship defies simple labels — a cross-cultural bond forged in the unlikeliest of circumstances.
 
 ## Related Lore
 - [Xue's Late Epiphany](../stories/xue_late_epiphany.md)

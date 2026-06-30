@@ -293,13 +293,15 @@ async function processOverlayData(data: any): Promise<string> {
 }
 
 async function processSceneData(data: any): Promise<string> {
+  if (!data) {
+    throw new Error("Invalid scene data: content is empty");
+  }
   const contentId = await upsertScene(data);
   const npcIds: string[] = data.metadata?.npcs || [];
-  for (const charId of npcIds) {
+  const uniqueNpcIds = [...new Set(npcIds)];
+  for (const charId of uniqueNpcIds) {
     await queryOLTP(
-      `INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood)
-       VALUES ($1, $2, true, 'neutral')
-       ON CONFLICT (scene_id, character_id) DO NOTHING`,
+      "INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood) VALUES ($1, $2, true, 'neutral') ON CONFLICT (scene_id, character_id) DO NOTHING",
       [contentId, charId]
     );
   }
@@ -307,6 +309,9 @@ async function processSceneData(data: any): Promise<string> {
 }
 
 async function processGigData(data: any): Promise<string> {
+  if (!data) {
+    throw new Error("Invalid gig data: content is empty");
+  }
   const gigs = data.gigs || [data];
   const ids: string[] = [];
   for (const gig of gigs) {
@@ -328,6 +333,9 @@ async function processVaultData(data: any): Promise<string> {
 }
 
 async function processMysteryData(data: any): Promise<string> {
+  if (!data) {
+    throw new Error("Invalid mystery data: content is empty");
+  }
   const mysteries = data.mysteries || [data];
   const mysteryIds: string[] = [];
   for (const mystery of mysteries) {

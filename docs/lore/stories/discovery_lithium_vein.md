@@ -11,7 +11,7 @@ In 2029, Global Lithium Corp (GLC) sent a small group of scientists and engineer
 ## The Discovery
 Annabella and her team arrived in Las Flores, eager to begin their survey. They were guided by a local man named Miguel, who had grown up in the area and knew the terrain like the back of his hand. Miguel led them to an old, abandoned mine near the river, a place where locals had once mined for small amounts of minerals.
 
-As they ventured deeper into the mine, they were closing a water river, and Annabella wanted to drink the water. Miguel warned her not to drink the water. "The water here is poisoned," he said, his voice echoing through the dark tunnels. "It has made many people sick over the years."
+As they ventured deeper into the mine, they approached an underground river, and Annabella wanted to drink the water. Miguel warned her not to drink the water. "The water here is poisoned," he said, his voice echoing through the dark tunnels. "It has made many people sick over the years."
 
 Annabella, always the curious scientist, had a sudden inspiration. "If the water is making people sick, it could be due to high concentrations of lithium," she mused in Dutch. She quickly took a sample of the water, sealing it in a sterile container for later analysis.
 

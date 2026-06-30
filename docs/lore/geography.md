@@ -49,8 +49,8 @@
 
 | Route | Distance | By Foot | By Car |
 |---|---|---|---|
-| Las Tres Montañas ↔ Central Business District | 100 km | 6h | 30m |
-| Las Tres Montañas ↔ Old Las Flores | 120 km | — | 1h 15m |
+| Las Tres Montañas ↔ Central Business District | 30 km | 6h | 30m |
+| Las Tres Montañas ↔ Old Las Flores | 60 km | — | 1h 15m |
 | Embajada de China ↔ Central Business District | 8 km | 2h | 10m |
 | Bahía de las Olas ↔ Old Las Flores | 45 km | — | 55m |
 | Airport (Southeast) ↔ Central Business District | 30 km | — | 30m |
@@ -58,7 +58,7 @@
 | Bahía de las Olas ↔ Central Business District | 6 km | 1h | 15m |
 | Port piers ↔ Central Business District | 5 km | 1h | 15m |
 | Port piers ↔ Old Las Flores | 40 km | — | 50m |
-| Airport ↔ Old Las Flores | 25 km | 2h | 30m |
+| Airport ↔ Old Las Flores | 25 km | 5h | 30m |
 | San Pedro de los Pescadores ↔ Old Las Flores | 70 km | — | 1.5h |
 | San Pedro de los Pescadores ↔ Central Business District | 60 km | — | 1h |
 | Old Las Flores ↔ Central Business District | 15 km | — | 20m |
