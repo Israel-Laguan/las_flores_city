@@ -44,10 +44,11 @@ For a comprehensive overview of the City District, see: [City District](../../di
 - [Universidad Nacional](central/universidad_nacional.md)
 
 ## Andes District
-- [Andean Mountains](andes/andean_mountains.md)
-- [Resort del Bosque](andes/resort_del_bosque.md)
-- [Rio Grande Dam](andes/rio_grande_dam.md)
-- [Vinícola La Hacienda](andes/vinicola_la_hacienda.md)
+- [Andean Mountains](andes/andean_mountains.md) ✅
+- [Minera Estrella Andes Mine](andes/minera_estrella_andes_mine.md) ✅
+- [Resort del Bosque](andes/resort_del_bosque.md) ❌
+- [Rio Grande Dam](andes/rio_grande_dam.md) ❌
+- [Vinícola La Hacienda](andes/vinicola_la_hacienda.md) ❌
 
 ## South District
 - [Agricultural Valley](south/agricultural_valley.md)
