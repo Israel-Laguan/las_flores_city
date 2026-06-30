@@ -1,9 +1,33 @@
 id: "58829bad-2255-4ae0-af20-ba2c607de59f"
 name: "Claire Moreau"
-title: "blend of elegance and comfort"
-description: "- Age : 45 - Nationality : French - Background : Claire hails from a quaint coastal town in France, where her love for the ocean is as strong as her connection to her spiritual side. Growing up in an artistic household, she developed a profound appreciation for beauty, both in nature and in people. - Sexual Orientation : Bisexual, Claire has a magnetic charm that draws in university students and young professionals."
+title: "Spiritual Yogini and Hostess by the Port"
+description: |
+  Claire Moreau is a captivating 45-year-old French woman who hails from a quaint coastal town in France, where her love for the ocean is as strong as her connection to her spiritual side. Growing up in an artistic household, she developed a profound appreciation for beauty, both in nature and in people.
+  
+  As a bisexual woman with magnetic charm, Claire draws in university students and young professionals alike. Her openness about her sexuality and her rich life experiences make her a captivating figure among her peers. She often engages in flirtatious banter and has had several affairs, but is known for valuing meaningful connections above all else.
+  
+  Claire's life took a transformative turn when her husband, a French captain, tragically died in a storm while at sea. This profound loss deeply affected her, but the substantial life insurance money she inherited allowed her to pursue her passions without financial worry. Now, she uses her newfound freedom to live life to the fullest, often channeling her grief into art and connection with others.
+  
+  Deeply spiritual, Claire practices meditation daily and hosts yoga sessions at dawn, inviting friends and locals to join her in celebrating wellness. She loves hosting lavish parties at her seaside home, where eclectic decor and bohemian ambiance create an inviting atmosphere. Her gatherings often feature music, art, and vibrant conversations, attracting a diverse and interesting crowd.
+  
+  Charismatic and warm-hearted, Claire is known for her empathy and understanding nature. She fosters a welcoming environment, making her home a safe space for friends and acquaintances to explore their free spirits. While she tends to be adventurous in her relationships, she also has moments of introspection, reflecting on her past and the legacy of her beloved husband.
 metadata:
   type: "human"
   role: "npc"
   faction: "independent"
-  personality: "creative_spirit"
+  personality: "charismatic_warm_hearted_spiritual"
+  age: 45
+  gender: "Female"
+  nationality: "French"
+  ethnicity: "Caucasian"
+  sexual_orientation: "Bisexual"
+  occupation: "Spiritual Guide, Yoga Instructor, Social Hostess"
+  background: "grew up in artistic household in French coastal town, married French captain who died at sea, inherited life insurance, now lives freely pursuing passions"
+  education: "self-taught in spiritual practices, experienced in yoga and meditation"
+  residence: "seaside home near the port with water views"
+  organization: "none (independent)"
+  allies: "university students, young professionals, artists, spiritual seekers, local community"
+  mannerisms: "practices daily meditation, hosts dawn yoga sessions, throws lavish bohemian parties, engages in flirtatious banter, creates welcoming safe spaces"
+  motivations: "live life to the fullest, help others find wellness and connection, honor her husband's memory through joy, create beauty and harmony"
+  quote: "The ocean taught me that even in the stormiest moments, there is always a calm waiting beneath the surface."
+  methods: "yoga instruction, meditation guidance, social hosting, artistic expression, empathetic listening"
