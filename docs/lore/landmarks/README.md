@@ -46,6 +46,7 @@ For a comprehensive overview of the City District, see: [City District](../../di
 ## Andes District
 - [Andean Mountains](andes/andean_mountains.md) ✅
 - [Minera Estrella Andes Mine](andes/minera_estrella_andes_mine.md) ✅
+- [Minera Estrella Valley Mine](andes/minera_estrella_valley_mine.md) ✅
 - [Resort del Bosque](andes/resort_del_bosque.md) ❌
 - [Rio Grande Dam](andes/rio_grande_dam.md) ❌
 - [Vinícola La Hacienda](andes/vinicola_la_hacienda.md) ❌
