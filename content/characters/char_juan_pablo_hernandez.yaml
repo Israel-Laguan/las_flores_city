@@ -1,0 +1,9 @@
+id: "d5e6f7a8-b9c0-4d1e-2f3a-4b5c6d7e8f9a"
+name: "Juan Pablo Hernandez"
+title: "Activist & Blogger"
+description: "Wrote 'Why are Police More Present in Rich Neighborhoods? And Who's Protecting the Poor?' exposing policing disparities and Business Coalition influence over Las Flores politics."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "civil_society"
+  personality: "grassroots_activist"

@@ -361,6 +361,30 @@ export const YAMLSceneSchema = z.object({
 
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
 
+export const YAMLSocialMediaSchema = z.object({
+  platforms: z.array(z.object({
+    name: z.string().min(1).max(100),
+    influence: z.string().max(100).optional(),
+    description: z.string().max(500).optional(),
+    posts: z.array(z.object({
+      id: z.string().min(1).max(100),
+      author: z.string().min(1).max(100),
+      content: z.string().min(1).max(2000),
+      translation: z.string().max(2000).optional(),
+      tags: z.array(z.string().max(50)).optional(),
+      sentiment: z.enum(['positive', 'negative', 'neutral']).optional(),
+      engagement: z.enum(['low', 'medium', 'high']).optional(),
+    })).optional(),
+    platforms: z.array(z.object({
+      name: z.string().min(1).max(100),
+      influence: z.string().max(100).optional(),
+      description: z.string().max(500).optional(),
+    })).optional(),
+  })).optional(),
+});
+
+export type YAMLSocialMedia = z.infer<typeof YAMLSocialMediaSchema>;
+
 // ==================== Migration Types ====================
 
 export const MigrationLogSchema = z.object({
@@ -470,7 +494,7 @@ export type { Gig } from './schemas/gig.js';
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'social_media']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

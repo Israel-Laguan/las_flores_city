@@ -1,0 +1,9 @@
+id: "e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5a6b"
+name: "Elisa Pérez"
+title: "Social Media & Community Manager, El Informador"
+description: "Joined El Informador as an intern while studying communications. Quickly rose to become the paper's digital outreach lead, significantly growing its online presence."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "media"
+  personality: "digital_organizer"

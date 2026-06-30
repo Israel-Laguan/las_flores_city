@@ -26,7 +26,7 @@ Her true objective was to investigate a puzzling observation she had made during
 In her experimental field on the outskirts of Minera Estrella's controlled area, Cecilia cultivated samples of both native and introduced species, monitoring their growth in soil with varying lithium concentrations. Her data showed unambiguous evidence that:
 
 1. The containment systems had been leaking **long before** the public "Great Lithium Leak" of 2052.
-2. A previously unidentified plant species demonstrated remarkable phytoremediation capacity for lithium-contaminated soil.
+2. The plant species **Carinata** demonstrated remarkable phytoremediation capacity for lithium-contaminated soil.
 3. The leakage patterns correlated with specific structural failures that had been documented in her original audit reports — the same reports now locked away by LW Group.
 
 Weeks from publishing a paper that would have exposed years of corporate negligence, Cecilia was found stabbed in a City District alley. The official ruling was a random robbery, but her roommate Nubia and those who knew her work suspected assassination. The timing — just before her breakthrough paper was to be submitted — made the coincidence impossible to ignore.
@@ -35,7 +35,7 @@ Weeks from publishing a paper that would have exposed years of corporate neglige
 
 Cecilia's evidence — including data from her phytoremediation experiments and copies of her original suppressed audit reports — was later collected by **Liu Fang** and passed to **Evelyn Ruthenberg**. Her dual contribution — both as an auditor who first documented the structural problems and as a researcher who proved the pre-leak contamination — made her one of the most important whistleblowers in the case against Minera Estrella.
 
-The plant species she identified later became central to the phytoremediation restoration plan devised by Evelyn Ruthenberg and Dr. Wei Zhang in 2058.
+The plant species **Carinata** she identified later became central to the phytoremediation restoration plan devised by Evelyn Ruthenberg and Dr. Wei Zhang in 2058.
 
 ## Related Lore
 

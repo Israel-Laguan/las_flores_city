@@ -1,0 +1,9 @@
+id: "f9a0b1c2-d3e4-4a5b-6c7d-8e9f0a1b2c3d"
+name: "Sofia Cortez"
+title: "Environment Correspondent, La Prensa"
+description: "Covers environmental issues affecting Las Flores, including the aftermath of the Great Lithium Leak. Her reporting has raised awareness and prompted policy changes."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "media"
+  personality: "environmental_journalist"

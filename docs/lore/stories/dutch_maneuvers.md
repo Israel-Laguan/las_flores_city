@@ -7,7 +7,7 @@
 
 ## Overview
 Initial Observations and Concerns
-In 2030, the Dutch mining consortium led by Pieter van der Meer began to notice the growing Chinese influence over the port in Las Flores. The Chinese, with their larger mine and substantial investments, were profiting significantly from their operations. Pieter and his team realized that over time, the Dutch operations could be absorbed by the Chinese, jeopardizing their long-term interests in the region.
+In 2030, the Dutch mining consortium led by Pieter van der Meer began to notice the growing Chinese influence over the port in Las Flores. The Chinese, with their larger mine and substantial investments, were profiting significantly from their operations. Pieter and his team realized that over time, the Dutch operations could be absorbed by the Chinese, jeopardizing their long-term interests in the region. By 2033, the discovery of an additional lithium vein by Van der Meer strengthened their bargaining position and accelerated the free city initiative.
 
 ## Strategic Planning
 Recognizing the need to equalize the power balance and secure their position, Pieter devised a plan to create a new political entity in Las Flores — one that would be less influenced by the Chinese. This entity, a "free city," would attract more foreign investment and provide the Dutch with greater leverage.
@@ -35,7 +35,7 @@ Pieter's plan for the governance model was to divide the city as much as possibl
 To get the deal, the Dutch had to make significant concessions. They agreed to give half of the airport and the Luz del Rio area to the Chinese. Additionally, more than half of the city, specifically the northern part, was to be under Chinese control. In return, the southern part of the city would be managed by the Dutch and Latin American interests.
 
 ## The Referendum
-In 2033, the Constitution of the Free City of Las Flores was put to a referendum. Despite allegations of voter intimidation and fraud, the measure passed with 65% of voters approving the creation of the free city. Juan Pablo Ramos was elected as the first Governor, while Mayor Hernandez transitioned to become the Mayor of the City District.
+In 2033, a proposal for the Free City of Las Flores was formally presented. The actual constitutional referendum took place in **2036**, when the measure passed with 65% of voters approving the creation of the free city amid allegations of voter intimidation and fraud. Juan Pablo Ramos assumed the role of Governor, formalizing a leadership position he had held provisionally since 2033. Mayor Carlos Hernandez transitioned to become the first **Mayor of the City District**, governing the administrative core while the constitution was being finalized.
 
 ## Related Lore
 - [Constitution Backstory](../figures/constitution_backstory.md)

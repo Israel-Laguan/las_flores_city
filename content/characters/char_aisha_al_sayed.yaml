@@ -1,0 +1,9 @@
+id: "c1000013-e29b-41d4-a716-446655440013"
+name: "Aisha Al-Sayed"
+title: "Electrical Engineer, Minera Estrella"
+description: "Born in Cairo, she rose through Minera Estrella's engineering ranks but now feels stagnant amid whispered complaints about 'cultural fit.' She suspects the promotion patterns favor recent Chinese hires, and she's been quietly documenting everything."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "Minera Estrella"
+  personality: "determined_pragmatic"

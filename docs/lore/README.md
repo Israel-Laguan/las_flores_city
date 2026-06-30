@@ -78,9 +78,12 @@ docs/lore/
 |---|---|---|
 | [El Informador](media/el_informador.md) | Newspaper | Voice of marginalized communities |
 | [Las Flores Chronicle](media/las_flores_chronicle.md) | Magazine | Elite gossip & society |
+| [Social Media Ecosystem](media/social_media_ecosystem.md) | Overview | Comprehensive platform analysis |
 | [LinkPulse](platforms/linkpulse.md) | Social Media | European intellectual vibe |
 | [PlayNetix](platforms/playnetix.md) | Streaming/Gaming | Gamified youth platform |
 | [ShénShǒu 神兽](platforms/shenshou.md) | Social Commerce | Chinese AR + e-commerce |
+| [Vitrina](platforms/vitrina.md) | Video/Image Sharing | Latin American community platform |
+| [VoxStream](platforms/voxstream.md) | Professional Streaming | European/American serious content |
 
 ### ✊ Civil Organizations
 | Entity | Focus | Leader |

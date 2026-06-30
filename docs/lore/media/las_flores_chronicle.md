@@ -58,8 +58,27 @@ The Las Flores Chronicle is a glossy lifestyle magazine catering to the city's e
 | **Juan Pérez** | Star journalist — dirt digger |
 | **Isabella Vasquez** | Owner — former model, society connections |
 
+## Notable Articles & Coverage
+
+| Article | Subject | Tone |
+|---|---|---|
+| "Van der Meer Dynasty's Unconventional Love" | Peter van der Meer's coming out, LGBTQ+ rights | Investigative feature |
+| "Van der Meer Orgy Scandal Rocks Free City" | Sebastian & Natalia van der Meer scandal | Sensationalist exposé |
+| "Natalia Van der Meer's Debut Art Show" | "Breaking Boundaries" exhibition | Culture/prestige |
+| "Liderazgo joven y exitoso: Liam y Sebastian" | Van der Meer Industries growth | Business praise |
+| "Police Combat Rising Insecurity" | Chief Adeyemi's Secure Neighborhoods | Government/police |
+
+## Relationship to Other Media
+
+| Outlet | Relationship |
+|---|---|
+| **El Informador** | ideological opposite — grassroots vs. elite |
+| **La Prensa** |Competes on investigative stories; less scandal-focused |
+| **El Grito Estudiantil** | Occasionally covers student perspectives ignored by Chronicle |
+
 ## In-Game References
 - Magazine covers and articles as environmental storytelling
 - Juan Pérez as gossip source NPC
 - Isabella Vasquez as high-society connection
 - Gossip articles as clue/vault items
+- Chronicle articles as narrative framing devices

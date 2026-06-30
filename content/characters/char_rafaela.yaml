@@ -1,0 +1,9 @@
+id: "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f"
+name: "Rafaela"
+title: "Ex-Wife of Peter van der Meer"
+description: "Married Peter van der Meer in a marriage of convenience to please their families. Later gave a tell-all interview in 2070 revealing the truth about their marriage and expressing concerns about their son Peter Jr.'s sexuality."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "candid_socialite"

@@ -1,0 +1,9 @@
+id: "74e27d09-4ae2-4617-8adc-2cf9ed9d9e4b"
+name: "Nubia"
+title: "Activist / Roommate of Cecilia Pérez"
+description: "Cecilia Pérez's roommate and fellow activist. Found murdered alongside Karla in February 2053. Evelyn Ruthenberg discovered their apartment in September 2053."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "caring_witness"

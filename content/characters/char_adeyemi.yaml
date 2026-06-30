@@ -1,0 +1,9 @@
+id: "e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b"
+name: "Chief Inspector Adeyemi"
+title: "Chief Inspector, Las Flores Police"
+description: "Led the 'Secure Neighborhoods' program to combat rising insecurity in Las Flores. Oversees dedicated police teams in six critical districts, emphasizing community engagement and preventative measures."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "law_enforcement"
+  personality: "reformist_police_chief"

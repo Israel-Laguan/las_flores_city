@@ -38,8 +38,20 @@ Initially slow growth — prioritized content quality over mainstream appeal. Th
 
 ---
 
+## Platform Comparison
+
+| Platform | Origin | Vibe | Audience |
+|---|---|---|---|
+| **LinkPulse** | European | Intellectual, text-first | Professionals, academics |
+| [ShénShǒu](shenshou.md) | Chinese | AR + shopping + influencer | All ages, shoppers |
+| [PlayNetix](playnetix.md) | North American | Gamified streaming | Youth, gamers |
+| [Vitrina](vitrina.md) | Latin American | Chaotic community content | Working-class, Spanish speakers |
+| [VoxStream](voxstream.md) | European/American | Professional streaming | Mature professionals |
+
+---
+
 ## In-Game References
 - Mentioned in NPC dialogue about social media habits
 - Ads visible in professional/tech districts
 - Academic characters may reference ThoughtPulse posts
-- Contrast with ShénShǒu (visual/commercial) and PlayNetix (gamified)
+- Contrast with ShénShǒu (visual/commercial), PlayNetix (gamified), and Vitrina (chaotic community)

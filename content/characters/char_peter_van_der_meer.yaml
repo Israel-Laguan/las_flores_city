@@ -1,0 +1,9 @@
+id: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e"
+name: "Peter van der Meer"
+title: "Van der Meer Family Member, LGBTQ+ Advocate"
+description: "Son of Jan and Maria van der Meer. Publicly revealed his homosexuality in 2065, sparking a turning point for LGBTQ+ rights in Las Flores. Married Rafaela in a marriage of convenience; father of Peter Jr."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "courageous_advocate"

@@ -45,8 +45,21 @@ PlayNetix is a global video streaming platform combining live-streamed playthrou
 
 ---
 
+## Platform Comparison
+
+| Platform | Origin | Vibe | Audience |
+|---|---|---|---|
+| **PlayNetix** | North American | Gamified streaming | Youth, gamers |
+| [ShénShǒu](shenshou.md) | Chinese | AR + shopping + influencer | All ages, shoppers |
+| [LinkPulse](linkpulse.md) | European | Intellectual, text-first | Professionals, academics |
+| [Vitrina](vitrina.md) | Latin American | Chaotic community content | Working-class, Spanish speakers |
+| [VoxStream](voxstream.md) | European/American | Professional streaming | Mature professionals |
+
+---
+
 ## In-Game References
 - Ads on screens and billboards throughout Las Flores
 - Young NPCs discuss streamers and stream points
 - Gaming culture dialogues
 - Leaderboard/competition metaphors in social commentary
+- Contrast with VoxStream (serious professional content) and Vitrina (chaotic community content)

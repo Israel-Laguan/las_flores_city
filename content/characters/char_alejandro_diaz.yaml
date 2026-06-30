@@ -1,0 +1,9 @@
+id: "c3000001-e29b-41d4-a716-446655440001"
+name: "Alejandro Díaz"
+title: "Corrupt Local Authority Figure"
+description: "A 45-year-old local authority figure in San Pedro de los Pescadores with a background in public administration. Known for his corrupt practices, Alex exploits his position for personal gain through shady dealings, kickbacks, and contract manipulation. Despite his unethical behavior, he maintains a charming facade as a dedicated public servant while indulging in gambling and high-society networking."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "corrupt_authority"
+  personality: "manipulative_opportunist"

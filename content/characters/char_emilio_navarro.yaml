@@ -1,0 +1,9 @@
+id: "a0b1c2d3-e4f5-4a6b-7c8d-9e0f1a2b3c4d"
+name: "Emilio Navarro"
+title: "Community & Culture Reporter, La Prensa"
+description: "Specializes in stories highlighting the cultural richness and social issues of Las Flores. Features grassroots movements, local artists, and everyday heroes, providing a platform for marginalized voices."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "media"
+  personality: "community_journalist"

@@ -28,7 +28,7 @@ Geologists from the National University, led by **Ana Maria Becerra**, discover 
 News of the lithium deposit spreads rapidly. **China**, eager to secure supplies for its burgeoning tech industry, is the first to act. **China Lithium & Metals (CLM)** — later renamed **Minera Estrella** — backed by Chinese state-owned enterprises, begins exploratory drilling and ore sampling. Initial environmental impact assessments are conducted with minimal public involvement.
 
 ### 2026 — Mining Concession Approved
-The Las Flores city council approves a mining concession to **Minera Estrella**, a newly formed Public-Private Partnership company, offering generous tax incentives and regulatory exemptions. Mayor Hernandez is re-elected amidst growing concerns about the potential environmental impacts of mining.
+The Las Flores city council approves a mining concession to **Minera Estrella** (formerly CLM), a newly formed Public-Private Partnership company, offering generous tax incentives and regulatory exemptions. The deal, negotiated by Mayor Hernandez during his 2025 re-election campaign, had been framed as a "historic opportunity" for Las Flores — promising jobs, infrastructure investment, and economic modernization. Behind closed doors, CLM executives had cultivated Hernandez for years, appealing to his ambitions and political vulnerabilities. Despite public debate and opposition from environmentalists and local business groups, the council approved the concession after intensive lobbying. Hernandez won re-election with strong Chinese backing, but whispers about the nature of his relationship with Chinese business interests began circulating. Growing concerns about the potential environmental impacts of mining would shadow his remaining tenure.
 
 ### 2028 — Mine Construction Begins
 Groundbreaking ceremony for Minera Estrella's lithium mine held with Mayor Hernandez and **Chinese Ambassador Li Wei** in attendance. Construction begins on a new port facility to accommodate increased mineral exports.
@@ -43,11 +43,14 @@ The first shipment of lithium concentrate leaves Las Flores' port, marking the c
 ### 2033 — Van der Meer Discovers Second Vein
 The Dutch mining company **Van der Meer** (subsidiary of **Global Lithium Corp / GLC**) discovers an additional lithium vein near Las Flores, separate from the Chinese one. The vein proves larger than expected, leading to increased production and the establishment of 2 active mines. A Dutch consortium invests in infrastructure projects, including a new airport and luxury housing developments.
 
-### 2034 — Free City Proposal
-A group of local businesspeople and investors, led by **Juan Pablo Ramos**, proposes the creation of a "Free City" status for Las Flores to attract more foreign investment. Mayor Hernandez supports the initiative, hoping it will boost his re-election prospects.
+### 2033 — Free City Proposal
+A group of local businesspeople and investors, led by **Juan Pablo Ramos** and **Pieter van der Meer**, proposes the creation of a "Free City" status for Las Flores to attract more foreign investment. Mayor Carlos Hernandez, facing declining support in Old Las Flores and the rise of the PLF, backs the initiative as a path to remain politically relevant.
+
+### 2034 — First Mayor of the City District
+Carlos Hernandez accepts the position of **Mayor of the City District** — the administrative core of the planned Free City. The new government district is only **60% complete**: streets are laid but largely empty, buildings stand unfinished, and the population is a fraction of its eventual size. Hernandez governs the district as a provisional administrative unit while the Free City Constitution is being drafted.
 
 ### 2036 — Free City Constitution Ratified
-The Constitution of the Free City of Las Flores is ratified in a controversial referendum, with **65% of voters** approving the measure. Critics allege voter intimidation and fraud. This is known as **"La Constitución"** (The Constitution). Juan Pablo Ramos becomes the first Governor of the Free City, replacing Mayor Hernandez.
+The Constitution of the Free City of Las Flores is ratified in a controversial referendum, with **65% of voters** approving the measure. Critics allege voter intimidation and fraud. This is known as **"La Constitución"** (The Constitution). Juan Pablo Ramos becomes the first **Governor** of the Free City, formalizing a role he had been executing provisionally since 2033. Carlos Hernandez continues as Mayor of the City District, now under the new constitutional framework.
 
 ### 2038 — Population Surpasses 500,000
 Las Flores' population surpasses 500,000, attracting migrants from across Latin America seeking work in mining and construction. Governor Ramos declares a state of exception due to increased social tensions and labor unrest.
@@ -95,8 +98,14 @@ Li Wei, CEO of LW Group, is briefed on the disaster. In a secret meeting, the in
 ### 2055 — Trial Begins (January 10)
 The trial of Minera Estrella executives begins in a Special Environmental Tribunal. Governor **Rafael Sáenz** and key political allies from the previous administration, including Senator Ricardo Chen, are implicated. Charges include gross negligence, environmental damage, public endangerment, and bribery.
 
+### 2055 — Gang Attack on Evelyn Ruthenberg (March)
+Evelyn Ruthenberg attempts to present her evidence from Karla and Nubia's apartment but is ambushed by gang members in an alley. She fights free using self-defense taught by her grandfather and escapes through an abandoned park onto a metro train. Fleeing to the South District Valley, she goes underground for three years.
+
 ### 2057 — Acquittal (January 10)
 Despite evidence of widespread corruption and negligence, Minera Estrella is **acquitted** on most charges due to technicalities and legal loopholes. The company agrees to a modest $5 million fine. Luz del Rio is scapegoated and sued.
+
+### 2057 — Evelyn Watches Verdict, Mother Dies (March)
+Evelyn Ruthenberg watches the trial's aftermath from her family home in the South District Valley. Her mother dies from lithium-contamination complications. Evelyn had sent her evidence anonymously to Luz del Rio's defense team, but it was never used. The rigged verdict and personal loss radicalize her: she stops waiting for legal justice and begins planning to operate outside the system.
 
 ### 2057 — Luz del Rio Bankruptcy (December)
 Luz del Rio files for bankruptcy after losing critical contracts and paying damages.
@@ -105,8 +114,8 @@ Luz del Rio files for bankruptcy after losing critical contracts and paying dama
 
 ## Modern Era
 
-### 2058 — Evelyn Returns (January)
-After her mother dies from lithium contamination complications, Evelyn Ruthenberg returns to Las Flores. She meets Yara Rossi in a bar and confides in her about the evidence she holds.
+### 2058 — Evelyn Returns (January–February)
+On January 1, 2058, Evelyn boards a bus to Las Flores carrying the evidence box. After her mother dies from lithium contamination complications, Evelyn arrives in February and meets Yara Rossi in a nightclub, confiding in her about the evidence she holds.
 
 ### 2058 — restoration Plan Devised (April–December)
 Evelyn, Yara, and Dr. Wei Zhang devise a comprehensive phytoremediation plan. Yara secures permits and raises international funding.
@@ -120,7 +129,7 @@ Yara publicly announces her intention to reopen the case against Minera Estrella
 An anonymous whistleblower sends Yara Liu Fang's evidence: container weakness documents, footage showing no rain on explosion night, and original auditor reports.
 
 ### 2059 — Yara Assassinated (July 14)
-Yara Rossi is assassinated returning from an investor meeting. Her murder remains unsolved. The evidence memory card is taken from her body. Dr. Wei Zhang defects to Minera Estrella.
+Yara Rossi is assassinated returning from an investor meeting. Her murder remains unsolved. The evidence memory card is taken from her body. Dr. Wei Zhang publicly aligns with the city council and Minera Estrella, continuing his work covertly alongside Evelyn.
 
 ### 2061 — Continued Expansion
 Despite ongoing environmental concerns and social tensions, Las Flores continues to expand as a major global hub for lithium exports.
@@ -128,11 +137,20 @@ Despite ongoing environmental concerns and social tensions, Las Flores continues
 ### 2061–2069 — Governor Maria Jose Torres (SEFP)
 Maria Jose Torres served two terms from 2061, during which she pledged to prioritize economic growth over environmental regulation. By 2065 she was midway through her second term, continuing to balance export revenues with mounting public pressure for accountability.
 
+### 2065 — Peter van der Meer Comes Out
+Peter van der Meer, son of Jan and Maria, publicly reveals his homosexuality in a landmark press conference. The announcement sparks both family conflict and a surge in LGBTQ+ activism across Las Flores. Jan Jr., his cousin and husband, emerges as a key ally.
+
 ### 2069–2073 — Governor Isabel Cáceres (PLF)
 Cáceres focused on social justice and support for communities marginalized by decades of mining damage.
 
+### 2070 — Rafaela's Tell-All Interview
+Rafaela, ex-wife of Peter van der Meer, gives a bombshell interview revealing their marriage was a convenience arrangement. She expresses concerns about her son Peter Jr.'s sexuality and the struggles he may face.
+
 ### 2073–2077 — Governor Teresa Chang (IGA)
 Chang's administration sought new foreign investment, deepening ties with the Chinese business community.
+
+### 2075 — LGBTQ+ Anti-Discrimination Law
+Las Flores passes landmark legislation outlawing discrimination based on sexual orientation and gender identity — a historic milestone influenced heavily by the van der Meer family's advocacy and Peter Jr.'s "Amor Verdadero" organization.
 
 ### Restoration Ongoing
 The restoration project continues under Evelyn Ruthenberg's leadership, with gradual improvement in water quality in some areas. Complete restoration expected to take decades.
@@ -171,7 +189,7 @@ New source material proposes alternate dates for three foundational events. The 
 
 | Figure | Role | Era |
 |---|---|---|
-| **Carlos Hernandez** | Mayor of Las Flores | Pre-Free City (2000–2036) |
+| **Carlos Hernandez** | Mayor of Old Las Flores (2000–2034), Mayor of City District (2034–2038) | Pre-Free City and early Free City (2000–2038) |
 | **Ana Maria Becerra** | Geologist, National University | Lithium discovery (2023) |
 | **Li Wei** | LW Group CEO / Emperor in Shadows | 2028–present (transitioned to advisor in 90s) |
 | **Juan Pablo Ramos** | First Governor, Free City architect | Free City founding (2033–2041) |

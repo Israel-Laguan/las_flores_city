@@ -3,7 +3,7 @@
 > Tags: `#restoration` `#environmental` `#phytoremediation` `#community` `#evelyn_ruthenberg` `#yara_rossi`
 > 
 > **Period:** 2058–present
-> **Lead Figures:** Evelyn Ruthenberg, Yara Rossi (deceased), Dr. Wei Zhang (defected)
+> **Lead Figures:** Evelyn Ruthenberg, Yara Rossi (deceased), Dr. Wei Zhang (covert double agent)
 
 ## Overview
 
@@ -63,7 +63,7 @@ As the project showed promising results, Yara publicly announced her intention t
 Yara was assassinated while returning from a meeting with investors. Her murder remains unsolved. The evidence memory card was taken from her body.
 
 ### Aftermath
-Dr. Wei Zhang later joined Minera Estrella, betraying the project. Evelyn Ruthenberg continued the work alone, more guarded and resolute.
+Dr. Wei Zhang publicly aligned with the city council and Minera Estrella after Yara's death, but this was a strategic performance—a calculated move to retain influence over the compromised project. A covert channel between Wei and Evelyn remained active. In the shadows, he continued channeling critical data and subtly modifying techniques to plant seeds of genuine restoration within the compromised framework. Evelyn Ruthenberg continued the visible work, more guarded and resolute, while the true fight persisted through their clandestine collaboration.
 
 ## Community Engagement Plan
 

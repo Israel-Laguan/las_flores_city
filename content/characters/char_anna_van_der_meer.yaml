@@ -1,0 +1,9 @@
+id: "c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f"
+name: "Anna van der Meer"
+title: "Photographer & Social Advocate"
+description: "A member of the wealthy Van der Meer family who uses her art for social good. Her series 'Faces of Inequality' features powerful portraits raising awareness about income disparity."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "socially_conscious_artist"

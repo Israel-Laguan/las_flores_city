@@ -49,11 +49,28 @@ Despite its relatively small size, El Informador **punches well above its weight
 
 ---
 
-## Key NPCs
+## Key Staff
 
 | Character | Role |
 |---|---|
 | **Juan Rodríguez** | Editor-in-Chief and Managing Director |
+| **María Suárez** | Senior Reporter & Columnist |
+| **Elisa Pérez** | Social Media & Community Manager |
+| **Diego López** | Business & Economics Editor |
+
+### María Suárez — Senior Reporter & Columnist
+- Began career as a stringer for El Informador, covering local news and politics
+- Has since become one of the paper's most prominent voices, known for investigative pieces on corruption and social inequality in Las Flores
+
+### Elisa Pérez — Social Media & Community Manager
+- Joined El Informador as an intern while studying communications at the University of Las Flores
+- Quickly rose through the ranks to become the paper's point-person for digital outreach and engagement, helping grow its online presence significantly
+
+### Diego López — Business & Economics Editor
+- Began career covering local business news for a regional newspaper before joining El Informador de Las Flores
+- Has since taken on increasing responsibilities, overseeing the paper's coverage of economic development and investment in Las Flores
+
+---
 
 ## In-Game References
 - News articles as vault/clue items

@@ -8,6 +8,7 @@ import {
   YAMLOverlaySchema,
   YAMLSceneSchema,
   YAMLMysterySchema,
+  YAMLSocialMediaSchema,
   VaultFileSchema,
   ShopItemFileSchema,
   GigFileSchema,
@@ -114,6 +115,9 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
       case 'scene':
         YAMLSceneSchema.parse(data);
         break;
+      case 'social_media':
+        YAMLSocialMediaSchema.parse(data);
+        break;
       case 'vault':
         VaultFileSchema.parse(data);
         break;
@@ -206,11 +210,14 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
     return 'shop_item';
   }
-  
+  if (normalizedPath.includes('/social_media/') || normalizedPath.includes('\\social_media\\')) {
+    return 'social_media';
+  }
+   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
     return 'gig';
   }
-  
+   
   return null;
 }
 

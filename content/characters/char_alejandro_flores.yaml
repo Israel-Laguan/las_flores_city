@@ -1,0 +1,16 @@
+id: "c1000002-e29b-41d4-a716-446655440002"
+name: "Alejandro Flores"
+title: "Middle Manager at Vinícola La Hacienda"
+description: "Middle manager at Vinícola La Hacienda from a prestigious wine-industry family. Fluent in Spanish, English, French, and Mandarin. Results-driven and authoritarian; struggles with empathy vs. high standards. Aspires to executive leadership while modernizing family winemaking traditions."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "authoritarian_manager"
+  age: 38
+  appearance: "tall, well-groomed, elegant sense of style, tailored suits, dark hair slicked back, sharp features, keen green eyes"
+  languages: ["Spanish", "English", "French", "Mandarin"]
+  job_role: "Middle Manager at Vinícola La Hacienda"
+  interests: ["wine tastings", "art galleries", "cultural events", "reading books on history and philosophy"]
+  goals: ["climb the corporate ladder", "leave a lasting legacy in winemaking", "modernize family's approach to production"]
+  challenges: ["balancing high standards with inclusive work environment", "perceived as dismissive and authoritarian"]

@@ -120,6 +120,19 @@ Nestled against the backdrop of mountains to the northeast and sprawling plains 
 
 ---
 
+## Political Leadership: Mayors of the City District
+
+The City District has had a succession of mayors who have shaped its development from a provisional administrative core into the bustling financial and political heart of Las Flores.
+
+| Mayor | Term | Party / Affiliation | Key Notes |
+|---|---|---|---|
+| **Carlos Hernandez** | 2034–2038 | Independent / Founding coalition | First Mayor of the City District; governed during the provisional period (60% completion) and through the 2036 Constitution ratification; retired with "builder" reputation before the 2038 social crisis |
+| **[Next mayor]** | 2038–??? | ??? | ??? |
+
+*Note: Carlos Hernandez's tenure (2034–2038) spanned the transition from provisional government to formal Free City status. He stepped down before the Estado de Excepción declared by Governor Ramos in 2038.*
+
+---
+
 ## In-Game References
 
 - **Scenes:** Mercado Central, government buildings, financial district, cultural venues, parks

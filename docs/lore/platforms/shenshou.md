@@ -60,6 +60,8 @@ ShénShǒu blends influencer-driven content, e-commerce, and immersive entertain
 | **ShénShǒu** | Chinese | AR + shopping + influencer | All ages, shoppers |
 | [LinkPulse](linkpulse.md) | European | Intellectual, text-first | Professionals, academics |
 | [PlayNetix](playnetix.md) | North American | Gamified streaming | Youth, gamers |
+| [Vitrina](vitrina.md) | Latin American | Chaotic community content | Working-class, Spanish speakers |
+| [VoxStream](voxstream.md) | European/American | Professional streaming | Mature professionals |
 
 ---
 
