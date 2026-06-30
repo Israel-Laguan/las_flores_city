@@ -1,0 +1,55 @@
+id: "9ad655bc-79f5-360f-8944-43063efc4ef4"
+type: location
+name: "Zona Franca"
+color: null
+aliases:
+  - Free Trade Zone
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  Zona Franca, or the Free Trade Zone, significantly influences the economy of Las Flores
+  by attracting foreign investment and businesses looking for tax incentives. This creates
+  a variety of job opportunities for local residents, ranging from manufacturing to
+  logistics and administration. The influx of jobs not only boosts income levels but also
+  helps elevate the overall quality of life for many families in the area.
+
+daytime: >
+  During the day, Zona Franca operates as a bustling hub of international trade and
+  commerce. Businesses ranging from manufacturing to logistics and administration operate
+  within the zone, taking advantage of tax incentives and favorable trade regulations.
+  The area facilitates the import and export of goods, enhancing the local economy and
+  providing residents access to a wider range of products and services. Businesses often
+  source raw materials locally or regionally, stimulating the agricultural and
+  manufacturing sectors within Las Flores.
+
+nightlife: >
+  After dark, the Zona Franca's industrial and commercial operations wind down, though
+  logistics and warehousing activities may continue around the clock. The surrounding
+  areas benefit from the economic activity generated during the day, with local
+  establishments serving workers and visitors. The presence of international businesses
+  and expatriates contributes to a diverse culinary and social scene in nearby districts.
+
+important_places:
+  - name: Manufacturing Facilities
+    description: Industrial plants and factories operating within the tax-incentivized zone, producing goods for export and local consumption.
+  - name: Logistics and Warehousing Hub
+    description: Centralized storage and distribution centers facilitating the efficient movement of goods through the free trade zone.
+  - name: Administrative Offices
+    description: Business and government offices managing trade operations, customs clearance, and zone administration.
+  - name: Training and Research Centers
+    description: Facilities hosting partnerships, training programs, and research initiatives that drive innovation and technological advancement within the zone.
+  - name: International Business District
+    description: Area housing international companies and expatriate services, promoting cultural exchanges and global business practices.
+
+conclusion: >
+  Zona Franca stands as a cornerstone of Las Flores' economic strategy, attracting foreign
+  investment, creating jobs, and fostering innovation. The zone's role as a trade hub
+  facilitates the import and export of goods while promoting cultural exchanges through
+  the presence of international businesses and expatriates. As industries establish
+  themselves within the zone, partnerships, training programs, and research initiatives
+  drive technological advancements that benefit both enterprises and the workforce,
+  contributing to the city's unique identity as a global crossroads.

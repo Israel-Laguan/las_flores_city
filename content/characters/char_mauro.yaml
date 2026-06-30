@@ -7,3 +7,4 @@ metadata:
   role: "npc"
   faction: "indigenous"
   personality: "redeemed_guilty"
+  lore_doc: "organizations/quechua.md"

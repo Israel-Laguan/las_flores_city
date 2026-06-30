@@ -1,0 +1,9 @@
+id: "463d6b83-62c0-4e37-ab09-8d3e804a5150"
+name: "Carlos Konibo"
+title: "accomplished artisan and entrepreneur"
+description: "Carlos Konibo, a proud member of the Shipibo-Konibo tribe, has always been deeply connected to his roots. Born along the banks of Rio Las Flores, he grew up surrounded by lush greenery and the rhythmic sounds of the river's flow. From an early age, Carlos learned the traditional techniques passed down through generations - the intricate patterns, vibrant colors, and the sacred geometry that defines Shipibo art."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "shrewd_businessperson"

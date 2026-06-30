@@ -34,9 +34,9 @@ Surrounding the new city, Central Las Flores encompasses a blend of natural beau
 
 The Central District features a wide range of housing:
 
-- **Upscale Residences:** New house complexes for mid to high-income families with modern amenities
-- **Apartment Living:** Various apartment buildings catering to diverse income levels
-- **Land Invasions:** Unauthorized small houses constructed by individuals claiming stake in the expanding city — highlighting the complexities of urban growth
+- **Upscale Residences:** Some areas boast new house complexes designed for mid to high-income families, featuring modern amenities and architectural designs that reflect contemporary lifestyle aspirations.
+- **Apartment Living:** Various apartment buildings cater to diverse income levels, contributing to the area's socio-economic variety and providing housing solutions for the growing urban population.
+- **Land Invasions:** In contrast, certain areas have seen land invasions, resulting in the construction of unauthorized, small houses by individuals claiming a stake in the rapidly expanding city. These settlements highlight the complexities of urban growth and the challenges of meeting housing demands.
 
 ---
 
@@ -52,16 +52,17 @@ The district's population is a mix of professionals commuting to the city center
 
 ---
 
-## Transportation
+## Commercial and Transportation Hubs
 
-**Roads:**
-- Newly developed and expanded roads to accommodate increasing traffic
-- Well-connected to the Circunvalación de Las Flores (CLF) ring road
+**Commercial Centers:** Throughout Central Las Flores, commercial centers have sprung up, offering shopping, dining, and entertainment. These hubs serve as community focal points, attracting residents from surrounding neighborhoods.
 
-**Public Transit:**
-- Bus stations connecting to city center and outlying districts
-- Train stations providing rapid transit to the urban core
-- Signage and advertisements line the streets, signaling commercial vitality
+**Transportation Networks:** Bus and train stations facilitate easy access to the city center and beyond, supporting the daily commute of workers and contributing to the area's vibrancy. These transportation links are crucial for residents working in the central city, ensuring connectivity despite the distance from the urban core.
+
+**Signage and Advertisements:** Streets are lined with advertisements and signs, signaling the area's commercial vitality and the constant development of new projects. These visuals add to the dynamic, evolving character of Central Las Flores.
+
+## Urban Expansion and Infrastructure
+
+**Roads:** Roads are being expanded and new ones constructed to accommodate the increasing traffic resulting from the area's burgeoning population. This infrastructural development is pivotal in supporting the suburb's growth, linking residential areas with commercial centers and the city at large.
 
 ---
 
@@ -75,6 +76,16 @@ The district's population is a mix of professionals commuting to the city center
 | [Port](port.md) | Transit links to the port district |
 
 ---
+
+## Urban Character & Future Trajectory
+
+Central Las Flores embodies the dual nature of urban expansion, showcasing both the opportunities and challenges of a rapidly growing city. Its development represents the broader trends of urbanization in Las Flores, offering insights into the city's future trajectory.
+
+The district serves as a microcosm of the city's growth patterns:
+- **Economic Opportunity:** Attracts businesses and residents seeking affordable alternatives to the central city
+- **Social Diversity:** Brings together different income levels and cultural backgrounds
+- **Infrastructure Challenges:** Struggles to keep pace with rapid population growth
+- **Urban Planning:** Balances formal development with informal settlement pressures
 
 ## In-Game References
 

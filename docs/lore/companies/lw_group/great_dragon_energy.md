@@ -9,7 +9,7 @@
 **Key Asset:** Rio Grande Dam
 **Role:** Primary energy provider for Las Flores industries
 
-Great Dragon Energy manages the Rio Grande Dam and is pivotal in ensuring the energy needs of the Free Zone. It powers local industries, supports LW Group operations, and provides electricity to the Electra Battery Factory.
+Great Dragon Energy manages the Rio Grande Dam and plays a critical role in Las Flores' energy sector. It not only powers local industries but also supports the operations of the LW Group and its affiliates through its power generation and distribution capabilities, and is pivotal in ensuring the energy needs of the Free Zone, including the Electra Battery Factory, are met efficiently and sustainably.
 
 ---
 

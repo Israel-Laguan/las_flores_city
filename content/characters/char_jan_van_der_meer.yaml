@@ -1,0 +1,9 @@
+id: "c51cf464-6020-40c2-87f5-0ef12636fcfa"
+name: "Jan van der Meer"
+title: "Las Flores Resident"
+description: "Jan van der Meer was born in 2018 as the youngest child of Pieter and Annabella van der Meer, growing up surrounded by privilege and opportunity. He moved to Las Flores with his family in 2030 at the age of 12, attending an exclusive private school where he met many influential people who would shape his future. Jan was always more reserved than his older brother Alexander, preferring to observe rather than participate in the social scene that came with being a van der Meer."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "passionate_activist"

@@ -2,6 +2,8 @@
 
 > Tags: `#luxury` `#chinese_influence` `#tech` `#international` `#education`
 
+**Aliases:** Zona Rica, Green Zone, Wealthy District
+
 ## Overview
 
 **Type:** Ultra-Affluent / International District

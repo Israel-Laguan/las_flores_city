@@ -1,0 +1,9 @@
+id: "fdfe4f86-1816-4ea1-af11-21bff98edcd2"
+name: "Pedro Quispe"
+title: "young man caught between his family's ex"
+description: "Pedro is 19 years old, grew up near the airport, where his parents manage a local café and restaurant inside the airport. Having helped out at their establishment from a young age, he gained valuable experience working in the food industry. Pedro always dreamed of becoming a pilot, but the high cost of training pushed him to pursue a more financially feasible path. He enrolled in university to study Business Administration, hoping to eventually take over his parents' café."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "shrewd_businessperson"

@@ -10,7 +10,7 @@
 **Range:** Mid-range to luxury, including cargo tractors
 **Key Issue:** Cybersecurity vulnerabilities
 
-Autopia Motors stands at the vanguard of electric mobility in Las Flores, offering a broad spectrum of EVs from accessible mid-range models to luxurious high-end vehicles. The streets of Las Flores are increasingly lined with their sleek, eco-friendly vehicles.
+Autopia Motors is a forward-thinking Chinese automaker standing at the vanguard of electric mobility in North Las Flores, offering a broad spectrum of EVs from accessible mid-range models to luxurious high-end vehicles. The streets of Las Flores are increasingly lined with their sleek, eco-friendly vehicles, signaling a decisive departure from conventional gas-powered cars.
 
 ---
 
@@ -18,6 +18,7 @@ Autopia Motors stands at the vanguard of electric mobility in Las Flores, offeri
 
 ### Budget & Mid-Range
 - Cost-effective options for budget-minded consumers
+- Particularly challenging for lower and mid-income groups regarding maintenance and parts availability
 - Basic AI pilot functions
 - Standard internet connectivity
 
@@ -52,8 +53,9 @@ Autopia Motors stands at the vanguard of electric mobility in Las Flores, offeri
 
 The proliferation of Autopia EVs is boosted by:
 - **Government subsidies** steering consumers toward EVs over fossil fuel vehicles
-- Reflects city's dedication to reducing greenhouse gas emissions
+- Reflects city's dedication to reducing greenhouse gas emissions and promoting sustainable urban living
 - Makes electric cars more accessible across income levels
+- Bolstered by progressive advancements in EV technology
 
 ---
 
@@ -74,3 +76,4 @@ The proliferation of Autopia EVs is boosted by:
 - Government subsidies as political discussion point
 - Maintenance shops as scene locations
 - Internet outage → AI fallback as gameplay mechanic potential
+- Mass pivot toward environmentally friendly transportation alternatives

@@ -22,8 +22,8 @@ The Southeast District is centered around the international airport and its surr
 
 | Landmark | Type | Description |
 |---|---|---|
-| **Aeropuerto Internacional de Las Flores** | Airport | International airport serving passenger and cargo flights |
-| **Camino Verde** | Community | Residential area near the airport, home to many aviation workers |
+| **Aeropuerto Internacional de Las Flores** | Airport | International airport serving passenger and cargo flights | [Details](../landmarks/southeast/aeropuerto_internacional_de_las_flores.md)
+| **Camino Verde** | Community | Residential area near the airport, home to many aviation workers | [Details](../landmarks/southeast/camino_verde.md)
 | **Sierra Verde** | Community | Nearby settlement with views of the surrounding hills |
 | **Airport Hotels & Restaurants** | Hospitality | Accommodations and dining catering to travelers |
 | **Transportation Hubs** | Transit | Taxi services, shuttle operators, rideshare staging areas |

@@ -7,3 +7,4 @@ metadata:
   role: "npc"
   faction: "media"
   personality: "ambitious_gossip"
+  lore_doc: "organizations/las_flores_chronicle.md"

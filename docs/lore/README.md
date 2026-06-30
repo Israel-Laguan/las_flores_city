@@ -94,6 +94,12 @@ docs/lore/
 | [CJS](organizations/cjs.md) | Indigenous Rights | Ana Ramirez |
 | [Músicos en Acción](organizations/musicos_en_accion.md) | Music Activism | Sofia Diaz |
 
+### 🔪 Criminal Organizations
+
+| Entity | Type | Leader |
+|---|---|---|
+| [Flowers Syndicate](organizations/flowers_syndicate.md) | Street Gang / Criminal Syndicate | Dong van der Meer |
+
 ### 🌍 Global Movements
 | Entity | Scope | Status in 2077 |
 |---|---|---|

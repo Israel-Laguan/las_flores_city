@@ -1,0 +1,9 @@
+id: "49f4df23-af27-45ac-8d0f-2e1a1b21cd6e"
+name: "Mateo Vargas"
+title: "Las Flores Resident"
+description: "\\\\ 34 \\\\ Mateo hails from a modest background in Las Flores and has worked his way up in the customs division (aduanas) at Aeropuerto Internacional de Las Flores. Driven by his desire for power and financial gain, he has taken advantage of his position to exploit tourists and bend the rules for his benefit. \\\\ Mateo presents himself with a polished and professional demeanor, often wearing a well-tailored uniform that displays his authority."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "cunning_manipulator"

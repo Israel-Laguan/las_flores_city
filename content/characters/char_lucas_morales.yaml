@@ -1,0 +1,9 @@
+id: "b161b2dd-224c-4a51-9b25-51c0c710239c"
+name: "Lucas Morales"
+title: "first-year engineering student from Play"
+description: "Lucas Morales (18). Luca comes from a small fishing town along the Pacific Coast called Playa de los Vientos. His family has a long history in the fishing industry, and he grew up helping his father on their fishing boat. Although passionate and ambitious, Luca felt pressured to pursue a stable career in engineering, a path emphasized by his family. Friendly and approachable, Luca is well-liked by his peers but often feels insecure about his growing struggles in university."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "passionate_activist"

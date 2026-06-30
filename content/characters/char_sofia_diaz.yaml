@@ -1,11 +1,9 @@
 id: "582c04f6-afa5-416a-a3b3-cda639907107"
 name: "Sofia Diaz"
 title: "Leader, Músicos en Acción"
-description: "A talented singer-songwriter who leads a dynamic collective of activist musicians. She uses the power of music and art to advocate for social causes and mobilize the community."
+description: "A talented singer-songwriter who leads a dynamic collective of activist musicians. She uses the power of music and art to advocate for social causes and mobilize the community. \ 30 \ Female \ Singer-Songwriter, TV Personality, Social Activist (Músicos en Acción) \ + Raised in a working-class neighborhood of Old Las Flores, Sofia discovered her passion for music at an early age. + After gaining popularity as a local musician, she used her platform to raise awareness about social issues affecting her community."
 metadata:
   type: "human"
   role: "npc"
   faction: "civil_society"
   personality: "artistic_rebel"
-  organization: "Músicos en Acción"
-  lore_doc: "organizations/musicos_en_accion.md"

@@ -22,8 +22,31 @@ Born into the wealthy Van der Meer family, Dong grew up in the shadow of the fam
 ### Rise to Power (2050s–2060s)
 As the Industrial Zone's legitimate economy declined in the 2050s, Dong saw opportunity. He began by organizing protection rackets among factory owners, then expanded into drug trafficking as the city's anti-crime efforts pushed competitors out of other districts. By the mid-2060s, the Flowers Syndicate was the dominant criminal force in the Industrial Zone.
 
-### Current Status (2070s)
+### Notable Crimes (2059)
+- **Port Authority Raid (March 2059):** The Flowers Syndicate launched a coordinated attack on the Port Authority's headquarters, demanding a larger cut of profits from container taxes and smuggling operations. Several officials were taken hostage until demands were met.
+- **Chinese Restaurant Massacre (May 14, 2059):** Gang members stormed a popular Chinese restaurant in downtown Las Flores, accusing it of serving as a front for Chinese Mafia money laundering. Six killed, over a dozen wounded before the attackers fled.
+
+### Ascendancy & Legitimacy (2060s–2070s)
+Dong evolved from a local gang leader into one of the most influential figures in Las Flores. His conglomerate, **Flowers Industries**, now encompasses legitimate and illegitimate ventures:
+- Mining operations (rare earth elements beyond lithium)
+- Logistics companies
+- Real estate development (luxury high-rises, commercial centers)
+- Renewable energy projects
+- Port infrastructure and shipping
+- Cybersecurity firms and hacking collectives
+
+He has expanded political reach by establishing strong ties with key figures in both the city council and national government, ensuring favorable policies for his businesses.
+
+### Current Status (2077)
 Dong controls a criminal empire that operates alongside — and sometimes in tension with — his family's legitimate businesses. The Flowers Syndicate maintains a fragmented network of smaller gangs operating under its umbrella, creating a complex criminal ecosystem.
+
+His power and wealth in 2077 have grown to international levels. He is involved in:
+- **Geopolitical manipulation:** Backing political candidates, funding proxy wars against rival criminal organizations and mining companies, manipulating strategic mineral supply markets
+- **Port expansion:** Increasing control over shipping routes and container traffic, strengthening grip on smuggling operations and customs fraud
+- **Tech expansion:** Cybersecurity firms and hacking collectives targeting corporate and government entities for intelligence and ransomware
+- **Rare earth mining:** Exploring new mining opportunities beyond lithium, including minerals for AI and clean energy, expanding into neighboring countries
+
+His health is declining due to stress, alcohol abuse, and an old injury sustained in a shootout, which may lead to changes in his status and power dynamics within his organization.
 
 ---
 

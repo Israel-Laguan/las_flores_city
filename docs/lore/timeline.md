@@ -25,7 +25,7 @@ Las Flores is a small fishing town with a population of around 5,000 residents, 
 Geologists from the National University, led by **Ana Maria Becerra**, discover significant lithium reserves in the mountains surrounding Las Flores. A state-owned company arrives, promising jobs and infrastructure investments in exchange for mining rights. The sleepy mining settlement begins to transform.
 
 ### 2024 — International Interest
-News of the lithium deposit spreads rapidly. **China**, eager to secure supplies for its burgeoning tech industry, is the first to act. **China Lithium & Metals (CLM)** — later renamed **Minera Estrella** — backed by Chinese state-owned enterprises, begins exploratory drilling and ore sampling. Initial environmental impact assessments are conducted with minimal public involvement.
+News of the lithium deposit spreads rapidly. **China**, eager to secure supplies for its burgeoning tech industry, is the first to act. **China Lithium & Metals (CLM)** — later renamed **Minera Estrella** — backed by Chinese state-owned enterprises, begins exploratory drilling and ore sampling. Initial environmental impact assessments are conducted with minimal public involvement. The Chinese company pours money into Las Flores, building roads, schools, a small airport, and a modest port on the nearby coast.
 
 ### 2026 — Mining Concession Approved
 The Las Flores city council approves a mining concession to **Minera Estrella** (formerly CLM), a newly formed Public-Private Partnership company, offering generous tax incentives and regulatory exemptions. The deal, negotiated by Mayor Hernandez during his 2025 re-election campaign, had been framed as a "historic opportunity" for Las Flores — promising jobs, infrastructure investment, and economic modernization. Behind closed doors, CLM executives had cultivated Hernandez for years, appealing to his ambitions and political vulnerabilities. Despite public debate and opposition from environmentalists and local business groups, the council approved the concession after intensive lobbying. Hernandez won re-election with strong Chinese backing, but whispers about the nature of his relationship with Chinese business interests began circulating. Growing concerns about the potential environmental impacts of mining would shadow his remaining tenure.
@@ -41,7 +41,7 @@ The first shipment of lithium concentrate leaves Las Flores' port, marking the c
 ## Dutch Arrival & Free City Movement
 
 ### 2033 — Van der Meer Discovers Second Vein
-The Dutch mining company **Van der Meer** (subsidiary of **Global Lithium Corp / GLC**) discovers an additional lithium vein near Las Flores, separate from the Chinese one. The vein proves larger than expected, leading to increased production and the establishment of 2 active mines. A Dutch consortium invests in infrastructure projects, including a new airport and luxury housing developments.
+The Dutch mining company **Van der Meer** (subsidiary of **Global Lithium Corp / GLC**) discovers an additional lithium vein near Las Flores, separate from the Chinese one. The vein proves larger than expected, leading to increased production and the establishment of 2 active mines. A Dutch consortium led by GLC invests heavily in key infrastructure projects, including a new airport and luxury housing developments to accommodate the growing population attracted by job opportunities in mining and related industries.
 
 ### 2033 — Free City Proposal
 A group of local businesspeople and investors, led by **Juan Pablo Ramos** and **Pieter van der Meer**, proposes the creation of a "Free City" status for Las Flores to attract more foreign investment. Mayor Carlos Hernandez, facing declining support in Old Las Flores and the rise of the PLF, backs the initiative as a path to remain politically relevant.
@@ -69,7 +69,7 @@ After serving two terms (2033–2041), **Juan Pablo Ramos** is succeeded by **Al
 ## Disaster & Aftermath
 
 ### 2052 — The Great Lithium Leak (August 15)
-A catastrophic failure of high-pressure pipes at Minera Estrella's processing facility releases massive quantities of lithium hydroxide into an affluent of the Río de las Flores. **Hundreds of people** in downstream communities die from exposure to toxic waste. The river's vibrant blue waters turn to sickly yellow-green sludge.
+A catastrophic failure of high-pressure pipes at Minera Estrella's processing facility releases massive quantities of lithium hydroxide into an affluent of the Río de las Flores. **Hundreds of people** in downstream communities die from exposure to toxic waste. The river's vibrant blue waters turn to sickly yellow-green sludge. The once-verdant hills surrounding Las Flores bear a sickly yellow hue; trees are bare, leaves withered and brown. The flowers that gave Las Flores its name all but vanish, replaced by hardy weeds thriving on poisoned soil.
 
 ### 2052 — Cover-Up Begins (August 18–19)
 Li Wei, CEO of LW Group, is briefed on the disaster. In a secret meeting, the inner circle approves a cover-up strategy: stage the scene as an electrical failure. Elena Torres takes charge of media relations; Zhang Liang manages bribes and witness elimination. Qiu Bo oversees the fabrication of evidence.
@@ -104,6 +104,9 @@ Evelyn Ruthenberg attempts to present her evidence from Karla and Nubia's apartm
 ### 2057 — Acquittal (January 10)
 Despite evidence of widespread corruption and negligence, Minera Estrella is **acquitted** on most charges due to technicalities and legal loopholes. The company agrees to a modest $5 million fine. Luz del Rio is scapegoated and sued.
 
+### 2057 — Canal 15 Media Manipulation
+Canal 15 runs biased reporting highlighting economic benefits of lithium mining, interviewing only pro-mining experts. The channel airs an "exclusive" interview with a "whistleblower" claiming the Movement is secretly funding left-wing rebels in neighboring countries. Sensationalized segments about supposed "eco-terrorist" activities air regularly.
+
 ### 2057 — Evelyn Watches Verdict, Mother Dies (March)
 Evelyn Ruthenberg watches the trial's aftermath from her family home in the South District Valley. Her mother dies from lithium-contamination complications. Evelyn had sent her evidence anonymously to Luz del Rio's defense team, but it was never used. The rigged verdict and personal loss radicalize her: she stops waiting for legal justice and begins planning to operate outside the system.
 
@@ -117,19 +120,47 @@ Luz del Rio files for bankruptcy after losing critical contracts and paying dama
 ### 2058 — Evelyn Returns (January–February)
 On January 1, 2058, Evelyn boards a bus to Las Flores carrying the evidence box. After her mother dies from lithium contamination complications, Evelyn arrives in February and meets Yara Rossi in a nightclub, confiding in her about the evidence she holds.
 
-### 2058 — restoration Plan Devised (April–December)
-Evelyn, Yara, and Dr. Wei Zhang devise a comprehensive phytoremediation plan. Yara secures permits and raises international funding.
+### 2058 — Evelyn's Revelations (January)
+Evelyn approaches Yara with irrefutable evidence that Minera Estrella tampered with safety reports and colluded with officials to shift blame for the Great Lithium Leak onto Luz del Rio. Evidence includes internal emails, bribery documents, and whistleblower testimony.
 
-### 2059 — Cover-Up Exposed?
+### 2058 — Attempts to Reopen Case (February–March)
+Yara petitions the court to reopen the case against Minera Estrella. The judge dismisses her request, citing lack of compelling new evidence and the statute of limitations.
+
+### 2058 — Restoration Plan Devised (April–December)
+Evelyn, Yara, and Dr. Wei Zhang devise a comprehensive phytoremediation plan. Yara secures permits and raises international funding. Three working groups are established: Media and Communications (MCWG), Fundraising and Partnerships (FRPWG), and Task Forces for River Restoration (TFRR).
+
+### 2058 — Artists Under Pressure
+Asociación de Artistas Las Flores faces funding cuts after Miguel Angel criticizes the city council's ties with Minera Estrella. The mining company pressures local businesses to withdraw sponsorship.
+
+### 2058 — COFAVIC Raided (July)
+Minera Estrella files a complaint against Laura Rodriguez for allegedly inciting violence. Police raid COFAVIC's office, seizing documents and equipment. Laura is forced into hiding.
+
+### 2058 — El Javi Compromised (August)
+A video surfaces showing Javier "El Javi" Garcia accepting cash from a Minera Estrella executive in exchange for positive coverage. His credibility is severely damaged.
+
+### 2058 — Isabella Chen's Report (October)
+Isabella files an investigative piece exposing Minera Estrella's exploitation of Chinese migrant workers. The company retaliates; Isabella is temporarily suspended from writing about the mining industry.
+
+### 2059 — Restoration Project Begins (January)
+With sufficient resources and support, Yara oversees the initiation of the phytoremediation and riparian habitat restoration project. Volunteers from Las Flores and abroad join to implement the plan.
+
+### 2059 — Ricardo Chen's Conflict of Interest (January)
+Canal 15 runs an exclusive interview with a Minera Estrella executive discussing the company's positive impact. It is later revealed that Ricardo holds shares in the mining conglomerate. He steps down as head of Canal 15 but maintains his ownership stake.
+
+### 2059 — Minera Estrella's Interference (February–March)
+Minera Estrella pressures local authorities to halt the restoration project, citing environmental concerns and potential damage to their mining operations.
 
 ### 2059 — Yara's Public Announcement (May)
-Yara publicly announces her intention to reopen the case against Minera Estrella.
+Yara publicly announces her intention to reopen the case against Minera Estrella based on new evidence. She urges the international community to support their efforts.
 
 ### 2059 — Anonymous Whistleblower (June)
 An anonymous whistleblower sends Yara Liu Fang's evidence: container weakness documents, footage showing no rain on explosion night, and original auditor reports.
 
 ### 2059 — Yara Assassinated (July 14)
-Yara Rossi is assassinated returning from an investor meeting. Her murder remains unsolved. The evidence memory card is taken from her body. Dr. Wei Zhang publicly aligns with the city council and Minera Estrella, continuing his work covertly alongside Evelyn.
+Yara Rossi is assassinated returning from an investor meeting. Her murder remains unsolved. The evidence memory card is taken from her body. Dr. Wei Zhang is pressured by Chinese investors to switch allegiances; his family in China faces threats. Mayor Vega appoints him as the new head of the restoration project. The Movement begins to crumble under false accusations of embezzlement. Evelyn Ruthenberg vows to continue gathering evidence on her own, maintaining a low profile. Dr. Wei Zhang publicly aligns with the city council and Minera Estrella, continuing his work covertly alongside Evelyn through a clandestine channel.
+
+### 2059 — Class-Action Lawsuit
+A group of affected communities launches a class-action lawsuit against Minera Estrella for damages related to the tailings dam failure. Luz del Rio files for bankruptcy after losing critical contracts and paying damages.
 
 ### 2061 — Continued Expansion
 Despite ongoing environmental concerns and social tensions, Las Flores continues to expand as a major global hub for lithium exports.

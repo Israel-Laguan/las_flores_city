@@ -10,7 +10,7 @@
 **Sector:** Mining automation
 **Workforce:** Mix of local and Chinese staff
 
-Jade Phoenix Technologies specializes in cutting-edge automation and AI solutions for the mining sector. They've expanded to Las Flores to capitalize on opportunities in the city's mining industry, offering products to streamline processes and enhance efficiency and safety.
+Jade Phoenix Technologies specializes in cutting-edge automation and AI solutions for the mining sector. Headquartered in Shenzhen, China, the company has expanded to Las Flores, recognizing the burgeoning opportunities within the city's mining sector. Their Las Flores office is strategically located in the city's technology park, providing easy access to major mining operations. The modern facility houses a team of dedicated engineers, sales representatives, and support staff. The company employs a mix of local and Chinese staff, combining global expertise with local market knowledge, and emphasizes diversity and inclusion, fostering a dynamic and innovative work environment. With a focus on innovation and sustainability, Jade Phoenix Technologies offers a range of products and services designed to streamline mining processes, enhancing both efficiency and safety.
 
 ---
 
@@ -55,6 +55,12 @@ For assembly and installation, Jade Phoenix collaborates with **local companies*
 - Created preference for Chinese operators
 - Company actively working on translations and bilingual staffing
 - Language gap makes technology less accessible to local workforce
+
+---
+
+## Outlook
+
+As Jade Phoenix Technologies continues to grow its presence in Las Flores, its success will be measured not only by the efficiency and safety improvements it brings to the mining sector but also by how effectively it integrates with the local community. By focusing on collaboration, skills development, and sustainable practices, the company is poised to play a pivotal role in the technological evolution of Las Flores' mining industry.
 
 ---
 

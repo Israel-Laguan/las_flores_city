@@ -24,6 +24,7 @@ The climate varies significantly with altitude, from temperate lower slopes to c
 
 | Landmark | Type | Description |
 |---|---|---|
+| **Andean Mountains** | Natural landmark | Rugged mountain range with diverse ecosystems and outdoor activities | [Details](../landmarks/andes/andean_mountains.md)
 | **Las Tres Montañas** | Natural landmark | Three prominent peaks visible from the city, a symbol of the district |
 | **Minera Estrella Andes Mine** | Mining operation | Chinese-backed lithium mine, a key economic driver and environmental flashpoint |
 | **Rio Grande Dam** | Hydroelectric dam | Major energy infrastructure, managed by Great Dragon Energy |

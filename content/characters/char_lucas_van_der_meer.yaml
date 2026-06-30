@@ -1,0 +1,9 @@
+id: "3b403235-8df0-4681-b3b6-9fc41a7a266c"
+name: "Lucas van der Meer"
+title: "Las Flores Resident"
+description: "As the youngest child of Jan and Maria, Lucas was often overshadowed by his siblings' accomplishments and accolades. Born into a life of privilege, he struggled to find his place within the rigid confines of Old Las Flores society. His childhood was marked by isolation and loneliness, as he grappled with feelings of inadequacy that would ultimately shape his adult life."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "independent_npc"

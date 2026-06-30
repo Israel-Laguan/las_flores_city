@@ -26,7 +26,7 @@ The district's elevation ranges from 10 to 30 meters above sea level, providing 
 | Landmark | Type | Description |
 |---|---|---|
 | **Old Las Flores** | Historical settlement | The original mining settlement, with historic adobe houses and narrow streets. A living testament to the city's humble beginnings. |
-| **Agricultural Valley** | Farmland | Fertile lands along the Río de las Flores supporting traditional farming communities. |
+| **Agricultural Valley** | Farmland | Fertile lands along the Río de las Flores supporting traditional farming communities. | [Details](../landmarks/south/agricultural_valley.md)
 | **Río de las Flores** | River | Flows from eastern mountains through the district, providing irrigation and sustaining local agriculture. |
 | **Indigenous Riverbank Communities** | Settlements | Traditional communities living along the river, maintaining customs passed down through generations. |
 

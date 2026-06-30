@@ -1,0 +1,63 @@
+id: "2ddafb1c-9cb5-3f00-51e9-7dd2f9810f08"
+type: location
+name: "Rio Grande Dam"
+color: null
+aliases:
+  - Rio Grande
+  - Chinese Dam
+  - Andes dam
+tags:
+  - Infra
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  Nestled in the foothills of the Andean Mountains, the Rio Grande Dam, specifically
+  the Eastern Dam segment, stands as a colossal engineering marvel owned and operated
+  by Great Dragon Energy, a subsidiary of the esteemed LW Group. This strategically
+  positioned dam harnesses the power of mountain streams and runoff, serving multiple
+  critical functions in the region. Construction of the dam spanned over 25 years
+  before it became fully operational.
+
+daytime: >
+  During the day, the Rio Grande Dam operates as both an industrial facility and
+  a tourist destination. The sheer scale and ambition of the Eastern Dam attract
+  visitors who marvel at the awe-inspiring views from above and below. Offices near
+  the machinery bustle with engineers and technicians overseeing operations, while
+  tour operators bring droves of tourists to witness the engineering feat. The
+  sprawling artificial lake and vast waterfall conducts create a spectacular sight.
+
+nightlife: >
+  After dark, the dam continues its critical operations under industrial lighting.
+  The facility maintains round-the-clock monitoring and security, with night-shift
+  personnel ensuring continuous operation. The illuminated dam structure against
+  the night sky creates a dramatic view, though tourist access is restricted during
+  evening hours for safety and security reasons.
+
+important_places:
+  - name: Eastern Dam Segment
+    description: The primary dam structure regulating the flow of the Río de las
+      Flores, ensuring consistent water supply for agricultural and city needs while
+      preventing downstream flooding.
+  - name: Artificial Lake
+    description: A sprawling reservoir created by the dam, vast in size but with
+      navigation restricted to LW Group boats for security and operational reasons.
+  - name: Waterfall Conducts
+    description: Impressive water release structures that create spectacular waterfall
+      displays, drawing tourists to witness the power of controlled water flow.
+  - name: Control Center
+    description: The operational hub where engineers and technicians monitor and
+      manage the dam's continuous functions.
+  - name: Tourist Viewing Areas
+    description: Designated observation points allowing visitors to safely view the
+      dam's grandeur from both above and below the structure.
+
+conclusion: >
+  The Rio Grande Dam, particularly its Eastern Dam segment, embodies human ingenuity
+  and the relentless pursuit of progress. More than a dam, it is a symbol of what
+  can be achieved when engineering excellence meets the natural world's might. As
+  it continues to power the region's growth, regulate vital water resources, and
+  attract awe-struck visitors, it also stands as a reminder of humanity's potential
+  to harness nature's forces for the betterment of society.

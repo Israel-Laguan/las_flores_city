@@ -47,23 +47,74 @@ Continuously assessing the progress of restoration efforts and adjusting strateg
 
 ## Evelyn & Yara's Restoration Project (2058–2059)
 
+### Evelyn's Revelations (January 2058)
+Evelyn Ruthenberg, a former employee of Luz del Rio, approached Yara Rossi with irrefutable evidence that Minera Estrella tampered with safety reports and colluded with officials to shift blame for the Great Lithium Leak onto Luz del Rio. Evidence included:
+- Internal emails between Minera Estrella executives discussing the dam's structural issues before the leak
+- Documents showing bribes paid to city council members
+- Testimony from whistleblowers within Minera Estrella
+
+### Attempts to Reopen the Case (February–March 2058)
+Armed with Evelyn's evidence, Yara petitioned the court to reopen the case against Minera Estrella. The judge dismissed her request, citing lack of compelling new evidence and the statute of limitations. Minera Estrella's legal team discredited Yara's character and questioned the authenticity of her documents.
+
 ### Planning Phase (April–December 2058)
-Evelyn Ruthenberg and Dr. Wei Zhang devised a comprehensive plan using phytoremediation and riparian habitat restoration. Yara Rossi rallied local support, secured necessary permits, and raised funds through international investors and environmental organizations.
+Evelyn, Yara, and Dr. Wei Zhang devised a comprehensive plan using phytoremediation and riparian habitat restoration. Yara Rossi rallied local support, secured necessary permits, and raised funds through international investors and environmental organizations.
+
+### Restoration Working Groups
+The plan was organized into three dedicated working groups:
+
+**1. Media and Communications Working Group (MCWG) — Led by Martín Lopez and María Fernanda Rodriguez**
+- Develop a comprehensive media strategy including press releases, opinion editorials, and social media campaigns
+- Organize regular press conferences to update the public on progress
+- Collaborate with Músicos en Acción for awareness-raising events
+- Targeted outreach to indigenous populations and Afro-Latino neighborhoods
+- Monitor and analyze media coverage
+
+**2. Fundraising and Partnerships Working Group (FRPWG) — Led by Yara Rossi and María Martinez (Fundación Esperanza)**
+- Develop compelling narrative and funding proposals
+- Identify potential funding sources: conservation foundations, development banks, CSR programs
+- Facilitate partnerships between local businesses, NGOs, and government entities
+- Establish a dedicated fund for river conservation
+- Monitor and report on allocation and expenditure of funds
+
+**3. Task Forces for River Restoration (TFRR) — Co-led by Dr. Wei Zhang, GreenWatch Las Flores (Maria Lopez), Ana Ramirez (CJS), and Juan Carlos Perez**
+- **Water Quality Task Force:** Investigate affordable and natural ways to clean lithium-contaminated water (phytoremediation)
+- **Habitat Restoration Task Force:** Identify suitable plant species for riverbank stabilization, develop revegetation plans
+- **Fauna Rehabilitation Task Force:** Assess health of fish populations, develop strategies for capturing and reintroducing healthy specimens
 
 ### Implementation (January 2059)
 With sufficient resources and support, Yara oversaw the initiation of the phytoremediation project. Volunteers from Las Flores and abroad joined to implement the plan.
 
-### Minera Estrella's Interference (February–March 2059)
-Minera Estrella pressured local authorities to halt the project, citing environmental concerns. Some collaborators abandoned the cause; others received life threats. One collaborator was killed.
+### Minera Estrella's Counterplan
+The mining company and their allies in the city council hatched a systematic plan to undermine the restoration movement:
+
+1. **Divide and Conquer:** Minera Estrella sponsored fringe environmental groups that opposed the restoration efforts, claiming they prioritized industry over nature. The city council amplified these divisions by selectively funding projects that favored certain working groups over others.
+
+2. **Elimination of Key Figures:** Assassins hired by Minera Estrella targeted Yara Rossi and other prominent leaders.
+
+3. **Moles and Fraudulent Activities:** The mining company enlisted moles within the working groups to disrupt efforts, sabotage projects, leak sensitive information, and fabricate scandals. A mole from FRPWG embezzled funds meant for riverbank stabilization, only to return the money later in an anonymous cash drop, framing the group leader.
+
+4. **Negative Propaganda Campaign:** Minera Estrella financed a smear campaign portraying movement leaders as corrupt and incompetent. They flooded local media with stories of mismanagement, delays, and setbacks, eroding public trust.
+
+5. **Takeover by Private Interests:** With the movement weakened, Minera Estrella planned to step in to "complete" the river restoration projects, securing exclusive rights to extract lithium from the newly cleaned-up riverbanks.
+
+### Media Manipulation (2056–2059)
+- **Canal 15** ran biased reporting highlighting economic benefits of lithium mining, interviewing only pro-mining experts
+- **Isabella Chen** spread rumors that the Movement was secretly investing in offshore accounts
+- **El Javi** mocked the Movement's leaders, calling Yara a "river nymph" disconnected from reality
+- **Ricardo Chen** invited environmental figures to live debates but ambushed them with false accusations; threatened to release compromising footage
+- **Lina Kim** faced death threats and her reporting was discredited by pro-Minera Estrella outlets
 
 ### Yara's Public Announcement (May 2059)
-As the project showed promising results, Yara publicly announced her intention to reopen the case against Minera Estrella based on new evidence.
+As the project showed promising results, Yara publicly announced her intention to reopen the case against Minera Estrella based on new evidence. She urged the international community to support their efforts.
 
 ### Yara's Assassination (July 14, 2059)
 Yara was assassinated while returning from a meeting with investors. Her murder remains unsolved. The evidence memory card was taken from her body.
 
-### Aftermath
-Dr. Wei Zhang publicly aligned with the city council and Minera Estrella after Yara's death, but this was a strategic performance—a calculated move to retain influence over the compromised project. A covert channel between Wei and Evelyn remained active. In the shadows, he continued channeling critical data and subtly modifying techniques to plant seeds of genuine restoration within the compromised framework. Evelyn Ruthenberg continued the visible work, more guarded and resolute, while the true fight persisted through their clandestine collaboration.
+### Aftermath (July 2059)
+- **Dr. Wei Zhang** was pressured by Chinese investors to switch allegiances; his family in China faced threats. Mayor Vega appointed him as the new head of the restoration project, praised by the city council for ensuring continuity.
+- **The Movement** began to crumble under false accusations of embezzlement. El Javi and Isabella spread rumors that the Movement was a front for foreign interests.
+- **Evelyn Ruthenberg** vowed to continue gathering evidence on her own, maintaining a low profile to avoid detection.
+- Dr. Wei Zhang publicly aligned with the city council and Minera Estrella, but this was a strategic performance — a calculated move to retain influence over the compromised project. A covert channel between Wei and Evelyn remained active. In the shadows, he continued channeling critical data and subtly modifying techniques to plant seeds of genuine restoration within the compromised framework.
 
 ## Community Engagement Plan
 

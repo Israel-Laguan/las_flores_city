@@ -1,0 +1,9 @@
+id: "fc5ee4eb-9abf-4d43-9e9a-355b5f9e59dc"
+name: "Sofia Aguirre"
+title: "Las Flores Resident"
+description: "A 32-year-old nurse originally from the small fishing town of San Pedro de los Pescadores. Motivated by her desire for personal and professional growth, she moved to Las Flores to pursue her nursing degree at the university. Her ultimate goal is to secure an administrative position within a clinic or hospital either in San Pedro or Old Las Flores, where she can contribute to the development of healthcare services in her hometown."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "community_caretaker"

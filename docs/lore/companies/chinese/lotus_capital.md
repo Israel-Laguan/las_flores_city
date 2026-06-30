@@ -9,7 +9,7 @@
 **Focus:** Real estate, technology, local startups
 **Impact:** Major driver of entrepreneurship and economic diversification
 
-Lotus Capital is one of the most influential Chinese investment firms in Las Flores, with a diversified portfolio spanning real estate, technology, and local startups. It's renowned for propelling business innovation and growth.
+Lotus Capital has established itself as one of the most influential Chinese investment firms in Las Flores, with a broad and diversified portfolio spanning real estate, technology, and local startups. The firm is renowned for its significant contributions to entrepreneurship and economic diversification within the city, providing crucial capital that propels business innovation and growth.
 
 ---
 

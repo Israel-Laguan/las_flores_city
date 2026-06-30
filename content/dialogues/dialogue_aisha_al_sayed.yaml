@@ -75,6 +75,26 @@ nodes:
           amount: 1
           description: "Commenting on the cafe"
 
+  aisha_cafe_comment:
+    id: "aisha_cafe_comment"
+    type: "character"
+    speaker_id: "c1000013-e29b-41d4-a716-446655440013"
+    text: "Yes, Marco really does make the best coffee in the Old Town. It's one of the reasons I come here so often. It helps me think clearly, away from the noise at the plant."
+    thought: "She relaxes a bit as she talks about the cafe, her shoulders dropping slightly."
+    choices:
+      - id: "ask_about_work"
+        text: "Well, I'm glad you have a place to unwind. What do you do for work?"
+        next_node_id: "aisha_work"
+        time_block_cost:
+          amount: 1
+          description: "Asking about her work"
+      - id: "end_conversation"
+        text: "I should let you get back to your coffee."
+        next_node_id: "farewell"
+        time_block_cost:
+          amount: 1
+          description: "Ending the conversation"
+
   aisha_work:
     id: "aisha_work"
     type: "character"
@@ -95,6 +115,26 @@ nodes:
           amount: 1
           description: "Asking about Minera Estrella"
 
+  aisha_minera_estrella:
+    id: "aisha_minera_estrella"
+    type: "character"
+    speaker_id: "c1000013-e29b-41d4-a716-446655440013"
+    text: "Minera Estrella is demanding but rewarding. We supply critical minerals, and there's pressure to deliver. I've learned a lot about leadership there — though I won't pretend it's always been easy."
+    thought: "She speaks with pride but her smile doesn't quite reach her eyes. There's clearly more beneath the surface."
+    choices:
+      - id: "ask_about_challenges"
+        text: "It sounds intense. Do you face many challenges there?"
+        next_node_id: "aisha_challenges"
+        time_block_cost:
+          amount: 1
+          description: "Asking about challenges"
+      - id: "ask_about_goals"
+        text: "What are your long-term goals at the company?"
+        next_node_id: "aisha_goals"
+        time_block_cost:
+          amount: 1
+          description: "Asking about her goals"
+
   aisha_challenges:
     id: "aisha_challenges"
     type: "character"
@@ -114,6 +154,26 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Offering support"
+
+  aisha_support:
+    id: "aisha_support"
+    type: "character"
+    speaker_id: "c1000013-e29b-41d4-a716-446655440013"
+    text: "Thank you. That means more than you know. It's been... difficult to maintain my footing with everything happening at the mine. I don't have many people I can talk to about this."
+    thought: "She seems genuinely touched. A slight softening in her posture."
+    choices:
+      - id: "ask_about_documentation"
+        text: "If you need to talk more, I'm here. Have you documented any of these issues?"
+        next_node_id: "aisha_documentation"
+        time_block_cost:
+          amount: 1
+          description: "Asking about documentation"
+      - id: "ask_about_favoritism"
+        text: "You mentioned favoritism — can you tell me more?"
+        next_node_id: "aisha_favoritism"
+        time_block_cost:
+          amount: 1
+          description: "Asking about favoritism"
 
   aisha_favoritism:
     id: "aisha_favoritism"
@@ -148,12 +208,26 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Offering help"
-      - id: "ask_about_goals"
-        text: "What are your goals at Minera Estrella?"
+
+  aisha_help:
+    id: "aisha_help"
+    type: "character"
+    speaker_id: "c1000013-e29b-41d4-a716-446655440013"
+    text: "I appreciate that. Honestly, I may take you up on it. The more allies we have in this city, the better. Especially with forces like Neptunes Haven and Greenwatch stirring things up behind the scenes."
+    thought: "She's opening up about broader stakes. This isn't just office politics — it's corporate warfare, and she's in the middle of it."
+    choices:
+      - id: "ask_about_neptunes_haven"
+        text: "Tell me more about Neptunes Haven."
         next_node_id: "aisha_goals"
         time_block_cost:
           amount: 1
-          description: "Asking about her goals"
+          description: "Asking about Neptunes Haven"
+      - id: "ask_about_greenwatch"
+        text: "What about Greenwatch?"
+        next_node_id: "aisha_personal_life"
+        time_block_cost:
+          amount: 1
+          description: "Asking about Greenwatch"
 
   aisha_goals:
     id: "aisha_goals"

@@ -1,0 +1,9 @@
+id: "8c4e6c03-38c8-416c-bd5b-dc85ad47477c"
+name: "Tomás Coronado"
+title: "lean young man at the University"
+description: "Tomás Coronado (22)."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "ambitious_professional"

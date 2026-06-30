@@ -29,6 +29,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
     return 'gig';
   }
+  if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
+    return 'location';
+  }
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
@@ -357,6 +360,31 @@ async function processShopItemData(data: any): Promise<string> {
   return shopIds.join(',');
 }
 
+async function processLocationData(data: any): Promise<string> {
+  if (!data?.name) {
+    throw new Error("Invalid location data: name is required");
+  }
+  if (!data?.id) {
+    throw new Error("Invalid location data: id is required");
+  }
+  const sceneData = {
+    id: data.id,
+    name: data.name,
+    description: sanitizeText(data.history || ''),
+    district: 'Unknown',
+    image_url: null,
+    background_url: null,
+    ambient_sound_url: null,
+    mood: 'neutral',
+    available_dialogues: [],
+    metadata: {
+      ...data,
+      type: 'location',
+    },
+  };
+  return upsertScene(sceneData);
+}
+
 export async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
   if (!contentType) {
@@ -392,6 +420,9 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
       break;
     case 'shop_item':
       contentId = await processShopItemData(data);
+      break;
+    case 'location':
+      contentId = await processLocationData(data);
       break;
     default:
       throw new Error(`Unsupported content type: ${contentType}`);

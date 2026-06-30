@@ -1,12 +1,27 @@
 id: "12d45902-c579-4520-b341-96bee23a5fda"
 name: "Ana Ramirez"
-title: "Leader, CJS"
-description: "A passionate indigenous political leader who heads La Coalición por la Justicia Social. She champions the rights of marginalized communities and fights against environmental destruction."
+title: "Environmental Activist, Indigenous Rights Advocate, Founder of La Coalición por la Justicia Social (CJS)"
+description: |
+  Ana Ramirez is a 32-year-old passionate indigenous political leader who heads La Coalición por la Justicia Social (CJS). Born into a family of indigenous activists in Las Flores' rural outskirts, she witnessed firsthand the impact of mining activities on native communities and their ancestral lands from an early age. This inspired her to pursue a degree in environmental science and dedicate herself to protecting both the environment and indigenous rights.
+  
+  As the founder of CJS, Ana crafts effective strategies for advocacy and education, working closely with progressive politicians and grassroots initiatives. She supports Yara Rossi's restoration efforts, seeing them as a means of mitigating mining damage and fostering sustainable development. Ana's deep commitment to her cause drives her to take bold stances against powerful interests, always centering the experiences of native communities.
+  
+  Her leadership style is grounded in humility, always prioritizing the voices of the indigenous communities she serves. She speaks eloquently about the intersectionality of environmental justice and indigenous rights, prefers nonviolent direct action and grassroots organizing, and maintains a strong connection to her cultural heritage by incorporating traditional practices into CJS's advocacy work.
 metadata:
   type: "human"
   role: "npc"
   faction: "civil_society"
-  personality: "fiery_activist"
-  organization: "CJS"
-  lore_doc: "organizations/cjs.md"
-  district_affiliation: "South"
+  personality: "passionate_intelligent_humble"
+  age: 32
+  gender: "Female"
+  ethnicity: "Indigenous"
+  occupation: "Environmental Activist, Indigenous Rights Advocate, Founder of La Coalición por la Justicia Social (CJS)"
+  background: "born into family of indigenous activists in Las Flores' rural outskirts, witnessed mining impact on native communities from early age"
+  education: "degree in environmental science"
+  residence: "Las Flores rural outskirts"
+  organization: "La Coalición por la Justicia Social (CJS)"
+  allies: "progressive politicians, Yara Rossi, other progressive organizations and grassroots initiatives"
+  mannerisms: "speaks eloquently about intersectionality of environmental justice and indigenous rights, prefers nonviolent direct action and grassroots organizing, incorporates traditional practices into advocacy work"
+  motivations: "raise awareness about environmental and social costs of unchecked mining expansion, achieve justice for indigenous people and protection for sacred spaces"
+  quote: "Our land, our culture, and our very existence are at stake. I will not rest until we have justice for our people and protection for our sacred spaces."
+  methods: "nonviolent direct action, grassroots organizing, advocacy, education"

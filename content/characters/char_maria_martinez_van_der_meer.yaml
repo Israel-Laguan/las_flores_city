@@ -1,0 +1,9 @@
+id: "26ee4303-72a9-4422-b30d-95dd5bd01353"
+name: "Maria Martinez van der Meer"
+title: "Las Flores Resident"
+description: "Born into a prominent Las Flores family with deep roots in the city's social and political scene. Her parents, both influential figures in local society, ensured that their daughter received an excellent education at exclusive European institutions. Upon returning to her hometown, Maria married Jan van der Meer, son of the renowned industrialist and philanthropist, Pieter van der Meer. As a young woman, Maria quickly established herself as a force within Las Flores' high society."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "passionate_activist"

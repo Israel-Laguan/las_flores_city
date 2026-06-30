@@ -1,0 +1,65 @@
+id: "72a39a4a-0da6-39aa-78ee-83e812f6ba0c"
+type: location
+name: "Universidad Nacional de Las Flores"
+color: null
+aliases:
+  - UNLF
+  - Universidad Nacional
+  - National University
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  Located in the heart of the Central Las Flores district, Universidad Nacional de
+  Las Flores stands as a beacon of educational excellence and cultural diversity.
+  Its strategic position near the industrial zone, along with dedicated bus and train
+  stations, makes it an accessible hub for students from various parts of the region,
+  including the valley, Old Las Flores, and even the Pacific coast. The university
+  boasts a vast campus equipped with state-of-the-art facilities that cater to both
+  academic and extracurricular pursuits.
+
+daytime: >
+  During the day, the campus buzzes with academic and extracurricular activity.
+  Students attend lectures in modern classrooms, conduct research in the comprehensive
+  library, and utilize the extensive sports facilities that were instrumental in
+  hosting the South American Student Games in 2048 and 2052. The large student
+  cafeteria, green spaces, group study seats, and dedicated study halls foster a
+  vibrant student community. Well-planned roads and paths facilitate easy movement
+  across the campus for pedestrians, cyclists, and motorists alike.
+
+nightlife: >
+  Evenings on campus are active with study sessions, group projects, and informal
+  gatherings. The library and study halls remain open for late-night research.
+  While the campus maintains a studious atmosphere, student events and social
+  activities continue into the evening hours, reflecting the diverse rhythms of
+  university life. The cafeteria serves as a natural hub for late-night discussions
+  and community building.
+
+important_places:
+  - name: Stadium
+    description: Large sports venue that hosted the South American Student Games in 2048 and 2052, symbolizing the university's commitment to athletic excellence and student engagement.
+  - name: Comprehensive Library
+    description: Extensive academic library housing diverse collections of legal documents, archives, and research materials, serving as the university's institutional memory and a vital resource for students and faculty.
+  - name: Student Hospital
+    description: Dedicated medical facility providing healthcare services to the campus community, ensuring student wellness and accessibility.
+  - name: Sports Facilities
+    description: Extensive athletic infrastructure that hosted major regional student competitions, supporting both recreational and competitive sports programs.
+  - name: Large Student Cafeteria
+    description: Central dining facility catering to a diverse student body, fostering community and informal academic exchange.
+  - name: Group Study Halls
+    description: Dedicated collaborative learning spaces equipped for group projects and study sessions, supporting the university's emphasis on peer learning.
+  - name: Green Spaces
+    description: Expansive outdoor areas providing relaxation and recreational opportunities, contributing to a balanced campus environment.
+
+conclusion: >
+  Universidad Nacional de Las Flores is more than an educational institution; it
+  is a vibrant community that nurtures intellectual growth, celebrates diversity,
+  and fosters global citizenship. Its infrastructure, academic offerings, and
+  inclusive environment make it a cornerstone of education and cultural exchange
+  in Central Las Flores and beyond. The healthy rivalry with Universidad
+  Internacional underscores its unique identity and its role in fostering an
+  inclusive educational environment that celebrates diversity and champions
+  social mobility.

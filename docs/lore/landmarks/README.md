@@ -20,7 +20,7 @@ For a comprehensive overview of the City District, see: [City District](../../di
 - [Plaza de la Constitución](city/plaza_de_la_constitucion.md) ✅
 - [Red District](city/red_district.md) ❌
 - [Teatro Nacional](city/teatro_nacional.md) ✅
-- [World Trade Center](city/world_trade_center.md) ❌
+- [World Trade Center](city/world_trade_center.md) ✅
 - [Zona Rosa](city/zona_rosa.md) ❌
 
 ## Port District
@@ -64,7 +64,8 @@ For a comprehensive overview of the City District, see: [City District](../../di
 - [Camino Verde](southeast/camino_verde.md)
 
 ## Far South District
-- [San Pedro de los Pescadores](far_south/san_pedro_de_los_pescadores.md)
+- [Far South](far_south/far_south.md) ✅
+- [San Pedro de los Pescadores](far_south/san_pedro_de_los_pescadores.md) ✅
 
 ## Natural Landmarks
 - [Agricultural Valley](natural/agricultural_valley.md) ❌
@@ -73,7 +74,7 @@ For a comprehensive overview of the City District, see: [City District](../../di
 - [Isla de Oro](natural/isla_de_oro.md) ✅
 - [Las Tres Montañas](natural/las_tres_montañas.md) ✅
 - [Playa de los Vientos](natural/playa_de_los_vientos.md) ✅
-- [Río de las Flores](natural/rio_de_las_flores.md) ❌
+- [Río de las Flores](natural/rio_de_las_flores.md) ✅
 - [Sendero del Puma](natural/sendero_del_puma.md) ✅
 - [Sierra Verde Park](natural/sierra_verde_park.md) ❌
 

@@ -6,25 +6,27 @@
 
 **Official Founding (Constitution):** 2036
 **Provisional Government Begins:** 2034
-**Population:** ~1,250,000 (2050), projected ~1,500,000+ (2080)
-**Total Area:** 8,000 km²
-**Length:** ~75 km
-**Width:** ~65 km
+**Population:** ~270,000
+**Total Area:** 150 km²
+**Length:** ~20 km (coastline to eastern mountains)
+**Width:** ~10 km (northern swamps to southern desert)
 **Official Language:** Spanish
 **Secondary Official Languages:** English, Chinese
 **Government:** Free City (autonomous governance)
-**Key Industries:** Finance, technology, tourism, manufacturing, lithium mining
+**Key Industries:** Finance, technology, tourism, conservation, manufacturing
 
-Las Flores Free City is a modern metropolis celebrated for its harmonious integration of urban development and natural landscapes. The city's official establishment under its Free City Constitution occurred in **2036**, but its administrative core — the City District — began operating under a provisional government in **2034**, when construction was approximately 60% complete. Under the leadership of Mayor Carlos Hernandez (2034–2038), the district served as the embryonic administrative and financial center while the broader metropolis was still being built. Since formal independence in 2036, the city has rapidly transformed into a center of economic innovation, cultural diversity, and social progress. Its early origins can be traced to Old Las Flores, now a cherished landmark within the South District, situated near the river to the south of the current city center.
+Las Flores Free City is a modern metropolis celebrated for its harmonious integration of urban development and natural landscapes. The city's official establishment under its Free City Constitution occurred in **2036**, but its administrative core began operating under a provisional government in **2034**. Under the leadership of Mayor Carlos Hernandez (2034–2038), the district served as the embryonic administrative and financial center. Since formal independence, the city has rapidly transformed into a center of economic innovation, cultural diversity, and social progress. Its early origins can be traced to Old Las Flores, now a cherished landmark within the South District, situated near the river to the south of the current city center.
+
+Las Flores occupies a unique geographic position: the Pacific Ocean defines its western boundary, the Andean Mountains rise to the east, rivers cut through desert landscapes to the south, and swamps transition into Amazonian terrain to the north. Urban development, the international airport, and diverse neighborhoods occupy the central corridor between mountains and sea. The southern reaches preserve Old Las Flores and rural valley communities with deep indigenous roots.
 
 ---
 
 ## Geography & Climate
 
 **Climate:** Temperate — mild winters, warm summers
-**Surrounding Geography:** Rolling hills, dense forests, clear waterways, Pacific coastline, eastern mountain range
+**Surrounding Geography:** Pacific coastline to the west, Andean Mountains to the east, desert and rivers to the south, swamps and Amazonian landscape to the north
 
-Las Flores enjoys a temperate climate characterized by mild winters and warm summers, providing an inviting atmosphere for residents and visitors alike. The surrounding geography is diverse, encompassing rolling hills, dense forests, and clear waterways, enhancing the city's aesthetic appeal and offering numerous recreational opportunities.
+Las Flores enjoys a temperate climate characterized by mild winters and warm summers, providing an inviting atmosphere for residents and visitors alike. The surrounding geography is diverse, encompassing rolling hills, dense forests, clear waterways, Pacific coastline, and eastern mountain range.
 
 **Elevation Range:**
 - Coastline: 0–5 m above sea level
@@ -35,22 +37,33 @@ Las Flores enjoys a temperate climate characterized by mild winters and warm sum
 
 ## Demographics
 
-As of 2050, the city is home to around 1,250,000 residents, a figure expected to grow to 1,500,000+ by 2080. The population is noted for its cultural and ethnic diversity, a reflection of the city's inclusive policies and economic vibrancy. This rich tapestry of cultures contributes significantly to the dynamic social fabric of Las Flores.
+As of current estimates, the city is home to around 270,000 residents. The population is noted for its cultural and ethnic diversity, a reflection of the city's inclusive policies and economic vibrancy. This rich tapestry of cultures contributes significantly to the dynamic social fabric of Las Flores.
 
 **Population by District:**
 | District | Population |
 |---|---|
-| [City District](districts/city.md) | 300,000 |
-| [Central (Suburbs)](districts/central.md) | 250,000 |
-| [Northeast District](districts/northeast.md) | 80,000 |
-| [North District](districts/north.md) | 75,000 |
-| [South District](districts/south.md) | 75,000 |
-| [Industrial Zone](districts/industrial.md) | 50,000 |
-| [Port District](districts/port.md) | 40,000 |
-| [Pacific Coast](districts/pacific.md) | 30,000 |
-| [Far South](districts/far_south.md) | 10,000 |
-| [Los Andes](districts/los_andes.md) | 5,000 |
-| **Total** | **1,250,000** |
+| [City District](districts/city.md) | ~70,000 |
+| [Northeast District](districts/northeast.md) | ~50,000 |
+| [North District](districts/north.md) | ~45,000 |
+| [Central (Suburbs)](districts/central.md) | ~40,000 |
+| [South District](districts/south.md) | ~25,000 |
+| [Industrial Zone](districts/industrial.md) | ~20,000 |
+| [Port District](districts/port.md) | ~12,000 |
+| [Pacific Coast](districts/pacific.md) | ~5,000 |
+| [Los Andes](districts/los_andes.md) | ~2,000 |
+| [Far South](districts/far_south.md) | ~1,000 |
+| **Total** | **270,000** |
+
+---
+
+## Socioeconomic Geography
+
+The city reveals a clear socioeconomic layering across its districts:
+
+- **Northern and Northeastern Sectors:** Wealthy neighborhoods with modern amenities, upscale commercial districts, and luxury residences. Home to the city's economic elite and diplomatic communities.
+- **Central Corridor:** The primary urban corridor between mountains and coastline, containing the City District, business centers, and mixed-use neighborhoods.
+- **Southern Districts:** Moving south from the affluent zones, industrial complexes and working-class neighborhoods dominate. Old Las Flores maintains its historical character, anchoring the city's origins alongside indigenous communities in the southern river valleys.
+- **Peripheral Boundaries:** The swamps to the north and desert to the south frame the city's edges, creating natural boundaries that contain urban sprawl and preserve pockets of wilderness.
 
 ---
 
@@ -91,14 +104,14 @@ Las Flores is home to several esteemed universities and educational institutions
 
 ## Economy & Infrastructure
 
-The local economy is robust and diverse, grounded in sectors like finance, technology, tourism, and manufacturing. With advanced public transportation, cutting-edge healthcare facilities, and dependable utilities, the city's infrastructure supports a high quality of life. The establishment of strategic economic zones and business-friendly policies bolsters Las Flores's status as a hotspot for investment and economic growth.
+The local economy is robust and diverse, grounded in sectors like finance, technology, tourism, conservation, and manufacturing. With advanced public transportation, cutting-edge healthcare facilities, and dependable utilities, the city's infrastructure supports a high quality of life. The establishment of strategic economic zones and business-friendly policies bolsters Las Flores's status as a hotspot for investment and economic growth.
 
 **Key Economic Sectors:**
 - Finance and banking (Centro Empresarial)
-- Lithium mining and processing
 - Technology and EV innovation
-- Port and airport logistics
 - Tourism and hospitality
+- Conservation and eco-tourism
+- Port and airport logistics
 - Manufacturing and light industry
 
 ---

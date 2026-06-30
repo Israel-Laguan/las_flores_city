@@ -1,0 +1,9 @@
+id: "10903e86-d796-4a7d-aa3e-fe7476cac17b"
+name: "Luis Contreras"
+title: "Las Flores Resident"
+description: "Luis Contreras was born in a small village along Rio Las Flores, the son of a Shipibo-Konibo mother and a Peruvian father from Lima. From an early age, Luis felt torn between two worlds – the vibrant, community-focused culture of his mother's people and the individualistic, urban lifestyle of his father's heritage. As he grew older, Luis became increasingly aware of the stares and whispers that followed him in his village."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "determined_survivor"

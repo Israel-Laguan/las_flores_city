@@ -1,11 +1,9 @@
 id: "32d3f8fc-7791-408e-b38b-19b1273e8c80"
 name: "Laura Rodriguez"
 title: "Leader, COFAVIC"
-description: "A dedicated human rights lawyer who leads the Comité de Familiares Víctimas del Conflicto. She fights tirelessly for the families affected by violence and conflict in Las Flores."
+description: "A dedicated human rights lawyer who leads the Comité de Familiares Víctimas del Conflicto. She fights tirelessly for the families affected by violence and conflict in Las Flores. \ 48 \ Female \ Human Rights Lawyer, Founder & Director of COFAVIC (Comité de Familiares Víctimas del Conflicto) \ + Laura was born and raised in a working-class neighborhood of Las Flores. + Her life's work began when her younger brother went missing after being caught in the crossfire between criminal organizations and security forces."
 metadata:
   type: "human"
   role: "npc"
   faction: "civil_society"
   personality: "determined_advocate"
-  organization: "COFAVIC"
-  lore_doc: "organizations/cofavic.md"

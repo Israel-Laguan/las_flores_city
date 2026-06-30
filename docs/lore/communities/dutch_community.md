@@ -8,7 +8,7 @@
 **Population:** Small but influential
 **Key Organizations:** Van der Meer Mining (GLC), Neptune's Haven B.V., EBF
 
-The Dutch community in Las Flores, while smaller than the Chinese population, wields significant influence through its control of lithium mining operations, port facilities, and energy infrastructure. The community is centered around the Van der Meer family interests and the broader European business presence.
+The Dutch community in Las Flores is primarily composed of employees from Voss & Co., the mining conglomerate that arrived later to explore the deeper lithium deposits. Most are highly skilled workers, engineers, or executives who have brought their families with them, forming a small but influential presence centered around the Van der Meer family interests and the broader European business presence.
 
 ---
 
@@ -46,16 +46,21 @@ The Dutch tend to live in upscale, gated communities on the outskirts of town, o
 - **Energy:** EBF partnership in San Miguel Dam
 - **Infrastructure:** Investment in city development projects
 - **Technical Expertise:** Mining engineering and environmental management
+- **Hospitality:** Western-style cafes, bakeries, and pubs introduced to Las Flores' culinary scene
 
 ---
 
-## Cultural Institutions
+## Cultural Institutions & Events
 
-| Institution | Location | Description |
+| Institution / Event | Location | Description |
 |---|---|---|
 | **Dutch Club** | City District | Social club for the Dutch and European community |
 | **European School** | Central | International school serving Dutch and other European families |
 | **Dutch Reformed Church** | City District | Small congregation serving the community |
+| **Koningsdag (King's Day)** | Dutch neighborhoods | Annual celebration with orange decorations, traditional Dutch food, and games |
+
+### Culinary Contributions
+The Dutch have introduced Western-style cafes, bakeries, and pubs to Las Flores' culinary scene, offering European-style dining and social venues.
 
 ---
 

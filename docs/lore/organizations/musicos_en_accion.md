@@ -6,7 +6,7 @@
 
 **Type:** Musicians' Activist Collective
 **Leader:** Sofia Diaz (singer-songwriter)
-**Founded:** Within the humanities faculty of Universidad Nacional
+**Founded:** Within the humanities faculty of Universidad Nacional by a group of reactionary students
 **Structure:** Non-profit (easy for students and underground artists to join)
 **Mission:** Harness the power of music as a tool for social change
 
@@ -18,7 +18,7 @@ Músicos en Acción is a dynamic collective of musicians dedicated to advocating
 
 - Concerts, events, and workshops
 - Education, empowerment, and advocacy for marginalized communities
-- Collaboration with CJS, COFAVIC, and Fundación Esperanza
+- Collaboration with CJS, COFAVIC, Fundación Esperanza, and Mothers of the Disappeared to support causes and raise funds
 - Annual influx of new talent from university students
 
 ---
@@ -39,8 +39,10 @@ Músicos en Acción is a dynamic collective of musicians dedicated to advocating
 - Solo artists, small and medium-sized musical groups
 - Underground music scene members
 - Indigenous and folk groups (traditional sounds)
-- **Diversity of genres** is a key strength
-- Non-profit structure ensures accessibility for students
+- Diverse genres from across Latin American musical traditions
+- **Diversity of genres** is a key strength, enabling connection with a broad audience
+- Non-profit structure ensures accessibility for students and underground artists
+- Annual influx of new talent drawn to the collective's mission
 
 ---
 
@@ -49,7 +51,7 @@ Músicos en Acción is a dynamic collective of musicians dedicated to advocating
 - Difficulty securing mainstream media coverage
 - Limited access to commercial venues
 - Perceived as "just a club" from outside
-- Despite this, members are deeply committed and continue releasing impactful music
+- Despite these challenges, members are deeply committed and continue releasing music that resonates with the struggles of everyday people
 
 ---
 

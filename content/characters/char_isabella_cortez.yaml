@@ -1,0 +1,9 @@
+id: "3fbb58b1-fef3-4dd2-8a29-0e5f882d20f1"
+name: "Isabella Cortez"
+title: "petite woman standing at 5'3"
+description: "Isabella Cortez (32)."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "sociable_connector"

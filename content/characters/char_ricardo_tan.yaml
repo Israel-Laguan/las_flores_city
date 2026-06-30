@@ -1,0 +1,9 @@
+id: "249d3956-a483-40b8-b714-8fb8949dd52b"
+name: "Ricardo Tan"
+title: "broadcasting"
+description: "Born as Ricardo Chen, he hails from a lower-income family in a vibrant neighborhood in Las Flores. Growing up amidst the struggles of his parents’ small business, Ricardo developed a keen sense of observation, an infectious charm, and a quick wit—tools he later transformed into a successful career in broadcasting. During his rise to fame, he adopted the public persona of \"Ricardo Tan,\" which he believed encapsulated his vibrant personality and captivated his audience."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "charismatic_driven"

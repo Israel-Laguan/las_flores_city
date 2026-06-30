@@ -1,0 +1,9 @@
+id: "d3e192f1-15ed-4bb8-988e-10c1d85a0eae"
+name: "Juan Carlos Pérez"
+title: "Las Flores Resident"
+description: " 45  Male  Community Organizer & Activist, Afro-Latino Rights Advocate  + Born and raised in Old Las Flores, Juan Carlos has always been passionate about empowering his community. + After witnessing the marginalization of Afro-Latinos in politics and society, he became a vocal advocate for their rights. + His work with COFAVIC exposed him to the intersections of racial injustice, environmental degradation, and political corruption."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "charismatic_driven"

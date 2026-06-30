@@ -1,0 +1,9 @@
+id: "4e1357e0-0106-45f4-aec1-95b816d9e55c"
+name: "Sophia van der Meer Rodriguez"
+title: "Las Flores Resident"
+description: "Born in 2041 to Elisabeth van der Meer and Alexander van der Meer Jr., grew up amidst the opulence of Las Flores' high society. Her parents' divorce left a significant impact on her life, shaping Sophia's perspective on marriage, family, and social responsibility. After completing her studies at an elite European university, Sophia returned to Las Flores with aspirations of making a difference in her hometown. In 2060, at the age of 19, Sophia married Carlos Rodriguez Jr."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "ambitious_professional"

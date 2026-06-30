@@ -70,3 +70,19 @@ No contradictions with existing family structure; all additions are complementar
 ## Last Updated
 
 2026-06-30 (updated with new content integration: media expansion, van der Meer family expansion, new figures, and timeline additions)
+
+
+## Character Integration Name Variants (2026-06-30)
+
+These characters from the "Flowers from the Red Soil" codex have ambiguous identity matches with existing YAML files and need manual review.
+
+| Source Slug | Source Name | Reason for Flag |
+|---|---|---|
+| dr-wei-zhang | Dr. Wei Zhang | Near-match with char_wei_zhang.yaml — verify same person |
+| javier-salazar | Javier Salazar | New character — verify if related to existing Javier files |
+| mei-li | Mei Li | Could be same as char_wang_mei_li.yaml — verify identity |
+
+### Resolution Needed
+- [ ] Verify each flagged character's identity against the target YAML
+- [ ] Either merge into existing file or create separate YAML
+- [ ] Remove entries from this table once resolved

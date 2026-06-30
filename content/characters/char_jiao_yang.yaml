@@ -1,0 +1,9 @@
+id: "5849e7bd-8d79-492d-8a0c-36a41526efa4"
+name: "Jiao Yang"
+title: "Las Flores Resident"
+description: "Jiao Yang, originally from Asian/Chinese (Early 20s)."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "shrewd_businessperson"

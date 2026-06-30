@@ -24,7 +24,7 @@ Scenic coastal highways offer breathtaking views of the ocean, attracting touris
 
 | Landmark | Type | Description |
 |---|---|---|
-| **Bahía de las Olas** | Bay | Popular bay known for waves, ideal for water sports |
+| **Bahía de las Olas** | Bay | Popular bay known for waves, ideal for water sports | [Details](../landmarks/pacific/bahia_de_las_olas.md)
 | **Playa de los Vientos** | Beach | Windy beach popular for kitesurfing and windsurfing |
 | **Isla de Oro** | Private island | Exclusive resort for the wealthy elite; luxury accommodations, golf courses, private beaches |
 | **Various Beachside Shops & Markets** | Retail | Local crafts, souvenirs, and beach essentials |

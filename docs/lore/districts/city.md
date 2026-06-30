@@ -8,14 +8,35 @@
 **Population:** ~80,000
 **Elevation:** 10–30 m above sea level
 **Key Arteries:** Avenida de las Naciones, Avenida Independencia, Paseo de las Estrellas
+**Aliases:** La Ciudad, El Centro, New Las Flores
 
 Central City is a bustling urban area that harmoniously blends modern architecture with lush natural surroundings. It serves as the administrative, financial, and cultural heart of Las Flores, making it a unique living experience for residents and an attractive destination for visitors.
+
+Nestled against the backdrop of mountains to the northeast and sprawling plains to the south and west, Central Las Flores is a modern urban oasis that represents the pinnacle of the city's development. This vibrant district is a mosaic of architectural grandeur, natural beauty, and cultural diversity, offering a strategic layout that emphasizes modernity while preserving the region's unique character.
 
 ---
 
 ## Geography & Character
 
 Nestled against the backdrop of mountains to the northeast and sprawling plains to the south and west, Central City emerged from humble beginnings on a small, plateau-like mount within the scenic valley. A geological survey revealed the mount's formidable foundation, making it ideal for substantial development — avoiding the flood risks and lime-laden base that made Old Las Flores unsuitable for large-scale construction.
+
+## Urban Character & Strategic Advantages
+
+Central City's strategic layout and emphasis on modernity, combined with its rich cultural tapestry and thriving economy, make it a unique urban gem that appeals to residents and visitors from around the globe.
+
+### Key Urban Features:
+- **Modern Architecture:** Sleek skyscrapers and contemporary designs that create an impressive skyline
+- **Green Spaces:** Thoughtfully integrated parks and gardens that provide natural oases amid the urban landscape
+- **Cultural Integration:** A harmonious blend of traditional and modern cultural elements
+- **Economic Hub:** Concentration of financial institutions, corporate headquarters, and business services
+- **Transportation Network:** Efficient public transit and well-planned road systems
+
+### Strategic Advantages:
+- **Geological Stability:** The plateau foundation provides a secure base for high-rise development
+- **Natural Beauty:** Proximity to mountains and plains enhances the city's aesthetic appeal
+- **Economic Diversity:** Mix of financial, cultural, and administrative functions creates resilience
+- **International Appeal:** Attracts global businesses, tourists, and expatriates
+- **Quality of Life:** Offers urban amenities with access to nature and cultural experiences
 
 ---
 

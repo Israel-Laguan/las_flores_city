@@ -1,0 +1,55 @@
+id: "dc60eee1-e608-3e4b-8c7b-7e02c7ad85c3"
+type: location
+name: "Sierra Verde Park"
+color: null
+aliases:
+  - Sierra Verde
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  Sierra Verde Park is nestled within the cityscape in the southeast of Las Flores,
+  serving as a green escape for residents and airport staff alike. Together with
+  the nearby Mirador de la Costa, these two locations provide delightful experiences
+  that combine coastal views with urban greenery, making southeast Las Flores an
+  attractive destination for both residents and visitors.
+
+daytime: >
+  During the day, Sierra Verde Park comes alive with visitors enjoying well-maintained
+  walking trails that wind through lush greenery. Picnic areas scattered throughout
+  the park invite visitors to enjoy meals amidst nature, while a tranquil lake adds
+  to the park's enchanting atmosphere. The park serves as an idyllic retreat where
+  people can find quiet moments of reflection or engage in energetic outdoor activities
+  after work hours.
+
+nightlife: >
+  After dark, Sierra Verde Park takes on a more peaceful character. While the park
+  is not extensively lit for nighttime use, the walking trails remain accessible for
+  evening strolls, and the lake area provides a tranquil setting under the stars.
+  The park's proximity to airport staff residences makes it a convenient evening
+  escape for those working irregular hours.
+
+important_places:
+  - name: Walking Trails
+    description: Well-maintained paths winding through lush greenery, perfect for
+      leisurely strolls or invigorating runs through the urban oasis.
+  - name: Picnic Areas
+    description: Scattered throughout the park, these spots invite visitors to enjoy
+      meals amidst the natural surroundings.
+  - name: Tranquil Lake
+    description: A serene water feature that enhances the park's enchanting atmosphere
+      and provides a focal point for relaxation.
+  - name: Mirador de la Costa
+    description: Nearby scenic viewpoint perched on a cliff overlooking the stunning
+      coastline, offering breathtaking panoramic views of turquoise waters, especially
+      mesmerizing during sunsets.
+
+conclusion: >
+  Sierra Verde Park and the adjacent Mirador de la Costa complement each other
+  perfectly, providing a blend of coastal views and urban greenery that cater to
+  diverse tastes and needs. Together, these southeast Las Flores locations contribute
+  to the city's rich tapestry of experiences, offering residents and visitors alike
+  accessible natural retreats within the urban environment.

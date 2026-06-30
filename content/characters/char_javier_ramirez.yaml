@@ -1,0 +1,11 @@
+id: "3ca8f620-0e1e-4a79-b4f8-f26f3fe2c7c3"
+name: "Javier Ramirez"
+title: "Las Flores Resident"
+description: |
+  Latino, born and raised in the Port Area of Las Flores, surrounded by the vibrant culture and activity that defines the neighborhood. Javi is 30 years old with a sturdy build, reflecting his physical job as a security guard. He has short, dark hair neatly styled and a well-groomed beard that adds a mature look to his face. His sharp brown eyes often scan his surroundings, reflecting both attentiveness and concern.
+   - \\ 30 - \\ Latino, born and raised in the Port Area of Las Flores, surrounded by the vibrant culture and activity that defines the neighborhood.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "loyal_advocate"
