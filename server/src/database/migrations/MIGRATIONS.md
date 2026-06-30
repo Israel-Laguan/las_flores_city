@@ -39,6 +39,7 @@ Apply to: `postgres-oltp` container, `las_flores` database
 | 023 | patreon_entitlements.sql | Patreon OAuth integration |
 | 024 | marketplace.sql | Shop items, inventory, cosmetics |
 | 026 | vault_signed_urls.sql | Vault media signed URL support |
+| 036 | add_location_content_type.sql | Add 'location' to migration_log.content_type CHECK |
 
 ### OLAP Migrations (5 migrations)
 Apply to: `postgres-olap` container, `las_flores_analytics` database

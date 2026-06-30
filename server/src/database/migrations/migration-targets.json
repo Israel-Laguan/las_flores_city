@@ -27,7 +27,8 @@
     "032_dialogue_chunk_tracking.sql",
     "033_district_travel_costs.sql",
     "034_seed_districts.sql",
-    "035_seed_districts_extended.sql"
+    "035_seed_districts_extended.sql",
+    "036_add_location_content_type.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",
