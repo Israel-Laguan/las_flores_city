@@ -1,9 +1,13 @@
 id: "23a68159-f5db-4574-bf22-73cd3f285c72"
 name: "Mia Chen-Rojas"
-title: "mixed Chinese and Latino girl whose pare"
-description: "- 19 - Mia is a mixed Chinese and Latino girl whose parents work at a luxurious resort in the Andean Mountains. Growing up in this environment, she has always been surrounded by beautiful scenery and an upscale lifestyle, fostering her interest in fashion and social media. Despite this privileged upbringing, Mia prefers to keep her family background and history private, often crafting a more glamorous life for herself online. - \\ 19 - \\ Mia is a mixed Chinese and Latino girl whose parents work at a luxurious resort in the Andean Mountains."
+title: "Social Media Influencer, Fashion Enthusiast"
+age: 19
+description: "Mia Chen-Rojas is a 19-year-old mixed Chinese and Latino influencer living in the Andean Mountains, where her parents work at a luxurious resort. She embodies class and ambition, creating a carefully curated online persona that highlights her glamorous lifestyle while keeping her past and family history private. Mia's journey explores themes of identity, authenticity, and the pursuit of success in the world of social media."
 metadata:
   type: "human"
   role: "npc"
   faction: "lw_group"
   personality: "ambitious_professional"
+  appearance: "effortlessly chic style, long dark hair in waves, striking almond-shaped eyes, elegant jewelry"
+  interests: "fashion, photography, videography, travel, social media"
+  goals: "establish herself as a leading influencer, collaborate with luxury brands, launch her own fashion line or lifestyle brand"

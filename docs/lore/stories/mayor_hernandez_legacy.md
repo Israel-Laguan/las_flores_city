@@ -6,7 +6,7 @@
 
 ## Overview
 
-A scathing investigative piece examining Mayor Carlos Hernandez's eight-year tenure and its devastating legacy of environmental degradation, unchecked corporate influence, and foreign domination of Las Flores.
+A scathing investigative piece examining Mayor Carlos Hernandez's multi-decade political tenure across Old Las Flores and the early City District, and its devastating legacy of environmental degradation, unchecked corporate influence, and foreign domination of Las Flores.
 
 ---
 

@@ -70,6 +70,9 @@ beforeAll(async () => {
   );
 
   // Seed districts table (required for coordinate-based TB calculation)
+  // Must use ON CONFLICT (name) because seed migrations 034/035 may have
+  // already created these districts with auto-generated UUIDs. We want to
+  // force our known UUIDs so the hardcoded constants above work as FK targets.
   await pool.query(
     `CREATE TABLE IF NOT EXISTS districts (
        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -87,24 +90,33 @@ beforeAll(async () => {
      ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
      ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
      ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
-     ON CONFLICT (name) DO NOTHING`
+     ON CONFLICT (name) DO UPDATE SET
+       id = EXCLUDED.id,
+       slug = EXCLUDED.slug,
+       x = EXCLUDED.x,
+       y = EXCLUDED.y`
   );
 
   await applyMigration('033_district_travel_costs.sql');
 
+  // Use the hardcoded district UUIDs (now guaranteed to exist after
+  // the ON CONFLICT (name) DO UPDATE SET id = EXCLUDED.id above).
+  const DOWNTOWN_ID = 'd1000000-0000-0000-0000-000000000001';
+  const OLD_TOWN_ID = 'd1000000-0000-0000-0000-000000000002';
+
   // Ensure scenes are assigned to the correct districts for this test
   // Apartment and Welcome Center -> Downtown, Cafe -> Old Town
   await pool.query(
-    `UPDATE scenes SET district_id = 'd1000000-0000-0000-0000-000000000001' WHERE id = $1`,
-    [APARTMENT_ID]
+    `UPDATE scenes SET district_id = $1 WHERE id = $2`,
+    [DOWNTOWN_ID, APARTMENT_ID]
   );
   await pool.query(
-    `UPDATE scenes SET district_id = 'd1000000-0000-0000-0000-000000000001' WHERE id = $1`,
-    [WELCOME_CENTER_ID]
+    `UPDATE scenes SET district_id = $1 WHERE id = $2`,
+    [DOWNTOWN_ID, WELCOME_CENTER_ID]
   );
   await pool.query(
-    `UPDATE scenes SET district_id = 'd1000000-0000-0000-0000-000000000002' WHERE id = $1`,
-    [CAFE_ID]
+    `UPDATE scenes SET district_id = $1 WHERE id = $2`,
+    [OLD_TOWN_ID, CAFE_ID]
   );
 
   await new Promise<void>((resolve) => {

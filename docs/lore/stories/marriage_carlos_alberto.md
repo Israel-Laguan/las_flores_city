@@ -6,12 +6,12 @@
 > **Period:** 2038
 
 ## Overview
-The marriage of Carlos Alberto Hernandez, the son of the influential politician Carlos Hernandez, to Elisabeth van der Meer, a member of the prominent Dutch family, marked a significant turning point in the political landscape of Las Flores. Initially seen as a strategic alliance between two powerful families, the union had unforeseen consequences that would derail Carlos Hernandez's reelection prospects.
+The marriage of Carlos Alberto Hernandez, the son of the influential politician Carlos Hernandez, to Elisabeth van der Meer, a member of the prominent Dutch family, marked a significant turning point in the political landscape of Las Flores. Initially seen as a strategic alliance between two powerful families, the union had unforeseen consequences that further undermined Carlos Hernandez's political standing.
 
 ## Political Consequences
 The Chinese community, which had been a major financial and political supporter of Carlos Hernandez, saw the marriage as a betrayal. They viewed the van der Meer family's Dutch roots and their mining interests as a direct threat to their own influence in Las Flores. This perception led to a significant cooling of relations between Carlos Hernandez and his Chinese allies, who had previously been instrumental in funding his political campaigns and ensuring his electoral success.
 
-As the rift between Carlos Hernandez and the Chinese community widened, it became clear that his reelection was no longer a viable option. The loss of Chinese support, coupled with the growing public scrutiny of his past dealings and allegations of corruption, made it untenable for Carlos Hernandez to continue his political career. Faced with the prospect of a bitter and divisive campaign, Carlos Hernandez decided to retire from politics, opting instead to focus on mentoring young leaders and engaging in philanthropic work.
+As the rift between Carlos Hernandez and the Chinese community widened, any prospect of continuing his political career became untenable. The loss of Chinese support, coupled with the growing public scrutiny of his past dealings and allegations of corruption, made it impossible for Carlos Hernandez to seek another term. Faced with the prospect of a bitter and divisive campaign, Carlos Hernandez decided to retire from politics, opting instead to focus on mentoring young leaders and engaging in philanthropic work.
 
 ## Family Dynamics
 The marriage between Carlos Alberto and Elisabeth was further complicated by the uncomfortable dynamics within the Hernandez family. Carlos Hernandez, the father, had a reputation for being somewhat inappropriate in his interactions with Elisabeth. His advances were subtle but unmistakable, making Elisabeth increasingly uncomfortable around him.

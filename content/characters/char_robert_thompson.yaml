@@ -1,9 +1,12 @@
-id: "05fb6665-5928-4e80-8bfc-d56b9bb38d71"
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 name: "Robert Thompson"
-title: "Las Flores Resident"
-description: "- 38 - Bob is tall and athletic, standing at about 6 feet with a well-kept beard that gives him a distinguished look. He has sandy blonde hair that he often styles back, and his wardrobe consists of tailored suits paired with trendy casual wear. He has a confident smile that can charm those around him. - Bob is outgoing and charismatic, known for his ability to network and connect with others easily. - \\ 38 - \\ Bob is tall and athletic, standing at about 6 feet with a well-kept beard that gives him a distinguished look."
+title: "Trade Regulation Consultant"
+description: |
+  A tall, athletic businessman originally from San Diego who moved to Las Flores to capitalize on opportunities in the Zona Franca. Bob runs a successful company helping international businesses navigate trade regulations. He's outgoing and charismatic, known for his networking abilities, but can be ruthless in his pursuit of wealth and influence. Married to Isabella with two children, he enjoys luxury vehicles, yachts, and high-end events.
 metadata:
   type: "human"
   role: "npc"
-  faction: "lw_group"
-  personality: "charismatic_driven"
+  faction: "independent"
+  personality: "charismatic_businessman"
+  organization: "Zona Franca Trade Solutions"
+  district_affiliation: "Las Flores"

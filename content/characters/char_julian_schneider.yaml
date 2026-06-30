@@ -1,9 +1,23 @@
-id: "aa9edae5-df77-4e8b-9cc0-d25e5acd82ac"
+id: "460b6f76-3d8e-4e85-9e24-7acf925c8b41"
 name: "Julian Schneider"
-title: "21-year-old European descendant living i at the university"
-description: "- 21 - Julian hails from a well-off family of European descent who moved to the Andean Mountains to create a picturesque hostel that attracts tourists seeking scenic retreats. His parents are entrepreneurs who enjoy sharing their love for the mountainous landscape and European-inspired hospitality. Growing up in this environment, Julian was exposed to both the comforts of affluence and the demands of running a business."
+title: "Business Administration Student, Future Hostel Manager"
+description: |
+  Julian Schneider, 21, European descendant in Andean Mountains. Studies business admin at Central Las Flores university, planning to modernize family hostel. Grew up affluent yet grounded in hospitality demands. Charming, sociable, adventurous but sometimes entitled. Struggles with balancing social life and academics under parental pressure. Loves skiing, hiking, photography, sharing Andean beauty online. Wants guided tours, culinary workshops, cultural events at hostel.
 metadata:
   type: "human"
   role: "npc"
-  faction: "media"
-  personality: "shrewd_businessperson"
+  faction: "entrepreneurial_elite"
+  personality: "charming_sociable_ambitious"
+  age: 21
+  gender: "Male"
+  ethnicity: "European"
+  occupation: "Business Administration Student"
+  background: "well-off European family moved to Andean Mountains to create hostel; exposed to affluence and business demands"
+  education: "business administration at Central Las Flores university"
+  residence: "Andean Mountains (family hostel)"
+  organization: "Schneider Family Hostel"
+  allies: "European hospitality traditions, mountain tourism industry"
+  mannerisms: "charming approachable demeanor; stylish casual attire; active mountain lifestyle"
+  motivations: "balance social/academic life; meet family expectations; modernize family business; attract international tourists"
+  quote: "I aim to blend old‑world hospitality with modern experiences."
+  methods: "hospitality management, entrepreneurship, cultural exchange, outdoor adventures"

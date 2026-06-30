@@ -1,9 +1,12 @@
-id: "492fb903-d999-44a7-bdb3-d59612850413"
+---
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567891"
 name: "Rosa Martínez"
-title: "supervisor at a popular café in Central"
-description: "- 45 - Rosa grew up in a small mountain village in the Andean region of Las Flores. She comes from a family of farmers and learned the value of hard work from a young age. Rosa began working at a local restaurant in the mountains, where she honed her culinary skills and developed a passion for traditional Andean cuisine. - Rosa has a warm, inviting presence, with long, dark hair often tied back in a practical bun. She has expressive brown eyes that convey her nurturing nature. - \\ 45 - \\ Rosa grew up in a small mountain village in the Andean region of Las Flores."
+title: "Café Supervisor & Culinary Mentor"
+description: "A resilient and resourceful Andean native who transitioned from mountain village life to manage a Central Las Flores café. Specializing in traditional Andean cuisine with modern fusion twists, she mentors colleagues while balancing urban challenges. Passionate about preserving her mountain heritage through food and community work."
 metadata:
   type: "human"
   role: "npc"
   faction: "independent"
-  personality: "community_caretaker"
+  personality: "cultural_preserver"
+  organization: "Central Las Flores Café"
+  district_affiliation: "Las Flores"

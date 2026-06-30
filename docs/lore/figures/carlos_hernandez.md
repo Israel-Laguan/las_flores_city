@@ -21,7 +21,7 @@ He was re-elected multiple times, maintaining power through the town's dramatic 
 - **Age:** ~25 (2000), ~51 (2026), ~63 (2038), ~84 (2059), ~102 (2077)
 - **Height:** 5'9"
 - **Weight:** 180 lbs
-- **Hair:** Black in youth (2025), predominantly gray/white by 2059, neatly groomed, receding hairline
+- **Hair:** Black in early adulthood, graying by 2025, predominantly gray/white by 2059, neatly groomed, receding hairline
 - **Eyes:** Dark brown, warm and engaging
 - **Facial Features:** Round face, friendly smile, distinctive mole on his right cheek
 - **Build:** Slightly overweight
@@ -66,7 +66,7 @@ Despite his popularity, rumors about Carlos persisted throughout his career:
 
 - **Chinese Ties:** Whispers of illicit campaign contributions and favors exchanged for political support circulated during his later terms. While no concrete evidence ever surfaced, the allegations cast a shadow over his otherwise illustrious career.
 - **Extramarital Affair:** It was rumored that Carlos had an affair with a local journalist during his mayoral tenure. Never confirmed, but the gossip strained his relationship with his wife and children for a time.
-- **Misappropriation Allegations (2058):** Allegations surfaced regarding the misappropriation of city funds for personal use. An investigation cleared him of wrongdoing, but whispers persisted that he had used his influence to quash the inquiry.
+- **Misappropriation Allegations (2058):** Retrospective allegations surfaced in 2058 regarding the misappropriation of mayoral-era city funds for personal use. An investigation cleared him of wrongdoing, but whispers persisted that he had used his influence to quash the inquiry. These claims related to decisions made during his tenure, not continued official activity after 2038.
 - **Luxury Lifestyle:** An open secret among the city's elite, Carlos had a penchant for expensive gifts and luxurious vacations, leading to speculation about the sources of his wealth and the favors he might be trading for such perks.
 
 ## The Free City Maneuver (2033–2034)

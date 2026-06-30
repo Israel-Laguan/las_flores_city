@@ -1,9 +1,10 @@
 id: "48144b52-82e7-4623-9c16-6fc44646dfcc"
 name: "Isadora Morales"
-title: "steadfast protector and her sister"
-description: "and Interests."
+title: "Mother of Two in Old Las Flores"
+description: |
+  Isadora "Izzy" Morales is a vivacious Far South descendant who settled in Old Las Flores seeking a fresh start. Raised among desert-tradition settlers with siblings Mateo and Lucia, she left home at 12 to live with a charismatic smuggler named Raúl until he abandoned her for another woman. She now juggles motherhood of two sons—Diego and Alejandro, from different fathers—with meager finances from selling small articles. Izzy frequents bars and parties, indulges in fashion and jewelry, and dreams of marrying wealth to secure stability for her children while struggling to balance immediate desires with long-term responsibility.
 metadata:
   type: "human"
   role: "npc"
   faction: "independent"
-  personality: "strong_willed"
+  personality: "vivacious_ambitious_impetuous"

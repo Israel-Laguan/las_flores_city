@@ -1,7 +1,12 @@
 id: "f92e061c-2515-4e09-8022-a1f359b2b754"
 name: "Javier Salazar"
 title: "Far South Police Helicopter Pilot"
-description: "A 35-year-old police officer assigned to the rugged Far South region of Las Flores, where he works as a helicopter pilot chasing smugglers and running aerial patrols. Originally from Central Las Flores, Javi chafes at the isolation of his posting and yearns for the city's nightlife, fine dining, and live music. He cultivates a flashy, ladies' man image — knock-off luxury brands, fake designer watches, a carefully styled look — and a magnetic charm that draws people in, even as his reputation for unfaithfulness undermines his credibility with local women. Beneath the bravado and exaggerated tales of aerial showdowns with smugglers sits a man genuinely discontent with his remote assignment, compensating for the dullness of duty with attention, dancing, and the occasional thrill of the chase."
+description: |
+  Javier "Javi" Salazar is a 35-year-old police helicopter pilot assigned to the Far South region of Las Flores. Originally from Central Las Flores, he grew up enjoying the city's vibrant nightlife and social scene, but his remote posting leaves him discontent and yearning for the excitement of home.
+
+  Javi cultivates a flashy ladies' man image — knock-off luxury brands, fake designer watches, styled dark hair, and a charming smile. He enjoys flirting, but his reputation for unfaithfulness makes local women view him with skepticism. Beneath the bravado, he struggles with disappointment about his isolation and limited social scene, seeking out drinking and dancing to enliven his mundane duties.
+
+  As a police helicopter pilot, he takes pride in his skills combating smugglers, thriving on adrenaline and exaggerating danger to impress others. In his free time, he enjoys restaurants, bars, live music, dancing, and embellishing tales of his escapades to entertain his peers.
 metadata:
   type: "human"
   role: "npc"

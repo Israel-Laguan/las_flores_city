@@ -1,9 +1,26 @@
 id: "c3000011-e29b-41d4-a716-446655440011"
 name: "Elisabeth van der Meer"
-title: "Political Figure"
-description: "A Dutch Van der Meer who married Carlos Alberto Hernandez in 2038. Trapped between her family's integrity, her husband's corruption, and her own desire for comfort, she navigates the treacherous waters of Las Flores politics. Elisabeth was born into the prominent van der Meer family in Europe during the 2020s. She met her husband at a society event when she was just 18 years old. When Elisabeth's father-in-law decided to expand the family's mining interests into Las Flores, the entire van der Meer clan, including Elisabeth and her immediate family, moved to the region."
+title: "Socialite, Art Collector, and Philanthropist"
+description: |
+  Born into the prominent van der Meer family in Europe during the 2020s, Elisabeth married Carlos Alberto Hernandez in 2038 after meeting him at a society event when she was 18. When her father Pieter expanded family mining interests into Las Flores, the entire van der Meer clan relocated to the region.
+
+  Elisabeth quickly became a pillar of Las Flores high society, hosting lavish parties at her riverbank estate and building one of the region's most extensive collections of Shipibo-Konibo art. She serves on boards of education, healthcare, and women's empowerment organizations, using her influence to advocate for marginalized communities. Despite public scrutiny surrounding her ex-husband's business dealings, she remains devoted to raising her daughter Sophia and supporting causes that improve residents' lives.
 metadata:
   type: "human"
   role: "npc"
   faction: "dutch_interest"
-  personality: "conflicted_alliance"
+  personality: "elegant_philanthropic_socialite"
+  age: "late 30s"
+  gender: "Female"
+  ethnicity: "Dutch"
+  occupation: "Socialite, Art Collector, Philanthropist"
+  physical_description: "elegant woman with refined European features, carries herself with the grace and poise expected of high society, typically dressed in sophisticated attire suitable for social events and gallery openings"
+  background: "born into prominent van der Meer family, married Carlos Alberto Hernandez, relocated to Las Flores for family mining business expansion, divorced but maintains social prominence"
+  residence: "Las Flores city (sprawling riverbank estate)"
+  business: "extensive art collection featuring Shipibo-Konibo paintings, frequently loans pieces to local museums and galleries"
+  mannerisms: "charming and gracious hostess, speaks with refined European accent, effortlessly navigates social situations, genuinely passionate about art and charitable causes"
+  motivations: "support cultural arts and indigenous artisans, advocate for marginalized communities through philanthropy, maintain family social status, provide stable upbringing for daughter Sophia"
+  fears: "family reputation tarnished by ex-husband's business scandals, loss of social influence, art collection devalued or dispersed, daughter affected by family controversies"
+  goals: "solidify legacy as patron of Shipibo-Konibo art, expand charitable impact on Las Flores community, protect daughter from family business fallout, maintain position in high society"
+  challenges: "balancing family reputation with personal values, navigating social expectations while pursuing genuine philanthropy, managing public perception amid business controversies, preserving cultural heritage while being part of colonial economic structures"
+  quote: "Art has the power to bridge worlds. Through Shipibo-Konibo paintings, I hope to give these talented artisans the recognition they deserve while enriching our community's cultural fabric."

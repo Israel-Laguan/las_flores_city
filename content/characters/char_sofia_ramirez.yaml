@@ -1,9 +1,18 @@
-id: "c1000008-e29b-41d4-a716-446655440008"
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 name: "Sofia Ramirez"
-title: "Lead Prosecutor, Minera Estrella Trial"
-description: "A seasoned environmental law attorney who led the prosecution against Minera Estrella. Known for her unwavering commitment to justice."
-metadata:
-  type: "human"
-  role: "npc"
-  faction: "civil_society"
-  personality: "passionate_advocate"
+title: "Attorney & Former Prosecutor"
+birth_year: 1974
+
+description: "Principled attorney who lost credibility after Minera Estrella trial"
+physical_description:
+  - Average height
+  - Determined stride
+  - Black hair with gray streaks
+  - Professional demeanor
+
+psychological_description:
+  - Disillusioned but still just
+  - Family-focused
+  - Memoir plans:
+    - Expose corruption
+    - Share truth
