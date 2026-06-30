@@ -1,9 +1,29 @@
 id: "36375e33-3a5d-4290-891e-09f5530267e7"
 name: "Camila Reyes"
-title: "spirited young woman from Bahía de las O"
-description: "Camila Reyes (19). Camila hails from Bahía de las Olas, a picturesque coastal village known for its stunning beaches and vibrant fishing community. Growing up by the ocean, she developed a deep appreciation for the sea and the cultural richness of her hometown. Camila is the first in her family to attend university, driven by her desire to create opportunities for herself and her community. Camila is adventurous, passionate, and sociable."
+title: "Environmental Science Student from Bahía de las Olas"
+description: |
+  Camila Reyes is a spirited 19-year-old woman from Bahía de las Olas, a picturesque coastal village known for its stunning beaches and vibrant fishing community. Growing up by the ocean, she developed a deep appreciation for the sea and the cultural richness of her hometown. 
+  
+  As the first in her family to attend university, Camila is driven by her desire to create opportunities for herself and her community. She is currently pursuing a degree in Environmental Science, motivated by her love for the ocean and her strong desire to advocate for marine conservation. Her dream is to return to Bahía de las Olas after graduation to help implement sustainable practices that can support the local fishing community and preserve the natural beauty of the coastline.
+  
+  Camila's adventurous, passionate, and sociable personality makes her radiate positivity and enthusiasm. She makes new friends easily wherever she goes and embraces the educational opportunities university life offers. Her warm-hearted nature makes her well-loved by her peers, though she sometimes struggles with homesickness and adjusting to the fast-paced urban environment after the simplicity and sense of community she enjoyed back home.
+  
+  Outside of her studies, Camila enjoys outdoor activities such as hiking, beach volleyball, and surfing. She loves capturing the beauty of her surroundings through photography and often shares her coastal adventures on social media. She is also an advocate for local art and culture, frequently attending events that celebrate the rich heritage of her hometown.
 metadata:
   type: "human"
   role: "npc"
-  faction: "media"
-  personality: "passionate_advocate"
+  faction: "civil_society"
+  personality: "adventurous_passionate_sociable"
+  age: 19
+  gender: "Female"
+  ethnicity: "Latin American"
+  occupation: "Environmental Science Student"
+  background: "grew up in Bahía de las Olas coastal village, first in family to attend university, deep connection to ocean and fishing community"
+  education: "Environmental Science degree in progress at university"
+  residence: "Bahía de las Olas (hometown), currently living in city for university studies"
+  organization: "none (independent student)"
+  allies: "local fishing community, environmental advocates, university peers"
+  mannerisms: "radiates positivity and enthusiasm, makes friends easily, frequently takes photographs, shares coastal adventures on social media, wears colorful headbands and beachy accessories"
+  motivations: "return to Bahía de las Olas to implement sustainable practices, protect coastal ecosystems, inspire next generation to appreciate and protect environment, bridge gap between traditional knowledge and modern ecological practices"
+  quote: "The ocean gave me life and purpose. I want to give back by protecting it for future generations."
+  methods: "education, community organizing, photography, social media advocacy, traditional knowledge integration"
