@@ -4,7 +4,8 @@
 
 ## Overview
 
-**Established:** 2036 (Free City status)
+**Official Founding (Constitution):** 2036
+**Provisional Government Begins:** 2034
 **Population:** ~1,250,000 (2050), projected ~1,500,000+ (2080)
 **Total Area:** 8,000 km²
 **Length:** ~75 km
@@ -14,7 +15,7 @@
 **Government:** Free City (autonomous governance)
 **Key Industries:** Finance, technology, tourism, manufacturing, lithium mining
 
-Las Flores Free City is a modern metropolis celebrated for its harmonious integration of urban development and natural landscapes. Since its official establishment in 2036, the city has rapidly transformed into a center of economic innovation, cultural diversity, and social progress. Its early origins can be traced to Old Las Flores, now a cherished landmark within the South District, situated near the river to the south of the current city center.
+Las Flores Free City is a modern metropolis celebrated for its harmonious integration of urban development and natural landscapes. The city's official establishment under its Free City Constitution occurred in **2036**, but its administrative core — the City District — began operating under a provisional government in **2034**, when construction was approximately 60% complete. Under the leadership of Mayor Carlos Hernandez (2034–2038), the district served as the embryonic administrative and financial center while the broader metropolis was still being built. Since formal independence in 2036, the city has rapidly transformed into a center of economic innovation, cultural diversity, and social progress. Its early origins can be traced to Old Las Flores, now a cherished landmark within the South District, situated near the river to the south of the current city center.
 
 ---
 
@@ -164,6 +165,7 @@ The streets of Las Flores extend from the historical center of Old Las Flores, p
 
 ### Food & Entertainment (Young & Middle-Aged Adults)
 - **Fusion Cuisine:** Chinese-Latin American blends (tacos al estilo chino, Asian-inspired ceviche, dim sum with Latin influences)
+- **Fresh Seafood:** Daily deliveries by Alberto Santiago "El Pescador" bringing Pacific Coast catch to city restaurants
 - **Craft Beers & Cocktails:** Local breweries and mixology bars
 - **Live Music & DJ Performances:** La Casa de la Música, El Templo del Ritmo, El Patio de las Estrellas
 - **Theater & Performing Arts:** Teatro Nacional, Centro Cultural Chino-Latino
