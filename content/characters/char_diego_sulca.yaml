@@ -1,9 +1,35 @@
 id: "b593431c-baae-4da1-9d83-9bab51b45170"
 name: "Diego Sulca"
-title: "Las Flores Resident"
-description: "A 19-year-old university student hailing from a modest background. His mother is from San Pedro de los Pescadores, and his father comes from Old Las Flores, where they instilled in him the values of hard work and perseverance. Diego is determined to make a better life for himself, but he finds himself grappling with the realities of university life. Appearance Diego has a lean, athletic build from years of helping his mother with fishing."
+title: "Environmental Science Student, Fisherman's Son from San Pedro de los Pescadores"
+description: |
+  Diego Sulca is a 19-year-old university student hailing from a modest background, embodying the journey of a young man caught between aspiration and anxiety. His mother is from San Pedro de los Pescadores, and his father comes from Old Las Flores, where they instilled in him the values of hard work and perseverance. Diego is determined to make a better life for himself, but he finds himself grappling with the harsh realities of university life.
+  
+  Diego has a lean, athletic build from years of helping his mother with fishing. He has dark, curly hair and warm brown eyes that reflect his inherent kindness but also reveal his shyness. His clothing typically consists of comfortable, casual wear, often a bit rumpled due to his easygoing nature. He prefers practicality over fashion, reflecting his working-class roots.
+  
+  Diego is ambitious, kind-hearted, and resilient, but he often struggles with feelings of self-doubt. He is not particularly enthusiastic about academics, which leads him to repeat courses that he finds challenging. His disinterest in studying often manifests as anxiety during exams, causing him to second-guess his abilities. Alongside this academic struggle, he is shy and has a hard time making friends, which makes the university environment particularly daunting for him.
+  
+  During his high school years, Diego experienced light bullying from classmates who found humor in his shyness and occasional academic struggles. Even now, he carries some of the emotional scars from those experiences, affecting his confidence in social situations.
+  
+  Currently pursuing a major in Environmental Science, inspired by a desire to help his community and raise awareness about sustainable fishing practices. Unfortunately, his lack of interest and difficulty grasping complex concepts make the coursework overwhelming. He often seeks help from his mother, attempting to navigate the challenges of college with limited support.
+  
+  Outside of his studies, Diego has a deep appreciation for nature and enjoys hiking and spending time outdoors. He finds solace in the mountains around Las Flores, where he can escape from the pressure of university life. He also loves traditional Andean music and plays the charango (a small stringed instrument), which brings him a sense of joy and connection to his roots.
+  
+  Despite his struggles, Diego dreams of successfully completing his degree and returning to his community to advocate for sustainable fishing and environmental conservation. He envisions creating programs that educate local fishermen about eco-friendly practices to preserve the environment while supporting their livelihoods.
 metadata:
   type: "human"
   role: "npc"
-  faction: "independent"
-  personality: "ambitious_professional"
+  faction: "civil_society"
+  personality: "ambitious_kind_hearted_shy"
+  age: 19
+  gender: "Male"
+  ethnicity: "Indigenous Latin American"
+  occupation: "Environmental Science Student"
+  background: "mother from San Pedro de los Pescadores, father from Old Las Flores, modest working-class background, helped mother with fishing, values of hard work and perseverance"
+  education: "Environmental Science major at university, struggles with coursework, repeats challenging courses"
+  residence: "university housing or modest accommodation near campus"
+  organization: "university student"
+  allies: "mother (fisherwoman from San Pedro de los Pescadores), father (from Old Las Flores), working-class community"
+  mannerisms: "shy demeanor, prefers practical clothing, plays charango, enjoys outdoor solitude, seeks help when struggling academically"
+  motivations: "complete degree, return to community, advocate for sustainable fishing, educate fishermen about eco-friendly practices, prove himself despite academic struggles"
+  quote: "I may struggle in the classroom, but I know the value of hard work. The mountains don't judge you for your grades."
+  methods: "perseverance, community support, outdoor therapy, traditional music, seeking academic help"
