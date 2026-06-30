@@ -256,7 +256,8 @@ test.describe('Full First Hour Loop', () => {
     expect(moveRes.ok()).toBeTruthy();
     const moveData = await moveRes.json();
     expect(moveData.data.to_location_id).toBe(CAFE_SCENE_ID);
-    expect(moveData.data.tb_cost).toBe(1);
+    // Apartment (City at 0,2) → Cafe (South at 2,0): distance=√8≈2.828, cost=floor(2.828/2)+1=2
+    expect(moveData.data.tb_cost).toBe(2);
 
     // 3. Start a dialogue at the Café
     const baristaId = '123e4567-e89b-12d3-a456-426614174000';

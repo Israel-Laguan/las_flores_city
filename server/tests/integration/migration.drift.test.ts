@@ -6,9 +6,9 @@ import { closeRedis } from '../../src/database/redis.js';
 
 const { Pool } = pg;
 
-// Dedicated test UUID — matches content/mysteries/mystery_old_town_leak.yaml; cleaned up in afterAll.
+// Dedicated test UUID — matches content/mysteries/mystery_great_lithium_leak.yaml; cleaned up in afterAll.
 const MYSTERY_ID = 'a0000000-e29b-41d4-a716-446655440001';
-const MYSTERY_FILE = 'mysteries/mystery_old_town_leak.yaml';
+const MYSTERY_FILE = 'mysteries/mystery_great_lithium_leak.yaml';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
@@ -89,7 +89,7 @@ describe('Migration drift guard', () => {
       [MYSTERY_ID]
     );
     expect(restored.rows).toHaveLength(1);
-    expect(restored.rows[0].title).toBe('The Old Town Leak');
+    expect(restored.rows[0].title).toBe('The Great Lithium Leak');
     expect(restored.rows[0].status).toBe('ACTIVE');
 
     const vaultItem = await pool.query(

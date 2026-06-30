@@ -92,6 +92,21 @@ beforeAll(async () => {
 
   await applyMigration('033_district_travel_costs.sql');
 
+  // Ensure scenes are assigned to the correct districts for this test
+  // Apartment and Welcome Center -> Downtown, Cafe -> Old Town
+  await pool.query(
+    `UPDATE scenes SET district_id = 'd1000000-0000-0000-0000-000000000001' WHERE id = $1`,
+    [APARTMENT_ID]
+  );
+  await pool.query(
+    `UPDATE scenes SET district_id = 'd1000000-0000-0000-0000-000000000001' WHERE id = $1`,
+    [WELCOME_CENTER_ID]
+  );
+  await pool.query(
+    `UPDATE scenes SET district_id = 'd1000000-0000-0000-0000-000000000002' WHERE id = $1`,
+    [CAFE_ID]
+  );
+
   await new Promise<void>((resolve) => {
     server = app.listen(0, resolve);
   });
