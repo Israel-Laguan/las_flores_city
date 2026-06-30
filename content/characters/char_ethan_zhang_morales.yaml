@@ -1,9 +1,35 @@
 id: "307ce7e1-71b8-4baf-9217-8184e4b46cde"
 name: "Ethan Zhang-Morales"
-title: "mixed Chinese and Latino student hailing"
-description: "- 21 - Ethan is a mixed Chinese and Latino student hailing from a multicultural neighborhood near the port area in Las Flores. Growing up in a family that values hard work, he developed a fascination with machines and engineering from a young age. His parents encourage him to pursue a degree in engineering to build a stable future. - Ethan is somewhat chubby, with a rounded face and a noticeable double chin. - \\ 21 - \\ Ethan is a mixed Chinese and Latino student hailing from a multicultural neighborhood near the port area in Las Flores."
+title: "Mechanical Engineering Student, Anime Enthusiast, and Aspiring Technician"
+description: |
+  Ethan Zhang-Morales is a charmingly goofy and prideful 21-year-old mixed Chinese and Latino student hailing from a multicultural neighborhood near the port area in Las Flores. Growing up in a family that values hard work, he developed a fascination with machines and engineering from a young age. His parents encourage him to pursue a degree in engineering to build a stable future.
+  
+  Ethan is somewhat chubby, with a rounded face and a noticeable double chin. He has short, messy black hair and round glasses that often slip down his nose. His casual attire consists of oversized graphic t-shirts featuring anime characters, paired with comfortable pants or shorts. His expressive brown eyes twinkle with mischief, and he's known for his goofy smile.
+  
+  Despite a reputation for being somewhat oblivious and lacking common sense, Ethan carries a prideful demeanor. He can be vengeful when provoked, especially towards those who mock him. He thrives on trolling online communities, often making sarcastic comments or posting memes related to anime and perverted humor. Although he might appear carefree, his desire to impress women, specifically with aspirations of a future marriage based on financial success, drives him.
+  
+  Ethan is currently studying Mechanical Engineering, with a focus on repairing and maintaining machines. He dreams of combining his technical skills with business knowledge to work in a lucrative position, ideally as a mechanic or technician for a successful manufacturing company. He has a basic understanding of various mechanical systems and enjoys tinkering with machines and gadgets, often surprising classmates with his insights despite his goofy nature.
+  
+  Ethan has to cope with the perception of being "dumb" despite showing flashes of insight and ambition. His pride often prevents him from acknowledging when he needs help. He struggles with focus at times, often distracted by thoughts of anime characters or romantic fantasies. His approach to studies is sometimes laid-back, though he is clear about finishing his education to secure a good job.
+  
+  Outside of his studies, Ethan enjoys discussing anime and manga with his friends, sharing perverted jokes and fan theories. He spends his weekends watching anime or playing video games, often discussing character developments and plot lines with fervor. He is a dreamer when it comes to relationships, frequently talking about how wealth and a good job will help him win over a girlfriend and, ultimately, a wife.
+  
+  Ethan aims to complete his degree successfully and land a reliable job in the mechanical field. He believes that financial stability will lead him to a fulfilling love life, as he assumes that women are primarily attracted to security and wealth. His long-term vision includes marrying someone beautiful and living a comfortable life.
 metadata:
   type: "human"
   role: "npc"
   faction: "independent"
-  personality: "shrewd_businessperson"
+  personality: "goofy_proud_ambitious"
+  age: 21
+  gender: "Male"
+  ethnicity: "Mixed Chinese and Latino"
+  occupation: "Mechanical Engineering Student"
+  background: "grew up in multicultural neighborhood near port area in Las Flores, family values hard work, fascination with machines from young age, parents encouraged engineering career"
+  education: "Mechanical Engineering degree in progress at university, focus on machine repair and maintenance"
+  residence: "student housing near university or port area"
+  organization: "university student"
+  allies: "classmates who share anime/manga interests, online gaming friends, family"
+  mannerisms: "glasses often slip down nose, goofy smile, wears oversized anime t-shirts, makes sarcastic comments, trolls online communities"
+  motivations: "complete Mechanical Engineering degree, secure stable job as mechanic/technician, impress women, achieve financial success for future marriage, prove his intelligence"
+  quote: "I may seem like a goof, but I know my way around a machine. And when I get that stable job, the ladies won't know what hit them."
+  methods: "tinkering with machines, troubleshooting repairs, anime discussions, online trolling, studying when necessary"
