@@ -1,0 +1,9 @@
+id: "c1000001-e29b-41d4-a716-446655440001"
+name: "Evelyn Ruthenberg"
+title: "Whistleblower & Shadow Investigator"
+description: "Former Luz del Rio engineer who discovered the Great Lithium Leak cover-up after meeting activist Karla in February 2053. She recovered key evidence—including Cecilia Perez's suppressed Carinata study and internal dam-structure emails—from Karla and Nubia's apartment, but was assaulted by Minera Estrella enforcers in March 2055 and forced into hiding for three years. After her mother died from lithium contamination and the 2057 acquittal destroyed her faith in legal justice, she returned in February 2058 and allied with Yara Rossi and Dr. Wei Zhang to build a phytoremediation restoration plan. Simultaneously she cultivated a covert intelligence network, tracking corrupt officials and manipulating informants. When Yara was assassinated July 14, 2059, Evelyn identified the body in the morgue and vowed to continue fighting in both the light and the shadows."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "shadow_investigator"

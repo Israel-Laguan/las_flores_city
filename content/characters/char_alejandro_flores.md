@@ -1,0 +1,7 @@
+# Alejandro Flores
+
+**Title:** Middle Manager at Vinícola La Hacienda
+
+**Description (full):**
+
+Alejandro Flores is a 38-year-old middle manager at Vinícola La Hacienda from a prestigious wine-industry family. Fluent in Spanish, English, French, and Mandarin, he was educated in private schools and raised in an affluent environment. Alejandro stands tall with an elegant sense of style—often wearing tailored suits that reflect his classy demeanor, dark hair slicked back, and sharp features with keen green eyes that convey authority or disapproval. His management style is results-driven and known for being dismissive of those he views as less competent, creating barriers in professional relationships. While knowledgeable and articulate, he struggles with balancing high standards and empathy, often prioritizing efficiency over understanding. As a middle manager, he oversees production processes, quality control, and logistics, ensuring wines meet high standards and are delivered promptly. His attention to detail and commitment to excellence drive the vineyard's success but also create pressure for his team. Outside work, Alejandro enjoys wine tastings, art galleries, cultural events, and reads on history and philosophy. Aspires to climb to executive leadership while modernizing family winemaking traditions while maintaining traditional practices within the vineyard.

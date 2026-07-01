@@ -9,7 +9,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const API_URL = process.env.API_URL ?? 'http://localhost:5173';
+const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
 const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 
@@ -256,7 +256,8 @@ test.describe('Full First Hour Loop', () => {
     expect(moveRes.ok()).toBeTruthy();
     const moveData = await moveRes.json();
     expect(moveData.data.to_location_id).toBe(CAFE_SCENE_ID);
-    expect(moveData.data.tb_cost).toBe(1);
+    // Apartment (City at 0,2) → Cafe (South at 2,0): distance=√8≈2.828, cost=floor(2.828/2)+1=2
+    expect(moveData.data.tb_cost).toBe(2);
 
     // 3. Start a dialogue at the Café
     const baristaId = '123e4567-e89b-12d3-a456-426614174000';

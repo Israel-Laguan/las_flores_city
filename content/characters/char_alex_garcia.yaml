@@ -1,0 +1,9 @@
+id: "c2000003-e29b-41d4-a716-446655440003"
+name: "Alex Garcia"
+title: "Mathematics Student, Van der Meer Scholar"
+description: "The eldest Garcia child, a math prodigy who secured a scholarship from the Van der Meer Foundation after his mother's death. He tutors other students and works at the university library to support his family."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "brilliant_survivor"

@@ -1,0 +1,10 @@
+id: "ca5d5579-c7e2-470b-9f38-292e983dc82b"
+name: "Juan Pérez"
+title: "Star Journalist, The Chronicle"
+description: "A charismatic and ambitious reporter for The Las Flores Chronicle. He has a sharp wit and an uncanny knack for uncovering scandals among the city's elite."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "media"
+  personality: "ambitious_gossip"
+  lore_doc: "organizations/las_flores_chronicle.md"

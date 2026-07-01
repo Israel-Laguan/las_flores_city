@@ -1,0 +1,9 @@
+id: "c1000008-e29b-41d4-a716-44665544000e"
+name: "Míngzé Luo"
+title: "President, Minera Estrella"
+description: "President of Minera Estrella during the Great Lithium Leak. Denied corporate responsibility at trial and helped orchestrate the cover-up."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "corporate_denier"

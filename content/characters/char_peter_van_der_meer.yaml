@@ -1,0 +1,15 @@
+id: "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e"
+name: "Peter van der Meer"
+title: "Van der Meer Industries Executive, LGBTQ+ Rights Advocate"
+age: 50
+description: "Peter van der Meer is the eldest child of Jan and Maria van der Meer, born into the privilege and expectation of Old Las Flores society. As the heir apparent to the Van der Meer family business, Peter was groomed from an early age to take on a significant leadership role. His journey has been marked by personal evolution, from questioning his predetermined path to becoming a trailblazer for LGBTQ+ rights in the conservative society of Las Flores, all while proving himself as a capable leader within Van der Meer Industries."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "courageous_advocate"
+  appearance: "polished aristocratic presence, warm and approachable demeanor"
+  interests: "business leadership, LGBTQ+ advocacy, family legacy, environmental innovation"
+  goals: "modernize Van der Meer Industries, honor father's legacy, advance LGBTQ+ rights, develop environmentally-conscious refinery"
+  relationships: "Jan van der Meer (father, deceased 2060), Maria van der Meer (mother), Anna van der Meer (sister), Rafaela (ex-wife), Peter van der Meer Jr. (son), Jan Jr. (husband)"
+  notable_events: "Married Rafaela in early 20s, came out as gay in 2058, married Jan Jr. at charity gala, father passed in 2060, co-manages mother's care with Anna, oversees cutting-edge refinery development"

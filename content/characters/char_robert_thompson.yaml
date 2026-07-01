@@ -1,0 +1,12 @@
+id: "54a51e17-73be-4e4e-9b10-cbeea060e0ea"
+name: "Robert Thompson"
+title: "Trade Regulation Consultant"
+description: |
+  A tall, athletic businessman originally from San Diego who moved to Las Flores to capitalize on opportunities in the Zona Franca. Bob runs a successful company helping international businesses navigate trade regulations. He's outgoing and charismatic, known for his networking abilities, but can be ruthless in his pursuit of wealth and influence. Married to Isabella with two children, he enjoys luxury vehicles, yachts, and high-end events.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "charismatic_businessman"
+  organization: "Zona Franca Trade Solutions"
+  district_affiliation: "Las Flores"

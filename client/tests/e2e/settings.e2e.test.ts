@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 

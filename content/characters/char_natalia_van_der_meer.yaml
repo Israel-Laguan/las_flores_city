@@ -1,0 +1,9 @@
+id: "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c"
+name: "Natalia van der Meer"
+title: "Artist"
+description: "An up-and-coming artist in the Van der Meer family. Her first solo exhibition 'Breaking Boundaries' featured abstract paintings and mixed media sculptures challenging traditional norms."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "artistic_rebel"

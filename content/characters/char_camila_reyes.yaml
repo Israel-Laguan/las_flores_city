@@ -1,0 +1,23 @@
+id: "36375e33-3a5d-4290-891e-09f5530267e7"
+name: "Camila Reyes"
+title: "Environmental Science Student from Bahía de las Olas"
+description: |
+  Camila Reyes is a spirited 19-year-old from Bahía de las Olas, a picturesque coastal village with stunning beaches and a vibrant fishing community. Growing up by the ocean, she developed a deep love for the sea and her hometown's cultural richness. As the first in her family to attend university, Camila is driven to create opportunities for herself and her community, pursuing a degree in Environmental Science with a focus on marine conservation. Her dream is to return to Bahía de las Olas after graduation to help implement sustainable fishing practices and preserve the coastline. Adventurous, passionate, and sociable, she radiates positivity and makes friends easily, though she sometimes struggles with homesickness and adjusting to city life after the tight-knit simplicity of her coastal home.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "civil_society"
+  personality: "adventurous_passionate_sociable"
+  age: 19
+  gender: "Female"
+  ethnicity: "Latin American"
+  occupation: "Environmental Science Student"
+  background: "grew up in Bahía de las Olas coastal village, first in family to attend university, deep connection to ocean and fishing community"
+  education: "Environmental Science degree in progress at university"
+  residence: "Bahía de las Olas (hometown), currently living in city for university studies"
+  organization: "none (independent student)"
+  allies: "local fishing community, environmental advocates, university peers"
+  mannerisms: "radiates positivity and enthusiasm, makes friends easily, frequently takes photographs, shares coastal adventures on social media, wears colorful headbands and beachy accessories"
+  motivations: "return to Bahía de las Olas to implement sustainable practices, protect coastal ecosystems, inspire next generation to appreciate and protect environment, bridge gap between traditional knowledge and modern ecological practices"
+  quote: "The ocean gave me life and purpose. I want to give back by protecting it for future generations."
+  methods: "education, community organizing, photography, social media advocacy, traditional knowledge integration"

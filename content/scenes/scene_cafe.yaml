@@ -1,7 +1,9 @@
 id: "123e4567-e89b-12d3-a456-426614174001"
 name: "Old Town Café"
 description: "A warm, slightly worn coffee shop in the historic district of Las Flores. Smells of roasted beans and damp brick."
-district: "Old Town"
+district: "South"
+district_lore: "old_las_flores"
+district_subzone: "Old Las Flores"
 background_url: "https://cdn.lasflores2077.com/locations/bg_old_town_cafe.png"
 mood: "cozy"
 available_dialogues:

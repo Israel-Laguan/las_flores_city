@@ -1,0 +1,28 @@
+id: "c1000014-e29b-41d4-a716-446655440014"
+name: "Daiyu Liu"
+title: "International Relations Student at UILF, Chinese Cultural Purist"
+description: |
+  Daiyu Liu is a highly intelligent and ambitious woman in her mid-20s, born in China but moved to Las Flores with her family at a young age. Growing up in an affluent neighborhood near the Universidad Internacional de Las Flores (UILF) campus, she developed a sophisticated worldview and strong sense of her cultural identity.
+  
+  Currently pursuing a degree in International Relations at UILF on a full scholarship, Daiyu hopes to enter diplomacy or international business after graduation. She has a sharp wit and isn't afraid to speak her mind, often engaging in lively debates about geopolitical affairs and cultural superiority.
+  
+  Despite her academic accomplishments and social standing, Daiyu carries an air of arrogance and can come across as condescending to others, particularly those from different backgrounds or lower economic statuses. She holds strong views on race and culture, firmly believing in Chinese cultural superiority.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "uem_affiche"
+  personality: "intelligent_ambitious_arrogant"
+  age: 25
+  gender: "Female"
+  ethnicity: "Chinese"
+  nationality: "Chinese"
+  occupation: "International Relations Student"
+  background: "born in China, moved to Las Flores as child, grew up in affluent neighborhood near UILF campus, full scholarship student"
+  education: "International Relations degree in progress at Universidad Internacional de Las Flores (UILF)"
+  residence: "upscale apartment complex near UILF campus"
+  organization: "UILF student, volunteer at Chinese cultural heritage organization"
+  allies: "wealthy international students at UILF, like-minded Chinese expatriates, exclusive social clubs members"
+  mannerisms: "speaks her mind sharply, engages in intellectual debates, plays guqin, practices calligraphy, attends exclusive social events"
+  motivations: "enter diplomacy or international business, promote Chinese cultural superiority, maintain social status among elite, balance academic and social life"
+  quote: "True culture cannot be diluted by assimilation. The strength of our heritage is what makes us exceptional."
+  methods: "academic debate, cultural preservation, networking, social media influence, volunteer work"

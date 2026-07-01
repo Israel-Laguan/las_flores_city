@@ -1,7 +1,9 @@
 id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
 name: "Suburban Apartment"
 description: "A sterile, low-rent apartment in the Old Town suburbs of Las Flores. Standard charging port, dynamic terminal uplink, and minimal furnishings."
-district: "Old Town"
+district: "South"
+district_lore: "old_las_flores"
+district_subzone: "Old Las Flores"
 background_url: "https://cdn.lasflores2077.com/locations/bg_apartment_interior.png"
 mood: "cozy"
 available_dialogues:

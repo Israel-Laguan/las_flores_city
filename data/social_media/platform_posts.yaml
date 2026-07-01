@@ -1,0 +1,213 @@
+# Social Media Platform Posts
+# This file contains example posts from various social media platforms in Las Flores
+# These posts can be referenced in dialogues, scenes, and lore
+
+platforms:
+  - name: "ShénShǒu"
+    influence: "Chinese"
+    description: "A platform that combines influencer culture, e-commerce, and entertainment with AI-driven beauty filters and shopping integration."
+    posts:
+      - id: "shenshou_post_1"
+        author: "微博用户6789"
+        content: "这家族真让人讨厌，凭什么他们可以为所欲为？是时候有人给他们点颜色瞧瞧了！# ВандерМейр"
+        translation: "This family is really annoying, why can they do whatever they want? It's time someone teaches them a lesson! #VanderMeir"
+        tags: ["#VanderMeir", "#family", "#criticism"]
+        sentiment: "negative"
+        engagement: "high"
+        
+      - id: "shenshou_post_2"
+        author: "🇨🇳ChinaDailyLV🇨🇳"
+        content: "Reports from the ground show a worrying increase in gang activity in Old Las Flores. Our correspondent @lisiwang explores the root causes and potential solutions: [link] #ChinaDailyLasFlores #OldLasFlores #GangActivity"
+        tags: ["#ChinaDailyLasFlores", "#OldLasFlores", "#GangActivity"]
+        sentiment: "neutral"
+        engagement: "medium"
+        
+      - id: "shenshou_post_3"
+        author: "微信好友123"
+        content: "这女孩是怎么想的？她竟然看好这家族中的任何一个人。#纳塔利亚 #奥利维亚 #本杰明 #凡德默尔"
+        translation: "What is this girl thinking? She actually likes someone from this family. #Natalia #Olivia #Benjamin #Vandermeer"
+        tags: ["#Natalia", "#Olivia", "#Benjamin", "#Vandermeer"]
+        sentiment: "negative"
+        engagement: "high"
+        
+      - id: "shenshou_post_4"
+        author: "用户4567"
+        content: "这几个小孩是怎么长大的？他们根本不懂得尊重别人。#范德默尔"
+        translation: "How did these kids grow up? They don't even know how to respect others. #Vandermeer"
+        tags: ["#Vandermeer", "#respect", "#criticism"]
+        sentiment: "negative"
+        engagement: "medium"
+
+  - name: "LinkPulse"
+    influence: "European"
+    description: "A sleek, text-first platform focusing on sharing articles, memes, and links with a professional and academic audience."
+    posts:
+      - id: "linkpulse_post_1"
+        author: "User123"
+        content: "Hey guys, just wanted to share my thoughts on the Van der Meer family. I think they're just a bunch of entitled brats who have it too easy because of their parents' money."
+        tags: ["#VanDerMeer", "#entitled", "#wealth"]
+        sentiment: "negative"
+        engagement: "high"
+        
+      - id: "linkpulse_post_2"
+        author: "User456"
+        content: "Shout out to Peter Jr. for being such a douchebag today at the club! You'd think he'd have more class, considering his family's 'status'. #VanDerMeer #Entitled"
+        tags: ["#VanDerMeer", "#Entitled", "#PeterJr"]
+        sentiment: "negative"
+        engagement: "high"
+        
+      - id: "linkpulse_post_3"
+        author: "User321"
+        content: "¿Alguien sabe si es cierto que las mujeres Van der Meer han tenido algún escándalo en el pasado? Siempre he oído rumores, pero nunca nada confirmado."
+        translation: "Does anyone know if it's true that the Van der Meer women have had any scandals in the past? I've always heard rumors, but nothing confirmed."
+        tags: ["#VanDerMeer", "#scandal", "#rumors"]
+        sentiment: "neutral"
+        engagement: "medium"
+        
+      - id: "linkpulse_post_4"
+        author: "User789"
+        content: "¿Alguien más encuentra sospechosa la cantidad de dinero que gastan los Van der Meer? #VanDerMeer #DineroFácil"
+        translation: "Does anyone else find the amount of money the Van der Meer spend suspicious? #VanDerMeer #EasyMoney"
+        tags: ["#VanDerMeer", "#DineroFácil", "#money"]
+        sentiment: "negative"
+        engagement: "medium"
+
+  - name: "PlayNetix"
+    influence: "North American"
+    description: "A global video streaming platform where users play games, stream live content, and share opinions with a gamified approach."
+    posts:
+      - id: "playnetix_post_1"
+        author: "User567"
+        content: "I've been following the Van der Meer family for a while now, and honestly, they all seem like they have something to prove. Like, 'Look at me, I'm rich and successful!' It's so cringeworthy."
+        tags: ["#VanDerMeer", "#wealth", "#cringe"]
+        sentiment: "negative"
+        engagement: "high"
+        
+      - id: "playnetix_post_2"
+        author: "User890"
+        content: "¡Acabo de ver a la hija menor de los Van der Meer en el centro! Parecía tan dulce y amable como siempre, a pesar de todo el alboroto alrededor de su familia."
+        translation: "I just saw the youngest daughter of the Van der Meer downtown! She seemed as sweet and kind as always, despite all the commotion around her family."
+        tags: ["#VanDerMeer", "#family", "#kindness"]
+        sentiment: "positive"
+        engagement: "medium"
+        
+      - id: "playnetix_post_3"
+        author: "User111"
+        content: "Rumores de una disputa familiar entre las mujeres Van der Meer: ¿se avecina una guerra por el control del imperio?"
+        translation: "Rumors of a family dispute among the Van der Meer women: is a war for control of the empire looming?"
+        tags: ["#VanDerMeer", "#family", "#power", "#rumors"]
+        sentiment: "neutral"
+        engagement: "high"
+
+  - name: "VoxStream"
+    influence: "European/American"
+    description: "A refined, professionally-oriented streaming service featuring in-depth discussions, gameplay reviews, and cultural commentary."
+    posts:
+      - id: "voxstream_post_1"
+        author: "ArtReview Magazine"
+        content: "Peter van der Meer Jr.: A Rising Star in the Art World. The son of a prominent business family, Peter van der Meer Jr., is making waves with his bold and innovative artwork. His latest exhibition, 'Disruption,' showcases his unique perspective on contemporary society."
+        tags: ["#PeterVanDerMeerJr", "#art", "#exhibition"]
+        sentiment: "positive"
+        engagement: "high"
+        
+      - id: "voxstream_post_2"
+        author: "🚨EXCLUSIVE🚨"
+        content: "Our reporter @pedroalvareztl has the latest on gang violence in Old Las Flores. Read his in-depth investigation here: [link] #LasFloresTimes #OldLasFlores #GangViolence"
+        tags: ["#LasFloresTimes", "#OldLasFlores", "#GangViolence"]
+        sentiment: "neutral"
+        engagement: "high"
+        
+      - id: "voxstream_post_3"
+        author: "El Reportero"
+        content: "Van der Meer Industries: Una fuerza a tener en cuenta. Análisis de los excelentes desempeños de Liam y Sebastian. Desde que Sebastian se unió a Van der Meer Industries, la compañía ha experimentado un auge sin precedentes."
+        translation: "Van der Meer Industries: A force to be reckoned with. Analysis of the excellent performances of Liam and Sebastian. Since Sebastian joined Van der Meer Industries, the company has experienced unprecedented growth."
+        tags: ["#VanDerMeerIndustries", "#Liam", "#Sebastian", "#business"]
+        sentiment: "positive"
+        engagement: "high"
+
+  - name: "Vitrina"
+    influence: "Latin American/Spanish"
+    description: "A video and image-sharing platform with a strong focus on community-driven content, memes, and viral challenges."
+    posts:
+      - id: "vitrina_post_1"
+        author: "User222"
+        content: "Van der Meer Industries Continues to Thrive Under New Leadership. Liam van der Meer-Krol y su primo Sebastian han demostrado ser un equipo dinámico desde que el segundo se unió a la empresa familiar hace unos meses."
+        translation: "Van der Meer Industries Continues to Thrive Under New Leadership. Liam van der Meer-Krol and his cousin Sebastian have proven to be a dynamic team since the latter joined the family business a few months ago."
+        tags: ["#VanDerMeerIndustries", "#Liam", "#Sebastian", "#leadership"]
+        sentiment: "positive"
+        engagement: "high"
+        
+      - id: "vitrina_post_2"
+        author: "User333"
+        content: "¿Sabían que el hijo menor de los Van der Meer, Lucas, es bastante brillante en matemáticas y economía? ¡Es muy talentoso!"
+        translation: "Did you know that the youngest son of the Van der Meer, Lucas, is quite brilliant in mathematics and economics? He's very talented!"
+        tags: ["#LucasVanDerMeer", "#talent", "#mathematics", "#economics"]
+        sentiment: "positive"
+        engagement: "medium"
+        
+      - id: "vitrina_post_3"
+        author: "User444"
+        content: "¿Las mujeres Van der Meer se han enfrentado a la familia Wei? Se rumorea una creciente rivalidad entre las dos familias más poderosas de Las Flores"
+        translation: "Have the Van der Meer women faced the Wei family? There are rumors of growing rivalry between the two most powerful families in Las Flores."
+        tags: ["#VanDerMeer", "#Wei", "#rivalry", "#LasFlores"]
+        sentiment: "neutral"
+        engagement: "high"
+        
+      - id: "vitrina_post_4"
+        author: "User555"
+        content: "¡Atención comunidad indígena de Old Las Flores! Los recientes informes indican un aumento en la actividad de pandillas y violencia en nuestra área."
+        translation: "Attention indigenous community of Old Las Flores! Recent reports indicate an increase in gang activity and violence in our area."
+        tags: ["#OldLasFlores", "#gangs", "#violence", "#indigenous"]
+        sentiment: "negative"
+        engagement: "high"
+
+  - name: "Other Platforms"
+    description: "Additional niche platforms and their content"
+    platforms:
+      - name: "Privé"
+        influence: "French"
+        description: "Premium adult content platform"
+        
+      - name: "XSite"
+        influence: "American"
+        description: "Dating and adult streaming"
+        
+      - name: "NeoVerse"
+        influence: "Chinese"
+        description: "Massive virtual world with dating and marriage systems"
+        
+      - name: "MetaSpace"
+        influence: "American"
+        description: "Corporate-focused VR meetings"
+        
+      - name: "FoodieFlow"
+        influence: "Chinese"
+        description: "Restaurant reviews and delivery"
+        
+      - name: "EcoTrack"
+        influence: "European"
+        description: "Environmental impact tracking"
+        
+      - name: "WeiShow"
+        influence: "Chinese"
+        description: "Interactive streaming with virtual gifting system"
+        
+      - name: "ArteLibre"
+        influence: "Latin American"
+        description: "Artist collaboration platform"
+        
+      - name: "TechVault"
+        influence: "American"
+        description: "Developer community"
+        
+      - name: "SportsFiesta"
+        influence: "Latin American"
+        description: "Sports betting and discussion"
+        
+      - name: "TalkDao"
+        influence: "Chinese"
+        description: "AI-enhanced podcasting platform"
+        
+      - name: "SharePulse"
+        influence: "American"
+        description: "Serious job searching and networking"

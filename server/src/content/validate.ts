@@ -8,6 +8,7 @@ import {
   YAMLOverlaySchema,
   YAMLSceneSchema,
   YAMLMysterySchema,
+  YAMLLocationSchema,
   VaultFileSchema,
   ShopItemFileSchema,
   GigFileSchema,
@@ -123,6 +124,9 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
       case 'gig':
         GigFileSchema.parse(data);
         break;
+      case 'location':
+        YAMLLocationSchema.parse(data);
+        break;
     }
   } catch (e: any) {
     errors.push({
@@ -200,18 +204,21 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
-  if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
-    return 'mystery';
-  }
-  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
-    return 'shop_item';
-  }
-  
-  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
-    return 'gig';
-  }
-  
-  return null;
+   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
+     return 'mystery';
+   }
+   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
+     return 'shop_item';
+   }
+   if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
+     return 'location';
+   }
+    
+   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
+     return 'gig';
+   }
+    
+   return null;
 }
 
 // Validate all content files

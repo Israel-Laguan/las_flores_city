@@ -1,0 +1,74 @@
+id: "d8130d0b-3c78-315d-fd49-d7319d524450"
+type: location
+name: "Electra Battery Factory"
+color: null
+aliases:
+  - Electra
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Electra Battery Factory was strategically created by the LW Group to localize
+  the entire lithium-to-battery production process near the source, reducing costs
+  and enhancing supply chain control. This move was designed to capitalize on the
+  growing demand for lithium batteries and to streamline the supply chain by
+  processing raw materials near the extraction sites, thus reducing costs and
+  enhancing control over the product lifecycle. To navigate potential monopoly
+  concerns and diversify its global reach, the LW Group partnered with a European
+  proxy company. While this company claims European origins, it is backed by
+  Chinese-sponsored investors, thereby indirectly maintaining the LW Group's
+  control over the entire extraction-to-battery manufacturing pipeline while
+  circumventing regulatory hurdles. The factory's energy needs are met by Great
+  Dragon Energy through the Rio Grande Dam, ensuring reliable and cost-effective
+  power for energy-intensive battery production.
+
+daytime: >
+  During the day, the Electra Battery Factory operates as a cutting-edge
+  manufacturing facility humming with advanced machinery and precision engineering.
+  The factory floor is a controlled environment where lithium compounds are
+  processed through a series of chemical reactions and assembly lines, producing
+  high-capacity batteries for electric vehicles, energy storage systems, and
+  consumer electronics. White-coated technicians monitor automated systems from
+  control rooms, while logistics teams coordinate the flow of raw materials from
+  Minera Estrella mines and the shipment of finished products to Jade Dragon Ports
+  for global distribution. The facility's corporate offices, located in the Centro
+  Empresarial, handle business operations, client relations, and strategic planning.
+
+nightlife: >
+  After dark, the factory continues operations with reduced crews running automated
+  production lines under industrial lighting. Security personnel patrol the perimeter
+  and monitor surveillance systems, protecting the facility's valuable intellectual
+  property and sensitive manufacturing processes. The glow from the factory's
+  processing units casts an industrial hue over the surrounding area, a constant
+  reminder of the 24/7 nature of lithium battery production. Night-shift workers
+  rotate through their duties, with break rooms and cafeterias providing respite
+  amid the ceaseless hum of machinery.
+
+important_places:
+  - name: Lithium Processing Facility
+    description: The core production area where raw lithium from Minera Estrella mines undergoes chemical processing and refinement into battery-grade materials.
+  - name: Battery Assembly Lines
+    description: Automated production lines where processed lithium is assembled into high-capacity battery cells and packs for various applications.
+  - name: Quality Control Laboratories
+    description: Advanced testing facilities where engineers and technicians verify battery performance, safety, and compliance with international standards.
+  - name: Raw Material Storage
+    description: Secure warehouses storing incoming lithium compounds and other raw materials essential for battery production.
+  - name: Finished Goods Warehouse
+    description: Climate-controlled storage facility for completed batteries awaiting shipment to domestic and international markets.
+  - name: Corporate Offices (Centro Empresarial)
+    description: Administrative headquarters located in the city's financial district, managing business operations, client relations, and strategic planning.
+
+conclusion: >
+  The Electra Battery Factory represents the vertical integration of the LW Group's
+  Las Flores operations, completing the pipeline from raw lithium extraction at
+  Minera Estrella mines to finished battery products ready for global distribution
+  through Jade Dragon Ports. This strategic positioning gives the LW Group
+  unprecedented control over the lithium value chain, from earth to finished
+  product. The factory stands as a symbol of the LW Group's industrial ambition
+  and its ability to navigate complex regulatory landscapes through proxy
+  partnerships, while also serving as a potential flashpoint for corporate
+  espionage, labor disputes, and environmental concerns that define the tensions
+  of Las Flores' rapid industrialization.

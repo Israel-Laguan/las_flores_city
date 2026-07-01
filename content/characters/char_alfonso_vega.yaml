@@ -1,0 +1,9 @@
+id: "a2b3c4d5-e6f7-4a8b-9c0d-1e2f3a4b5c6d"
+name: "Alfonso Vega"
+title: "Mayor of Las Flores"
+description: "Mayor of Las Flores who lauded Chief Inspector Adeyemi's Secure Neighborhoods program. Publicly addresses city challenges including the environmental crisis and rising insecurity. A significant figure in the political landscape of Las Flores, served as the city's mayor during one of its most tumultuous periods. His tenure, marked by the catastrophic tailings dam failure in 2052, showcased his ability to navigate complex situations, albeit under a cloud of controversy."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "government"
+  personality: "public_figure"

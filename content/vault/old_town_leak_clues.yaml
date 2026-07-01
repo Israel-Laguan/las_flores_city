@@ -1,8 +1,0 @@
-vault_items:
-  - id: "b0000000-e29b-41d4-a716-446655440001"
-    title: "Corrupted Data Drive"
-    description: "A heavily encrypted USB drive. The casing is cracked. It bears the insignia of the Li Wei Port Authority."
-    thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_clue_usb_drive.png"
-    media_path: "/clues/clue_usb_drive.png"
-    item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"

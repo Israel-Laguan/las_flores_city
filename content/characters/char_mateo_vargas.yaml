@@ -1,0 +1,11 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567897"
+name: "Mateo Vargas"
+title: "Corrupt Customs Guard"
+description: "Modest background in Las Flores, rose to prominence in customs division at Aeropuerto Internacional de Las Flores. Serves as customs guard who exploits tourists through bribes and confiscations, bends rules for personal gain. Has polished, professional demeanor with well-tailored uniform, neatly combed dark hair, chiseled jawline, sharp features, and piercing eyes."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "corrupt_officials"
+  personality: "charming_manipulative_vengeful"
+  organization: "Aeropuerto Internacional de Las Flores Customs"
+  district_affiliation: "Aeropuerto Internacional"

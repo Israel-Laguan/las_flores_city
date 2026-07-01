@@ -1,0 +1,9 @@
+id: "6a468bc4-1bde-4686-94b7-2b6f87595286"
+name: "Marco Jiménez"
+title: "Subordinate to Alejandro Díaz"
+description: "Marco 'Mako' Jiménez, 30-year-old subordinate to Alejandro 'Alex' Díaz in San Pedro de los Pescadores authority. From modest background, idolizes power, believes success comes through connections. Loyal to Alex for upward mobility. Lean, scruffy with dark unkempt hair, sharp brown eyes. Wears casual clothing, favors comfort over style. Highly impressionable, eager to please, naive. Driven by ambition, wealth allure, seeking to prove worth. Anxious but charming when needed. Skilled observer, picks up on people's needs to assist Alex's dealings. Facilitates corrupt activities: contracts, errands, betting logistics, fund management. Acts as buffer protecting Alex. Intimidates threats to gain approval. Free time: gambles with Alex, enjoys nightlife. Secretly passionate about photography. Dreams of rising ranks as moral line blurs in corruption."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "corrupt_authority"
+  personality: "corrupt_official"

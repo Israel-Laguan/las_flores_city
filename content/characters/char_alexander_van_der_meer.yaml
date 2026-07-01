@@ -1,0 +1,16 @@
+id: "c1000003-e29b-41d4-a716-446655440003"
+name: "Alexander van der Meer"
+title: "Former Executive at Global Lithium Corp"
+description: "Born into privilege as eldest child of Pieter and Annabella van der Meer. Moved to Las Flores in 2030 for his father's GLC role. Married Mei Li and had two children (Xiu Mei and Dong). Engaged in numerous affairs; in 2045 a scandal involving a young employee forced his resignation from GLC. Mei Li divorced him and retained custody. By 2059, Alexander spiraled into alcoholism and depression. In 2077, a public incident forced him into rehabilitation. Now in his mid-80s, attempting to rebuild his life."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "fallen_aristocrat"
+  age: 85
+  appearance: "once handsome but now showing signs of age and alcohol abuse, disheveled, unkempt"
+  background: ["born into privilege", "traveled between Africa and Europe", "moved to Las Flores in 2030"]
+  relationships: ["married Mei Li", "two children: Xiu Mei and Dong", "divorced due to infidelity"]
+  career: ["worked at Global Lithium Corp", "resigned due to scandal", "lost wealth and status"]
+  health: ["alcoholism", "depression", "liver failure", "hospitalizations"]
+  redemption: ["hit rock bottom in 2077", "entered rehabilitation program", "attempting to rebuild life"]

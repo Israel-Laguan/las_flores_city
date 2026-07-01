@@ -1,0 +1,9 @@
+mysteries:
+  - id: "a0000000-e29b-41d4-a716-446655440001"
+    title: "The Great Lithium Leak"
+    description: "Decades after the catastrophic 2052 lithium leak that poisoned the Río de las Flores, buried evidence surfaces revealing the LW Group's elaborate cover-up. Uncover the truth behind the staged electrical failure, the silenced witnesses, and the corporate conspiracy that shielded Minera Estrella from justice."
+    status: "ACTIVE"
+    written_by: "Lina Kim, La Prensa"
+    aftermath_payload:
+      retire_vault_items: []
+      remove_scene_characters: []

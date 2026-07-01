@@ -1,0 +1,9 @@
+id: "c3000005-e29b-41d4-a716-446655440005"
+name: "Diego"
+title: "Mina Escondida Guide"
+description: "A young local who guided tourists into the abandoned Mina Escondida. After surviving a cave-in, his report of silver in the deep tunnels ignited a new wave of treasure hunters."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "reluctant_hero"

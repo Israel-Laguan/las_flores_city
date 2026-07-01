@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 const ABOUT_US_URL = 'https://example.com/about-us';
 
 test.describe('Main menu — normal operations', () => {

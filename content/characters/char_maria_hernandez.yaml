@@ -1,0 +1,9 @@
+id: "c1000011-e29b-41d4-a716-446655440011"
+name: "Dr. Maria Hernandez"
+title: "Professor, Las Flores University"
+description: "A respected environmental scientist who led the campaign testing water samples, proving the extent of Minera Estrella's pollution."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "civil_society"
+  personality: "academic_activist"

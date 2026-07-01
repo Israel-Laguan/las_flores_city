@@ -63,3 +63,100 @@ docker exec las-flores-server wget -qO- http://localhost:3000/health
 # The alpine image has no curl, and host-side curl can return exit 56
 # due to stale docker-proxy state even when the server is healthy.
 ```
+
+## Podman workflow
+
+When running on Podman instead of Docker, do not use `docker compose` commands. Use the workflow below.
+
+### First-time environment setup (Podman)
+
+```bash
+# Create network and volumes (one-time)
+podman network create las-flores-net
+podman volume create postgres-oltp-data
+podman volume create postgres-olap-data
+podman volume create redis-data
+podman volume create minio-data
+```
+
+### Start services
+
+```bash
+# Build server image
+podman build -f server/Dockerfile -t las-flores-server .
+
+# Start databases, cache, and object storage
+podman run -d --name las-flores-postgres-oltp \
+  --network las-flores-net -p 5434:5432 \
+  -v postgres-oltp-data:/var/lib/postgresql/data \
+  -e POSTGRES_DB=las_flores \
+  -e POSTGRES_USER=las_flores \
+  -e POSTGRES_PASSWORD=las_flores_dev_password \
+  docker.io/library/postgres:16-alpine
+
+podman run -d --name las-flores-postgres-olap \
+  --network las-flores-net -p 5433:5432 \
+  -v postgres-olap-data:/var/lib/postgresql/data \
+  -e POSTGRES_DB=las_flores_analytics \
+  -e POSTGRES_USER=las_flores_analytics \
+  -e POSTGRES_PASSWORD=las_flores_analytics_dev_password \
+  docker.io/library/postgres:16-alpine
+
+podman run -d --name las-flores-redis \
+  --network las-flores-net -p 6379:6379 \
+  -v redis-data:/data \
+  docker.io/library/redis:7-alpine
+
+podman run -d --name las-flores-minio \
+  --network las-flores-net -p 9000:9000 -p 9001:9001 \
+  -v minio-data:/data \
+  docker.io/minio/minio:latest server /data --console-address ":9001"
+
+# Start server using container IPs for intra-network connectivity
+podman run -d --name las-flores-server \
+  --network las-flores-net -p 3000:3000 \
+  -v ./server/src:/app/server/src \
+  -v ./shared:/app/shared \
+  -v ./content:/app/content \
+  -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@10.89.0.3:5432/las_flores \
+  -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@10.89.0.4:5432/las_flores_analytics \
+  -e REDIS_URL=redis://10.89.0.5:6379 \
+  -e MINIO_ENDPOINT=10.89.0.6 \
+  -e MINIO_PORT=9000 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin \
+  -e JWT_SECRET=your-jwt-secret-change-in-production \
+  las-flores-server
+```
+
+Verify with:
+```bash
+curl http://localhost:3000/health
+```
+
+Apparent healthy response: `{"success":true,"data":{"status":"healthy",...}}. If the server refuses the connection, check `podman logs las-flores-server`.
+
+### Clean shutdown (Podman)
+
+```bash
+podman rm -f las-flores-server
+podman rm -f las-flores-postgres-oltp
+podman rm -f las-flores-postgres-olap
+podman rm -f las-flores-redis
+podman rm -f las-flores-minio
+podman network rm las-flores-net
+podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data
+```
+
+### Podman gotchas
+
+- **Rootless networking**: If `podman run` errors with `exec: "pasta": executable file not found in $PATH`, install `slirp4netns` and set `~/.config/containers/containers.conf`:
+  ```ini
+  [engine]
+  network_backend = "cni"
+
+  [network]
+  default_rootless_network_cmd = "slirp4netns"
+  ```
+- **DNS resolution**: Without `aardvark-dns`, container hostnames do not resolve. Use the container IPs from `podman network inspect las-flores-net` in the server's `DATABASE_URL`/`REDIS_URL`/`MINIO_ENDPOINT`.
+- **Container IPs change after recreate**: If you recreate containers, refresh the IPs by re-running `podman network inspect las-flores-net`.

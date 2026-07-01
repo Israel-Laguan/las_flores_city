@@ -1,0 +1,9 @@
+id: "b5c6d7e8-f9a0-4a1b-2c3d-4e5f6a7b8c9d"
+name: "Alejandro Ruiz"
+title: "Senior Investigative Reporter, La Prensa"
+description: "Investigative reporter with a track record of uncovering corporate misconduct and government corruption. His investigations have led to significant legal reforms and high-profile resignations."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "media"
+  personality: "relentless_investigator"

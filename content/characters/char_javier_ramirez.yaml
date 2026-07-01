@@ -1,0 +1,14 @@
+id: "3af15adb-e985-492a-ba60-d1428f2bc805"
+name: "Javier Ramirez"
+title: "Security Guard at Centro Empresarial Chino-Latino"
+description: |
+  Javier Ramirez is a 30-year-old Latino security guard born and raised in the Port Area of Las Flores. Standing around 5'10\" with a sturdy build, he has short dark hair, a well-groomed beard, and sharp brown eyes. He wears a crisp, well-fitted uniform.
+
+  Javi loves the Andean Mountains and often takes his girlfriend Elena on hiking excursions and weekend getaways to mountain resorts. He enjoys cooking recipes from his cultural heritage and dreams of building a future with her beyond his current job.
+
+  A diligent and loyal guard at the Centro Empresarial Chino-Latino, he has become a reluctant witness to illicit activity and feels torn between duty and fear of retaliation from local mafia syndicates. Witty and warm, he uses humor to ease tension and approaches every shift with a protective instinct shaped by life in one of Las Flores' busiest waterfront districts.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "diligent_loyal_protective"

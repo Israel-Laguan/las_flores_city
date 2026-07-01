@@ -1,0 +1,24 @@
+id: "e1f2a3b4-c5d6-7890-abcd-ef1234567890"
+name: "Isabella Marquez"
+title: "Port Community Matriarch"
+description: |
+  Isabella Marquez is a vibrant Latina community figure in Las Flores's bustling port district. Born in a small coastal village, she settled in the port area where she is beloved by sailors, dockworkers, and local families. Strong, expressive, and fiercely connected to her roots, she radiates warmth while navigating the challenges of raising three young sons alone.
+  
+  Known for long loose waves, sun-kissed skin, and expressive brown eyes, Bella dresses in vibrant flowing clothing and handmade jewelry that celebrate her heritage. Her home is a gathering place for neighbors and travelers, filled with Caribbean rhythms, home cooking, and laughter. She is fiercely protective of Joaquín, Mateo, and Luis while remaining unapologetically open about the joys and heartbreaks of her personal life.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "vibrant_magnetic_resilient"
+  age: "42"
+  gender: "Female"
+  ethnicity: "Latina"
+  occupation: "Community matriarch, Port District"
+  physical_description: "long dark hair worn in loose waves, sun-kissed skin, expressive brown eyes, vibrant flowing clothing and handmade jewelry reflecting coastal culture"
+  background: "grew up in a tight-knit coastal village; relocated to the port area of Las Flores; raised three sons as a single mother after their fathers disappeared under mysterious circumstances; her own mother provides childcare support and stability"
+  mannerisms: "frequently the center of attention at gatherings; expressive gestures and animated storytelling; wears bright colors and handmade accessories; often found dancing, cooking, or hosting neighbors"
+  motivations: "provide a loving, adventurous life for her sons; preserve cultural traditions and community bonds; embrace life fully despite loss and uncertainty"
+  fears: "her children suffering the same fate as their fathers; being unable to protect or provide for them long-term; losing the community that sustains her"
+  goals: "raise Joaquín, Mateo, and Luis with love, strength, and cultural pride; maintain her social network and found family in the port district; keep joy and festivity at the center of her household"
+  challenges: "loneliness and the transient nature of relationships; raising three young sons alone with absent fathers; navigating conservative judgment from some community members about her lifestyle"
+  quote: "I dance through the hard parts so my boys learn that life is still worth celebrating."

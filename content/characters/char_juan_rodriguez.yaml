@@ -1,0 +1,23 @@
+id: "7c9a5d3e-1f8c-4b2d-8e0a-5c7b9a3e4d1f"
+name: "Juan Carlos Pérez"
+title: "Human Rights Lawyer, COFAVIC Founder & Director"
+description: |
+  Juan Carlos Pérez, 45, human rights lawyer and COFAVIC founder. Brother's disappearance during criminal violence inspired his justice work. Provides legal aid, advocacy, and emotional support for victims' families through COFAVIC. Faces resistance but remains committed, using legal expertise to hold perpetrators accountable. International recognition via partnerships with Human Rights Watch and Amnesty International. Empathetic and strategic, key figure in Las Flores' human rights movement. Organizes victim support groups, collaborates with activists to raise awareness. Resilient, dedicated to safer society. Spanish primary language, fluent in English.
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "human_rights"
+  personality: "compassionate_determined_strategic"
+  age: 45
+  gender: "Male"
+  ethnicity: "Peruvian"
+  occupation: "Human Rights Lawyer"
+  background: "born Las Flores, brother disappeared in conflict, founded COFAVIC"
+  education: "law degree (human rights)"
+  residence: "Las Flores"
+  organization: "COFAVIC"
+  allies: "Michael Pérez (brother), Human Rights Watch, Amnesty International"
+  mannerisms: "speaks passionately about justice, listens actively to victims"
+  motivations: "hold perpetrators accountable, support victims' rights, promote justice"
+  quote: "No one should live in fear. Seek justice for victims and families."
+  methods: "legal advocacy, community outreach, international partnerships"

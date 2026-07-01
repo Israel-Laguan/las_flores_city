@@ -361,13 +361,35 @@ export const YAMLSceneSchema = z.object({
 
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
 
+export const YAMLLocationSchema = z.object({
+  id: z.string().uuid(),
+  type: z.literal('location'),
+  name: z.string().min(1).max(100),
+  color: z.any().nullable().optional(),
+  aliases: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  alwaysIncludeInContext: z.boolean().optional(),
+  doNotTrack: z.boolean().optional(),
+  noAutoInclude: z.boolean().optional(),
+  history: z.string().optional(),
+  daytime: z.string().optional(),
+  nightlife: z.string().optional(),
+  important_places: z.array(z.object({
+    name: z.string().min(1).max(100),
+    description: z.string().max(500),
+  })).optional(),
+  conclusion: z.string().optional(),
+});
+
+export type YAMLLocation = z.infer<typeof YAMLLocationSchema>;
+
 // ==================== Migration Types ====================
 
 export const MigrationLogSchema = z.object({
   id: z.string().uuid(),
   file_path: z.string(),
   file_checksum: z.string(),
-  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item']),
+  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location']),
   content_id: z.string().uuid(),
   applied_at: z.string().datetime(),
   applied_by: z.string().uuid().optional(),
@@ -470,7 +492,7 @@ export type { Gig } from './schemas/gig.js';
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

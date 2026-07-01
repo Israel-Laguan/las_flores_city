@@ -1,0 +1,53 @@
+id: "6c2d9a1c-5691-3b0c-7831-92b5cc25837f"
+type: location
+name: "Río de las Flores"
+color: null
+aliases: []
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Río de las Flores (River of the Flowers) is the lifeblood of Las Flores Free City,
+  originating high in the Andean Mountains and flowing westward through diverse landscapes
+  to empty into the Pacific Ocean. Its journey shapes the geography, economy, and culture
+  of all districts it touches, providing water, transportation, and sustenance to the
+  communities along its banks.
+
+daytime: >
+  By day, the river reveals its character in each district. In the Andean Mountains, it
+  begins as mountain streams fed by snow melt and rainfall. Through the agricultural valley,
+  it widens and slows, irrigating fertile farmlands. Approaching Old Las Flores, it
+  creates scenic banks lined with parks and recreational areas. Along the Port Area, it
+  becomes a busy waterway for trade and transportation. At the coastline, its delta
+  supports diverse wildlife and bustling fishing operations.
+
+nightlife: >
+  After dark, the river transforms. Moonlight reflects off its surface in the mountain
+  reaches, while the valley stretches into peaceful darkness. In the city areas, lights
+  along the banks create romantic settings. The port sees nighttime shipping activity,
+  and the delta comes alive with nocturnal wildlife and fishing operations under
+  lantern light.
+
+important_places:
+  - name: Mountain Headwaters
+    description: Origin point in the Andean Mountains where melting snow and rainfall
+      feed the river, characterized by steep slopes and rugged terrain.
+  - name: Agricultural Valley
+    description: Rural valley section where the river meanders through hills dotted
+      with indigenous communities and fertile farmland.
+  - name: Old Las Flores
+    description: Area where river meets rural-urban blend, supporting small farms
+      and traditional homes along its banks.
+  - name: Port Waterway
+    description: Western stretch connecting the city to the Pacific Ocean, vital for
+      trade and transportation.
+  - name: Pacific Delta
+    description: River mouth where it empties into the ocean, supporting fishing
+      and tourism with diverse wildlife and ecosystems.
+
+conclusion: >
+  From mountain snowmelt to ocean delta, the Río de las Flores connects every
+  corner of Las Flores in a continuous flow of life, commerce, and story.

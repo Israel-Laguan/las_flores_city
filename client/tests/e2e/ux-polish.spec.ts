@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 // Shared credentials — beforeAll registers the user; injectAuth() logs in
 // per-page to scope the HttpOnly cookie to :5173 (the page's origin).

@@ -1,0 +1,9 @@
+id: "f7a8b9c0-d1e2-4f3a-4b5c-6d7e8f9a0b1c"
+name: "Manuel Reyes"
+title: "Union Leader, Union del Trabajador"
+description: "Charismatic leader of Union del Trabajador (UT). Campaigns for fair wages, safe working conditions, and worker rights. Backed by the Progressive Alliance."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "labor"
+  personality: "charismatic_organizer"

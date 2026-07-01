@@ -15,6 +15,7 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   dialogue: 'dialogue_trees',
   overlay: 'dialogue_overlays',
   scene: 'scenes',
+  location: 'scenes',
   gig: 'gigs',
   mystery: 'mysteries',
   vault: 'vault_items',
@@ -175,6 +176,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
     return 'gig';
   }
+  if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
+    return 'location';
+  }
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
@@ -193,7 +197,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['character', 'scene', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item'];
+  const order: ContentType[] = ['character', 'scene', 'location', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);

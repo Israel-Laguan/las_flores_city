@@ -1,0 +1,9 @@
+id: "a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d"
+name: "Liam van der Meer"
+title: "Executive, Van der Meer Industries"
+description: "Cousin of Sebastian van der Meer. Together they have led strategic decisions at Van der Meer Industries, driving exponential growth and identifying profitable investment opportunities."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "van_der_meer"
+  personality: "strategic_executive"

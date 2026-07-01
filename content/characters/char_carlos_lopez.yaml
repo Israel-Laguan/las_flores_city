@@ -1,0 +1,9 @@
+id: "291eece2-4ed7-4f19-8c00-283ab3dfcd50"
+name: "Carlos Lopez"
+title: "Community Verifier, Humanity First"
+description: "A small business owner who serves as a vital verifier for Humanity First's projects. His practical skepticism and keen eye are essential for ensuring funds are used transparently."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "humanity_first"
+  personality: "practical_skeptic"
