@@ -17,6 +17,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) return 'location';
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) return 'vault';
   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) return 'mystery';
+  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) return 'shop_item';
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) return 'gig';
   return null;
 }
@@ -84,7 +85,7 @@ async function upsertScene(data: any): Promise<string> {
     [districtName, districtSlug]
   );
   const availableDialogues = data.available_dialogues || [];
-  const dialogArray = availableDialogues.length > 0 ? `{${availableDiscounts.join(',')}}` : '{}';
+  const dialogArray = availableDialogues.length > 0 ? `{${availableDialogues.join(',')}}` : '{}';
   const result = await queryOLTP(
     `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
       VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10)
