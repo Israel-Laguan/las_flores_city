@@ -1,7 +1,0 @@
-# Alberto Santiago
-
-**Title:** El Pescador - Coastal Seafood Vendor
-
-**Description (full):**
-
-Alberto Santiago, known as 'El Pescador,' is a sturdy, sun-kissed seafood vendor who brings fresh Pacific Coast catch to Las Flores restaurants daily. Standing about 5'10" with salt-and-pepper hair and a warm, approachable smile, he wears practical clothing like well-worn t-shirts, cargo shorts, and sturdy sandals. Lively and outgoing, Alberto is a social butterfly with a knack for charming others through his infectious humor and optimism. He grew up in a fishing family along the Pacific Coast, learning the trade from his father, and has adapted to the evolving industry by establishing a successful seafood vending business. Every morning, he delivers fresh catch from the coast to restaurants throughout Las Flores, enjoying the bustle of the city while chatting with chefs about the freshest catch. When finished with deliveries, he indulges his sweet tooth at local bakeries, delighting in artisan sweets and often engaging in playful flirting with city girls he meets during his routes. While dreaming of expanding his seafood business and spreading joy through coastal flavors, Alberto values the connections he makes with customers and community.

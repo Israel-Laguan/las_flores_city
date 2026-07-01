@@ -1,9 +1,17 @@
 id: "670eea6f-3983-4d5a-8195-b08be6c81661"
 name: "Valentina Quan"
-title: "young woman living a seemingly glamorous"
-description: "\\\\ 25 \\\\ Valentina grew up in a multicultural environment, shaped by her diverse heritage. She has always been drawn to adventure and travel, leading her to pursue a career as a flight attendant (azafata) at Aeropuerto Internacional de Las Flores. Through her job, she has had the opportunity to visit numerous countries, enriching her experiences and perspective on life. Fluent in English, Chinese, and Dutch, Valentina has embraced her role, connecting with people from various backgrounds."
+title: "Flight Attendant, Aeropuerto Internacional de Las Flores"
+description: |
+  A 25-year-old flight attendant of multicultural heritage, fluent in English, Chinese, and Dutch.
+  Raised in a diverse environment, she pursued a career as an azafata at Aeropuerto Internacional
+  de Las Flores, travelling the world and connecting with people across cultures. On the surface she
+  is charming and vivacious; beneath it she battles depression, a persistent sense of emptiness, and
+  a pattern of fleeting romances that offer only temporary relief. She dreams of retraining as a
+  psychologist or counsellor so she can help others who carry the same silent struggles she does.
 metadata:
   type: "human"
   role: "npc"
   faction: "lw_group"
   personality: "sociable_connector"
+  organization: "Aeropuerto Internacional de Las Flores"
+  district_affiliation: "Las Flores"

@@ -1,0 +1,31 @@
+id: "b369c8c3-35cf-4d12-a660-1a3f0e83e170"
+name: "Don Pedro"
+title: "La Familia Gang Leader"
+description: "Don Pedro — Pedro Vargas Castellano, 62 — has controlled La Familia's territory across the Industrial Zone and Old Las Flores border for over two decades. Born in the district, he runs his organisation as a substitute state: security where police response averages forty-seven minutes, protection for ignored vendors, credit where formal lenders refuse. The rackets funding these services are, in his framing, a tax for maintaining order where government under-governs. His uneasy co-existence with El Caimán's Cartel and Dragon Head's Chinese Mafia is his most durable achievement — 2055 and 2063 conflicts changed nothing; his 2063 settlement has held fourteen years. His paternalistic style is genuine and extractive: he attends events, resolves disputes, supports families in crisis, and runs rackets against the same people."
+relationships:
+  - target_id: "El Caimán's Cartel"
+    type: "rival"
+    closeness: -10
+    trust: 40
+    context: "Uneasy co-existence and territorial settlement"
+  - target_id: "Dragon Head's Chinese Mafia"
+    type: "rival"
+    closeness: -10
+    trust: 40
+    context: "Uneasy co-existence and territorial settlement"
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "criminal"
+  personality: "territorial_patriarch"
+  age: 62
+  gender: "Male"
+  ethnicity: "Latino"
+  occupation: "La Familia Gang Leader"
+  organization: "La Familia"
+  territory: "Industrial Zone southern residential blocks, Old Las Flores northern edge"
+  residence: "Industrial Zone, Old Las Flores border"
+  background: "born and raised in the Industrial Zone, entered La Familia in his twenties, assumed leadership in 2055 following predecessor's incarceration, negotiated 2063 territorial settlement"
+  motivations: "territorial control and stability, community dependency and loyalty, organisation sustainability, personal legacy as neighbourhood patriarch"
+  methods: "protection rackets, labour exploitation, negotiated co-existence with rival organisations, community patronage, informal dispute resolution"
+  quote: "The city decided not to govern this neighbourhood. Someone had to. I have been someone for a long time."

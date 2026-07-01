@@ -1,0 +1,31 @@
+id: "f007b9f2-7e50-48ee-9133-4ba2cb27af12"
+name: "Aeropuerto Internacional — Public Terminal"
+description: "The public arrivals and departures concourse of the Aeropuerto Internacional Las Flores. Biometric gate arrays process the continuous flow of passengers; the holographic departures board cycles through routes and cargo notifications. The LW Group charter terminal is not visible from here but its access corridors branch from behind the service doors."
+district: "City"
+district_lore: "urban_core"
+district_subzone: "Central City"
+background_url: "https://cdn.lasflores2077.com/locations/bg_aeropuerto_terminal.png"
+mood: "transient"
+available_dialogues: []
+metadata:
+  type: "transport_hub"
+  accessible: true
+  features:
+    - "ticket_kiosks"
+    - "security_scan"
+    - "holographic_departures_board"
+    - "biometric_passport_control"
+    - "lw_charter_terminal"
+    - "cargo_processing_wing"
+  ambiance:
+    - "public_address_system"
+    - "rolling_luggage"
+    - "crowd_hum"
+  idle_thoughts:
+    - "The biometric gate array at passport control is logging departure patterns against dual registries simultaneously: city border authority and LW Group security division. The data-sharing clause is in the concession agreement signed in 2047. The passengers whose iris geometry is being logged in two separate databases are not informed of the second registry at any point during the process."
+    - "The LW Group charter terminal access corridor branches from behind the service doors at the northern end of this concourse. The door is marked Authorized Personnel Only. Regulatory delegations visiting Las Flores to audit mineral extraction compliance enter through that door. Their visit schedules, access routes, and accommodation arrangements are coordinated by LW Group's government relations division."
+    - "The holographic departures board shows forty-two passenger routes. The raw operational feed visible in the cargo wing's terminal interface includes mineral shipment specifications, consignee data, and lithium batch identification codes. These are not displayed on the public board. The information exists; it is displayed in a different room."
+    - "A family is photographing the departures board. They are not departing. They are documenting the city from its threshold. The city, from this angle, looks like a connection to somewhere else. This is what the airport is designed to express."
+    - "The autonomous loading vehicles in the cargo processing wing run on a seventeen-minute cycle timed for the overnight Asian market cargo windows. From the public concourse the cargo wing is invisible. Its operational hum is audible as a sub-bass frequency that passengers register as airport ambiance and do not investigate."
+    - "A child is sleeping across two seats near gate 7. Their parent is monitoring the holographic departures board. The board updates every ninety seconds. The child's breathing rate is approximately fourteen cycles per minute. Both are accurate."
+    - "The public address system just announced a delay on the 14:20 departure. The automated voice tone is calibrated to convey information without provoking anxiety. I find the calibration successful and the calibration itself informative about what the airport expects passenger anxiety to cost."

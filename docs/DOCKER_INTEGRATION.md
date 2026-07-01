@@ -101,7 +101,7 @@ Migration failed!
 
 Errors:
   - scenes/welcome_center.yaml: Schema validation failed: [...]
-  - characters/aria_welcome_bot.yaml: Schema validation failed: [...]
+  - characters/char_aria_welcome_bot.yaml: Schema validation failed: [...]
 ```
 
 ### 2.5 Container Health Checks
@@ -147,7 +147,7 @@ las-flores-admin           Up                           0.0.0.0:3001->3000/tcp
 | `server/src/content/validate.ts` | Made `file` optional in `ValidationError` |
 | `server/src/database/connection.ts` | Added `QueryResultRow` constraint to generic types |
 | `server/src/content/migrate.ts` | Fixed dependency order, added error printing in CLI |
-| `content/characters/aria_welcome_bot.yaml` | UUIDs, removed `null` fields |
+| `content/characters/char_aria_welcome_bot.yaml` | UUIDs, removed `null` fields |
 | `content/scenes/welcome_center.yaml` | UUIDs, removed `null` fields |
 | `content/dialogues/welcome_dialogue.yaml` | UUIDs for all references |
 | `content/overlays/welcome_nsfw_overlay.yaml` | UUIDs for all references |

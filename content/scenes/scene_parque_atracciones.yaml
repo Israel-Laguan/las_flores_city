@@ -1,0 +1,29 @@
+id: "67ecfcff-8da3-41bf-9f76-fc3d4483d28a"
+name: "Parque de Atracciones — Midway"
+description: "The central midway of the Parque de Atracciones Las Flores, where holographic ride-overlay projectors transform aging mechanical frames into immersive spectacle. Crowd noise, synthesized music, and the periodic thunderclap of a holographic sequence make quiet observation difficult. The park is engineered for immersion."
+district: "Port"
+district_lore: "port_area"
+district_subzone: "Port Area"
+background_url: "https://cdn.lasflores2077.com/locations/bg_parque_atracciones.png"
+mood: "stimulating"
+available_dialogues: []
+metadata:
+  type: "entertainment"
+  accessible: true
+  features:
+    - "holographic_ride_overlays"
+    - "filtration_water_slides"
+    - "corporate_sponsor_kiosks"
+    - "biometric_wristbands"
+  ambiance:
+    - "crowd_noise"
+    - "synthesized_music"
+    - "water_splash"
+  idle_thoughts:
+    - "The biometric wristband I observe on the child at the water-slide entrance is collecting physiological and location data at 0.5-second intervals. The sponsor network receives this feed in real-time. The parent does not know this is the product being exchanged for the wristband."
+    - "The water in the filtration slides is drawn from the Río de las Flores and processed through three-stage membrane filters and heavy-metal chelation tanks before reaching the slide surface. The family using the slides has no awareness of the industrial infrastructure humming sixty metres behind that fence."
+    - "The holographic overlay on the steel-loop coaster renders a deep-space launch sequence. The mechanical frame beneath it is rated for a design load established in 2039. The overlay refreshes every 0.03 seconds. The frame does not."
+    - "Children's uninhibited joy: the crowd's emotional data is measurably distinct from the adult register around them. Children engage with the holographic environment without modelling its production conditions. This is the demographic the sponsor kiosk behavioural analysts classify as the highest-yield cohort."
+    - "Sponsor kiosk density: one unit per forty metres of midway. Each kiosk logs visitor proximity dwell-time and face-direction via passive biometric read. I am currently being logged by three kiosks simultaneously."
+    - "The park's perimeter drones are making their twelfth circuit since I arrived. Navigation lights at 1.2-second intervals. The children have stopped noticing them. Most adults have not started."
+    - "The sound system output is calibrated at 82dB across the midway. Human cognitive processing of environmental detail declines measurably above 75dB. The park is engineered to inhibit the kind of attention that would notice what it is doing."

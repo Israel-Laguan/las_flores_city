@@ -108,7 +108,7 @@ GitHub Actions workflows:
 
 ### Sample Content
 
-- `content/characters/aria_welcome_bot.yaml` — welcome AI character
+- `content/characters/char_aria_welcome_bot.yaml` — welcome AI character
 - `content/dialogues/welcome_dialogue.yaml` — tutorial dialogue tree
 - `content/scenes/welcome_center.yaml` — starting location
 - `content/overlays/welcome_nsfw_overlay.yaml` — NSFW overlay example

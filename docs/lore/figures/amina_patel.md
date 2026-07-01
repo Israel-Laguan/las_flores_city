@@ -1,6 +1,6 @@
 # Amina Patel
 
-> Tags: `#character` `#npc` `#south_asian` `#indian` `#finance` `#clm` `#corporate_corruption`
+> Tags: `#figure` `#npc` `#south_asian` `#indian` `#finance` `#clm` `#corporate_corruption`
 
 ## Overview
 

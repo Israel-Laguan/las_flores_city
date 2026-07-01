@@ -1,6 +1,6 @@
 # Anna van der Meer
 
-> Tags: `#character` `#npc` `#van_der_meer` `#ceo` `#lgbtq` `#environmentalism` `#city_council`
+> Tags: `#figure` `#npc` `#van_der_meer` `#ceo` `#lgbtq` `#environmentalism` `#city_council`
 
 ## Overview
 

@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const RelationshipSchema = z.object({
+  target_id: z.string(),
+  type: z.enum(['friend', 'rival', 'romance', 'professional', 'family', 'enemy', 'mentor', 'subordinate']),
+  closeness: z.number().min(-100).max(100),
+  trust: z.number().min(-100).max(100).optional(),
+  context: z.string().max(200).optional()
+});
+
 export const CharacterSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100),
@@ -9,6 +17,7 @@ export const CharacterSchema = z.object({
   physical_description: z.string().optional(),
   psychological_description: z.string().optional(),
   background_and_role: z.array(z.string()).optional(),
+  relationships: z.array(RelationshipSchema).optional(),
   metadata: z.record(z.string(), z.any()).optional()
 });
 

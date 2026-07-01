@@ -1,0 +1,101 @@
+id: "1591c1ce-ee00-4d39-9161-92c45821250f"
+type: location
+name: "Línea 1 Roja"
+color: null
+aliases:
+  - Red Line
+  - Metro Line 1
+  - Linea Roja
+tags:
+  - Transport
+  - Central City
+  - Infrastructure
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Línea 1 Roja — the North–South corridor of the Metro de Las Flores — was the
+  first metro line to achieve full operational status, inaugurated in 2042 as the
+  new city's demonstration that it could build civic infrastructure commensurate with
+  its constitutional ambitions. Running from its northern terminus in the North Las
+  Flores enclave district to its southern terminus in Old Las Flores, it was framed
+  by the provisional government as the spine of social mobility: the line that would
+  allow a factory worker in the south to reach a job interview in the north in under
+  twenty minutes. The framing was not false, but it was selective. The stations
+  serving the northern enclave district were built to higher finishing specifications
+  and maintained to a higher standard from the outset; the southern stations, serving
+  Old Las Flores and the adjacent working-class quarters, have been on a deferred
+  maintenance cycle since 2059. The wealthy residents of North Las Flores use the
+  Red Line sparingly — private vehicles, corporate shuttles, and the enclave's
+  internal transit system absorb most of their journeys. The working class of the
+  south depends on it entirely. A 2076 ridership analysis by the city transport
+  authority found that 78% of Red Line daily users travel southbound in the morning
+  and northbound in the evening — the commuter pattern of people working in districts
+  they cannot afford to live in. The line carries that asymmetry in every trip it
+  makes, in both directions simultaneously.
+
+daytime: >
+  During morning peak hours — 06:30 to 09:00 — the Línea 1 Roja runs at four-minute
+  headways, its carriages at full capacity through the central stations and thinning
+  only as they approach the northern terminus where most passengers have already
+  boarded. The trains are a mix of the 2042 original fleet and 2061 replacement units,
+  a difference visible in the carriage interiors: the replacement units have holographic
+  advertising displays and biometric door-monitoring cameras; the original stock has
+  neither. Platform surveillance cameras are present at every station regardless of
+  fleet vintage; the data feeds route to the city transport authority and, under a
+  data-sharing agreement signed in 2068, to the LW Group security division for
+  "pattern analysis in support of infrastructure safety." Journey times on the full
+  north-south run average twenty-two minutes outside peak hours and thirty-six minutes
+  during the morning surge, when delays compound at the central interchange stations.
+  Station maintenance quality is measurably stratified: northern-end stations receive
+  cleaning cycles three times per day; southern-end stations twice per day, with a
+  scheduled maintenance backlog that the transport authority has acknowledged and
+  not resourced.
+
+nightlife: >
+  After 22:00 the Línea 1 Roja shifts to ten-minute headways, its late-night
+  ridership composed primarily of shift workers, service industry personnel, and
+  the city's precariat class navigating the distance between where they work and
+  where they can afford to sleep. Northern terminus departures after midnight
+  are sparse; southern terminus departures — where the transit-dependent population
+  is concentrated — maintain near-capacity loads until the last service at 01:30.
+  Station lighting in the southern section dims to energy-saving mode after 23:00,
+  a policy the transport authority characterises as a sustainability measure and
+  that platform users characterise as a safety issue. Biometric door cameras continue
+  logging in all fleet units regardless of time; the overnight data, like the daytime
+  feed, routes to both city authority and LW Group security systems. The Red Line
+  in its overnight mode is the city's most unmediated portrait of who depends on
+  public infrastructure and who does not.
+
+important_places:
+  - name: North Las Flores Terminus
+    description: >
+      The northern terminal station serving the enclave district, built to premium
+      finishing specifications and maintained on daily cleaning cycles. Ridership is
+      significantly lighter here than at the southern terminus; the enclave's internal
+      transit options absorb most local journeys.
+  - name: Central Interchange Stations
+    description: >
+      Mid-line stations connecting the Red Line to the Blue and Green Lines and to
+      surface bus routes. Primary bottleneck during peak hours; delay propagation
+      originates here before spreading north and south. Surveillance camera density
+      is highest at interchange points.
+  - name: Old Las Flores Terminus
+    description: >
+      The southern terminal station serving Old Las Flores and adjacent working-class
+      quarters. Built to standard specification in 2042; on deferred maintenance since
+      2059. Platform lighting runs at reduced intensity after 23:00. The origin point
+      for the majority of the line's southbound-morning, northbound-evening commuter
+      asymmetry.
+
+conclusion: >
+  The Línea 1 Roja was built to connect the city's economic poles and has succeeded in
+  that function while making the distance between them more efficient to traverse but no
+  shorter in social terms. The spine of social mobility carries mostly people for whom
+  mobility is not optional — workers commuting to jobs they cannot walk to, in districts
+  where they cannot afford to live, on a line that serves the wealthy's portion of the
+  route to a higher standard than the working-class portion. The biometric cameras log
+  every journey regardless of direction; the data-sharing agreement ensures that pattern
+  analysis of who moves between which districts is available to the private security
+  infrastructure of the entity that benefits most from the labour those movements represent.

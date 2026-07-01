@@ -1,0 +1,102 @@
+id: "2da8355c-cf0d-438f-ad44-b67cbf5a66e0"
+type: location
+name: "Línea 2 Azul"
+color: null
+aliases:
+  - Blue Line
+  - Metro Line 2
+  - Linea Azul
+tags:
+  - Transport
+  - Industrial Zone
+  - Infrastructure
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Línea 2 Azul was not built by civic ambition but by contractual obligation.
+  Its construction was a condition inserted into LW Group's 2043 Port Area expansion
+  deal — a transit link that the city's negotiating team extracted from the company
+  as partial compensation for the land-use concessions granted along the industrial
+  waterfront. LW Group's infrastructure subsidiary built the line to its own
+  engineering specification and handed operational management to the city transport
+  authority upon completion in 2046, retaining a seat on the operational advisory
+  board that it has occupied continuously since. The East–West corridor cuts through
+  the Industrial Zone's most contaminated stretches, connecting the eastern factory
+  complexes to the Port Area docks — a route that exists primarily to move factory
+  workers to their shifts and port labourers between terminals, and to reduce the
+  congestion on Avenida Independencia that factory truck routes had made nearly
+  impassable by the early 2040s. The labour protests of 2049 and 2053 both targeted
+  fare hike announcements for the Blue Line specifically — the first protest blocking
+  three stations for forty hours, the second prompting a concession from the transport
+  authority in the form of a twelve-month fare freeze followed by a graduated increase
+  that over three years exceeded the original proposed hike. Environmental contamination
+  is a background condition of the Blue Line's entire route: the tunnel sections between
+  the eastern Industrial Zone stations were built through groundwater that heavy-metal
+  monitoring subsequently classified as significantly contaminated, a finding that
+  prompted an engineering review and a maintenance protocol that has been described as
+  adequate by the city authority and inadequate by independent structural engineers.
+
+daytime: >
+  The Blue Line carries the Industrial Zone's shift-change rhythm across its twenty-three
+  stations. At 05:30, when the first shift begins at the major factory complexes,
+  eastbound trains run standing-room capacity; at 14:00, when the first shift ends and
+  the second begins, the same pattern reverses. The tunnel sections through the zone's
+  contaminated groundwater table show their environmental context in minor but persistent
+  ways: seepage management systems in three stations run continuously, their pump sounds
+  audible during quiet periods between trains. Station air quality in the underground
+  sections is monitored by sensors that report to the transport authority; independent
+  sampling by the Universidad Nacional environmental science department found elevated
+  particulate readings in two zone stations in 2074. The authority's response was a
+  ventilation-system review that remains ongoing. Platform-level surveillance cameras
+  are standard-issue transport authority equipment here; the network also includes
+  factory-operator cameras at station exits serving major employer complexes, their
+  coverage extending into the public platform area under an access arrangement the
+  workers using those exits are not informed of.
+
+nightlife: >
+  After the evening shift change — typically 22:00 to 23:00 — the Blue Line's
+  ridership drops sharply. Night-shift factory workers board the eastbound service
+  in low numbers; the Port Area terminals, which operate overnight on a skeleton
+  crew, generate a trickle of westbound traffic at the dock stations through the
+  small hours. The tunnel sections of the route are quieter than at any point
+  in the operating day, the seepage management pumps running in near-silence.
+  Lighting in the Industrial Zone stations reduces to minimum-compliance levels
+  after 23:00, a policy implemented during the 2071 infrastructure austerity
+  cycle and never reversed. Labour condition monitoring at the zone's factory
+  complexes tends to reflect the Blue Line's overnight timetable: when workers
+  miss the last service from a factory station due to mandated overtime extensions
+  — a documented pattern at three complexes — the transport authority's records
+  show a predictable gap in station usage that corresponds precisely to unpaid
+  detention at the shift-end.
+
+important_places:
+  - name: Eastern Factory Terminal Cluster
+    description: >
+      A group of three adjacent stations serving the Industrial Zone's largest factory
+      complexes. Factory-operator cameras at platform exits record worker egress under
+      an access arrangement not disclosed to workers at those exits. Shift-change
+      surges are the network's highest daily ridership events.
+  - name: Port Connection Stations
+    description: >
+      Western terminus stations linking the Blue Line to the Port Area dock network.
+      Serve a primarily port-labour ridership; operational around the clock for dock
+      workers on rotating shift schedules. LW Group port subsidiary staff hold
+      operational advisory board access for these stations specifically.
+  - name: Contamination-Zone Tunnel Sections
+    description: >
+      Underground sections traversing the Industrial Zone's classified contaminated
+      groundwater table. Active seepage management infrastructure at three stations;
+      independent particulate sampling found readings above advisory levels in 2074.
+      The transport authority's ventilation review is ongoing.
+
+conclusion: >
+  The Línea 2 Azul is the city's most functionally honest transit line: it connects
+  the places where industrial labour is performed to the places where that labour is
+  delivered, without the civic-mobility framing that the Red Line carries. Its
+  construction was a concession extracted from corporate infrastructure expansion;
+  its route is a map of contamination and labour; its fare hike protests are the most
+  recent instance of a recurring pattern in which the city's most transit-dependent
+  workers pay the price of operating a line built to serve the entity that extracted
+  the concession that made its construction necessary.

@@ -7,6 +7,7 @@ import {
 } from './schemas/dialogue.js';
 import type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange } from './schemas/dialogue.js';
 import { AftermathSchema } from './schemas/aftermath.js';
+import { RelationshipSchema } from './schemas/character.js';
 
 export {
   DialogueChoiceSchema,
@@ -280,6 +281,7 @@ export const YAMLCharacterSchema = z.object({
   name: z.string().min(1).max(100),
   title: z.string().max(100).optional(),
   description: z.string().max(1000),
+  relationships: z.array(RelationshipSchema).optional(),
   avatar_url: z.string().url().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
@@ -349,6 +351,8 @@ export const YAMLSceneSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(1000),
   district: z.string().max(50),
+  district_lore: z.string().max(50).optional(),
+  district_subzone: z.string().max(50).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),
   image_url: z.string().url().optional(),
