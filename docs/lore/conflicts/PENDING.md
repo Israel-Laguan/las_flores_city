@@ -72,17 +72,12 @@ No contradictions with existing family structure; all additions are complementar
 2026-06-30 (updated with new content integration: media expansion, van der Meer family expansion, new figures, and timeline additions)
 
 
-## Character Integration Name Variants (2026-06-30)
+## Character Integration Name Variants (2026-06-30) — RESOLVED
 
-These characters from the "Flowers from the Red Soil" codex have ambiguous identity matches with existing YAML files and need manual review.
+These characters from the "Flowers from the Red Soil" codex had ambiguous identity matches with existing YAML files. All have been verified and resolved.
 
-| Source Slug | Source Name | Reason for Flag |
+| Source Slug | Source Name | Resolution |
 |---|---|---|
-| dr-wei-zhang | Dr. Wei Zhang | Near-match with char_wei_zhang.yaml — verify same person |
-| javier-salazar | Javier Salazar | New character — verify if related to existing Javier files |
-| mei-li | Mei Li | Could be same as char_wang_mei_li.yaml — verify identity |
-
-### Resolution Needed
-- [ ] Verify each flagged character's identity against the target YAML
-- [ ] Either merge into existing file or create separate YAML
-- [ ] Remove entries from this table once resolved
+| dr-wei-zhang | Dr. Wei Zhang | ✅ Same person as `char_wei_zhang.yaml` — already well-documented, no changes needed |
+| javier-salazar | Javier Salazar | ✅ Already integrated as `char_javier_salazar.yaml` — distinct character from other Javier files (police helicopter pilot in Far South) |
+| mei-li | Mei Li | ✅ Same person as `char_wang_mei_li.yaml` (founder of Dragon Phoenix Trading). Full description already in `char_mei_li.yaml` created by integration script. Both files kept as they document the same character with different detail levels. |
