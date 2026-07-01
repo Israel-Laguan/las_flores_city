@@ -280,6 +280,68 @@ async function processLocationData(data: any): Promise<string> {
   return upsertScene(sceneData);
 }
 
+async function upsertMapTile(data: { district_id: string; x: number; y: number; terrain_type: string; base_image_url?: string; overlay_image_url?: string; rotation?: number; is_flipped?: boolean; metadata?: Record<string, unknown> }): Promise<string> {
+  const result = await queryOLTP(
+    `INSERT INTO map_tiles (district_id, x, y, terrain_type, base_image_url, overlay_image_url, rotation, is_flipped, metadata)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ON CONFLICT (district_id, x, y) DO UPDATE SET
+        terrain_type = EXCLUDED.terrain_type,
+        base_image_url = EXCLUDED.base_image_url,
+        overlay_image_url = EXCLUDED.overlay_image_url,
+        rotation = EXCLUDED.rotation,
+        is_flipped = EXCLUDED.is_flipped,
+        metadata = EXCLUDED.metadata,
+        updated_at = NOW()
+      RETURNING id`,
+    [
+      data.district_id,
+      data.x,
+      data.y,
+      data.terrain_type,
+      data.base_image_url ?? null,
+      data.overlay_image_url ?? null,
+      data.rotation || 0,
+      data.is_flipped || false,
+      JSON.stringify(data.metadata || {}),
+    ]
+  );
+  return result.rows[0].id;
+}
+
+async function processMapTileData(data: any): Promise<string> {
+  const { MapTileFileSchema } = await import('@las-flores/shared');
+  MapTileFileSchema.parse(data);
+
+  const districtName = data.district || 'Unknown';
+  
+  // Look up canonical district — do NOT auto-create
+  const districtResult = await queryOLTP(
+    `SELECT id FROM districts WHERE name = $1`,
+    [districtName]
+  );
+  if (districtResult.rows.length === 0) {
+    throw new Error(`District "${districtName}" not found. Create the district record before importing tiles.`);
+  }
+  const districtId = districtResult.rows[0].id;
+
+  const tileIds: string[] = [];
+  for (const tile of data.tiles) {
+    const id = await upsertMapTile({
+      district_id: districtId,
+      x: tile.x,
+      y: tile.y,
+      terrain_type: tile.terrain_type,
+      base_image_url: tile.base_image_url,
+      overlay_image_url: tile.overlay_image_url,
+      rotation: tile.rotation,
+      is_flipped: tile.is_flipped,
+      metadata: tile.metadata,
+    });
+    tileIds.push(id);
+  }
+  return tileIds.join(',');
+}
+
 export async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
   if (!contentType) throw new Error(`Could not determine content type from path: ${filePath}`);
@@ -298,6 +360,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'mystery': contentId = await processMysteryData(data); break;
     case 'shop_item': contentId = await processShopItemData(data); break;
     case 'location': contentId = await processLocationData(data); break;
+    case 'map_tile': contentId = await processMapTileData(data); break;
     default: throw new Error(`Unsupported content type: ${contentType}`);
   }
 

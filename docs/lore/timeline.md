@@ -159,6 +159,12 @@ An anonymous whistleblower sends Yara Liu Fang's evidence: container weakness do
 ### 2059 — Yara Assassinated (July 14)
 Yara Rossi is assassinated returning from an investor meeting. Her murder remains unsolved. The evidence memory card is taken from her body. Dr. Wei Zhang is pressured by Chinese investors to switch allegiances; his family in China faces threats. Mayor Vega appoints him as the new head of the restoration project. The Movement begins to crumble under false accusations of embezzlement. Evelyn Ruthenberg vows to continue gathering evidence on her own, maintaining a low profile. Dr. Wei Zhang publicly aligns with the city council and Minera Estrella, continuing his work covertly alongside Evelyn through a clandestine channel.
 
+### 2059 — The Student USB Flashback (August)
+During a massive anti-mining protest at Estación Central, an assassin working for Li Wei stabs a friend of Cecilia Perez who had held onto backup data. A university student witnesses the murder and receives the USB from the dying woman. The student escapes the assassin (posing as a doctor) in a cinematic confrontation.
+
+### 2059 — The Underground Handoff (September)
+The student attempts to deliver the USB to the mainstream press, but they ignore it due to corporate pressure. Frustrated, the student posts an encrypted sample on the underground network *El Grito Estudiantil*. Evelyn Ruthenberg intercepts the post, tracks down the student, and secures the drive, obtaining the exact target list she needs for her vigilante campaign.
+
 ### 2059 — Class-Action Lawsuit
 A group of affected communities launches a class-action lawsuit against Minera Estrella for damages related to the tailings dam failure. Luz del Rio files for bankruptcy after losing critical contracts and paying damages.
 
@@ -167,6 +173,9 @@ Despite ongoing environmental concerns and social tensions, Las Flores continues
 
 ### 2061–2069 — Governor Maria Jose Torres (SEFP)
 Maria Jose Torres served two terms from 2061, during which she pledged to prioritize economic growth over environmental regulation. By 2065 she was midway through her second term, continuing to balance export revenues with mounting public pressure for accountability.
+
+### 2062–2065 — The Apartment Murders (Vigilante Campaign)
+Operating as a lone vigilante, Evelyn Ruthenberg uses the USB data to target retired officials from Minera Estrella and the municipality who co-own the **Residencial Las Estrellas** apartment complex. She orchestrates a series of fatal "accidents" (CO poisoning, brake tampering). Mayor Vega and Senator Chen task Chief Inspector Adeyemi to hunt her down.
 
 ### 2065 — Peter van der Meer Comes Out
 Peter van der Meer, son of Jan and Maria, publicly reveals his homosexuality in a landmark press conference. The announcement sparks both family conflict and a surge in LGBTQ+ activism across Las Flores. Jan Jr., his cousin and husband, emerges as a key ally.
@@ -183,8 +192,17 @@ Chang's administration sought new foreign investment, deepening ties with the Ch
 ### 2075 — LGBTQ+ Anti-Discrimination Law
 Las Flores passes landmark legislation outlawing discrimination based on sexual orientation and gender identity — a historic milestone influenced heavily by the van der Meer family's advocacy and Peter Jr.'s "Amor Verdadero" organization.
 
+### 2077 — The Endgame (Alex's Movement)
+Alex, a resident whose mother died from lithium contamination, discovers the truth of the cover-up. After initially clashing with Evelyn Ruthenberg, Alex joins forces with her and builds a grassroots movement to take down the LW Group.
+
+### 2077 — The Mayor's Estate Raid
+Alex's movement and Evelyn breach the estate of Mayor Vega and Senator Chen. During the raid, Chief Inspector Adeyemi experiences a crisis of conscience. Moved by Alex's idealism and Evelyn's resolve, Adeyemi turns his gun on the Mayor, buying Evelyn time to escape.
+
+### 2077 — The Fall of Li Wei
+Alex sacrifices their life to ensure Evelyn can finally expose Li Wei, the "Emperor in the Shadows." The revelation dismantles the corrupt power structure of Las Flores, leaving Alex's surviving friends to carry on the fight.
+
 ### Restoration Ongoing
-The restoration project continues under Evelyn Ruthenberg's leadership, with gradual improvement in water quality in some areas. Complete restoration expected to take decades.
+The restoration project, initiated by Yara and Evelyn decades earlier, slowly begins to show genuine progress as the grip of the LW Group shatters. Complete environmental restoration is expected to take decades.
 
 ---
 
@@ -201,6 +219,35 @@ The restoration project continues under Evelyn Ruthenberg's leadership, with gra
 | 7 | **Maria Jose Torres** | SEFP (Social & Economic Focus Party) | 2061–2069 | Two terms; pragmatic; economic growth > environmental regulation |
 | 8 | **Isabel Cáceres** | PLF | 2069–2073 | Social justice; support for mining-affected communities |
 | 9 | **Teresa Chang** | IGA (Investment & Growth Alliance) | 2073–2077 | Foreign investment; deepened China business ties |
+
+---
+
+## Source Discrepancies
+
+The source material (the original narrative dump stored in `/media/israel/DEEP_STORE/PERSONAL/LasFlores/`) contains several discrepancies with the established canonical lore. These are documented here for reference.
+
+### Name Variants — Resolved
+
+After analysis, the following surname assignments were made to reflect Las Flores's multicultural heritage:
+
+| Character | Final Name | Reasoning |
+|-----------|-----------|-----------|
+| Alex's engineering friend | **Carlos Lacan** | Lacan (European/French-Caribbean) was unused; Mendoza exists as separate figure (Javier Mendoza) |
+| Alex's logistics friend | **Miguel Jhonson** | Jhonson (Anglo-Caribbean) was unused; Reyes exists as separate figures (Camila, Valentina, Emilio Reyes) |
+| The investigation analyst | **Isabella Vargas** | Retained — Vargas was less used than Lopez; Mateo Vargas exists but surname is shared |
+| The library colleague | **Ana Kim** | Kim (Asian-descent) was less used than Castillo (unused); Lina Kim exists as separate journalist |
+
+The unused surnames from these changes — **Castillo**, **Reyes**, **Mendoza**, **Lopez** — have been recycled into new background NPCs for the city.
+
+### Final Confrontation Discrepancy
+
+The source dump has Chief Inspector Adeyemi killing **both** Mayor Vega **and** Senator Chen inside the safe room, then taking his own life. The canonical lore (established in `alex_and_evelyn_2077.md`, `the_moral_fracture.md`, and `chief_inspector_adeyemi.md`) has Adeyemi killing only **Mayor Vega**, staging Evelyn's capture, and surviving to coordinate the arrests.
+
+The canonical version is correct. The dump version appears to be an earlier draft where Adeyemi's arc was more tragic.
+
+### Victim Age Pattern
+
+The source dump mentions that all victims at Residencial Las Estrellas were approximately **60 years old**. This detail is consistent with the canonical lore's description of retired mid-level managers and municipal officers from the 2052 era, and has been incorporated into the enriched `retirement_complex_murders.md`.
 
 ---
 

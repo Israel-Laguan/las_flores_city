@@ -127,6 +127,9 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
       case 'location':
         YAMLLocationSchema.parse(data);
         break;
+      case 'map_tile':
+        // Map tile files are validated by MapTileFileSchema during migration
+        break;
     }
   } catch (e: any) {
     errors.push({

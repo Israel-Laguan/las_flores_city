@@ -1,0 +1,9 @@
+id: "8c75df2b-c8db-4c8d-b903-cf7ebbc8ad10"
+name: "Yī Sāng"
+title: "Chief of Operations, LW Group"
+description: "Li Wei's ruthless Head of Corporate Security and ground fixer. He coldly oversees black operations and public relations crises from a safe distance."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "ruthless_calculating"

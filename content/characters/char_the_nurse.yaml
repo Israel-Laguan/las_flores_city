@@ -1,0 +1,9 @@
+id: "1c09b342-6f29-4e08-967c-d6b052aa1033"
+name: "The Nurse"
+title: "Bystander"
+description: "A compassionate bystander who attempts to save the Whistleblower in the alleyway before the 'Doctor' takes over the scene."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "helpful_compassionate"

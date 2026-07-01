@@ -1,0 +1,14 @@
+id: "b3c7d1e2-4f5a-4b6c-8d9e-0f1a2b3c4d5e"
+name: "Roberto Mendoza"
+title: "Retired Minera Estrella Engineer"
+description: "A retired engineer who worked at Minera Estrella during the 2052 lithium leak, Roberto Mendoza quietly provided crucial technical information to the 2077 investigators about the structural failures at the processing facility. He was not among the building owners at Residencial Las Estrellas, but his knowledge of the pipe systems and containment failures helped prove the cover-up. He lived in fear of retaliation for decades, and only came forward when it became clear the movement had the strength to protect him."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "independent"
+  personality: "cautious_principled"
+  age: 72
+  gender: "Male"
+  occupation: "Retired Mining Engineer (Minera Estrella)"
+  residence: "Old Las Flores District"
+  status: "Active (2077 and beyond)"

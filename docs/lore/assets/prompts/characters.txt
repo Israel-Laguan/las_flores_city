@@ -1,0 +1,160 @@
+# LAS FLORES: CHARACTER PROMPTS
+# Version: 1.0
+# Use these prompts with AI image generators (MidJourney, Stable Diffusion, DALL·E, Leonardo.AI, etc.)
+# Add --no androids, no robots, no neon, no clean backgrounds to all prompts
+
+---
+
+## 👥 CORE GROUP (2077)
+
+### Miguel Jhonson (The Anchor)
+
+#### Portrait (Standard)
+Photorealistic portrait of Miguel Jhonson, a 24-year-old logistics worker and urban management student from Las Flores's western district. He has broad shoulders and a sturdy frame, with a calm, grounding presence that makes him the rock of his friend group. His skin is a rich, warm brown, and his dark, curly hair is cropped short. His expression is serious but kind, with a hint of a smile playing at the corners of his mouth, as if he's about to share a joke. He's dressed in practical clothing—a sturdy work shirt, cargo pants, and well-worn boots—reflecting his hands-on approach to life. The background shows the bustling western district: colorful market stalls, children playing in the streets, and the faded facades of old buildings. The lighting is warm and natural, highlighting the texture of his skin and the sincerity in his eyes. Multicultural heritage (Anglo-Caribbean), hyper-detailed, intimate framing, 8K.
+
+#### Action Shot (Building the Network)
+Miguel Jhonson in his element, organizing a safehouse in the western district of Las Flores. He stands in a dimly lit room, a map of the city spread out on a table before him. His hands move deftly as he places pins and draws lines, connecting safe locations across the district. Around him, other members of the movement work quietly—some packing supplies, others testing communication equipment. The room is cluttered but organized, with stacks of medical supplies and crates of food in the corner. The lighting is practical: a single lamp casting long shadows, and the glow of a tablet showing a list of contacts. Miguel's expression is focused but calm, the kind of concentration that comes from doing something he's good at. Photorealistic, warm lighting, detailed, 8K.
+
+#### Emotional Moment (At Carlos's Bench)
+Miguel Jhonson sitting alone on a bench near the renamed retirement complex at dawn, his broad shoulders slumped in a way that seems unnatural for him. His hands grip the edge of the bench, his knuckles white with tension. His expression is a mix of grief and determination, the weight of Carlos's death and the responsibility of the movement pressing down on him. In the background, the first light of day begins to touch the faded buildings of the western district. The scene captures Miguel's quiet strength and the burden he carries. Photorealistic, melancholic, soft lighting, 8K.
+
+#### Full Body (Western District)
+Full-body shot of Miguel Jhonson walking through the western district of Las Flores, his unhurried movement making the bustling market around him seem slightly more stable. He's dressed in his usual practical clothing, with a clipBoard tucked under his arm and a radio at his belt. The market stalls and vendors blur slightly in the background, emphasizing his grounding presence. The lighting is warm and natural, with the golden hour sun casting long shadows. His expression is calm and observant, taking in the details of his surroundings. Photorealistic, dynamic, warm lighting, 8K.
+
+---
+
+### Carlos Lacan (The Heart)
+
+#### Portrait (Standard)
+Photorealistic portrait of Carlos Lacan, a 24-year-old electrical engineering student and the emotional heart of Alex's friend group. He has a lean build, with warm brown skin and a mop of dark, slightly unruly hair. His eyes are bright and kind, always crinkling at the corners as if he's about to laugh. He's wearing a simple t-shirt with the sleeves rolled up, revealing arms dusted with freckles and the faint scars of a tinkerer. In his hands, he holds a multimeter and a notebook, tools of his trade. The background is the cluttered but cozy interior of the electronics repair shop where he works part-time: shelves lined with tools, half-disassembled gadgets, and the warm glow of a desk lamp. The lighting is soft and inviting, casting a gentle glow on his face. Multicultural heritage (French-Caribbean), hyper-detailed, warm tones, nostalgic mood, 8K.
+
+#### Action Shot (On the Roof)
+Carlos Lacan on a rooftop at night, installing surveillance cameras for the Las Estrellas investigation. He's crouched low, his hands steady as he works with the equipment. The city sprawls out beneath him, a sea of lights and shadows, with the Andean foothills a dark silhouette in the distance. His expression is a mix of concentration and quiet excitement—this is the kind of technical challenge he lives for. The lighting is dim, with only the faint glow of his headlamp and the city lights below illuminating the scene. The scene captures the moment before the danger becomes real. Photorealistic, tense, atmospheric, 8K.
+
+#### Emotional Moment (With the Group)
+Carlos Lacan at a café table with the group, his expression animated as he explains a technical aspect of the investigation. His hands are in motion, narrating his thoughts as he often does, making the complex seem simple. The others—Alex, Miguel, Ana, Isabella—listen intently, their expressions a mix of understanding and admiration. The café is warmly lit, with the glow of string lights creating a cozy atmosphere. The scene captures Carlos's role as the heart of the group, the one who makes the technical work feel possible and the danger feel less isolating. Photorealistic, warm, intimate, 8K.
+
+#### Memorial (Framed Photo)
+A close-up of the framed photograph of Carlos Lacan that sits on the counter of the electronics repair shop where he used to work. The photo shows Carlos smiling, his eyes bright with life, holding up a repaired device as if presenting it. The frame is simple, the glass slightly dusty, and in the background, the repair shop continues its business, a testament to Carlos's legacy. The lighting is soft and warm, with a single lamp casting a gentle glow on the photo. The scene is bittersweet, a reminder of what was lost. Photorealistic, nostalgic, soft lighting, 8K.
+
+---
+
+### Ana Kim (The Conscience)
+
+#### Portrait (Standard)
+Photorealistic portrait of Ana Kim, a 25-year-old social work student and library worker from Las Flores's middle districts. She has a slender build, with fair skin, dark almond-shaped eyes, and long black hair tied back in a practical ponytail. Her expression is direct and honest, with a no-nonsense gaze that betrays her sharp intellect. She's dressed in a simple, neat outfit—a blouse, a cardigan, and a pair of comfortable trousers—reflecting her organized and practical nature. In her hands, she holds a stack of books and a notebook, tools of her trade as a researcher. The background is the quiet, wood-paneled interior of the university library, with towering bookshelves and pools of light from old-fashioned lamps. The lighting is soft and natural, highlighting her focused expression and the warmth in her eyes. Multicultural heritage (Asian), hyper-detailed, calm atmosphere, 8K.
+
+#### Action Shot (Library Research)
+Ana Kim at work in the university library, surrounded by stacks of books and printouts. She's hunched over a desk, her expression one of intense focus as she cross-references information on her laptop and in the physical archives. The library around her is quiet and dimly lit, with the towering bookshelves stretching into the shadows. In her hand, she holds the newspaper clipping that identified four of the building's victims as former Minera Estrella PR staff—the breakthrough that helped the investigation. The scene is one of quiet determination, as Ana applies her practical skills to uncover the truth. Photorealistic, focused, moody lighting, 8K.
+
+#### Emotional Moment (After Carlos's Death)
+Ana Kim sitting in the café with the group after Carlos's death, her expression distant and her usual directness replaced by a quiet sadness. She sits with her arms folded, her gaze fixed on the table, lost in thought. The warm lighting of the café does little to penetrate the weight of her grief. In the background, the others are similarly affected, but Ana's expression captures the moment when she realizes she can no longer sustain the emotional cost of the investigation. Photorealistic, melancholic, soft lighting, 8K.
+
+#### Group Interaction (City Hall Archives)
+Ana Kim in the City Hall archives during the break-in, her expression a mix of determination and fear as she faces off against a guard. She's not a fighter, but she stands her ground, her practical nature shining through even in the tension of the moment. In the background, Isabella moves swiftly to photograph documents, while Miguel tries to negotiate with the guard. The scene is lit by flickering fluorescent lights and the cold glow of flashlights, creating a tense and urgent atmosphere. Photorealistic, high tension, dynamic lighting, 8K.
+
+---
+
+### Isabella Vargas (The Brain)
+
+#### Portrait (Standard)
+Photorealistic portrait of Isabella Vargas, a 23-year-old architecture and urban studies student from Las Flores's eastern district. She has a medium build, with olive skin, sharp features, and dark, straight hair cut just above her shoulders. Her expression is calm and unreadable, but her eyes betray a keen intelligence and a quiet intensity. She's dressed in a minimalist, modern outfit—a black turtleneck, a long coat, and tailored pants—that reflects her analytical and precise nature. In her hands, she holds a tablet displaying a complex spreadsheet, the tool she used to uncover the patterns behind the Las Estrellas murders. The background is a sleek, modern architecture studio, with blueprints and models of buildings scattered across a large table. The lighting is cool and precise, with a single desk lamp casting sharp shadows. Multicultural heritage (Latin American), hyper-detailed, high contrast, focused mood, 8K.
+
+#### Action Shot (Spreadsheet Work)
+Isabella Vargas hunched over her tablet in a quiet corner of the university library, the screen casting a cold glow on her face. She's surrounded by papers—printouts of documents, handwritten notes, and a sprawling spreadsheet that seems to contain the entire Las Estrellas investigation. Her fingers fly over the keyboard, and her expression is one of intense focus, as if she's chasing a pattern only she can see. In the background, the towering bookshelves of the library stretch into the darkness, their contents a blur of knowledge waiting to be uncovered. The scene is quiet but electric, the tension of the investigation palpable in the air. Photorealistic, high contrast, moody, 8K.
+
+#### Action Shot (City Hall Break-In)
+Isabella Vargas during the City Hall archive break-in, moving silently and purposefully through the stacks. She crouches behind a row of filing cabinets, her tablet glowing faintly as she photographs a crucial document. Her expression is one of calm focus, even as the tension of the moment builds around her. In the background, the flickering overhead lights and the beam of a guard's flashlight cut through the darkness, creating a dynamic interplay of light and shadow. The scene captures Isabella's role as the intelligence anchor of the group, the one who sees the patterns others miss. Cinematic, high tension, dynamic lighting, 8K.
+
+#### Emotional Moment (Uncle's Case)
+Isabella Vargas visiting her uncle's grave, her expression unreadable but her eyes reflecting the quiet, consistent heat of the anger she carries about his death. She stands with her hands clasped behind her back, her posture rigid, as if holding herself together. The graveyard is simple and quiet, with the Andean foothills rising in the background. The lighting is soft and natural, with the golden light of the setting sun casting long shadows. The scene captures the personal stake Isabella has in the investigation, the driving force behind her precision and focus. Photorealistic, melancholic, atmospheric, 8K.
+
+---
+
+### Alex Garcia (The Spark)
+
+#### Portrait (Standard)
+Photorealistic portrait of Alex Garcia, a 23-year-old architecture student and the leader of the Las Estrellas investigation. He has a lean, athletic build, with warm olive skin and dark, expressive eyes that seem to burn with intensity. His dark hair is slightly disheveled, as if he's been running his hands through it in frustration. He's dressed in casual but stylish clothing—a fitted shirt, a leather jacket, and worn-in jeans—that reflects his role as both a student and a revolutionary. In his hands, he holds a notebook filled with sketches and notes, the physical manifestation of his investigations. The background is a dimly lit café, the kind where the group often met, with the warm glow of string lights and the faint outline of the other group members in the background. The lighting is warm and intimate, casting soft shadows that highlight his determined expression. Multicultural heritage, hyper-detailed, charismatic, 8K.
+
+#### Action Shot (The Broadcast)
+Alex Garcia in the final moments before his broadcast, the one that will expose the truth about Las Flores to the world. He stands in a hidden studio, the camera pointed at him, its red light blinking. Behind him, a monitor displays the feed that will go out to the city—and the world. His expression is a mix of exhaustion and resolve, his hands gripping the edges of the desk as if it's the only thing holding him up. In the background, the other members of the group watch from a separate monitor, their faces a mix of hope and fear. The lighting is dramatic, with the camera light casting sharp shadows on his face and the monitor glow illuminating the room. The scene captures the weight of the moment—the culmination of everything they've worked for. Photorealistic, emotional, high contrast, 8K.
+
+#### Emotional Moment (After Carlos's Death)
+Alex Garcia at Carlos's memorial, his expression a mix of grief and determination. He stands with his head bowed, his hands clenched into fists at his sides, as if holding back the overwhelming emotions. The memorial is simple: a small plaque, some flowers, and the framed photo of Carlos that has become a symbol of the movement. In the background, the other members of the group stand in silent support, their own grief etched on their faces. The lighting is soft and somber, with the golden light of the setting sun casting long shadows. Photorealistic, melancholic, soft lighting, 8K.
+
+#### Group Leadership (Café Meeting)
+Alex Garcia at the café table with the group, his expression animated as he lays out his latest theory. His hands are in motion, sketching in the air as he explains his ideas, his charisma and warmth drawing the others in. The café is warmly lit, with the glow of string lights creating a cozy atmosphere, but the tension of their mission is palpable in their expressions. The scene captures Alex's role as the spark of the group, the one who provides direction and heat, even as he needs the others to temper his recklessness. Photorealistic, warm, intimate, 8K.
+
+---
+
+## 👥 SUPPORTING CHARACTERS
+
+### Evelyn Ruthenberg (The Shadow)
+
+#### Portrait (Mysterious)
+Photorealistic portrait of Evelyn Ruthenberg, a Luz del Río engineer turned whistleblower. She has a lean build, with sharp features, short dark hair, and piercing eyes that seem to see right through you. Her expression is unreadable, but there's a quiet intensity that suggests she knows more than she's letting on. She's dressed in practical, non-descript clothing—dark pants, a fitted shirt, and a jacket—that allows her to move unseen through the city. The background is shadowy and indistinct, as if she's always just out of reach. The lighting is dim and moody, with a single source casting sharp shadows across her face. Hyper-detailed, mysterious, high contrast, 8K.
+
+#### Action Shot (Shadow Network)
+Evelyn Ruthenberg in a dimly lit room, surrounded by monitors and communication equipment. She's coordinating her shadow network, her fingers flying over a keyboard as she sends encrypted messages to her contacts across the city. The room is filled with the glow of screens and the hum of machinery, creating an atmosphere of quiet urgency. In the background, maps of the city are pinned to the walls, with lines and notes connecting various locations and individuals. The scene captures Evelyn's role as the hidden hand behind the movement, the one who operates in the shadows while Alex and the others take the public risks. Cinematic, moody, detailed, 8K.
+
+---
+
+### Javier "El Fantasma" Morales (The Shadow)
+
+#### Portrait (Standard)
+Photorealistic portrait of Javier "El Fantasma" Morales, a 30-year-old smuggler with a scar across his left cheek, dark circles under his eyes from sleepless nights. Lean, wiry build, dark hair, sharp features. Wearing a worn leather jacket, cap pulled low, fingerless gloves. Background: a dimly lit alley in the eastern district, with crates of smuggled goods and a flickering streetlight. Moody lighting, tense expression, hyper-detailed, 8K. Hispanic and Native American heritage.
+
+#### Action Shot (Black Market)
+Javier Morales in his element, navigating the black market of the eastern district. He moves swiftly and silently through the crowded alleys, his cap pulled low and his jacket concealing the goods he's transporting. Around him, vendors and buyers haggle in hushed tones, the atmosphere tense and secretive. In his hand, he carries a small package, his expression focused and determined. The lighting is dim and uneven, with pools of streetlight creating sharp contrasts. The scene captures Javier's role as a ghost in the machine, a smuggler who knows every back alley and hidden tunnel in the city. Photorealistic, tense, high contrast, 8K.
+
+#### Emotional Moment (Brother's Memory)
+Javier Morales looking at a photo of his brother, his expression a mix of grief and determination. He sits on a crate in a dimly lit alley, the photo held in his weathered hands. The photo shows his brother smiling, a stark contrast to the serious, haunted look on Javier's face. The alley around him is quiet, the only light coming from a flickering streetlight. The scene captures the personal stake Javier has in the fight against LW Group, the driving force behind his willingness to help the movement. Photorealistic, melancholic, soft lighting, 8K.
+
+---
+
+### Sofia Mendez (The Spark - Journalist)
+
+#### Portrait (Investigative)
+Photorealistic portrait of Sofia Mendez, a 28-year-old investigative journalist with *La Voz del Pueblo*. She has a lean build, with sharp features, dark hair tied back in a practical style, and eyes that miss nothing. Her expression is intense and determined, the kind of look that suggests she's always chasing a story. She's dressed in practical clothing—a sturdy jacket, a button-down shirt, and comfortable pants—with a press badge visible on her jacket. The background is the newsroom of *La Voz del Pueblo*, filled with the hum of activity and the glow of computer screens. The lighting is bright and practical, casting few shadows. Hyper-detailed, focused, 8K.
+
+#### Action Shot (Undercover)
+Sofia Mendez in the field, her camera hidden in a bag as she documents a meeting between LW Group officials and city politicians. She's disguised as a waitress at a high-end restaurant, her expression calm and professional as she moves among the tables, her real purpose hidden beneath her polite demeanor. In the background, the meeting takes place at a secluded table, the participants unaware they're being watched. The scene is tense and secretive, with the warm lighting of the restaurant contrasting with the cold reality of the corruption being uncovered. Photorealistic, tense, high contrast, 8K.
+
+---
+
+## 👥 GROUP SCENES
+
+### The Core Group Together (Pre-2077)
+A candid, intimate scene of Alex's core group—Miguel, Carlos, Ana, and Isabella—gathered around a small table in a dimly lit café in Las Flores. The café is cozy, with warm lighting from old-fashioned lamps and the scent of coffee hanging in the air. Miguel sits with his arms crossed, his expression serious but supportive. Carlos leans forward, his hands animated as he explains something technical, a half-smile on his face. Ana sits with her arms folded, listening intently, her direct gaze fixed on Carlos. Isabella is slightly apart from the group, her fingers tapping on a tablet, her expression thoughtful. The camera angle is slightly above and to the side, giving a sense of intimacy and inclusion, as if the viewer is part of the group. The lighting is warm and soft, with shadows playing across their faces, highlighting the bond between them. This is a moment of calm before the storm—a snapshot of the group before Carlos's death changes everything. Photorealistic, emotional, cinematic lighting, 8K.
+
+### The Group After Carlos's Death
+A somber scene of the remaining group—Miguel, Ana, and Isabella—sitting in silence at the same café table after Carlos's death. Miguel stares at his hands, his broad shoulders slumped in a way that seems unnatural for him. Ana's expression is distant, her usual directness replaced by a quiet sadness. Isabella's fingers tap restlessly on the table, her calm exterior cracked by the tension in her jaw. The café is darker now, the warm lighting unable to penetrate the weight of their grief. In the background, the framed photo of Carlos that usually hangs behind the bar is now draped with a black cloth. The scene captures the moment when the group realizes that nothing will be the same. Photorealistic, melancholic, high contrast between light and shadow, 8K.
+
+### The Group Planning (City Hall Break-In)
+The group gathered in a safehouse, planning the City Hall archive break-in. Alex paces back and forth, his expression animated as he lays out the plan. Miguel sits at a table, his hands moving over a map of the archives, pointing out potential entry and exit points. Ana examines a floor plan, her expression focused as she identifies the locations of guards and cameras. Isabella sits slightly apart, her tablet in hand, her expression calm and thoughtful as she considers the risks. The room is dimly lit, with a single lamp casting long shadows and the glow of various screens creating pools of light. The scene is one of tension and determination, as the group prepares for one of their most dangerous missions yet. Cinematic, moody, detailed, 8K.
+
+---
+
+## 🎭 EMOTIONAL MOMENTS
+
+### Carlos's Death (The Car Chase)
+A dramatic, high-speed chase scene on the rain-slicked streets of Las Flores at night. A black car, its headlights cutting through the darkness, races through the empty streets, pursued by a second vehicle. Inside the first car, Carlos Lacan is at the wheel, his expression a mix of fear and determination. Beside him, Ana Kim clutches the door, her knuckles white, while Miguel Jhonson in the back seat barks instructions into a radio. The city blurs past them: the glow of streetlights, the flicker of neon signs, the shadows of towering buildings. The rain streaks across the windshield, distorting the view, while the tires screech on the wet pavement. In the distance, the lights of the Luz del Río energy plant loom like a beacon of doom. The scene is tense and urgent, with a sense of inevitability hanging in the air. The lighting is dramatic, with harsh contrasts between light and shadow, and the colors are cool and muted, dominated by blacks, blues, and grays. Cinematic, action-packed, high detail, 8K.
+
+### Miguel at the Bench (Post-2077)
+Miguel Jhonson sitting on a bench near the renamed complex (former retirement complex) early in the morning, before the neighborhood fills up. He's alone, his broad shoulders slightly slumped, his hands resting on his knees. His expression is distant, lost in thought, as he carries the weight of Carlos's death and the responsibility of the movement's legacy. The bench is simple, the area around it quiet, with the first light of dawn beginning to touch the buildings. In the background, the city wakes up, its vibrancy a stark contrast to Miguel's somber mood. The scene captures Miguel's quiet strength and the burden he carries as the last one standing from the core group. Photorealistic, melancholic, soft lighting, 8K.
+
+### Ana's Departure (The Decision)
+Ana Kim in the car after the City Hall archive break-in, her expression a mix of pain and resolve as she tells the group she's done. She sits with her hands in her lap, her knuckles white with tension, her direct gaze fixed on the others as she speaks. Miguel and Isabella listen, their expressions a mix of understanding and sadness. The car is parked on a quiet street, the city lights visible through the windows. The scene is intimate and emotional, capturing the moment when Ana makes the difficult but honest choice to leave the group. Photorealistic, emotional, soft lighting, 8K.
+
+### Isabella's Discovery (The Spreadsheet)
+Isabella Vargas at her moment of triumph, having just completed the spreadsheet that will unlock the Las Estrellas investigation. She sits at a desk, her tablet before her, her expression a mix of satisfaction and determination. The spreadsheet is visible on the screen, its complex web of connections and patterns a testament to her analytical skills. The room around her is dimly lit, with the glow of the screen casting sharp shadows on her face. The scene captures the intelligence and precision that Isabella brings to the group, the intellectual structure that makes their work possible. Photorealistic, focused, high contrast, 8K.
+
+---
+
+# NOTES
+- All prompts should include: `--no androids, no robots, no neon, no clean backgrounds, no modern clothing, no utopian`
+- For consistent characters, use the same seed and model (especially in Leonardo.AI)
+- For group shots, generate individual portraits first, then composite
+- Use face swap tools to maintain consistency across multiple images of the same character
+- For emotional moments, focus on the eyes and expressions
+- For action shots, pay attention to lighting and composition

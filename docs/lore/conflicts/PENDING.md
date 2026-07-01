@@ -67,9 +67,57 @@ No contradictions with existing family structure; all additions are complementar
 
 ---
 
+## New Lore Additions (2026-07-01)
+
+### Sofia Duarte
+- **New figure**: Councilwoman Sofia Duarte, corrupt politician allied with Mayor Vega and Senator Chen
+- **Files created**: `docs/lore/figures/sofia_duarte.md`, `content/characters/char_sofia_duarte.yaml`
+- **No conflicts**: This is a new character not previously documented in any existing lore
+
+### Crisis Daily Life Effects
+- **New event file**: `docs/lore/events/crisis_daily_life.md`
+- **Covers**: Education, folk stories, food supply, tourism, crime, racial tensions, science/tech, USA/China geopolitics, work displacement, political abandonment
+- **No conflicts**: Complements existing `effects_of_lithium_leak.md` without duplication
+
+### Visual Arts Response
+- **New event file**: `docs/lore/events/visual_arts_response.md`
+- **Covers**: Murals, music (Lithio-Rock), documentary filmmaking, graphic novels, social media activism
+- **No conflicts**: Expands on the "Cultural" section of the Great Lithium Leak file
+
+### Leisure & Destinations
+- **New file**: `docs/lore/leisure_and_destinations.md`
+- **Covers**: Family destinations, couples' retreats, school trips, food trends, nightlife, outdoor activities
+- **No conflicts**: Consolidates information scattered across landmark files
+
+### Financial District
+- **New landmark**: `docs/lore/landmarks/city/financial_district.md`
+- **No conflicts**: Complements existing World Trade Center and business center landmarks
+
+## Raw File Processing Log
+
+### `docs/lore/stories/raw_retirement_complex_gdd.md` (2026-07-01) — DELETED
+
+This raw GDD file contained three distinct content types:
+
+1. **Game Design Document specs** (mechanics, art style, UI, audio, demo scenario)
+   - **Preserved in:** `docs/game_design.md` (created 2026-07-01)
+   - Adapted from original Godot/Unity GDD to current server-driven Phaser.js architecture
+   - Captures discussion battle concept, skill gating, atmosphere duality
+
+2. **Story: Karla's Murder (prologue)**
+   - **Preserved in:** `docs/lore/stories/karlas_murder.md` (already existed, more detailed)
+   - Evelyn's encounter with dying Karla in the alley, evidence handoff
+
+3. **Story: Chapter 1 — Alex & The Retirement Complex**
+   - **Preserved in:** `docs/lore/stories/retirement_complex_murders.md` (already existed, comprehensive)
+   - Alex Garcia investigation into HVAC murders, team formation, mystery resolution
+   - Character profiles in `docs/lore/figures/gdd_friends.md`
+
+No additional processing needed; all narrative content was already canonical.
+
 ## Last Updated
 
-2026-06-30 (updated with new content integration: media expansion, van der Meer family expansion, new figures, and timeline additions)
+2026-07-01 (updated with new content integration: Sofia Duarte, crisis daily life, visual arts, leisure, financial district)
 
 
 ## Character Integration Name Variants (2026-06-30) — RESOLVED

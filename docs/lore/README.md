@@ -6,10 +6,40 @@
 
 ---
 
+## 📚 GUIDES & DOCUMENTATION
+
+For **creating new content** (lore, UI, assets), see the **[Guides](#-guides--documentation) section below**.
+
+### 🎯 Quick Start for Contributors
+1. **Read the [Lore Extraction Framework](guides/lore_extraction_framework.md)** – Extracted elements for lore, UI, and prompts
+2. **Explore [Creative Mediums Guide](guides/creative_mediums_guide.md)** – Visual arts, literature, music applications
+3. **Read the [Asset Generation Guide](guides/asset_generation_guide.md)** – Core principles and lore framework
+4. **Use the [Templates](guides/templates.md)** – Copy-paste resources for quick creation
+5. **Follow the [Workflows](guides/workflows.md)** – Step-by-step processes for common tasks
+6. **Reference the [Prompt Library](guides/prompt_library.md)** – Image/video generation templates
+7. **Design with the [UI/UX System](guides/ui_ux_design_system.md)** – Visual identity and components
+
+---
+
 ## Directory Structure
 
 ```
 docs/lore/
+├── guides/                 # Creation guides & workflows (NEW!)
+│   ├── asset_generation_guide.md  # Core principles & lore framework
+│   ├── ui_ux_design_system.md      # Visual identity & components
+│   ├── prompt_library.md           # Image/video generation templates
+│   ├── workflows.md                # Step-by-step processes
+│   ├── templates.md                # Copy-paste resources & cheat sheets
+│   ├── lore_extraction_framework.md # Extracted elements for lore/UI/prompts
+│   └── creative_mediums_guide.md   # Visual arts, literature, music guides
+│
+├── assets/                # Generated content (NEW!)
+│   └── prompts/            # Curated prompt collections
+│       ├── locations.txt   # Location-specific prompts
+│       ├── characters.txt  # Character portrait prompts
+│       └── scenes.txt      # Key story moment prompts
+│
 ├── companies/
 │   ├── european/          # Dutch/European investor entities
 │   ├── lw_group/          # Chinese state-linked conglomerate
@@ -114,6 +144,17 @@ docs/lore/
 | [Dong van der Meer](figures/dong_van_der_meer.md) | Key figure (criminal) |
 | [Constitution Backstory](figures/constitution_backstory.md) | Historical event |
 | [Evelyn Ruthenberg](figures/evelyn_ruthenberg.md) | Whistleblower, Luz del Rio engineer |
+| [Sofia Duarte](figures/sofia_duarte.md) | Councilwoman, Business Coalition, corrupt politician |
+
+### 👥 Alex's Friends (The 2077 Core Group)
+
+| Entry | Type | Role | Status |
+|---|---|---|---|
+| [Miguel Jhonson](figures/miguel_jhonson.md) | Key Figure | Logistics, Infrastructure | Active |
+| [Carlos Lacan](figures/carlos_lacan.md) | Key Figure | Technical Expert | Deceased (2077) |
+| [Ana Kim](figures/ana_kim.md) | Key Figure | Research, Conscientious Objector | Active |
+| [Isabella Vargas](figures/isabella_vargas.md) | Key Figure | Intelligence, Analysis | Active |
+| [The 2077 Core Group](figures/gdd_friends.md) | Group Overview | All | Mixed |
 | [Yara Rossi](figures/yara_rossi.md) | Businesswoman-activist, assassinated 2059 |
 | [Lina Kim](figures/lina_kim.md) | Investigative journalist, La Prensa |
 | [Liu Fang](figures/liu_fang.md) | Whistleblower, disappeared 2055 |
