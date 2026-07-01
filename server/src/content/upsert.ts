@@ -280,13 +280,10 @@ async function processLocationData(data: any): Promise<string> {
   return upsertScene(sceneData);
 }
 
-async function upsertMapTile(data: any): Promise<string> {
+async function upsertMapTile(data: { district_id: string; x: number; y: number; terrain_type: string; base_image_url?: string; overlay_image_url?: string; rotation?: number; is_flipped?: boolean; metadata?: Record<string, unknown> }): Promise<string> {
   const result = await queryOLTP(
     `INSERT INTO map_tiles (district_id, x, y, terrain_type, base_image_url, overlay_image_url, rotation, is_flipped, metadata)
-      VALUES (
-        (SELECT id FROM districts WHERE name = $1),
-        $2, $3, $4, $5, $6, $7, $8, $9
-      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       ON CONFLICT (district_id, x, y) DO UPDATE SET
         terrain_type = EXCLUDED.terrain_type,
         base_image_url = EXCLUDED.base_image_url,
@@ -297,12 +294,12 @@ async function upsertMapTile(data: any): Promise<string> {
         updated_at = NOW()
       RETURNING id`,
     [
-      data.district,
+      data.district_id,
       data.x,
       data.y,
       data.terrain_type,
-      data.base_image_url || null,
-      data.overlay_image_url || null,
+      data.base_image_url ?? null,
+      data.overlay_image_url ?? null,
       data.rotation || 0,
       data.is_flipped || false,
       JSON.stringify(data.metadata || {}),
@@ -317,17 +314,28 @@ async function processMapTileData(data: any): Promise<string> {
 
   const districtName = data.district || 'Unknown';
   
-  // Ensure district exists
-  await queryOLTP(
-    `INSERT INTO districts (name, slug, x, y) VALUES ($1, $2, 0, 0) ON CONFLICT (name) DO NOTHING`,
-    [districtName, districtName.toLowerCase().replace(/\s+/g, '-')]
+  // Look up canonical district — do NOT auto-create
+  const districtResult = await queryOLTP(
+    `SELECT id FROM districts WHERE name = $1`,
+    [districtName]
   );
+  if (districtResult.rows.length === 0) {
+    throw new Error(`District "${districtName}" not found. Create the district record before importing tiles.`);
+  }
+  const districtId = districtResult.rows[0].id;
 
   const tileIds: string[] = [];
   for (const tile of data.tiles) {
     const id = await upsertMapTile({
-      ...tile,
-      district: districtName,
+      district_id: districtId,
+      x: tile.x,
+      y: tile.y,
+      terrain_type: tile.terrain_type,
+      base_image_url: tile.base_image_url,
+      overlay_image_url: tile.overlay_image_url,
+      rotation: tile.rotation,
+      is_flipped: tile.is_flipped,
+      metadata: tile.metadata,
     });
     tileIds.push(id);
   }

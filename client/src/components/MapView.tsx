@@ -67,7 +67,9 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
 
   useEffect(() => {
     if (playerState?.timeBlocks !== undefined) {
-      setDayNight(playerState.timeBlocks <= 10 ? 'night' : playerState.timeBlocks >= 30 ? 'day' : dayNight);
+      setDayNight((current) =>
+        playerState.timeBlocks <= 10 ? 'night' : playerState.timeBlocks >= 30 ? 'day' : current
+      );
     }
   }, [playerState?.timeBlocks]);
 
@@ -140,6 +142,7 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
   const minY = tiles.length ? Math.min(...tiles.map((t) => t.y)) : 0;
   const maxY = tiles.length ? Math.max(...tiles.map((t) => t.y)) : 0;
   const cols = maxX - minX + 1;
+  const rows = maxY - minY + 1;
 
   return (
     <div className="map-container map-district" data-daynight={dayNight}>
@@ -163,9 +166,13 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
           className="tile-grid"
           style={{
             gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
           }}
         >
-          {tiles.map((tile: Tile) => {
+          {tiles
+            .slice()
+            .sort((a, b) => a.y - b.y || a.x - b.x)
+            .map((tile: Tile) => {
             const color = TERRAIN_COLORS[tile.terrainType] || '#2a2a2a';
             const isCurrent = currentLocationId && tile.metadata?.location_id === currentLocationId;
             const baseStyle: React.CSSProperties = {
@@ -174,6 +181,8 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               transform: tile.rotation ? `rotate(${tile.rotation}deg)` : undefined,
+              gridColumn: tile.x - minX + 1,
+              gridRow: tile.y - minY + 1,
             };
 
             return (
@@ -182,12 +191,17 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
                 className={`map-tile${tile.overlayImageUrl ? ' has-overlay' : ''}${isCurrent ? ' current-location' : ''}`}
                 style={baseStyle}
                 onClick={() => handleTileClick(tile)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') handleTileClick(tile);
+                }}
                 title={String(tile.metadata?.label || tile.terrainType)}
               >
                 {tile.overlayImageUrl && (
                   <img src={tile.overlayImageUrl} alt="" className="landmark-overlay" draggable={false} />
                 )}
-                {String(tile.metadata?.label) && !tile.overlayImageUrl && (
+                {!!tile.metadata?.label && !tile.overlayImageUrl && (
                   <span className="tile-dot" />
                 )}
               </div>

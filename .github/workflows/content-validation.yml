@@ -8,6 +8,10 @@ on:
     paths:
       - 'content/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-content:
     runs-on: ubuntu-latest

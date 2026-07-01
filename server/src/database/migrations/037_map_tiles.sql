@@ -20,9 +20,6 @@ CREATE TABLE IF NOT EXISTS map_tiles (
     UNIQUE(district_id, x, y)
 );
 
-CREATE INDEX idx_map_tiles_district ON map_tiles(district_id);
-CREATE INDEX idx_map_tiles_position ON map_tiles(district_id, x, y);
-
 -- Extend migration_log.content_type CHECK to include 'map_tile'
 ALTER TABLE migration_log
     DROP CONSTRAINT IF EXISTS migration_log_content_type_check;

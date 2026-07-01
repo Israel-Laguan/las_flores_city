@@ -8,7 +8,7 @@
 
 ## 📚 GUIDES & DOCUMENTATION
 
-For **creating new content** (lore, UI, assets), see the **[Guides](#guides) section below**.
+For **creating new content** (lore, UI, assets), see the **[Guides](#-guides--documentation) section below**.
 
 ### 🎯 Quick Start for Contributors
 1. **Read the [Lore Extraction Framework](guides/lore_extraction_framework.md)** – Extracted elements for lore, UI, and prompts
@@ -147,6 +147,7 @@ docs/lore/
 | [Sofia Duarte](figures/sofia_duarte.md) | Councilwoman, Business Coalition, corrupt politician |
 
 ### 👥 Alex's Friends (The 2077 Core Group)
+
 | Entry | Type | Role | Status |
 |---|---|---|---|
 | [Miguel Jhonson](figures/miguel_jhonson.md) | Key Figure | Logistics, Infrastructure | Active |

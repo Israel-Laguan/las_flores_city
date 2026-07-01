@@ -1,7 +1,7 @@
 import express from 'express';
 import { queryOLTP } from '../database/connection.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { getCache, setCache } from '../database/redis.js';
+import { getCache, setCache, deleteCache } from '../database/redis.js';
 
 export const mapRouter = express.Router();
 
@@ -154,12 +154,11 @@ mapRouter.post('/:districtSlug/invalidate', authMiddleware, async (req: AuthRequ
   try {
     const { districtSlug } = req.params;
     
-    // Force overview cache expiry
-    await setCache(mapOverviewCacheKey(), {}, 1);
+    // Invalidate overview cache
+    await deleteCache(mapOverviewCacheKey());
 
-    // Force district cache expiry
-    const key = districtMapCacheKey(districtSlug);
-    await setCache(key, {}, 1);
+    // Invalidate district cache
+    await deleteCache(districtMapCacheKey(districtSlug));
 
     res.json({
       success: true,

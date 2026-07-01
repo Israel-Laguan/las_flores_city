@@ -1028,7 +1028,7 @@ Conceptual art split-screen (diptych) that captures the contrast between beauty 
 
 ### 🔹 FOR UI/UX DESIGN
 
-- [ ] **🎨 Visual Identity:** Uses the **color palette, textures, and fonts** from the [Design System](../ui_ux_design_system.md)?
+- [ ] **🎨 Visual Identity:** Uses the **color palette, textures, and fonts** from the [Design System](./ui_ux_design_system.md)?
 - [ ] **🧭 Navigation:** Is it **intuitive** and **linked to other relevant pages**?
 - [ ] **📖 Lore Integration:** Does it **showcase the duality** of Las Flores?
 - [ ] **📱 Responsive:** Does it work on **mobile, tablet, and desktop**?

@@ -183,12 +183,12 @@ export async function getLocationDialogues(id: string): Promise<any> {
 }
 
 // Map API
-export async function getMapOverview(): Promise<any> {
+export async function getMapOverview(): Promise<{ success: boolean; data: import('../types/map').District[] }> {
   return fetchAPI('/map');
 }
 
-export async function getDistrictMap(districtSlug: string): Promise<any> {
-  return fetchAPI(`/map/${districtSlug}`);
+export async function getDistrictMap(districtSlug: string): Promise<{ success: boolean; data: { tiles: import('../types/map').Tile[]; name: string; description?: string } }> {
+  return fetchAPI(`/map/${encodeURIComponent(districtSlug)}`);
 }
 
 // Dialogue API

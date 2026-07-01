@@ -53,7 +53,7 @@ Assets are **externally generated** (AI or artist) and stored in MinIO. The serv
 ```
 /map                           → World overview (all districts)
 /map/:districtSlug             → District tile grid
-/map/:districtSlug/:locationId → Location detail (→ /city/loc/:locationId)
+/city/loc/:locationId          → Location detail
 ```
 
 ### Responsive Behavior

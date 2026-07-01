@@ -80,6 +80,15 @@ function destroyCurrentView(): void {
   }
 }
 
+function mountReactView(component: any, props: Record<string, unknown>): void {
+  const container = document.getElementById('view-container') as HTMLDivElement;
+  const mountEl = document.createElement('div');
+  container.appendChild(mountEl);
+  const root = createRoot(mountEl);
+  root.render(createElement(component, props));
+  currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
+}
+
 function hideAllContainers(): void {
   document.getElementById('login-menu')!.style.display = 'none';
   document.getElementById('view-container')!.style.display = 'none';
@@ -191,12 +200,7 @@ function registerRoutes(): void {
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
-    const container = document.getElementById('view-container') as HTMLDivElement;
-    const mountEl = document.createElement('div');
-    container.appendChild(mountEl);
-    const root = createRoot(mountEl);
-    root.render(createElement(MapView, { playerState: cachedPlayerState }));
-    currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
+    mountReactView(MapView, { playerState: cachedPlayerState });
   });
 
   registerRoute('/map/', (params) => {
@@ -208,13 +212,8 @@ function registerRoutes(): void {
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
-    const container = document.getElementById('view-container') as HTMLDivElement;
     const districtSlug = extractDistrictSlug();
-    const mountEl = document.createElement('div');
-    container.appendChild(mountEl);
-    const root = createRoot(mountEl);
-    root.render(createElement(MapView, { initialDistrict: districtSlug, playerState: cachedPlayerState }));
-    currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
+    mountReactView(MapView, { initialDistrict: districtSlug, playerState: cachedPlayerState });
   });
 
   function extractDistrictSlug(): string | undefined {

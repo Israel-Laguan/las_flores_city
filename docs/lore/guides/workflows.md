@@ -226,7 +226,7 @@
   - **Connections:** (Link to characters, locations)
 
 #### 8️⃣ Quality Control (5 min)
-- Run through the **[Scene Quality Checklist](#)** (See below).
+- Run through the **[Scene Quality Checklist](./templates.md#scene-quality-checklist)** (See below).
 - Verify:
   - [ ] Fits timeline
   - [ ] Character motivations make sense
