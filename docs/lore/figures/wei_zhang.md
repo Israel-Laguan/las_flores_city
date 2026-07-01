@@ -28,4 +28,4 @@ Yara Rossi's assassination on July 14, 2059, shattered the movement's equilibriu
 
 ## Legacy
 
-Though officially listed as working for Minera Estrella as of 2065, Wei Zhang's true allegiance remains ambiguous. What is certain is that the phytoremediation techniques developed under his guidance form the scientific backbone of the restoration effort, and that the fight for Las Flores' river continues—whether in the light or in the shadows.
+Though officially listed as working for Minería Estrella as of 2065, Wei Zhang's true allegiance remains ambiguous. What is certain is that the phytoremediation techniques developed under his guidance form the scientific backbone of the restoration effort, and that the fight for Las Flores' river continues—whether in the light or in the shadows.
