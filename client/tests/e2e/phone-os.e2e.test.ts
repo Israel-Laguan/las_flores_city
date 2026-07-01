@@ -18,7 +18,7 @@ import { test, expect } from '@playwright/test';
  * This replaced the old `addInitScript(localStorage.setItem)` pattern, which
  * cannot set HttpOnly cookies. See Task 6.5 spec §E2E migration.
  */
-const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 test.beforeEach(async ({ page }) => {
   const userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {

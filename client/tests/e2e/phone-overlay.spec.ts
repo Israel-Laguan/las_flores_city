@@ -5,7 +5,7 @@ const rand = Math.random().toString(36).slice(2, 8);
 const testEmail = `overlay-${Date.now()}-${rand}@example.com`;
 const testUsername = `overlay_${Date.now()}_${rand}`;
 
-const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 test.beforeAll(async ({ request }) => {
   const res = await request.post(`${API_BASE}/api/auth/register`, {

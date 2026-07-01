@@ -9,7 +9,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const API_URL = process.env.API_URL ?? 'http://localhost:5173';
+const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
 const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
 

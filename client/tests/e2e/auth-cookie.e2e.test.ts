@@ -21,7 +21,7 @@
 import { test, expect } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 const testEmail = `cookie-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
 const testUsername = `cookie_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;

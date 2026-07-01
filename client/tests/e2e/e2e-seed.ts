@@ -1,7 +1,7 @@
 import { APIRequestContext } from '@playwright/test';
 
 // API base URL: use full backend URL in CI, local proxy in dev
-const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
+const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 /**
  * Authenticate the request context's cookie jar by logging in.
