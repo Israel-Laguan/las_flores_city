@@ -2,11 +2,11 @@ id: "3315f76b-a1dc-4525-b247-bcb99560b606"
 name: "Carlos Rodriguez"
 title: "Mayor of Las Flores Free City"
 description: |
-  Carlos Rodriguez is a 48-year-old Progressive Alliance mayor serving his second term. A founding Alliance member, his political partnership with Ana Silva — the coalition's environmental policy architect — anchors his legislative agenda. Together they co-authored three contamination oversight bills; two passed in weakened form under LW Group lobbying pressure Rodriguez has never publicly named as such.
+  Carlos Rodriguez is a 48-year-old Progressive Alliance mayor serving his second term. A founding member, his partnership with Ana Silva — the coalition's environmental policy architect — anchors his agenda. Together they co-authored three contamination oversight bills; two passed in weakened form under LW Group lobbying pressure.
 
-  His contested position defines him: a reformist mayor governing a city whose largest employer and primary infrastructure funder is LW Group. His public statements invoke the 2052 Great Lithium Leak and its health impacts on Port Area communities; his enacted environmental contamination legislation contains enforcement provisions industry analysts describe as structurally toothless.
+  His contested position defines him: a reformist mayor governing a city whose largest employer is LW Group. His statements invoke the 2052 Great Lithium Leak and its health impacts; his environmental legislation contains enforcement provisions analysts call toothless.
 
-  Rodriguez is pragmatic in the way politicians who survive structurally compromised positions tend to be: he identifies the most achievable within his constraints, achieves it, and calls it progress.
+  Rodriguez is pragmatic: he identifies the achievable within his constraints, achieves it, and calls it progress.
 relationships:
   - target_id: "Ana Silva"
     type: "professional"

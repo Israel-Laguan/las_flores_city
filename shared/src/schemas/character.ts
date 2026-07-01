@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const RelationshipSchema = z.object({
-  target_id: z.string().uuid().or(z.string()),
+  target_id: z.string(),
   type: z.enum(['friend', 'rival', 'romance', 'professional', 'family', 'enemy', 'mentor', 'subordinate']),
   closeness: z.number().min(-100).max(100),
   trust: z.number().min(-100).max(100).optional(),
