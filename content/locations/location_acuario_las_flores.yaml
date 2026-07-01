@@ -1,0 +1,109 @@
+id: "ee521a24-55d4-48f3-b838-fde02322cd08"
+type: location
+name: "Acuario Las Flores"
+color: null
+aliases:
+  - Las Flores Aquarium
+  - Acuario
+tags:
+  - Landmark
+  - Port Area
+  - Entertainment
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Acuario Las Flores stands at the mouth of the Río de las Flores delta, a monument
+  to the city's complicated relationship with its own waters. When the facility first opened
+  in 2041 it was conceived as a conservation showcase, a place where the river's native
+  species could be studied and celebrated. That ambition collided with reality a decade
+  later. The 2052 Great Lithium Leak — the catastrophic rupture of an LW Group
+  tailings pipeline upstream — sent a plume of heavy-metal brine surging down the
+  Río de las Flores and into the coastal delta, wiping out roughly sixty percent of the
+  aquarium's open-water breeding stock and bleaching every natural coral formation
+  within two kilometres of the river mouth. The incident forced a fundamental
+  reinvention. Rather than close, the facility pivoted to an LW Group-sponsored
+  corporate research partnership, accepting restoration funding in exchange for
+  branding rights and access to its genetics laboratories. The contamination legacy
+  remains visible in the permanent "Resilience Wing," where visitors can read the
+  officially approved account of the Leak — one that conspicuously omits the
+  suppressed environmental-liability report filed by the city's own marine biologists
+  and buried under a non-disclosure order within weeks of the disaster.
+
+daytime: >
+  Under the aquarium's diffused-glass canopy the daytime experience is engineered
+  calm. Holographic coral reef displays stretch across the main hall, rendering
+  in photorealistic detail the reef formations that no longer exist outside — a
+  seamless substitution for ecosystems that were destroyed, presented without
+  editorial comment. Sponsor plaques bearing the LW Group crest appear at
+  regular intervals along every major corridor, and the marine research wing
+  accessible to ticketed visitors hums with activity: technicians in branded
+  lab coats tend bioreactor tanks growing heat-resistant coral polyps while
+  overhead screens broadcast real-time contamination readings from the Río de
+  las Flores estuary — numbers that, according to independent environmental
+  monitors, are consistently under-reported by a factor of three. Atmospheric
+  scrubbers in the climate-controlled galleries maintain a faint salt-air scent
+  independent of the actual river outside, whose smell on a warm day is closer
+  to industrial solvent. Biometric scanners log every entry and exit; the data
+  feed, per the facility's terms of service, is shared with the LW Group security
+  division as part of the sponsorship agreement.
+
+nightlife: >
+  After hours the aquarium reinvents itself. The main corridors are bathed in blue
+  and violet bioluminescent lighting sourced from genetically modified jellyfish
+  cultures displayed in wall-length tank installations — one of the few genuinely
+  novel exhibits the facility has produced since the 2052 contamination. Ticketed
+  evening visitors move through near-darkness punctuated by softly glowing tanks,
+  the effect deliberately cinematic and entirely disconnected from any ecological
+  reality. The private event suites on the upper level are a different proposition
+  entirely: LW Group subsidiaries, logistics conglomerates, and city-government
+  delegations book the rooftop terrace for dinners overlooking the delta,
+  surveillance drones from the corporate security detail making slow circuits
+  overhead while catering staff move through corridors that the public never sees.
+  The bioluminescent evening exhibits draw genuine wonder from visitors who have
+  no reason to connect the spectacle to the industrial contamination that made
+  such engineered substitutes necessary in the first place.
+
+important_places:
+  - name: Holographic Coral Hall
+    description: >
+      The facility's centrepiece gallery, where floor-to-ceiling holographic
+      projectors reconstruct reef formations destroyed by the 2052 Lithium Leak.
+      Informational panels describe pre-contamination biodiversity; the role of
+      LW Group in the contamination event is not mentioned.
+  - name: LW Group Marine Research Wing
+    description: >
+      Corporate-sponsored genetics laboratory and bioreactor suite accessible
+      on the standard visitor route. Researchers develop heat-resistant and
+      contaminant-tolerant coral strains under LW Group IP agreements. Public
+      tours are offered three times daily; access beyond the glass observation
+      corridor requires a corporate-guest pass.
+  - name: Resilience Wing
+    description: >
+      Permanent exhibition framing the post-2052 rebuilding effort as a story
+      of institutional perseverance. The suppressed environmental-liability
+      report is not on display; a redacted summary prepared by LW Group's
+      communications department is.
+  - name: Bioluminescent Jellyfish Gallery
+    description: >
+      Evening-hours installation featuring genetically modified jellyfish
+      cultures in wall-length tanks. Designed for atmospheric effect rather
+      than scientific interpretation; the exhibit omits any reference to the
+      engineering origins of the organisms.
+  - name: Private Event Terrace
+    description: >
+      Rooftop venue overlooking the Río de las Flores delta, available for
+      corporate bookings. Catering, private security, and dedicated drone
+      airspace clearance are included in the hire package.
+
+conclusion: >
+  The Acuario Las Flores occupies an uncomfortable position in the city's cultural
+  landscape: a public institution that would not exist in its current form without
+  the corporate patronage of the entity most responsible for its original decline.
+  For most visitors the holographic displays and bioluminescent tanks provide a
+  genuinely affecting encounter with marine life they could encounter nowhere else
+  in the contaminated delta region. Whether that encounter constitutes education or
+  a sophisticated form of erasure depends on how much of the Río de las Flores
+  contamination record one has managed to read before the non-disclosure orders
+  took effect.

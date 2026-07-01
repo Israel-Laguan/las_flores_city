@@ -1,0 +1,100 @@
+id: "ee52e79d-3e90-4337-a18c-7bc2c51aa619"
+type: location
+name: "Circunvalación Las Flores"
+color: null
+aliases:
+  - Ring Road
+  - CLF
+  - The Circunvalación
+tags:
+  - Transport
+  - Infrastructure
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Circunvalación Las Flores was planned as the city's outer boundary — a ring
+  road encircling the urban core, intended to absorb through-traffic that would
+  otherwise penetrate the central district and to define a physical perimeter
+  between the city's developed urban fabric and the informal and industrial
+  periphery beyond. It was constructed in stages between 2040 and 2058, its four
+  sections progressing roughly in order of political priority: the northern section
+  first, serving the emerging enclave district; the eastern and western sections
+  following as industrial and port logistics demand grew; and the southern section
+  last, completed in 2058 to a specification that the infrastructure authority's
+  own evaluation noted was below the standard of the other three sections. The ring
+  road has performed its through-traffic function adequately for the urban core it
+  encircles. It has not performed the function its planners did not acknowledge:
+  along its outer edge — particularly the southern and eastern stretches — informal
+  settlements have grown in the space between the carriageway and the city's
+  official boundary line, a population that has no formal address, no municipal
+  service connection, and no presence in the city's planning records. From the
+  traffic lanes the settlements are invisible — set back from the road edge,
+  screened by sound-barrier panels, present only in the aggregate electricity
+  demand that the city's distribution network cannot fully explain and in the
+  demographic data that the informal economy generates without being counted.
+
+daytime: >
+  The Circunvalación carries its primary function during daylight hours: freight
+  vehicles diverting from the congested central avenues, airport transfer coaches,
+  construction logistics, and the continuous circulation of port-bound cargo that
+  uses the ring road to avoid Avenida Independencia's worst bottlenecks. Section
+  condition varies significantly by quadrant: the northern section's asphalt is
+  at 2074 maintenance standard; the southern section's is at 2061 standard, with
+  visible patching that the infrastructure authority's deferred maintenance registry
+  classifies as stable-pending-replacement. Traffic monitoring cameras are standard
+  equipment at every intersection; the city's transport authority operates the feeds,
+  with a data-sharing arrangement that routes vehicle registration scans to the
+  police authority and — in the northern section, under a separate agreement — to
+  the enclave's private security network. The informal settlements along the outer
+  edge of the southern section are visible from elevated overpasses; from the
+  carriageway surface they are screened by the sound-barrier panels, present
+  as a faint suggestion of residential activity in the spaces between infrastructure.
+
+nightlife: >
+  After 22:00 the Circunvalación's freight traffic reduces but does not stop.
+  Overnight port logistics runs at lower volume than the daytime peak; airport
+  transfer coaches maintain their schedule for late-arriving international flights.
+  The informal settlements along the outer edge are most legible after dark:
+  light from cooking fires and personal devices is visible above the sound barriers
+  in the southern section, a consistent glow that traffic cameras on the carriageway
+  record without categorising. The northern section's camera feeds continue their
+  vehicle registration scans through the night; the southern section's feeds,
+  operating on older equipment under a lower-priority maintenance contract, run
+  at degraded resolution after 23:00. The difference in overnight camera quality
+  between the northern and southern sections is not a stated policy. It is a
+  consequence of the differential maintenance investment that has characterised
+  the ring road since its southern section was built to below-standard specification
+  in 2058 and has not been upgraded since.
+
+important_places:
+  - name: Northern Section
+    description: >
+      The ring road's highest-specification quadrant, serving the enclave district.
+      Maintained to 2074 standard; traffic cameras equipped with vehicle registration
+      scanning that routes to both city transport authority and the enclave's
+      private security network under a section-specific data-sharing agreement.
+  - name: Southern Section Informal Settlement Zone
+    description: >
+      The outer edge of the ring road's southern quadrant, where informal settlements
+      have grown in the space between the carriageway and the city's official boundary.
+      Invisible from the traffic lanes; visible from elevated overpasses. No formal
+      address, no municipal service connection, no planning record. Present in the
+      city's electricity demand data and informal economy activity.
+  - name: Deferred Maintenance Stretches
+    description: >
+      The patched and below-standard sections of the southern and eastern ring road,
+      classified as stable-pending-replacement in the infrastructure authority's
+      deferred maintenance registry. Condition has not been upgraded since the
+      southern section's 2058 below-specification construction.
+
+conclusion: >
+  The Circunvalación Las Flores encircles the city and, in doing so, defines what
+  the city considers inside and outside its care. The traffic lanes serve their
+  function. The outer edge of the southern section, where the informal settlements
+  have grown precisely because the city has not decided to prevent them and has not
+  decided to serve them, is the ring road's most politically legible feature —
+  a population that exists in the space between the carriageway and the planning
+  boundary, visible from the right vantage point and invisible from the lane you
+  are supposed to stay in.

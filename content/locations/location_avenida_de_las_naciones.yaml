@@ -1,0 +1,102 @@
+id: "56f1654d-b089-4750-a843-378a1b5a7de9"
+type: location
+name: "Avenida de las Naciones"
+color: null
+aliases:
+  - Avenue of Nations
+  - La Naciones
+  - AN
+tags:
+  - Transport
+  - Central City
+  - Infrastructure
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  Avenida de las Naciones was designed as the constitutional city's ceremonial spine —
+  a north-south boulevard that would express, in physical form, Las Flores Free City's
+  aspiration toward internationalism and civic dignity. When it was completed in 2038
+  alongside the city's formal founding infrastructure, the avenue was lined with the
+  flags of the forty-three nations that had extended diplomatic recognition, and
+  its central median was planted with a sequence of native tree species selected by
+  a horticultural commission as living markers of the city's ecological ambitions.
+  By 2077 the flags have multiplied to sixty-one, each pole now alternating between
+  national colours and the brand standards of the corporate sponsors who fund the
+  avenue's maintenance contract — a concession arrangement that the city council
+  approved in 2064 after the infrastructure authority's maintenance budget was cut
+  by thirty percent. LW Group holds three of the twelve primary sponsorship positions;
+  its corporate banners appear at regular intervals along the prestige stretch between
+  the financial district and the government quarter. The avenue's elevated monorail
+  section — a 2069 addition intended to reduce surface-level traffic pressure — cuts
+  through the central portion of the boulevard at seven metres above street level,
+  and the steel columns supporting its track have generated a set of recessed spaces
+  beneath the elevated structure that the city's housing authority classifies as
+  infrastructure access zones and that serve, in practice, as semi-permanent
+  encampments for the city's most visible homeless population. The encampments are
+  within sight of the ceremonial flag poles, a proximity that the avenue's original
+  planners did not anticipate and that the city's current administration has not
+  addressed with anything beyond periodic clearance operations.
+
+daytime: >
+  At peak hours Avenida de las Naciones is the city's most legible social panorama.
+  The prestige carriageway carries executive vehicles, diplomatic motorcades, and
+  tourist coaches whose passengers photograph the flag sequence; the lateral lanes
+  carry delivery trucks and transit buses serving the commercial district. The
+  monorail above runs its six-minute service, its route visible from street level
+  as a moving silhouette against the sky. Corporate sponsor banners along the
+  median are designed for vehicle-speed visibility — large-format holographic
+  cloth that updates its displayed content through a central scheduling system
+  maintained by the sponsorship management division of an LW Group subsidiary.
+  Atmospheric monitoring nodes mounted on flag poles at three-hundred-metre
+  intervals measure particulate density, temperature, and humidity; the data
+  feeds to the city's environmental dashboard, where it shows the avenue as among
+  the city's cleaner arterials — accurate, because the commercial district that
+  the avenue traverses has stricter emissions regulations than the Industrial Zone
+  whose factory exhaust shifts northward on prevailing winds. The encampments
+  beneath the monorail columns are outside the monitoring node coverage area.
+
+nightlife: >
+  After 22:00 Avenida de las Naciones empties of its diplomatic and tourist traffic
+  and becomes primarily a through-route for freight and late service vehicles.
+  The flag poles are lit from below by LED arrays whose power draw is metered under
+  the sponsorship contract; corporate banners continue their content rotation through
+  the night. The monorail runs its reduced night service overhead, its carriages
+  mostly empty, its schedule maintained for regulatory continuity. The encampments
+  beneath the monorail columns are most visible in the evenings, lit by the residual
+  glow from the banner arrays above and occasionally by the personal devices of the
+  encampment's residents. City clearance operations — when they occur — are scheduled
+  for early morning, before the diplomatic traffic resumes. The avenue after midnight
+  is its most honest version: the flags in the wind above the corporate banners above
+  the infrastructure columns above the encampments, a vertical map of the city's
+  hierarchy in a sequence that daylight and traffic obscure.
+
+important_places:
+  - name: Ceremonial Flag Mile
+    description: >
+      The prestige central stretch between the financial district and the government
+      quarter, lined with sixty-one national flags alternating with corporate sponsor
+      banners. LW Group holds three of the twelve primary sponsorship positions.
+      Maintenance funded through the 2064 sponsorship concession.
+  - name: Monorail Elevated Section
+    description: >
+      A 2069 addition running seven metres above the avenue's central carriageway.
+      Its supporting columns create recessed spaces that serve as semi-permanent
+      encampments for the city's homeless population. Clearance operations are
+      scheduled for early morning before diplomatic traffic resumes.
+  - name: Corporate Banner Array
+    description: >
+      Holographic-cloth banner units along the central median, connected to a content
+      scheduling system administered by an LW Group subsidiary. Update their displayed
+      content centrally; visible at vehicle speed; operate through the night.
+
+conclusion: >
+  Avenida de las Naciones is the city's most legible statement of what it aspires
+  to project and what it has actually produced. The flag poles and the sponsorship
+  banners occupy the same poles; the ceremonial median and the monorail columns
+  share the same boulevard. The encampments beneath the elevated structure are not
+  an anomaly but a direct consequence of the infrastructure investment decisions
+  that produced the structure above them. The avenue functions as prestige
+  infrastructure and as shelter simultaneously, which is not what its designers
+  intended and is an accurate portrait of the city it connects.

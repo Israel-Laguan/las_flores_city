@@ -1,6 +1,6 @@
 # Ana Ramirez
 
-> Tags: `#character` `#npc` `#indigenous` `#environmental_activist` `#civil_society` `#cjs` `#justice`
+> Tags: `#figure` `#npc` `#indigenous` `#environmental_activist` `#civil_society` `#cjs` `#justice`
 
 ## Overview
 

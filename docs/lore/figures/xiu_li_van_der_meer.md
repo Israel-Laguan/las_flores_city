@@ -1,62 +1,50 @@
-# Xiu Li van der Meer
+# Xiu Li van der Meer Krol
 
-> Tags: `#figure` `#dutch_chinese` `#business` `#heir`
+> Tags: `#figure` `#dutch_chinese` `#mining` `#politics` `#councilwoman` `#heir`
 >
-> **Born:** 2033 (Las Flores)
-> **Role:** Heir apparent to Van der Meer Mining
-> **Parents:** Alexander van der Meer and Mei Li
+> **Born:** 2031 (Las Flores)
+> **Role:** Councilwoman; Head of Van der Meer Mining Operations
+> **Parents:** Alexander van der Meer and Wang Mei Li
 > **Spouse:** Liam Krol (Dutch-Latin American businessman)
-> **Children:** To be determined
 > **Status:** Active (as of 2077)
 
 ## Overview
 
-Xiu Li van der Meer represents the future of the Van der Meer dynasty - a perfect blend of Dutch business acumen and Chinese-Latin American cultural understanding. As the eldest child of Alexander van der Meer and Mei Li, Xiu Li has been groomed to take over the legitimate family business while navigating the complex political landscape of Las Flores.
+Xiu Li van der Meer Krol is a mining executive and local councilwoman who has spent her career bridging the practical world of resource extraction with a commitment to social justice. The eldest child of Alexander van der Meer and Wang Mei Li, she grew up at the intersection of two powerful families and two distinct cultures — a position that shaped both her ambitions and the resistance she faced in pursuing them.
 
-## Early Life and Education
+## Early Life
 
-Born and raised in Las Flores, Xiu Li received a cosmopolitan education:
+Born in Las Flores in 2031, Xiu Li came of age along the riverbank where her father's mining operations defined the local economy. Her mixed Chinese-Dutch heritage and gender made her an outsider in the eyes of the Van der Meer old guard, even as she was technically the family heir. She learned early that legitimacy had to be earned through competence, not claimed by birthright.
 
-- Primary education at the prestigious International School of Las Flores
-- University studies in business and international relations at Leiden University in the Netherlands
-- MBA from INSEAD with a focus on emerging markets
-- Fluency in Dutch, Mandarin, Spanish, and English
+She completed her education in geology and business at universities in Las Flores and Europe, returning home in her mid-twenties determined to reshape the family's mining interests from within.
 
-## Business Career
+## Mining Career
 
-Xiu Li currently serves as:
+Xiu Li started at one of the Van der Meer riverbank mines in a junior operations role — deliberately so, wanting to understand the work from the ground up. She focused on environmental practices and worker conditions at a time when neither was a priority for the company. Resistance from long-tenured employees was steady but not insurmountable; she outlasted it through competence and consistency.
 
-- **Chief Strategy Officer** of Van der Meer Mining
-- **Board Member** of Global Lithium Corp
-- **Director** of the Van der Meer Foundation (philanthropic arm)
-- **Advisor** to the Free City Economic Development Council
+Over the following decade she moved through increasingly senior roles, implementing efficiency improvements alongside sustainability measures and advocating for better wages and safety standards. By her early forties she had been appointed head of operations for all Van der Meer mining interests in Las Flores — a position that had never before been held by a woman or someone outside the family's Dutch inner circle.
 
-## Marriage and Family
+## Political Career
 
-In 2058, Xiu Li married Liam Krol, a Dutch-Latin American businessman whose family has long-standing ties to the Van der Meers. Their marriage strengthened the family's connections to both European and Latin American elite circles. Xiu Li's spouse Sofia (née Rodriguez) is a prominent socialite and philanthropist in her own right.
+In 2075, at age 45, Xiu Li ran for a seat on the local council. Her campaign centered on gender equality in the workplace, affordable childcare, and access to education for underprivileged girls — issues she had watched go unaddressed throughout her years in industry. She won by a wide margin.
 
-## Leadership Style
+As a councilwoman she has championed legislation promoting women's rights and workforce empowerment. She has also worked closely with her brother Liam to attract European investment in sustainable development projects across Las Flores, leveraging the family's international connections toward civic ends.
 
-Xiu Li is known for:
+## Personal Life
 
-- **Cultural bridge-building** - Leveraging her mixed heritage to navigate complex business relationships
-- **Modern management** - Introducing sustainable mining practices and corporate social responsibility initiatives
-- **Political savvy** - Maintaining neutral ground between Dutch, Chinese, and Latin American interests
-- **Family loyalty** - Supporting her father's leadership while carefully managing her brother Dong's controversial reputation
+Xiu Li lives in an elegant but unpretentious home overlooking the riverbank where she grew up. The house functions as an informal gathering place for colleagues, advocates, and others who share her interests in social justice and environmental stewardship. She remains actively involved in day-to-day mining operations alongside her council duties.
 
 ## Relationship to Other Entities
 
 | Entity | Relationship |
 |---|---|
-| [Alexander van der Meer](../figures/alexander_van_der_meer.md) | Father and current CEO |
-| [Mei Li](../figures/mei_xiang.md) | Mother and business advisor |
-| [Dong van der Meer](../figures/dong_van_der_meer.md) | Younger brother (complicated relationship) |
+| [Alexander van der Meer](alexander_van_der_meer.md) | Father |
+| [Wang Mei Li](mei_xiang.md) | Mother; founder of Dragon Phoenix Trading |
+| [Dong van der Meer](dong_van_der_meer.md) | Younger brother |
 | [Liam Krol](to_be_created.md) | Spouse and business partner |
-| [Sofia Rodriguez Krol](../figures/sofia_rodriguez_krol.md) | Sister-in-law |
 
 ## In-Game References
 
-- **Scenes:** Corporate boardrooms, charity galas, family council meetings
-- **Mysteries:** Xiu Li's true feelings about Dong's criminal empire
-- **Characters:** Xiu Li, her executive team, family members
-- **Narrative Hooks:** The next generation of leadership, balancing tradition and innovation
+- **Scenes:** Council chambers, Van der Meer mining sites, riverbank district
+- **Mysteries:** Corporate ethics in extractive industry; gender and inheritance in elite families
+- **Narrative Hooks:** Balancing family loyalty with progressive politics; the costs of reform from within

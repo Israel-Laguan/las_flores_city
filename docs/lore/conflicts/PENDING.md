@@ -81,3 +81,14 @@ These characters from the "Flowers from the Red Soil" codex had ambiguous identi
 | dr-wei-zhang | Dr. Wei Zhang | ✅ Same person as `char_wei_zhang.yaml` — already well-documented, no changes needed |
 | javier-salazar | Javier Salazar | ✅ Already integrated as `char_javier_salazar.yaml` — distinct character from other Javier files (police helicopter pilot in Far South) |
 | mei-li | Mei Li | ✅ Same person as `char_wang_mei_li.yaml` (founder of Dragon Phoenix Trading). Full description already in `char_mei_li.yaml` created by integration script. Both files kept as they document the same character with different detail levels. |
+
+## Character File Conflicts (2026-06-30) — RESOLVED
+
+The following 6 markdown files in `content/characters/` had hard lore conflicts with entries in `docs/lore/figures/`. They were resolved by merging character traits into the canonical `docs/lore/` timelines and removing the duplicate `.md` files from `content/characters/`:
+
+- `char_elisabeth_van_der_meer.md` ✅ RESOLVED (Consolidated traits into docs/lore)
+- `char_jan_van_der_meer.md` ✅ RESOLVED (Enforced 2060 death canonical timeline)
+- `char_javier_mendoza.md` ✅ RESOLVED (Combined inspector & farmer roles into a redemption arc)
+- `char_peter_van_der_meer.md` ✅ RESOLVED (Enforced 2065 coming out canonical timeline)
+- `char_pieter_van_der_meer.md` ✅ RESOLVED (Enforced 2029 discovery canonical timeline)
+- `char_sophia_van_der_meer_rodriguez.md` ✅ RESOLVED (Corrected parentage to Carlos Alberto Hernandez)

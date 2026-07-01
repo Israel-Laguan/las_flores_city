@@ -1,6 +1,6 @@
 # Alonzo Morales
 
-> Tags: `#character` `#npc` `#afro_latino` `#bodega` `#airport` `#community`
+> Tags: `#figure` `#npc` `#afro_latino` `#bodega` `#airport` `#community`
 
 ## Overview
 

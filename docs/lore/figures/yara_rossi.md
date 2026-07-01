@@ -7,6 +7,8 @@
 > **Died:** July 14, 2059 (age 40)
 > **Role:** Businesswoman, Environmental Activist
 > **Status:** Deceased (assassinated)
+> **Core traits:** Astute, compassionate, haunted by the injustices she witnesses
+> **Mannerisms:** Direct, assertive, fiercely committed to supporting the fight for justice
 
 ## Overview
 
@@ -67,6 +69,15 @@ Yara was assassinated while returning from a meeting with investors who pledged 
 ## Legacy
 
 Yara's death galvanized the environmental movement in Las Flores. Her restoration project continued under Evelyn's leadership, and her story became a symbol of resistance against corporate impunity.
+
+## Connections
+
+- **Evelyn Ruthenberg** — Closest ally. Yara recognized a kindred spirit in their nightclub encounter and committed her full resources to Evelyn's cause. Evelyn continued the restoration project in Yara's memory after her assassination.
+- **Dr. Wei Zhang** — Trusted collaborator introduced by Yara to Evelyn. Together the three of them devised the phytoremediation plan.
+- **Gabriel** (former partner) — A painful personal chapter; his infidelity and their breakup in 2044 redirected Yara's energy fully toward activism.
+- **Minería Estrella** — Primary antagonist. Suspected responsible for her father's death, her company's bankruptcy, and ultimately her assassination.
+- **The LW Group** — Deep conflict; Yara blamed the LW Group's monopolistic practices and corruption for the collapse of one of her companies in 2043.
+- **Corrupt officials and politicians** — Ongoing adversarial relationship throughout her activism, particularly during the failed 2055–2057 trial.
 
 ## Related Lore
 

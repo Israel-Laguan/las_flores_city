@@ -1,0 +1,135 @@
+id: "c2d7ab70-d1a7-444b-9f6a-690183935c49"
+type: location
+name: "Parque de Atracciones Las Flores"
+color: null
+aliases:
+  - Las Flores Amusement Park
+  - Parque de Atracciones
+  - The Amusement Park
+tags:
+  - Landmark
+  - Port Area
+  - Entertainment
+  - Family
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Parque de Atracciones Las Flores was born from a concession agreement
+  appended to the original Port Area development charter of 2031 — a recreational
+  amenity written into the expansion terms as a goodwill gesture toward the
+  working-class families who would bear the noise, traffic, and atmospheric
+  scrubber exhaust of living adjacent to the city's primary cargo hub. For its
+  first decade the park operated as a modest fairground: mechanical rides,
+  food stalls, and a single water-slide complex drawing on the Río de las
+  Flores for its supply. That last detail would prove consequential. When the
+  2052 Great Lithium Leak released a heavy-metal brine plume through the river
+  delta, contamination readings at the park's water intake exceeded safe
+  thresholds within forty-eight hours. Management quietly installed the first
+  of what would become a multi-stage industrial filtration system — the same
+  class of infrastructure normally found at municipal water-treatment plants —
+  without public disclosure. A 2059 investigative report by the Universidad
+  Nacional de Las Flores eventually surfaced the filtration logs, prompting a
+  brief political scandal and a rapid rebranding. The park marketed the system
+  as an innovation rather than a remediation measure, launching the "Pure Wave"
+  campaign that positioned its filtration-fed water attractions as cleaner than
+  city tap supply. Technically accurate; contextually evasive. LW Group acquired
+  a minority stake in the park's operating company in 2063, bringing in capital
+  for holographic ride overlays and a corporate surveillance integration package
+  that management described as "enhanced guest experience infrastructure." By
+  2077 the park draws roughly eight thousand visitors on a busy weekend, the
+  majority from Port Area working-class families for whom it remains one of the
+  few affordable entertainment destinations in the district.
+
+daytime: >
+  The park greets visitors through biometric turnstiles that log facial geometry
+  against a shared registry maintained by the park's corporate partner network;
+  the terms of service — presented on a touchscreen in six-point type — grant
+  consent by default unless a guest opts out, a step that requires a separate
+  kiosk visit and a fifteen-minute queue. Inside, the main midway runs beneath
+  a canopy of holographic ride-overlay projectors that transform the park's
+  aging mechanical frames into immersive spectacle: a steel-loop coaster
+  becomes a deep-space launch sequence; a spinning teacup ride erupts in
+  cascading neon fractals visible from the port esplanade. Sponsor kiosks
+  bearing the livery of LW Group subsidiaries, logistics companies, and
+  municipal data-services contractors line both sides of the midway at
+  forty-metre intervals, offering discounts in exchange for additional
+  biometric profile enhancements. The water-slide complex in the eastern
+  section draws the longest queues by midmorning. Parents and children
+  cycle through the attraction unaware — or at least untroubled — by the
+  industrial filtration plant humming in a compound behind the maintenance
+  fence, processing river water from the Río de las Flores through
+  three-stage membrane filters and heavy-metal chelation tanks before
+  it reaches the slides. Crowd noise, synthesized ambient music, and the
+  periodic thunderclap of a holographic ride sequence create a sensory
+  density that makes quiet observation difficult; the park is engineered
+  for immersion, not reflection.
+
+nightlife: >
+  After dark the park scales down to a curated evening mode, the midway
+  crowd thinning to couples and older teenagers as family groups depart
+  before the second biometric gate sweep at 21:00. The holographic
+  projectors shift palette — ride overlays give way to abstract light
+  sculptures suspended above the walkways, a collaboration between the
+  park's operator and a LW Group cultural-foundation grant recipient whose
+  name appears on a small plaque that most visitors walk past without
+  reading. The water-slide complex closes at sunset; the filtration plant
+  continues cycling, its status lights visible through the maintenance
+  fence as a row of amber and green indicators that pulse with the
+  cadence of automated machinery. Food stalls shift their menus toward
+  alcohol-adjacent offerings with prices calibrated to the reduced
+  crowd, and the sponsor kiosks enter passive mode, their screens
+  displaying ambient brand content and soft data-collection prompts.
+  The park's perimeter surveillance drones — four quadcopters running
+  a fixed patrol pattern — become audible in the relative quiet,
+  their navigation lights tracing slow ellipses above the fence line.
+  Security presence doubles on weekend evenings after a 2074 incident
+  near the northern gate that management has never publicly described
+  beyond the phrase "crowd management intervention."
+
+important_places:
+  - name: Pure Wave Water Complex
+    description: >
+      The park's main water attraction, fed by Río de las Flores water
+      processed through an industrial three-stage filtration and heavy-metal
+      chelation system. Marketing materials emphasise purity; the filtration
+      plant itself is located behind a maintenance fence not included on
+      the visitor map.
+  - name: Holographic Midway
+    description: >
+      The central avenue where holographic projectors overlay the park's
+      mechanical ride structures with immersive visual environments.
+      Projection hardware is LW Group subsidiary-supplied; content licensing
+      agreements are renewed annually.
+  - name: Sponsor Kiosk Row
+    description: >
+      Forty-metre-spaced corporate kiosks offering discounts and promotions
+      in exchange for biometric profile enhancements. Operated by a mix of
+      LW Group subsidiaries, port logistics companies, and municipal
+      data-services contractors.
+  - name: Biometric Entry Terminals
+    description: >
+      Turnstile-integrated facial-recognition units logging visitor geometry
+      to a corporate partner registry. Opt-out requires a separate kiosk
+      visit; the default is consent. Data retention period is not disclosed
+      on-site.
+  - name: Filtration Compound
+    description: >
+      Industrial water-treatment installation behind the eastern maintenance
+      fence, running continuous membrane filtration and chelation to render
+      Río de las Flores water safe for the water-slide attractions. Not
+      marked on the visitor map.
+
+conclusion: >
+  The Parque de Atracciones Las Flores functions simultaneously as a genuine
+  source of affordable family entertainment and as an object lesson in the
+  infrastructure required to sustain leisure in a post-contamination urban
+  environment. The holographic overlays and synthesized soundscape deliver
+  a credible simulacrum of joy, and for the families who arrive each weekend
+  the park is simply the place where their children laugh in the sun. The
+  biometric logging, the filtration plant, the sponsor kiosks, and the
+  surveillance drones are background noise — present, pervasive, and largely
+  unremarked upon, the way all ambient systems of monitoring and remediation
+  tend to be in Las Flores 2077.
+

@@ -1,0 +1,104 @@
+id: "cd4fa87f-52f8-4d08-9b24-893f83b1f294"
+type: location
+name: "Línea 3 Verde"
+color: null
+aliases:
+  - Green Line
+  - Metro Line 3
+  - Linea Verde
+tags:
+  - Transport
+  - Port Area
+  - Infrastructure
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  The Línea 3 Verde is the Port Area loop — a surface and elevated rail circuit
+  connecting the dock terminals to the Central district interchange, running through
+  the Port Area's residential quarter and the waterfront logistics zone. It was
+  the last of the three metro lines to achieve full operational status, completing
+  its loop configuration in 2051 after a construction programme marked by funding
+  disputes, contractor substitutions, and a routing compromise that placed two
+  stations considerably further from their intended destinations than the original
+  design specified. The Green Line has an irregular service record that the city
+  transport authority has characterised as a legacy issue requiring capital investment
+  it has consistently failed to secure. The line's defining event in public memory
+  is the 2071 derailment near the port dock station — a low-speed incident in which
+  a train unit left the elevated track during a scheduled service, injuring eleven
+  passengers and closing the dock section of the loop for eight months. The official
+  investigation concluded that wheel-flange wear beyond maintenance tolerance was
+  the proximate cause; a dissenting finding by the independent transport safety board
+  cited a systemic maintenance-inspection failure across the line's elevated sections
+  that had been documented internally by the transport authority since 2068 and not
+  actioned. The safety board's dissenting finding was published; the authority's
+  internal maintenance records that corroborated it were not. The 2071 derailment
+  remains an unresolved safety controversy: the line has been operational since 2072
+  and the elevated section has received interim repairs, but the comprehensive
+  structural audit recommended by the independent board has not been completed.
+
+daytime: >
+  The Green Line's service frequency varies across its loop: the Central district
+  stations, which serve the line's highest ridership interchange, run at six-minute
+  headways during peak hours. The dock terminal stations — where the 2071 derailment
+  occurred — run at nine-minute headways, a spacing that the transport authority
+  attributes to rolling-stock constraints and that regulars attribute to the lingering
+  operational caution following the incident. The elevated sections through the
+  Port Area carry visible signs of their maintenance history: interim repair patches
+  on the track bed support structures are visible from below, marked with date stamps
+  that run from 2072 to 2076. Holographic information displays at stations show
+  real-time service status; the Green Line's delay notification frequency is the
+  highest of the three metro lines, a fact the transport authority's annual report
+  acknowledges in a footnote. Surveillance cameras on the elevated sections were
+  upgraded in 2072 as part of the post-derailment remediation; the new units are
+  higher-resolution and feed to both the transport authority and the Port Authority's
+  security system.
+
+nightlife: >
+  After 21:00 the Green Line reduces to fifteen-minute headways and runs with
+  reduced staffing at its surface stations. The dock terminal stations close at
+  23:00 on weekdays, leaving overnight port workers dependent on surface bus
+  connections or private transport after that hour — a gap that appears in the
+  transport authority's accessibility reports as a known service deficiency with
+  no current remediation timeline. The elevated section's exterior lights,
+  installed as part of the 2072 post-derailment safety upgrade, cast a diffuse
+  orange glow over the port waterfront after dark, a persistent visual reminder
+  of the incident that the authority has never formally acknowledged as a safety
+  failure. The structural audit gap — the comprehensive inspection recommended
+  by the independent board in 2071 and not yet completed — is most legible at
+  night, when the interim repair patches are illuminated by the upgraded cameras
+  and the question of whether the structure is safe is answered only by the fact
+  that it has not failed again since the last time it did.
+
+important_places:
+  - name: Port Dock Station
+    description: >
+      The elevated station near the port dock terminal where the 2071 derailment
+      occurred. Operational since 2072 after eight months of closure; interim
+      repairs are visible on the track bed support structures. The comprehensive
+      structural audit recommended by the independent safety board has not been
+      completed.
+  - name: Central District Interchange
+    description: >
+      The Green Line's highest-ridership station, connecting to the Red and Blue
+      Lines and to surface bus routes. Operating at six-minute peak headways; the
+      practical hub for the line's commuter traffic. Surveillance infrastructure
+      here includes both transport authority and Port Authority feeds.
+  - name: Elevated Port Loop
+    description: >
+      The elevated track section traversing the waterfront logistics zone. Interim
+      repair patches visible from ground level bear date stamps from 2072 to 2076.
+      Post-derailment camera upgrades cover the entire elevated section.
+
+conclusion: >
+  The Línea 3 Verde is the city's most functionally compromised public transit
+  asset: a line with an irregular service record, a known and unresolved structural
+  audit gap, and a defining incident whose full accountability remains embedded in
+  unpublished internal documents. That it continues to operate, and that most Port
+  Area residents continue to use it, is a function of the absence of alternatives
+  rather than of confidence in its safety. The 2071 derailment is the kind of event
+  that, in a different institutional context, would have produced systemic reform.
+  In Las Flores it produced interim repairs, a dissenting safety board finding, and
+  a service that runs at nine-minute headways through the section where it came off
+  the tracks.

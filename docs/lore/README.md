@@ -130,6 +130,37 @@ docs/lore/
 
 ---
 
+## 📝 How to Add New Characters vs. Figures
+
+When creating or documenting a new person in the Las Flores 2077 universe, it is critical to understand the distinction between the **Lore Wiki** and the **Game Engine**. 
+
+Depending on the character's role, you must create files in the appropriate directories. **Never create a `docs/lore/characters/` directory.**
+
+### 1. The Lore Wiki: `docs/lore/figures/`
+If you are adding a person to the worldbuilding lore—whether they are a historical figure, a politician, a corporate executive, or a notable citizen—their profile goes here.
+- **Path:** `docs/lore/figures/<name>.md`
+- **Purpose:** Deep lore reference, backstory, metadata, and cross-linking for writers and designers.
+- **Format:** Markdown file containing a tags block (e.g., `> Tags: #figure #faction`), overview, background, relationships, and legacy. 
+- **Rule:** Always use the `#figure` tag in the metadata block, never `#character`.
+
+### 2. The Game Engine: `content/characters/`
+If the person is an **active NPC** that the player will interact with in the game engine (e.g., in dialogues, phone overlays, or events), they *must* have character files in the `content/` pipeline.
+- **Paths:** 
+  - `content/characters/char_<name>.yaml` (Structured data: id, name, metadata, faction)
+  - `content/characters/char_<name>.md` (Narrative description ingested by the engine)
+- **Purpose:** Data ingestion for the dialogue and event systems.
+- **Format:** The `.md` file here should be purely narrative (no tag blocks like in the lore wiki), formatted to match other `content/characters/*.md` files.
+
+### 3. The Dual-Track Character
+For major NPCs who are *both* deeply rooted in the lore and active in the game (e.g., Evelyn Ruthenberg, Dr. Wei Zhang, Ana Ramirez), you must create **all three files**:
+1. `docs/lore/figures/<name>.md` (For worldbuilding and linking)
+2. `content/characters/char_<name>.yaml` (For the engine)
+3. `content/characters/char_<name>.md` (For the engine)
+
+*Note: While the narrative text may be similar or identical across the two `.md` files, they serve different systems and are NOT duplicates.*
+
+---
+
 ## Cross-Reference Tags
 
 Use these tags when referencing lore in dialogue YAML or vault entries:

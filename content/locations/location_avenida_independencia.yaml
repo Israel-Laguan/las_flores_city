@@ -1,0 +1,97 @@
+id: "3f7c7f36-90c3-4493-add7-4f4badf4cfab"
+type: location
+name: "Avenida Independencia"
+color: null
+aliases:
+  - Independence Avenue
+  - Avenida Indy
+  - AI
+tags:
+  - Transport
+  - Central City
+  - Infrastructure
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+
+history: >
+  Avenida Independencia predates the free city itself — the east-west artery was
+  a colonial-era road that the provisional government paved, widened, and rebranded
+  in 2034 as a symbolic gesture toward the city's self-determination. Its route
+  cuts through the full cross-section of the city's social geography: beginning in
+  the eastern industrial districts where the factory complexes cluster, passing
+  through the commercial and mixed-use zones of the central corridor, and terminating
+  at the western waterfront access road. For most of its length it functions less as
+  a ceremonial boulevard than as a working artery — the route that cargo truck
+  convoys serving the Port Area have used since the 1990s and that the 2043 port
+  expansion made significantly busier. Chronic congestion from port-bound freight
+  traffic has been a documented condition on the avenue since 2045, when a transport
+  authority study found that cargo truck volume exceeded the road's design capacity
+  by approximately thirty percent during peak freight windows. Subsequent reports
+  in 2055, 2062, and 2074 repeated the finding with increasing urgency; the
+  infrastructure investment required to address it has not been allocated. The
+  avenue serves as the Blue Line metro's surface counterpart — the ground-level
+  route that mirrors the underground east-west corridor — with the consequence that
+  when the metro runs late, which is often, its overflow ridership appears on the
+  surface bus lanes of Avenida Independencia, compounding the congestion.
+
+daytime: >
+  Between 07:00 and 10:00 and again between 15:00 and 19:00, Avenida Independencia
+  operates at or beyond functional capacity. Cargo truck convoys serving the port
+  compress into the outer lanes; delivery vehicles for the central commercial zone
+  double-park in the middle lanes with a regularity that traffic enforcement has
+  documented and never consistently addressed; surface buses for the east-west
+  corridor operate in designated lanes that trucks and taxis encroach on throughout
+  the peak window. Atmospheric sensors along the avenue record particulate readings
+  that exceed the city's own advisory levels on approximately forty percent of weekdays —
+  a concentration attributable primarily to the diesel freight traffic. The commercial
+  stretch through the central zone hosts a mix of independent retail, restaurant
+  frontages, and the kind of mid-tier services that have survived in spaces between
+  the development pressure moving outward from the financial district and the
+  decline pressure moving inward from the industrial east. Cultural landmarks that
+  once defined the avenue's character — a 2038-vintage public library, two community
+  theatres — have been converted to commercial use or demolished since 2060 under
+  successive redevelopment approvals.
+
+nightlife: >
+  After 21:00 the cargo truck presence reduces to a baseline night-freight flow,
+  and Avenida Independencia assumes a different character. The commercial zone's
+  late venues — restaurants, small music bars, a cluster of late-service pharmacies —
+  create islands of pedestrian activity in an avenue that is fundamentally designed
+  for vehicle throughput. Atmospheric particulate readings drop as freight volume
+  reduces; by midnight the sensors record levels within advisory threshold, a daily
+  pattern that the transport authority's environmental compliance reports use as the
+  basis for calculating the avenue's annual average — a figure that, averaged across
+  all hours, meets the standard that daytime-only measurement would fail. The surface
+  bus lanes are repurposed as general traffic lanes after 22:00, a scheduling decision
+  that reflects the avenue's primary identity as a freight route and its secondary
+  identity as a public transit corridor, in that order of priority.
+
+important_places:
+  - name: Cargo Truck Outer Lanes
+    description: >
+      The designated freight lanes along the avenue's full length, used by port-bound
+      cargo convoys running beyond their designed capacity since 2045. The congestion
+      documentation record spans four consecutive transport authority studies without
+      a remediation outcome.
+  - name: Commercial Central Zone
+    description: >
+      The mid-avenue commercial stretch where independent retail, restaurants, and
+      services cluster between development pressure from the west and industrial
+      decline pressure from the east. Two historical cultural landmarks have been
+      converted or demolished since 2060.
+  - name: Surface Bus Corridor
+    description: >
+      Designated bus lanes along the avenue serving as the ground-level counterpart
+      to the Blue Line metro. Encroached upon by freight vehicles during peak hours;
+      repurposed as general traffic lanes after 22:00. Overflow ridership from Blue
+      Line delays feeds directly into this corridor's surface buses.
+
+conclusion: >
+  Avenida Independencia is the city's most accurately named artery in an ironic sense:
+  it is the road that most clearly shows what Las Flores's economic structure has made
+  independent decisions to prioritise. Freight throughput for port logistics has priority
+  over pedestrian safety, transit reliability, and air quality. The documentation of each
+  of those costs is thorough, continuous, and unactioned. The avenue functions efficiently
+  as a freight corridor and poorly as everything else it is expected to be, which is not
+  a design failure but a funding-allocation statement.
