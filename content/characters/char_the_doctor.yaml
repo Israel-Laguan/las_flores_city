@@ -1,0 +1,9 @@
+id: "e44d32a7-f986-4e55-bdc2-67d4f9b877ac"
+name: "The Doctor"
+title: "Corporate Assassin"
+description: "A highly trained killer employed by Yī Sāng. He poses as a medical professional to get close to victims and verify kills, responsible for the murder of the Whistleblower."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "cold_professional"

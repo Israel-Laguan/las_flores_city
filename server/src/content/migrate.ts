@@ -20,6 +20,7 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   mystery: 'mysteries',
   vault: 'vault_items',
   shop_item: 'shop_items',
+  map_tile: 'map_tiles',
 };
 
 export interface MigrationResult {
@@ -188,6 +189,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
     return 'shop_item';
   }
+  if (normalizedPath.includes('/maps/') || normalizedPath.includes('\\maps\\')) {
+    return 'map_tile';
+  }
   
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
     return 'gig';
@@ -197,7 +201,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['character', 'scene', 'location', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item'];
+  const order: ContentType[] = ['character', 'scene', 'location', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);
@@ -319,6 +323,14 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
   try {
     await invalidatePattern('dialogue:*');
     console.log('🗑️  Cleared dialogue caches');
+  } catch (error: any) {
+    console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
+  }
+
+  // Clear stale map caches (covers map:district:*, map:overview:*).
+  try {
+    await invalidatePattern('map:*');
+    console.log('🗑️  Cleared map caches');
   } catch (error: any) {
     console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
   }

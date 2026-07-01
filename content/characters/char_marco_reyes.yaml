@@ -1,0 +1,14 @@
+id: "marco-reyes-001"
+name: "Marco Reyes"
+title: "Retired Dockworker, Union Organizer"
+description: "A retired dockworker from the Port District, Marco Reyes spent thirty years organizing labor at the port facilities. He knew Miguel Jhonson's father from the union and became an unexpected ally of the 2077 movement, providing access to the port's storage facilities for supply caches. He was instrumental in smuggling evidence documents out of the city to international journalists when the local media was compromised. After the transition, he advised on labor policy reform."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "labor"
+  personality: "gruff_kind"
+  age: 67
+  gender: "Male"
+  occupation: "Retired Dockworker, Union Organizer (Emeritus)"
+  residence: "Port District, Las Flores"
+  status: "Active (2077 and beyond)"

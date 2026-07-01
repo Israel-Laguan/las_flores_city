@@ -182,6 +182,15 @@ export async function getLocationDialogues(id: string): Promise<any> {
   return fetchAPI(`/location/${id}/dialogues`);
 }
 
+// Map API
+export async function getMapOverview(): Promise<any> {
+  return fetchAPI('/map');
+}
+
+export async function getDistrictMap(districtSlug: string): Promise<any> {
+  return fetchAPI(`/map/${districtSlug}`);
+}
+
 // Dialogue API
 export async function getDialogue(id: string): Promise<any> {
   return fetchAPI(`/dialogue/${id}`);

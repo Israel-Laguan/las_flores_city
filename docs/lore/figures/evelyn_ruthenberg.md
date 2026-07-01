@@ -1,10 +1,10 @@
 # Evelyn Ruthenberg
 
 > Tags: `#figure` `#whistleblower` `#luz_del_rio` `#lithium` `#justice` `#shadow_investigator` `#carinata`
-> 
+>
 > **Born:** ~2029
-> **Role:** Former Engineer at Luz del Rio, Whistleblower, Shadow Investigator
-> **Status:** Active (as of 2065)
+> **Role:** Former Engineer, Whistleblower, Shadow Investigator, Vigilante
+> **Status:** Active (through 2077)
 
 ## Overview
 
@@ -20,7 +20,7 @@ A catastrophic failure of high-pressure pipes at Minera Estrella's processing fa
 
 ## The Karla Encounter (February 2053)
 
-Evelyn met Karla, a local farmer whose land had been contaminated by the leak. Karla was also searching for her sister Nubia, who had disappeared months earlier. Before Karla died—stabbed while resisting arrest during a protest—she pressed a study into Evelyn's hands. The study, conducted by biologist **Cecilia Pérez**, demonstrated that Carinata plants had shown lithium resistance **a full year before** the public disaster, proving pre-leak contamination had been documented and ignored.
+Evelyn's life changed forever when she stumbled into a dark alleyway and witnessed the murder of **Karla**, an internal employee at Minera Estrella who knew Cecilia Pérez. Karla was brutally attacked by [Li Wei's](../companies/lw_group/li_wei.md) corporate enforcers because she was trying to leak the truth. Before Karla died, she pressed a small green pouch into Evelyn's hands. Inside was a key, a note for her missing sister Nubia, and the ultimate proof: **Carinata seeds** and a study conducted by biologist **Cecilia Pérez**. The study demonstrated that the plants had shown lithium resistance **a full year before** the public disaster, proving pre-leak contamination had been documented and ignored.
 
 ## The Apartment Discovery (September 2053)
 
@@ -73,13 +73,27 @@ Yara was killed returning from an investor meeting. Evelyn identified the body i
 
 She left the morgue with unshakable resolve. The fight would continue. In the light and in the shadows.
 
+## The Vigilante Era (2060s)
+
+With the loss of Yara Rossi and the defection of Dr. Wei Zhang, Evelyn was left completely alone. The corrupt officials, the mining executives, the powerful and greedy—they would not win. She abandoned the illusion of systemic justice.
+
+Inspired by survivalist tactics, Evelyn transitioned from a shadow investigator into a hardened, lethal vigilante. She knew she was physically outmatched by corporate enforcers and cartel hitmen. Instead of brute force, she survived and succeeded through extreme patience, psychological warfare, and environmental sabotage. Drawing on her engineering background at Luz del Río, she orchestrated "accidents"—carbon monoxide poisoning via HVAC sabotage, brake tampering, and electrical fires. She learned to use firearms, but treated them strictly as an absolute last resort, preferring to remain a terrifying, phantom-like adversary who struck from the shadows.
+
+## The 2077 Endgame
+
+By 2077, Evelyn had spent nearly two decades fighting a grueling, lonely war against the LW Group and the corrupt city officials. Her campaign eventually crossed paths with **Alex**, a young resident of Las Flores whose mother had died from the lingering effects of the lithium contamination.
+
+Initially, Alex hunted Evelyn, misled by official propaganda that painted her as a dangerous radical. However, upon discovering the truth of the Great Lithium Leak cover-up, Alex allied with Evelyn. While Evelyn provided the tactical expertise and shadow intelligence, Alex provided what Evelyn could no longer muster: charisma and hope. Alex built a grassroots movement that finally brought the fight into the light.
+
+During the climactic raid on the estate of Mayor Vega and Senator Chen, Evelyn engaged in a final cat-and-mouse game with her long-time pursuer, **Chief Inspector Adeyemi**. Her resolve, combined with Alex's idealism, finally broke Adeyemi's compromised loyalty, leading him to turn on his corrupt masters. Alex's ultimate sacrifice during this raid allowed Evelyn to finally expose Li Wei, dismantling the "Emperor in the Shadows" and ending her decades-long war.
+
 ## Personality & Mannerisms
 
-Evelyn is manipulative, analytical, and fiercely dedicated—but also deeply scarred. She laughs rarely, trusts selectively, and carries an undercurrent of guardedness that sharpened after Yara's death. She is good with people, good at making them lower their defenses and give her what she wants. She knows this about herself and does not always like it. Her moral compass points firmly toward justice, but she has crossed lines she will never fully reconcile: deception, blackmail, the occasional threat. She works in the dark because she believes the system burns daylight.
+Evelyn is manipulative, analytical, and fiercely dedicated—but also deeply scarred. She laughs rarely, trusts selectively, and carries a heavy burden of survivor's guilt. She is good with people, able to make them lower their defenses, though she uses this skill less in her later vigilante years. Her moral compass points firmly toward justice, but she has crossed lines she will never fully reconcile: deception, blackmail, sabotage, and murder. She works in the dark because she knows the system burns daylight.
 
 ## Legacy
 
-As of 2065, Evelyn Ruthenberg continues to lead the restoration project publicly while operating an extensive shadow intelligence network. She has exposed subordinate officials, relocated endangered witnesses, and leaked damaging documents to international press. She is the keeper of Cecilia Pérez's Carinata seeds, the curator of Karla and Nubia's evidence, and the silent architect of a justice campaign that runs deeper than any courtroom could reach.
+Evelyn Ruthenberg is the silent architect of Las Flores' liberation. What began as a desperate attempt to protect a whistleblower's evidence evolved into a legendary vigilante campaign. She is the keeper of Cecilia Pérez's Carinata seeds, the curator of Karla and Nubia's evidence, and the phantom who systematically dismantled the architects of the Great Lithium Leak, paving the way for Alex's movement to finally reclaim the city.
 
 ## Key Evidence Held
 

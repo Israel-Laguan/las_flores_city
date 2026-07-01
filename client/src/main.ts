@@ -16,6 +16,9 @@ import { MainMenu } from './components/MainMenu';
 import { SettingsView } from './components/SettingsView';
 import { GalleryView } from './components/GalleryView';
 import { CityNav } from './components/CityNav';
+import { createRoot } from 'react-dom/client';
+import { createElement } from 'react';
+import MapView from './components/MapView';
 import * as api from './utils/api';
 import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
@@ -179,6 +182,46 @@ function registerRoutes(): void {
     currentView = new CityNav(container, cachedPlayerState);
   });
 
+  registerRoute('/map', () => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyGame();
+    destroyCurrentView();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    const mountEl = document.createElement('div');
+    container.appendChild(mountEl);
+    const root = createRoot(mountEl);
+    root.render(createElement(MapView, { playerState: cachedPlayerState }));
+    currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
+  });
+
+  registerRoute('/map/', (params) => {
+    if (!isAuthenticated) {
+      navigateTo('/', true);
+      return;
+    }
+    destroyGame();
+    destroyCurrentView();
+    hideAllContainers();
+    document.getElementById('view-container')!.style.display = 'flex';
+    const container = document.getElementById('view-container') as HTMLDivElement;
+    const districtSlug = extractDistrictSlug();
+    const mountEl = document.createElement('div');
+    container.appendChild(mountEl);
+    const root = createRoot(mountEl);
+    root.render(createElement(MapView, { initialDistrict: districtSlug, playerState: cachedPlayerState }));
+    currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
+  });
+
+  function extractDistrictSlug(): string | undefined {
+    const match = window.location.pathname.match(/^\/map\/([^\/]+)/);
+    return match ? match[1] : undefined;
+  }
+
   registerRoute('/city/loc/', (params) => {
     if (!isAuthenticated) {
       navigateTo('/', true);
@@ -319,7 +362,7 @@ function initOnce() {
       return;
     }
     destroyCurrentView();
-    navigateTo('/city');
+    navigateTo('/map');
   });
 
   // Show login menu immediately for fast visual feedback

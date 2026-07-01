@@ -496,7 +496,7 @@ export type { Gig } from './schemas/gig.js';
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 
@@ -507,6 +507,41 @@ export const ContentFileSchema = z.object({
 });
 
 export type ContentFile = z.infer<typeof ContentFileSchema>;
+
+// ==================== Map Tiles ====================
+
+export const MapTileSchema = z.object({
+  id: z.string().uuid(),
+  district_id: z.string().uuid(),
+  x: z.number().int(),
+  y: z.number().int(),
+  terrain_type: z.string().max(50),
+  base_image_url: z.string().url().optional().or(z.literal('')),
+  overlay_image_url: z.string().url().optional().or(z.literal('')),
+  rotation: z.number().int().default(0),
+  is_flipped: z.boolean().default(false),
+  metadata: z.record(z.string(), z.any()).default({}),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+export type MapTile = z.infer<typeof MapTileSchema>;
+
+export const MapTileFileSchema = z.object({
+  district: z.string().min(1).max(50),
+  tiles: z.array(z.object({
+    x: z.number().int(),
+    y: z.number().int(),
+    terrain_type: z.string().min(1).max(50),
+    base_image_url: z.string().optional(),
+    overlay_image_url: z.string().optional(),
+    rotation: z.number().int().default(0),
+    is_flipped: z.boolean().default(false),
+    metadata: z.record(z.string(), z.any()).optional(),
+  })),
+});
+
+export type MapTileFile = z.infer<typeof MapTileFileSchema>;
 
 // ==================== BYOK AI Presentation ====================
 export { preserveImportantTags } from './importantTags.js';

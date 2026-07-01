@@ -1,0 +1,9 @@
+id: "3ab2f6a9-8d14-41b1-b9cf-2b81d77a8459"
+name: "Nadia Al-Farsi"
+title: "Corporate Negotiator"
+description: "A high-level negotiator working alongside Yī Sāng to manage crises and control the public narrative during protests."
+metadata:
+  type: "human"
+  role: "npc"
+  faction: "lw_group"
+  personality: "persuasive_composed"

@@ -280,6 +280,60 @@ async function processLocationData(data: any): Promise<string> {
   return upsertScene(sceneData);
 }
 
+async function upsertMapTile(data: any): Promise<string> {
+  const result = await queryOLTP(
+    `INSERT INTO map_tiles (district_id, x, y, terrain_type, base_image_url, overlay_image_url, rotation, is_flipped, metadata)
+      VALUES (
+        (SELECT id FROM districts WHERE name = $1),
+        $2, $3, $4, $5, $6, $7, $8, $9
+      )
+      ON CONFLICT (district_id, x, y) DO UPDATE SET
+        terrain_type = EXCLUDED.terrain_type,
+        base_image_url = EXCLUDED.base_image_url,
+        overlay_image_url = EXCLUDED.overlay_image_url,
+        rotation = EXCLUDED.rotation,
+        is_flipped = EXCLUDED.is_flipped,
+        metadata = EXCLUDED.metadata,
+        updated_at = NOW()
+      RETURNING id`,
+    [
+      data.district,
+      data.x,
+      data.y,
+      data.terrain_type,
+      data.base_image_url || null,
+      data.overlay_image_url || null,
+      data.rotation || 0,
+      data.is_flipped || false,
+      JSON.stringify(data.metadata || {}),
+    ]
+  );
+  return result.rows[0].id;
+}
+
+async function processMapTileData(data: any): Promise<string> {
+  const { MapTileFileSchema } = await import('@las-flores/shared');
+  MapTileFileSchema.parse(data);
+
+  const districtName = data.district || 'Unknown';
+  
+  // Ensure district exists
+  await queryOLTP(
+    `INSERT INTO districts (name, slug, x, y) VALUES ($1, $2, 0, 0) ON CONFLICT (name) DO NOTHING`,
+    [districtName, districtName.toLowerCase().replace(/\s+/g, '-')]
+  );
+
+  const tileIds: string[] = [];
+  for (const tile of data.tiles) {
+    const id = await upsertMapTile({
+      ...tile,
+      district: districtName,
+    });
+    tileIds.push(id);
+  }
+  return tileIds.join(',');
+}
+
 export async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
   if (!contentType) throw new Error(`Could not determine content type from path: ${filePath}`);
@@ -298,6 +352,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'mystery': contentId = await processMysteryData(data); break;
     case 'shop_item': contentId = await processShopItemData(data); break;
     case 'location': contentId = await processLocationData(data); break;
+    case 'map_tile': contentId = await processMapTileData(data); break;
     default: throw new Error(`Unsupported content type: ${contentType}`);
   }
 
