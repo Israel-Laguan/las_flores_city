@@ -1,9 +1,11 @@
+import { z } from 'zod';
+
 export const CharacterSchema = z.object({
-  id: z.string().uuid().required(),
-  name: z.string().min(1).max(100).required(),
+  id: z.string().uuid(),
+  name: z.string().min(1).max(100),
   title: z.string().max(100).optional(),
   birth_year: z.number().optional(),
-  description: z.string().max(1000).required(),  // Required field
+  description: z.string().max(1000),  // Required field
   physical_description: z.string().optional(),
   psychological_description: z.string().optional(),
   background_and_role: z.array(z.string()).optional(),
