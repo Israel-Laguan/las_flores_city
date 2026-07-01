@@ -166,6 +166,7 @@ async function upsertVaultItem(data: any): Promise<string> {
 }
 
 async function upsertShopItem(data: any): Promise<string> {
+  const is_active = data.is_active ?? true;
   const result = await queryOLTP(
     `INSERT INTO shop_items (id, name, description, item_type, price, currency_type, asset_url, is_active)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -176,10 +177,10 @@ async function upsertShopItem(data: any): Promise<string> {
         price = EXCLUDED.price,
         currency_type = EXCLUDED.currency_type,
         asset_url = EXCLUDED.asset_url,
-        is_active = EXCLUDED.is_active === undefined ? true : data.is_active,
+        is_active = EXCLUDED.is_active,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.name, data.description || null, data.item_type, data.price, data.currency_type || 'gold_credits', data.asset_url, data.is_active]
+    [data.id, data.name, data.description || null, data.item_type, data.price, data.currency_type || 'gold_credits', data.asset_url, is_active]
   );
   return result.rows[0].id;
 }
