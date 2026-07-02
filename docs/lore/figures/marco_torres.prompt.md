@@ -1,12 +1,13 @@
 # Prompt: Marco "Mar" Torres
 
+[CONSUMER: portrait]
 **Type:** portrait
 **Source:** docs/lore/figures/marco_mar_torres.md
 **Target field:** `portrait_urls[].url` in `content/characters/char_marco_mar_torres.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Marco "Mar" Torres, a young adult-year-old resident from Las Flores's Las Flores. Distinctive appearance. undefined. Dressed in undefined, with . Background: Las Flores cityscape. Lighting: atmospheric, casting sharp shadows. peaceful.  emotional depth, 8K.
+Photorealistic portrait of Marco "Mar" Torres, a young adult resident from Las Flores's Las Flores. distinctive appearance fitting their background. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Las Flores cityscape. Lighting: atmospheric, casting sharp shadows. peaceful.  emotional depth, 8K.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

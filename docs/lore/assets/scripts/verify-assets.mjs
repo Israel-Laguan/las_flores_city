@@ -230,19 +230,12 @@ async function main() {
       // Parse YAML manually to avoid needing a YAML library
       const raw = fs.readFileSync(yamlFile, 'utf-8');
       
-      // Simple YAML URL extraction pattern: look for *_url: "http..."
-      const urlPattern = /(?:^|\n)\s*(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?(https?:\/\/[^"'\s]+)["']?/g;
+      // Simple YAML URL extraction pattern: look for *_url: "http..." (including nested list items)
+      const urlPattern = /(?:^|\n)\s*(?:-\s*)?(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?(https?:\/\/[^"'\s]+)["']?/g;
       const urls = [];
       let match;
       while ((match = urlPattern.exec(raw)) !== null) {
         urls.push(match[1]);
-      }
-
-      // Also check nested portrait_urls
-      const nestedPattern = /portrait_urls?:[\s\S]*?(https?:\/\/[^"'\s,\]]+)/g;
-      while ((match = nestedPattern.exec(raw)) !== null) {
-        const u = match[1];
-        if (!urls.includes(u)) urls.push(u);
       }
 
       if (urls.length === 0) continue;

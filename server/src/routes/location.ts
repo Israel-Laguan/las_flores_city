@@ -129,7 +129,8 @@ function selectPortraitUrl(
   } else if (typeof portraitUrls === 'string' && portraitUrls.trim().startsWith('[')) {
     try {
       urls = JSON.parse(portraitUrls);
-    } catch {
+    } catch (err) {
+      console.error(`Failed to parse portrait_urls for character ${characterName}:`, err);
       urls = [];
     }
   }

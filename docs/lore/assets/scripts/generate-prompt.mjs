@@ -41,10 +41,10 @@ const TEMPLATES = {
    * Target: content/characters/char_<name>.yaml → portrait_urls[].url
    */
   portrait({ name, age, role, district, physical, expression, clothing, accessories, setting, lighting, shadows, mood, heritage, negatives }) {
-    const physicalDesc = physical && physical !== 'Distinctive appearance' ? physical : 'distinctive appearance fitting their background';
-    const expressionDesc = expression && expression !== 'undefined' ? expression : 'calm and determined';
-    const clothingDesc = clothing && clothing !== 'undefined' ? clothing : 'practical clothing suited to their environment';
-    const accessoriesDesc = accessories && accessories !== 'undefined' ? accessories : 'personal items reflecting their role';
+    const physicalDesc = (physical && physical !== 'Distinctive appearance') ? physical : 'distinctive appearance fitting their background';
+    const expressionDesc = (expression && expression !== 'undefined') ? expression : 'calm and determined';
+    const clothingDesc = (clothing && clothing !== 'undefined') ? clothing : 'practical clothing suited to their environment';
+    const accessoriesDesc = (accessories && accessories !== 'undefined') ? accessories : 'personal items reflecting their role';
 
     return `# Prompt: ${name}
 
@@ -55,7 +55,7 @@ const TEMPLATES = {
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of ${name}, a ${age}-year-old ${role} from Las Flores's ${district}. ${physicalDesc}. ${expressionDesc}. Dressed in ${clothingDesc}, with ${accessoriesDesc}. Background: ${setting}. Lighting: ${lighting}, casting ${shadows}. ${mood}. ${heritage ? `Multicultural heritage (${heritage}),` : ''} emotional depth, 8K.
+Photorealistic portrait of ${name}, a ${/^\d+$/.test(age) ? age + '-year-old' : age} ${role} from Las Flores's ${district}. ${physicalDesc}. ${expressionDesc}. Dressed in ${clothingDesc}, with ${accessoriesDesc}. Background: ${setting}. Lighting: ${lighting}, casting ${shadows}. ${mood}. ${heritage ? `Multicultural heritage (${heritage}),` : ''} emotional depth, 8K.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing${negatives ? `, ${negatives}` : ''}
@@ -484,8 +484,8 @@ function processFile(filePath, type, force) {
 
   const outputPath = getOutputPath(filePath);
   if (fs.existsSync(outputPath) && !force) {
-    console.log(`  ⏭️  Skipping (exists, use --force to overwrite): ${path.basename(outputPath)}`);
-    return true;
+    console.log("  ⏭️  Skipping (exists, use --force to overwrite): " + path.basename(outputPath));
+    return 'skipped';
   }
 
   let meta;
@@ -556,11 +556,11 @@ function main() {
       const filePath = path.join(dir, file);
       const result = processFile(filePath, opts.type, opts.force);
       if (result === true) success++;
-      else if (result === false) failed++;
-      else skipped++;
+      else if (result === 'skipped') skipped++;
+      else failed++;
     }
 
-    console.log(`\n📊 Results: ${success} created, ${failed} failed\n`);
+    console.log("\n📊 Results: " + success + " created, " + skipped + " skipped, " + failed + " failed\n");
   }
 }
 
