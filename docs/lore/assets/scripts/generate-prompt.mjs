@@ -124,7 +124,7 @@ Seamless top-down tile texture of ${description}, Las Flores 2077, soft cyberpun
   overlay({ name, description }) {
     return `# Prompt: ${name} (landmark overlay)
 
-[CONSUMER: tile]
+[CONSUMER: phaser-sprite]
 **Type:** overlay
 **Source:** docs/lore/landmarks/${slugify(name)}.md
 **Target field:** \`overlay_image_url\` in \`content/maps/map_*.yaml\`

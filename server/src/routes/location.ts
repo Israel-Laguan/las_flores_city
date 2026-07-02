@@ -42,6 +42,9 @@ async function getOverlayNpcs(sceneId: string, userId: string): Promise<Array<{
   character_id: string;
   is_permanent: boolean;
   default_mood: string;
+  character_name?: string;
+  portrait_urls?: any;
+  atlas_url?: string | null;
 }>> {
   // Get user's active mysteries from dialogue_overlays conditions
   const overlayResult = await queryOLTP(
@@ -62,15 +65,34 @@ async function getOverlayNpcs(sceneId: string, userId: string): Promise<Array<{
     character_id: string;
     is_permanent: boolean;
     default_mood: string;
+    character_name?: string;
+    portrait_urls?: any;
+    atlas_url?: string | null;
   }> = [];
 
   for (const overlay of overlayResult.rows) {
     const conditions = overlay.conditions as any;
     if (conditions?.presence?.character_id) {
+      // Fetch character details from the characters table
+      const characterResult = await queryOLTP(
+        `SELECT 
+          character_name, 
+          portrait_urls, 
+          atlas_url
+         FROM characters
+         WHERE character_id = $1`,
+        [conditions.presence.character_id]
+      );
+
+      const characterData = characterResult.rows[0] || {};
+      
       overlayNpcs.push({
         character_id: conditions.presence.character_id,
         is_permanent: false,
         default_mood: conditions.presence.default_mood || 'neutral',
+        character_name: characterData.character_name,
+        portrait_urls: characterData.portrait_urls,
+        atlas_url: characterData.atlas_url,
       });
     }
   }

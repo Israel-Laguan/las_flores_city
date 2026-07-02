@@ -47,7 +47,7 @@ Las Flores 2077 is an immersive RPG set in a neon-lit cyberpunk city. Players cr
 ### Running with Docker Compose
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Israel-Laguan/las_flores_city.git
 cd las_flores_city
 docker-compose up -d
 ```
@@ -55,7 +55,7 @@ docker-compose up -d
 ### Running with Podman
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Israel-Laguan/las_flores_city.git
 cd las_flores_city
 
 # Create network and volumes (one-time)
@@ -67,7 +67,49 @@ podman volume create minio-data
 
 # Build and start
 podman build -f server/Dockerfile -t las-flores-server .
-# ... (see full Podman setup in the developer docs)
+
+# Start infrastructure services
+podman run -d --name las-flores-postgres-oltp \
+  --network las-flores-net -p 5434:5432 \
+  -v postgres-oltp-data:/var/lib/postgresql/data \
+  -e POSTGRES_DB=las_flores \
+  -e POSTGRES_USER=las_flores \
+  -e POSTGRES_PASSWORD=las_flores_dev_password \
+  docker.io/library/postgres:16-alpine
+
+podman run -d --name las-flores-postgres-olap \
+  --network las-flores-net -p 5433:5432 \
+  -v postgres-olap-data:/var/lib/postgresql/data \
+  -e POSTGRES_DB=las_flores_analytics \
+  -e POSTGRES_USER=las_flores_analytics \
+  -e POSTGRES_PASSWORD=las_flores_analytics_dev_password \
+  docker.io/library/postgres:16-alpine
+
+podman run -d --name las-flores-redis \
+  --network las-flores-net -p 6379:6379 \
+  -v redis-data:/data \
+  docker.io/library/redis:7-alpine
+
+podman run -d --name las-flores-minio \
+  --network las-flores-net -p 9000:9000 -p 9001:9001 \
+  -v minio-data:/data \
+  docker.io/minio/minio:latest server /data --console-address ":9001"
+
+# Start server (uses container IPs for intra-network connectivity)
+podman run -d --name las-flores-server \
+  --network las-flores-net -p 3000:3000 \
+  -v ./server/src:/app/server/src \
+  -v ./shared:/app/shared \
+  -v ./content:/app/content \
+  -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@las-flores-postgres-oltp:5432/las_flores \
+  -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@las-flores-postgres-olap:5432/las_flores_analytics \
+  -e REDIS_URL=redis://las-flores-redis:6379 \
+  -e MINIO_ENDPOINT=las-flores-minio \
+  -e MINIO_PORT=9000 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin \
+  -e JWT_SECRET=your-jwt-secret-change-in-production \
+  las-flores-server
 ```
 
 ### Verify Setup

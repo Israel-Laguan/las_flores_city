@@ -14,6 +14,7 @@ Identify if the target is a **Character**, **Object**, or **Location**.
 Apply the corresponding expansion matrix based on the entity type:
 
 #### A. Characters
+
 | Component | Goal | Consumer Tag | Key Details |
 | :--- | :--- | :--- | :--- |
 | **Face Reference** | High-fidelity headshot | `[CONSUMER: portrait]` | Precise facial features, skin texture, eye color, hair style, neutral expression. |
@@ -21,7 +22,9 @@ Apply the corresponding expansion matrix based on the entity type:
 | **Expression Sheet** | Emotional range | `[CONSUMER: portrait]` | 5 key emotions on one sheet: Neutral, Happy, Angry, Sad, Focused/Determined. |
 | **Unique Contexts** | Role-based visuals | `[CONSUMER: phaser-sprite]` | Uniforms, specific tools of the trade, typical activities, iconic outfits. |
 
+
 #### B. Objects
+
 | Component | Goal | Consumer Tag | Key Details |
 | :--- | :--- | :--- | :--- |
 | **Base Reference** | Isolate the object | `[CONSUMER: phaser-sprite]` | Neutral lighting, clear outlines, 360-degree understanding, high detail. |
@@ -29,13 +32,16 @@ Apply the corresponding expansion matrix based on the entity type:
 | **Interaction** | How it's used | `[CONSUMER: portrait]` | Object in hand or in use by a character, scale reference, ergonomics. |
 | **Detail Macro** | Technical precision | `[CONSUMER: phaser-sprite]` | Extreme close-ups of specific mechanisms, labels, or unique carvings. |
 
+
 #### C. Locations
+
 | Component | Goal | Consumer Tag | Key Details |
 | :--- | :--- | :--- | :--- |
 | **Establishing Shot**| General layout | `[CONSUMER: html-background]` | Wide angle, horizon, key landmarks, atmospheric lighting. |
 | **Detail Vistas** | Environmental story | `[CONSUMER: html-background]` | Specific corners, interior focal points, "lived-in" details. |
 | **Mood Variants** | Temporal changes | `[CONSUMER: html-background]` | Day, Night, Rainy, Foggy. Lighting shifts and reflection changes. |
 | **Sectional/Cut** | Architectural logic | `[CONSUMER: html-background]` | Cross-sections, floor plans, verticality (especially for buildings). |
+
 
 ### 3. Technical Implementation
 Every prompt must follow the **Modular Structure**:

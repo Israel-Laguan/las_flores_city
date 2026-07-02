@@ -290,7 +290,7 @@ export const YAMLCharacterSchema = z.object({
     label: z.string().max(50).optional(),
     expression: z.string().max(50).optional(),
   })).optional(),
-  atlas_url: z.string().url().optional(),
+  atlas_url: z.string().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),

@@ -66,8 +66,7 @@ function createNPCVisual(
       // Atlas loaded: create a Sprite and play the expression animation
       const sprite = scene.add.sprite(0, 0, npcKey);
       const maxH = height * 0.55;
-      const source = texture.getSourceImage();
-      const scale = maxH / source.height;
+      const scale = maxH / sprite.height;
       sprite.setScale(scale);
       sprite.setOrigin(0.5, 1);
 
@@ -88,10 +87,9 @@ function createNPCVisual(
     } else {
       // Static image: use the existing image-based rendering
       const sprite = scene.add.image(0, 0, npcKey);
-      const tex = scene.textures.get(npcKey);
-      const source = tex.getSourceImage();
       const maxH = height * 0.55;
-      sprite.setScale(maxH / source.height);
+      const scale = maxH / sprite.height;
+      sprite.setScale(scale);
       sprite.setOrigin(0.5, 1);
 
       // VN aesthetic: subtle blue tint for saturate/contrast approximation
@@ -124,12 +122,24 @@ function addPortraitFrame(
   height: number
 ): void {
   const maxH = height * 0.55;
-  const frameW = 70;
   const frameH = maxH * 0.95;
+  const frameW = frameH * 0.75; // 3:4 aspect ratio matching the prompt library standard
 
   // Create frame with asymmetric border-radius: 16px 16px 4px 4px
   // Using canvas texture for precise control over corner radii
   const frameKey = `frame-${npc.characterId}`;
+  if (scene.textures.exists(frameKey)) {
+    const frame = scene.add.image(0, -frameH / 2, frameKey);
+    frame.setDepth(9);
+    container.add(frame);
+
+    const glitch = scene.add.rectangle(0, -frameH / 2, frameW, frameH, 0x00d4ff, 0.06);
+    glitch.setDepth(11);
+    glitch.setBlendMode(Phaser.BlendModes.SCREEN);
+    container.add(glitch);
+    return;
+  }
+
   const canvasTexture = scene.textures.createCanvas(frameKey, frameW, frameH);
   if (canvasTexture) {
     const ctx = canvasTexture.context;
@@ -206,7 +216,14 @@ function attachNPCHitArea(
   visualElement: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Graphics,
   onNPCClick: (npc: NPCData) => void
 ): void {
-  const hitArea = scene.add.rectangle(0, -40, 80, 90, 0x000000, 0);
+  const maxH = scene.cameras.main.height * 0.55;
+  const hitW = (visualElement instanceof Phaser.GameObjects.Image || visualElement instanceof Phaser.GameObjects.Sprite)
+    ? visualElement.displayWidth
+    : 60;
+  const hitH = (visualElement instanceof Phaser.GameObjects.Image || visualElement instanceof Phaser.GameObjects.Sprite)
+    ? visualElement.displayHeight
+    : 80;
+  const hitArea = scene.add.rectangle(0, -hitH / 2, hitW, hitH, 0x000000, 0);
   hitArea.setInteractive({ useHandCursor: true });
 
   hitArea.on('pointerover', () => {

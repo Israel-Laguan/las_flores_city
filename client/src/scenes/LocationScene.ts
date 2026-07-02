@@ -113,12 +113,8 @@ export class LocationScene extends Phaser.Scene {
       color: '#ffffff',
       align: 'center',
     }).setOrigin(0.5);
-    locationLabel.setStyle({ 
-      fontSize: '0.7rem',
-      opacity: 0.7,
-      textTransform: 'uppercase',
-      letterSpacing: '0.1em'
-    } as any);
+    locationLabel.setAlpha(0.7);
+    locationLabel.setLetterSpacing(2);
     this.locationNameContainer.add(locationLabel);
 
     this.locationValueText = this.add.text(0, 0, '', {
@@ -146,12 +142,8 @@ export class LocationScene extends Phaser.Scene {
       color: '#ffffff',
       align: 'center',
     }).setOrigin(0.5);
-    moodLabel.setStyle({ 
-      fontSize: '0.7rem',
-      opacity: 0.7,
-      textTransform: 'uppercase',
-      letterSpacing: '0.1em'
-    } as any);
+    moodLabel.setAlpha(0.7);
+    moodLabel.setLetterSpacing(2);
     this.moodContainer.add(moodLabel);
 
     this.moodValueText = this.add.text(0, 0, '', {
@@ -289,18 +281,28 @@ export class LocationScene extends Phaser.Scene {
 
       if (this.textures.exists(key)) return resolve();
 
+      const errorHandler = (file: any) => {
+        if (file.key === key) {
+          resolve();
+        }
+      };
+
       if (type === 'image') {
         this.load.image(key, url);
         this.load.once(`filecomplete-${key}`, () => {
           this.urlTextureCache.set(url, key);
+          this.load.off('loaderror', errorHandler);
           resolve();
         });
+        this.load.once('loaderror', errorHandler);
       } else {
         this.load.audio(key, url);
         this.load.once(`filecomplete-${key}`, () => {
           this.urlTextureCache.set(url, key);
+          this.load.off('loaderror', errorHandler);
           resolve();
         });
+        this.load.once('loaderror', errorHandler);
       }
       this.load.start();
     });
@@ -332,9 +334,10 @@ export class LocationScene extends Phaser.Scene {
 
       let settled = false;
 
-      this.load.once(`filecomplete-${key}`, () => {
+      const successHandler = () => {
         if (!settled) {
           settled = true;
+          this.load.off('loaderror', errorHandler);
           this.urlTextureCache.set(atlasUrl, key);
 
           // Create default blink animation for this atlas
@@ -353,9 +356,31 @@ export class LocationScene extends Phaser.Scene {
             });
           }
 
+          // Create expression-specific animations if they exist in the atlas
+          const expressions = ['neutral', 'happy', 'angry', 'sad', 'focused'];
+          for (const expression of expressions) {
+            const exprKey = `${key}-${expression}`;
+            if (!this.anims.exists(exprKey)) {
+              const frames = this.anims.generateFrameNames(key, {
+                prefix: `${expression}_`,
+                start: 0,
+                end: 3,
+                zeroPad: 2,
+              });
+              if (frames.length > 0) {
+                this.anims.create({
+                  key: exprKey,
+                  frames,
+                  frameRate: 8,
+                  repeat: -1,
+                });
+              }
+            }
+          }
+
           resolve(true);
         }
-      });
+      };
 
       const errorHandler = (file: any) => {
         if (file.key === key && !settled) {
@@ -373,6 +398,7 @@ export class LocationScene extends Phaser.Scene {
       };
 
       this.load.on('loaderror', errorHandler);
+      this.load.once(`filecomplete-${key}`, successHandler);
       this.load.atlas(key, textureUrl, atlasUrl);
       this.load.start();
     });
