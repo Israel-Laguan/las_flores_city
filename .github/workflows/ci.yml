@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     services:
       postgres-oltp:
@@ -64,6 +65,16 @@ jobs:
 
       - name: Build shared types
         run: npm run build --workspace=shared
+
+      - name: Build server
+        run: npm run build --workspace=server
+
+      - name: Apply database migrations and seed content
+        run: npm run schema:migrate --workspace=server
+        env:
+          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+          REDIS_URL: redis://localhost:6379
 
       - name: Run server tests
         run: npm run test:server
