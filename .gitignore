@@ -49,6 +49,21 @@ docker-compose.override.yml
 # Content build artifacts
 content/**/*.generated.*
 
+# Generated binary assets (do not commit images/video/audio)
+# These live in MinIO, not in git
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.mp4
+*.mov
+*.webm
+*.mp3
+*.wav
+*.ogg
+*.flac
+
 # Playwright
 client/playwright-report/
 client/test-results/

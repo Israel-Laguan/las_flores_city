@@ -21,3 +21,7 @@ metadata:
   quote: "This neighborhood will be better built next time."
   status: "Deceased (2077)"
   death: "Died in a mine explosion while creating an improvised dam to save Las Flores from a catastrophic flood."
+portrait_urls:
+  - url: "http://minio:9000/las-flores/portraits/alex_garcia/neutral.png"
+    label: "Standard portrait"
+    expression: "neutral"

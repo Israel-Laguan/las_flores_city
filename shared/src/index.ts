@@ -283,6 +283,11 @@ export const YAMLCharacterSchema = z.object({
   description: z.string().max(1000),
   relationships: z.array(RelationshipSchema).optional(),
   avatar_url: z.string().url().optional(),
+  portrait_urls: z.array(z.object({
+    url: z.string().url(),
+    label: z.string().max(50).optional(),
+    expression: z.string().max(50).optional(),
+  })).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),

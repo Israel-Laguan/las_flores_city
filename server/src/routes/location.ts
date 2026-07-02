@@ -117,19 +117,54 @@ function mergeNpcEntries(
   return npcEntries;
 }
 
+function selectPortraitUrl(
+  portraitUrls: any[] | string | null | undefined,
+  mood: string,
+  characterName: string
+): string {
+  // Parse portrait_urls if it came back as a JSON string from Postgres
+  let urls: Array<{ url: string; label?: string; expression?: string }> = [];
+  if (Array.isArray(portraitUrls)) {
+    urls = portraitUrls;
+  } else if (typeof portraitUrls === 'string' && portraitUrls.trim().startsWith('[')) {
+    try {
+      urls = JSON.parse(portraitUrls);
+    } catch {
+      urls = [];
+    }
+  }
+
+  // 1. Try to find a portrait whose expression tag matches the current mood
+  if (urls.length > 0) {
+    const moodMatch = urls.find(u => (u.expression || '').toLowerCase() === mood.toLowerCase());
+    if (moodMatch) return moodMatch.url;
+
+    // 2. Fallback to the first entry with a label (usually "Standard portrait")
+    const labeled = urls.find(u => u.label && u.label.trim().length > 0);
+    if (labeled) return labeled.url;
+
+    // 3. Fallback to the first entry in the array
+    if (urls[0] && typeof urls[0].url === 'string') return urls[0].url;
+  }
+
+  // 4. Fallback to the convention-based path
+  return `${portraitBasePath(characterName)}/${mood}.png`;
+}
+
 function buildNpcPayload(
-  npcEntries: Array<{ character_id: string; is_permanent: boolean; default_mood: string; character_name?: string }>,
+  npcEntries: Array<{ character_id: string; is_permanent: boolean; default_mood: string; character_name?: string; portrait_urls?: any }>,
   relMap: Map<string, { friendship: number; romance: number }>
 ): any[] {
   return npcEntries.map(entry => {
     const rel = relMap.get(entry.character_id) || { friendship: 0, romance: 0 };
     const mood = selectMood(entry.default_mood, rel.friendship, rel.romance);
     const name = entry.character_name || 'Unknown';
+    const portraitUrl = selectPortraitUrl(entry.portrait_urls, mood, name);
 
     return {
       characterId: entry.character_id,
       name,
-      portraitUrl: `${portraitBasePath(name)}/${mood}.png`,
+      portraitUrl,
       currentMood: mood,
       relationship: {
         friendship: rel.friendship,
@@ -194,7 +229,8 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
       sc.character_id,
       sc.is_permanent,
       sc.default_mood,
-      c.name as character_name
+      c.name as character_name,
+      c.portrait_urls
      FROM scene_characters sc
      JOIN characters c ON sc.character_id = c.id
      WHERE sc.scene_id = $1`,

@@ -24,17 +24,18 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 
 async function upsertCharacter(data: any): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO characters (id, name, title, description, avatar_url, metadata)
-      VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, metadata)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         title = EXCLUDED.title,
         description = EXCLUDED.description,
         avatar_url = EXCLUDED.avatar_url,
+        portrait_urls = EXCLUDED.portrait_urls,
         metadata = EXCLUDED.metadata,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.name, data.title || null, sanitizeText(data.description), data.avatar_url || null, JSON.stringify(data.metadata || {})]
+    [data.id, data.name, data.title || null, sanitizeText(data.description), data.avatar_url || null, JSON.stringify(data.portrait_urls || []), JSON.stringify(data.metadata || {})]
   );
   return result.rows[0].id;
 }
