@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     services:
       postgres-oltp:
@@ -62,18 +63,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-       - name: Build shared types
-         run: npm run build --workspace=shared
+      - name: Build shared types
+        run: npm run build --workspace=shared
 
-       - name: Run server tests
-         run: npm run test:server
-         env:
+      - name: Build server
+        run: npm run build --workspace=server
+
+      - name: Apply database migrations and seed content
+        run: npm run schema:migrate --workspace=server
+        env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379
-          CDN_BASE_URL: https://cdn.lasflores2077.com
-          CDN_KEY_PAIR_ID: APKADEV00000000000000
-          CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
+
+      - name: Run server tests
+        run: npm run test:server
+        env:
+            DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+            ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+            REDIS_URL: redis://localhost:6379
+            CDN_BASE_URL: https://cdn.lasflores2077.com
+            CDN_KEY_PAIR_ID: APKADEV00000000000000
+            CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
 
       - name: Run linter
         run: npm run lint

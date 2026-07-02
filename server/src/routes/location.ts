@@ -42,6 +42,9 @@ async function getOverlayNpcs(sceneId: string, userId: string): Promise<Array<{
   character_id: string;
   is_permanent: boolean;
   default_mood: string;
+  character_name?: string;
+  portrait_urls?: any;
+  atlas_url?: string | null;
 }>> {
   // Get user's active mysteries from dialogue_overlays conditions
   const overlayResult = await queryOLTP(
@@ -62,15 +65,34 @@ async function getOverlayNpcs(sceneId: string, userId: string): Promise<Array<{
     character_id: string;
     is_permanent: boolean;
     default_mood: string;
+    character_name?: string;
+    portrait_urls?: any;
+    atlas_url?: string | null;
   }> = [];
 
   for (const overlay of overlayResult.rows) {
     const conditions = overlay.conditions as any;
     if (conditions?.presence?.character_id) {
+      // Fetch character details from the characters table
+      const characterResult = await queryOLTP(
+        `SELECT 
+          character_name, 
+          portrait_urls, 
+          atlas_url
+         FROM characters
+         WHERE character_id = $1`,
+        [conditions.presence.character_id]
+      );
+
+      const characterData = characterResult.rows[0] || {};
+      
       overlayNpcs.push({
         character_id: conditions.presence.character_id,
         is_permanent: false,
         default_mood: conditions.presence.default_mood || 'neutral',
+        character_name: characterData.character_name,
+        portrait_urls: characterData.portrait_urls,
+        atlas_url: characterData.atlas_url,
       });
     }
   }
@@ -86,6 +108,8 @@ function mergeNpcEntries(
   is_permanent: boolean;
   default_mood: string;
   character_name?: string;
+  portrait_urls?: any;
+  atlas_url?: string | null;
 }> {
   const allNpcIds = new Set<string>();
   const npcEntries: Array<{
@@ -93,6 +117,8 @@ function mergeNpcEntries(
     is_permanent: boolean;
     default_mood: string;
     character_name?: string;
+    portrait_urls?: any;
+    atlas_url?: string | null;
   }> = [];
 
   for (const row of permanentResult.rows) {
@@ -103,6 +129,8 @@ function mergeNpcEntries(
         is_permanent: row.is_permanent,
         default_mood: row.default_mood,
         character_name: row.character_name,
+        portrait_urls: row.portrait_urls,
+        atlas_url: row.atlas_url,
       });
     }
   }
@@ -110,7 +138,7 @@ function mergeNpcEntries(
   for (const npc of overlayNpcs) {
     if (!allNpcIds.has(npc.character_id)) {
       allNpcIds.add(npc.character_id);
-      npcEntries.push(npc);
+      npcEntries.push({ ...npc });
     }
   }
 
@@ -153,7 +181,7 @@ function selectPortraitUrl(
 }
 
 function buildNpcPayload(
-  npcEntries: Array<{ character_id: string; is_permanent: boolean; default_mood: string; character_name?: string; portrait_urls?: any }>,
+  npcEntries: Array<{ character_id: string; is_permanent: boolean; default_mood: string; character_name?: string; portrait_urls?: any; atlas_url?: string | null }>,
   relMap: Map<string, { friendship: number; romance: number }>
 ): any[] {
   return npcEntries.map(entry => {
@@ -162,7 +190,7 @@ function buildNpcPayload(
     const name = entry.character_name || 'Unknown';
     const portraitUrl = selectPortraitUrl(entry.portrait_urls, mood, name);
 
-    return {
+    const payload: any = {
       characterId: entry.character_id,
       name,
       portraitUrl,
@@ -173,6 +201,14 @@ function buildNpcPayload(
       },
       canInteract: true,
     };
+
+    // Include atlas fields only if atlas_url is configured (backwards-compatible)
+    if (entry.atlas_url) {
+      payload.atlasUrl = entry.atlas_url;
+      payload.expression = mood;
+    }
+
+    return payload;
   });
 }
 
@@ -231,7 +267,8 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
       sc.is_permanent,
       sc.default_mood,
       c.name as character_name,
-      c.portrait_urls
+      c.portrait_urls,
+      c.atlas_url
      FROM scene_characters sc
      JOIN characters c ON sc.character_id = c.id
      WHERE sc.scene_id = $1`,
@@ -246,7 +283,9 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
         `SELECT c.id AS character_id,
                 true AS is_permanent,
                 'neutral' AS default_mood,
-                c.name AS character_name
+                c.name AS character_name,
+                c.portrait_urls,
+                c.atlas_url
          FROM characters c
          WHERE c.id = ANY($1)`,
         [npcIds]

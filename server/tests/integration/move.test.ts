@@ -91,7 +91,6 @@ beforeAll(async () => {
      ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
      ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
      ON CONFLICT (name) DO UPDATE SET
-       id = EXCLUDED.id,
        slug = EXCLUDED.slug,
        x = EXCLUDED.x,
        y = EXCLUDED.y`
@@ -99,10 +98,16 @@ beforeAll(async () => {
 
   await applyMigration('033_district_travel_costs.sql');
 
-  // Use the hardcoded district UUIDs (now guaranteed to exist after
-  // the ON CONFLICT (name) DO UPDATE SET id = EXCLUDED.id above).
-  const DOWNTOWN_ID = 'd1000000-0000-0000-0000-000000000001';
-  const OLD_TOWN_ID = 'd1000000-0000-0000-0000-000000000002';
+  // Use the existing district UUIDs. When seed migrations 034/035 created
+  // these districts with auto-generated IDs, we must reuse those IDs.
+  const downtownQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'Downtown'"
+  );
+  const DOWNTOWN_ID = downtownQ.rows[0].id;
+  const oldTownQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'Old Town'"
+  );
+  const OLD_TOWN_ID = oldTownQ.rows[0].id;
 
   // Ensure scenes are assigned to the correct districts for this test
   // Apartment and Welcome Center -> Downtown, Cafe -> Old Town
