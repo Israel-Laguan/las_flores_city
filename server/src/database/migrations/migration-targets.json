@@ -30,7 +30,8 @@
     "035_seed_districts_extended.sql",
     "036_add_location_content_type.sql",
     "037_map_tiles.sql",
-    "038_character_portrait_urls.sql"
+    "038_character_portrait_urls.sql",
+    "039_character_atlas_url.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

@@ -172,6 +172,8 @@ export const ScenePayloadSchema = z.object({
       romance: z.number().int().min(0).max(100),
     }),
     canInteract: z.boolean(),
+    atlasUrl: z.string().optional(),
+    expression: z.string().optional(),
   })),
 });
 
@@ -288,6 +290,7 @@ export const YAMLCharacterSchema = z.object({
     label: z.string().max(50).optional(),
     expression: z.string().max(50).optional(),
   })).optional(),
+  atlas_url: z.string().url().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),

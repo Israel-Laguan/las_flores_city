@@ -47,6 +47,9 @@ export class LocationScene extends Phaser.Scene {
   /** Set to true while the WorldScene onboarding lock is active (Req 12.1). */
   private navigationLocked: boolean = false;
 
+  // URL-to-key cache for preventing duplicate loads (fixes "E. Phaser loading guard")
+  private urlTextureCache: Map<string, string> = new Map();
+
   constructor() {
     super({ key: 'LocationScene' });
   }
@@ -74,6 +77,7 @@ export class LocationScene extends Phaser.Scene {
 
     this.registerEventHandlers();
     this.setupContextRecovery();
+    this.registerDefaultAnimations();
     this.loadCurrentLocation();
   }
 
@@ -259,19 +263,117 @@ export class LocationScene extends Phaser.Scene {
     });
   }
 
+  // ==================== Default Animations ====================
+
+  /**
+   * Register default animations for sprite atlas support.
+   * Per-texture blink animations are created in loadSpriteAtlas() after
+   * successful atlas load using convention: {textureKey}-blink with frames
+   * named blink_00, blink_01, etc.
+   */
+  private registerDefaultAnimations(): void {
+    // Default blink animation is registered per-texture when atlases load.
+    // This method documents the convention for future reference.
+    // See loadSpriteAtlas() for actual animation creation.
+  }
+
   // ==================== Dynamic Asset Loading Pipeline ====================
 
   private loadDynamicAsset(key: string, url: string, type: 'image' | 'audio'): Promise<void> {
     return new Promise((resolve) => {
+      // Cache by URL: if this URL was already loaded under any key, resolve immediately
+      const cachedKey = this.urlTextureCache.get(url);
+      if (cachedKey && this.textures.exists(cachedKey)) {
+        return resolve();
+      }
+
       if (this.textures.exists(key)) return resolve();
 
       if (type === 'image') {
         this.load.image(key, url);
-        this.load.once(`filecomplete-${key}`, () => resolve());
+        this.load.once(`filecomplete-${key}`, () => {
+          this.urlTextureCache.set(url, key);
+          resolve();
+        });
       } else {
         this.load.audio(key, url);
-        this.load.once(`filecomplete-${key}`, () => resolve());
+        this.load.once(`filecomplete-${key}`, () => {
+          this.urlTextureCache.set(url, key);
+          resolve();
+        });
       }
+      this.load.start();
+    });
+  }
+
+  /**
+   * Load a texture atlas (texture + JSON) for animated NPC portraits.
+   * If atlas loading fails, falls back to loading the texture as a static image.
+   * @param key - The texture key to use
+   * @param textureUrl - URL to the texture image (PNG)
+   * @param atlasUrl - URL to the atlas JSON
+   * @returns Promise resolving to true if atlas loaded, false if fallback to image
+   */
+  private loadSpriteAtlas(key: string, textureUrl: string, atlasUrl: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      // Check URL cache first
+      if (this.urlTextureCache.has(atlasUrl)) {
+        const cachedKey = this.urlTextureCache.get(atlasUrl)!;
+        if (this.textures.exists(cachedKey)) {
+          return resolve(true);
+        }
+      }
+
+      // Check if texture already exists
+      if (this.textures.exists(key)) {
+        this.urlTextureCache.set(atlasUrl, key);
+        return resolve(true);
+      }
+
+      let settled = false;
+
+      this.load.once(`filecomplete-${key}`, () => {
+        if (!settled) {
+          settled = true;
+          this.urlTextureCache.set(atlasUrl, key);
+
+          // Create default blink animation for this atlas
+          if (!this.anims.exists(`${key}-blink`)) {
+            this.anims.create({
+              key: `${key}-blink`,
+              frames: this.anims.generateFrameNames(key, {
+                prefix: 'blink_',
+                start: 0,
+                end: 3,
+                zeroPad: 2,
+              }),
+              frameRate: 8,
+              repeat: -1,
+              repeatDelay: 2000,
+            });
+          }
+
+          resolve(true);
+        }
+      });
+
+      const errorHandler = (file: any) => {
+        if (file.key === key && !settled) {
+          settled = true;
+          this.load.off('loaderror', errorHandler);
+
+          // Fallback: load texture as static image
+          this.load.image(key, textureUrl);
+          this.load.once(`filecomplete-${key}`, () => {
+            this.urlTextureCache.set(textureUrl, key);
+            resolve(false);
+          });
+          this.load.start();
+        }
+      };
+
+      this.load.on('loaderror', errorHandler);
+      this.load.atlas(key, textureUrl, atlasUrl);
       this.load.start();
     });
   }
@@ -288,7 +390,18 @@ export class LocationScene extends Phaser.Scene {
 
     for (const npc of payload.npcs) {
       const npcKey = `npc-${npc.characterId}`;
-      assetPromises.push(this.loadDynamicAsset(npcKey, npc.portraitUrl, 'image'));
+
+      if (npc.atlasUrl) {
+        // Use the portraitUrl as the texture URL for the atlas
+        // The atlas will be loaded with this URL as the texture
+        assetPromises.push(
+          this.loadSpriteAtlas(npcKey, npc.portraitUrl, npc.atlasUrl).then(() => {
+            // Atlas loaded (or fallback to image) - texture is ready
+          })
+        );
+      } else {
+        assetPromises.push(this.loadDynamicAsset(npcKey, npc.portraitUrl, 'image'));
+      }
     }
 
     await Promise.all(assetPromises);

@@ -11,6 +11,10 @@ export interface NPCData {
   };
   canInteract: boolean;
   position_x?: number;
+  /** Optional URL to a Phaser texture atlas JSON for animated portraits */
+  atlasUrl?: string;
+  /** Animation key to play when atlas is loaded (defaults to currentMood) */
+  expression?: string;
 }
 
 const MOOD_COLORS: Record<string, number> = {
@@ -51,21 +55,51 @@ function createNPCVisual(
   container: Phaser.GameObjects.Container,
   npc: NPCData,
   height: number
-): Phaser.GameObjects.Image | Phaser.GameObjects.Graphics {
+): Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Graphics {
   const npcKey = `npc-${npc.characterId}`;
   if (scene.textures.exists(npcKey)) {
-    const sprite = scene.add.image(0, 0, npcKey);
-    const tex = scene.textures.get(npcKey);
-    const source = tex.getSourceImage();
-    const maxH = height * 0.55;
-    sprite.setScale(maxH / source.height);
-    sprite.setOrigin(0.5, 1);
+    const texture = scene.textures.get(npcKey);
+    const frameTotal = texture.frameTotal;
 
-    // VN aesthetic: subtle blue tint for saturate/contrast approximation
-    sprite.setTint(0xeeddff);
+    // Check if this is an atlas (multiple frames) or a static image
+    if (frameTotal > 1) {
+      // Atlas loaded: create a Sprite and play the expression animation
+      const sprite = scene.add.sprite(0, 0, npcKey);
+      const maxH = height * 0.55;
+      const source = texture.getSourceImage();
+      const scale = maxH / source.height;
+      sprite.setScale(scale);
+      sprite.setOrigin(0.5, 1);
 
-    container.add(sprite);
-    return sprite;
+      // VN aesthetic: subtle blue tint for saturate/contrast approximation
+      sprite.setTint(0xeeddff);
+
+      // Play the expression animation (default to blink if expression not found)
+      const expression = npc.expression || npc.currentMood || 'blink';
+      const animKey = `${npcKey}-${expression}`;
+      if (scene.anims.exists(animKey)) {
+        sprite.play(animKey);
+      } else if (scene.anims.exists(`${npcKey}-blink`)) {
+        sprite.play(`${npcKey}-blink`);
+      }
+
+      container.add(sprite);
+      return sprite;
+    } else {
+      // Static image: use the existing image-based rendering
+      const sprite = scene.add.image(0, 0, npcKey);
+      const tex = scene.textures.get(npcKey);
+      const source = tex.getSourceImage();
+      const maxH = height * 0.55;
+      sprite.setScale(maxH / source.height);
+      sprite.setOrigin(0.5, 1);
+
+      // VN aesthetic: subtle blue tint for saturate/contrast approximation
+      sprite.setTint(0xeeddff);
+
+      container.add(sprite);
+      return sprite;
+    }
   }
   const fallback = scene.add.graphics();
   fallback.fillStyle(getMoodColor(npc.currentMood), 1);
@@ -169,7 +203,7 @@ function attachNPCHitArea(
   scene: Phaser.Scene,
   container: Phaser.GameObjects.Container,
   npc: NPCData,
-  visualElement: Phaser.GameObjects.Image | Phaser.GameObjects.Graphics,
+  visualElement: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Graphics,
   onNPCClick: (npc: NPCData) => void
 ): void {
   const hitArea = scene.add.rectangle(0, -40, 80, 90, 0x000000, 0);
@@ -177,7 +211,7 @@ function attachNPCHitArea(
 
   hitArea.on('pointerover', () => {
     container.setScale(1.05);
-    if (visualElement instanceof Phaser.GameObjects.Image) {
+    if (visualElement instanceof Phaser.GameObjects.Image || visualElement instanceof Phaser.GameObjects.Sprite) {
       visualElement.setTint(0xffffff);
     } else {
       visualElement.setAlpha(0.9);
@@ -186,7 +220,7 @@ function attachNPCHitArea(
 
   hitArea.on('pointerout', () => {
     container.setScale(1);
-    if (visualElement instanceof Phaser.GameObjects.Image) {
+    if (visualElement instanceof Phaser.GameObjects.Image || visualElement instanceof Phaser.GameObjects.Sprite) {
       visualElement.clearTint();
     } else {
       visualElement.setAlpha(1);
