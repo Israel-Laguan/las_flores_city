@@ -246,7 +246,8 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
         `SELECT c.id AS character_id,
                 true AS is_permanent,
                 'neutral' AS default_mood,
-                c.name AS character_name
+                c.name AS character_name,
+                c.portrait_urls
          FROM characters c
          WHERE c.id = ANY($1)`,
         [npcIds]

@@ -15,16 +15,16 @@
 ### Tasks
 
 - [x] 0.1 — Create feature branch `feat/media-pipeline-tier0`
-- [ ] 0.2 — DB migration: add `portrait_urls` JSONB to `characters`
-- [ ] 0.3 — Shared schema: extend `YAMLCharacterSchema` with `portrait_urls`
-- [ ] 0.4 — Server upsert: persist `portrait_urls` in `upsertCharacter()`
-- [ ] 0.5 — Server route: read `portrait_urls` from DB, select by expression
-- [ ] 0.6 — Prompt library: add Consumer Intent Tags section
-- [ ] 0.7 — Prompt generator: fix undefined leaks, add consumer tags
-- [ ] 0.8 — Verify script: add MIME + dimension checks
-- [ ] 0.9 — Asset pipeline docs: add sprite atlas convention section
-- [ ] 0.10 — Content YAML: add `portrait_urls` to key character YAMLs
-- [ ] Verify: validate content, lint+build server, build shared, test prompt generator
+- [x] 0.2 — DB migration: add `portrait_urls` JSONB to `characters`
+- [x] 0.3 — Shared schema: extend `YAMLCharacterSchema` with `portrait_urls`
+- [x] 0.4 — Server upsert: persist `portrait_urls` in `upsertCharacter()`
+- [x] 0.5 — Server route: read `portrait_urls` from DB, select by expression
+- [x] 0.6 — Prompt library: add Consumer Intent Tags section
+- [x] 0.7 — Prompt generator: fix undefined leaks, add consumer tags
+- [x] 0.8 — Verify script: add MIME + dimension checks
+- [x] 0.9 — Asset pipeline docs: add sprite atlas convention section
+- [x] 0.10 — Content YAML: add `portrait_urls` to key character YAMLs
+- [x] Verify: validate content, lint+build server, build shared, test prompt generator
 
 ### Deliverable
 - Characters can have multiple portrait URLs tagged by expression/mood

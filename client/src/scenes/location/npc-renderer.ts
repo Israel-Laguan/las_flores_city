@@ -60,6 +60,10 @@ function createNPCVisual(
     const maxH = height * 0.55;
     sprite.setScale(maxH / source.height);
     sprite.setOrigin(0.5, 1);
+
+    // VN aesthetic: subtle blue tint for saturate/contrast approximation
+    sprite.setTint(0xeeddff);
+
     container.add(sprite);
     return sprite;
   }
@@ -77,6 +81,30 @@ function createNPCVisual(
   container.add(label);
 
   return fallback;
+}
+
+function addPortraitFrame(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+  npc: NPCData,
+  height: number
+): void {
+  const maxH = height * 0.55;
+  const frameW = 70;
+  const frameH = maxH * 0.95;
+
+  const frame = scene.add.graphics();
+  frame.setDepth(9);
+  frame.lineStyle(2, 0x00d4ff, 0.9);
+  frame.fillStyle(0x000000, 0);
+  frame.strokeRoundedRect(-frameW / 2, -frameH, frameW, frameH, 10);
+  container.add(frame);
+
+  // Glitch overlay rectangle with screen blend mode
+  const glitch = scene.add.rectangle(0, -frameH / 2, frameW, frameH, 0x00d4ff, 0.06);
+  glitch.setDepth(11);
+  glitch.setBlendMode(Phaser.BlendModes.SCREEN);
+  container.add(glitch);
 }
 
 function addNameAndMoodTags(
@@ -153,6 +181,7 @@ export function renderNPCs(
     container.setDepth(10);
 
     const visualElement = createNPCVisual(scene, container, npc, height);
+    addPortraitFrame(scene, container, npc, height);
     addNameAndMoodTags(scene, container, npc);
 
     if (npc.canInteract) {
