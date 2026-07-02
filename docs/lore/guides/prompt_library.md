@@ -26,6 +26,25 @@
 
 ---
 
+### 🔹 CONSUMER INTENT TAGS
+
+Tag every prompt with its consumer so generation settings match the target:
+
+| Tag | Meaning | Generation Guidance |
+|---|---|---|
+| `[CONSUMER: phaser-sprite]` | Phaser Sprite/Atlas | Transparent background, centered, isolated asset, PNG with alpha |
+| `[CONSUMER: html-background]` | DOM background image | No transparency required, 16:9 crop, JPEG acceptable |
+| `[CONSUMER: tile]` | Map tile texture | Seamless tileable, no horizon, 1:1 crop, transparent optional |
+| `[CONSUMER: portrait]` | Character portrait (both DOM + Phaser) | Transparent background, 3:4 crop, PNG with alpha |
+
+**Usage:** Place the tag at the top of the prompt, after the title line. Example:
+```
+[CONSUMER: portrait]
+Photorealistic portrait of ...
+```
+
+---
+
 ### 🔹 PROMPT STRUCTURE TEMPLATE
 
 *Use this **modular system** to build any prompt:*

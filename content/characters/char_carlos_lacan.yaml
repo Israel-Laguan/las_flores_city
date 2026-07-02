@@ -20,3 +20,7 @@ metadata:
   challenges: "None — he was killed before the investigation reached its climax."
   quote: "Whoever did this knew exactly what they were doing. They bypassed the safety protocols... it's sophisticated. And premeditated."
   status: "Deceased (2077)"
+portrait_urls:
+  - url: "http://minio:9000/las-flores/portraits/carlos_lacan/neutral.png"
+    label: "Standard portrait"
+    expression: "neutral"

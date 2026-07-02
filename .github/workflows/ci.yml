@@ -62,12 +62,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build shared types
-        run: npm run build --workspace=shared
+       - name: Build shared types
+         run: npm run build --workspace=shared
 
-
-        run: npm run test:server
-        env:
+       - name: Run server tests
+         run: npm run test:server
+         env:
           DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
           ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
           REDIS_URL: redis://localhost:6379

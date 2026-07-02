@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Novel Interface — Las Flores 2077</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a1a;
+    --surface: #12121f;
+    --text: #F5F5DC;
+    --amber: #E6A857;
+    --neon-blue: #00d4ff;
+    --neon-pink: #ff006e;
+    --neon-green: #00ff88;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Quicksand', 'Segoe UI', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .game-viewport {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%),
+      radial-gradient(circle at 50% 30%, rgba(0,212,255,0.08), transparent 60%),
+      #0a0a1a;
+    overflow: hidden;
+  }
+
+  .bg-city {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 60px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 60px);
+    opacity: 0.5;
+  }
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.12) 0px,
+      rgba(0,0,0,0.12) 2px,
+      transparent 2px,
+      transparent 6px
+    );
+    pointer-events: none;
+    z-index: 3;
+  }
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .hud {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 24px;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .hud-block {
+    background: rgba(10,10,26,0.7);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    backdrop-filter: blur(6px);
+  }
+  .hud-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+  .hud-value {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    color: var(--neon-blue);
+    text-shadow: 0 0 8px rgba(0,212,255,0.4);
+  }
+
+  .portrait-area {
+    position: absolute;
+    left: 3vw;
+    bottom: 28vh;
+    width: 320px;
+    height: 420px;
+    z-index: 4;
+    background:
+      linear-gradient(180deg, rgba(0,212,255,0.06), transparent 60%),
+      rgba(18,18,31,0.15);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 16px 16px 4px 4px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(0,212,255,0.08);
+  }
+  .portrait-area img.sprite {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: bottom center;
+    filter: saturate(0.9) contrast(1.1);
+  }
+  .portrait-placeholder {
+    display: none;
+  }
+  .portrait-glitch {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,212,255,0.08), rgba(255,0,110,0.04));
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  .scene-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+    filter: brightness(0.85) saturate(0.9);
+  }
+
+  .dialog-box {
+    position: absolute;
+    left: 2vw;
+    right: 2vw;
+    bottom: 24px;
+    z-index: 5;
+    background: rgba(10,10,26,0.92);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 12px;
+    padding: 18px 22px 18px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.06);
+  }
+  .speaker {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px rgba(0,212,255,0.4);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .speaker .dot {
+    width: 10px; height: 10px;
+    background: var(--neon-blue);
+    border-radius: 999px;
+    box-shadow: 0 0 10px var(--neon-blue);
+    animation: pulse-blue 2.5s ease-in-out infinite;
+  }
+  .dialog-text {
+    font-size: 1rem;
+    line-height: 1.55;
+    min-height: 52px;
+  }
+  .dialog-text .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--neon-blue);
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+
+  @keyframes pulse-blue {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--neon-blue); }
+    50% { opacity: 0.6; box-shadow: 0 0 16px var(--neon-blue); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .choices {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 360px;
+    z-index: 5;
+  }
+  .choice {
+    background: rgba(10,10,26,0.88);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fade-in 0.4s ease-out forwards;
+  }
+  .choice:nth-child(1) { animation-delay: 0.1s; }
+  .choice:nth-child(2) { animation-delay: 0.2s; }
+  .choice:nth-child(3) { animation-delay: 0.3s; }
+  .choice:hover {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 18px rgba(0,212,255,0.2);
+    transform: translateX(4px);
+  }
+  @keyframes fade-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .choice.selected {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 18px rgba(0,255,136,0.25);
+    color: var(--neon-green);
+  }
+
+  .backlog-hint {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    background: rgba(10,10,26,0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    opacity: 0.5;
+    width: 180px;
+    z-index: 4;
+    display: none;
+  }
+  .backlog-hint.visible { display: block;}
+
+  .effects-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .neon-flare {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: 160px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="game-viewport">
+  <div class="bg-city"></div>
+  <div class="neon-flare"></div>
+  <div class="vignette"></div>
+  <div class="scanlines"></div>
+  <div class="effects-overlay"></div>
+
+  <div class="hud">
+    <div class="hud-block">
+      <div class="hud-label">Time Blocks</div>
+      <div class="hud-value">24 / 32</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-label">Suspicion</div>
+      <div class="hud-value" style="color: var(--neon-pink);">3 / 10</div>
+    </div>
+  </div>
+
+  <img class="scene-bg" id="scene-bg" src="assets/bg_puerto_noche.jpg" alt="Scene background" />
+
+  <div class="portrait-area">
+    <img class="sprite" id="portrait" src="assets/portrait_alex.png" alt="Speaker" />
+    <div class="portrait-glitch"></div>
+  </div>
+
+  <div class="dialog-box" id="dialog">
+    <div class="speaker"><span class="dot"></span>ALEX GARCÍA</div>
+    <div class="dialog-text" id="dialog-text"></div>
+  </div>
+
+  <div class="choices" id="choices"></div>
+  <div class="backlog-hint" id="backlog">HISTORIAL DE DIÁLOGO<br>[press Backspace]</div>
+</div>
+
+<script>
+  const LINES = [
+    { speaker: 'ALEX GARCÍA', bg: 'assets/bg_puerto_noche.jpg', portrait: 'assets/portrait_alex.png', text: 'El viento del Río trae olor a sal y azufre esta noche... algo no cuadra.' },
+    { speaker: 'MATEO', bg: 'assets/bg_callejon_centro.jpg', portrait: 'assets/portrait_mateo.png', text: 'Cállate y escucha. La vieja iglesia no abre hasta el amanecer.' },
+    { speaker: 'ALEX GARCÍA', bg: 'assets/bg_puerto_noche.jpg', portrait: 'assets/portrait_alex.png', text: 'Tenemos que revisar el puerto antes de que el turno de las 6 empiece.' },
+  ];
+
+  const CHOICES = [
+    { text: 'Ir al puerto ahora (gasta 4 TB)', color: 'var(--neon-blue)' },
+    { text: 'Esperar hasta el amanecer (gana 2 TB)', color: 'var(--neon-green)' },
+    { text: 'Preguntar a los pescadores (-)', color: 'var(--text)' },
+  ];
+
+  let lineIndex = 0;
+  const textEl = document.getElementById('dialog-text');
+  const choicesEl = document.getElementById('choices');
+  const speakerEl = document.querySelector('.speaker');
+
+  function typeLine(text, speed = 28) {
+    return new Promise(res => {
+      textEl.innerHTML = '';
+      let i = 0;
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      function tick() {
+        if (i < text.length) {
+          textEl.innerHTML = text.slice(0, i + 1);
+          textEl.appendChild(cursor);
+          i++;
+          setTimeout(tick, speed + Math.random() * 20);
+        } else {
+          res();
+        }
+      }
+      tick();
+    });
+  }
+
+  async function showLine() {
+    if (lineIndex >= LINES.length) {
+      showChoices();
+      return;
+    }
+    const line = LINES[lineIndex];
+    speakerEl.innerHTML = `<span class="dot"></span>${line.speaker}`;
+    const bg = document.getElementById('scene-bg');
+    const portrait = document.getElementById('portrait');
+    if (bg && line.bg) bg.src = line.bg;
+    if (portrait && line.portrait) portrait.src = line.portrait;
+    await typeLine(line.text, 25);
+    lineIndex++;
+    setTimeout(showLine, 1200);
+  }
+
+  function showChoices() {
+    choicesEl.innerHTML = '';
+    CHOICES.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.textContent = c.text;
+      btn.style.borderLeftColor = c.color;
+      btn.style.borderLeftWidth = '3px';
+      btn.onclick = () => {
+        document.querySelectorAll('.choice').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        setTimeout(() => {
+          choicesEl.innerHTML = '<div style="color:var(--neon-green);text-align:center;">Viaje aceptado. (mockup end)</div>';
+        }, 350);
+      };
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  showLine();
+</script>
+
+</body>
+</html>

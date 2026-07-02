@@ -20,3 +20,7 @@ metadata:
   challenges: "Grief for Carlos and Alex. The weight of being the one who survives."
   quote: "This neighborhood will be better built next time."
   status: "Active (2077 and beyond)"
+portrait_urls:
+  - url: "http://minio:9000/las-flores/portraits/miguel_jhonson/neutral.png"
+    label: "Standard portrait"
+    expression: "neutral"

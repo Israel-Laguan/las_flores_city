@@ -7,3 +7,7 @@ metadata:
   role: "npc"
   faction: "independent"
   personality: "analytical_determined"
+portrait_urls:
+  - url: "http://minio:9000/las-flores/portraits/isabella_vargas/neutral.png"
+    label: "Standard portrait"
+    expression: "neutral"
