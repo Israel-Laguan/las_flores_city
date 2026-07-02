@@ -25,6 +25,14 @@ app.use(express.json());
 app.use('/vault', vaultRouter);
 app.use('/dialogue', dialogueRouter);
 
+process.env.CDN_BASE_URL = 'https://cdn.lasflores2077.com';
+process.env.CDN_KEY_PAIR_ID = 'APKADEV00000000000';
+process.env.CDN_PRIVATE_KEY_PATH = '/nonexistent/key-for-test.pem';
+
+process.env.CDN_BASE_URL = 'https://cdn.lasflores2077.com';
+process.env.CDN_KEY_PAIR_ID = 'APKADEV00000000000';
+process.env.CDN_PRIVATE_KEY_PATH = '/nonexistent/key-for-test.pem';
+
 let server: ReturnType<typeof express.Application.listen>;
 let oltpPool: pg.Pool;
 let olapPool: pg.Pool;
