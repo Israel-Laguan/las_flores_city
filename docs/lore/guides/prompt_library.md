@@ -971,91 +971,91 @@ Photorealistic reference of Miguel Jhonson, 24-year-old logistics worker, in his
 ```
 
 #### Miguel Jhonson – Safehouse Leader
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Miguel Jhonson in his element, organizing a safehouse in the western district. He's surrounded by maps, supplies, and communication equipment. His expression is focused but calm—the competent leader in his domain. The background shows a dimly lit room with crates of supplies and a city map on the table. Practical warm lighting from a single lamp. Hyper-detailed, 8k, PNG with alpha.
 --no bright clean environments, no modern tech, no military gear, no formal clothing
 ```
 
 #### Carlos Lacan – Electronics Shop Worker
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Carlos Lacan, 24-year-old electrical engineering student, working at the electronics repair shop. He's wearing his work outfit: a plain gray t-shirt with the sleeves rolled up, jeans, and a faded blue apron over it. He's holding a multimeter in one hand and a small screwdriver in the other. His expression is one of focused concentration—he's in his element. The background shows the cluttered but cozy interior of the repair shop with shelves of tools and half-disassembled gadgets. Warm glow from a desk lamp. Standing pose, front-facing. Transparent background, centered. Hyper-detailed, 8k, PNG with alpha.
 --no clean environments, no formal clothing, no fancy tools, no bright overhead lighting
 ```
 
 #### Carlos Lacan – Rooftop Technician
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Carlos Lacan on a rooftop at night, installing surveillance cameras for the Las Estrellas investigation. He's crouched low, wearing a dark hoodie and cargo pants, his hands steady as he works with the equipment. The city sprawls out beneath him, a sea of lights and shadows, with the Andean foothills as a dark silhouette. His expression is a mix of concentration and quiet excitement. Dim lighting from his headlamp and the city lights below. Atmospheric, tense. Hyper-detailed, 8k, PNG with alpha.
 --no modern equipment (use period-appropriate), no bright city, no clean environments
 ```
 
 #### Ana Kim – Library Worker
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Ana Kim, 25-year-old social work student, working at the university library. She's wearing her work outfit: a cozy brown cardigan over a cream blouse, dark trousers, and comfortable flats. She's holding a stack of books and a notebook. Her expression is focused and efficient. The background shows the quiet, wood-paneled interior of the library with towering bookshelves. Soft natural window lighting. Standing pose, front-facing. Transparent background, centered. Hyper-detailed, 8k, PNG with alpha.
 --no modern clothing, no casual wear, no bright colors, no sterile environments
 ```
 
 #### Ana Kim – Social Work Field
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Ana Kim doing field work in the poor districts, visiting a family in need. She's wearing practical casual clothes: a simple gray sweater, dark jeans, and sturdy walking shoes. Her expression is one of genuine concern and empathy—she's in her element helping others. The background shows a modest home in the poor districts, showing the reality of her social work. Natural soft lighting from a window. Hyper-detailed, 8k, PNG with alpha.
 --no formal clothing, no clean environments, no clinical look, no distanced expression
 ```
 
 #### Isabella Vargas – Architecture Student
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Isabella Vargas, 23-year-old architecture student, in her student outfit. She's wearing her signature look: a black turtleneck sweater, a long gray coat, tailored black trousers, and black leather boots. She's holding a tablet and a rolled blueprint under her arm. Her expression is focused and analytical. The background shows the sleek interior of an architecture studio. Cool precise lighting. Standing pose, front-facing. Transparent background, centered. Hyper-detailed, 8k, PNG with alpha.
 --no bright colors, no casual clothing, no warm tones, no disheveled look
 ```
 
 #### Isabella Vargas – Investigator Mode
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Isabella Vargas hunched over her tablet in the university library, uncovering patterns in the Las Estrellas investigation. She's surrounded by papers, printouts, handwritten notes, and a sprawling spreadsheet. Her fingers fly over the keyboard, expression one of intense focus, chasing a pattern only she can see. The background shows towering bookshelves stretching into darkness. Cold glow from her tablet screen. High contrast, moody. Hyper-detailed, 8k, PNG with alpha.
 --no warm lighting, no clean organized desk, no casual relaxed expression
 ```
 
 #### Alex Garcia – Casual Student
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Alex Garcia, 23-year-old architecture student, in his casual student outfit. He's wearing his signature look: a fitted dark gray t-shirt, a well-worn brown leather jacket, and blue jeans with brown boots. His dark hair is slightly disheveled in that effortlessly magnetic way. His expression is warm but with an underlying intensity. Standing pose, front-facing, arms slightly away from body. Transparent background, centered. Warm intimate lighting. Hyper-detailed, 8k, PNG with alpha.
 --no formal clothing, no overly neat hair, no clean crisp look, no boring expression
 ```
 
 #### Alex Garcia – Investigation Leader
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Alex Garcia in the final moments before his broadcast, the one that will expose the truth about Las Flores. He stands in a hidden studio, wearing his leather jacket, his expression a mix of exhaustion and resolve. His hands grip the edges of the desk as if it's the only thing holding him up. Behind him, a monitor displays the feed that will go out to the city. The lighting is dramatic, with the camera light casting sharp shadows on his face. Emotional, high contrast. Hyper-detailed, 8k, PNG with alpha.
 --no clean studio, no bright lighting, no weak expression, no casual relaxed look
 ```
 
 #### Alex Garcia – Rally Leader
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Alex Garcia leading a protest gathering in Parque de las Montañas against the Luz del Río energy plant. He stands at the front of the crowd, his expression fierce and determined, a revolutionary's fire in his eyes. He holds a banner, his posture commanding. Behind him, people of all ages hold signs and banners. The park's natural beauty contrasts with the industrial glow of the plant visible in the distance. Cinematic, high tension, environmental storytelling. Hyper-detailed, 8k, PNG with alpha.
 --no violence, no police brutality, no clean peaceful scene, no uncertain expression
 ```
 
 #### Mayor Vega – Mayoral Attire
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Mayor Vega in his official mayoral attire. He's wearing a perfectly tailored dark navy suit, white dress shirt, conservative red tie, and polished black dress shoes. His posture is commanding and rigid, shoulders back, chin up—used to being in power. His expression is the politician's mask: fake charm with underlying cold calculation. Standing pose, front-facing, arms slightly away from body. Transparent background, centered. Professional cool office lighting. Hyper-detailed, 8k, PNG with alpha.
 --no casual clothing, no casual stance, no warmth, no authentic emotion
 ```
 
 #### Mayor Vega – Behind Closed Doors
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Mayor Vega in his private office, the mask slipping. He's sitting behind a grand desk, still in his suit, but his expression is cold and dangerous—the true face of the corrupt mayor. On his desk are documents and a glass of whiskey. The office is opulent but oppressive, dark wood and leather. The lighting is dramatic, cold, with sharp shadows. Cinematic, high contrast, threatening. Hyper-detailed, 8k, PNG with alpha.
 --no warmth, no genuine smile, no humble surroundings, no kind expression
 ```
 
 #### Mayor Vega – Meeting the Senator
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Mayor Vega meeting with Senator Chen in a private backroom. Both men are in tailored suits, their expressions indicating a deal being made. The setting is a dark, opulent room with leather chairs and dark wood. The atmosphere is tense, corrupt, a deal being sealed. The lighting is dim, with only the glow of a desk lamp illuminating their expressions. Cinematic, moody, high tension. Hyper-detailed, 8k, PNG with alpha.
 --no public settings, no honest expressions, no simple surroundings, no bright lighting
@@ -1064,42 +1064,42 @@ Photorealistic reference of Mayor Vega meeting with Senator Chen in a private ba
 ---
 
 #### Senator Chen Wei – Face
-```
+```text
 [CONSUMER: portrait]
 Photorealistic close-up portrait of Senator Chen Wei, a prominent Chinese Senator and businessman from Las Flores. His face is refined and angular, with a high bridge to his nose and sharp, calculating eyes of a deep, obsidian brown. His skin is smooth, pale with a slight, healthy glow of high-end skincare. His hair is jet black, styled in a precise, contemporary side-part, perfectly groomed. His expression is one of detached authority, a faint, knowing smirk playing at the corners of his lips. He wears thin, gold-rimmed glasses that add to his intellectual and calculating appearance. The shot is from the shoulders up, centered, with a transparent background. Lighting is cool and professional, emphasizing the precision of his features. Hyper-detailed, 8k, PNG with alpha.
 --no facial hair, no sweat, no emotional warmth, no casual attire, no disheveled hair
 ```
 
 #### Senator Chen Wei – Body (Plan Pose)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Senator Chen Wei in a standing plan pose. His build is lean and athletic, reflecting a disciplined lifestyle. He's wearing minimal clothing: a high-end, fitted white designer t-shirt and black tailored trousers. His posture is impeccable, standing with a quiet confidence and an aura of absolute control, weight evenly distributed. His hands are at his sides, fingers relaxed but precise. Front-facing, arms slightly away from body for clean sprite outlines. Transparent background, centered, full body visible. Even studio lighting to capture his precise build. Hyper-detailed, 8k, PNG with alpha.
 --no bulk, no casual slouch, no sportswear, no accessories
 ```
 
 #### Senator Chen Wei – Body (Minimal Clothes)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Senator Chen Wei in minimal high-end athletic wear for figure study. He's wearing a fitted black compression shirt and matching athletic shorts. His lean, disciplined musculature is visible. His skin is pale and smooth. Posture is rigid and confident. Front-facing, transparent background, centered. Even studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no extreme muscles, no tattoos, no jewelry, no footwear
 ```
 
 #### Senator Chen Wei – Expressions
-```
+```text
 [CONSUMER: portrait]
 EXPRESSION SHEET: Senator Chen Wei, Chinese Senator & Businessman. Five expressions on a single transparent background, arranged horizontally: 1) NEUTRAL: Detached and calculating, obsidian eyes steady, lips in a thin line; 2) SMIRKING: A subtle, superior curve of the lip, eyes showing amusement at another's expense; 3) AUTHORITATIVE: Brow slightly lowered, eyes piercing, expression of absolute command; 4) BORED: Eyelids slightly lowered, a look of mild impatience with the current conversation; 5) COLD: Eyes narrow and void of warmth, jaw set, expression of absolute clinical decision. Same face model as face reference. Hyper-detailed, 8k, PNG with alpha.
 --no genuine laughter, no sadness, no panic, no distorted faces
 ```
 
 #### Senator Chen Wei – Unique Contexts
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Senator Chen Wei in his signature power attire. He's wearing a bespoke, charcoal gray three-piece suit, a crisp white shirt, and a deep crimson silk tie. A gold Patek Philippe watch is visible on his wrist. His expression is one of polished diplomatic charm. Standing pose, front-facing. Transparent background. Professional office lighting. Hyper-detailed, 8k, PNG with alpha.
 --no casual wear, no disheveled look, no bright colors
 ```
 
 #### Senator Chen Wei – Boardroom Power
-```
+```text
 [CONSUMER: portrait]
 Photorealistic portrait of Senator Chen Wei at the head of a glass conference table in a luxury skyscraper. He is leaning forward, fingers interlaced, his obsidian eyes burning with a mix of ambition and cold calculation. Behind him, the sprawling skyline of Las Flores is visible through floor-to-ceiling windows. The lighting is dramatic, with the city lights reflecting off the glass and the cold glow of a tablet on the table. High contrast, cinematic, 8k.
 --no warmth, no kindness, no casual posture, no cluttered environment
@@ -1108,42 +1108,42 @@ Photorealistic portrait of Senator Chen Wei at the head of a glass conference ta
 ---
 
 #### Xiu Li van der Meer Krol – Face
-```
+```text
 [CONSUMER: portrait]
 Photorealistic close-up portrait of Xiu Li van der Meer Krol, a Councilwoman and mining executive in her mid-40s. Her face is a striking blend of her mixed heritage, with high, defined cheekbones and a strong, pragmatic jawline. Her skin is a warm olive tone, showing the faint, graceful lines of a life spent in leadership and field work. Her eyes are dark, intelligent, and focused, reflecting a level-headed pragmatism. Her hair is dark, with subtle silver streaks at the temples, pulled back into a sophisticated, tight bun. Her expression is one of calm determination, a diplomatic but firm gaze. The shot is from the shoulders up, centered, with a transparent background. Natural, clear lighting that emphasizes her strength and experience. Hyper-detailed, 8k, PNG with alpha.
 --no heavy makeup, no jewelry, no emotional instability, no soft features, no disheveled hair
 ```
 
 #### Xiu Li van der Meer Krol – Body (Plan Pose)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Xiu Li van der Meer Krol in a standing plan pose. Her build is sturdy and balanced, reflecting her background in geology and her time in the mining fields. She's wearing minimal professional clothing: a simple white structured blouse and navy tailored trousers. Her posture is upright and commanding, projecting both political authority and operational competence. Her hands are at her sides, relaxed but ready. Front-facing, arms slightly away from body. Transparent background, centered, full body visible. Soft studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no high heels, no restrictive clothing, no fragility, no complex poses
 ```
 
 #### Xiu Li van der Meer Krol – Body (Minimal Clothes)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Xiu Li van der Meer Krol in minimal athletic gear for figure study. She's wearing a black high-performance sports bra and matching leggings. Her build is strong and pragmatic, with a level of fitness maintained through active field management. Her warm olive skin is visible on her arms and neck. Posture is stable and focused. Front-facing, transparent background, centered. Even studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no extreme muscularity, no fragility, no jewelry, no footwear
 ```
 
 #### Xiu Li van der Meer Krol – Expressions
-```
+```text
 [CONSUMER: portrait]
 EXPRESSION SHEET: Xiu Li van der Meer Krol, Councilwoman & Mining Executive. Five expressions on a single transparent background, arranged horizontally: 1) NEUTRAL: Pragmatic and calm, eyes focused, lips in a neutral line; 2) DETERMINED: Brow slightly knit, eyes burning with resolve, jaw set; 3) DIPLOMATIC: A measured, professional smile that doesn't quite reach the eyes; 4) FRUSTRATED: A slight tighten in the jaw, a focused but annoyed gaze; 5) REFLECTIVE: Eyes softened, looking slightly away, an expression of quiet calculation. Same face model as face reference. Hyper-detailed, 8k, PNG with alpha.
 --no genuine joy, no panic, no sadness, no distorted faces
 ```
 
 #### Xiu Li van der Meer Krol – Mining Executive
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Xiu Li van der Meer Krol in her mining field attire. She's wearing a white hard hat, a high-visibility orange safety vest over a durable tan work shirt, and rugged brown work trousers with steel-toed boots. She holds a digital geological tablet in one hand. Her expression is focused and operational. Standing pose, front-facing. Transparent background. Industrial outdoor lighting. Hyper-detailed, 8k, PNG with alpha.
 --no office wear, no high heels, no makeup, no delicate jewelry
 ```
 
 #### Xiu Li van der Meer Krol – Council Chamber
-```
+```text
 [CONSUMER: portrait]
 Photorealistic portrait of Xiu Li van der Meer Krol during a council session, standing at the podium. She is wearing a sophisticated navy blue power suit. Her expression is one of fierce advocacy, her hand gesturing to emphasize a point about workers' rights. The background shows the ornate, wood-paneled council chamber with other officials in a blurred background. Lighting is formal and bright, emphasizing her presence. Cinematic, high detail, 8k.
 --no casual wear, no hesitation in expression, no disheveled look
@@ -1152,42 +1152,42 @@ Photorealistic portrait of Xiu Li van der Meer Krol during a council session, st
 ---
 
 #### Xue – Face
-```
+```text
 [CONSUMER: portrait]
 Photorealistic close-up portrait of Xue, a restaurateur and former military operative. Her face is a mask of disciplined stillness, with a sharp, angular jawline and a complexion that is fair but weathered by years of service. Her eyes are a piercing, cold grey, almond-shaped and perpetually alert, betraying her training as an operative. Her dark hair is cut in a severe, practical bob that frames her face with precision. Her expression is stern and protective, a gaze that seems to scan for threats even in a moment of peace. There is a thin, barely visible scar running along the edge of her left eyebrow. The shot is from the shoulders up, centered, with a transparent background. Lighting is moody and side-lit, creating a stark contrast that highlights her intensity. Hyper-detailed, 8k, PNG with alpha.
 --no warmth, no smile, no jewelry, no makeup, no softness in the eyes
 ```
 
 #### Xue – Body (Plan Pose)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Xue in a standing plan pose. Her build is lean, athletic, and efficient, with the coiled strength of a professional soldier. She's wearing minimal clothing: a simple black fitted tank top and dark grey athletic leggings. Her skin is fair, with a few faded surgical scars visible on her shoulders and upper arms. Her posture is a perfect military stance—back straight, feet shoulder-width apart, hands at her sides, completely still. Her face shows her stern, protective expression. Front-facing, arms slightly away from body. Transparent background, centered, full body visible. Neutral studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no bulk, no casual slouch, no feminine softness, no accessories
 ```
 
 #### Xue – Body (Minimal Clothes)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Xue in minimal athletic gear for figure study. She's wearing a black sports bra and matching leggings. Her lean, functional musculature is evident, especially in her core and shoulders. Her fair skin shows a map of old, faded scars from her operative days. Posture is alert and disciplined. Front-facing, transparent background, centered. Even studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no extreme muscles, no softness, no jewelry, no footwear
 ```
 
 #### Xue – Expressions
-```
+```text
 [CONSUMER: portrait]
 EXPRESSION SHEET: Xue, Restaurateur & Former Operative. Five expressions on a single transparent background, arranged horizontally: 1) NEUTRAL: The "mask"—emotionless, alert, eyes scanning; 2) PROTECTIVE: Brow lowered, eyes narrowed, expression of fierce guardianship; 3) NOSTALGIC: A rare, subtle softening of the eyes, a distant look of longing; 4) ALERT: Pupils dilated, eyebrows raised slightly, a look of imminent action; 5) STERN: Jaw clenched, eyes piercing, the expression of a commander. Same face model as face reference. Hyper-detailed, 8k, PNG with alpha.
 --no genuine laughter, no panic, no happiness, no distorted faces
 ```
 
 #### Xue – The Restaurateur
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Xue in her role as a restaurant owner. She's wearing a clean, white chef's apron over a simple black t-shirt and dark trousers. She holds a small, traditional Chinese tasting spoon. Her expression is the "public mask"—polite but distant, the stern protector hidden beneath the facade of a business owner. Standing pose, front-facing. Transparent background. Warm, inviting restaurant lighting. Hyper-detailed, 8k, PNG with alpha.
 --no military gear, no weapons, no formal suit, no softness in expression
 ```
 
 #### Xue – Operative Instinct
-```
+```text
 [CONSUMER: portrait]
 Photorealistic portrait of Xue in a rain-slicked alleyway of Old Las Flores at night. She is wearing a dark, tactical waterproof jacket with the collar popped. She's partially hidden in the shadows, one hand resting on a concealed weapon. Her eyes are sharp and alert, scanning the environment. The lighting is dim and moody, with the cold glow of a distant streetlamp reflecting in the rain on her jacket. High contrast, cinematic, 8k.
 --no warmth, no smile, no bright lighting, no casual wear
@@ -1196,42 +1196,42 @@ Photorealistic portrait of Xue in a rain-slicked alleyway of Old Las Flores at n
 ---
 
 #### Valentina "Val" Reyes – Face
-```
+```text
 [CONSUMER: portrait]
 Photorealistic close-up portrait of Valentina "Val" Reyes, an 18-year-old university student from a rural town. Her face is youthful and open, with a soft, rounded jawline and sun-kissed bronze skin that tells of years spent under the Andean sun. Her eyes are a warm, expressive amber-brown, filled with a mix of curiosity, uncertainty, and an underlying determination. Her dark hair is tied back in a loose, slightly messy ponytail, with a few stray strands framing her face. Her expression is a gentle, hopeful smile, but her gaze is careful and observant, reflecting her struggle to navigate a new world. The shot is from the shoulders up, centered, with a transparent background. Soft, warm natural lighting from the side, highlighting the radiance of her skin. Hyper-detailed, 8k, PNG with alpha.
 --no heavy makeup, no jewelry, no cynical expressions, no cold lighting, no styled hair
 ```
 
 #### Valentina "Val" Reyes – Body (Plan Pose)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Valentina "Val" Reyes in a standing plan pose. Her build is slender and youthful, with a natural, unstudied grace. She's wearing minimal casual clothing: a simple cream-colored cotton t-shirt and a pair of faded blue denim shorts. Her skin is a consistent sun-kissed bronze. Her posture is slightly tentative, weight shifted to one leg, reflecting her feeling of being an outsider in the city. Her hands are clasped slightly in front of her. Front-facing, arms slightly away from body. Transparent background, centered, full body visible. Natural, soft studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no high fashion, no athletic gear, no rigid posture, no accessories
 ```
 
 #### Valentina "Val" Reyes – Body (Minimal Clothes)
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic full-body reference of Valentina "Val" Reyes in minimal athletic wear for figure study. She's wearing a simple white sports bra and light gray athletic shorts. Her slender, youthful build is visible. Her sun-kissed bronze skin is glowing. Posture is natural and slightly shy. Front-facing, transparent background, centered. Even studio lighting. Hyper-detailed, 8k, PNG with alpha.
 --no extreme muscles, no revealing extremes, no jewelry, no footwear
 ```
 
 #### Valentina "Val" Reyes – Expressions
-```
+```text
 [CONSUMER: portrait]
 EXPRESSION SHEET: Valentina "Val" Reyes, University Student. Five expressions on a single transparent background, arranged horizontally: 1) NEUTRAL: Open and curious, eyes bright, lips in a soft, natural line; 2) HOPEFUL: Eyes wide and shining, a genuine, soft smile of optimism; 3) UNCERTAIN: One eyebrow slightly raised, eyes hesitant, a look of being overwhelmed; 4) DETERMINED: Jaw set, eyes focused and burning with a quiet resolve; 5) SAD: Eyes downturned, a slight pout to the lips, reflecting her feeling of isolation. Same face model as face reference. Hyper-detailed, 8k, PNG with alpha.
 --no cynicism, no anger, no coldness, no distorted faces
 ```
 
 #### Valentina "Val" Reyes – The Student
-```
+```text
 [CONSUMER: phaser-sprite]
 Photorealistic reference of Valentina "Val" Reyes in her student attire. She's wearing a simple oversized knit cardigan over a white t-shirt, blue jeans, and worn-in sneakers. She carries a heavy backpack and holds a textbook against her chest. Her expression is a mix of nervousness and determination. Standing pose, front-facing. Transparent background. Bright, natural university campus lighting. Hyper-detailed, 8k, PNG with alpha.
 --no formal wear, no high fashion, no professional attire, no confidence in posture
 ```
 
 #### Valentina "Val" Reyes – The Outsider
-```
+```text
 [CONSUMER: portrait]
 Photorealistic portrait of Valentina "Val" Reyes standing in the middle of a crowded, bustling street in Central City. She looks small and overwhelmed, her expression one of wide-eyed wonder and slight fear, her backpack clutched tightly. The background is a blur of fast-moving people and towering skyscrapers. The lighting is the harsh, overwhelming midday sun of the city, contrasting with the soft, natural light of her home town. Cinematic, emotional, high detail, 8k.
 --no confidence, no casual ease, no clean environment, no sadness

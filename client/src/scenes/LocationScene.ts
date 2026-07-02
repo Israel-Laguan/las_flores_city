@@ -29,7 +29,7 @@ export class LocationScene extends Phaser.Scene {
   private rainEmitter: Phaser.GameObjects.Particles.ParticleEmitter | null = null;
 
   // Atmosphere effects
-  private scanlines!: Phaser.GameObjects.Image;
+  private scanlines!: Phaser.GameObjects.TileSprite;
   private vignette!: Phaser.GameObjects.Graphics;
   private neonFlare!: Phaser.GameObjects.Graphics;
 

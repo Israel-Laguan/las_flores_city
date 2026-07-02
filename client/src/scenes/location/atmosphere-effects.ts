@@ -12,7 +12,7 @@ export function addScanlines(
   scene: Phaser.Scene,
   width: number,
   height: number
-): Phaser.GameObjects.Image {
+): Phaser.GameObjects.TileSprite {
   const scanlineKey = '__scanlines';
 
   // Create canvas texture with horizontal scanline pattern if it doesn't exist
@@ -33,7 +33,7 @@ export function addScanlines(
   scanlineImage.setAlpha(0.5);
   scanlineImage.setBlendMode(Phaser.BlendModes.MULTIPLY);
 
-  return scanlineImage as unknown as Phaser.GameObjects.Image;
+  return scanlineImage;
 }
 
 /**
