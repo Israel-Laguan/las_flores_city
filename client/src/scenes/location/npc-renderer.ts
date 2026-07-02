@@ -93,11 +93,48 @@ function addPortraitFrame(
   const frameW = 70;
   const frameH = maxH * 0.95;
 
-  const frame = scene.add.graphics();
+  // Create frame with asymmetric border-radius: 16px 16px 4px 4px
+  // Using canvas texture for precise control over corner radii
+  const frameKey = `frame-${npc.characterId}`;
+  const canvasTexture = scene.textures.createCanvas(frameKey, frameW, frameH);
+  if (canvasTexture) {
+    const ctx = canvasTexture.context;
+    const radiusTL = 16;
+    const radiusTR = 16;
+    const radiusBL = 4;
+    const radiusBR = 4;
+    const lineWidth = 2;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, frameW, frameH);
+    
+    // Draw rounded rect with asymmetric corners
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.9)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+    ctx.beginPath();
+    
+    // Top-left corner (radius 16)
+    ctx.moveTo(radiusTL, 0);
+    ctx.lineTo(frameW - radiusTR, 0);
+    // Top-right corner (radius 16)
+    ctx.quadraticCurveTo(frameW, 0, frameW, radiusTR);
+    ctx.lineTo(frameW, frameH - radiusBR);
+    // Bottom-right corner (radius 4)
+    ctx.quadraticCurveTo(frameW, frameH, frameW - radiusBR, frameH);
+    ctx.lineTo(radiusBL, frameH);
+    // Bottom-left corner (radius 4)
+    ctx.quadraticCurveTo(0, frameH, 0, frameH - radiusBL);
+    ctx.lineTo(0, radiusTL);
+    ctx.quadraticCurveTo(0, 0, radiusTL, 0);
+    ctx.closePath();
+    ctx.stroke();
+    
+    canvasTexture.refresh();
+  }
+  
+  const frame = scene.add.image(0, -frameH / 2, frameKey);
   frame.setDepth(9);
-  frame.lineStyle(2, 0x00d4ff, 0.9);
-  frame.fillStyle(0x000000, 0);
-  frame.strokeRoundedRect(-frameW / 2, -frameH, frameW, frameH, 10);
   container.add(frame);
 
   // Glitch overlay rectangle with screen blend mode

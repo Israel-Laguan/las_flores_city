@@ -5,6 +5,7 @@ import { renderNPCs, NPCData } from './location/npc-renderer';
 import { applyRainEffect, applyTenseEffect, applyNeonEffect } from './location/mood-effects';
 import { createLoadingOverlay, LoadingOverlay } from './location/loading-overlay';
 import { AudioManager } from '../utils/AudioManager';
+import { addScanlines, addVignette, addNeonFlare } from './location/atmosphere-effects';
 
 interface SceneData {
   id: string;
@@ -27,8 +28,17 @@ export class LocationScene extends Phaser.Scene {
   private moodOverlay: Phaser.GameObjects.Graphics | null = null;
   private rainEmitter: Phaser.GameObjects.Particles.ParticleEmitter | null = null;
 
-  private locationNameText!: Phaser.GameObjects.Text;
-  private moodText!: Phaser.GameObjects.Text;
+  // Atmosphere effects
+  private scanlines!: Phaser.GameObjects.Image;
+  private vignette!: Phaser.GameObjects.Graphics;
+  private neonFlare!: Phaser.GameObjects.Graphics;
+
+  // HUD blocks
+  private locationNameContainer!: Phaser.GameObjects.Container;
+  private locationValueText!: Phaser.GameObjects.Text;
+  private moodContainer!: Phaser.GameObjects.Container;
+  private moodValueText!: Phaser.GameObjects.Text;
+
   private phoneButton!: Phaser.GameObjects.Container;
   private loadingOverlay!: LoadingOverlay;
   private audioManager!: AudioManager;
@@ -53,17 +63,11 @@ export class LocationScene extends Phaser.Scene {
       this.displayAudioUnlockPrompt();
     }
 
-    this.locationNameText = this.add.text(width / 2, 30, '', {
-      font: 'bold 24px monospace',
-      color: '#00ff00',
-      align: 'center',
-    }).setOrigin(0.5).setDepth(50);
+    // Create atmosphere effects (scanlines, vignette, neon flare)
+    this.createAtmosphereEffects(width, height);
 
-    this.moodText = this.add.text(width / 2, 58, '', {
-      font: '12px monospace',
-      color: '#666666',
-      align: 'center',
-    }).setOrigin(0.5).setDepth(50);
+    // Create styled HUD blocks
+    this.createHUDBlocks(width, height);
 
     this.createLoadingOverlay();
     this.createPhoneButton();
@@ -71,6 +75,87 @@ export class LocationScene extends Phaser.Scene {
     this.registerEventHandlers();
     this.setupContextRecovery();
     this.loadCurrentLocation();
+  }
+
+  /**
+   * Creates atmosphere effects: scanlines, vignette, and neon flare.
+   * All effects are added at depth 8, below mood overlays and NPCs.
+   */
+  private createAtmosphereEffects(width: number, height: number) {
+    this.scanlines = addScanlines(this, width, height);
+    this.vignette = addVignette(this, width, height);
+    this.neonFlare = addNeonFlare(this, width, height);
+  }
+
+  /**
+   * Creates styled HUD blocks matching the VN concept aesthetic.
+   * Location name (top-left) and mood (top-right) with rounded rect backgrounds.
+   */
+  private createHUDBlocks(width: number, height: number) {
+    // Location name HUD block (top-left)
+    this.locationNameContainer = this.add.container(24, 18);
+    this.locationNameContainer.setDepth(50);
+
+    const locationBg = this.add.graphics();
+    locationBg.fillStyle(0x0a0a1a, 0.7);
+    locationBg.lineStyle(1, 0x00d4ff, 0.25);
+    locationBg.fillRoundedRect(-80, -18, 160, 36, 8);
+    locationBg.strokeRoundedRect(-80, -18, 160, 36, 8);
+    this.locationNameContainer.add(locationBg);
+
+    const locationLabel = this.add.text(0, 8, 'LOCATION', {
+      font: '10px monospace',
+      fontSize: '10px',
+      color: '#ffffff',
+      align: 'center',
+    }).setOrigin(0.5);
+    locationLabel.setStyle({ 
+      fontSize: '0.7rem',
+      opacity: 0.7,
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em'
+    } as any);
+    this.locationNameContainer.add(locationLabel);
+
+    this.locationValueText = this.add.text(0, 0, '', {
+      font: '16px monospace',
+      color: '#00d4ff',
+      align: 'center',
+    }).setOrigin(0.5);
+    this.locationNameContainer.add(this.locationValueText);
+
+    // Mood HUD block (top-right)
+    // Positioned at top-right with offset for the block width
+    this.moodContainer = this.add.container(width - 100, 18);
+    this.moodContainer.setDepth(50);
+
+    const moodBg = this.add.graphics();
+    moodBg.fillStyle(0x0a0a1a, 0.7);
+    moodBg.lineStyle(1, 0x00d4ff, 0.25);
+    moodBg.fillRoundedRect(-100, -18, 200, 36, 8);
+    moodBg.strokeRoundedRect(-100, -18, 200, 36, 8);
+    this.moodContainer.add(moodBg);
+
+    const moodLabel = this.add.text(0, 8, 'MOOD', {
+      font: '10px monospace',
+      fontSize: '10px',
+      color: '#ffffff',
+      align: 'center',
+    }).setOrigin(0.5);
+    moodLabel.setStyle({ 
+      fontSize: '0.7rem',
+      opacity: 0.7,
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em'
+    } as any);
+    this.moodContainer.add(moodLabel);
+
+    this.moodValueText = this.add.text(0, 0, '', {
+      font: '16px monospace',
+      color: '#00d4ff',
+      align: 'center',
+    }).setOrigin(0.5);
+    this.moodContainer.add(this.moodValueText);
   }
 
   /**
@@ -448,8 +533,9 @@ export class LocationScene extends Phaser.Scene {
   private applyScenePayload(payload: ScenePayload) {
     this.currentPayload = payload;
 
-    this.locationNameText.setText(payload.scene.title);
-    this.moodText.setText(`[ ${payload.scene.mood.toUpperCase()} ]`);
+    // Update HUD blocks
+    this.locationValueText.setText(payload.scene.title);
+    this.moodValueText.setText(`[ ${payload.scene.mood.toUpperCase()} ]`);
 
     if (payload.scene.backgroundUrl) {
       this.renderBackground(payload.scene.backgroundUrl, payload.scene.id);
