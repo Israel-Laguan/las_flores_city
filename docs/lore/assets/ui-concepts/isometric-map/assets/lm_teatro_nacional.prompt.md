@@ -9,17 +9,9 @@
 ## Prompt — Base
 Top-down view of Teatro Nacional, Las Flores 2077, grand theater with circular dome and ornate facade shape, transparent background, centered, isolated asset, realistic, 512x512.
 
-## Negative Prompt
---no people, no vehicles, no neon, no shadows, no environmental background, no text
-
 ## Prompt — Day-lit Variant
 Top-down view of Teatro Nacional in bright daylight, Las Flores 2077, warm sunlight on ornate stone dome, grand entrance steps visible, transparent background, centered, isolated asset, realistic, 512x512.
-
-## Negative Prompt
---no people, no vehicles, no neon, no shadows, no environmental background, no text
 
 ## Prompt — Night Glow Variant
 Top-down view of Teatro Nacional at night, Las Flores 2077, illuminated dome with warm golden light, marquee lights outlining the facade, transparent background, centered, isolated asset, realistic, 512x512.
 
-## Negative Prompt
---no people, no vehicles, no neon, no environmental background, no text

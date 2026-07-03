@@ -7,13 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt — Base
-Phone app icon design: Missions quest tracker app, Las Flores 2077 style, soft cyberpunk pastel, minimalist star badge icon, transparent background, centered, 128x128, sharp edges, no text.
-
-## Negative Prompt
---no text, no complex details, no shadows, no gradients, no neon glow, no cartoon, no anime
+App icon design: task tracker, Las Flores 2077, soft cyberpunk pastel, minimalist star symbol, transparent background, centered, sharp edges.
 
 ## Prompt — Alt Color
-Phone app icon design: Missions quest tracker app, Las Flores 2077 style, soft cyberpunk pastel, minimalist star badge icon in gold-amber palette, transparent background, centered, 128x128, sharp edges, no text.
-
-## Negative Prompt
---no text, no complex details, no shadows, no gradients, no neon glow, no cartoon, no anime
+App icon design: task tracker, Las Flores 2077, amber gold pastel, minimalist star symbol, transparent background, centered, sharp edges.

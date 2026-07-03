@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 PROMPT_ROOT="$ROOT/docs/lore/assets/ui-concepts"
 JS_SCRIPT="$SCRIPT_DIR/generate-pollinations-drafts.mjs"
+NIM_SCRIPT="$SCRIPT_DIR/generate-nim-drafts.mjs"
 STATE_FILE="$SCRIPT_DIR/generate-drafts-state.tsv"
 DRAFTS_DIR="drafts"
 
@@ -65,7 +66,7 @@ function cmd_init() {
     local slug
     slug=$(echo "$variant" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g' | sed 's/^_\|_$//g')
     local draft_path_rel="${rel%.*}/$DRAFTS_DIR/${base}__${slug}.png"
-    local draft_path_abs="$PROMPT_ROOT/$(dirname "$rel")/$DRAFTS_DIR/${base}__${slug}.png"
+    local draft_path_abs="$PROMPT_ROOT/$draft_path_rel"
     local size=0
     if [[ -f "$draft_path_abs" ]]; then
       size=$(stat -c%s "$draft_path_abs" 2>/dev/null || stat -f%z "$draft_path_abs" 2>/dev/null || echo 0)
@@ -94,8 +95,19 @@ function cmd_status() {
 }
 
 function cmd_run() {
-  header "Running Pollinations generator"
-  echo -e "  ${CYAN}Delay: 30s between requests${NC}"
+  header "Running Draft Generator (NIM → Pollinations fallback)"
+  echo -e "  ${CYAN}Delay: 30s between requests per provider${NC}"
+  echo -e "  ${CYAN}Filter:${NC} $*"
+
+  header "Step 1: NVIDIA NIM (FLUX.2 Klein)"
+  echo "DEBUG: NIM_SCRIPT=$NIM_SCRIPT"
+  if [[ -f "$NIM_SCRIPT" ]]; then
+    node "$NIM_SCRIPT" "$@" || true
+  else
+    warn "NIM script not found: $NIM_SCRIPT — skipping to Pollinations"
+  fi
+
+  header "Step 2: Pollinations (fallback)"
   echo -e "  ${CYAN}Filter:${NC} $*"
   echo "DEBUG: JS_SCRIPT=$JS_SCRIPT"
   echo "DEBUG: ROOT=$ROOT"
@@ -176,14 +188,14 @@ function cmd_reset() {
 
 echo -e "${BLUE}${BOLD}
   ╔════════════════════════════════════════════════════╗
-  ║      Pollinations Draft Generator (Wrapper)       ║
+  ║   Draft Generator (NIM primary + Pollinations FB)  ║
   ╚════════════════════════════════════════════════════╝${NC}"
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <command> [options]"
   echo ""
   echo "Commands:"
   echo "  init              Initialize state from prompt files"
-  echo "  run [opts]        Generate pending (passes --filter etc to JS)"
+  echo "  run [opts]        Generate pending via NIM → Pollinations fallback"
   echo "  status            Show progress summary"
   echo "  list-failed       List failed variants"
   echo "  retry [opts]      Delete failed drafts and regenerate"
@@ -205,7 +217,7 @@ case "$CMD" in
     echo ""
     echo "Commands:"
     echo "  init              Initialize state from prompt files"
-    echo "  run [opts]        Generate pending (passes --filter etc to JS)"
+    echo "  run [opts]        Generate pending via NIM → Pollinations fallback"
     echo "  status            Show progress summary"
     echo "  list-failed       List failed variants"
     echo "  retry [opts]      Delete failed drafts and regenerate"

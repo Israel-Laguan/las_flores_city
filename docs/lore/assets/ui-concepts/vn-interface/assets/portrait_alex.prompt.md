@@ -7,19 +7,10 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt — Base
-Portrait of Alex Garcia, Las Flores 2077, young night student with warm olive skin, dark expressive eyes, slightly disheveled hair, leather jacket collar visible, transparent background, centered bust, soft neon rim lighting, vivid pastels, 512x768, photorealistic.
-
-## Negative Prompt
---no full body, no environment, no background, no text, no modern 2020s fashion
+Bust portrait, Las Flores 2077, young person with warm olive skin, dark expressive eyes, slightly disheveled hair, dark leather jacket, transparent background, centered composition, soft neon rim lighting, vivid pastel palette, 512x768, photorealistic.
 
 ## Prompt — Serious Expression
-Portrait of Alex Garcia, Las Flores 2077, serious determined expression, jaw set, eyes focused, leather jacket collar visible, transparent background, centered bust, dramatic side lighting, vivid pastels, 512x768, photorealistic.
-
-## Negative Prompt
---no full body, no environment, no background, no text, no modern 2020s fashion
+Bust portrait, Las Flores 2077, serious determined expression, jaw set, focused eyes, dark leather jacket collar, transparent background, centered composition, dramatic side lighting, vivid pastel palette, 512x768, photorealistic.
 
 ## Prompt — Warm Lighting
-Portrait of Alex Garcia, Las Flores 2077, warm smile, relaxed expression, golden hour light on face, leather jacket collar visible, transparent background, centered bust, soft warm rim lighting, vivid pastels, 512x768, photorealistic.
-
-## Negative Prompt
---no full body, no environment, no background, no text, no modern 2020s fashion
+Bust portrait, Las Flores 2077, warm smile, relaxed mood, golden hour light on face, dark leather jacket collar visible, transparent background, centered composition, soft warm rim lighting, vivid pastel palette, 512x768, photorealistic.

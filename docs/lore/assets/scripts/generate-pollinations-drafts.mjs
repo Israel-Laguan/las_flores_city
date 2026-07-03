@@ -195,9 +195,8 @@ function isErrorFile(filePath) {
   return false;
 }
 
-async function downloadDraft(promptData, outDir, force) {
+async function downloadDraft(promptData, outDir, baseName, force) {
   const slug = slugify(promptData.type);
-  const baseName = path.basename(outDir);
   const fileName = `${baseName}__${slugify(promptData.variantName)}.png`;
   const outPath = path.join(outDir, fileName);
 
@@ -291,9 +290,8 @@ async function main() {
 
     if (filtered.length === 0) continue;
 
-    // Determine draft output directory: sibling `drafts/` folder
-    const assetDir = path.dirname(promptFile);
-    const draftDir = path.join(assetDir, 'drafts');
+    const promptBase = promptFile.replace(/\.md$/, '');
+    const draftDir = path.join(promptBase, 'drafts');
     const baseName = path.basename(promptFile, '.prompt.md');
 
     console.log(`\n📄 ${relFromRoot} (${filtered.length} prompt(s))`);
@@ -308,7 +306,7 @@ async function main() {
         continue;
       }
 
-      const result = await downloadDraft(variant, draftDir, opts.force);
+      const result = await downloadDraft(variant, draftDir, baseName, opts.force);
 
       switch (result.status) {
         case 'ok':
