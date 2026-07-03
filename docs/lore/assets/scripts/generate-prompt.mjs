@@ -238,7 +238,7 @@ theme, ${mood.toLowerCase()}, cinematic, las flores, cyberpunk
 **Tool:** MidJourney --v 6 --ar 9:16 --style raw
 
 ## Prompt
-Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Vertical composition, no text, no logos, soft cyberpunk pastel aesthetic, photorealistic, 1080x1920.
+Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay || 'ambient time of day'}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Vertical composition, no text, no logos, soft cyberpunk pastel aesthetic, photorealistic, 1080x1920.
 
 ## Negative Prompt
 --no androids, no robots, no neon signs, no modern 2020s buildings, no cartoon, no anime, no text, no logos

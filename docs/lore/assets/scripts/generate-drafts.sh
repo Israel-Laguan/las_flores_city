@@ -88,7 +88,7 @@ function cmd_status() {
     t=$((t+1)); case "$status" in completed) c=$((c+1));; pending) p=$((p+1));; failed) f=$((f+1));; *) echo "DEBUG: unknown status '$status' for $_rel";; esac
   done < "$STATE_FILE"
   echo -e "  Total: ${BOLD}$t${NC}  ${GREEN}Completed: $c${NC}  ${YELLOW}Pending: $p${NC}  ${RED}Failed: $f${NC}"
-  [[ $t -gt 0 ]] && echo -e "  Progress: ${BOLD}${GREEN}$c${NC}/${t} ($(( (c+f)*100/t ))%)"
+  [[ $t -gt 0 ]] && echo -e "  Progress: ${BOLD}${GREEN}$c${NC}/${t} ($(( c*100/t ))%)
 }
 
 function cmd_run() {

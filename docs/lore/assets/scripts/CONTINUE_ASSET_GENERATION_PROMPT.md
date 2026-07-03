@@ -58,5 +58,5 @@ cat docs/lore/assets/ui-concepts/UI_ASSET_INVENTORY.md
 ```
 
 ## Commit Message from This Branch
-```
+```text
 feat(ui-assets): generate 145/145 draft variants via NIM + Pollinations

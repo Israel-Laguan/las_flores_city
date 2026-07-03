@@ -200,8 +200,6 @@ function isErrorFile(filePath) {
 }
 
 async function downloadDraft(promptData, outDir, baseName, force) {
-  // Remove unused slug variable
-  const fileName = `${baseName}__${slugify(promptData.variantName)}.png`;
   const fileName = `${baseName}__${slugify(promptData.variantName)}.png`;
   const outPath = path.join(outDir, fileName);
 

@@ -204,7 +204,7 @@ function parsePromptFile(filePath) {
   width = resolved.width;
   height = resolved.height;
 
-  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt |$)/g;
+  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
   let match;
   while ((match = promptRegex.exec(content)) !== null) {
     const variantName = match[1].trim();
@@ -282,12 +282,9 @@ async function generateNIM(promptData, outDir, baseName, force) {
         body: JSON.stringify(payload),
       });
 
-      console.log(`DEBUG: NIM status ${res.status}`);
-
       if (res.status === 429) {
         const errText = await res.text();
         lastError = new Error(`rate limited (429): ${errText}`);
-        console.log(`DEBUG: attempt ${attempt} rate limited, backing off ${wait/1000}s...`);
         await sleep(wait);
         wait = Math.min(wait * 1.5, 300000);
         continue;
@@ -306,7 +303,6 @@ async function generateNIM(promptData, outDir, baseName, force) {
       }
       const b64 = artifact?.base64;
       if (!b64) {
-        console.error('DEBUG: NIM response body:', JSON.stringify(body, null, 2).slice(0, 2000));
         throw new Error('no base64 artifact in response');
       }
 
@@ -321,7 +317,6 @@ async function generateNIM(promptData, outDir, baseName, force) {
       return { status: 'ok', path: outPath, size: buffer.length };
     } catch (err) {
       lastError = err;
-      console.log(`DEBUG: attempt ${attempt} failed: ${err.message}`);
       if (attempt < MAX_RETRIES) {
         await sleep(wait);
         wait = Math.min(wait * 1.5, 300000);
