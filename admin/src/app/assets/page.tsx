@@ -118,6 +118,27 @@ export default function AssetsPage() {
     }
   };
 
+  const importLocalDrafts = async () => {
+    if (!selectedEntry) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/import-drafts?prompt_rel=${encodeURIComponent(selectedEntry.prompt_rel)}`);
+      const data = await res.json();
+      if (data.success) {
+        await loadAssets(selectedEntry.prompt_rel);
+        await loadGroups();
+        alert(`Imported ${data.data.imported.bases} bases and ${data.data.imported.variants} variants`);
+      } else {
+        setError(data.error || 'Failed to import drafts');
+      }
+    } catch (e) {
+      setError('Failed to import drafts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const approveBase = async (baseId: string) => {
     setLoading(true);
     try {
@@ -324,7 +345,33 @@ export default function AssetsPage() {
 
       {view === 'catalog' && (
         <div>
-          <h2 style={{ color: '#00ff00', marginBottom: '1rem' }}>What do you want to create?</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ color: '#00ff00', margin: 0 }}>What do you want to create?</h2>
+            <button
+              onClick={async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                  const res = await fetch(`${API_BASE}/import-drafts?all=true`);
+                  const data = await res.json();
+                  if (data.success) {
+                    alert(`Bulk imported: ${data.data.imported.bases} bases, ${data.data.imported.variants} variants`);
+                    await loadGroups();
+                  } else {
+                    setError(data.error || 'Failed to bulk import drafts');
+                  }
+                } catch (e) {
+                  setError('Failed to bulk import drafts');
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+              style={{ padding: '0.5rem 1rem', background: '#00aaff', color: '#000', cursor: 'pointer', border: 'none', fontWeight: 'bold', fontSize: '0.8rem' }}
+            >
+              📁 Import All Local Drafts
+            </button>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
             {categories.map(cat => (
               <div key={cat.id} style={{ border: '1px solid #00ff00', padding: '1.5rem', borderRadius: '5px' }}>
@@ -389,13 +436,22 @@ export default function AssetsPage() {
                 Delete All Bases
               </button>
             </div>
-            <button
-              onClick={generateBases}
-              disabled={loading}
-              style={{ padding: '0.75rem 1.5rem', background: '#00ff00', color: '#000', cursor: 'pointer', border: 'none', fontWeight: 'bold', marginBottom: '1rem' }}
-            >
-              Generate 4 Bases
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+              <button
+                onClick={generateBases}
+                disabled={loading}
+                style={{ padding: '0.75rem 1.5rem', background: '#00ff00', color: '#000', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}
+              >
+                Generate 4 Bases
+              </button>
+              <button
+                onClick={importLocalDrafts}
+                disabled={loading}
+                style={{ padding: '0.75rem 1.5rem', background: '#00aaff', color: '#000', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}
+              >
+                Import Local Drafts
+              </button>
+            </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
               {bases.map(base => {
