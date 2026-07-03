@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssetVariant } from '../page';
+import type { AssetVariant } from '@las-flores/shared';
 
 type Props = {
   variant: AssetVariant;

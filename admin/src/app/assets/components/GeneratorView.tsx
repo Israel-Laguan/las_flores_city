@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import type { AssetBase, AssetVariant, AssetListAllResponse, Category } from '../page';
+import type { Category } from '../page';
+import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
 import { API_BASE } from '../page';
 import BaseCard from './BaseCard';
 import BasesSection from './BasesSection';
@@ -25,11 +26,11 @@ type Props = {
   setNewBaseIds: (v: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
   setView: (v: 'catalog' | 'generator') => void;
   setSelectedEntry: (v: Category['entries'][0] | null) => void;
-  loadGroups: (setGroups: (groups: AssetListAllResponse['groups']) => void) => Promise<void>;
-  loadAssets: (setLoading: (v: boolean) => void, setError: (v: string | null) => void, setBases: (v: AssetBase[]) => void, setVariants: (v: AssetVariant[]) => void, prompt_rel: string) => Promise<void>;
+  loadGroups: () => Promise<void>;
+  loadAssets: (prompt_rel: string) => Promise<void>;
 };
 
-async function deleteBase(baseId: string, setLoading: (v: boolean) => void, setError: (v: string | null) => void, setBases: (v: AssetBase[] | ((prev: AssetBase[]) => AssetBase[])) => void, setVariants: (v: AssetVariant[] | ((prev: AssetVariant[]) => AssetVariant[])) => void, loadGroups: (setGroups: (groups: AssetListAllResponse['groups']) => void) => Promise<void>, groups: AssetListAllResponse['groups']) {
+async function deleteBase(baseId: string, setLoading: (v: boolean) => void, setError: (v: string | null) => void, setBases: (v: AssetBase[] | ((prev: AssetBase[]) => AssetBase[])) => void, setVariants: (v: AssetVariant[] | ((prev: AssetVariant[]) => AssetVariant[])) => void, loadGroups: () => Promise<void>) {
   if (!confirm('Are you sure? This will also delete all variants.')) return;
   setLoading(true);
   try {
@@ -38,7 +39,7 @@ async function deleteBase(baseId: string, setLoading: (v: boolean) => void, setE
     if (data.success) {
       setBases(prev => prev.filter(b => b.id !== baseId));
       setVariants(prev => prev.filter(v => v.base_id !== baseId));
-      await loadGroups((newGroups) => newGroups);
+      await loadGroups();
     } else {
       setError(data.error || 'Failed to delete base');
     }
@@ -243,7 +244,7 @@ async function deleteAllBases(bases: AssetBase[], setLoading: (v: boolean) => vo
   }
 }
 
-async function publishAsset(baseId?: string, variantId?: string, setLoading: (v: boolean) => void, setError: (v: string | null) => void, loadAssets: (prompt_rel: string) => Promise<void>, selectedEntry: Category['entries'][0]) {
+async function publishAsset(baseId: string | undefined, variantId: string | undefined, setLoading: (v: boolean) => void, setError: (v: string | null) => void, loadAssets: (prompt_rel: string) => Promise<void>, selectedEntry: Category['entries'][0]) {
   setLoading(true);
   setError(null);
   try {

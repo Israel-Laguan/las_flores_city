@@ -46,28 +46,7 @@ async function loadCatalog(
   }
 }
 
-async function loadAssets(
-  setLoading: (v: boolean) => void,
-  setError: (v: string | null) => void,
-  setBases: (v: AssetBase[]) => void,
-  setVariants: (v: AssetVariant[]) => void,
-  prompt_rel: string
-) {
-  setLoading(true);
-  setError(null);
-  try {
-    const res = await fetch(`${API_BASE}/list?prompt_rel=${encodeURIComponent(prompt_rel)}`);
-    const data = await res.json();
-    if (data.success) {
-      setBases(data.data.bases);
-      setVariants(data.data.variants);
-    }
-  } catch (e) {
-    setError('Failed to load assets');
-  } finally {
-    setLoading(false);
-  }
-}
+
 
 export default function AssetsPage() {
   const [view, setView] = useState<View>('catalog');
@@ -80,6 +59,26 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newBaseIds, setNewBaseIds] = useState<Set<string>>(new Set());
+
+  async function handleLoadAssets(prompt_rel: string) {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(""
+        .concat(API_BASE, "/list?prompt_rel=")
+        .concat(encodeURIComponent(prompt_rel))
+      );
+      const data = await res.json();
+      if (data.success) {
+        setBases(data.data.bases);
+        setVariants(data.data.variants);
+      }
+    } catch (e) {
+      setError('Failed to load assets');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function loadGroups() {
     try {
@@ -120,7 +119,7 @@ export default function AssetsPage() {
           onSelectEntry={entry => {
             setSelectedEntry(entry);
             setView('generator');
-            loadAssets(setLoading, setError, setBases, setVariants, entry.prompt_rel);
+            handleLoadAssets(entry.prompt_rel);
           }}
         />
       )}
@@ -142,7 +141,7 @@ export default function AssetsPage() {
           setView={setView}
           setSelectedEntry={setSelectedEntry}
           loadGroups={loadGroups}
-          loadAssets={loadAssets}
+          loadAssets={handleLoadAssets}
         />
       )}
     </main>

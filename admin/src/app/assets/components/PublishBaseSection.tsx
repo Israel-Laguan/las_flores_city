@@ -1,9 +1,9 @@
 "use client";
 
-import type { Category } from '../page';
+import type { AssetBase } from '@las-flores/shared';
 
 type Props = {
-  chosenBase: Category['entries'][0]['entries'][0] & { id: string };
+  chosenBase: AssetBase;
   loading: boolean;
   onPublish: () => void;
 };

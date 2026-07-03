@@ -4,35 +4,74 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
+
+// Mock AWS SDK and StorageService using ESM mocks
+// These must be set up before importing the routes
+import { jest as jestGlobals } from '@jest/globals';
+
+const mockSignMinioUrl = jestGlobals.fn().mockResolvedValue('http://mocked-signed-url');
+const mockUploadToMinio = jestGlobals.fn().mockImplementation((buf: any, key: string, contentType?: string) => 
+  Promise.resolve(`s3://las-flores/${key}`)
+);
+const mockDeleteFromMinio = jestGlobals.fn().mockResolvedValue(undefined);
+const mockGenerateBaseImage = jestGlobals.fn().mockResolvedValue(Buffer.from('base-image-data'));
+const mockGenerateVariantImage = jestGlobals.fn().mockResolvedValue(Buffer.from('variant-image-data'));
+const mockFetchImageAsBase64 = jestGlobals.fn().mockResolvedValue('base64-data');
+
+// Mock AWS SDK modules
+jestGlobals.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: jestGlobals.fn().mockResolvedValue('http://mocked-signed-url'),
+  default: {
+    getSignedUrl: jestGlobals.fn().mockResolvedValue('http://mocked-signed-url'),
+  },
+}));
+
+jestGlobals.unstable_mockModule('@aws-sdk/client-s3', () => ({
+  S3Client: jestGlobals.fn().mockImplementation(() => ({
+    send: jestGlobals.fn().mockResolvedValue({}),
+  })),
+  GetObjectCommand: jestGlobals.fn(),
+  PutObjectCommand: jestGlobals.fn(),
+  DeleteObjectCommand: jestGlobals.fn(),
+  HeadBucketCommand: jestGlobals.fn(),
+  CreateBucketCommand: jestGlobals.fn(),
+  default: {
+    S3Client: jestGlobals.fn(),
+    GetObjectCommand: jestGlobals.fn(),
+    PutObjectCommand: jestGlobals.fn(),
+    DeleteObjectCommand: jestGlobals.fn(),
+    HeadBucketCommand: jestGlobals.fn(),
+    CreateBucketCommand: jestGlobals.fn(),
+  },
+}));
+
+// Mock StorageService
+jestGlobals.unstable_mockModule('../../src/services/StorageService.js', () => ({
+  signMinioUrl: mockSignMinioUrl,
+  uploadToMinio: mockUploadToMinio,
+  deleteFromMinio: mockDeleteFromMinio,
+  default: {
+    signMinioUrl: mockSignMinioUrl,
+    uploadToMinio: mockUploadToMinio,
+    deleteFromMinio: mockDeleteFromMinio,
+  },
+}));
+
+// Mock AssetGenerationService
+jestGlobals.unstable_mockModule('../../src/services/AssetGenerationService.js', () => ({
+  generateBaseImage: mockGenerateBaseImage,
+  generateVariantImage: mockGenerateVariantImage,
+  fetchImageAsBase64: mockFetchImageAsBase64,
+  default: {
+    generateBaseImage: mockGenerateBaseImage,
+    generateVariantImage: mockGenerateVariantImage,
+    fetchImageAsBase64: mockFetchImageAsBase64,
+  },
+}));
+
+// Now import the routes after mocking the dependencies
 import { assetsRouter } from '../../src/routes/assets.js';
 import { closeRedis } from '../../src/database/redis.js';
-
-// Mock AWS SDK to avoid real S3/MinIO calls in tests
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: jest.fn().mockResolvedValue('http://mocked-signed-url'),
-}));
-
-jest.mock('@aws-sdk/client-s3', () => ({
-  S3Client: jest.fn().mockImplementation(() => ({
-    send: jest.fn().mockResolvedValue({}),
-  })),
-  GetObjectCommand: jest.fn(),
-  PutObjectCommand: jest.fn(),
-}));
-
-// Mock generation service
-jest.mock('../../src/services/AssetGenerationService.js', () => ({
-  generateBaseImage: jest.fn().mockResolvedValue(Buffer.from('base-image-data')),
-  generateVariantImage: jest.fn().mockResolvedValue(Buffer.from('variant-image-data')),
-  fetchImageAsBase64: jest.fn().mockResolvedValue('base64-data'),
-}));
-
-// Mock storage service
-jest.mock('../../src/services/StorageService.js', () => ({
-  uploadToMinio: jest.fn().mockImplementation((buf: any, key: string, contentType?: string) => Promise.resolve(`s3://las-flores/${key}`)),
-  signMinioUrl: jest.fn().mockResolvedValue('http://mocked-signed-url'),
-  deleteFromMinio: jest.fn().mockResolvedValue(undefined),
-}));
 
 const { Pool } = pg;
 
@@ -76,6 +115,16 @@ afterAll(async () => {
   
   await oltpPool.end();
   await closeRedis();
+  jestGlobals.restoreAllMocks();
+});
+
+beforeEach(() => {
+  mockSignMinioUrl.mockClear();
+  mockUploadToMinio.mockClear();
+  mockDeleteFromMinio.mockClear();
+  mockGenerateBaseImage.mockClear();
+  mockGenerateVariantImage.mockClear();
+  mockFetchImageAsBase64.mockClear();
 });
 
 describe('Assets API', () => {
@@ -152,9 +201,6 @@ describe('Assets API', () => {
     });
     expect(res2.status).toBe(200);
 
-    const check2 = await oltpPool.query(`SELECT chosen FROM asset_bases WHERE id IN ($1, $2) ORDER BY id`, [createdBaseId, base2Id]);
-    const row1 = check2.rows.find((r: any) => r.id === createdBaseId) || check2.rows[0]; // just grab boolean if order not matching
-    // Actual check by id:
     const finalCheck1 = await oltpPool.query(`SELECT chosen FROM asset_bases WHERE id = $1`, [createdBaseId]);
     const finalCheck2 = await oltpPool.query(`SELECT chosen FROM asset_bases WHERE id = $1`, [base2Id]);
     
@@ -188,19 +234,19 @@ describe('Assets API', () => {
     expect(data.data).toHaveLength(1);
     expect(data.data[0].id).toBeDefined();
 
-    createdVariantId = data.data.id;
+    createdVariantId = data.data[0].id;
   });
 
   test('POST /assets/publish copies to final path', async () => {
     const originalFetch = global.fetch;
     
     // Mock fetch to handle the signed URL calls from executePublishAsset
-    (global.fetch as unknown) = jest.fn().mockImplementation((url: string) => {
-      if (url.startsWith('http://mocked-signed-url')) {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
+      if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
           status: 200,
           arrayBuffer: async () => Buffer.from('fake-image-bytes').buffer,
-        } as any);
+        });
       }
       return originalFetch(url);
     });
@@ -223,6 +269,8 @@ describe('Assets API', () => {
       // Verify DB update for variant
       const check = await oltpPool.query(`SELECT final_path FROM asset_variants WHERE id = $1`, [createdVariantId]);
       expect(check.rows[0].final_path).toBeTruthy();
+      
+      expect(mockSignMinioUrl).toHaveBeenCalled();
     } finally {
       global.fetch = originalFetch;
     }
@@ -232,12 +280,12 @@ describe('Assets API', () => {
     const originalFetch = global.fetch;
     
     // Mock fetch to handle the signed URL calls from executePublishAsset
-    (global.fetch as unknown) = jest.fn().mockImplementation((url: string) => {
-      if (url.startsWith('http://mocked-signed-url')) {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
+      if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
           status: 200,
           arrayBuffer: async () => Buffer.from('fake-image-bytes').buffer,
-        } as any);
+        });
       }
       return originalFetch(url);
     });
@@ -260,6 +308,8 @@ describe('Assets API', () => {
       // Verify DB update for base
       const check = await oltpPool.query(`SELECT final_path FROM asset_bases WHERE id = $1`, [createdBaseId]);
       expect(check.rows[0].final_path).toBeTruthy();
+      
+      expect(mockSignMinioUrl).toHaveBeenCalled();
     } finally {
       global.fetch = originalFetch;
     }
@@ -267,12 +317,12 @@ describe('Assets API', () => {
 
   test('GET /assets/image/:id returns base image bytes', async () => {
     const originalFetch = global.fetch;
-    (global.fetch as unknown) = jest.fn().mockImplementation((url: string) => {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
       if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
           status: 200,
           arrayBuffer: async () => Buffer.from('fake-image-bytes').buffer,
-        } as any);
+        });
       }
       return originalFetch(url);
     });
@@ -281,6 +331,7 @@ describe('Assets API', () => {
       expect(res.status).toBe(200);
       const buf = await res.arrayBuffer();
       expect(Buffer.from(buf).toString()).toBe('fake-image-bytes');
+      expect(mockSignMinioUrl).toHaveBeenCalled();
     } finally {
       global.fetch = originalFetch;
     }
@@ -288,20 +339,21 @@ describe('Assets API', () => {
 
   test('GET /assets/image/:id returns variant image bytes', async () => {
     const originalFetch = global.fetch;
-    (global.fetch as unknown) = jest.fn().mockImplementation((url: string) => {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
       if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
           status: 200,
           arrayBuffer: async () => Buffer.from('fake-variant-image-bytes').buffer,
-        } as any);
+        });
       }
       return originalFetch(url);
     });
     try {
       const res = await fetch(`http://localhost:${port}/assets/image/${createdVariantId}`);
       expect(res.status).toBe(200);
-const buf = await res.arrayBuffer();
-        expect(Buffer.from(buf).toString()).toEqual('fake-variant-image-bytes');
+      const buf = await res.arrayBuffer();
+      expect(Buffer.from(buf).toString()).toEqual('fake-variant-image-bytes');
+      expect(mockSignMinioUrl).toHaveBeenCalled();
     } finally {
       global.fetch = originalFetch;
     }

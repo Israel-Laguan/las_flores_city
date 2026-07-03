@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssetBase } from '../page';
+import type { AssetBase } from '@las-flores/shared';
 
 type Props = {
   base: AssetBase;

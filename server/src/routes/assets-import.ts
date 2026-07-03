@@ -153,7 +153,7 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
           
           const destKey = `drafts/bases/${prompt_rel.replace(/\//g, '_')}_${proposal_index}.png`;
           
-          const imageBuffer = fs.readFileSync(filePath);
+          const imageBuffer = await fs.promises.readFile(filePath);
           const contentType = file.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
           const image_path = await uploadToMinio(imageBuffer, destKey, contentType);
           
@@ -244,7 +244,7 @@ assetsImportRouter.post('/import-base', async (req, res, next) => {
     const proposal_index = 0;
     const destKey = `drafts/bases/${prompt_rel.replace(/\//g, '_')}_${proposal_index}.png`;
     
-    const imageBuffer = fs.readFileSync(file_path);
+    const imageBuffer = await fs.promises.readFile(file_path);
     const contentType = file_path.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
     const image_path = await uploadToMinio(imageBuffer, destKey, contentType);
     

@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssetBase, AssetListAllResponse } from '../page';
+import type { AssetBase, AssetListAllResponse } from '@las-flores/shared';
 import BaseCard from './BaseCard';
 
 type Props = {
