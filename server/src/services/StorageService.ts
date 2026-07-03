@@ -124,7 +124,53 @@ export async function fetchCdnMedia(mediaUrl: string): Promise<{ buffer: Buffer;
   return { buffer: Buffer.from(arrayBuffer), contentType };
 }
 
+// Cache for bucket existence checks
+let bucketExistsCache: boolean | null = null;
+
+/**
+ * Ensure the MinIO bucket exists, create it if it doesn't
+ */
+async function ensureBucketExists(): Promise<void> {
+  if (bucketExistsCache === true) return;
+  
+  const { CreateBucketCommand, HeadBucketCommand } = await import('@aws-sdk/client-s3');
+  const client = getS3Client();
+  
+  try {
+    // Check if bucket exists
+    await client.send(new HeadBucketCommand({ Bucket: MINIO_BUCKET }));
+    bucketExistsCache = true;
+  } catch (err: any) {
+    if (err.name === 'NotFound' || err.name === 'NoSuchBucket') {
+      // Bucket doesn't exist, create it
+      try {
+        await client.send(new CreateBucketCommand({ Bucket: MINIO_BUCKET }));
+        bucketExistsCache = true;
+        console.log(`[MinIO] Created bucket: ${MINIO_BUCKET}`);
+      } catch (createErr: any) {
+        // MinIO might already have the bucket created by another process
+        // Check again after creation attempt
+        try {
+          await client.send(new HeadBucketCommand({ Bucket: MINIO_BUCKET }));
+          bucketExistsCache = true;
+          console.log(`[MinIO] Bucket ${MINIO_BUCKET} already exists or was created by another process`);
+        } catch {
+          console.error(`[MinIO] Failed to create bucket ${MINIO_BUCKET}:`, createErr.message);
+          throw createErr;
+        }
+      }
+    } else {
+      // Some other error
+      console.error(`[MinIO] Error checking bucket ${MINIO_BUCKET}:`, err.message);
+      throw err;
+    }
+  }
+}
+
 export async function uploadToMinio(buffer: Buffer, key: string, contentType: string = 'image/png'): Promise<string> {
+  // Ensure bucket exists before uploading
+  await ensureBucketExists();
+  
   const command = new PutObjectCommand({
     Bucket: MINIO_BUCKET,
     Key: key,
