@@ -30,6 +30,8 @@ const PROMPT_TYPES = [
   'ambient',
   'sfx',
   'music',
+  'phone-wallpaper',
+  'app-icon',
 ];
 
 // ── Template Library ────────────────────────────────────────────────────────
@@ -219,6 +221,56 @@ Musical theme for ${name}, ${role}. ${mood}. ${instruments ? `Instruments: ${ins
 
 ## Tags
 theme, ${mood.toLowerCase()}, cinematic, las flores, cyberpunk
+`;
+  },
+
+  /**
+   * phone-wallpaper – for phone lock-screen/home-screen wallpapers (MidJourney, --ar 9:16)
+   * Target: phone-terminal concept, phone background
+   */
+  'phone-wallpaper'({ name, description, timeOfDay, mood, colors }) {
+    return `# Prompt: ${name} (phone wallpaper)
+
+[CONSUMER: html-background]
+**Type:** phone-wallpaper
+**Target:** Phone OS home screen wallpaper
+**Tool:** MidJourney --v 6 --ar 9:16 --style raw
+
+## Prompt
+Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Vertical composition, no text, no logos, soft cyberpunk pastel aesthetic, photorealistic, 1080x1920.
+
+## Negative Prompt
+--no androids, no robots, no neon signs, no modern 2020s buildings, no cartoon, no anime, no text, no logos
+
+## Variations
+- [ ] Lock screen: same scene with subtle clock-friendly top area
+- [ ] Home screen: same scene with app-grid-friendly central area
+- [ ] Dark variant: slightly darker, battery-friendly version
+`;
+  },
+
+  /**
+   * app-icon – for phone app icons (MidJourney, --ar 1:1, small)
+   * Target: phone-terminal concept, app grid
+   */
+  'app-icon'({ name, description, iconStyle }) {
+    return `# Prompt: ${name} (app icon)
+
+[CONSUMER: phaser-sprite]
+**Type:** app-icon
+**Target:** Phone OS app grid icon
+**Tool:** MidJourney --v 6 --ar 1:1 --style raw
+
+## Prompt
+Phone app icon design: ${description}, Las Flores 2077 style, soft cyberpunk pastel, ${iconStyle || 'minimalist geometric icon'}, transparent background, centered, 128x128, sharp edges, no text.
+
+## Negative Prompt
+--no text, no complex details, no shadows, no gradients, no neon glow, no cartoon, no anime
+
+## Variations
+- [ ] Alt color: same icon in alternate color palette
+- [ ] Badge variant: icon with notification badge overlay
+- [ ] Disabled variant: grayscale version for locked apps
 `;
   },
 };
