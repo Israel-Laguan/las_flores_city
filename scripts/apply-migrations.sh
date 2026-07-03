@@ -71,7 +71,7 @@ is_applied() {
     local db_user="$4"
     local version="$5"
     
-    local count=$(docker exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -t -c \
+    local count=$(podman exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -t -c \
         "SELECT COUNT(*) FROM schema_migrations WHERE version = '$version' AND database_name = '$db_name';" 2>/dev/null | tr -d ' ')
     
     [ "$count" = "1" ]
@@ -85,7 +85,7 @@ get_applied_checksum() {
     local db_user="$4"
     local version="$5"
     
-    docker exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -t -c \
+    podman exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -t -c \
         "SELECT checksum FROM schema_migrations WHERE version = '$version' AND database_name = '$db_name';" 2>/dev/null | tr -d ' '
 }
 
@@ -99,7 +99,7 @@ record_migration() {
     local filename="$6"
     local checksum="$7"
     
-    docker exec -i "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -c \
+    podman exec -i "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -c \
         "INSERT INTO schema_migrations (version, filename, checksum, database_name) \
          VALUES ('$version', '$filename', '$checksum', '$db_name') \
          ON CONFLICT (version, database_name) DO UPDATE SET \
@@ -139,7 +139,7 @@ apply_migration() {
     log_info "Applying migration $version ($filename) to $db_name..."
     
     # Apply the migration
-    if docker exec -i "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" < "$migration_file" 2>&1; then
+    if podman exec -i "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" < "$migration_file" 2>&1; then
         record_migration "$db_host" "$db_port" "$db_name" "$db_user" "$version" "$filename" "$checksum"
         log_info "✓ Migration $version applied successfully to $db_name"
         return 0
@@ -319,7 +319,7 @@ show_status() {
     log_header "Migration Status: $db_type ($db_name)"
     log_header "========================================"
     
-    docker exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -c \
+    podman exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -c \
         "SELECT version, filename, applied_at FROM schema_migrations ORDER BY CAST(version AS INTEGER);"
 }
 
