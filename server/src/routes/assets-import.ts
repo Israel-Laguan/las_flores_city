@@ -34,11 +34,14 @@ function getProposalIndex(filename: string): number {
 
 /**
  * Get prompt_rel from a drafts folder path
+ * Drafts are in: PROMPT_ROOT/isometric-map/assets/lm_electra.prompt/drafts
+ * We want: isometric-map/assets/lm_electra
  */
 function getPromptRelFromDraftsFolder(draftsFolder: string): string {
   const parentFolder = path.dirname(draftsFolder);
   const relPath = path.relative(PROMPT_ROOT, parentFolder);
-  return relPath.replace('.prompt', '');
+  // Remove .prompt suffix if present at the end
+  return relPath.replace(/\.prompt$/, '');
 }
 
 /**
@@ -81,6 +84,7 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
           const fullPath = path.join(dir, entry.name);
           if (entry.isDirectory()) {
             if (entry.name === DRAFTS_DIR) {
+              console.log(`[import-drafts] Found drafts folder: ${fullPath}`);
               draftsFolders.push(fullPath);
             } else {
               walk(fullPath);
@@ -88,30 +92,48 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
           }
         }
       };
+      console.log(`[import-drafts] Walking PROMPT_ROOT: ${PROMPT_ROOT}`);
       walk(PROMPT_ROOT);
+      console.log(`[import-drafts] Found ${draftsFolders.length} drafts folders for bulk import`);
     } else {
       // Find the specific drafts folder
       const promptFile = resolvePromptFile(prompt_rel as string);
       const promptDir = path.dirname(promptFile);
-      const draftsFolder = path.join(promptDir, DRAFTS_DIR);
+      // The prompt file is e.g. "lm_electra.prompt.md"
+      // The drafts are in "lm_electra.prompt/drafts/"
+      // So we need to replace .prompt.md with .prompt/drafts
+      const baseName = path.basename(promptFile, '.md'); // e.g. "lm_electra.prompt"
+      const draftsFolder = path.join(promptDir, baseName, DRAFTS_DIR);
+      console.log(`[import-drafts] Looking for drafts: ${draftsFolder} (exists: ${fs.existsSync(draftsFolder)})`);
       if (fs.existsSync(draftsFolder)) {
         draftsFolders.push(draftsFolder);
+      } else {
+        // Fallback: try the old way for compatibility
+        const oldDraftsFolder = path.join(promptDir, DRAFTS_DIR);
+        console.log(`[import-drafts] Trying fallback: ${oldDraftsFolder} (exists: ${fs.existsSync(oldDraftsFolder)})`);
+        if (fs.existsSync(oldDraftsFolder)) {
+          draftsFolders.push(oldDraftsFolder);
+        }
       }
     }
     
     if (draftsFolders.length === 0) {
+      console.log(`[import-drafts] No drafts folders found. Searched in: ${PROMPT_ROOT}`);
       return res.status(404).json({
         success: false,
-        error: 'No drafts folders found',
+        error: `No drafts folders found. PROMPT_ROOT=${PROMPT_ROOT}. Make sure drafts exist in ${path.join(PROMPT_ROOT, '*', '*', DRAFTS_DIR)}`,
         timestamp: new Date().toISOString()
       });
     }
     
+    console.log(`[import-drafts] Processing ${draftsFolders.length} drafts folders`);
     for (const draftsFolder of draftsFolders) {
       const prompt_rel = getPromptRelFromDraftsFolder(draftsFolder);
+      console.log(`[import-drafts] Processing: ${prompt_rel} (folder: ${draftsFolder})`);
       const files = fs.readdirSync(draftsFolder);
       const imageFiles = files.filter(f => f.endsWith('.png') || f.endsWith('.jpg'));
       
+      console.log(`[import-drafts] Found ${imageFiles.length} images in ${draftsFolder}`);
       if (imageFiles.length === 0) continue;
       
       // Try to parse prompt file for metadata
