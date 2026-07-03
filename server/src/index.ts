@@ -20,6 +20,7 @@ import { paypalRouter } from './routes/paypal.js';
 import { archiveRouter } from './routes/archive.js';
 import { devRouter } from './routes/dev.js';
 import { mapRouter } from './routes/map.js';
+import { assetsRouter } from './routes/assets.js';
 import { testConnections, closeConnections, queryOLTP } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
@@ -71,6 +72,7 @@ app.use('/paypal', paypalRouter);
 app.use('/dev', devRouter);
 app.use('/archive', archiveRouter);
 app.use('/map', mapRouter);
+app.use('/assets', assetsRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

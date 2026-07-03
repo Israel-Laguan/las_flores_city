@@ -120,6 +120,7 @@ services:
       - ./server/src:/app/server/src
       - ./shared:/app/shared
       - ./content:/app/content
+      - ./docs:/app/docs:ro
       
 
   # Playwright E2E

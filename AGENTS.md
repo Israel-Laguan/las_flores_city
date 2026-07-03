@@ -118,6 +118,7 @@ podman run -d --name las-flores-server \
   -v ./server/src:/app/server/src \
   -v ./shared:/app/shared \
   -v ./content:/app/content \
+  -v ./docs:/app/docs:ro \
   -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@10.89.0.3:5432/las_flores \
   -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@10.89.0.4:5432/las_flores_analytics \
   -e REDIS_URL=redis://10.89.0.5:6379 \

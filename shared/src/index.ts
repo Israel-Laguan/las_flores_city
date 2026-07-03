@@ -8,6 +8,7 @@ import {
 import type { DialogueChoice, DialogueNode, DialogueNodeType, RelationshipChange } from './schemas/dialogue.js';
 import { AftermathSchema } from './schemas/aftermath.js';
 import { RelationshipSchema } from './schemas/character.js';
+import { AssetListResponseSchema } from './schemas/assets.js';
 
 export {
   DialogueChoiceSchema,
@@ -275,6 +276,12 @@ export const SleepResponseWrapperSchema = ApiResponseSchema.extend({
 });
 
 export type SleepResponseWrapper = z.infer<typeof SleepResponseWrapperSchema>;
+
+export const AssetListResponseWrapperSchema = ApiResponseSchema.extend({
+  data: z.array(AssetListResponseSchema).optional(),
+});
+
+export type AssetListResponseWrapper = z.infer<typeof AssetListResponseWrapperSchema>;
 
 // ==================== YAML Content Types ====================
 
@@ -558,3 +565,33 @@ export { preserveImportantTags } from './importantTags.js';
 export { ChunkSchema, FreeLeafSchema, GuardedLeafSchema, LeafSchema, BoundaryReasonSchema } from './schemas/chunk.js';
 export type { Chunk, FreeLeaf, GuardedLeaf, Leaf, BoundaryReason } from './schemas/chunk.js';
 export { evaluateBoundary } from './schemas/chunk.js';
+
+// ==================== Assets ====================
+export {
+  AssetBaseSchema,
+  AssetVariantSchema,
+  GenerateBasesRequestSchema,
+  GenerateVariantsRequestSchema,
+  ApproveBaseRequestSchema,
+  AssetListResponseSchema,
+  PromptCatalogEntrySchema,
+  PromptCatalogResponseSchema,
+  PublishAssetRequestSchema,
+  PublishAssetResponseSchema,
+  AssetGroupSummarySchema,
+  AssetListAllResponseSchema,
+} from './schemas/assets.js';
+export type {
+  AssetBase,
+  AssetVariant,
+  GenerateBasesRequest,
+  GenerateVariantsRequest,
+  ApproveBaseRequest,
+  AssetListResponse,
+  PromptCatalogEntry,
+  PromptCatalogResponse,
+  PublishAssetRequest,
+  PublishAssetResponse,
+  AssetGroupSummary,
+  AssetListAllResponse,
+} from './schemas/assets.js';

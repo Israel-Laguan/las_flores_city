@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const DEFAULT_TTL_SECONDS = 300;
@@ -16,8 +16,12 @@ let s3Client: S3Client | null = null;
 
 function getS3Client(): S3Client {
   if (!s3Client) {
+    const endpoint = MINIO_ENDPOINT.includes(':') && !MINIO_ENDPOINT.startsWith('http') 
+      ? `http://${MINIO_ENDPOINT}`
+      : `http://${MINIO_ENDPOINT}:${MINIO_PORT}`;
+    
     s3Client = new S3Client({
-      endpoint: `http://${MINIO_ENDPOINT}:${MINIO_PORT}`,
+      endpoint: endpoint,
       region: 'us-east-1',
       credentials: {
         accessKeyId: MINIO_ACCESS_KEY,
@@ -118,4 +122,27 @@ export async function fetchCdnMedia(mediaUrl: string): Promise<{ buffer: Buffer;
   const contentType = response.headers.get('content-type') || 'application/octet-stream';
   const arrayBuffer = await response.arrayBuffer();
   return { buffer: Buffer.from(arrayBuffer), contentType };
+}
+
+export async function uploadToMinio(buffer: Buffer, key: string, contentType: string = 'image/png'): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: MINIO_BUCKET,
+    Key: key,
+    Body: buffer,
+    ContentType: contentType,
+  });
+  await getS3Client().send(command);
+  return `s3://${MINIO_BUCKET}/${key}`;
+}
+
+export async function deleteFromMinio(mediaUrl: string): Promise<void> {
+  const { DeleteObjectCommand } = await import('@aws-sdk/client-s3');
+  const location = parseS3Location(mediaUrl);
+  if (!location) return;
+
+  const command = new DeleteObjectCommand({
+    Bucket: location.bucket,
+    Key: location.key,
+  });
+  await getS3Client().send(command);
 }

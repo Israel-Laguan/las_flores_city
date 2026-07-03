@@ -31,7 +31,9 @@
     "036_add_location_content_type.sql",
     "037_map_tiles.sql",
     "038_character_portrait_urls.sql",
-    "039_character_atlas_url.sql"
+    "039_character_atlas_url.sql",
+    "040_asset_generation.sql",
+    "041_asset_generation_enhancements.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

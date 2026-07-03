@@ -16,6 +16,7 @@ const sections: Section[] = [
       { href: '/dialogues', label: '💬 Dialogues' },
       { href: '/overlays', label: '🔄 Overlays' },
       { href: '/scenes', label: '🏙️ Scenes' },
+      { href: '/assets', label: '🎨 Asset Generation' },
     ],
   },
   {
