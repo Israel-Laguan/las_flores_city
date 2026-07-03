@@ -26,8 +26,8 @@ import dotenv from 'dotenv';
 import { oltpPool, closeConnections } from '../src/database/connection.js';
 import { closeRedis } from '../src/database/redis.js';
 
-dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
 const PAYPAL_MODE = process.env.PAYPAL_MODE || 'sandbox';
 const PAYPAL_API_BASE =
@@ -41,8 +41,9 @@ const SERVER_URL = `http://localhost:${SERVER_PORT}`;
 const AMOUNT_USD = 5.00;
 const GOLD_CREDITS_PER_USD = parseInt(process.env.GOLD_CREDITS_PER_USD || '100', 10);
 
+let hasFailures = false;
 function ok(msg: string) { console.log(`  ✅ ${msg}`); }
-function fail(msg: string) { console.error(`  ❌ ${msg}`); }
+function fail(msg: string) { hasFailures = true; console.error(`  ❌ ${msg}`); }
 function info(msg: string) { console.log(`  ℹ  ${msg}`); }
 function section(msg: string) { console.log(`\n── ${msg} ──`); }
 
@@ -161,10 +162,11 @@ async function simulateWebhook(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(webhookPayload),
   });
-  const body = await res.json() as any;
   if (!res.ok) {
-    throw new Error(`Webhook returned ${res.status}: ${JSON.stringify(body)}`);
+    const text = await res.text();
+    throw new Error(`Webhook returned ${res.status}: ${text}`);
   }
+  const body = await res.json() as any;
   if (!body.success) {
     throw new Error(`Webhook not processed: ${JSON.stringify(body)}`);
   }
@@ -219,6 +221,10 @@ async function verifyDB(userId: string, referenceId: string): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(webhookPayload),
     });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Idempotency webhook request failed with status ${res.status}: ${text}`);
+    }
     const body = await res.json() as any;
     if (body.idempotent === true) {
       ok(`Idempotency guard works — duplicate webhook correctly ignored`);
@@ -235,28 +241,29 @@ async function main() {
   console.log('=== PayPal Sandbox Integration Probe ===');
   console.log(`Target: ${SERVER_URL} | PayPal: ${PAYPAL_API_BASE}`);
 
-  if (!checkConfig()) {
-    console.log('\nAdd PAYPAL_CLIENT_ID and PAYPAL_SECRET to your .env and retry.');
-    process.exit(1);
-  }
-
-  // Resolve test user: prefer PROBE_USER_ID env, else pick first from player_states
-  let userId = process.env.PROBE_USER_ID;
-  if (!userId) {
-    const client = await oltpPool.connect();
-    try {
-      const { rows } = await client.query(
-        `SELECT user_id FROM player_states LIMIT 1`
-      );
-      if (rows.length === 0) throw new Error('No users in player_states — run the dev seed first');
-      userId = rows[0].user_id as string;
-      info(`Auto-selected userId=${userId} (set PROBE_USER_ID env var to override)`);
-    } finally {
-      client.release();
-    }
-  }
-
   try {
+    if (!checkConfig()) {
+      console.log('\nAdd PAYPAL_CLIENT_ID and PAYPAL_SECRET to your .env and retry.');
+      process.exitCode = 1;
+      return;
+    }
+
+    // Resolve test user: prefer PROBE_USER_ID env, else pick first from player_states
+    let userId = process.env.PROBE_USER_ID;
+    if (!userId) {
+      const client = await oltpPool.connect();
+      try {
+        const { rows } = await client.query(
+          `SELECT user_id FROM player_states LIMIT 1`
+        );
+        if (rows.length === 0) throw new Error('No users in player_states — run the dev seed first');
+        userId = rows[0].user_id as string;
+        info(`Auto-selected userId=${userId} (set PROBE_USER_ID env var to override)`);
+      } finally {
+        client.release();
+      }
+    }
+
     // Step 1: verify sandbox credentials work
     await getAccessToken();
 
@@ -271,10 +278,16 @@ async function main() {
     await verifyDB(userId, referenceId);
 
     console.log('\n=== All checks passed ✅ ===\n');
+    if (hasFailures) {
+      console.log('\n=== PROBE COMPLETED WITH FAILURES ❌ ===\n');
+      process.exitCode = 1;
+    } else {
+      console.log('\n=== All checks passed ✅ ===\n');
+    }
   } catch (err) {
     console.error('\n=== PROBE FAILED ===');
     console.error(err);
-    process.exit(1);
+    process.exitCode = 1;
   } finally {
     await closeConnections();
     await closeRedis();
