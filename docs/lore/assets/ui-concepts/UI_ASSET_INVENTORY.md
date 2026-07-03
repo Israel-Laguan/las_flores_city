@@ -2,9 +2,9 @@
 
 > **Purpose:** Complete inventory of all visual assets needed to evolve the three UI concepts (isometric map, VN interface, phone-terminal) from CSS/emoji placeholders to asset-backed interfaces.
 >
-> **Workflow:** Step 1 (Inventory) → Step 2 (Generate assets from prompts) → Step 3 (Apply to client code)
+> **Workflow:** Step 1 (Inventory) → Step 2 (Generate drafts via NIM/Pollinations wrapper) → Step 3 (Apply to client code)
 >
-> **Last updated:** 2026-07-02
+> **Last updated:** 2026-07-03
 
 ---
 
@@ -28,10 +28,11 @@ Step 1: INVENTORY (this document)
         └── Review what assets are needed, where they go, and how they're used
 
 Step 2: GENERATE ASSETS (you do this)
-        ├── Open each .prompt.md file in your AI tool of choice
-        ├── Use the generation settings specified in each prompt
-        ├── Download the generated asset
-        └── Upload to MinIO (or local assets directory)
+        ├── Run the draft generator wrapper: `bash docs/lore/assets/scripts/generate-drafts.sh run`
+        ├── Primary: NVIDIA NIM FLUX.2 Klein (fast, 35 RPM client-side limit)
+        ├── Fallback: Pollinations free endpoint (fills any remaining pending items)
+        ├── Scripts write drafts to `docs/lore/assets/ui-concepts/*/assets/drafts/`
+        └── Monitor via `bash docs/lore/assets/scripts/generate-drafts.sh status`
 
 Step 3: APPLY TO CLIENT (second chat)
         ├── Update CSS/TSX to reference the new asset URLs
@@ -316,6 +317,32 @@ Add to ALL generations:
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no modern day, no 2020s, no utopian, no pristine environments, no oversaturated colors, no cartoonish, no anime, no text, no logos
 ```
 
+### NVIDIA NIM (FLUX.2 Klein) — primary automated endpoint
+
+Wrapper script: `bash docs/lore/assets/scripts/generate-drafts.sh run`
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| Model | `flux.2-klein-4b` | Fastest FLUX variant via NVIDIA NIM |
+| Auth | `Bearer $NVIDIA_API_KEY` | Set in `.env` |
+| RPM | 35 (client-side token bucket) | Gateway may return `429` above this |
+| Steps | 4 | Highest quality/speed tradeoff for Klein |
+| Seed | 0 (random each call) | Omit for deterministic reruns |
+| Dimensions | Forced to supported palette only | See dropdown in docs |
+| Retries | 6 (exponential backoff 60s → 300s) | Handles `429` and transient failures |
+| Fallback | Pollinations auto-runs after NIM step | Wrapper chains both providers for throughput |
+| Supported resolutions | `672×1568`, `688×1504`, `720×1456`, `752×1392`, `800×1328`, `832×1248`, `880×1184`, `944×1104`, `1024×1024`, `1104×944`, `1184×880`, `1248×832`, `1328×800`, `1392×752`, `1456×720`, `1504×688`, `1568×672` | Auto-picked by aspect-ratio proximity |
+| Default resolutions by asset type | Tile/overlay: 1024×1024 · VN background: 1392×752 · Portrait: 832×1248 · Phone wallpaper: 752×1392 · App icon: 1248×832 | See `generate-nim-drafts.mjs` for exact mapping |
+
+**Wrappers / automation:**
+```bash
+bash docs/lore/assets/scripts/generate-drafts.sh init
+bash docs/lore/assets/scripts/generate-drafts.sh status
+bash docs/lore/assets/scripts/generate-drafts.sh run
+bash docs/lore/assets/scripts/generate-drafts.sh run --filter tile
+bash docs/lore/assets/scripts/generate-drafts.sh run --dry-run
+```
+
 ---
 
 ## MinIO Upload Paths
@@ -476,7 +503,7 @@ docs/lore/assets/ui-concepts/
 
 Each `.prompt.md` now contains multiple prompt variants (Base + Night/Weather + Alt). The Pollinations draft script can generate first drafts automatically; final production assets should still be run through MidJourney/DALL-E for quality.
 
-#### Option A: Auto-generate first drafts with Pollinations (recommended starting point)
+#### Option A: Auto-generate first drafts with NIM primary + Pollinations fallback (recommended starting point)
 
 ```bash
 # One-time: initialize state manifest
@@ -485,14 +512,16 @@ bash docs/lore/assets/scripts/generate-drafts.sh init
 # Check status
 bash docs/lore/assets/scripts/generate-drafts.sh status
 
-# Generate all drafts (saves to docs/lore/assets/ui-concepts/*/drafts/)
+# Generate all drafts:
+# Step 1 → NVIDIA NIM FLUX.2 Klein (35 RPM client-side limit, auto 429 backoff)
+# Step 2 → Pollinations fills anything NIM missed
 bash docs/lore/assets/scripts/generate-drafts.sh run
 
 # Generate only specific types
 bash docs/lore/assets/scripts/generate-drafts.sh run --filter tile
 bash docs/lore/assets/scripts/generate-drafts.sh run --filter portrait,background
 
-# Preview without downloading
+# Preview without downloads
 bash docs/lore/assets/scripts/generate-drafts.sh run --dry-run
 ```
 
