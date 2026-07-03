@@ -61,7 +61,7 @@ bash docs/lore/assets/scripts/generate-drafts.sh status
 
 - **30-second delay** between requests (Pollinations rate limit)
 - Total variants: **145** across **51 prompt files**
-- Estimated total time: ~72 hours for full generation
+- Estimated total time: ~1.2 hours for full generation (145 variants × 30s delay)
 - Drafts save to sibling `drafts/` directories next to each prompt file
 - Files under 5KB are considered corrupt/error responses
 
@@ -78,9 +78,9 @@ bash docs/lore/assets/scripts/generate-drafts.sh status
 
 ### Issue: `find: docs/lore/docs/lore/... No such file or directory`
 **Cause:** The script was run from the wrong directory.  
-**Fix:** Always run from the project root (`/home/anthony/code/las_flores_city`) or use absolute paths:
+**Fix:** Always run from the project root or use absolute paths:
 ```bash
-cd /home/anthony/code/las_flores_city
+cd /path/to/las_flores_city
 bash docs/lore/assets/scripts/generate-drafts.sh init
 ```
 
@@ -144,7 +144,7 @@ Example:
 
 ## Output Structure
 
-```
+```text
 docs/lore/assets/ui-concepts/
 ├── isometric-map/assets/
 │   ├── tile_street.prompt.md

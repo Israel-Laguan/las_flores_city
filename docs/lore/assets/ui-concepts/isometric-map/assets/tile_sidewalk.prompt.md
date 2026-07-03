@@ -15,11 +15,11 @@ Seamless top-down tileable texture of pedestrian sidewalk, Las Flores 2077, soft
 ## Prompt — Night Variant
 Seamless top-down tileable texture of sidewalk at night, Las Flores 2077, soft cyberpunk pastel palette, dark concrete with amber streetlamp pools and wet sheen after rain, photorealistic, 512x512, no objects, no people, no horizon, no sky, centered square crop.
 
-## Negative Prompt
+## Negative Prompt — Night Variant
 --no androids, no robots, no neon, no modern objects, no buildings, no people, no text
 
 ## Prompt — Wet Variant
 Seamless top-down tileable texture of wet sidewalk after rain, Las Flores 2077, soft cyberpunk pastel palette, dark gray concrete with water reflections and puddle patterns, photorealistic, 512x512, no objects, no people, no horizon, no sky, centered square crop.
 
-## Negative Prompt
+## Negative Prompt — Wet Variant
 --no androids, no robots, no neon, no modern objects, no buildings, no people, no text

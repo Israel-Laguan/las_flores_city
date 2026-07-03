@@ -15,11 +15,11 @@ Seamless top-down tileable texture of weathered port asphalt, Las Flores 2077, s
 ## Prompt — Night Variant
 Seamless top-down tileable texture of port asphalt at night, Las Flores 2077, soft cyberpunk pastel palette, very dark tarmac lit by sodium vapor lights, wet sheen, rust puddle reflections, photorealistic, 512x512, no objects, no people, no horizon, no sky, centered square crop.
 
-## Negative Prompt
+## Negative Prompt — Night Variant
 --no androids, no robots, no neon, no modern objects, no buildings, no people, no text
 
 ## Prompt — Weathered Variant
 Seamless top-down tileable texture of heavily weathered port asphalt, Las Flores 2077, soft cyberpunk pastel palette, cracked dark tarmac with oil stains, heavy equipment tire tracks, salt corrosion, photorealistic, 512x512, no objects, no people, no horizon, no sky, centered square crop.
 
-## Negative Prompt
+## Negative Prompt — Weathered Variant
 --no androids, no robots, no neon, no modern objects, no buildings, no people, no text

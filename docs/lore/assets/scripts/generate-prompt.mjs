@@ -233,6 +233,7 @@ theme, ${mood.toLowerCase()}, cinematic, las flores, cyberpunk
 
 [CONSUMER: html-background]
 **Type:** phone-wallpaper
+**Dimensions:** 1080×1920
 **Target:** Phone OS home screen wallpaper
 **Tool:** MidJourney --v 6 --ar 9:16 --style raw
 
@@ -258,6 +259,7 @@ Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay}, ${mood}. ${co
 
 [CONSUMER: phaser-sprite]
 **Type:** app-icon
+**Dimensions:** 128×128
 **Target:** Phone OS app grid icon
 **Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
@@ -559,6 +561,8 @@ function processFile(filePath, type, force) {
       break;
     case 'tile':
     case 'overlay':
+    case 'phone-wallpaper':
+    case 'app-icon':
       meta = extractDistrictMeta(content);
       break;
     default:

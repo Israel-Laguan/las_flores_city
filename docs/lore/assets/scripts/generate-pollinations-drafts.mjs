@@ -109,6 +109,10 @@ function httpGet(url) {
   return new Promise((resolve, reject) => {
     const lib = url.startsWith('https') ? https : http;
     const req = lib.get(url, { timeout: 30000 }, res => {
+      if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
+        reject(new Error(`Request failed with status code ${res.statusCode}`));
+        return;
+      }
       const chunks = [];
       res.on('data', c => chunks.push(c));
       res.on('end', () => resolve(Buffer.concat(chunks)));
@@ -125,14 +129,14 @@ function httpGet(url) {
 // ── Prompt File Parsing ─────────────────────────────────────────────────────
 
 function parsePromptFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8');
+  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
   const results = [];
 
   // Extract metadata
   const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
   const type = typeMatch ? typeMatch[1].trim() : 'unknown';
 
-  const dimMatch = content.match(/\*\*Dimensions:\*\* (\d+)×(\d+)/);
+  const dimMatch = content.match(/\*\*Dimensions:\*\* (\d+)\s*[x×]\s*(\d+)/i);
   let width = null;
   let height = null;
   if (dimMatch) {
@@ -153,7 +157,7 @@ function parsePromptFile(filePath) {
   }
 
   // Extract all prompt variants: ## Prompt — <name> ... until next ## Prompt — or ## Negative Prompt
-  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt |$)/g;
+  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
   let match;
 
   while ((match = promptRegex.exec(content)) !== null) {
@@ -196,7 +200,8 @@ function isErrorFile(filePath) {
 }
 
 async function downloadDraft(promptData, outDir, baseName, force) {
-  const slug = slugify(promptData.type);
+  // Remove unused slug variable
+  const fileName = `${baseName}__${slugify(promptData.variantName)}.png`;
   const fileName = `${baseName}__${slugify(promptData.variantName)}.png`;
   const outPath = path.join(outDir, fileName);
 
@@ -204,15 +209,15 @@ async function downloadDraft(promptData, outDir, baseName, force) {
     return { status: 'skipped', path: outPath };
   }
 
-  // Build prompt string: positive + negative
-  let fullPrompt = promptData.promptText;
-  if (promptData.negativeText && !fullPrompt.includes(promptData.negativeText)) {
-    fullPrompt = `${fullPrompt} ${promptData.negativeText}`;
-  }
+  // Ensure the drafts directory exists
+  fs.mkdirSync(outDir, { recursive: true });
+
+  // Build prompt string: positive only, negative passed separately
+  const fullPrompt = promptData.promptText;
 
   const encoded = encodeURIComponent(fullPrompt);
-  const url = `${POLLINATIONS_BASE}/${encoded}?width=${promptData.width}&height=${promptData.height}&nologo=true`;
-  console.log(`DEBUG: GET ${url}`);
+  const url = `${POLLINATIONS_BASE}/${encoded}?width=${promptData.width}&height=${promptData.height}&nologo=true${promptData.negativeText ? `&negative_prompt=${encodeURIComponent(promptData.negativeText)}` : ''}`;
+
 
   let lastError;
   let wait = INITIAL_BACKOFF_MS;
@@ -220,7 +225,7 @@ async function downloadDraft(promptData, outDir, baseName, force) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       const buffer = await httpGet(url);
-      console.log(`DEBUG: received ${buffer.length} bytes, type hint: ${buffer.slice(0,20).toString()}`);
+
       fs.writeFileSync(outPath, buffer);
 
       if (isErrorFile(outPath)) {
@@ -231,9 +236,9 @@ async function downloadDraft(promptData, outDir, baseName, force) {
       return { status: 'ok', path: outPath, size: buffer.length };
     } catch (err) {
       lastError = err;
-      console.log(`DEBUG: attempt ${attempt} failed: ${err.message}`);
+
       if (attempt < MAX_RETRIES) {
-        console.log(`    ⏳ Backoff ${wait / 1000}s...`);
+
         await sleep(wait);
         wait = Math.min(wait * 1.5, 300000);
       }

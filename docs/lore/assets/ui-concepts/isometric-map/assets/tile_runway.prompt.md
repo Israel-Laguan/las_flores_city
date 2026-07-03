@@ -15,11 +15,11 @@ Seamless top-down tileable texture of airport runway tarmac, Las Flores 2077, so
 ## Prompt — Taxiway Variant
 Seamless top-down tileable texture of airport taxiway apron, Las Flores 2077, soft cyberpunk pastel palette, concrete tarmac with taxiway markings, ground lighting cutouts, jet fuel stains, photorealistic, 512x512, no planes, no people, no horizon, no sky, centered square crop.
 
-## Negative Prompt
+## Negative Prompt — Taxiway Variant
 --no androids, no robots, no neon, no modern objects, no buildings, no people, no text
 
 ## Prompt — Night Variant
 Seamless top-down tileable texture of airport runway at night, Las Flores 2077, soft cyberpunk pastel palette, dark concrete with approach lighting reflections, runway floodlights, wet sheen from evening rain, photorealistic, 512x512, no planes, no people, no horizon, no sky, centered square crop.
 
-## Negative Prompt
+## Negative Prompt — Night Variant
 --no androids, no robots, no neon, no modern objects, no buildings, no people, no text

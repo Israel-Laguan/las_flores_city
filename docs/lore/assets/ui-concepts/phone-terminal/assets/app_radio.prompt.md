@@ -9,11 +9,11 @@
 ## Prompt — Base
 Phone app icon design: Music radio streaming app, Las Flores 2077 style, soft cyberpunk pastel, minimalist radio wave icon, transparent background, centered, 128x128, sharp edges, no text.
 
-## Negative Prompt
+## Negative Prompt — Base
 --no text, no complex details, no shadows, no gradients, no neon glow, no cartoon, no anime
 
 ## Prompt — Alt Color
 Phone app icon design: Music radio streaming app, Las Flores 2077 style, soft cyberpunk pastel, minimalist radio wave icon in mint-green palette, transparent background, centered, 128x128, sharp edges, no text.
 
-## Negative Prompt
+## Negative Prompt — Alt Color
 --no text, no complex details, no shadows, no gradients, no neon glow, no cartoon, no anime

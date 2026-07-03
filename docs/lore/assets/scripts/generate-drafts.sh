@@ -21,21 +21,18 @@ fail()   { echo -e "  ${RED}✗${NC} $1"; }
 function build_manifest() {
   local prompt_files
   prompt_files=$(find "$PROMPT_ROOT" -name '*.prompt.md' | sort)
-  echo "DEBUG: PROMPT_ROOT=$PROMPT_ROOT" >&2
-  echo "DEBUG: Found prompt files:" >&2
-  echo "$prompt_files" | sed 's/^/  - /' >&2
-  echo "DEBUG: ---" >&2
+
   while IFS= read -r pf; do
     [[ -z "$pf" ]] && continue
     local rel="${pf#"$PROMPT_ROOT"/}"
     local type
-    type=$(grep -oP '\[CONSUMER:\s*\K[^\]]+' "$pf" | head -1 | tr '[:upper:]' '[:lower:]')
+    type=$(sed -n 's/.*\*\*Type:\*\*[[:space:]]*\([^[:space:]]*\).*/\1/p' "$pf" | head -1 | tr '[:upper:]' '[:lower:]')
     local dim_line
-    dim_line=$(grep -oP '\*\*Dimensions:\*\* \K[\d×]+' "$pf" | head -1)
+    dim_line=$(sed -n 's/.*\*\*Dimensions:\*\*[[:space:]]*\([0-9xX×]*\).*/\1/p' "$pf" | head -1)
     local w h
-    w=$(echo "$dim_line" | grep -oP '\d+' | head -1 || true)
-    h=$(echo "$dim_line" | grep -oP '\d+' | tail -1 || true)
-    echo "DEBUG: $rel | type=$type | dim_line='$dim_line' | w=$w h=$h" >&2
+    w=$(echo "$dim_line" | tr -cs '0-9' ' ' | cut -d' ' -f1)
+    h=$(echo "$dim_line" | tr -cs '0-9' ' ' | cut -d' ' -f2)
+
     case "$type" in
       tile|overlay|phaser-sprite) w=${w:-512}; h=${h:-512} ;;
       background|html-background)  w=${w:-1280}; h=${h:-720} ;;
@@ -45,7 +42,7 @@ function build_manifest() {
       *)                            w=${w:-512}; h=${h:-512} ;;
     esac
     local variants
-    variants=$(grep -oP '## Prompt — \K[^\n]+' "$pf" | sed 's/[[:space:]]*$//')
+    variants=$(sed -n 's/^## Prompt — \(.*\)/\1/p' "$pf" | sed 's/[[:space:]]*$//')
     while IFS= read -r variant; do
       [[ -z "$variant" ]] && continue
       printf "%s\t%s\t%s\t%s\n" "$rel" "$variant" "$w" "$h"
@@ -65,7 +62,7 @@ function cmd_init() {
     base=$(basename "$rel" .prompt.md)
     local slug
     slug=$(echo "$variant" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g' | sed 's/^_\|_$//g')
-    local draft_path_rel="${rel%.*}/$DRAFTS_DIR/${base}__${slug}.png"
+    local draft_path_rel="$(dirname "$rel")/$DRAFTS_DIR/${base}__${slug}.png"
     local draft_path_abs="$PROMPT_ROOT/$draft_path_rel"
     local size=0
     if [[ -f "$draft_path_abs" ]]; then
@@ -75,7 +72,7 @@ function cmd_init() {
     if [[ "$size" -ge 5000 ]]; then status="completed"; completed=$((completed+1)); else pending=$((pending+1)); fi
     printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" "$rel" "$variant" "$w" "$h" "$draft_path_rel" "$size" "$status" "$(date -Iseconds)" >> "$STATE_FILE"
   done < <(build_manifest)
-  echo "DEBUG: count=$count completed=$completed pending=$pending"
+
   echo -e "  Total variants: ${BOLD}$count${NC}"
   echo -e "  ${GREEN}Completed: $completed${NC}"
   echo -e "  ${YELLOW}Pending:   $pending${NC}"
@@ -91,7 +88,7 @@ function cmd_status() {
     t=$((t+1)); case "$status" in completed) c=$((c+1));; pending) p=$((p+1));; failed) f=$((f+1));; *) echo "DEBUG: unknown status '$status' for $_rel";; esac
   done < "$STATE_FILE"
   echo -e "  Total: ${BOLD}$t${NC}  ${GREEN}Completed: $c${NC}  ${YELLOW}Pending: $p${NC}  ${RED}Failed: $f${NC}"
-  [[ $t -gt 0 ]] && echo -e "  Progress: ${BOLD}${GREEN}$c${NC}/${t} ($(( (c+f)*100/t ))%)\nDEBUG: state_file=$STATE_FILE"
+  [[ $t -gt 0 ]] && echo -e "  Progress: ${BOLD}${GREEN}$c${NC}/${t} ($(( (c+f)*100/t ))%)"
 }
 
 function cmd_run() {
@@ -100,7 +97,6 @@ function cmd_run() {
   echo -e "  ${CYAN}Filter:${NC} $*"
 
   header "Step 1: NVIDIA NIM (FLUX.2 Klein)"
-  echo "DEBUG: NIM_SCRIPT=$NIM_SCRIPT"
   if [[ -f "$NIM_SCRIPT" ]]; then
     node "$NIM_SCRIPT" "$@" || true
   else
@@ -109,17 +105,13 @@ function cmd_run() {
 
   header "Step 2: Pollinations (fallback)"
   echo -e "  ${CYAN}Filter:${NC} $*"
-  echo "DEBUG: JS_SCRIPT=$JS_SCRIPT"
-  echo "DEBUG: ROOT=$ROOT"
-  echo "DEBUG: PROMPT_ROOT=$PROMPT_ROOT"
-  echo "DEBUG: running: node $JS_SCRIPT $*"
   node "$JS_SCRIPT" "$@"
   echo ""
   header "Updating state..."
   if [[ -f "$STATE_FILE" ]]; then
     local tmp; tmp=$(mktemp)
     printf "prompt_rel\tvariant\tw\th\tdraft_path\tsize_bytes\tstatus\tupdated_at\n" > "$tmp"
-    while IFS=$'\t' read -r rel var w h dp_rel size status ts; do
+    while IFS=$'\t' read -r rel var w h dp_rel size status; do
       [[ "$rel" == "prompt_rel" ]] && continue
       local abs="$PROMPT_ROOT/$dp_rel"
       if [[ -f "$abs" ]]; then
@@ -169,7 +161,11 @@ function cmd_clean() {
     local sz; sz=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f" 2>/dev/null || echo 0)
     if [[ "$sz" -lt 5000 ]]; then rm -f "$f"; fail "$(basename "$f") (${sz} bytes)"; cleaned=$((cleaned+1)); fi
   done < <(find "$PROMPT_ROOT" -path "*/$DRAFTS_DIR/*.png" -type f)
-  [[ $cleaned -eq 0 ]] && ok "Nothing to clean" || warn "Removed $cleaned files"
+  if [[ $cleaned -eq 0 ]]; then
+    ok "Nothing to clean"
+  else
+    warn "Removed $cleaned files"
+  fi
 }
 
 function cmd_reset() {

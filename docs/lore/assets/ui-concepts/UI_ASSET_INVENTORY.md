@@ -50,7 +50,7 @@ Step 3: APPLY TO CLIENT (second chat)
 | Isometric Map | 17 tiles + 15 landmark overlays | 32 | Prompts ready |
 | VN Interface | 8 backgrounds + 2 portraits | 10 | Prompts ready |
 | Phone & Terminal | 1 wallpaper + 8 app icons | 9 | Prompts ready |
-| **Total** | | **46** | **All prompts generated** |
+| **Total** | | **51** | **All prompts generated** |
 
 ---
 
@@ -501,7 +501,14 @@ docs/lore/assets/ui-concepts/
 
 ### Step 2 — Generate Assets (you do this)
 
-Each `.prompt.md` now contains multiple prompt variants (Base + Night/Weather + Alt). The Pollinations draft script can generate first drafts automatically; final production assets should still be run through MidJourney/DALL-E for quality.
+Each `.prompt.md` contains multiple prompt variants (Base + Night/Weather + Alt). The documented wrapper generates first drafts automatically with NVIDIA NIM as primary and Pollinations as fallback; final production assets should still be run through MidJourney/DALL-E for quality.
+
+Current run status: **145/145 variants generated**.
+
+Known behaviors:
+- NIM may return `finishReason: CONTENT_FILTERED` even on HTTP 200; the wrapper treats this as a failure and falls back to Pollinations automatically.
+- Client-side NIM rate limit is ~35 RPM; the wrapper enforces a 2s delay between requests.
+- The wrapper writes drafts to `<prompt_basename>.prompt/drafts/<slugified_variant>.png` and tracks progress in `docs/lore/assets/scripts/generate-drafts-state.tsv`.
 
 #### Option A: Auto-generate first drafts with NIM primary + Pollinations fallback (recommended starting point)
 
@@ -565,7 +572,7 @@ node docs/lore/assets/scripts/verify-assets.mjs --check-dimensions
 
 ### Step 3 — Apply to Client (second chat)
 
-1. Open a new chat with the context: "We have all 30 UI assets uploaded to MinIO. Apply them to the client following the integration map in `docs/lore/assets/ui-concepts/UI_ASSET_INVENTORY.md`"
+1. Open a new chat with the context: "We have all 51 UI assets uploaded to MinIO. Apply them to the client following the integration map in `docs/lore/assets/ui-concepts/UI_ASSET_INVENTORY.md`"
 2. The second chat will:
    - Update `map.css` + `MapView.tsx` for isometric rendering
    - Update `dialogue.css` + `dialogue-templates.ts` + `DialogueUI.ts` for VN portraits/backgrounds
