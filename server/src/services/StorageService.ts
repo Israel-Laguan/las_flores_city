@@ -14,14 +14,19 @@ const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env
 
 let s3Client: S3Client | null = null;
 
+function getMinioEndpointUrl(): string {
+  const endpoint = MINIO_ENDPOINT.match(/^https?:\/\//) ? MINIO_ENDPOINT : `http://${MINIO_ENDPOINT}`;
+  const url = new URL(endpoint);
+  if (!url.port) {
+    url.port = MINIO_PORT;
+  }
+  return url.toString().replace(/\/$/, '');
+}
+
 function getS3Client(): S3Client {
   if (!s3Client) {
-    const endpoint = MINIO_ENDPOINT.includes(':') && !MINIO_ENDPOINT.startsWith('http') 
-      ? `http://${MINIO_ENDPOINT}`
-      : `http://${MINIO_ENDPOINT}:${MINIO_PORT}`;
-    
     s3Client = new S3Client({
-      endpoint: endpoint,
+      endpoint: getMinioEndpointUrl(),
       region: 'us-east-1',
       credentials: {
         accessKeyId: MINIO_ACCESS_KEY,

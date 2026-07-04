@@ -288,7 +288,7 @@
   border-radius: 4px;
 }
 
-/* ── Task 6.2: Typing indicator bubble ── */
+/* ── : Typing indicator bubble ── */
 .comms-app .bubble.npc.typing {
   display: flex;
   align-items: center;

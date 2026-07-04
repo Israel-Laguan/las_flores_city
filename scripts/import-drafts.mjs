@@ -14,6 +14,7 @@
  */
 
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
@@ -248,7 +249,7 @@ async function insertVariant(dbClient, data) {
 
 function parsePromptFile(filePath) {
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fsSync.readFileSync(filePath, 'utf-8');
     
     const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
     const asset_type = typeMatch ? typeMatch[1].trim() : 'unknown';
@@ -364,7 +365,7 @@ async function scanDrafts() {
     };
     
     try {
-      if (fs.existsSync(actualPromptFile)) {
+      if (fsSync.existsSync(actualPromptFile)) {
         const parsed = parsePromptFile(actualPromptFile);
         if (parsed) {
           metadata = parsed;

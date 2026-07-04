@@ -45,7 +45,7 @@ async function injectAuth(page: Page) {
   });
 }
 
-test.describe('Interactive Polish (Task 6.2)', () => {
+test.describe('Interactive Polish ()', () => {
   test('Banco tab shows live balance (not placeholder)', async ({ page }) => {
     await injectAuth(page);
     await startNewGame(page);

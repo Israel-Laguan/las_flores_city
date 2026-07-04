@@ -34,6 +34,24 @@ function getPromptRelFromDraftsFolder(draftsFolder: string): string {
   return relPath.replace(/\.prompt$/, '');
 }
 
+function isPathInside(childPath: string, parentPath: string): boolean {
+  const relative = path.relative(parentPath, childPath);
+  return relative === '' || (!!relative && !relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function resolveAllowedImportFile(promptRel: string, filePath: string): string | null {
+  const promptFile = resolvePromptFile(promptRel);
+  const promptDir = path.dirname(promptFile);
+  const baseName = path.basename(promptFile, '.md');
+  const allowedRoots = [
+    path.join(promptDir, baseName, DRAFTS_DIR),
+    path.join(promptDir, DRAFTS_DIR),
+  ].map((dir) => path.resolve(dir));
+  const resolvedFilePath = path.resolve(filePath);
+
+  return allowedRoots.some((root) => isPathInside(resolvedFilePath, root)) ? resolvedFilePath : null;
+}
+
 /**
  * Import all drafts from filesystem to database and MinIO
  * GET /assets/import-drafts?prompt_rel=isometric-map/assets/tile_street
@@ -128,7 +146,7 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
       if (imageFiles.length === 0) continue;
       
       const promptFilePath = resolvePromptFile(prompt_rel);
-      const metadata = parsePromptFile(promptFilePath);
+      const metadata = await parsePromptFile(promptFilePath);
       
       // SIMPLE APPROACH: Import ALL files as separate bases
       // Users can approve one and generate variants manually in the UI
@@ -239,8 +257,17 @@ assetsImportRouter.post('/import-base', async (req, res, next) => {
       });
     }
     
+    const resolvedFilePath = resolveAllowedImportFile(prompt_rel, file_path);
+    if (!resolvedFilePath) {
+      return res.status(400).json({
+        success: false,
+        error: 'file_path must be inside the drafts directory for prompt_rel',
+        timestamp: new Date().toISOString()
+      });
+    }
+
     try {
-      await fs.promises.access(file_path);
+      await fs.promises.access(resolvedFilePath);
     } catch {
       return res.status(404).json({
         success: false,
@@ -252,8 +279,8 @@ assetsImportRouter.post('/import-base', async (req, res, next) => {
     const proposal_index = 0;
     const destKey = `drafts/bases/${prompt_rel.replace(/\//g, '_')}_${proposal_index}.png`;
     
-    const imageBuffer = await fs.promises.readFile(file_path);
-    const contentType = file_path.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
+    const imageBuffer = await fs.promises.readFile(resolvedFilePath);
+    const contentType = resolvedFilePath.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
     const image_path = await uploadToMinio(imageBuffer, destKey, contentType);
     
     const seed = Math.floor(Math.random() * 2147483647);

@@ -65,6 +65,37 @@ Location: `server/tests/unit/`
 
 ## Troubleshooting
 
+### Asset Tests Fail in CI but Pass Another Way
+
+Lessons learned from fixing the asset test suites under podman/CI:
+
+1. **PROMPT_ROOT is cwd-dependent.**  
+   In CI and podman, `process.cwd()` is `server/`, so:
+   - ✅ `path.resolve(process.cwd(), '../docs/lore/assets/ui-concepts')`
+   - ❌ `path.resolve(process.cwd(), '../../docs/lore/assets/ui-concepts')`
+
+2. **`jest.unstable_mockModule()` is unreliable under ts-jest / CJS transform.**  
+   Prefer `jest.doMock()` + `await import()` in `beforeAll`:
+   ```typescript
+   jest.doMock('../../src/services/StorageService.js', () => ({ ... }));
+   const { signMinioUrl } = await import('../../src/services/StorageService.js');
+   ```
+
+3. **`Buffer.arrayBuffer()` can return shared/slab memory.**  
+   `mockBuffer.buffer` may include extra bytes. Use an exact slice:
+   ```typescript
+   function exactArrayBuffer(value: Buffer | string): ArrayBuffer {
+     const buffer = Buffer.isBuffer(value) ? value : Buffer.from(value);
+     return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+   }
+   ```
+
+4. **Mock `fetch` must preserve `RequestInit`.**  
+   When falling back to `originalFetch(url, init)`, pass `init` through or Express receives the wrong HTTP method and returns HTML error pages.
+
+5. **Test-inserted rows must satisfy Zod response schemas.**  
+   An `INSERT` that omits non-nullable response fields (e.g. `asset_type`, `prompt_text`, `negative_prompt`) causes `GET /assets/list` to 500 on `AssetListResponseSchema.parse`.
+
 ### Tests Fail in CI but Pass Locally
 
 Common causes:
@@ -75,18 +106,16 @@ Common causes:
 
 ### Jest Mock Module Path Issue
 
-If mocks aren't being applied, ensure paths use `.ts` extension (not `.js`):
+If mocks aren't being applied under ts-jest, avoid the `.ts` / `.js` mismatch: the safer pattern is `jest.doMock()` + `await import()` in `beforeAll`.
 
 ```typescript
-// Correct:
-jest.unstable_mockModule('../../src/services/StorageService.ts', () => ({
+jest.doMock('../../src/services/StorageService.js', () => ({
   signMinioUrl: jest.fn().mockResolvedValue('signed-url'),
 }));
+const { signMinioUrl } = await import('../../src/services/StorageService.js');
+```
 
-// Wrong (file doesn't exist):
-jest.unstable_mockModule('../../src/services/StorageService.js', () => ({
-  signMinioUrl: jest.fn().mockResolvedValue('signed-url'),
-}));
+Old `jest.unstable_mockModule(... .ts)` behavior is unreliable once ts-jest compiles specs to CommonJS.
 ```
 
 ## Testing in Production Mode

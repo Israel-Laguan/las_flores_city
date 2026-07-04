@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { signMinioUrl, uploadToMinio } from '../services/StorageService.js';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
@@ -75,9 +75,9 @@ export interface ParsedPromptFile {
   variants: PromptVariant[];
 }
 
-export function parsePromptFile(filePath: string): ParsedPromptFile | null {
+export async function parsePromptFile(filePath: string): Promise<ParsedPromptFile | null> {
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = await fs.readFile(filePath, 'utf-8');
     const relFromRoot = path.relative(getPromptRoot(), filePath);
     const prompt_rel = relFromRoot.replace(/\.prompt\.md$/, '');
     const baseName = path.basename(filePath, '.prompt.md');
@@ -135,22 +135,24 @@ export function parsePromptFile(filePath: string): ParsedPromptFile | null {
   }
 }
 
-export function getPromptCatalog(): z.infer<typeof PromptCatalogResponseSchema> {
+export async function getPromptCatalog(): Promise<z.infer<typeof PromptCatalogResponseSchema>> {
   const promptRoot = getPromptRoot();
-  if (!fs.existsSync(promptRoot)) {
+  try {
+    await fs.access(promptRoot);
+  } catch {
     return { categories: [] };
   }
 
   const entries = new Map<string, ParsedPromptFile[]>();
 
-  function walk(dir: string) {
-    const entries_fs = fs.readdirSync(dir, { withFileTypes: true });
+  async function walk(dir: string) {
+    const entries_fs = await fs.readdir(dir, { withFileTypes: true });
     for (const entry of entries_fs) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
-        walk(full);
+        await walk(full);
       } else if (entry.isFile() && entry.name.endsWith('.prompt.md')) {
-        const parsed = parsePromptFile(full);
+        const parsed = await parsePromptFile(full);
         if (parsed) {
           const cat = parsed.category;
           if (!entries.has(cat)) entries.set(cat, []);
@@ -160,7 +162,7 @@ export function getPromptCatalog(): z.infer<typeof PromptCatalogResponseSchema> 
     }
   }
 
-  walk(promptRoot);
+  await walk(promptRoot);
 
   const categoryLabels: Record<string, string> = {
     'isometric-map': '🗺️ Isometric Map',

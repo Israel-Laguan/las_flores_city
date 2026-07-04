@@ -25,7 +25,7 @@ async function injectAuth(page: Page) {
   });
 }
 
-test.describe('Viewport Tuning (Task 6.3)', () => {
+test.describe('Viewport Tuning ()', () => {
   test('CSS custom properties are injected on :root after page load', async ({ page }) => {
     await injectAuth(page);
     await startNewGame(page);

@@ -28,7 +28,7 @@ export const assetsRouter = express.Router();
 // GET /assets/prompt-catalog
 assetsRouter.get('/prompt-catalog', async (_req, res, next) => {
   try {
-    const data = getPromptCatalog();
+    const data = await getPromptCatalog();
     res.json({ success: true, data, timestamp: new Date().toISOString() });
   } catch (error) {
     next(error);
@@ -51,7 +51,7 @@ assetsRouter.post('/generate-bases', async (req, res, next) => {
       return;
     }
 
-    const parsed = parsePromptFile(promptFile);
+    const parsed = await parsePromptFile(promptFile);
     if (!parsed || parsed.variants.length === 0) {
       res.status(400).json({ success: false, error: 'No prompt variants found in file', timestamp: new Date().toISOString() });
       return;
@@ -63,8 +63,16 @@ assetsRouter.post('/generate-bases', async (req, res, next) => {
     const finalAssetType = asset_type || parsed.asset_type;
     const finalNegativePrompt = negative_prompt || baseVariant.negativePrompt;
 
+    const maxIdxRes = await queryOLTP(
+      `SELECT COALESCE(MAX(proposal_index), -1) AS max_idx FROM asset_bases WHERE prompt_rel = $1`,
+      [prompt_rel]
+    );
+    const startIndex = Number(maxIdxRes.rows[0]?.max_idx ?? -1) + 1;
+
     const newBases = [];
-    for (let i = 0; i < count; i++) {
+    const errors = [];
+    for (let offset = 0; offset < count; offset++) {
+      const proposalIndex = startIndex + offset;
       try {
         const seed = Math.floor(Math.random() * 2147483647);
         const buffer = await generateBaseImage({
@@ -82,17 +90,21 @@ assetsRouter.post('/generate-bases', async (req, res, next) => {
           `INSERT INTO asset_bases (prompt_rel, proposal_index, image_path, seed, asset_type, prompt_text, negative_prompt, width, height)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
            RETURNING id, prompt_rel, proposal_index, image_path, seed, chosen, created_at, asset_type, prompt_text, negative_prompt, width, height, final_path`,
-          [prompt_rel, i, image_path, seed, finalAssetType, baseVariant.prompt, finalNegativePrompt, finalWidth, finalHeight]
+          [prompt_rel, proposalIndex, image_path, seed, finalAssetType, baseVariant.prompt, finalNegativePrompt, finalWidth, finalHeight]
         );
         newBases.push(result.rows[0]);
       } catch (err: any) {
-        console.error(`Error generating base ${i}:`, err);
+        console.error(`Error generating base ${proposalIndex}:`, err);
+        errors.push({ proposal_index: proposalIndex, error: err.message });
       }
     }
 
-    res.json({
-      success: true,
+    const success = errors.length === 0;
+    const status = success ? 200 : newBases.length > 0 ? 207 : 500;
+    res.status(status).json({
+      success,
       data: newBases,
+      ...(errors.length > 0 ? { errors } : {}),
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -117,8 +129,25 @@ assetsRouter.post('/generate-variants', async (req, res, next) => {
     }
     const base = baseRes.rows[0];
 
+    const existingVariantsRes = await queryOLTP(
+      `SELECT variant_name FROM asset_variants WHERE base_id = $1`,
+      [base_id]
+    );
+    const usedVariantNames = new Set(existingVariantsRes.rows.map((row: any) => row.variant_name));
+
     const newVariants = [];
+    const errors = [];
     for (const v of variants) {
+      let variantName = v.variant_name;
+      if (usedVariantNames.has(variantName)) {
+        let suffix = 2;
+        while (usedVariantNames.has(`${v.variant_name}_${suffix}`)) {
+          suffix++;
+        }
+        variantName = `${v.variant_name}_${suffix}`;
+      }
+      usedVariantNames.add(variantName);
+
       try {
         const buffer = await generateVariantImage({
           prompt: v.prompt,
@@ -129,24 +158,28 @@ assetsRouter.post('/generate-variants', async (req, res, next) => {
           negativePrompt: v.negative_prompt,
         });
 
-        const key = `drafts/variants/${slugify(base.prompt_rel)}__${slugify(v.variant_name)}_${crypto.randomUUID()}.png`;
+        const key = `drafts/variants/${slugify(base.prompt_rel)}__${slugify(variantName)}_${crypto.randomUUID()}.png`;
         const image_path = await uploadToMinio(buffer, key);
 
         const result = await queryOLTP(
           `INSERT INTO asset_variants (base_id, variant_name, image_path, i2i_strength, prompt_text, negative_prompt, width, height)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
            RETURNING id, base_id, variant_name, image_path, i2i_strength, created_at, prompt_text, negative_prompt, width, height, final_path`,
-          [base_id, v.variant_name, image_path, v.i2i_strength, v.prompt, v.negative_prompt || null, v.width || base.width, v.height || base.height]
+          [base_id, variantName, image_path, v.i2i_strength, v.prompt, v.negative_prompt || null, v.width || base.width, v.height || base.height]
         );
         newVariants.push(result.rows[0]);
       } catch (err: any) {
-        console.error(`Error generating variant ${v.variant_name}:`, err);
+        console.error(`Error generating variant ${variantName}:`, err);
+        errors.push({ variant_name: variantName, error: err.message });
       }
     }
 
-    res.json({
-      success: true,
+    const success = errors.length === 0;
+    const status = success ? 200 : newVariants.length > 0 ? 207 : 500;
+    res.status(status).json({
+      success,
       data: newVariants,
+      ...(errors.length > 0 ? { errors } : {}),
       timestamp: new Date().toISOString()
     });
   } catch (error) {
