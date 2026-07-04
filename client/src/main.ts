@@ -12,23 +12,99 @@ import { TerminalModal } from './components/TerminalModal';
 import { PhoneOverlay } from './components/PhoneOverlay';
 import { SleepOverlay } from './components/SleepOverlay';
 import { LoginMenu } from './components/LoginMenu';
-import { MainMenu } from './components/MainMenu';
-import { SettingsView } from './components/SettingsView';
-import { GalleryView } from './components/GalleryView';
-import { CityNav } from './components/CityNav';
-import { createRoot } from 'react-dom/client';
-import { createElement } from 'react';
-import MapView from './components/MapView';
-import * as api from './utils/api';
-import { eventBus } from './utils/EventBus';
 import { ViewportManager } from './bridge/ViewportManager';
 import { initThemeEngine, restorePersistedTheme } from './utils/themeEngine';
+import { eventBus } from './utils/EventBus';
 import { registerRoute, navigateTo, startRouter } from './router';
+import { registerRoutes } from './router/routes.js';
 
 declare global {
   interface Window {
     __lasFloresInitialized?: boolean;
   }
+}
+
+export let gameInstance: Phaser.Game | null = null;
+export let phoneOverlayInstance: PhoneOverlay | null = null;
+export let sleepOverlayInstance: SleepOverlay | null = null;
+export let currentView: { destroy: () => void } | null = null;
+export let isAuthenticated = false;
+export let cachedPlayerState: any = null;
+
+export function destroyGame(): void {
+  if (phoneOverlayInstance) {
+    phoneOverlayInstance.destroy();
+    phoneOverlayInstance = null;
+  }
+  if (sleepOverlayInstance) {
+    sleepOverlayInstance.destroy();
+    sleepOverlayInstance = null;
+  }
+  if (gameInstance) {
+    gameInstance.destroy(true);
+    gameInstance = null;
+  }
+}
+
+export function destroyCurrentView(): void {
+  if (currentView) {
+    currentView.destroy();
+    currentView = null;
+  }
+}
+
+async function mountReactView(component: any, props: Record<string, unknown>): Promise<void> {
+  const container = document.getElementById('view-container') as HTMLDivElement;
+  const mountEl = document.createElement('div');
+  container.appendChild(mountEl);
+  const { createRoot } = await import('react-dom/client');
+  const { createElement } = await import('react');
+  const root = createRoot(mountEl);
+  root.render(createElement(component, props));
+  currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
+}
+
+export function hideAllContainers(): void {
+  document.getElementById('login-menu')!.style.display = 'none';
+  document.getElementById('view-container')!.style.display = 'none';
+  document.getElementById('game-container')!.style.display = 'none';
+}
+
+async function fetchPlayerData(): Promise<void> {
+  const state = await (await import('./utils/api')).getPlayerState();
+  if (!state.success) return;
+  eventBus.emit('player:state-loaded', state.data);
+
+  if (state.data.currentNodeId !== null) {
+    eventBus.emit('ui:lock-phone-apps', true);
+    eventBus.emit('dialogue:resume');
+  } else {
+    eventBus.emit('ui:lock-phone-apps', false);
+
+    if (state.data.locationId) {
+      const location = await (await import('./utils/api')).getLocation(state.data.locationId);
+      if (location.success) {
+        const flatLocation = {
+          id: location.data.scene?.id,
+          name: location.data.scene?.title || 'Unknown',
+          npcs: location.data.npcs,
+        };
+        eventBus.emit('location:loaded', flatLocation);
+      }
+    }
+  }
+}
+
+export function startGame(): void {
+  hideAllContainers();
+  document.getElementById('game-container')!.style.display = 'flex';
+
+  destroyGame();
+
+  gameInstance = new Phaser.Game(config);
+  sleepOverlayInstance = new SleepOverlay();
+  phoneOverlayInstance = new PhoneOverlay();
+  initThemeEngine();
 }
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -51,203 +127,7 @@ const config: Phaser.Types.Core.GameConfig = {
   },
 };
 
-let gameInstance: Phaser.Game | null = null;
-let phoneOverlayInstance: PhoneOverlay | null = null;
-let sleepOverlayInstance: SleepOverlay | null = null;
-let currentView: { destroy: () => void } | null = null;
-let isAuthenticated = false;
-let cachedPlayerState: any = null;
-
-function destroyGame(): void {
-  if (phoneOverlayInstance) {
-    phoneOverlayInstance.destroy();
-    phoneOverlayInstance = null;
-  }
-  if (sleepOverlayInstance) {
-    sleepOverlayInstance.destroy();
-    sleepOverlayInstance = null;
-  }
-  if (gameInstance) {
-    gameInstance.destroy(true);
-    gameInstance = null;
-  }
-}
-
-function destroyCurrentView(): void {
-  if (currentView) {
-    currentView.destroy();
-    currentView = null;
-  }
-}
-
-function mountReactView(component: any, props: Record<string, unknown>): void {
-  const container = document.getElementById('view-container') as HTMLDivElement;
-  const mountEl = document.createElement('div');
-  container.appendChild(mountEl);
-  const root = createRoot(mountEl);
-  root.render(createElement(component, props));
-  currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
-}
-
-function hideAllContainers(): void {
-  document.getElementById('login-menu')!.style.display = 'none';
-  document.getElementById('view-container')!.style.display = 'none';
-  document.getElementById('game-container')!.style.display = 'none';
-}
-
-async function fetchPlayerData(): Promise<void> {
-  const state = await api.getPlayerState();
-  if (!state.success) return;
-  eventBus.emit('player:state-loaded', state.data);
-
-  if (state.data.currentNodeId !== null) {
-    eventBus.emit('ui:lock-phone-apps', true);
-    eventBus.emit('dialogue:resume');
-  } else {
-    eventBus.emit('ui:lock-phone-apps', false);
-
-    if (state.data.locationId) {
-      const location = await api.getLocation(state.data.locationId);
-      if (location.success) {
-        const flatLocation = {
-          id: location.data.scene?.id,
-          name: location.data.scene?.title || 'Unknown',
-          npcs: location.data.npcs,
-        };
-        eventBus.emit('location:loaded', flatLocation);
-      }
-    }
-  }
-}
-
-function startGame(): void {
-  hideAllContainers();
-  document.getElementById('game-container')!.style.display = 'flex';
-
-  destroyGame();
-
-  gameInstance = new Phaser.Game(config);
-  sleepOverlayInstance = new SleepOverlay();
-  phoneOverlayInstance = new PhoneOverlay();
-  initThemeEngine();
-}
-
-function registerRoutes(): void {
-  registerRoute('/', () => {
-    destroyGame();
-    destroyCurrentView();
-    hideAllContainers();
-    document.getElementById('login-menu')!.style.display = 'flex';
-  });
-
-  registerRoute('/main', () => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    destroyGame();
-    destroyCurrentView();
-    hideAllContainers();
-    restorePersistedTheme();
-    document.getElementById('view-container')!.style.display = 'flex';
-    const container = document.getElementById('view-container') as HTMLDivElement;
-    currentView = new MainMenu(container, cachedPlayerState);
-  });
-
-  registerRoute('/main/settings', () => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    destroyCurrentView();
-    hideAllContainers();
-    document.getElementById('view-container')!.style.display = 'flex';
-    const container = document.getElementById('view-container') as HTMLDivElement;
-    currentView = new SettingsView(container);
-  });
-
-  registerRoute('/main/gallery', () => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    destroyCurrentView();
-    hideAllContainers();
-    document.getElementById('view-container')!.style.display = 'flex';
-    const container = document.getElementById('view-container') as HTMLDivElement;
-    currentView = new GalleryView(container);
-  });
-
-  registerRoute('/city', () => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    destroyGame();
-    destroyCurrentView();
-    hideAllContainers();
-    document.getElementById('view-container')!.style.display = 'flex';
-    const container = document.getElementById('view-container') as HTMLDivElement;
-    currentView = new CityNav(container, cachedPlayerState);
-  });
-
-  registerRoute('/map', () => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    destroyGame();
-    destroyCurrentView();
-    hideAllContainers();
-    document.getElementById('view-container')!.style.display = 'flex';
-    mountReactView(MapView, { playerState: cachedPlayerState });
-  });
-
-  registerRoute('/map/', (params) => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    destroyGame();
-    destroyCurrentView();
-    hideAllContainers();
-    document.getElementById('view-container')!.style.display = 'flex';
-    const districtSlug = extractDistrictSlug();
-    mountReactView(MapView, { initialDistrict: districtSlug, playerState: cachedPlayerState });
-  });
-
-  function extractDistrictSlug(): string | undefined {
-    const match = window.location.pathname.match(/^\/map\/([^\/]+)/);
-    return match ? match[1] : undefined;
-  }
-
-  registerRoute('/city/loc/', (params) => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
-    const locationId = extractLocationId();
-    if (!locationId) {
-      navigateTo('/city', true);
-      return;
-    }
-    destroyCurrentView();
-    if (gameInstance) {
-      hideAllContainers();
-      document.getElementById('game-container')!.style.display = 'flex';
-      eventBus.emit('city:travel-to', { locationId });
-    } else {
-      startGameForLocation(locationId);
-    }
-  });
-}
-
-function extractLocationId(): string | null {
-  const match = window.location.pathname.match(/^\/city\/loc\/(.+)$/);
-  return match ? match[1] : null;
-}
-
-function startGameForLocation(locationId: string): void {
+async function startGameForLocation(locationId: string): Promise<void> {
   hideAllContainers();
   document.getElementById('game-container')!.style.display = 'flex';
 
@@ -273,15 +153,22 @@ function startGameForLocation(locationId: string): void {
   waitForReady();
 }
 
-// Bridge window CustomEvents (dispatched by E2E tests / external scripts)
-// to the internal EventEmitter3-based eventBus so DialogueUI picks them up.
+registerRoutes({
+  destroyGame,
+  destroyCurrentView,
+  hideAllContainers,
+  startGame,
+  startGameForLocation,
+  isAuthenticated,
+  cachedPlayerState,
+  mountReactView,
+  gameInstance,
+});
+
 window.addEventListener('lf:dialogue-start', (e: Event) => {
   eventBus.emit('dialogue:start', (e as CustomEvent).detail);
 });
 
-// Bridge modal CustomEvents so the TerminalModal confirm/error paths are
-// reachable from E2E tests and external integrations without reaching into the
-// internal eventBus singleton. Mirrors the lf:dialogue-start bridge above.
 window.addEventListener('lf:show_confirm', (e: Event) => {
   eventBus.emit('ui:show_confirm', (e as CustomEvent).detail);
 });
@@ -289,10 +176,8 @@ window.addEventListener('lf:show_error', (e: Event) => {
   eventBus.emit('ui:show_error', (e as CustomEvent).detail);
 });
 
-function initOnce() {
-  if (window.__lasFloresInitialized) {
-    return;
-  }
+async function initOnce() {
+  if (window.__lasFloresInitialized) return;
 
   window.__lasFloresInitialized = true;
   const viewportManager = new ViewportManager();
@@ -302,10 +187,8 @@ function initOnce() {
   new BreakthroughAlert();
   new TerminalModal();
 
-  registerRoutes();
   startRouter();
 
-  // Root-level HUD status bar listeners (work with and without Phaser)
   eventBus.on('tb:updated', (remaining: number) => {
     const tbEl = document.getElementById('tb-display');
     if (tbEl) {
@@ -316,27 +199,17 @@ function initOnce() {
 
   eventBus.on('player:state-loaded', (data: any) => {
     const tbEl = document.getElementById('tb-display');
-    if (tbEl && data.timeBlocks !== undefined) {
-      tbEl.textContent = `${data.timeBlocks}/48`;
-    }
+    if (tbEl && data.timeBlocks !== undefined) tbEl.textContent = `${data.timeBlocks}/48`;
     const creditsEl = document.getElementById('credits-display');
-    if (creditsEl && data.credits !== undefined) {
-      creditsEl.textContent = data.credits.toString();
-    }
+    if (creditsEl && data.credits !== undefined) creditsEl.textContent = data.credits.toString();
     const locationEl = document.getElementById('location-display');
-    if (locationEl && data.locationId) {
-      locationEl.textContent = data.locationName || 'Unknown';
-    }
+    if (locationEl && data.locationId) locationEl.textContent = data.locationName || 'Unknown';
   });
 
-  // Sync Phaser travel to URL
   eventBus.on('travel:complete', (data: any) => {
-    if (data.locationId) {
-      navigateTo(`/city/loc/${data.locationId}`, true);
-    }
+    if (data.locationId) navigateTo(`/city/loc/${data.locationId}`, true);
   });
 
-  // Handle Phaser-internal travel triggered from URL
   eventBus.on('city:travel-to', async (data: { locationId: string }) => {
     const scene = gameInstance?.scene.getScene('LocationScene');
     if (scene && typeof (scene as any).travelTo === 'function') {
@@ -344,51 +217,46 @@ function initOnce() {
     }
   });
 
-  eventBus.on('auth:login', () => {
-    isAuthenticated = true;
-  });
-
+  eventBus.on('auth:login', () => { isAuthenticated = true; });
   eventBus.on('auth:logout', () => {
     isAuthenticated = false;
     destroyGame();
     destroyCurrentView();
     navigateTo('/', true);
   });
-
   eventBus.on('game:start', () => {
-    if (!isAuthenticated) {
-      navigateTo('/', true);
-      return;
-    }
+    if (!isAuthenticated) { navigateTo('/', true); return; }
     destroyCurrentView();
     navigateTo('/map');
   });
 
-  // Show login menu immediately for fast visual feedback
+  initializeUI();
+  restoreSession();
+}
+
+function initializeUI(): void {
   new LoginMenu();
   hideAllContainers();
   document.getElementById('login-menu')!.style.display = 'flex';
-  const initialPath = window.location.pathname;
   navigateTo('/', true);
+}
 
-  // Then check session in background
+async function restoreSession(): Promise<void> {
   void (async () => {
     try {
-      const state = await api.getPlayerState();
+      const state = await (await import('./utils/api')).getPlayerState();
       if (state.success) {
         cachedPlayerState = state.data;
         isAuthenticated = true;
+        const initialPath = window.location.pathname;
         navigateTo(initialPath !== '/' ? initialPath : '/main', true);
       }
     } catch (error: any) {
-      if (error?.status !== 401) {
-        console.error('Session restore failed:', error);
-      }
+      if (error?.status !== 401) console.error('Session restore failed:', error);
     }
   })();
 }
 
-// Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initOnce);
 } else {

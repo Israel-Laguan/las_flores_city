@@ -88,15 +88,27 @@ let oltpPool: pg.Pool;
 let port: number;
 
 let TEST_PROMPT_REL: string;
+let adminCookie: string;
 
 beforeAll(async () => {
   const { assetsRouter } = await import('../../src/routes/assets.js');
+  const { authRouter } = await import('../../src/routes/auth.js');
   const redisModule = await import('../../src/database/redis.js');
+  const { cookieParserMiddleware } = await import('../../src/utils/cookies.js');
   closeRedis = redisModule.closeRedis;
 
   app = express();
   app.use(express.json());
+  
+  // Cookie parser — required for auth middleware to read cookies
+  app.use(cookieParserMiddleware);
+  
+  // Mount auth router first for login
+  app.use('/auth', authRouter);
+  
+  // Mount assets router (requires admin auth)
   app.use('/assets', assetsRouter);
+  
   app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     console.error(err);
     res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
@@ -120,6 +132,20 @@ beforeAll(async () => {
     const s = app.listen(0, () => resolve(s));
   });
   port = (server.address() as { port: number }).port;
+
+  // Login as admin to get cookie for subsequent requests
+  const loginRes = await fetch(`http://localhost:${port}/auth/dev-admin-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({}),
+  });
+  const loginData = await loginRes.json();
+  
+  // Extract cookie from response headers
+  const cookieHeader = loginRes.headers.get('set-cookie');
+  if (cookieHeader) {
+    adminCookie = cookieHeader.split(';')[0]; // Get just the session cookie part
+  }
 });
 
 afterAll(async () => {
@@ -147,8 +173,19 @@ beforeEach(() => {
 });
 
 describe('Assets API', () => {
+  // Helper to make authenticated requests
+  const authFetch = async (url: string, options: RequestInit = {}) => {
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Cookie: adminCookie,
+      },
+    });
+  };
+
   test('GET /assets/prompt-catalog returns 200 with categories', async () => {
-    const res = await fetch(`http://localhost:${port}/assets/prompt-catalog`);
+    const res = await authFetch(`http://localhost:${port}/assets/prompt-catalog`);
     const data = await res.json();
 
     expect(res.status).toBe(200);
@@ -164,7 +201,7 @@ describe('Assets API', () => {
     // Use the known path relative to PROMPT_ROOT.
     const validPromptRel = 'phone-terminal/assets/app_misiones';
 
-    const res = await fetch(`http://localhost:${port}/assets/generate-bases`, {
+    const res = await authFetch(`http://localhost:${port}/assets/generate-bases`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt_rel: validPromptRel, count: 1 }),
@@ -186,7 +223,7 @@ describe('Assets API', () => {
   });
 
   test('POST /assets/generate-bases returns 404 for invalid prompt_rel', async () => {
-    const res = await fetch(`http://localhost:${port}/assets/generate-bases`, {
+    const res = await authFetch(`http://localhost:${port}/assets/generate-bases`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt_rel: 'invalid_prompt_rel_does_not_exist', count: 1 }),
@@ -206,7 +243,7 @@ describe('Assets API', () => {
     const base2Id = base2Res.rows[0].id;
 
     // Approve first base
-    const res1 = await fetch(`http://localhost:${port}/assets/approve-base`, {
+    const res1 = await authFetch(`http://localhost:${port}/assets/approve-base`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ base_id: createdBaseId }),
@@ -219,7 +256,7 @@ describe('Assets API', () => {
     expect(check1.rows[0].chosen).toBe(true);
 
     // Approve second base
-    const res2 = await fetch(`http://localhost:${port}/assets/approve-base`, {
+    const res2 = await authFetch(`http://localhost:${port}/assets/approve-base`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ base_id: base2Id }),
@@ -236,7 +273,7 @@ describe('Assets API', () => {
   let createdVariantId: string;
 
   test('POST /assets/generate-variants creates variant with i2i', async () => {
-    const res = await fetch(`http://localhost:${port}/assets/generate-variants`, {
+    const res = await authFetch(`http://localhost:${port}/assets/generate-variants`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -282,7 +319,7 @@ describe('Assets API', () => {
     
     try {
       // Test publishing a variant
-      const res = await fetch(`http://localhost:${port}/assets/publish`, {
+      const res = await authFetch(`http://localhost:${port}/assets/publish`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -323,7 +360,7 @@ describe('Assets API', () => {
     
     try {
       // Test publishing a base
-      const res = await fetch(`http://localhost:${port}/assets/publish`, {
+      const res = await authFetch(`http://localhost:${port}/assets/publish`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -360,7 +397,7 @@ describe('Assets API', () => {
       return originalFetch(url, init);
     });
     try {
-      const res = await fetch(`http://localhost:${port}/assets/image/${createdBaseId}`);
+      const res = await authFetch(`http://localhost:${port}/assets/image/${createdBaseId}`);
       expect(res.status).toBe(200);
       const buf = await res.arrayBuffer();
       expect(Buffer.from(buf).toString()).toBe('fake-image-bytes');
@@ -383,7 +420,7 @@ describe('Assets API', () => {
       return originalFetch(url, init);
     });
     try {
-      const res = await fetch(`http://localhost:${port}/assets/image/${createdVariantId}`);
+      const res = await authFetch(`http://localhost:${port}/assets/image/${createdVariantId}`);
       expect(res.status).toBe(200);
       const buf = await res.arrayBuffer();
       expect(Buffer.from(buf).toString()).toEqual('fake-variant-image-bytes');
@@ -394,7 +431,7 @@ describe('Assets API', () => {
   });
 
   test('GET /assets/list returns bases and variants', async () => {
-    const res = await fetch(`http://localhost:${port}/assets/list?prompt_rel=${TEST_PROMPT_REL}`);
+    const res = await authFetch(`http://localhost:${port}/assets/list?prompt_rel=${TEST_PROMPT_REL}`);
     const data = await res.json();
     console.log('list status:', res.status, 'body:', JSON.stringify(data));
     expect(res.status).toBe(200);
@@ -405,7 +442,7 @@ describe('Assets API', () => {
   });
 
   test('GET /assets/list-all returns group summaries', async () => {
-    const res = await fetch(`http://localhost:${port}/assets/list-all`);
+    const res = await authFetch(`http://localhost:${port}/assets/list-all`);
     const data = await res.json();
     expect(res.status).toBe(200);
     expect(data.success).toBe(true);
