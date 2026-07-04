@@ -143,7 +143,12 @@ authRouter.post('/login', async (req, res) => {
     setSessionCookie(res, token);
 
     // Remove password_hash from response
-    const { password_hash, ...userWithoutPassword } = user;
+    const userWithoutPassword = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      display_name: user.display_name,
+    };
 
     res.json({
       success: true,
@@ -390,7 +395,13 @@ authRouter.post('/admin-login', async (req, res) => {
     setSessionCookie(res, token);
 
     // Remove password_hash from response
-    const { password_hash, ...userWithoutPassword } = user;
+    const userWithoutPassword = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      display_name: user.display_name,
+      role: user.role,
+    };
 
     res.json({
       success: true,

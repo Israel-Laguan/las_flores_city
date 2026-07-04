@@ -1,13 +1,17 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
 
-const rand = Math.random().toString(36).slice(2, 8);
-const testEmail = `phaser-${Date.now()}-${rand}@example.com`;
-const testUsername = `phaser_${Date.now()}_${rand}`;
-
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
+// Generate unique ID inside beforeAll to avoid collisions in parallel tests
+let testEmail: string;
+let testUsername: string;
+
 test.beforeAll(async ({ request }) => {
+  const rand = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+  testEmail = `phaser-${rand()}@example.com`;
+  testUsername = `phaser_${rand()}`;
+
   const res = await request.post(`${API_BASE}/api/auth/register`, {
     data: {
       email: testEmail,
@@ -16,6 +20,9 @@ test.beforeAll(async ({ request }) => {
       password: 'test1234',
     },
   });
+  if (!res.ok()) {
+    console.log('Registration failed:', res.status(), await res.text());
+  }
   expect(res.ok()).toBeTruthy();
 });
 

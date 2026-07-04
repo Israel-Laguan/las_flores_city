@@ -5,10 +5,14 @@ const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
 // Shared credentials — beforeAll registers the user; injectAuth() logs in
 // per-page to scope the HttpOnly cookie to :5173 (the page's origin).
-const testEmail = `event-bus-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
-const testUsername = `event_bus_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+let testEmail: string;
+let testUsername: string;
 
 test.beforeAll(async ({ request }) => {
+  const rand = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+  testEmail = `event-bus-${rand()}@example.com`;
+  testUsername = `event_bus_${rand()}`;
+
   const response = await request.post(`${API_BASE}/api/auth/register`, {
     data: {
       email: testEmail,

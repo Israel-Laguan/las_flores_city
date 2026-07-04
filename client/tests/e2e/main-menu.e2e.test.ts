@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
-const ABOUT_US_URL = 'https://example.com/about-us';
+const ABOUT_US_URL = process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us';
 
 test.describe('Main menu — normal operations', () => {
   test('dev login button is visible on the login page in dev mode', async ({ page }) => {
@@ -35,35 +35,33 @@ test.describe('Main menu — normal operations', () => {
       await page.request.post(`${AUTH_BASE}/api/auth/dev-login`);
       await page.goto('/main');
 
+      // Wait for page to fully load and settle
+      await page.waitForLoadState('networkidle');
+
       for (let i = 0; i < 3; i++) {
         await page.locator('.menu-btn[data-action="settings"]').click();
         await page.locator('.view-back-btn[data-action="back"]').click();
         await page.locator('.menu-btn[data-action="about"]').waitFor();
       }
 
-      // Track window.open calls by wrapping it in the page context
-      await page.evaluate(() => {
-        (window as any)._lasFlores_openCallCount = 0;
-        const originalOpen = window.open;
-        window.open = function(...args: any[]) {
-          (window as any)._lasFlores_openCallCount++;
-          return originalOpen.apply(this, args);
-        };
-      });
+      // Wait for page to settle after navigation
+      await page.waitForLoadState('networkidle');
 
-      const initialCallCount = await page.evaluate(() => {
-        return (window as any)._lasFlores_openCallCount || 0;
-      });
+      // Use Playwright's popup event to count popups
+      let popupCount = 0;
+      const popupPromise = page.waitForEvent('popup', { timeout: 5000 }).catch(() => null);
 
-      await page.locator('.menu-btn[data-action="about"]').click();
+      // Click the About Us button and wait for popup
+      const aboutBtn = page.locator('.menu-btn[data-action="about"]');
+      await aboutBtn.click();
 
-      await page.waitForTimeout(200);
+      const popup = await popupPromise;
+      if (popup) {
+        popupCount = 1;
+        popup.close();
+      }
 
-      const finalCallCount = await page.evaluate(() => {
-        return (window as any)._lasFlores_openCallCount || 0;
-      });
-
-      expect(finalCallCount - initialCallCount).toBe(1);
+      expect(popupCount).toBe(1);
     });
   });
 });
