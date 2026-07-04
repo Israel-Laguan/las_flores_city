@@ -164,8 +164,13 @@ las_flores_city/
 ### Running Tests
 
 ```bash
+# Run locally
 npm run test --workspace=server
 npm run test --workspace=client
+
+# Run in Podman container
+./scripts/run-tests-podman.sh server/tests/integration/assets.test.ts
+./scripts/run-tests-podman.sh server/tests/
 ```
 
 ### Linting

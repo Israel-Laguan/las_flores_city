@@ -149,6 +149,46 @@ podman network rm las-flores-net
 podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data
 ```
 
+### Helper Scripts
+
+Several helper scripts streamline development tasks:
+
+#### `scripts/run-tests-podman.sh`
+Run tests in a Podman container with proper environment:
+
+```bash
+# Run specific test file
+./scripts/run-tests-podman.sh server/tests/integration/assets.test.ts
+
+# Run test directory
+./scripts/run-tests-podman.sh server/tests/integration/
+
+# With custom env file
+./scripts/run-tests-podman.sh server/tests/ --env .env.test
+
+# Show help
+./scripts/run-tests-podman.sh --help
+```
+
+#### `scripts/dev-cleanup.sh`
+Find and clean development artifacts:
+
+```bash
+# Scan and report (dry-run)
+./scripts/dev-cleanup.sh
+
+# Show what would be deleted
+./scripts/dev-cleanup.sh --dry-run
+
+# Delete found artifacts (with confirmation)
+./scripts/dev-cleanup.sh --delete
+
+# Only scan specific categories
+./scripts/dev-cleanup.sh --categories temp,debug
+```
+
+Categories: `temp`, `task`, `debug`, `build`, `ide`
+
 ### Podman gotchas
 
 - **Rootless networking**: If `podman run` errors with `exec: "pasta": executable file not found in $PATH`, install `slirp4netns` and set `~/.config/containers/containers.conf`:
