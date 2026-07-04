@@ -107,6 +107,13 @@ services:
       PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS:-}
       CLIENT_BASE_URL: ${CLIENT_BASE_URL:-http://localhost:5173}
 
+      # Integración de PayPal
+      PAYPAL_MODE: ${PAYPAL_MODE:-sandbox}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET: ${PAYPAL_SECRET}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID:-}
+      GOLD_CREDITS_PER_USD: ${GOLD_CREDITS_PER_USD:-100}
+
     depends_on:
       postgres-oltp:
         condition: service_healthy
