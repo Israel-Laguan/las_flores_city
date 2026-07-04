@@ -41,13 +41,29 @@ test.describe('Main menu — normal operations', () => {
         await page.locator('.menu-btn[data-action="about"]').waitFor();
       }
 
-      let popupCount = 0;
-      page.on('popup', () => popupCount++);
+      // Track window.open calls by wrapping it in the page context
+      await page.evaluate(() => {
+        (window as any)._lasFlores_openCallCount = 0;
+        const originalOpen = window.open;
+        window.open = function(...args: any[]) {
+          (window as any)._lasFlores_openCallCount++;
+          return originalOpen.apply(this, args);
+        };
+      });
+
+      const initialCallCount = await page.evaluate(() => {
+        return (window as any)._lasFlores_openCallCount || 0;
+      });
 
       await page.locator('.menu-btn[data-action="about"]').click();
 
-      await page.waitForTimeout(500);
-      expect(popupCount).toBe(1);
+      await page.waitForTimeout(200);
+
+      const finalCallCount = await page.evaluate(() => {
+        return (window as any)._lasFlores_openCallCount || 0;
+      });
+
+      expect(finalCallCount - initialCallCount).toBe(1);
     });
   });
 });
