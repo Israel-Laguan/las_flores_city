@@ -6,7 +6,7 @@ import { PlayerStateRepository } from '../database/repositories/PlayerStateRepos
 import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { buildDialogueResponse, stripGuardedTargetChunks, type ChunkPayload } from './dialogue-response-helpers.js';
-import { filterChoices, initializeDialogueState } from './dialogue-helpers.js';
+import { filterChoices } from './dialogue-helpers.js';
 
 export const dialogueRouter = express.Router();
 

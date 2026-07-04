@@ -88,7 +88,7 @@ let oltpPool: pg.Pool;
 let port: number;
 
 let TEST_PROMPT_REL: string;
-let adminToken: string;
+let adminCookie: string;
 
 beforeAll(async () => {
   const { assetsRouter } = await import('../../src/routes/assets.js');
@@ -141,13 +141,11 @@ beforeAll(async () => {
   });
   const loginData = await loginRes.json();
   
-  // Extract token from response for Authorization header
+  // Preserve the session cookie for authenticated requests
   const cookieHeader = loginRes.headers.get('set-cookie');
   
   if (cookieHeader) {
-    // Extract token from cookie: jwt_session=token_value; ...
-    const cookiePart = cookieHeader.split(';')[0].trim();
-    adminToken = cookiePart.split('=')[1];
+    adminCookie = cookieHeader.split(';')[0].trim();
   } else {
     throw new Error('No set-cookie header found in login response');
   }
@@ -178,13 +176,13 @@ beforeEach(() => {
 });
 
 describe('Assets API', () => {
-  // Helper to make authenticated requests
+  // Helper to make authenticated requests using the session cookie
   const authFetch = async (url: string, options: RequestInit = {}) => {
     return fetch(url, {
       ...options,
       headers: {
         ...options.headers,
-        Authorization: `Bearer ${adminToken}`,
+        Cookie: adminCookie,
       },
     });
   };

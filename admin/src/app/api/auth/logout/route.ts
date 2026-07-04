@@ -31,9 +31,9 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/login', request.url), { status: 303 });
   } catch (error) {
     console.error('Logout error:', error);
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/login', request.url), { status: 303 });
   }
 }

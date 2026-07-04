@@ -27,12 +27,6 @@ function isBaseVariant(filename: string): boolean {
   return getVariantNameFromFilename(filename) === 'base';
 }
 
-function getPromptRelFromDraftsFolder(draftsFolder: string): string {
-  const parentFolder = path.dirname(draftsFolder);
-  const relPath = path.relative(getPromptRoot(), parentFolder);
-  return relPath.replace(/\.prompt$/, '');
-}
-
 function isPathInside(childPath: string, parentPath: string): boolean {
   const relative = path.relative(parentPath, childPath);
   return relative === '' || (!!relative && !relative.startsWith('..') && !path.isAbsolute(relative));
@@ -75,10 +69,20 @@ async function collectDraftsFolders(promptRel: string | null): Promise<DraftsFol
     ? path.dirname(resolvePromptFile(promptRel))
     : getPromptRoot();
 
-  const files = await fs.promises.readdir(searchDir);
+  let files: string[];
+  try {
+    files = await fs.promises.readdir(searchDir);
+  } catch (err: any) {
+    if (err?.code === 'ENOENT') return [];
+    throw err;
+  }
+
   for (const file of files) {
-    if (file.endsWith('.prompt.md') || file.endsWith('.prompt.yaml')) {
-      const foundPromptRel = file.replace(/\.prompt\.(md|yaml)$/, '');
+    if (file.endsWith('.prompt.md')) {
+      const promptPath = path.join(searchDir, file);
+      const foundPromptRel = path
+        .relative(getPromptRoot(), promptPath)
+        .replace(/\.prompt\.md$/, '');
       if (!foundPromptRel) continue;
       const sanitizedPromptRel = sanitizePromptRel(foundPromptRel);
       if (!sanitizedPromptRel) {

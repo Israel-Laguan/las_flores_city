@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { queryOLTP } from '../database/connection.js';
 import { authMiddleware, AuthRequest } from './auth.js';
 

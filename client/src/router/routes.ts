@@ -155,7 +155,7 @@ function registerMapRoutes({
     void mountReactView(MapView, { playerState: getCachedPlayerState() });
   });
 
-  registerRoute('/map/', (params) => {
+  registerRoute('/map/', () => {
     if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
@@ -176,7 +176,7 @@ function registerGameRoutes({
   startGameForLocation,
   getGameInstance,
 }: Pick<RouteDeps, 'getIsAuthenticated' | 'destroyCurrentView' | 'hideAllContainers' | 'startGameForLocation' | 'getGameInstance'>): void {
-  registerRoute('/city/loc/', (params) => {
+  registerRoute('/city/loc/', () => {
     if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;

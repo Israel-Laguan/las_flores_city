@@ -13,7 +13,6 @@ import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import {
   ChunkSchema,
   evaluateBoundary,
-  type Chunk,
   type Leaf,
 } from '@las-flores/shared';
 import type { DialogueNode } from '@las-flores/shared';

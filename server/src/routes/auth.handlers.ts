@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { queryOLTP } from '../database/connection.js';
-import { generateToken, authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { AuthRequest } from '../middleware/auth.js';
 import bcrypt from 'bcryptjs';
 
 export async function handleChangePassword(req: AuthRequest, res: Response): Promise<void> {

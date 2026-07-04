@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { DialogueNodeSchema } from './dialogue.js';
 
 export const PlayerFlagsSchema = z.record(z.string(), z.boolean());
 

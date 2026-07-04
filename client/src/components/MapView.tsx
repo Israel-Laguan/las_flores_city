@@ -136,7 +136,6 @@ function DistrictView({ district, dayNight, currentLocationId, onTileClick, onBa
         tiles={tiles}
         minX={minX}
         minY={minY}
-        maxY={maxY}
         cols={cols}
         rows={rows}
         currentLocationId={currentLocationId}
@@ -150,14 +149,13 @@ interface TileGridProps {
   tiles: Tile[];
   minX: number;
   minY: number;
-  maxY: number;
   cols: number;
   rows: number;
   currentLocationId?: string;
   onTileClick: (tile: Tile) => void;
 }
 
-function TileGrid({ tiles, minX, minY, maxY, cols, rows, currentLocationId, onTileClick }: TileGridProps) {
+function TileGrid({ tiles, minX, minY, cols, rows, currentLocationId, onTileClick }: TileGridProps) {
   return (
     <div
       className="tile-grid"

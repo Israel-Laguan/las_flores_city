@@ -10,7 +10,6 @@ import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { uploadToMinio, signMinioUrl, deleteFromMinio } from '../services/StorageService.js';
 import { executePublishAsset, slugify } from './assets.helpers.js';
 import { sanitizePromptRel } from '../utils/sanitize.js';
-import crypto from 'crypto';
 
 export async function handleListAssets(req: Request, res: Response, next: NextFunction) {
   try {

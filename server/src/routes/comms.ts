@@ -5,7 +5,6 @@ import {
 } from '../middleware/auth.js';
 import {
   queryOLTP,
-  queryOLAP,
 } from '../database/connection.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
 import { userStateCacheKey } from './player-helpers.js';

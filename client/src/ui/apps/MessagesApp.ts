@@ -14,8 +14,6 @@ import {
   scrollThreadToBottom,
   setChoicesDisabled,
   appendInlineError,
-  createBubble,
-  createChoiceButton,
 } from './MessagesApp.rendering.js';
 
 type View = 'inbox' | 'thread' | 'loading' | 'error';

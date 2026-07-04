@@ -318,8 +318,8 @@ export class IronGateValidator {
   // ────────────────────────────────────────────────────────────
 
   private static async _validateVaultUnlock(
-    client: pg.PoolClient,
-    userId: string,
+    _client: pg.PoolClient,
+    _userId: string,
     _leaf: GuardedLeaf
   ): Promise<{ success: boolean }> {
     // The GuardedLeaf schema does not include vault_unlock as a

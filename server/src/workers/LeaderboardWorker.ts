@@ -1,7 +1,7 @@
 import { oltpPool, queryOLAP } from '../database/connection.js';
 import { invalidatePattern } from '../database/redis.js';
 import { SocialFeedService } from '../services/SocialFeedService.js';
-import type { LeaderboardBadgeType, LeaderboardEntry } from '../../../shared/src/types/leaderboard.js';
+import type { LeaderboardBadgeType } from '../../../shared/src/types/leaderboard.js';
 
 const LEADERBOARD_SOCIAL_HANDLE = '@system';
 const LEADERBOARD_SOCIAL_AUTHOR = 'Las Flores Network';

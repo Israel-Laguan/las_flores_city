@@ -13,9 +13,9 @@ export async function getAdminUser() {
     const response = await fetch(`${serverUrl}/auth/admin-me`, {
       method: 'GET',
       headers: {
+        'Cookie': `jwt_session=${sessionCookie.value}`,
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -34,12 +34,21 @@ export async function adminFetch(url: string, options: RequestInit = {}) {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
   const headers = new Headers(options.headers);
-  headers.set('Content-Type', 'application/json');
+  
+  // Only set Content-Type for JSON-compatible bodies; skip for FormData uploads
+  if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  const cookieStore = cookies();
+  const sessionCookie = cookieStore.get('jwt_session');
+  if (sessionCookie && !headers.has('Cookie')) {
+    headers.set('Cookie', `jwt_session=${sessionCookie.value}`);
+  }
 
   const response = await fetch(`${serverUrl}${url}`, {
     ...options,
     headers,
-    credentials: 'include',
   });
 
   if (!response.ok) {

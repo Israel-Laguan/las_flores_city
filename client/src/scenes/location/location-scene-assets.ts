@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
-import { createLoadingOverlay, LoadingOverlay } from './loading-overlay.js';
+import { LoadingOverlay } from './loading-overlay.js';
 import { addScanlines, addVignette, addNeonFlare } from './atmosphere-effects.js';
-import { applyRainEffect, applyTenseEffect, applyNeonEffect } from './mood-effects.js';
 
 interface ScenePayload {
   scene: {
@@ -28,8 +27,7 @@ export function createAtmosphereEffects(
 
 export function createHUDBlocks(
   scene: Phaser.Scene,
-  width: number,
-  height: number
+  width: number
 ): {
   locationNameContainer: Phaser.GameObjects.Container;
   locationValueText: Phaser.GameObjects.Text;

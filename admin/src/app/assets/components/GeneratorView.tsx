@@ -298,7 +298,6 @@ export default function GeneratorView({
 
       <BasesSection
         bases={bases}
-        groups={groups}
         newBaseIds={newBaseIds}
         loading={loading}
         onDeleteAll={() => deleteAllBases(bases, setLoading, setError, setBases, setVariants, setNewBaseIds, loadGroups)}
@@ -306,6 +305,8 @@ export default function GeneratorView({
         onImport={() => importLocalDrafts({ selectedEntry, setLoading, setError, loadAssets, loadGroups })}
         onDeleteBase={(baseId) => deleteBase(baseId, setLoading, setError, setBases, setVariants, loadGroups)}
         onApproveBase={(baseId) => approveBase(baseId, setLoading, setError, setBases)}
+        error={error}
+        setError={setError}
       />
 
       {chosenBase && (

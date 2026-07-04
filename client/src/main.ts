@@ -70,31 +70,6 @@ export function hideAllContainers(): void {
   document.getElementById('game-container')!.style.display = 'none';
 }
 
-async function fetchPlayerData(): Promise<void> {
-  const state = await (await import('./utils/api')).getPlayerState();
-  if (!state.success) return;
-  eventBus.emit('player:state-loaded', state.data);
-
-  if (state.data.currentNodeId !== null) {
-    eventBus.emit('ui:lock-phone-apps', true);
-    eventBus.emit('dialogue:resume');
-  } else {
-    eventBus.emit('ui:lock-phone-apps', false);
-
-    if (state.data.locationId) {
-      const location = await (await import('./utils/api')).getLocation(state.data.locationId);
-      if (location.success) {
-        const flatLocation = {
-          id: location.data.scene?.id,
-          name: location.data.scene?.title || 'Unknown',
-          npcs: location.data.npcs,
-        };
-        eventBus.emit('location:loaded', flatLocation);
-      }
-    }
-  }
-}
-
 export function startGame(): void {
   hideAllContainers();
   document.getElementById('game-container')!.style.display = 'flex';

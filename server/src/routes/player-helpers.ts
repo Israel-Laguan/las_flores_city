@@ -1,5 +1,5 @@
 import type { PoolClient } from 'pg';
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 export function userStateCacheKey(userId: string): string {

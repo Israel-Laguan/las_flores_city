@@ -5,9 +5,10 @@ import BaseCard from './BaseCard';
 
 type Props = {
   bases: AssetBase[];
-  groups: AssetListAllResponse['groups'];
   newBaseIds: Set<string>;
   loading: boolean;
+  error: string | null;
+  setError: (v: string | null) => void;
   onDeleteAll: () => void;
   onGenerate: () => void;
   onImport: () => void;
@@ -15,7 +16,7 @@ type Props = {
   onApproveBase: (baseId: string) => void;
 };
 
-export default function BasesSection({ bases, groups, newBaseIds, loading, onDeleteAll, onGenerate, onImport, onDeleteBase, onApproveBase }: Props) {
+export default function BasesSection({ bases, newBaseIds, loading, error, setError, onDeleteAll, onGenerate, onImport, onDeleteBase, onApproveBase }: Props) {
   return (
     <div style={{ marginBottom: '3rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

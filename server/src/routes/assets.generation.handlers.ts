@@ -4,7 +4,6 @@ import {
   GenerateVariantsRequestSchema,
 } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
-import { generateBaseImage, generateVariantImage } from '../services/AssetGenerationService.js';
 import { deleteFromMinio, uploadToMinio } from '../services/StorageService.js';
 import { resolvePromptFile, slugify } from './assets.helpers.js';
 import { sanitizePromptRel } from '../utils/sanitize.js';
@@ -32,7 +31,7 @@ export async function handleGenerateBases(req: Request, res: Response, next: Nex
       return;
     }
 
-    const { parsed, baseVariant, finalWidth, finalHeight, finalAssetType, finalNegativePrompt } = await prepareBaseGeneration(
+    const { baseVariant, finalWidth, finalHeight, finalAssetType, finalNegativePrompt } = await prepareBaseGeneration(
       sanitizedPromptRel,
       promptFile,
       width,

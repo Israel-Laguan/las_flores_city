@@ -1,7 +1,6 @@
 import '../styles/city-nav.css';
 import { navigateTo } from '../router';
 import * as api from '../utils/api';
-import { eventBus } from '../utils/EventBus';
 
 interface LocationInfo {
   id: string;

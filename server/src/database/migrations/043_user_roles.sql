@@ -13,11 +13,9 @@ ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS users_role_check
 -- Create index for role column for faster admin queries
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
--- Update existing dev user to have admin role (idempotent, safe in all environments)
--- This is a convenience for local development
-UPDATE users 
-SET role = 'admin'
-WHERE id = '00000000-0000-0000-0000-000000000001' 
-AND role = 'player';
+-- Dev-only convenience seed moved out of the migration path.
+-- Promote the local dev user via a separate `npm run seed:dev` script
+-- gated on NODE_ENV !== 'production', not inside a migration that
+-- always executes against every database including production.
 
 COMMIT;
