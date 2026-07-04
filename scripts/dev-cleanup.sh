@@ -17,7 +17,6 @@ set -e
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DRY_RUN=true
 CATEGORIES=""
-DELETE_FILES=false
 
 # Colors for output
 RED='\033[0;31m'
@@ -33,8 +32,7 @@ Usage: $(basename "$0") [OPTIONS]
 Find and help clean up development artifacts from the repository.
 
 Options:
-    --dry-run           Show what would be found/deleted (default)
-    --delete            Actually delete found files (requires confirmation)
+    --dry-run           Show what would be found (default)
     --categories CATS   Comma-separated categories to scan (default: all)
     --help, -h          Show this help message
 
@@ -47,9 +45,8 @@ Categories:
 
 Examples:
     $(basename "$0")                          # Scan and report
-    $(basename "$0") --dry-run                # Show what would be removed
+    $(basename "$0") --dry-run                # Show what would be found
     $(basename "$0") --categories temp,debug  # Only scan temp and debug files
-    $(basename "$0") --delete                 # Delete found files (with confirm)
 
 EOF
     exit 0
@@ -61,6 +58,10 @@ log_info() {
 
 log_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
 }
 
 log_section() {
@@ -76,11 +77,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --dry-run)
             DRY_RUN=true
-            shift
-            ;;
-        --delete)
-            DELETE_FILES=true
-            DRY_RUN=false
             shift
             ;;
         --categories)
@@ -102,29 +98,7 @@ echo ""
 echo "Project: $PROJECT_ROOT"
 echo "Mode: $([ "$DRY_RUN" == "true" ] && echo "Dry Run" || echo "Delete")"
 
-# Helper function to find files
-find_files() {
-    local pattern="$1"
-    local description="$2"
-    local files
-
-    files=$(find "$PROJECT_ROOT" -type f \( -name "*.md" -o -name "*.txt" -o -name "*.sh" \) \
-        -exec grep -l -i "$pattern" {} \; 2>/dev/null || true)
-
-    if [[ -n "$files" ]]; then
-        log_section "$description"
-        echo "$files" | while IFS= read -r file; do
-            # Make path relative to project root
-            rel_path="${file#$PROJECT_ROOT/}"
-            echo "  - $rel_path"
-        done
-        return 0
-    fi
-    return 1
-}
-
-# Track findings
-declare -A findings
+# Track total files found
 total_files=0
 
 # Check if a category should be scanned
@@ -298,18 +272,12 @@ log_section "Summary"
 echo "Total files found: $total_files"
 echo ""
 
-if [[ "$DRY_RUN" == "true" ]]; then
-    echo -e "${YELLOW}This was a dry run. No files were deleted.${NC}"
+echo -e "${GREEN}Scan complete.${NC}"
+if [[ $total_files -gt 0 ]]; then
     echo ""
-    echo "To actually delete these files, run:"
-    echo "  $0 --delete"
-else
-    echo -e "${GREEN}Files have been processed.${NC}"
-    if [[ $total_files -gt 0 ]]; then
-        echo ""
-        echo "Note: Only temporary and debug files were considered for deletion."
-        echo "Build artifacts and node_modules are preserved."
-    fi
+    echo "Files found: $total_files"
+    echo "Note: This script currently only scans and reports. To clean up files,"
+    echo "  remove them manually based on the report above."
 fi
 
 echo ""

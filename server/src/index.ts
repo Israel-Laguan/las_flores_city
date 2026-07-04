@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'node:fs';
 import { cookieParserMiddleware } from './utils/cookies.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
@@ -28,6 +29,51 @@ import { runAllMigrations } from './database/migrate.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 
 dotenv.config();
+
+// Resolve _FILE environment variables to their plain counterparts
+// This allows Docker secrets to work with code that reads plain env vars
+function resolveFileEnvVars() {
+  const fileEnvMap: Record<string, string> = {
+    JWT_SECRET_FILE: 'JWT_SECRET',
+    PATREON_CLIENT_SECRET_FILE: 'PATREON_CLIENT_SECRET',
+    PAYPAL_SECRET_FILE: 'PAYPAL_SECRET',
+    MINIO_ACCESS_KEY_FILE: 'MINIO_ACCESS_KEY',
+    MINIO_SECRET_KEY_FILE: 'MINIO_SECRET_KEY',
+    CDN_SIGNING_SECRET_FILE: 'CDN_SIGNING_SECRET',
+    POSTGRES_PASSWORD_FILE: 'POSTGRES_PASSWORD',
+    POSTGRES_ANALYTICS_PASSWORD_FILE: 'POSTGRES_ANALYTICS_PASSWORD',
+    MINIO_ROOT_USER_FILE: 'MINIO_ROOT_USER',
+    MINIO_ROOT_PASSWORD_FILE: 'MINIO_ROOT_PASSWORD',
+  };
+
+  for (const [fileVar, targetVar] of Object.entries(fileEnvMap)) {
+    const filePath = process.env[fileVar];
+    if (filePath && !process.env[targetVar]) {
+      try {
+        const value = fs.readFileSync(filePath, 'utf8').trim();
+        process.env[targetVar] = value;
+        console.log(`🔐 Loaded ${targetVar} from ${fileVar}`);
+      } catch (err) {
+        console.warn(`⚠️ Could not read ${fileVar} at ${filePath}:`, err);
+      }
+    }
+  }
+
+  // Construct database URLs if passwords were loaded from _FILE secrets
+  if (process.env.POSTGRES_PASSWORD && process.env.DATABASE_URL?.includes('${POSTGRES_PASSWORD}')) {
+    const baseUrl = process.env.DATABASE_URL.replace('${POSTGRES_PASSWORD}', process.env.POSTGRES_PASSWORD);
+    process.env.DATABASE_URL = baseUrl;
+    console.log(`🔐 Constructed DATABASE_URL from POSTGRES_PASSWORD`);
+  }
+
+  if (process.env.POSTGRES_ANALYTICS_PASSWORD && process.env.ANALYTICS_DATABASE_URL?.includes('${POSTGRES_ANALYTICS_PASSWORD}')) {
+    const baseUrl = process.env.ANALYTICS_DATABASE_URL.replace('${POSTGRES_ANALYTICS_PASSWORD}', process.env.POSTGRES_ANALYTICS_PASSWORD);
+    process.env.ANALYTICS_DATABASE_URL = baseUrl;
+    console.log(`🔐 Constructed ANALYTICS_DATABASE_URL from POSTGRES_ANALYTICS_PASSWORD`);
+  }
+}
+
+resolveFileEnvVars();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -21,4 +21,10 @@ RUN npm run build --workspace=shared && npm run build --workspace=admin
 
 EXPOSE 3000
 
+# Copy startup script
+COPY admin/start.sh /app/admin/start.sh
+RUN chmod +x /app/admin/start.sh
+
+# For development: use npm run dev
+# For production: use start.sh which resolves secrets before starting
 CMD ["npm", "run", "dev", "--workspace=admin"]

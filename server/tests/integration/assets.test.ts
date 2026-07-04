@@ -87,7 +87,7 @@ let server: ReturnType<typeof express.Application.listen>;
 let oltpPool: pg.Pool;
 let port: number;
 
-const TEST_PROMPT_REL = 'test_assets_prompt';
+let TEST_PROMPT_REL: string;
 
 beforeAll(async () => {
   const { assetsRouter } = await import('../../src/routes/assets.js');
@@ -108,6 +108,10 @@ beforeAll(async () => {
       'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
     connectionTimeoutMillis: 5000,
   });
+
+  // Generate a unique test key to avoid collisions with other test runs
+  const crypto = await import('node:crypto');
+  TEST_PROMPT_REL = `test_assets_prompt_${crypto.randomUUID().replace(/-/g, '_')}`;
 
   await oltpPool.query('DELETE FROM asset_variants WHERE prompt_text LIKE $1 OR variant_name LIKE $1', ['%test%']);
   await oltpPool.query('DELETE FROM asset_bases WHERE prompt_rel = $1', [TEST_PROMPT_REL]);

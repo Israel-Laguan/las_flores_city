@@ -140,27 +140,23 @@ if [[ ${#MISSING_VARS[@]} -gt 0 ]]; then
     exit 1
 fi
 
-# Get container IPs for host mapping
-get_container_ip() {
-    local container_name="$1"
-    podman inspect "$container_name" 2>/dev/null | jq -r '.[0].NetworkSettings.Networks[].IPAddress // empty'
-}
-
-# Build common environment variables for the container
-ENV_VARS="-e DATABASE_URL=$DATABASE_URL"
-ENV_VARS="$ENV_VARS -e REDIS_URL=$REDIS_URL"
-ENV_VARS="$ENV_VARS -e NODE_ENV=test"
+# Build common environment variables for the container as an array
+ENV_VARS=()
+ENV_VARS+=("-e" "DATABASE_URL=$DATABASE_URL")
+ENV_VARS+=("-e" "REDIS_URL=$REDIS_URL")
+ENV_VARS+=("-e" "NODE_ENV=test")
 
 if [[ -n "$ANALYTICS_DATABASE_URL" ]]; then
-    ENV_VARS="$ENV_VARS -e ANALYTICS_DATABASE_URL=$ANALYTICS_DATABASE_URL"
+    ENV_VARS+=("-e" "ANALYTICS_DATABASE_URL=$ANALYTICS_DATABASE_URL")
 fi
 
 if [[ -n "$JWT_SECRET" ]]; then
-    ENV_VARS="$ENV_VARS -e JWT_SECRET=$JWT_SECRET"
+    ENV_VARS+=("-e" "JWT_SECRET=$JWT_SECRET")
 fi
 
 # Build the test command
-TEST_COMMAND="cd /${SERVER_DIR} && npm test -- ${TEST_PATH}"
+# The container workdir is /app, and SERVER_DIR is "server", so TEST_PATH should be relative to /app
+TEST_COMMAND="cd ${SERVER_DIR} && npm test -- ${TEST_PATH}"
 
 if [[ "$VERBOSE" == "true" ]]; then
     TEST_COMMAND="$TEST_COMMAND --verbose"
@@ -173,9 +169,9 @@ log_info "Command: $TEST_COMMAND"
 podman run --rm \
     --network host \
     -v "$PROJECT_ROOT:/${CONTAINER_WORKDIR}:ro" \
-    -w "${CONTAINER_WORKDIR}/${SERVER_DIR}" \
-    $ENV_VARS \
-    node:18-alpine \
+    -w "${CONTAINER_WORKDIR}" \
+    "${ENV_VARS[@]}" \
+    node:20-alpine \
     sh -c "$TEST_COMMAND"
 
 exit_code=$?

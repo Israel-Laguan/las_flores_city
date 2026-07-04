@@ -10,7 +10,10 @@ export async function loadGroups(
   setError?: (v: string | null) => void
 ): Promise<void> {
   try {
-    const res = await fetch(`${API_BASE}/list-all`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch(`${API_BASE}/list-all`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     const data = await res.json();
     if (data.success) {
       setGroups(data.data.groups);
@@ -24,7 +27,7 @@ export async function loadGroups(
     console.error('Failed to load groups', e);
     // If there's a setError function, use it to show the error
     if (setError) {
-      setError('Failed to load groups');
+      setError(e instanceof Error && e.name === 'AbortError' ? 'Request timed out' : 'Failed to load groups');
     }
   }
 }

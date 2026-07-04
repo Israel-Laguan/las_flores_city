@@ -26,15 +26,15 @@ Rel: can't make relative to /home/anthony/code/las_flores_city/server
 
 **Cause:** Build context is `./server` but Dockerfile has:
 ```dockerfile
-COPY ./server/package*.json ./server/
+COPY ./shared/package.json ./shared/
 ```
 
-This resolves to `./server/server/package.json` (doesn't exist).
+This resolves to `./server/../shared/package.json` but the build context is only `./server`, so `../shared` is outside the context and inaccessible.
 
 **Fix:** When context is `./server`, the Dockerfile should use paths relative to that context:
 
 ```dockerfile
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -79,6 +79,8 @@ If you prefer to keep original Dockerfile paths, use project root as context:
 ```bash
 podman build -t las-flores-server -f server/Dockerfile .
 ```
+
+This allows COPY commands like `COPY ./shared/package.json ./shared/` to work because the build context includes all sibling directories.
 
 ## Running Tests with Podman
 

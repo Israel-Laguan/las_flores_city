@@ -5,12 +5,13 @@ services:
   # PostgreSQL - OLTP (Main Game State)
   postgres-oltp:
     # Remove public port exposure - only accessible via internal network
-    # ports:
-    #   - "5434:5432"
+    ports: !reset []
     # Production restart policy - ensure automatic recovery
     restart: unless-stopped
     # Use secrets in production (via external secrets or k8s)
+    # Clear plaintext password before setting _FILE variant (Postgres entrypoint requires exclusivity)
     environment:
+      POSTGRES_PASSWORD: !reset null
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     secrets:
       - postgres_password
@@ -18,10 +19,10 @@ services:
   # PostgreSQL - OLAP (Analytics & Leaderboards)
   postgres-olap:
     # Remove public port exposure - only accessible via internal network
-    # ports:
-    #   - "5433:5432"
+    ports: !reset []
     restart: unless-stopped
     environment:
+      POSTGRES_PASSWORD: !reset null
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_analytics_password
     secrets:
       - postgres_analytics_password
@@ -29,17 +30,18 @@ services:
   # Redis - Versioned Content Cache
   redis:
     # Remove public port exposure - only accessible via internal network
-    # ports:
-    #   - "6379:6379"
+    ports: !reset []
     restart: unless-stopped
 
   # MinIO - S3-compatible Object Storage (for Signed URLs)
   minio:
     restart: unless-stopped
-    # Production: Only expose console, API should be behind internal network/reverse proxy
-    ports:
+    # Production: Only expose console (9001), API (9000) should be behind internal network/reverse proxy
+    ports: !override
       - "9001:9001"
     environment:
+      MINIO_ROOT_USER: !reset null
+      MINIO_ROOT_PASSWORD: !reset null
       MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
     secrets:
@@ -50,51 +52,66 @@ services:
   server:
     restart: unless-stopped
     # Production: Remove source code volume mounts - use built image
-    volumes: []
+    volumes: !reset []
     # Override start_period for faster health checks in production
     healthcheck:
       start_period: 10s
     environment:
-      # Production: No defaults - all secrets must be provided externally
-      DATABASE_URL: postgresql://las_flores@postgres-oltp:5432/las_flores
-      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics@postgres-olap:5432/las_flores_analytics
+      # Production: Use _FILE secrets that the server's startup resolver will read
+      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
+      # Database passwords via _FILE (resolver will read and set POSTGRES_PASSWORD, etc.)
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_ANALYTICS_PASSWORD_FILE: /run/secrets/postgres_analytics_password
+      # _FILE secrets - startup resolver (resolveFileEnvVars) will read these and set plain env vars
       MINIO_ACCESS_KEY_FILE: /run/secrets/minio_access_key
       MINIO_SECRET_KEY_FILE: /run/secrets/minio_secret_key
       JWT_SECRET_FILE: /run/secrets/jwt_secret
+      PATREON_CLIENT_ID_FILE: /run/secrets/patreon_client_id
+      PATREON_CLIENT_SECRET_FILE: /run/secrets/patreon_client_secret
+      PAYPAL_SECRET_FILE: /run/secrets/paypal_secret
       # Production: These MUST be set externally
       # CDN_BASE_URL:
       # CDN_KEY_PAIR_ID:
       # CDN_PRIVATE_KEY_PATH:
       SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
-      PATREON_CLIENT_ID_FILE: /run/secrets/patreon_client_id
-      PATREON_CLIENT_SECRET_FILE: /run/secrets/patreon_client_secret
       PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI}
       PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS}
       CLIENT_BASE_URL: ${CLIENT_BASE_URL}
     secrets:
+      - postgres_password
+      - postgres_analytics_password
       - minio_access_key
       - minio_secret_key
       - jwt_secret
       - patreon_client_id
       - patreon_client_secret
+      - paypal_secret
 
   # Admin Panel - Next.js
   admin:
     restart: unless-stopped
     # Production: Remove source code volume mounts - use built image
-    volumes: []
+    volumes: !reset []
     environment:
       # Production: Use internal server URL
       API_URL: http://server:3000
-      DATABASE_URL: postgresql://las_flores@postgres-oltp:5432/las_flores
+      # Database password via _FILE - will be resolved by startup script
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      # Use start.sh as entrypoint to resolve secrets
+      NODE_ENV: production
+    secrets:
+      - postgres_password
     depends_on:
       server:
         condition: service_healthy
       postgres-oltp:
         condition: service_healthy
+    command: sh /app/admin/start.sh npm run start --workspace=admin
 
 # Docker Secrets - Use external secrets in production (e.g., Swarm mode, Kubernetes)
 # Example secrets file structure (create per-environment):
@@ -117,3 +134,5 @@ services:
 #     file: ./secrets/patreon_client_id.txt
 #   patreon_client_secret:
 #     file: ./secrets/patreon_client_secret.txt
+#   paypal_secret:
+#     file: ./secrets/paypal_secret.txt
