@@ -118,6 +118,7 @@ podman run -d --name las-flores-server \
   -v ./server/src:/app/server/src \
   -v ./shared:/app/shared \
   -v ./content:/app/content \
+  -v ./docs:/app/docs:ro \
   -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@10.89.0.3:5432/las_flores \
   -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@10.89.0.4:5432/las_flores_analytics \
   -e REDIS_URL=redis://10.89.0.5:6379 \
@@ -147,6 +148,46 @@ podman rm -f las-flores-minio
 podman network rm las-flores-net
 podman volume rm postgres-oltp-data postgres-olap-data redis-data minio-data
 ```
+
+### Helper Scripts
+
+Several helper scripts streamline development tasks:
+
+#### `scripts/run-tests-podman.sh`
+Run tests in a Podman container with proper environment:
+
+```bash
+# Run specific test file
+./scripts/run-tests-podman.sh server/tests/integration/assets.test.ts
+
+# Run test directory
+./scripts/run-tests-podman.sh server/tests/integration/
+
+# With custom env file
+./scripts/run-tests-podman.sh server/tests/ --env .env.test
+
+# Show help
+./scripts/run-tests-podman.sh --help
+```
+
+#### `scripts/dev-cleanup.sh`
+Find and clean development artifacts:
+
+```bash
+# Scan and report (dry-run)
+./scripts/dev-cleanup.sh
+
+# Show what would be deleted
+./scripts/dev-cleanup.sh --dry-run
+
+# Delete found artifacts (with confirmation)
+./scripts/dev-cleanup.sh --delete
+
+# Only scan specific categories
+./scripts/dev-cleanup.sh --categories temp,debug
+```
+
+Categories: `temp`, `task`, `debug`, `build`, `ide`
 
 ### Podman gotchas
 

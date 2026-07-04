@@ -12,6 +12,8 @@ import { oltpPool } from '@/lib/database';
 // GET /health. Does not expose any data.
 // ============================================================
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await oltpPool.query('SELECT 1');

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const DEFAULT_TTL_SECONDS = 300;
@@ -14,10 +14,19 @@ const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env
 
 let s3Client: S3Client | null = null;
 
+function getMinioEndpointUrl(): string {
+  const endpoint = MINIO_ENDPOINT.match(/^https?:\/\//) ? MINIO_ENDPOINT : `http://${MINIO_ENDPOINT}`;
+  const url = new URL(endpoint);
+  if (!url.port) {
+    url.port = MINIO_PORT;
+  }
+  return url.toString().replace(/\/$/, '');
+}
+
 function getS3Client(): S3Client {
   if (!s3Client) {
     s3Client = new S3Client({
-      endpoint: `http://${MINIO_ENDPOINT}:${MINIO_PORT}`,
+      endpoint: getMinioEndpointUrl(),
       region: 'us-east-1',
       credentials: {
         accessKeyId: MINIO_ACCESS_KEY,
@@ -118,4 +127,73 @@ export async function fetchCdnMedia(mediaUrl: string): Promise<{ buffer: Buffer;
   const contentType = response.headers.get('content-type') || 'application/octet-stream';
   const arrayBuffer = await response.arrayBuffer();
   return { buffer: Buffer.from(arrayBuffer), contentType };
+}
+
+// Cache for bucket existence checks
+let bucketExistsCache: boolean | null = null;
+
+/**
+ * Ensure the MinIO bucket exists, create it if it doesn't
+ */
+async function ensureBucketExists(): Promise<void> {
+  if (bucketExistsCache === true) return;
+  
+  const { CreateBucketCommand, HeadBucketCommand } = await import('@aws-sdk/client-s3');
+  const client = getS3Client();
+  
+  try {
+    // Check if bucket exists
+    await client.send(new HeadBucketCommand({ Bucket: MINIO_BUCKET }));
+    bucketExistsCache = true;
+  } catch (err: any) {
+    if (err.name === 'NotFound' || err.name === 'NoSuchBucket') {
+      // Bucket doesn't exist, create it
+      try {
+        await client.send(new CreateBucketCommand({ Bucket: MINIO_BUCKET }));
+        bucketExistsCache = true;
+        console.log(`[MinIO] Created bucket: ${MINIO_BUCKET}`);
+      } catch (createErr: any) {
+        // MinIO might already have the bucket created by another process
+        // Check again after creation attempt
+        try {
+          await client.send(new HeadBucketCommand({ Bucket: MINIO_BUCKET }));
+          bucketExistsCache = true;
+          console.log(`[MinIO] Bucket ${MINIO_BUCKET} already exists or was created by another process`);
+        } catch {
+          console.error(`[MinIO] Failed to create bucket ${MINIO_BUCKET}:`, createErr.message);
+          throw createErr;
+        }
+      }
+    } else {
+      // Some other error
+      console.error(`[MinIO] Error checking bucket ${MINIO_BUCKET}:`, err.message);
+      throw err;
+    }
+  }
+}
+
+export async function uploadToMinio(buffer: Buffer, key: string, contentType: string = 'image/png'): Promise<string> {
+  // Ensure bucket exists before uploading
+  await ensureBucketExists();
+  
+  const command = new PutObjectCommand({
+    Bucket: MINIO_BUCKET,
+    Key: key,
+    Body: buffer,
+    ContentType: contentType,
+  });
+  await getS3Client().send(command);
+  return `s3://${MINIO_BUCKET}/${key}`;
+}
+
+export async function deleteFromMinio(mediaUrl: string): Promise<void> {
+  const { DeleteObjectCommand } = await import('@aws-sdk/client-s3');
+  const location = parseS3Location(mediaUrl);
+  if (!location) return;
+
+  const command = new DeleteObjectCommand({
+    Bucket: location.bucket,
+    Key: location.key,
+  });
+  await getS3Client().send(command);
 }

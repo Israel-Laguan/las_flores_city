@@ -97,7 +97,7 @@
 .ledger-amount.income  { color: #33ff33; }
 .ledger-amount.expense { color: #ff3333; }
 
-/* ── Task 6.2: Balance flash animation ── */
+/* ── : Balance flash animation ── */
 .balance-card .value {
   will-change: transform, color, filter;
 }

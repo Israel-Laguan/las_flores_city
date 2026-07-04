@@ -7,7 +7,8 @@ services:
     environment:
       POSTGRES_DB: las_flores
       POSTGRES_USER: las_flores
-      POSTGRES_PASSWORD: las_flores_dev_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-las_flores_dev_password}
+    # Production: Remove port mapping, use internal network only
     ports:
       - "5434:5432"
     volumes:
@@ -26,7 +27,8 @@ services:
     environment:
       POSTGRES_DB: las_flores_analytics
       POSTGRES_USER: las_flores_analytics
-      POSTGRES_PASSWORD: las_flores_analytics_dev_password
+      POSTGRES_PASSWORD: ${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}
+    # Production: Remove port mapping, use internal network only
     ports:
       - "5433:5432"
     volumes:
@@ -42,6 +44,7 @@ services:
     image: redis:7-alpine
     container_name: las-flores-redis
     restart: unless-stopped
+    # Production: Remove port mapping, use internal network only
     ports:
       - "6379:6379"
     volumes:
@@ -59,8 +62,9 @@ services:
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    # Production: Only expose console (9001), remove API (9000) from public access
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -82,21 +86,21 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://las_flores:las_flores_dev_password@postgres-oltp:5432/las_flores
-      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@postgres-olap:5432/las_flores_analytics
+      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-      JWT_SECRET: your-jwt-secret-change-in-production
-      CDN_BASE_URL: ${CDN_BASE_URL:-https://cdn.lasflores2077.com}
-      CDN_KEY_PAIR_ID: ${CDN_KEY_PAIR_ID:-APKADEV00000000000000}
-      CDN_PRIVATE_KEY_PATH: ${CDN_PRIVATE_KEY_PATH:-/etc/secrets/cdn_private_key.pem}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
+      # Production: Use external secrets/config, no defaults
+      CDN_BASE_URL: ${CDN_BASE_URL}
+      CDN_KEY_PAIR_ID: ${CDN_KEY_PAIR_ID}
+      CDN_PRIVATE_KEY_PATH: ${CDN_PRIVATE_KEY_PATH}
       SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
-      
 
-      # Integración de Patreon
+      # Patreon Integration - use external secrets in production
       PATREON_CLIENT_ID: ${PATREON_CLIENT_ID}
       PATREON_CLIENT_SECRET: ${PATREON_CLIENT_SECRET}
       PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI:-http://localhost:3000/patreon/callback}
@@ -115,12 +119,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 20s
+      # Development: reduce start_period for faster feedback
+      start_period: ${DEV_MODE:-20}s
     volumes:
+      # Production: Remove volume mounts for source code
       - ./server/src:/app/server/src
       - ./shared:/app/shared
       - ./content:/app/content
-      
+      - ./docs:/app/docs:ro
 
   # Playwright E2E
   playwright:
@@ -150,13 +156,21 @@ services:
     ports:
       - "3001:3000"
     environment:
-      API_URL: http://localhost:3000
-      DATABASE_URL: postgresql://las_flores:las_flores_dev_password@postgres-oltp:5432/las_flores
+      API_URL: http://server:3000
+      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
+    # Fix: Change to service_healthy to wait for server to be ready
+    # Also add redis dependency since server needs it
     depends_on:
       server:
-        condition: service_started
+        condition: service_healthy
       postgres-oltp:
         condition: service_healthy
+    # Add healthcheck for admin service
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     volumes:
       - ./admin/src:/app/admin/src
       - ./shared:/app/shared

@@ -232,7 +232,7 @@ export class MessagesApp {
     scrollThreadToBottom(this.container);
   }
 
-  // ── Paced delivery (Task 6.2) ───────────────────────────────────────────────
+  // ── Paced delivery () ───────────────────────────────────────────────
 
   private async pacedDelivery(detail: SMSThreadDetail): Promise<void> {
     this.isPacing = true;

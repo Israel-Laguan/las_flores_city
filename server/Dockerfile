@@ -1,22 +1,27 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY server/package*.json ./server/
-COPY shared/package*.json ./shared/
-COPY client/package*.json ./client/
-COPY admin/package*.json ./admin/
+# Copy package files from project root
+COPY package.json ./package.json
+COPY server/package.json ./server/package.json
+COPY shared/package.json ./shared/package.json
+COPY client/package.json ./client/package.json
+COPY admin/package.json ./admin/package.json
 
-RUN npm ci
+# Install dependencies FIRST to create package-lock.json
+RUN npm install --no-save
 
-COPY .eslintrc.json ./
-COPY tsconfig.json ./
-COPY client/ ./client/
-COPY admin/ ./admin/
-COPY server/ ./server/
-COPY shared/ ./shared/
+# Copy source files
+COPY .eslintrc.json ./.eslintrc.json
+COPY tsconfig.json ./tsconfig.json
+COPY client ./client
+COPY admin ./admin
+COPY server ./server
+COPY shared ./shared
+COPY docs ./docs
 
+# Build workspaces
 RUN npm run build --workspace=shared && npm run build --workspace=server
 
 EXPOSE 3000

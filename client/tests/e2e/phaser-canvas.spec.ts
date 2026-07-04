@@ -61,6 +61,7 @@ test.describe('Phaser Canvas', () => {
     
     // Wait for overlay to settle to none (closed state) before asserting
     const phoneOverlay = page.locator('#phone-overlay');
+    await expect(phoneOverlay).toBeAttached();
     await expect(phoneOverlay).toHaveCSS('pointer-events', 'none', { timeout: 5_000 });
   });
 });

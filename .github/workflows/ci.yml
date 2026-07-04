@@ -50,6 +50,21 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      minio:
+        image: minio/minio:latest
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+        ports:
+          - 9000:9000
+          - 9001:9001
+        options: >-
+          --health-cmd "mc ready local"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        command: server /data --console-address :9001
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,7 +72,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -82,6 +97,11 @@ jobs:
             DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
             ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
             REDIS_URL: redis://localhost:6379
+            MINIO_ENDPOINT: localhost
+            MINIO_PORT: 9000
+            MINIO_ACCESS_KEY: minioadmin
+            MINIO_SECRET_KEY: minioadmin
+            MINIO_BUCKET: las-flores
             CDN_BASE_URL: https://cdn.lasflores2077.com
             CDN_KEY_PAIR_ID: APKADEV00000000000000
             CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
@@ -100,7 +120,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies

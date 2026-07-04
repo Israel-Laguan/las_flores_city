@@ -27,7 +27,7 @@ dialogueRouter.post('/start', authMiddleware, async (req: AuthRequest, res) => {
 // ============================================================
 // POST /dialogue/:id/choose - Make a choice
 //
-// Task 6.2: Accept { current_chunk_id, choice_id } instead of
+// : Accept { current_chunk_id, choice_id } instead of
 // { choiceIndex }. Calls IronGateValidator.validateChoice for
 // chunk boundary validation. Handles FREE and GUARDED leaves.
 // Loads next chunk when crossing boundary. Appends TB receipt.
@@ -85,7 +85,7 @@ dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, r
 // ============================================================
 // GET /dialogue/active - Get current active dialogue (for refresh recovery)
 //
-// Task 6.3: Return chunk format with merged overlays.
+// : Return chunk format with merged overlays.
 // Include current_chunk_id in response.
 //
 // Requirements: 8.4
