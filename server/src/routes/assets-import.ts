@@ -4,7 +4,7 @@ import { uploadToMinio, deleteFromMinio } from '../services/StorageService.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { PROMPT_ROOT, parsePromptFile, resolvePromptFile, slugify } from './assets.helpers.js';
+import { getPromptRoot, parsePromptFile, resolvePromptFile, slugify } from './assets.helpers.js';
 
 const DRAFTS_DIR = 'drafts';
 
@@ -30,7 +30,7 @@ function isBaseVariant(filename: string): boolean {
  */
 function getPromptRelFromDraftsFolder(draftsFolder: string): string {
   const parentFolder = path.dirname(draftsFolder);
-  const relPath = path.relative(PROMPT_ROOT, parentFolder);
+  const relPath = path.relative(getPromptRoot(), parentFolder);
   return relPath.replace(/\.prompt$/, '');
 }
 
@@ -81,8 +81,8 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
           }
         }
       };
-      console.log(`[import-drafts] Walking PROMPT_ROOT: ${PROMPT_ROOT}`);
-      await walk(PROMPT_ROOT);
+      console.log(`[import-drafts] Walking PROMPT_ROOT: ${getPromptRoot()}`);
+      await walk(getPromptRoot());
       console.log(`[import-drafts] Found ${draftsFolders.length} drafts folders`);
     } else {
       const promptFile = resolvePromptFile(prompt_rel as string);
@@ -111,7 +111,7 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
       console.log(`[import-drafts] No drafts folders found`);
       return res.status(404).json({
         success: false,
-        error: `No drafts folders found. PROMPT_ROOT=${PROMPT_ROOT}`,
+        error: `No drafts folders found. PROMPT_ROOT=${getPromptRoot()}`,
         timestamp: new Date().toISOString()
       });
     }

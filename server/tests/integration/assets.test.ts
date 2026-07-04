@@ -7,8 +7,8 @@ import express from 'express';
 import path from 'node:path';
 
 // Set PROMPT_ROOT to the actual location relative to repo root
-// In CI, process.cwd() is the server directory, so we need to go up one level
-process.env.PROMPT_ROOT = path.resolve(process.cwd(), '../../docs/lore/assets/ui-concepts');
+// In CI and podman, process.cwd() is the server directory.
+process.env.PROMPT_ROOT = path.resolve(process.cwd(), '../docs/lore/assets/ui-concepts');
 
 // Mock AWS SDK and StorageService using ESM mocks
 // These must be set up before importing the routes
@@ -23,15 +23,20 @@ const mockGenerateBaseImage = jestGlobals.fn().mockResolvedValue(Buffer.from('ba
 const mockGenerateVariantImage = jestGlobals.fn().mockResolvedValue(Buffer.from('variant-image-data'.repeat(1000)));
 const mockFetchImageAsBase64 = jestGlobals.fn().mockResolvedValue(Buffer.from('mock-image-data').toString('base64'));
 
+function exactArrayBuffer(value: Buffer | string): ArrayBuffer {
+  const buffer = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+}
+
 // Mock AWS SDK modules
-jestGlobals.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
+jestGlobals.doMock('@aws-sdk/s3-request-presigner', () => ({
   getSignedUrl: jestGlobals.fn().mockResolvedValue('http://mocked-signed-url'),
   default: {
     getSignedUrl: jestGlobals.fn().mockResolvedValue('http://mocked-signed-url'),
   },
 }));
 
-jestGlobals.unstable_mockModule('@aws-sdk/client-s3', () => ({
+jestGlobals.doMock('@aws-sdk/client-s3', () => ({
   S3Client: jestGlobals.fn().mockImplementation(() => ({
     send: jestGlobals.fn().mockResolvedValue({}),
   })),
@@ -51,7 +56,7 @@ jestGlobals.unstable_mockModule('@aws-sdk/client-s3', () => ({
 }));
 
 // Mock StorageService
-jestGlobals.unstable_mockModule('../../src/services/StorageService.ts', () => ({
+jestGlobals.doMock('../../src/services/StorageService.js', () => ({
   signMinioUrl: mockSignMinioUrl,
   uploadToMinio: mockUploadToMinio,
   deleteFromMinio: mockDeleteFromMinio,
@@ -63,7 +68,7 @@ jestGlobals.unstable_mockModule('../../src/services/StorageService.ts', () => ({
 }));
 
 // Mock AssetGenerationService
-jestGlobals.unstable_mockModule('../../src/services/AssetGenerationService.ts', () => ({
+jestGlobals.doMock('../../src/services/AssetGenerationService.js', () => ({
   generateBaseImage: mockGenerateBaseImage,
   generateVariantImage: mockGenerateVariantImage,
   fetchImageAsBase64: mockFetchImageAsBase64,
@@ -74,20 +79,10 @@ jestGlobals.unstable_mockModule('../../src/services/AssetGenerationService.ts', 
   },
 }));
 
-// Now import the routes after mocking the dependencies
-import { assetsRouter } from '../../src/routes/assets.js';
-import { closeRedis } from '../../src/database/redis.js';
-
 const { Pool } = pg;
 
-const app = express();
-app.use(express.json());
-app.use('/assets', assetsRouter);
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
-});
-
+let app: express.Express;
+let closeRedis: () => Promise<void>;
 let server: ReturnType<typeof express.Application.listen>;
 let oltpPool: pg.Pool;
 let port: number;
@@ -95,12 +90,27 @@ let port: number;
 const TEST_PROMPT_REL = 'test_assets_prompt';
 
 beforeAll(async () => {
+  const { assetsRouter } = await import('../../src/routes/assets.js');
+  const redisModule = await import('../../src/database/redis.js');
+  closeRedis = redisModule.closeRedis;
+
+  app = express();
+  app.use(express.json());
+  app.use('/assets', assetsRouter);
+  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error(err);
+    res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+  });
+
   oltpPool = new Pool({
     connectionString:
       process.env.DATABASE_URL ||
       'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
     connectionTimeoutMillis: 5000,
   });
+
+  await oltpPool.query('DELETE FROM asset_variants WHERE prompt_text LIKE $1 OR variant_name LIKE $1', ['%test%']);
+  await oltpPool.query('DELETE FROM asset_bases WHERE prompt_rel = $1', [TEST_PROMPT_REL]);
 
   server = await new Promise<ReturnType<typeof app.listen>>((resolve) => {
     const s = app.listen(0, () => resolve(s));
@@ -184,7 +194,9 @@ describe('Assets API', () => {
   test('POST /assets/approve-base marks base as chosen and unchoses previous base', async () => {
     // Create a second base
     const base2Res = await oltpPool.query(
-      `INSERT INTO asset_bases (prompt_rel, proposal_index, image_path, chosen) VALUES ($1, 2, 'dummy', false) RETURNING id`,
+      `INSERT INTO asset_bases (prompt_rel, proposal_index, image_path, chosen, asset_type, prompt_text, negative_prompt, width, height)
+       VALUES ($1, 2, 'dummy', false, 'app-icon', 'test prompt', '', 1024, 1024)
+       RETURNING id`,
       [TEST_PROMPT_REL]
     );
     const base2Id = base2Res.rows[0].id;
@@ -253,14 +265,15 @@ describe('Assets API', () => {
     const originalFetch = global.fetch;
     
     // Mock fetch to handle the signed URL calls from executePublishAsset
-    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string, init?: RequestInit) => {
       if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
+          ok: true,
           status: 200,
-          arrayBuffer: async () => Buffer.from('fake-image-bytes').buffer,
+          arrayBuffer: async () => exactArrayBuffer('fake-image-bytes'),
         });
       }
-      return originalFetch(url);
+      return originalFetch(url, init);
     });
     
     try {
@@ -293,14 +306,15 @@ describe('Assets API', () => {
     const originalFetch = global.fetch;
     
     // Mock fetch to handle the signed URL calls from executePublishAsset
-    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string, init?: RequestInit) => {
       if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
+          ok: true,
           status: 200,
-          arrayBuffer: async () => Buffer.from('fake-image-bytes').buffer,
+          arrayBuffer: async () => exactArrayBuffer('fake-image-bytes'),
         });
       }
-      return originalFetch(url);
+      return originalFetch(url, init);
     });
     
     try {
@@ -331,14 +345,15 @@ describe('Assets API', () => {
 
   test('GET /assets/image/:id returns base image bytes', async () => {
     const originalFetch = global.fetch;
-    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string, init?: RequestInit) => {
       if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
+          ok: true,
           status: 200,
-          arrayBuffer: async () => Buffer.from('fake-image-bytes').buffer,
+          arrayBuffer: async () => exactArrayBuffer('fake-image-bytes'),
         });
       }
-      return originalFetch(url);
+      return originalFetch(url, init);
     });
     try {
       const res = await fetch(`http://localhost:${port}/assets/image/${createdBaseId}`);
@@ -353,14 +368,15 @@ describe('Assets API', () => {
 
   test('GET /assets/image/:id returns variant image bytes', async () => {
     const originalFetch = global.fetch;
-    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string) => {
+    (global as any).fetch = jestGlobals.fn().mockImplementation((url: string, init?: RequestInit) => {
       if (url === 'http://mocked-signed-url') {
         return Promise.resolve({
+          ok: true,
           status: 200,
-          arrayBuffer: async () => Buffer.from('fake-variant-image-bytes').buffer,
+          arrayBuffer: async () => exactArrayBuffer('fake-variant-image-bytes'),
         });
       }
-      return originalFetch(url);
+      return originalFetch(url, init);
     });
     try {
       const res = await fetch(`http://localhost:${port}/assets/image/${createdVariantId}`);

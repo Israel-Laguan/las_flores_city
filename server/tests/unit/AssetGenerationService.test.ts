@@ -8,7 +8,12 @@ const mockSignMinioUrl = jest.fn().mockResolvedValue('http://mocked-signed-url')
 const mockUploadToMinio = jest.fn().mockResolvedValue('s3://mock-bucket/mock-key');
 const mockDeleteFromMinio = jest.fn().mockResolvedValue(undefined);
 
-jest.unstable_mockModule('../../src/services/StorageService.ts', () => ({
+function exactArrayBuffer(value: Buffer | string): ArrayBuffer {
+  const buffer = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+}
+
+jest.doMock('../../src/services/StorageService.js', () => ({
   signMinioUrl: mockSignMinioUrl,
   uploadToMinio: mockUploadToMinio,
   deleteFromMinio: mockDeleteFromMinio,
@@ -19,14 +24,21 @@ jest.unstable_mockModule('../../src/services/StorageService.ts', () => ({
   },
 }));
 
-import { fetchImageAsBase64, generateBaseImage, generateVariantImage } from '../../src/services/AssetGenerationService.ts';
+let fetchImageAsBase64: any;
+let generateBaseImage: any;
+let generateVariantImage: any;
 
 describe('AssetGenerationService', () => {
   let originalFetch: typeof global.fetch;
   let originalSetTimeout: typeof global.setTimeout;
   let originalAbortSignal: typeof AbortSignal;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    const module = await import('../../src/services/AssetGenerationService.ts');
+    fetchImageAsBase64 = module.fetchImageAsBase64;
+    generateBaseImage = module.generateBaseImage;
+    generateVariantImage = module.generateVariantImage;
+
     originalFetch = global.fetch;
     originalSetTimeout = global.setTimeout;
     originalAbortSignal = global.AbortSignal;
@@ -64,7 +76,7 @@ describe('AssetGenerationService', () => {
       const mockResponse = {
         ok: true,
         status: 200,
-        arrayBuffer: async () => mockBuffer.buffer,
+        arrayBuffer: async () => exactArrayBuffer(mockBuffer),
         text: async () => 'mock text',
       };
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -80,7 +92,7 @@ describe('AssetGenerationService', () => {
       const mockResponse = {
         ok: true,
         status: 200,
-        arrayBuffer: async () => mockBuffer.buffer,
+        arrayBuffer: async () => exactArrayBuffer(mockBuffer),
         text: async () => 'mock text',
       };
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -119,7 +131,7 @@ describe('AssetGenerationService', () => {
       const mockResponse = {
         ok: true,
         status: 200,
-        arrayBuffer: async () => mockBuffer.buffer,
+        arrayBuffer: async () => exactArrayBuffer(mockBuffer),
         text: async () => 'mock text',
       };
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -139,7 +151,7 @@ describe('AssetGenerationService', () => {
       const mockSourceResponse = {
         ok: true,
         status: 200,
-        arrayBuffer: async () => mockSourceBuffer.buffer,
+        arrayBuffer: async () => exactArrayBuffer(mockSourceBuffer),
         text: async () => 'mock text',
       };
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockSourceResponse);
@@ -169,7 +181,7 @@ describe('AssetGenerationService', () => {
       const mockSourceResponse = {
         ok: true,
         status: 200,
-        arrayBuffer: async () => Buffer.from('source-image-data').buffer,
+        arrayBuffer: async () => exactArrayBuffer('source-image-data'),
         text: async () => 'mock text',
       };
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockSourceResponse);
@@ -180,7 +192,7 @@ describe('AssetGenerationService', () => {
       const mockPollinationsResponse = {
         ok: true,
         status: 200,
-        arrayBuffer: async () => mockOutBuffer.buffer,
+        arrayBuffer: async () => exactArrayBuffer(mockOutBuffer),
         text: async () => 'mock text',
       };
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockPollinationsResponse);

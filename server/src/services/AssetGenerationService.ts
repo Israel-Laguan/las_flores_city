@@ -1,3 +1,5 @@
+import { signMinioUrl } from './StorageService.js';
+
 const NIM_INVOKE_URL = 'https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b';
 const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt';
 
@@ -94,8 +96,7 @@ export async function fetchImageAsBase64(imageUrl: string): Promise<string> {
   // Handle s3:// URLs by fetching from MinIO
   let url = imageUrl;
   if (imageUrl.startsWith('s3://')) {
-    const { signMinioUrl } = await import('./StorageService.js');
-    url = await signMinioUrl(imageUrl);
+    url = await signMinioUrl(imageUrl, 900);
   }
   const buffer = await httpGet(url);
   return buffer.toString('base64');

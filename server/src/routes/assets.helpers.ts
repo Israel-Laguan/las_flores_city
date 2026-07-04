@@ -5,13 +5,17 @@ import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { PromptCatalogResponseSchema, PublishAssetResponseSchema } from '@las-flores/shared';
 import { z } from 'zod';
 
-const PROMPT_ROOT = process.env.PROMPT_ROOT
-  ? path.resolve(process.env.PROMPT_ROOT)
-  : path.resolve(process.cwd(), 'docs/lore/assets/ui-concepts');
-export { PROMPT_ROOT };
+export function getPromptRoot(): string {
+  return process.env.PROMPT_ROOT
+    ? path.resolve(process.env.PROMPT_ROOT)
+    : path.resolve(process.cwd(), 'docs/lore/assets/ui-concepts');
+}
+
+/** @deprecated Use getPromptRoot() — this value is frozen at module load time */
+export const PROMPT_ROOT = getPromptRoot();
 
 export function resolvePromptFile(prompt_rel: string): string {
-  return path.join(PROMPT_ROOT, `${prompt_rel}.prompt.md`);
+  return path.join(getPromptRoot(), `${prompt_rel}.prompt.md`);
 }
 
 export const DEFAULT_DIMENSIONS: Record<string, { width: number; height: number }> = {
@@ -74,7 +78,7 @@ export interface ParsedPromptFile {
 export function parsePromptFile(filePath: string): ParsedPromptFile | null {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
-    const relFromRoot = path.relative(PROMPT_ROOT, filePath);
+    const relFromRoot = path.relative(getPromptRoot(), filePath);
     const prompt_rel = relFromRoot.replace(/\.prompt\.md$/, '');
     const baseName = path.basename(filePath, '.prompt.md');
 
@@ -132,7 +136,8 @@ export function parsePromptFile(filePath: string): ParsedPromptFile | null {
 }
 
 export function getPromptCatalog(): z.infer<typeof PromptCatalogResponseSchema> {
-  if (!fs.existsSync(PROMPT_ROOT)) {
+  const promptRoot = getPromptRoot();
+  if (!fs.existsSync(promptRoot)) {
     return { categories: [] };
   }
 
@@ -155,7 +160,7 @@ export function getPromptCatalog(): z.infer<typeof PromptCatalogResponseSchema> 
     }
   }
 
-  walk(PROMPT_ROOT);
+  walk(promptRoot);
 
   const categoryLabels: Record<string, string> = {
     'isometric-map': '🗺️ Isometric Map',
