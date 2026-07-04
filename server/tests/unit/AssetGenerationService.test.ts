@@ -8,7 +8,7 @@ const mockSignMinioUrl = jest.fn().mockResolvedValue('http://mocked-signed-url')
 const mockUploadToMinio = jest.fn().mockResolvedValue('s3://mock-bucket/mock-key');
 const mockDeleteFromMinio = jest.fn().mockResolvedValue(undefined);
 
-jest.unstable_mockModule('../../src/services/StorageService.js', () => ({
+jest.unstable_mockModule('../../src/services/StorageService.ts', () => ({
   signMinioUrl: mockSignMinioUrl,
   uploadToMinio: mockUploadToMinio,
   deleteFromMinio: mockDeleteFromMinio,
@@ -19,7 +19,7 @@ jest.unstable_mockModule('../../src/services/StorageService.js', () => ({
   },
 }));
 
-import { fetchImageAsBase64, generateBaseImage, generateVariantImage } from '../../src/services/AssetGenerationService.js';
+import { fetchImageAsBase64, generateBaseImage, generateVariantImage } from '../../src/services/AssetGenerationService.ts';
 
 describe('AssetGenerationService', () => {
   let originalFetch: typeof global.fetch;
@@ -40,21 +40,21 @@ describe('AssetGenerationService', () => {
         return controller.signal;
       },
     };
+    // Initialize global.fetch as a mock for the first time
+    global.fetch = jest.fn();
   });
 
   afterAll(() => {
     global.fetch = originalFetch;
     global.setTimeout = originalSetTimeout;
     global.AbortSignal = originalAbortSignal;
-    jest.restoreAllMocks();
   });
 
   beforeEach(() => {
-    global.fetch = jest.fn();
     mockSignMinioUrl.mockClear();
     mockUploadToMinio.mockClear();
     mockDeleteFromMinio.mockClear();
-    jest.clearAllMocks();
+    global.fetch = jest.fn();
   });
 
   describe('fetchImageAsBase64', () => {
@@ -86,6 +86,8 @@ describe('AssetGenerationService', () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const b64 = await fetchImageAsBase64('http://example.com/test.png');
+      console.log('fetchImageAsBase64 result:', b64);
+      console.log('expected:', mockBuffer.toString('base64'));
       expect(b64).toBe(mockBuffer.toString('base64'));
       expect(mockSignMinioUrl).not.toHaveBeenCalled();
       expect(global.fetch).toHaveBeenCalledWith('http://example.com/test.png', expect.anything());

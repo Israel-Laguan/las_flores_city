@@ -4,6 +4,11 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
+import path from 'node:path';
+
+// Set PROMPT_ROOT to the actual location relative to repo root
+// In CI, process.cwd() is the server directory, so we need to go up one level
+process.env.PROMPT_ROOT = path.resolve(process.cwd(), '../../docs/lore/assets/ui-concepts');
 
 // Mock AWS SDK and StorageService using ESM mocks
 // These must be set up before importing the routes
@@ -14,9 +19,9 @@ const mockUploadToMinio = jestGlobals.fn().mockImplementation((buf: any, key: st
   Promise.resolve(`s3://las-flores/${key}`)
 );
 const mockDeleteFromMinio = jestGlobals.fn().mockResolvedValue(undefined);
-const mockGenerateBaseImage = jestGlobals.fn().mockResolvedValue(Buffer.from('base-image-data'));
-const mockGenerateVariantImage = jestGlobals.fn().mockResolvedValue(Buffer.from('variant-image-data'));
-const mockFetchImageAsBase64 = jestGlobals.fn().mockResolvedValue('base64-data');
+const mockGenerateBaseImage = jestGlobals.fn().mockResolvedValue(Buffer.from('base-image-data'.repeat(1000)));
+const mockGenerateVariantImage = jestGlobals.fn().mockResolvedValue(Buffer.from('variant-image-data'.repeat(1000)));
+const mockFetchImageAsBase64 = jestGlobals.fn().mockResolvedValue(Buffer.from('mock-image-data').toString('base64'));
 
 // Mock AWS SDK modules
 jestGlobals.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
@@ -46,7 +51,7 @@ jestGlobals.unstable_mockModule('@aws-sdk/client-s3', () => ({
 }));
 
 // Mock StorageService
-jestGlobals.unstable_mockModule('../../src/services/StorageService.js', () => ({
+jestGlobals.unstable_mockModule('../../src/services/StorageService.ts', () => ({
   signMinioUrl: mockSignMinioUrl,
   uploadToMinio: mockUploadToMinio,
   deleteFromMinio: mockDeleteFromMinio,
@@ -58,7 +63,7 @@ jestGlobals.unstable_mockModule('../../src/services/StorageService.js', () => ({
 }));
 
 // Mock AssetGenerationService
-jestGlobals.unstable_mockModule('../../src/services/AssetGenerationService.js', () => ({
+jestGlobals.unstable_mockModule('../../src/services/AssetGenerationService.ts', () => ({
   generateBaseImage: mockGenerateBaseImage,
   generateVariantImage: mockGenerateVariantImage,
   fetchImageAsBase64: mockFetchImageAsBase64,
@@ -153,6 +158,8 @@ describe('Assets API', () => {
     
     const data = await res.json();
     console.log('generate-bases status:', res.status, 'body:', JSON.stringify(data));
+    console.log('mockGenerateBaseImage called:', mockGenerateBaseImage.mock.calls.length, 'times');
+    console.log('mockUploadToMinio called:', mockUploadToMinio.mock.calls.length, 'times');
     expect(res.status).toBe(200);
     expect(data.success).toBe(true);
     expect(data.data).toHaveLength(1);
@@ -188,6 +195,8 @@ describe('Assets API', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ base_id: createdBaseId }),
     });
+    const data1 = await res1.json();
+    console.log('approve-base status:', res1.status, 'body:', JSON.stringify(data1));
     expect(res1.status).toBe(200);
 
     const check1 = await oltpPool.query(`SELECT chosen FROM asset_bases WHERE id = $1`, [createdBaseId]);
@@ -228,6 +237,9 @@ describe('Assets API', () => {
     });
     
     const data = await res.json();
+    console.log('generate-variants status:', res.status, 'body:', JSON.stringify(data));
+    console.log('mockGenerateVariantImage called:', mockGenerateVariantImage.mock.calls.length, 'times');
+    console.log('mockUploadToMinio called:', mockUploadToMinio.mock.calls.length, 'times');
     expect(res.status).toBe(200);
     expect(data.success).toBe(true);
     expect(Array.isArray(data.data)).toBe(true);
@@ -262,6 +274,7 @@ describe('Assets API', () => {
       });
       
       const data = await res.json();
+      console.log('publish variant status:', res.status, 'body:', JSON.stringify(data));
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.final_path).toBeDefined();
@@ -301,6 +314,7 @@ describe('Assets API', () => {
       });
       
       const data = await res.json();
+      console.log('publish base status:', res.status, 'body:', JSON.stringify(data));
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.final_path).toBeDefined();
@@ -362,6 +376,7 @@ describe('Assets API', () => {
   test('GET /assets/list returns bases and variants', async () => {
     const res = await fetch(`http://localhost:${port}/assets/list?prompt_rel=${TEST_PROMPT_REL}`);
     const data = await res.json();
+    console.log('list status:', res.status, 'body:', JSON.stringify(data));
     expect(res.status).toBe(200);
     expect(data.success).toBe(true);
     expect(Array.isArray(data.data.bases)).toBe(true);
