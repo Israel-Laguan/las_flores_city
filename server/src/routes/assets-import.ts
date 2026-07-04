@@ -293,10 +293,14 @@ assetsImportRouter.delete('/imported-drafts', async (req, res, next) => {
         await deleteFromMinio(row.image_path).catch(() => {});
       }
       
+      const allVariantCountRes = await queryOLTP(
+        `SELECT COUNT(*) FROM asset_variants WHERE base_id IN (SELECT id FROM asset_bases WHERE image_path LIKE 's3://%/drafts/%')`
+      );
       await queryOLTP(`DELETE FROM asset_variants WHERE base_id IN (SELECT id FROM asset_bases WHERE image_path LIKE 's3://%/drafts/%')`);
       await queryOLTP(`DELETE FROM asset_bases WHERE image_path LIKE 's3://%/drafts/%'`);
       
       deleted.bases = basesRes.rows.length;
+      deleted.variants = parseInt(allVariantCountRes.rows[0].count, 10);
     } else {
       const basesRes = await queryOLTP(
         `SELECT id, image_path FROM asset_bases WHERE prompt_rel = $1 AND image_path LIKE 's3://%/drafts/%'`,

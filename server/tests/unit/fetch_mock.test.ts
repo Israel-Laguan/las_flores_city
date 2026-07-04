@@ -1,9 +1,18 @@
-import { test, expect } from '@jest/globals';
+import { test, expect, beforeAll, afterAll } from '@jest/globals';
 
 test('mock fetch works', async () => {
-  const original = (global as any).fetch;
-  (global as any).fetch = jest.fn().mockResolvedValue({ status: 200, arrayBuffer: async () => Buffer.from('test').buffer });
-  const res = await fetch('http://example.test');
-  expect(res.status).toBe(200);
-  (global as any).fetch = original;
+  const originalFetch = global.fetch;
+  global.fetch = jest.fn().mockResolvedValue({
+    status: 200,
+    ok: true,
+    arrayBuffer: async () => Buffer.from('test').buffer,
+    text: async () => 'mock text',
+  });
+  
+  try {
+    const res = await fetch('http://example.test');
+    expect(res.status).toBe(200);
+  } finally {
+    global.fetch = originalFetch;
+  }
 });

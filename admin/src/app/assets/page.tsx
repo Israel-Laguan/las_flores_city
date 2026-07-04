@@ -2,30 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
+import { API_BASE } from './constants';
+import type { Category, View } from './constants';
 import CatalogView from './components/CatalogView';
 import GeneratorView from './components/GeneratorView';
-
-const API_BASE = '/assets';
-
-type Category = {
-  id: string;
-  label: string;
-  icon: string;
-  entries: Array<{
-    prompt_rel: string;
-    name: string;
-    category: string;
-    asset_type: string;
-    dimensions: { width: number; height: number };
-    prompt_file: string;
-    variants: Array<{ name: string; prompt: string; negative_prompt?: string }>;
-  }>;
-};
-
-type View = 'catalog' | 'generator';
-
-export type { Category, View };
-export { API_BASE };
 
 async function loadCatalog(
   setLoading: (v: boolean) => void,
@@ -46,7 +26,40 @@ async function loadCatalog(
   }
 }
 
+async function handleLoadAssets(
+  prompt_rel: string,
+  setLoading: (v: boolean) => void,
+  setError: (v: string | null) => void,
+  setBases: (v: AssetBase[]) => void,
+  setVariants: (v: AssetVariant[]) => void
+) {
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await fetch(`${API_BASE}/list?prompt_rel=${encodeURIComponent(prompt_rel)}`);
+    const data = await res.json();
+    if (data.success) {
+      setBases(data.data.bases);
+      setVariants(data.data.variants);
+    }
+  } catch (e) {
+    setError('Failed to load assets');
+  } finally {
+    setLoading(false);
+  }
+}
 
+async function loadGroups(setGroups: (v: AssetListAllResponse['groups']) => void) {
+  try {
+    const res = await fetch(`${API_BASE}/list-all`);
+    const data = await res.json();
+    if (data.success) {
+      setGroups(data.data.groups);
+    }
+  } catch (e) {
+    console.error('Failed to load groups', e);
+  }
+}
 
 export default function AssetsPage() {
   const [view, setView] = useState<View>('catalog');
@@ -60,41 +73,9 @@ export default function AssetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [newBaseIds, setNewBaseIds] = useState<Set<string>>(new Set());
 
-  async function handleLoadAssets(prompt_rel: string) {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(""
-        .concat(API_BASE, "/list?prompt_rel=")
-        .concat(encodeURIComponent(prompt_rel))
-      );
-      const data = await res.json();
-      if (data.success) {
-        setBases(data.data.bases);
-        setVariants(data.data.variants);
-      }
-    } catch (e) {
-      setError('Failed to load assets');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadGroups() {
-    try {
-      const res = await fetch(`${API_BASE}/list-all`);
-      const data = await res.json();
-      if (data.success) {
-        setGroups(data.data.groups);
-      }
-    } catch (e) {
-      console.error('Failed to load groups', e);
-    }
-  }
-
   useEffect(() => {
     loadCatalog(setLoading, setCategories, setError);
-    loadGroups();
+    loadGroups(setGroups);
   }, []);
 
   return (
@@ -115,11 +96,11 @@ export default function AssetsPage() {
           error={error}
           setLoading={setLoading}
           setError={setError}
-          loadGroups={loadGroups}
+          loadGroups={() => loadGroups(setGroups)}
           onSelectEntry={entry => {
             setSelectedEntry(entry);
             setView('generator');
-            handleLoadAssets(entry.prompt_rel);
+            handleLoadAssets(entry.prompt_rel, setLoading, setError, setBases, setVariants);
           }}
         />
       )}
@@ -140,8 +121,8 @@ export default function AssetsPage() {
           setNewBaseIds={setNewBaseIds}
           setView={setView}
           setSelectedEntry={setSelectedEntry}
-          loadGroups={loadGroups}
-          loadAssets={handleLoadAssets}
+          loadGroups={() => loadGroups(setGroups)}
+          loadAssets={(prompt_rel) => handleLoadAssets(prompt_rel, setLoading, setError, setBases, setVariants)}
         />
       )}
     </main>

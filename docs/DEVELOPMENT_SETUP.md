@@ -34,7 +34,7 @@ The easiest way to start the entire stack:
 
 ```bash
 # Clone and enter the repository
-cd /home/anthony/code/las_flores_city
+cd /path/to/las_flores_city
 
 # Make the script executable
 chmod +x start-stack.sh
@@ -306,7 +306,7 @@ podman network rm las-flores-net
 
 ## File Structure
 
-```
+```text
 las_flores_city/
 ├── start-stack.sh          # Main startup script
 ├── scripts/

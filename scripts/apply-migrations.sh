@@ -70,10 +70,11 @@ is_applied() {
     local db_name="$3"
     local db_user="$4"
     local version="$5"
-    
-    local count=$(podman exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -t -c \
+    local count
+
+    count=$(podman exec "$db_host" psql -h localhost -p "$db_port" -U "$db_user" -d "$db_name" -t -c \
         "SELECT COUNT(*) FROM schema_migrations WHERE version = '$version' AND database_name = '$db_name';" 2>/dev/null | tr -d ' ')
-    
+
     [ "$count" = "1" ]
 }
 

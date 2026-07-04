@@ -317,46 +317,42 @@ assetsRouter.post('/publish', async (req, res, next) => {
 assetsRouter.get('/image/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`[image/:id] Fetching image for id: ${id}`);
+    console.log(`[image/:id] Fetching image for id: ${JSON.stringify(id)}`);
 
     let baseRes = await queryOLTP(`SELECT image_path FROM asset_bases WHERE id = $1`, [id]);
     let imagePath: string | null = null;
 
     if (baseRes.rows.length > 0) {
       imagePath = baseRes.rows[0].image_path;
-      console.log(`[image/:id] Found base image path: ${imagePath}`);
+      console.log(`[image/:id] Found base image path: ${JSON.stringify(imagePath)}`);
     } else {
       const variantRes = await queryOLTP(`SELECT image_path FROM asset_variants WHERE id = $1`, [id]);
       if (variantRes.rows.length > 0) {
         imagePath = variantRes.rows[0].image_path;
-        console.log(`[image/:id] Found variant image path: ${imagePath}`);
+        console.log(`[image/:id] Found variant image path: ${JSON.stringify(imagePath)}`);
       }
     }
 
     if (!imagePath) {
-      console.error(`[image/:id] Image not found for id: ${id}`);
+      console.error(`[image/:id] Image not found for id: ${JSON.stringify(id)}`);
       res.status(404).json({ success: false, error: 'Image not found', timestamp: new Date().toISOString() });
       return;
     }
 
-    console.log(`[image/:id] Signing URL for path: ${imagePath}`);
+    console.log(`[image/:id] Signing URL for path: ${JSON.stringify(imagePath)}`);
     const signedUrl = await signMinioUrl(imagePath, 300);
-    console.log(`[image/:id] Signed URL: ${signedUrl}`);
-    
-    if (!signedUrl || typeof signedUrl !== 'string') {
-      console.error(`[image/:id] Invalid signed URL: ${signedUrl}`);
-      res.status(500).json({ success: false, error: 'Failed to generate signed URL', timestamp: new Date().toISOString() });
-      return;
-    }
+    console.log(`[image/:id] Signed URL: ${JSON.stringify(signedUrl)}`);
 
-    const imageBuffer = await fetch(signedUrl).then((r) => r.arrayBuffer()).then((b) => Buffer.from(b));
+    const resp = await fetch(signedUrl, { signal: AbortSignal.timeout(15000) });
+    if (!resp.ok) throw new Error(`Failed to fetch source image: ${resp.status}`);
+    const imageBuffer = Buffer.from(await resp.arrayBuffer());
     const contentType = imagePath.endsWith('.jpg') || imagePath.endsWith('.jpeg') ? 'image/jpeg' : 'image/png';
 
     res.setHeader('Content-Type', contentType);
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.send(imageBuffer);
   } catch (error) {
-    console.error(`[image/:id] Error for id ${req.params.id}:`, error);
+    console.error(`[image/:id] Error for id ${JSON.stringify(req.params.id)}:`, error);
     next(error);
   }
 });
@@ -365,28 +361,32 @@ assetsRouter.get('/image/:id', async (req, res, next) => {
 assetsRouter.delete('/bases/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
+    let baseImagePath: string | null = null;
+    let variantImagePaths: string[] = [];
+
     await withOLTPTransaction(async (client) => {
       const baseRes = await client.query(`SELECT image_path FROM asset_bases WHERE id = $1`, [id]);
       if (baseRes.rows.length === 0) {
         throw new Error('Base not found');
       }
-      const baseImagePath = baseRes.rows[0].image_path;
+      baseImagePath = baseRes.rows[0].image_path;
 
       const variantsRes = await client.query(`SELECT image_path FROM asset_variants WHERE base_id = $1`, [id]);
-      const variantImagePaths = variantsRes.rows.map((r) => r.image_path);
+      variantImagePaths = variantsRes.rows.map((r) => r.image_path);
 
       await client.query(`DELETE FROM asset_variants WHERE base_id = $1`, [id]);
       await client.query(`DELETE FROM asset_bases WHERE id = $1`, [id]);
-
-      if (baseImagePath) {
-        await deleteFromMinio(baseImagePath).catch((err) => console.error('Failed to delete base from Minio:', err));
-      }
-      for (const vp of variantImagePaths) {
-        if (vp) {
-          await deleteFromMinio(vp).catch((err) => console.error('Failed to delete variant from Minio:', err));
-        }
-      }
     });
+
+    // Perform MinIO cleanup after transaction commits
+    if (baseImagePath) {
+      await deleteFromMinio(baseImagePath).catch((err) => console.error('Failed to delete base from Minio:', err));
+    }
+    for (const vp of variantImagePaths) {
+      if (vp) {
+        await deleteFromMinio(vp).catch((err) => console.error('Failed to delete variant from Minio:', err));
+      }
+    }
 
     res.json({ success: true, timestamp: new Date().toISOString() });
   } catch (error: any) {
@@ -402,19 +402,22 @@ assetsRouter.delete('/bases/:id', async (req, res, next) => {
 assetsRouter.delete('/variants/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
+    let variantImagePath: string | null = null;
+
     await withOLTPTransaction(async (client) => {
       const variantRes = await client.query(`SELECT image_path FROM asset_variants WHERE id = $1`, [id]);
       if (variantRes.rows.length === 0) {
         throw new Error('Variant not found');
       }
-      const variantImagePath = variantRes.rows[0].image_path;
+      variantImagePath = variantRes.rows[0].image_path;
 
       await client.query(`DELETE FROM asset_variants WHERE id = $1`, [id]);
-
-      if (variantImagePath) {
-        await deleteFromMinio(variantImagePath).catch((err) => console.error('Failed to delete variant from Minio:', err));
-      }
     });
+
+    // Perform MinIO cleanup after transaction commits
+    if (variantImagePath) {
+      await deleteFromMinio(variantImagePath).catch((err) => console.error('Failed to delete variant from Minio:', err));
+    }
 
     res.json({ success: true, timestamp: new Date().toISOString() });
   } catch (error: any) {

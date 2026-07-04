@@ -1,6 +1,6 @@
 "use client";
 
-import type { Category } from '../page';
+import type { Category } from '../constants';
 
 type Props = {
   selectedEntry: Category['entries'][0];

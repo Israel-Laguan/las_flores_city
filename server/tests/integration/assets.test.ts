@@ -97,7 +97,7 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
-  server = await new Promise<ReturnType<typeof express.Application.listen>>((resolve) => {
+  server = await new Promise<ReturnType<typeof app.listen>>((resolve) => {
     const s = app.listen(0, () => resolve(s));
   });
   port = (server.address() as { port: number }).port;

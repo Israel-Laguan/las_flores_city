@@ -1,8 +1,8 @@
 "use client";
 
 import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
-import type { Category } from '../page';
-import { API_BASE } from '../page';
+import type { Category } from '../constants';
+import { API_BASE } from '../constants';
 
 type Props = {
   categories: Category[];

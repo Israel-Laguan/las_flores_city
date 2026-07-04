@@ -59,7 +59,7 @@ Step 3: Publish
 
 ## Step 1: Choose an Asset to Create
 
-On the main page, you'll see a **"What do you want to create?"** menu with 5 categories:
+On the main page, you'll see a **"What do you want to create?"** menu with 3 categories:
 
 | Category | Icon | Description |
 |----------|------|-------------|
@@ -110,7 +110,7 @@ Each base proposal card shows:
 1. Review the 4 proposals.
 2. Click **"Approve"** on the best proposal.
 3. The chosen base will get a green border and a **"✓ Chosen"** badge.
-4. Only one base can be chosen at a time (choosing a new one automatically unchoses the previous).
+4. Only one base can be chosen at a time (choosing a new one automatically unchecks the previous).
 
 **Tip:** If none of the 4 proposals are good, you can generate 4 more by clicking "Generate 4 Bases" again. The new proposals will be added to the grid.
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import type { Category } from '../page';
+import type { Category } from '../constants';
 import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
-import { API_BASE } from '../page';
+import { API_BASE } from '../constants';
 import BaseCard from './BaseCard';
 import BasesSection from './BasesSection';
 import VariantCard from './VariantCard';

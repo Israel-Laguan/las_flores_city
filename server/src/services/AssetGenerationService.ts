@@ -28,14 +28,12 @@ class TokenBucket {
 
   async take() {
     this.refill();
-    if (this.tokens > 0) {
-      this.tokens--;
-      return;
+    while (this.tokens <= 0) {
+      const waitMs = this.perMs / this.rate;
+      await new Promise(resolve => setTimeout(resolve, waitMs));
+      this.refill();
     }
-    const waitMs = (this.perMs / this.rate) * (1 - this.tokens / this.rate);
-    await new Promise(resolve => setTimeout(resolve, waitMs));
-    this.refill();
-    this.tokens = Math.max(0, this.tokens - 1);
+    this.tokens--;
   }
 }
 

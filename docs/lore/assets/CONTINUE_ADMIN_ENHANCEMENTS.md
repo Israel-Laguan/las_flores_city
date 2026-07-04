@@ -65,7 +65,7 @@ Add delete buttons to base and variant cards.
 Allow user to:
 1. See all historical bases
 2. Click "Approve" on any base (old or new)
-3. If a new base is approved, it unchoses the previous one
+3. If a new base is approved, it deselects the previous one
 4. If an old base is approved, generate new variants from it
 
 **UI Changes**:

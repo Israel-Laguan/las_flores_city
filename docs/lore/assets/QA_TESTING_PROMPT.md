@@ -346,7 +346,7 @@ After manual QA passes, create automated tests for:
    - `POST /assets/generate-bases` — creates bases with valid prompt_rel
    - `POST /assets/generate-bases` — returns 404 for invalid prompt_rel
    - `POST /assets/approve-base` — marks base as chosen
-   - `POST /assets/approve-base` — unchoses previous base for same prompt_rel
+    - `POST /assets/approve-base` — clears the chosen flag on the previous base for the same prompt_rel
    - `POST /assets/generate-variants` — creates variant with i2i
    - `POST /assets/publish` — copies to final path
    - `GET /assets/image/:id` — returns image bytes

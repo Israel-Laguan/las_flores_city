@@ -24,16 +24,28 @@ import { fetchImageAsBase64, generateBaseImage, generateVariantImage } from '../
 describe('AssetGenerationService', () => {
   let originalFetch: typeof global.fetch;
   let originalSetTimeout: typeof global.setTimeout;
+  let originalAbortSignal: typeof AbortSignal;
 
   beforeAll(() => {
     originalFetch = global.fetch;
     originalSetTimeout = global.setTimeout;
+    originalAbortSignal = global.AbortSignal;
     (global as any).setTimeout = (cb: Function) => { cb(); return 0; };
+    // Mock AbortSignal.timeout to return a non-aborted signal
+    // This prevents the mocked setTimeout from causing immediate aborts
+    (global as any).AbortSignal = {
+      ...global.AbortSignal,
+      timeout: (ms: number) => {
+        const controller = new AbortController();
+        return controller.signal;
+      },
+    };
   });
 
   afterAll(() => {
     global.fetch = originalFetch;
     global.setTimeout = originalSetTimeout;
+    global.AbortSignal = originalAbortSignal;
     jest.restoreAllMocks();
   });
 
@@ -46,12 +58,16 @@ describe('AssetGenerationService', () => {
   });
 
   describe('fetchImageAsBase64', () => {
+
     it('handles s3:// URLs', async () => {
       const mockBuffer = Buffer.from('mock-image-data');
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockResponse = {
         ok: true,
+        status: 200,
         arrayBuffer: async () => mockBuffer.buffer,
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const b64 = await fetchImageAsBase64('s3://las-flores/test.png');
       expect(b64).toBe(mockBuffer.toString('base64'));
@@ -61,10 +77,13 @@ describe('AssetGenerationService', () => {
 
     it('handles regular HTTP URLs', async () => {
       const mockBuffer = Buffer.from('mock-image-data');
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockResponse = {
         ok: true,
+        status: 200,
         arrayBuffer: async () => mockBuffer.buffer,
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const b64 = await fetchImageAsBase64('http://example.com/test.png');
       expect(b64).toBe(mockBuffer.toString('base64'));
@@ -76,12 +95,15 @@ describe('AssetGenerationService', () => {
   describe('generateBaseImage', () => {
     it('calls NIM with correct params', async () => {
       const mockBuffer = Buffer.from('mock-image-data'.repeat(1000));
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockResponse = {
         ok: true,
+        status: 200,
         json: async () => ({
           artifacts: [{ base64: mockBuffer.toString('base64'), finishReason: 'SUCCESS' }],
         }),
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
 
       const result = await generateBaseImage({ prompt: 'test', width: 1024, height: 1024 });
       expect(result).toBeInstanceOf(Buffer);
@@ -92,10 +114,13 @@ describe('AssetGenerationService', () => {
       for(let i=0; i<6; i++) {
         (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error(`NIM Error ${i}`)));
       }
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockResponse = {
         ok: true,
+        status: 200,
         arrayBuffer: async () => mockBuffer.buffer,
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
       
       const result = await generateBaseImage({ prompt: 'test', width: 1024, height: 1024 });
       expect(result).toBeInstanceOf(Buffer);
@@ -109,17 +134,23 @@ describe('AssetGenerationService', () => {
       const mockOutBuffer = Buffer.from('out-image-data'.repeat(1000));
       
       // First call is for fetching the source image
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockSourceResponse = {
         ok: true,
+        status: 200,
         arrayBuffer: async () => mockSourceBuffer.buffer,
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockSourceResponse);
       // Second call is for NIM i2i
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockNimResponse = {
         ok: true,
+        status: 200,
         json: async () => ({
           artifacts: [{ base64: mockOutBuffer.toString('base64'), finishReason: 'SUCCESS' }],
         }),
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockNimResponse);
 
       const result = await generateVariantImage({
         prompt: 'variant',
@@ -133,18 +164,24 @@ describe('AssetGenerationService', () => {
     });
 
     it('falls back to Pollinations i2i on failure', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockSourceResponse = {
         ok: true,
+        status: 200,
         arrayBuffer: async () => Buffer.from('source-image-data').buffer,
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockSourceResponse);
       for(let i=0; i<6; i++) {
         (global.fetch as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('NIM fetch failure')));
       }
       const mockOutBuffer = Buffer.from('out-image-data'.repeat(1000));
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      const mockPollinationsResponse = {
         ok: true,
+        status: 200,
         arrayBuffer: async () => mockOutBuffer.buffer,
-      });
+        text: async () => 'mock text',
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(mockPollinationsResponse);
 
       const result = await generateVariantImage({
         prompt: 'variant',

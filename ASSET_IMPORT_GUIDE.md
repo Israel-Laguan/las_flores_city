@@ -5,7 +5,7 @@ This guide explains how to import your existing locally-generated drafts into th
 ## Overview
 
 You have 145 draft images already generated in:
-```
+```text
 docs/lore/assets/ui-concepts/*/assets/*/drafts/
 ```
 
