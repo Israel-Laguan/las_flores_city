@@ -138,6 +138,12 @@ async function startGameForLocation(locationId: string): Promise<void> {
   phoneOverlayInstance = new PhoneOverlay();
   initThemeEngine();
 
+  try {
+    gameInstance.scene.start('LocationScene');
+  } catch {
+    gameInstance.scene.add('LocationScene', LocationScene, true);
+  }
+
   let attempts = 0;
   const maxAttempts = 600;
   const waitForReady = () => {
@@ -159,10 +165,10 @@ registerRoutes({
   hideAllContainers,
   startGame,
   startGameForLocation,
-  isAuthenticated,
-  cachedPlayerState,
+  getIsAuthenticated: () => isAuthenticated,
+  getCachedPlayerState: () => cachedPlayerState,
   mountReactView,
-  gameInstance,
+  getGameInstance: () => gameInstance,
 });
 
 window.addEventListener('lf:dialogue-start', (e: Event) => {
@@ -230,8 +236,9 @@ async function initOnce() {
     navigateTo('/map');
   });
 
+  const initialPath = window.location.pathname;
   initializeUI();
-  restoreSession();
+  restoreSession(initialPath);
 }
 
 function initializeUI(): void {
@@ -241,14 +248,13 @@ function initializeUI(): void {
   navigateTo('/', true);
 }
 
-async function restoreSession(): Promise<void> {
+function restoreSession(initialPath: string): void {
   void (async () => {
     try {
       const state = await (await import('./utils/api')).getPlayerState();
       if (state.success) {
         cachedPlayerState = state.data;
         isAuthenticated = true;
-        const initialPath = window.location.pathname;
         navigateTo(initialPath !== '/' ? initialPath : '/main', true);
       }
     } catch (error: any) {

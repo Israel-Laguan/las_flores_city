@@ -5,7 +5,7 @@ import {
 } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { generateBaseImage, generateVariantImage } from '../services/AssetGenerationService.js';
-import { uploadToMinio } from '../services/StorageService.js';
+import { deleteFromMinio, uploadToMinio } from '../services/StorageService.js';
 import { resolvePromptFile, slugify } from './assets.helpers.js';
 import { sanitizePromptRel } from '../utils/sanitize.js';
 import crypto from 'crypto';
@@ -110,6 +110,7 @@ async function generateBases(
 
   for (let offset = 0; offset < count; offset++) {
     const proposalIndex = startIndex + offset;
+    let image_path: string | undefined;
     try {
       const seed = Math.floor(Math.random() * 2147483647);
       const buffer = await generateBaseImage({
@@ -121,7 +122,7 @@ async function generateBases(
       });
 
       const key = `drafts/bases/${slugify(sanitizedPromptRel)}__base_${crypto.randomUUID()}.png`;
-      const image_path = await uploadToMinio(buffer, key);
+      image_path = await uploadToMinio(buffer, key);
 
       const result = await queryOLTP(
         `INSERT INTO asset_bases (prompt_rel, proposal_index, image_path, seed, asset_type, prompt_text, negative_prompt, width, height)
@@ -131,6 +132,11 @@ async function generateBases(
       );
       newBases.push(result.rows[0]);
     } catch (err: any) {
+      if (image_path) {
+        await deleteFromMinio(image_path).catch((deleteErr) =>
+          console.error('Failed to delete orphaned generated base from MinIO:', deleteErr)
+        );
+      }
       console.error(`Error generating base ${proposalIndex}:`, err);
       errors.push({ proposal_index: proposalIndex, error: err.message });
     }
@@ -197,27 +203,35 @@ async function generateVariants(
     }
     usedVariantNames.add(variantName);
 
+    let image_path: string | undefined;
     try {
+      const finalWidth = v.width || base.width || 1024;
+      const finalHeight = v.height || base.height || 1024;
       const buffer = await generateVariantImage({
         prompt: v.prompt,
         sourceImageUrl: base.image_path,
         strength: v.i2i_strength,
-        width: v.width || base.width || 1024,
-        height: v.height || base.height || 1024,
+        width: finalWidth,
+        height: finalHeight,
         negativePrompt: v.negative_prompt,
       });
 
       const key = `drafts/variants/${slugify(base.prompt_rel)}__${slugify(variantName)}_${crypto.randomUUID()}.png`;
-      const image_path = await uploadToMinio(buffer, key);
+      image_path = await uploadToMinio(buffer, key);
 
       const result = await queryOLTP(
         `INSERT INTO asset_variants (base_id, variant_name, image_path, i2i_strength, prompt_text, negative_prompt, width, height)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING id, base_id, variant_name, image_path, i2i_strength, created_at, prompt_text, negative_prompt, width, height, final_path`,
-        [base_id, variantName, image_path, v.i2i_strength, v.prompt, v.negative_prompt || null, v.width || base.width, v.height || base.height]
+        [base_id, variantName, image_path, v.i2i_strength, v.prompt, v.negative_prompt || null, finalWidth, finalHeight]
       );
       newVariants.push(result.rows[0]);
     } catch (err: any) {
+      if (image_path) {
+        await deleteFromMinio(image_path).catch((deleteErr) =>
+          console.error('Failed to delete orphaned generated variant from MinIO:', deleteErr)
+        );
+      }
       console.error(`Error generating variant ${variantName}:`, err);
       errors.push({ variant_name: variantName, error: err.message });
     }

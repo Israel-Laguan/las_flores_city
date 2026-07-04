@@ -38,15 +38,19 @@ export async function POST(request: Request) {
     // Set the session cookie from the server response
     const setCookieHeader = response.headers.get('set-cookie');
     if (setCookieHeader) {
-      cookies().set('jwt_session', setCookieHeader.split('=')[1].split(';')[0], {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-      });
+      const match = setCookieHeader.match(/jwt_session=([^;]+)/);
+      if (match) {
+        cookies().set('jwt_session', match[1], {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          path: '/',
+          maxAge: 60 * 60 * 24,
+        });
+      }
     }
 
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/', request.url), 303);
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { cookies } from 'next/headers'
 
 // Routes that don't require authentication
 const publicRoutes = ['/login', '/api/auth/admin-login', '/api/auth/logout']
@@ -14,8 +13,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Check for session cookie
-  const cookieStore = cookies()
-  const sessionCookie = cookieStore.get('jwt_session')
+  const sessionCookie = request.cookies.get('jwt_session')
 
   // If no session and not a public route, redirect to login
   if (!sessionCookie) {

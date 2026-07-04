@@ -36,13 +36,15 @@ export async function adminFetch(url: string, options: RequestInit = {}) {
   const cookieStore = cookies();
   const sessionCookie = cookieStore.get('jwt_session');
 
+  const headers = new Headers(options.headers);
+  headers.set('Content-Type', 'application/json');
+  if (sessionCookie) {
+    headers.set('Cookie', `jwt_session=${sessionCookie.value}`);
+  }
+
   const response = await fetch(`${serverUrl}${url}`, {
     ...options,
-    headers: {
-      ...options.headers,
-      'Content-Type': 'application/json',
-      ...(sessionCookie ? { 'Cookie': `jwt_session=${sessionCookie.value}` } : {}),
-    },
+    headers,
     credentials: 'include',
   });
 

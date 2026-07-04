@@ -51,51 +51,9 @@ function resolveAllowedImportFile(promptRel: string, filePath: string): string |
   return allowedRoots.some((root) => isPathInside(resolvedFilePath, root)) ? resolvedFilePath : null;
 }
 
-async function collectDraftsFolders(promptRel: string | null, all: string): Promise<string[]> {
-  const draftsFolders: string[] = [];
-
-  if (all === 'true') {
-    const walk = async (dir: string) => {
-      const entries = await fs.promises.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          if (entry.name === DRAFTS_DIR) {
-            console.log(`[import-drafts] Found drafts folder: ${fullPath}`);
-            draftsFolders.push(fullPath);
-          } else {
-            await walk(fullPath);
-          }
-        }
-      }
-    };
-    console.log(`[import-drafts] Walking PROMPT_ROOT: ${getPromptRoot()}`);
-    await walk(getPromptRoot());
-    console.log(`[import-drafts] Found ${draftsFolders.length} drafts folders`);
-  } else {
-    const promptFile = resolvePromptFile(promptRel!);
-    const promptDir = path.dirname(promptFile);
-    const baseName = path.basename(promptFile, '.md');
-    const draftsFolder = path.join(promptDir, baseName, DRAFTS_DIR);
-    console.log(`[import-drafts] Looking for drafts: ${draftsFolder}`);
-    try {
-      await fs.promises.access(draftsFolder);
-      console.log(`[import-drafts] Found drafts folder: ${draftsFolder}`);
-      draftsFolders.push(draftsFolder);
-    } catch {
-      const oldDraftsFolder = path.join(promptDir, DRAFTS_DIR);
-      console.log(`[import-drafts] Trying fallback: ${oldDraftsFolder}`);
-      try {
-        await fs.promises.access(oldDraftsFolder);
-        console.log(`[import-drafts] Found fallback drafts folder: ${oldDraftsFolder}`);
-        draftsFolders.push(oldDraftsFolder);
-      } catch {
-        console.log(`[import-drafts] No drafts folders found for ${promptRel}`);
-      }
-    }
-  }
-
-  return draftsFolders;
+interface DraftsFolderRef {
+  draftsFolder: string;
+  promptRel: string;
 }
 
 interface ImportResult {
@@ -111,15 +69,50 @@ interface ImportResult {
   }>;
 }
 
-async function importDrafts(draftsFolders: string[]): Promise<ImportResult> {
+async function collectDraftsFolders(promptRel: string | null, all: string): Promise<DraftsFolderRef[]> {
+  const draftsFolders: DraftsFolderRef[] = [];
+  const promptDir = promptRel ? path.dirname(resolvePromptFile(promptRel)) : all;
+
+  for (const file of await fs.promises.readdir(all)) {
+    if (file.endsWith('.prompt.md') || file.endsWith('.prompt.yaml')) {
+      const promptRel = file.replace(/\.prompt\.(md|yaml)$/, '');
+      if (!promptRel) continue;
+      const sanitizedPromptRel = sanitizePromptRel(promptRel);
+      if (!sanitizedPromptRel) {
+        console.log(`[import-drafts] Skipping invalid prompt_rel: ${promptRel}`);
+        continue;
+      }
+      const draftsFolder = path.join(all, DRAFTS_DIR);
+      console.log(`[import-drafts] Looking for drafts: ${draftsFolder}`);
+      try {
+        await fs.promises.access(draftsFolder);
+        console.log(`[import-drafts] Found drafts folder: ${draftsFolder}`);
+        draftsFolders.push({ draftsFolder, promptRel: sanitizedPromptRel });
+      } catch {
+        const oldDraftsFolder = path.join(path.dirname(resolvePromptFile(sanitizedPromptRel)), DRAFTS_DIR);
+        console.log(`[import-drafts] Trying fallback: ${oldDraftsFolder}`);
+        try {
+          await fs.promises.access(oldDraftsFolder);
+          console.log(`[import-drafts] Found fallback drafts folder: ${oldDraftsFolder}`);
+          draftsFolders.push({ draftsFolder: oldDraftsFolder, promptRel: sanitizedPromptRel });
+        } catch {
+          console.log(`[import-drafts] No drafts folders found for ${sanitizedPromptRel}`);
+        }
+      }
+    }
+  }
+
+  return draftsFolders;
+}
+
+async function importDrafts(draftsFolders: DraftsFolderRef[]): Promise<ImportResult> {
   const results: ImportResult = {
     imported: { bases: 0, variants: 0 },
     errors: [],
     details: []
   };
 
-  for (const draftsFolder of draftsFolders) {
-    const prompt_rel = getPromptRelFromDraftsFolder(draftsFolder);
+  for (const { draftsFolder, promptRel: prompt_rel } of draftsFolders) {
     const sanitizedPromptRel = sanitizePromptRel(prompt_rel);
     if (!sanitizedPromptRel) {
       console.log(`[import-drafts] Skipping invalid prompt_rel: ${prompt_rel}`);
@@ -133,7 +126,7 @@ async function importDrafts(draftsFolders: string[]): Promise<ImportResult> {
     const promptFilePath = resolvePromptFile(sanitizedPromptRel);
     const metadata = await parsePromptFile(promptFilePath);
 
-    await processImageFiles(draftsFolder, sanitizedPromptRel, metadata, results);
+    await processImageFiles(draftsFolder, sanitizedPromptRel, imageFiles, metadata, results);
   }
 
   return results;
@@ -142,10 +135,11 @@ async function importDrafts(draftsFolders: string[]): Promise<ImportResult> {
 async function processImageFiles(
   draftsFolder: string,
   sanitizedPromptRel: string,
+  imageFiles: string[],
   metadata: Awaited<ReturnType<typeof parsePromptFile>>,
   results: ImportResult
 ): Promise<void> {
-  for (const file of fs.readdirSync(draftsFolder).filter(f => f.endsWith('.png') || f.endsWith('.jpg'))) {
+  for (const file of imageFiles) {
     try {
       const filePath = path.join(draftsFolder, file);
       const fileHash = crypto.createHash('md5').update(`${sanitizedPromptRel}_${file}`).digest('hex');
@@ -183,7 +177,7 @@ async function processImageFiles(
 
       const result = await queryOLTP(
         `INSERT INTO asset_bases (prompt_rel, proposal_index, image_path, seed, asset_type, prompt_text, negative_prompt, width, height, chosen)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING id, prompt_rel, proposal_index, image_path`,
         [
           sanitizedPromptRel,
@@ -299,6 +293,18 @@ assetsImportRouter.post('/import-base', async (req, res, next) => {
     }
 
     const proposal_index = 0;
+    const existing = await queryOLTP(
+      `SELECT id FROM asset_bases WHERE prompt_rel = $1 AND proposal_index = $2`,
+      [sanitizedPromptRel, proposal_index]
+    );
+    if (existing.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        error: 'Imported base already exists for this prompt',
+        timestamp: new Date().toISOString()
+      });
+    }
+
     const destKey = `drafts/bases/${sanitizedPromptRel.replace(/\//g, '_')}_${proposal_index}.png`;
 
     const imageBuffer = await fs.promises.readFile(resolvedFilePath);
@@ -382,8 +388,8 @@ assetsImportRouter.delete('/imported-drafts', async (req, res, next) => {
       );
 
       await withOLTPTransaction(async (client) => {
-        await client.query(`DELETE FROM asset_variants WHERE base_id IN (SELECT id FROM asset_bases WHERE prompt_rel = $1 AND image_path LIKE 's3://%/drafts/%')`, [prompt_rel]);
-        await client.query(`DELETE FROM asset_bases WHERE prompt_rel = $1 AND image_path LIKE 's3://%/drafts/%'`, [prompt_rel]);
+        await client.query(`DELETE FROM asset_variants WHERE base_id IN (SELECT id FROM asset_bases WHERE prompt_rel = $1 AND image_path LIKE 's3://%/drafts/%')`, [sanitizedPromptRel]);
+        await client.query(`DELETE FROM asset_bases WHERE prompt_rel = $1 AND image_path LIKE 's3://%/drafts/%'`, [sanitizedPromptRel]);
       });
 
       baseImagePaths.push(...basesRes.rows.map(row => row.image_path));

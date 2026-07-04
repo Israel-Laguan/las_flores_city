@@ -13,10 +13,10 @@ interface RouteDeps {
   hideAllContainers: () => void;
   startGame: () => void;
   startGameForLocation: (locationId: string) => void;
-  isAuthenticated: boolean;
-  cachedPlayerState: any;
+  getIsAuthenticated: () => boolean;
+  getCachedPlayerState: () => any;
   mountReactView: (component: any, props: Record<string, unknown>) => Promise<void>;
-  gameInstance: Phaser.Game | null;
+  getGameInstance: () => Phaser.Game | null;
 }
 
 export function registerRoutes({
@@ -25,39 +25,39 @@ export function registerRoutes({
   hideAllContainers,
   startGame,
   startGameForLocation,
-  isAuthenticated,
-  cachedPlayerState,
+  getIsAuthenticated,
+  getCachedPlayerState,
   mountReactView,
-  gameInstance,
+  getGameInstance,
 }: RouteDeps): void {
   registerHomeOrCity({
     destroyGame,
     destroyCurrentView,
     hideAllContainers,
-    isAuthenticated,
-    cachedPlayerState,
+    getIsAuthenticated,
+    getCachedPlayerState,
   });
   registerMainMenu({
     destroyGame,
     destroyCurrentView,
     hideAllContainers,
-    isAuthenticated,
-    cachedPlayerState,
+    getIsAuthenticated,
+    getCachedPlayerState,
   });
   registerMapRoutes({
     destroyGame,
     destroyCurrentView,
     hideAllContainers,
     mountReactView,
-    isAuthenticated,
-    cachedPlayerState,
+    getIsAuthenticated,
+    getCachedPlayerState,
   });
   registerGameRoutes({
-    isAuthenticated,
+    getIsAuthenticated,
     destroyCurrentView,
     hideAllContainers,
     startGameForLocation,
-    gameInstance,
+    getGameInstance,
   });
 }
 
@@ -65,9 +65,9 @@ function registerHomeOrCity({
   destroyGame,
   destroyCurrentView,
   hideAllContainers,
-  isAuthenticated,
-  cachedPlayerState,
-}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'isAuthenticated' | 'cachedPlayerState'>): void {
+  getIsAuthenticated,
+  getCachedPlayerState,
+}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'getIsAuthenticated' | 'getCachedPlayerState'>): void {
   registerRoute('/', () => {
     destroyGame();
     destroyCurrentView();
@@ -76,7 +76,7 @@ function registerHomeOrCity({
   });
 
   registerRoute('/city', () => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -85,7 +85,7 @@ function registerHomeOrCity({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
-    new CityNav(container, cachedPlayerState);
+    new CityNav(container, getCachedPlayerState());
   });
 }
 
@@ -93,11 +93,11 @@ function registerMainMenu({
   destroyGame,
   destroyCurrentView,
   hideAllContainers,
-  isAuthenticated,
-  cachedPlayerState,
-}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'isAuthenticated' | 'cachedPlayerState'>): void {
+  getIsAuthenticated,
+  getCachedPlayerState,
+}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'getIsAuthenticated' | 'getCachedPlayerState'>): void {
   registerRoute('/main', () => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -107,11 +107,11 @@ function registerMainMenu({
     restorePersistedTheme();
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
-    new MainMenu(container, cachedPlayerState);
+    new MainMenu(container, getCachedPlayerState());
   });
 
   registerRoute('/main/settings', () => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -123,7 +123,7 @@ function registerMainMenu({
   });
 
   registerRoute('/main/gallery', () => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -140,11 +140,11 @@ function registerMapRoutes({
   destroyCurrentView,
   hideAllContainers,
   mountReactView,
-  isAuthenticated,
-  cachedPlayerState,
-}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'mountReactView' | 'isAuthenticated' | 'cachedPlayerState'>): void {
+  getIsAuthenticated,
+  getCachedPlayerState,
+}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'mountReactView' | 'getIsAuthenticated' | 'getCachedPlayerState'>): void {
   registerRoute('/map', () => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -152,11 +152,11 @@ function registerMapRoutes({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
-    void mountReactView(MapView, { playerState: cachedPlayerState });
+    void mountReactView(MapView, { playerState: getCachedPlayerState() });
   });
 
   registerRoute('/map/', (params) => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -165,19 +165,19 @@ function registerMapRoutes({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const districtSlug = extractDistrictSlug();
-    void mountReactView(MapView, { initialDistrict: districtSlug, playerState: cachedPlayerState });
+    void mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
   });
 }
 
 function registerGameRoutes({
-  isAuthenticated,
+  getIsAuthenticated,
   destroyCurrentView,
   hideAllContainers,
   startGameForLocation,
-  gameInstance,
-}: Pick<RouteDeps, 'isAuthenticated' | 'destroyCurrentView' | 'hideAllContainers' | 'startGameForLocation' | 'gameInstance'>): void {
+  getGameInstance,
+}: Pick<RouteDeps, 'getIsAuthenticated' | 'destroyCurrentView' | 'hideAllContainers' | 'startGameForLocation' | 'getGameInstance'>): void {
   registerRoute('/city/loc/', (params) => {
-    if (!isAuthenticated) {
+    if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
     }
@@ -187,7 +187,7 @@ function registerGameRoutes({
       return;
     }
     destroyCurrentView();
-    if (gameInstance) {
+    if (getGameInstance()) {
       hideAllContainers();
       document.getElementById('game-container')!.style.display = 'flex';
       eventBus.emit('city:travel-to', { locationId });

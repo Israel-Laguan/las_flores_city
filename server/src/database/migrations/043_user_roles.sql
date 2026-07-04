@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 -- This is a convenience for local development
 DO $$
 BEGIN
-    IF current_setting('env.NODE_ENV') = 'development' THEN
+    IF current_setting('env.NODE_ENV', true) = 'development' THEN
         UPDATE users 
         SET role = 'admin'
         WHERE id = '00000000-0000-0000-0000-000000000001' 

@@ -113,15 +113,21 @@ authRouter.post('/login', async (req, res) => {
     const user = result.rows[0];
 
     // Check password
-    if (user.password_hash) {
-      const validPassword = await bcrypt.compare(password, user.password_hash);
-      if (!validPassword) {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid credentials',
-          timestamp: new Date().toISOString(),
-        });
-      }
+    if (!user.password_hash) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
     }
 
     // Update last_login
@@ -351,31 +357,22 @@ authRouter.post('/admin-login', async (req, res) => {
     const user = result.rows[0];
 
     // Check password
-    if (user.password_hash) {
-      const validPassword = await bcrypt.compare(password, user.password_hash);
-      if (!validPassword) {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid credentials',
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }
-
-    // Check if user has admin role
-    if (user.role !== 'admin' && user.role !== 'developer') {
-      return res.status(403).json({
+    if (!user.password_hash) {
+      return res.status(401).json({
         success: false,
-        error: 'Admin access required',
+        error: 'Invalid credentials',
         timestamp: new Date().toISOString(),
       });
     }
 
-    // Update last_login
-    await queryOLTP(
-      'UPDATE users SET last_login = NOW() WHERE id = $1',
-      [user.id]
-    );
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     // Generate token
     const token = generateToken(user.id);

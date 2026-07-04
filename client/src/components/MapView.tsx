@@ -172,12 +172,16 @@ function TileGrid({ tiles, minX, minY, maxY, cols, rows, currentLocationId, onTi
         .map((tile: Tile) => {
           const color = TERRAIN_COLORS[tile.terrainType] || '#2a2a2a';
           const isCurrent = currentLocationId && tile.metadata?.location_id === currentLocationId;
+          const transforms = [
+            tile.rotation ? `rotate(${tile.rotation}deg)` : '',
+            tile.isFlipped ? 'scaleX(-1)' : '',
+          ].filter(Boolean).join(' ');
           const baseStyle: React.CSSProperties = {
             backgroundColor: color,
             backgroundImage: tile.baseImageUrl ? `url(${tile.baseImageUrl})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transform: tile.rotation ? `rotate(${tile.rotation}deg)` : undefined,
+            transform: transforms || undefined,
             gridColumn: tile.x - minX + 1,
             gridRow: tile.y - minY + 1,
           };
@@ -191,7 +195,10 @@ function TileGrid({ tiles, minX, minY, maxY, cols, rows, currentLocationId, onTi
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') onTileClick(tile);
+                if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === ' ') e.preventDefault();
+                  onTileClick(tile);
+                }
               }}
               title={String(tile.metadata?.label || tile.terrainType)}
             >
@@ -288,7 +295,16 @@ export default function MapView({ initialDistrict, playerState }: MapViewProps) 
     );
   }
 
-  if (!selectedDistrict) return null;
+  if (!selectedDistrict) {
+    return (
+      <div className="map-container map-district" data-daynight={dayNight}>
+        <button className="back-button" onClick={handleBack}>← Volver</button>
+        <div className="district-empty">
+          <p>No se pudo cargar este distrito.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <DistrictView

@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 
@@ -68,11 +71,28 @@ const styles = {
 } satisfies Record<string, CSSProperties>;
 
 export default function LoginPage() {
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    const formData = new FormData(e.currentTarget);
+    const res = await fetch('/api/auth/admin-login', { method: 'POST', body: formData });
+    if (res.redirected) {
+      window.location.href = res.url;
+      return;
+    }
+    const data = await res.json().catch(() => null);
+    setError(data?.error || 'Login failed');
+  }
+
   return (
     <main style={styles.main}>
       <h1 style={styles.heading}>Las Flores 2077 - Admin Login</h1>
 
-      <form style={styles.form} action="/api/auth/admin-login" method="POST">
+      {error && <p style={styles.error}>{error}</p>}
+
+      <form style={styles.form} onSubmit={handleSubmit}>
         <div style={styles.formGroup}>
           <label htmlFor="email" style={styles.label}>Email</label>
           <input 

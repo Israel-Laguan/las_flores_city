@@ -36,7 +36,7 @@ export function createHUDBlocks(
   moodContainer: Phaser.GameObjects.Container;
   moodValueText: Phaser.GameObjects.Text;
 } {
-  const locationNameContainer = scene.add.container(24, 18);
+  const locationNameContainer = scene.add.container(104, 18);
   locationNameContainer.setDepth(50);
 
   const locationBg = scene.add.graphics();
@@ -177,7 +177,7 @@ function loadDynamicAsset(
 
     if (type === 'image') {
       scene.load.image(key, url);
-      scene.load.once(`filecomplete-${key}`, () => {
+      scene.load.once(`filecomplete-image-${key}`, () => {
         urlTextureCache.set(url, key);
         scene.load.off('loaderror', errorHandler);
         resolve();
@@ -185,7 +185,7 @@ function loadDynamicAsset(
       scene.load.once('loaderror', errorHandler);
     } else {
       scene.load.audio(key, url);
-      scene.load.once(`filecomplete-${key}`, () => {
+      scene.load.once(`filecomplete-audio-${key}`, () => {
         urlTextureCache.set(url, key);
         scene.load.off('loaderror', errorHandler);
         resolve();

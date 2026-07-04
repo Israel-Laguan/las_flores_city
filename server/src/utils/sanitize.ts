@@ -1,11 +1,10 @@
 import path from 'node:path';
 
 /**
- * Check if a path is a Windows-style absolute path (e.g., C:\, D:\)
+ * Check if a path is a Windows-style absolute path (e.g., C:\, D:\, C:/, \\server\share)
  */
-function isWindowsAbsolutePath(path: string): boolean {
-  // Match drive letter patterns like C:\, D:\, etc.
-  return /^[A-Za-z]:\\/.test(path);
+function isWindowsAbsolutePath(value: string): boolean {
+  return path.win32.isAbsolute(value);
 }
 
 /**

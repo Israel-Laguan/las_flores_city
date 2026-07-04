@@ -67,6 +67,7 @@ export class LocationScene extends Phaser.Scene {
 
     this.registerEventHandlers();
     this.setupContextRecovery();
+    this.events.once('shutdown', () => this.shutdown());
     this.loadCurrentLocation();
   }
 
@@ -82,37 +83,74 @@ export class LocationScene extends Phaser.Scene {
   }
 
   private registerEventHandlers() {
-    eventBus.on('location:loaded', (data: ScenePayload) => this.loadScene(data));
-    eventBus.on('location:npcs-updated', (npcs: NPCData[]) => renderNPCs(this, npcs, this.npcSprites, (npc) => this.onNPCClick(npc)));
-    eventBus.on('phone:open', () => { this.phoneOpen = true; this.input.enabled = false; });
-    eventBus.on('phone:close', () => { this.phoneOpen = false; this.input.enabled = true; });
-    eventBus.on('phaser:disable_inputs', () => {
-      this.phoneOpen = true;
-      this.input.enabled = false;
-      this.children.each((child) => {
-        if (child instanceof Phaser.GameObjects.Sprite && child.input) {
-          child.clearTint();
-          child.setScale(1.0);
-        }
-        return true;
-      });
-    });
-    eventBus.on('phaser:enable_inputs', () => { this.phoneOpen = false; this.input.enabled = true; });
-    eventBus.on('dialogue:opened', () => { this.input.enabled = false; });
-    eventBus.on('dialogue:closed', () => { if (!this.phoneOpen) this.input.enabled = true; });
-    eventBus.on('navigation:locked', () => { this.navigationLocked = true; });
-    eventBus.on('navigation:unlocked', () => { this.navigationLocked = false; });
+    const handlers = {
+      locationLoaded: (data: ScenePayload) => this.loadScene(data),
+      npcsUpdated: (npcs: NPCData[]) => renderNPCs(this, npcs, this.npcSprites, (npc) => this.onNPCClick(npc)),
+      phoneOpen: () => { this.phoneOpen = true; this.syncInputEnabled(); },
+      phoneClose: () => { this.phoneOpen = false; this.syncInputEnabled(); },
+      disableInputs: () => {
+        this.phoneOpen = true;
+        this.input.enabled = false;
+        this.children.each((child) => {
+          if (child instanceof Phaser.GameObjects.Sprite && child.input) {
+            child.clearTint();
+            child.setScale(1.0);
+          }
+          return true;
+        });
+      },
+      enableInputs: () => { this.phoneOpen = false; this.syncInputEnabled(); },
+      dialogueOpened: () => { this.input.enabled = false; },
+      dialogueClosed: () => { this.syncInputEnabled(); },
+      navigationLocked: () => { this.navigationLocked = true; this.syncInputEnabled(); },
+      navigationUnlocked: () => { this.navigationLocked = false; this.syncInputEnabled(); },
+    };
+
+    eventBus.on('location:loaded', handlers.locationLoaded);
+    eventBus.on('location:npcs-updated', handlers.npcsUpdated);
+    eventBus.on('phone:open', handlers.phoneOpen);
+    eventBus.on('phone:close', handlers.phoneClose);
+    eventBus.on('phaser:disable_inputs', handlers.disableInputs);
+    eventBus.on('phaser:enable_inputs', handlers.enableInputs);
+    eventBus.on('dialogue:opened', handlers.dialogueOpened);
+    eventBus.on('dialogue:closed', handlers.dialogueClosed);
+    eventBus.on('navigation:locked', handlers.navigationLocked);
+    eventBus.on('navigation:unlocked', handlers.navigationUnlocked);
+
+    this._eventHandlers = handlers;
+  }
+
+  private _eventHandlers: Record<string, (...args: any[]) => void> = {};
+
+  private syncInputEnabled(): void {
+    this.input.enabled = !this.phoneOpen && !this.navigationLocked;
   }
 
   private setupContextRecovery(): void {
-    document.addEventListener('visibilitychange', () => {
+    this._visibilityHandler = () => {
       if (document.hidden) {
         if (this.sound.locked === false) (this.sound as any).context?.suspend?.();
       } else {
         const ctx = (this.sound as any).context as AudioContext | undefined;
         if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this._visibilityHandler);
+  }
+
+  private _visibilityHandler?: () => void;
+
+  private shutdown(): void {
+    if (this._eventHandlers) {
+      Object.entries(this._eventHandlers).forEach(([event, handler]) => {
+        eventBus.off(event, handler as any);
+      });
+      this._eventHandlers = {} as any;
+    }
+    if (this._visibilityHandler) {
+      document.removeEventListener('visibilitychange', this._visibilityHandler);
+      this._visibilityHandler = undefined;
+    }
   }
 
   private createAtmosphereEffects(width: number, height: number) {
@@ -271,7 +309,6 @@ export class LocationScene extends Phaser.Scene {
     await travelTo(
       this,
       locationId,
-      this.navigationLocked,
       this.phoneOpen,
       this.audioManager
     );
@@ -279,24 +316,27 @@ export class LocationScene extends Phaser.Scene {
 
   private async bootstrapScene(payload: ScenePayload) {
     this.loadingOverlay.show();
-    const assetPromises: Promise<void>[] = [];
+    try {
+      const assetPromises: Promise<void>[] = [];
 
-    if (payload.scene.backgroundUrl) {
-      const bgKey = `bg-${payload.scene.id}`;
-      assetPromises.push(this.loadDynamicAsset(bgKey, payload.scene.backgroundUrl, 'image'));
-    }
-
-    for (const npc of payload.npcs) {
-      const npcKey = `npc-${npc.characterId}`;
-      if (npc.atlasUrl) {
-        assetPromises.push(this.loadSpriteAtlas(npcKey, npc.portraitUrl, npc.atlasUrl).then(() => {}));
-      } else {
-        assetPromises.push(this.loadDynamicAsset(npcKey, npc.portraitUrl, 'image'));
+      if (payload.scene.backgroundUrl) {
+        const bgKey = `bg-${payload.scene.id}`;
+        assetPromises.push(this.loadDynamicAsset(bgKey, payload.scene.backgroundUrl, 'image'));
       }
-    }
 
-    await Promise.all(assetPromises);
-    this.loadingOverlay.hide();
+      for (const npc of payload.npcs) {
+        const npcKey = `npc-${npc.characterId}`;
+        if (npc.atlasUrl) {
+          assetPromises.push(this.loadSpriteAtlas(npcKey, npc.portraitUrl, npc.atlasUrl).then(() => {}));
+        } else {
+          assetPromises.push(this.loadDynamicAsset(npcKey, npc.portraitUrl, 'image'));
+        }
+      }
+
+      await Promise.all(assetPromises);
+    } finally {
+      this.loadingOverlay.hide();
+    }
   }
 
   private loadDynamicAsset(key: string, url: string, type: 'image' | 'audio'): Promise<void> {
@@ -310,7 +350,7 @@ export class LocationScene extends Phaser.Scene {
 
       if (type === 'image') {
         this.load.image(key, url);
-        this.load.once(`filecomplete-${key}`, () => {
+        this.load.once(`filecomplete-image-${key}`, () => {
           this.urlTextureCache.set(url, key);
           this.load.off('loaderror', errorHandler);
           resolve();
@@ -318,7 +358,7 @@ export class LocationScene extends Phaser.Scene {
         this.load.once('loaderror', errorHandler);
       } else {
         this.load.audio(key, url);
-        this.load.once(`filecomplete-${key}`, () => {
+        this.load.once(`filecomplete-audio-${key}`, () => {
           this.urlTextureCache.set(url, key);
           this.load.off('loaderror', errorHandler);
           resolve();
