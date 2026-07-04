@@ -69,20 +69,23 @@ interface ImportResult {
   }>;
 }
 
-async function collectDraftsFolders(promptRel: string | null, all: string): Promise<DraftsFolderRef[]> {
+async function collectDraftsFolders(promptRel: string | null): Promise<DraftsFolderRef[]> {
   const draftsFolders: DraftsFolderRef[] = [];
-  const promptDir = promptRel ? path.dirname(resolvePromptFile(promptRel)) : all;
+  const searchDir = promptRel
+    ? path.dirname(resolvePromptFile(promptRel))
+    : getPromptRoot();
 
-  for (const file of await fs.promises.readdir(all)) {
+  const files = await fs.promises.readdir(searchDir);
+  for (const file of files) {
     if (file.endsWith('.prompt.md') || file.endsWith('.prompt.yaml')) {
-      const promptRel = file.replace(/\.prompt\.(md|yaml)$/, '');
-      if (!promptRel) continue;
-      const sanitizedPromptRel = sanitizePromptRel(promptRel);
+      const foundPromptRel = file.replace(/\.prompt\.(md|yaml)$/, '');
+      if (!foundPromptRel) continue;
+      const sanitizedPromptRel = sanitizePromptRel(foundPromptRel);
       if (!sanitizedPromptRel) {
-        console.log(`[import-drafts] Skipping invalid prompt_rel: ${promptRel}`);
+        console.log(`[import-drafts] Skipping invalid prompt_rel: ${foundPromptRel}`);
         continue;
       }
-      const draftsFolder = path.join(all, DRAFTS_DIR);
+      const draftsFolder = path.join(searchDir, DRAFTS_DIR);
       console.log(`[import-drafts] Looking for drafts: ${draftsFolder}`);
       try {
         await fs.promises.access(draftsFolder);
@@ -230,7 +233,7 @@ assetsImportRouter.get('/import-drafts', async (req, res, next) => {
       });
     }
 
-    const draftsFolders = await collectDraftsFolders(sanitizedPromptRel, all as string);
+    const draftsFolders = await collectDraftsFolders(sanitizedPromptRel);
     if (draftsFolders.length === 0) {
       return res.status(404).json({
         success: false,

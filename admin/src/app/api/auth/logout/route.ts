@@ -10,12 +10,25 @@ export async function POST(request: Request) {
 
     if (sessionCookie) {
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
-      await fetch(`${serverUrl}/auth/logout`, {
+      const serverResponse = await fetch(`${serverUrl}/auth/logout`, {
         method: 'POST',
         headers: {
           'Cookie': `jwt_session=${sessionCookie.value}`,
         },
       });
+
+      // Forward the server's Set-Cookie (clear cookie) to the browser
+      const setCookieHeader = serverResponse.headers.get('set-cookie');
+      if (setCookieHeader) {
+        const responseHeaders: Record<string, string> = {
+          'location': new URL('/login', request.url).toString(),
+        };
+        responseHeaders['set-cookie'] = setCookieHeader;
+        return new NextResponse(null, {
+          status: 303,
+          headers: responseHeaders,
+        });
+      }
     }
 
     return NextResponse.redirect(new URL('/login', request.url));

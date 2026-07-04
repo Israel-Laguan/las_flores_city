@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check for session cookie
+  // Check for session cookie (UX guard only — actual auth enforcement is server-side via adminMiddleware)
   const sessionCookie = request.cookies.get('jwt_session')
 
   // If no session and not a public route, redirect to login

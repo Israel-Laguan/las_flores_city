@@ -14,7 +14,6 @@ export async function getAdminUser() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': `jwt_session=${sessionCookie.value}`,
       },
       credentials: 'include',
     });
@@ -33,14 +32,9 @@ export async function getAdminUser() {
 
 export async function adminFetch(url: string, options: RequestInit = {}) {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get('jwt_session');
 
   const headers = new Headers(options.headers);
   headers.set('Content-Type', 'application/json');
-  if (sessionCookie) {
-    headers.set('Cookie', `jwt_session=${sessionCookie.value}`);
-  }
 
   const response = await fetch(`${serverUrl}${url}`, {
     ...options,

@@ -4,7 +4,6 @@ import { eventBus } from '../../utils/EventBus';
 export async function travelTo(
   scene: any,
   locationId: string,
-  phoneOpen: boolean,
   audioManager: any
 ): Promise<void> {
   if (scene.navigationLocked) return;
@@ -29,7 +28,7 @@ export async function travelTo(
     await scene.cameras.main.fadeIn(500, 0, 0, 0);
   }
 
-  if (!phoneOpen) scene.input.enabled = true;
+  if (!scene.phoneOpen) scene.input.enabled = true;
 }
 
 async function completeTravel(

@@ -309,7 +309,6 @@ export class LocationScene extends Phaser.Scene {
     await travelTo(
       this,
       locationId,
-      this.phoneOpen,
       this.audioManager
     );
   }

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   try {
@@ -33,24 +32,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const data = await response.json();
-
-    // Set the session cookie from the server response
+    // Forward the Set-Cookie header from the server response
     const setCookieHeader = response.headers.get('set-cookie');
+    const responseHeaders: Record<string, string> = {
+      'location': new URL('/', request.url).toString(),
+    };
     if (setCookieHeader) {
-      const match = setCookieHeader.match(/jwt_session=([^;]+)/);
-      if (match) {
-        cookies().set('jwt_session', match[1], {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          path: '/',
-          maxAge: 60 * 60 * 24,
-        });
-      }
+      responseHeaders['set-cookie'] = setCookieHeader;
     }
 
-    return NextResponse.redirect(new URL('/', request.url), 303);
+    return new NextResponse(null, {
+      status: 303,
+      headers: responseHeaders,
+    });
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(

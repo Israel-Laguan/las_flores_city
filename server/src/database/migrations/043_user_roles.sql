@@ -13,16 +13,11 @@ ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS users_role_check
 -- Create index for role column for faster admin queries
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
--- Update existing dev user to have admin role if in development environment
+-- Update existing dev user to have admin role (idempotent, safe in all environments)
 -- This is a convenience for local development
-DO $$
-BEGIN
-    IF current_setting('env.NODE_ENV', true) = 'development' THEN
-        UPDATE users 
-        SET role = 'admin'
-        WHERE id = '00000000-0000-0000-0000-000000000001' 
-        AND role = 'player';
-    END IF;
-END $$;
+UPDATE users 
+SET role = 'admin'
+WHERE id = '00000000-0000-0000-0000-000000000001' 
+AND role = 'player';
 
 COMMIT;

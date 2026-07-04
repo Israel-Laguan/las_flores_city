@@ -374,6 +374,15 @@ authRouter.post('/admin-login', async (req, res) => {
       });
     }
 
+    // Check that user has admin or developer role
+    if (user.role !== 'admin' && user.role !== 'developer') {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. Admin privileges required.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     // Generate token
     const token = generateToken(user.id);
 
