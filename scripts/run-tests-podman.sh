@@ -154,6 +154,13 @@ if [[ -n "$JWT_SECRET" ]]; then
     ENV_VARS+=("-e" "JWT_SECRET=$JWT_SECRET")
 fi
 
+if [[ -n "$MINIO_ENDPOINT" ]]; then
+    ENV_VARS+=("-e" "MINIO_ENDPOINT=$MINIO_ENDPOINT")
+    ENV_VARS+=("-e" "MINIO_PORT=$MINIO_PORT")
+    ENV_VARS+=("-e" "MINIO_ACCESS_KEY=$MINIO_ACCESS_KEY")
+    ENV_VARS+=("-e" "MINIO_SECRET_KEY=$MINIO_SECRET_KEY")
+fi
+
 # Build the test command
 # The container workdir is /app, and SERVER_DIR is "server", so TEST_PATH should be relative to /app
 TEST_COMMAND="cd ${SERVER_DIR} && npm test -- ${TEST_PATH}"
