@@ -219,21 +219,21 @@ assetsRouter.get('/list-all', async (_req, res, next) => {
 
     const variantMap = new Map(variantsRes.rows.map((r: any) => [r.prompt_rel, r.variant_count]));
 
-    const chosenBasePromises = basesRes.rows.map(async (r: any) => {
+    const chosenRes = await queryOLTP(`SELECT DISTINCT ON (prompt_rel) prompt_rel, id FROM asset_bases WHERE chosen ORDER BY prompt_rel`);
+    const chosenMap = new Map(chosenRes.rows.map((r: any) => [r.prompt_rel, r.id]));
+
+    const groups = basesRes.rows.map((r: any) => {
       const count = typeof r.base_count === 'string' ? parseInt(r.base_count, 10) : r.base_count;
       const vCount = typeof variantMap.get(r.prompt_rel) === 'string'
         ? parseInt(variantMap.get(r.prompt_rel) as string, 10)
         : (variantMap.get(r.prompt_rel) || 0);
-      const chosenRes = await queryOLTP(`SELECT id FROM asset_bases WHERE prompt_rel = $1 AND chosen LIMIT 1`, [r.prompt_rel]);
       return {
         prompt_rel: r.prompt_rel,
         base_count: count || 0,
         variant_count: vCount,
-        chosen_base_id: chosenRes.rows[0]?.id || null,
+        chosen_base_id: chosenMap.get(r.prompt_rel) || null,
       };
     });
-
-    const groups = await Promise.all(chosenBasePromises);
 
     const data = AssetListAllResponseSchema.parse({ groups });
     res.json({ success: true, data, timestamp: new Date().toISOString() });
@@ -317,31 +317,25 @@ assetsRouter.post('/publish', async (req, res, next) => {
 assetsRouter.get('/image/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(`[image/:id] Fetching image for id: ${JSON.stringify(id)}`);
 
     let baseRes = await queryOLTP(`SELECT image_path FROM asset_bases WHERE id = $1`, [id]);
     let imagePath: string | null = null;
 
     if (baseRes.rows.length > 0) {
       imagePath = baseRes.rows[0].image_path;
-      console.log(`[image/:id] Found base image path: ${JSON.stringify(imagePath)}`);
     } else {
       const variantRes = await queryOLTP(`SELECT image_path FROM asset_variants WHERE id = $1`, [id]);
       if (variantRes.rows.length > 0) {
         imagePath = variantRes.rows[0].image_path;
-        console.log(`[image/:id] Found variant image path: ${JSON.stringify(imagePath)}`);
       }
     }
 
     if (!imagePath) {
-      console.error(`[image/:id] Image not found for id: ${JSON.stringify(id)}`);
       res.status(404).json({ success: false, error: 'Image not found', timestamp: new Date().toISOString() });
       return;
     }
 
-    console.log(`[image/:id] Signing URL for path: ${JSON.stringify(imagePath)}`);
     const signedUrl = await signMinioUrl(imagePath, 300);
-    console.log(`[image/:id] Signed URL: ${JSON.stringify(signedUrl)}`);
 
     const resp = await fetch(signedUrl, { signal: AbortSignal.timeout(15000) });
     if (!resp.ok) throw new Error(`Failed to fetch source image: ${resp.status}`);
@@ -352,7 +346,6 @@ assetsRouter.get('/image/:id', async (req, res, next) => {
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.send(imageBuffer);
   } catch (error) {
-    console.error(`[image/:id] Error for id ${JSON.stringify(req.params.id)}:`, error);
     next(error);
   }
 });

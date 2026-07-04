@@ -6,6 +6,7 @@ import { API_BASE } from './constants';
 import type { Category, View } from './constants';
 import CatalogView from './components/CatalogView';
 import GeneratorView from './components/GeneratorView';
+import { loadGroups as sharedLoadGroups } from '@/lib/hooks/useAssetsApi';
 
 async function loadCatalog(
   setLoading: (v: boolean) => void,
@@ -49,16 +50,8 @@ async function handleLoadAssets(
   }
 }
 
-async function loadGroups(setGroups: (v: AssetListAllResponse['groups']) => void) {
-  try {
-    const res = await fetch(`${API_BASE}/list-all`);
-    const data = await res.json();
-    if (data.success) {
-      setGroups(data.data.groups);
-    }
-  } catch (e) {
-    console.error('Failed to load groups', e);
-  }
+async function loadGroups(setGroups: (v: AssetListAllResponse['groups']) => void, setError?: (v: string | null) => void) {
+  await sharedLoadGroups(setGroups, setError);
 }
 
 export default function AssetsPage() {
@@ -75,7 +68,7 @@ export default function AssetsPage() {
 
   useEffect(() => {
     loadCatalog(setLoading, setCategories, setError);
-    loadGroups(setGroups);
+    loadGroups(setGroups, setError);
   }, []);
 
   return (
@@ -96,7 +89,7 @@ export default function AssetsPage() {
           error={error}
           setLoading={setLoading}
           setError={setError}
-          loadGroups={() => loadGroups(setGroups)}
+          loadGroups={() => loadGroups(setGroups, setError)}
           onSelectEntry={entry => {
             setSelectedEntry(entry);
             setView('generator');
@@ -121,7 +114,7 @@ export default function AssetsPage() {
           setNewBaseIds={setNewBaseIds}
           setView={setView}
           setSelectedEntry={setSelectedEntry}
-          loadGroups={() => loadGroups(setGroups)}
+          loadGroups={() => loadGroups(setGroups, setError)}
           loadAssets={(prompt_rel) => handleLoadAssets(prompt_rel, setLoading, setError, setBases, setVariants)}
         />
       )}
