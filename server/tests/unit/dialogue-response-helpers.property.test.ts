@@ -21,6 +21,10 @@ import {
 } from '../../src/routes/dialogue-response-helpers.js';
 import type { DialogueNode, DialogueChoice, Leaf } from '@las-flores/shared';
 
+// ISO 8601 regex: matches the output of Date.toISOString()
+const ISO_8601_RE =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
 // ── Arbitraries ───────────────────────────────────────────────
 
 /** Generates a valid node id string. */

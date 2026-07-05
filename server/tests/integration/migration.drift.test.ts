@@ -100,7 +100,7 @@ describe('Migration drift guard', () => {
 
     const drift = await pool.query(
       `SELECT ml.file_path FROM migration_log ml
-       LEFT JOIN mysteries m ON ml.content_id = m.id
+       LEFT JOIN mysteries m ON ml.content_id::uuid = m.id
        WHERE ml.content_type = 'mystery' AND m.id IS NULL`
     );
     expect(drift.rows).toHaveLength(0);

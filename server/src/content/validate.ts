@@ -39,9 +39,7 @@ export interface ValidationError {
 async function loadValidBeatSlugs(): Promise<Set<string> | null> {
   try {
     const result = await queryOLTP<{ slug: string }>('SELECT slug FROM story_beats');
-    if (result.rows.length > 0) {
-      return new Set(result.rows.map(r => r.slug));
-    }
+    return new Set(result.rows.map(r => r.slug));
   } catch {
     // fall through to Redis
   }

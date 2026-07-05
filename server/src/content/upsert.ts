@@ -362,9 +362,9 @@ async function upsertStoryBeat(beat: { slug: string; label: string; order: numbe
 
 async function processStoryBeatData(data: any): Promise<string> {
   const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
-  StoryBeatRegistrySchema.parse(data);
+  const parsed = StoryBeatRegistrySchema.parse(data);
   const slugs: string[] = [];
-  for (const beat of data.beats) {
+  for (const beat of parsed.beats) {
     await upsertStoryBeat(beat);
     slugs.push(beat.slug);
   }
