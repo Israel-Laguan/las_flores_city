@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 export function applyRainEffect(
   scene: Phaser.Scene,
   width: number,
-  height: number
+  _height: number
 ): Phaser.GameObjects.Particles.ParticleEmitter {
   const rainKey = '__raindrop';
   if (!scene.textures.exists(rainKey)) {

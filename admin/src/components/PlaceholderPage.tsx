@@ -1,5 +1,7 @@
 "use client";
 
+import React from 'react';
+
 export const placeholderStyles = {
   main: { padding: '2rem', fontFamily: 'monospace', backgroundColor: '#1a1a2e', minHeight: '100vh', color: '#fff' },
   heading: { color: '#00ff00', marginBottom: '2rem' },
@@ -33,7 +35,7 @@ interface PlaceholderPageProps {
   badgeColor: string;
   heading: string;
   description: string;
-  features: string[];
+  features: React.ReactNode[];
   footnote?: string;
   buttonLabel: string;
 }

@@ -15,7 +15,7 @@ export default function SettingsPage() {
         'Content pipeline configuration (paths, validation rules)',
         'API key management for external services (asset generation, etc.)',
         'System preferences (theme, notifications, defaults)',
-        'Integration with <code style={{ color: "#aaa" }}>GET/PUT /admin/settings</code> API endpoints',
+        <>Integration with <code style={{ color: "#aaa" }}>GET/PUT /admin/settings</code> API endpoints</>,
       ]}
       footnote="Not yet scheduled for a specific milestone. Will be implemented as admin tooling matures and configuration needs arise."
       buttonLabel="⚙️ Configure Settings (Coming Soon)"

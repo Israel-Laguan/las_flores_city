@@ -216,7 +216,6 @@ function attachNPCHitArea(
   visualElement: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Graphics,
   onNPCClick: (npc: NPCData) => void
 ): void {
-  const maxH = scene.cameras.main.height * 0.55;
   const hitW = (visualElement instanceof Phaser.GameObjects.Image || visualElement instanceof Phaser.GameObjects.Sprite)
     ? visualElement.displayWidth
     : 60;

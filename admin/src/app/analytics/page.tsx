@@ -16,7 +16,7 @@ export default function AnalyticsPage() {
         'Content engagement stats (dialogue completions, mystery resolution rates)',
         'Leaderboard data visualization',
         'Time-series charts for key OLAP metrics',
-        'Integration with <code style={{ color: "#aaa" }}>GET /admin/analytics/*</code> API endpoints',
+        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/analytics/*</code> API endpoints</>,
       ]}
       footnote="Not yet scheduled for a specific milestone. Will be implemented when OLAP infrastructure is fully leveraged for admin tooling."
       buttonLabel="📊 View Dashboard (Coming Soon)"

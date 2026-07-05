@@ -15,7 +15,7 @@ export default function CharactersPage() {
         'Table of all characters with name, type, faction, and portrait status columns',
         'Filter by faction, type, or district',
         'Click-through to character detail with YAML preview',
-        'Integration with <code style={{ color: "#aaa" }}>GET /admin/characters</code> API endpoint',
+        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/characters</code> API endpoint</>,
       ]}
       footnote="Server-side API endpoint to be implemented as part of M6."
       buttonLabel="🔍 Refresh (Coming in M6)"

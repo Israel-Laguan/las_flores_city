@@ -15,7 +15,7 @@ export default function OverlaysPage() {
         'Table of all overlays with type, dialogue reference, and node count columns',
         'Filter by overlay type or associated dialogue',
         'Click-through to overlay detail with modification diff view',
-        'Integration with <code style={{ color: "#aaa" }}>GET /admin/overlays</code> API endpoint',
+        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/overlays</code> API endpoint</>,
       ]}
       footnote="Server-side API endpoint to be implemented as part of M6."
       buttonLabel="🔍 Refresh (Coming in M6)"

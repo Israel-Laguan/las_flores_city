@@ -23,7 +23,7 @@ export function registerRoutes({
   destroyGame,
   destroyCurrentView,
   hideAllContainers,
-  startGame,
+  startGame: _startGame,
   startGameForLocation,
   getIsAuthenticated,
   getCachedPlayerState,

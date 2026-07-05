@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssetBase, AssetListAllResponse } from '@las-flores/shared';
+import type { AssetBase } from '@las-flores/shared';
 import BaseCard from './BaseCard';
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
   onApproveBase: (baseId: string) => void;
 };
 
-export default function BasesSection({ bases, newBaseIds, loading, error, setError, onDeleteAll, onGenerate, onImport, onDeleteBase, onApproveBase }: Props) {
+export default function BasesSection({ bases, newBaseIds, loading, error: _error, setError: _setError, onDeleteAll, onGenerate, onImport, onDeleteBase, onApproveBase }: Props) {
   return (
     <div style={{ marginBottom: '3rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

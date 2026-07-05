@@ -55,7 +55,7 @@ async function bulkImport({ setLoading, setError, loadGroups }: Pick<Props, 'set
   }
 }
 
-export default function CatalogView({ categories, groups, loading, error, setLoading, setError, loadGroups, onSelectEntry }: Props) {
+export default function CatalogView({ categories, groups, loading, error: _error, setLoading, setError, loadGroups, onSelectEntry }: Props) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

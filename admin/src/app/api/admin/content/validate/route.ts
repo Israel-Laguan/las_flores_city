@@ -9,9 +9,10 @@ export async function POST() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Admin content validate error:', error);
+    const status = (error as { status?: number })?.status ?? 500;
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { status }
     );
   }
 }

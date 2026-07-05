@@ -15,7 +15,7 @@ export default function ScenesPage() {
         'Table of all scenes with district, location, and required_story_beat columns',
         'Filter by district, location, or story beat',
         'Click-through to scene detail with YAML preview',
-        'Integration with <code style={{ color: "#aaa" }}>GET /admin/scenes</code> API endpoint',
+        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/scenes</code> API endpoint</>,
       ]}
       footnote="Server-side API endpoint to be implemented as part of M6."
       buttonLabel="🔍 Refresh (Coming in M6)"

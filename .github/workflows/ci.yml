@@ -120,6 +120,14 @@ jobs:
           PORT: 3000
           CLIENT_ORIGIN_URL: http://localhost:5173
           NODE_ENV: development
+          CDN_BASE_URL: https://cdn.lasflores2077.com
+          CDN_KEY_PAIR_ID: APKADEV00000000000000
+          CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
+          MINIO_ENDPOINT: localhost
+          MINIO_PORT: 9000
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+          MINIO_BUCKET: las-flores
 
       - name: Wait for API server
         run: |

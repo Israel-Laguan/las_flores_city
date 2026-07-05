@@ -15,7 +15,7 @@ export default function DialoguesPage() {
         'Table of all dialogue trees with node count, character, and beat columns',
         'Filter by character, beat, or dialogue type',
         'Click-through to dialogue detail with node tree visualization',
-        'Integration with <code style={{ color: "#aaa" }}>GET /admin/dialogues</code> API endpoint',
+        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/dialogues</code> API endpoint</>,
       ]}
       footnote="Server-side API endpoint to be implemented as part of M6."
       buttonLabel="🔍 Refresh (Coming in M6)"

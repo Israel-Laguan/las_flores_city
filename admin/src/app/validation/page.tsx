@@ -52,6 +52,7 @@ const styles = {
   codeBlock: { backgroundColor: '#0d0d1a', padding: '0.25rem 0.5rem', borderRadius: '3px', color: '#aaa', fontSize: '0.85rem' },
 };
 
+// eslint-disable-next-line max-lines-per-function
 export default function ValidationPage() {
   const [validating, setValidating] = useState(false);
   const [result, setResult] = useState<ValidationResult | null>(null);
