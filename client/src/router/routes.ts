@@ -11,6 +11,7 @@ interface RouteDeps {
   destroyGame: () => void;
   destroyCurrentView: () => void;
   hideAllContainers: () => void;
+  startGame: () => void;
   startGameForLocation: (locationId: string) => void;
   getIsAuthenticated: () => boolean;
   getCachedPlayerState: () => any;
