@@ -12,8 +12,11 @@ import {
   VaultFileSchema,
   ShopItemFileSchema,
   GigFileSchema,
+  StoryBeatRegistrySchema,
   ContentType,
 } from '@las-flores/shared';
+import { queryOLTP } from '../database/connection.js';
+import { getCache } from '../database/redis.js';
 
 // Content validation results
 export interface ValidationResult {
@@ -28,6 +31,23 @@ export interface ValidationError {
   column?: number;
   message: string;
   severity: 'error' | 'warning';
+}
+
+// Load the set of valid beat slugs from the DB (primary) or Redis (fallback).
+// Returns null when neither source has any data, which means the registry
+// has not been migrated yet — callers should emit a warning, not an error.
+async function loadValidBeatSlugs(): Promise<Set<string> | null> {
+  try {
+    const result = await queryOLTP<{ slug: string }>('SELECT slug FROM story_beats');
+    if (result.rows.length > 0) {
+      return new Set(result.rows.map(r => r.slug));
+    }
+  } catch {
+    // fall through to Redis
+  }
+  const cached = await getCache<string[]>('story_beats:slugs');
+  if (cached && cached.length > 0) return new Set(cached);
+  return null;
 }
 
 // Validate a single YAML file
@@ -67,6 +87,56 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
     const validationResult = validateContentByType(contentType, data);
     errors.push(...validationResult.errors.map(e => ({ ...e, file: filePath })));
     warnings.push(...validationResult.warnings);
+
+    // Beat slug cross-reference for dialogues
+    if (contentType === 'dialogue' && validationResult.errors.filter(e => e.severity === 'error').length === 0) {
+      const validSlugs = await loadValidBeatSlugs();
+      if (validSlugs === null) {
+        errors.push({
+          file: filePath,
+          message: 'Beat registry unavailable: story_beat cross-reference checks skipped',
+          severity: 'warning',
+        });
+      } else if (validSlugs.size === 0) {
+        errors.push({
+          file: filePath,
+          message: 'Cannot validate effects.story_beat: story_beats registry not yet migrated. Run story_beats.yaml migration first.',
+          severity: 'error',
+        });
+      } else {
+        const nodes = data?.nodes ?? {};
+        for (const [nodeId, node] of Object.entries(nodes as Record<string, any>)) {
+          const beatSlug = (node as any)?.effects?.story_beat;
+          if (beatSlug && !validSlugs.has(beatSlug)) {
+            errors.push({
+              file: filePath,
+              message: `Unknown story_beat slug "${beatSlug}" on node "${nodeId}" — not in registry`,
+              severity: 'error',
+            });
+          }
+        }
+      }
+    }
+
+    // Beat slug cross-reference for scenes
+    if (contentType === 'scene' && validationResult.errors.filter(e => e.severity === 'error').length === 0) {
+      const requiredBeat = data?.metadata?.required_story_beat;
+      if (requiredBeat !== undefined && requiredBeat !== null) {
+        const validSlugs = await loadValidBeatSlugs();
+        if (validSlugs !== null) {
+          const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
+          for (const slug of slugsToCheck) {
+            if (!validSlugs.has(slug)) {
+              errors.push({
+                file: filePath,
+                message: `Unknown required_story_beat slug "${slug}" in scene — not in registry`,
+                severity: 'error',
+              });
+            }
+          }
+        }
+      }
+    }
 
     return {
       valid: errors.filter(e => e.severity === 'error').length === 0,
@@ -126,6 +196,9 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         break;
       case 'location':
         YAMLLocationSchema.parse(data);
+        break;
+      case 'story_beat':
+        StoryBeatRegistrySchema.parse(data);
         break;
       case 'map_tile':
         // Map tile files are validated by MapTileFileSchema during migration
@@ -216,7 +289,11 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
    if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
      return 'location';
    }
-    
+
+   if (normalizedPath.endsWith('story_beats.yaml')) {
+     return 'story_beat';
+   }
+
    if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
      return 'gig';
    }

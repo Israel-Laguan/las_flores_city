@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { VaultFileSchema, YAMLMysterySchema, ShopItemFileSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
+import { setCache, deleteCache } from '../database/redis.js';
 import { sanitizeText } from './validate.js';
 import type { AppliedMigration } from './migrate.js';
 import type { ContentType } from '@las-flores/shared';
@@ -18,6 +19,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) return 'vault';
   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) return 'mystery';
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) return 'shop_item';
+  if (normalizedPath.endsWith('story_beats.yaml')) return 'story_beat';
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) return 'gig';
   return null;
 }
@@ -344,6 +346,35 @@ async function processMapTileData(data: any): Promise<string> {
   return tileIds.join(',');
 }
 
+async function upsertStoryBeat(beat: { slug: string; label: string; order: number; description: string }): Promise<string> {
+  await queryOLTP(
+    `INSERT INTO story_beats (slug, label, "order", description)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (slug) DO UPDATE SET
+       label       = EXCLUDED.label,
+       "order"     = EXCLUDED."order",
+       description = EXCLUDED.description,
+       updated_at  = NOW()`,
+    [beat.slug, beat.label, beat.order, beat.description]
+  );
+  return beat.slug;
+}
+
+async function processStoryBeatData(data: any): Promise<string> {
+  const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
+  StoryBeatRegistrySchema.parse(data);
+  const slugs: string[] = [];
+  for (const beat of data.beats) {
+    await upsertStoryBeat(beat);
+    slugs.push(beat.slug);
+  }
+  // Invalidate stale cache before re-populating
+  await deleteCache('story_beats:slugs');
+  // TTL 0 = no expiry — invalidated explicitly by deleteCache before each re-population
+  await setCache('story_beats:slugs', slugs, 0);
+  return slugs.join(',');
+}
+
 export async function processContentFile(filePath: string): Promise<AppliedMigration> {
   const contentType = getContentTypeFromPath(filePath);
   if (!contentType) throw new Error(`Could not determine content type from path: ${filePath}`);
@@ -363,6 +394,7 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'shop_item': contentId = await processShopItemData(data); break;
     case 'location': contentId = await processLocationData(data); break;
     case 'map_tile': contentId = await processMapTileData(data); break;
+    case 'story_beat': contentId = await processStoryBeatData(data); break;
     default: throw new Error(`Unsupported content type: ${contentType}`);
   }
 

@@ -9,6 +9,7 @@ mood: "cozy"
 available_dialogues:
   - "123e4567-e89b-12d3-a456-426614174002"
 metadata:
+  required_story_beat: act1_awakening
   idle_thoughts:
     - "The espresso machine is releasing pressurized steam. The local grid is stable."
     - "The music playing over the speakers is a slow, synthesized Andean melody."

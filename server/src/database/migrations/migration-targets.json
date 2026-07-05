@@ -35,7 +35,9 @@
     "040_asset_generation.sql",
     "041_asset_generation_enhancements.sql",
     "042_asset_unique_constraints.sql",
-    "043_user_roles.sql"
+    "043_user_roles.sql",
+    "044_story_beats.sql",
+    "045_migration_log_text_id.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

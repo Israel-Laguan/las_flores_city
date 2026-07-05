@@ -162,6 +162,8 @@ nodes:
     text: "You've completed your orientation. The city of Las Flores awaits. Your journey begins now."
     thought: "My journey. Their experiment. Same thing, different words."
     is_end: true
+    effects:
+      story_beat: act1_city_arrived
 
 metadata:
   version: "1.1"

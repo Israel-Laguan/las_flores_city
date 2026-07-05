@@ -23,7 +23,7 @@ describe('CI Workflow Has Explicit Permissions', () => {
 describe('Admin Content Operations Unchanged', () => {
   const projectRoot = join(__dirname, '..', '..', '..');
 
-  describe('Property 4a: Validate endpoint response structure preserved', () => {
+  describe('Validate endpoint response structure preserved', () => {
     it('server validate handler returns { success, data, timestamp } on success path', () => {
       const serverPath = join(projectRoot, 'server', 'src', 'routes', 'admin-content.ts');
       const content = readFileSync(serverPath, 'utf-8');
@@ -56,7 +56,7 @@ describe('Admin Content Operations Unchanged', () => {
     });
   });
 
-  describe('Property 4b: Migrate endpoint response structure preserved', () => {
+  describe('Migrate endpoint response structure preserved', () => {
     it('server migrate handler returns { success, data, timestamp } on success path', () => {
       const serverPath = join(projectRoot, 'server', 'src', 'routes', 'admin-content.ts');
       const content = readFileSync(serverPath, 'utf-8');
@@ -80,7 +80,7 @@ describe('Admin Content Operations Unchanged', () => {
     });
   });
 
-  describe('Property 4c: Status endpoint top-level fields preserved', () => {
+  describe('Status endpoint top-level fields preserved', () => {
     it('server status handler returns byType grouping', () => {
       const serverPath = join(projectRoot, 'server', 'src', 'routes', 'admin-content.ts');
       const content = readFileSync(serverPath, 'utf-8');
@@ -119,7 +119,7 @@ describe('Admin Content Operations Unchanged', () => {
     });
   });
 
-  describe('Property 4d: CI workflow jobs preserved', () => {
+  describe('CI workflow jobs preserved', () => {
     const ciPath = join(projectRoot, '.github', 'workflows', 'ci.yml');
 
     it('ci workflow defines a validate job', () => {

@@ -113,7 +113,7 @@ const leavesWithBothTypesArb = (): fc.Arbitrary<Record<string, Leaf>> =>
       return record;
     });
 
-// ── Property 9: Structural invariant ─────────────────────────
+// ── Structural invariant ─────────────────────────────────────
 //
 // For all ChunkPayload leaves objects with a mix of FREE and GUARDED leaves,
 // stripGuardedTargetChunks() SHALL produce a record where:
@@ -127,7 +127,7 @@ const leavesWithBothTypesArb = (): fc.Arbitrary<Record<string, Leaf>> =>
 // Validates: Requirement 9.5
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 9: stripGuardedTargetChunks structural invariant', () => {
+describe('stripGuardedTargetChunks structural invariant', () => {
   it('9a — GUARDED leaves in output have no target_chunk property', () => {
     fc.assert(
       fc.property(

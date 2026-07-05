@@ -40,7 +40,12 @@ export async function getCache<T = any>(key: string): Promise<T | null> {
 export async function setCache(key: string, value: any, ttlSeconds: number = 3600): Promise<boolean> {
   try {
     const serialized = JSON.stringify(value);
-    await redis.setex(key, ttlSeconds, serialized);
+    if (ttlSeconds === 0) {
+      // TTL 0 means "no expiry" — persist until explicitly deleted
+      await redis.set(key, serialized);
+    } else {
+      await redis.setex(key, ttlSeconds, serialized);
+    }
     return true;
   } catch (error) {
     console.error('Cache set error:', error);

@@ -34,7 +34,7 @@ const choiceIdArb = (): fc.Arbitrary<string> =>
 const leafTypeArb = (): fc.Arbitrary<'FREE' | 'GUARDED'> =>
   fc.constantFrom('FREE', 'GUARDED');
 
-// ── Property 9: Telemetry includes chunk context ──────────────
+// ── Telemetry includes chunk context ─────────────────────────
 //
 // For ANY dialogue choice event, the OLAP event_data SHALL include:
 //   9a: chunk_id (Requirement 9.1)
@@ -51,10 +51,9 @@ const leafTypeArb = (): fc.Arbitrary<'FREE' | 'GUARDED'> =>
 //   9j: leaf_type is exactly 'FREE' or 'GUARDED' — no other value
 //
 // Validates: Requirements 9.1, 9.3, 9.4
-// Feature: runtime-rewrite-dialogue-chunks, Property 9
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 9: Telemetry includes chunk context', () => {
+describe('Telemetry includes chunk context', () => {
   it('9a — event_data contains chunk_id (Req 9.1)', () => {
     fc.assert(
       fc.property(
