@@ -403,8 +403,8 @@ export const MigrationLogSchema = z.object({
   id: z.string().uuid(),
   file_path: z.string(),
   file_checksum: z.string(),
-  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location']),
-  content_id: z.string().uuid(),
+  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile', 'story_beat']),
+  content_id: z.string(),
   applied_at: z.string().datetime(),
   applied_by: z.string().uuid().optional(),
 });
@@ -506,7 +506,10 @@ export type { Gig } from './schemas/gig.js';
 
 // ==================== Content Validation ====================
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile']);
+export { StoryBeatSchema, StoryBeatRegistrySchema } from './schemas/story-beat.js';
+export type { StoryBeat, StoryBeatRegistry } from './schemas/story-beat.js';
+
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile', 'story_beat']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

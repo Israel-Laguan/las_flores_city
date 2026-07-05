@@ -118,7 +118,7 @@ const chunkArb = () =>
     leaves: fc.dictionary(chunkKeyArb(), leafArb(), { minKeys: 0, maxKeys: 10 }),
   });
 
-// ── Property: Round-trip consistency ─────────────────────────
+// ── Round-trip consistency ───────────────────────────────────
 //
 // For all valid Chunk objects, parsing the object with ChunkSchema.parse()
 // then re-serialising with JSON.stringify() then parsing again with

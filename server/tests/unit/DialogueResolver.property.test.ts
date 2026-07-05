@@ -196,7 +196,7 @@ function wireQueryOLTP(
   }
 }
 
-// ── Property 1: Chunk contains only allowed nodes ────────────
+// ── Chunk contains only allowed nodes ────────────────────────
 //
 // For ANY chunk served to a client, the response SHALL only
 // contain nodes that exist within that chunk's node set.
@@ -209,10 +209,9 @@ function wireQueryOLTP(
 // When there are NO overlays, mergedNodes keys === base chunk keys.
 //
 // Validates: Requirements 1.3, 1.5
-// Feature: runtime-rewrite-dialogue-chunks, Property 1
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 1: Chunk contains only allowed nodes', () => {
+describe('Chunk contains only allowed nodes', () => {
   it('1a — mergedNodes contains only the base chunk node keys when no overlay is present', async () => {
     await fc.assert(
       fc.asyncProperty(
@@ -271,7 +270,7 @@ describe('Property 1: Chunk contains only allowed nodes', () => {
   });
 });
 
-// ── Property 2: Chunk size limit enforcement ─────────────────
+// ── Chunk size limit enforcement ─────────────────────────────
 //
 // For any chunk stored in dialogue_chunks, the number of nodes
 // SHALL NOT exceed 15.
@@ -283,10 +282,9 @@ describe('Property 1: Chunk contains only allowed nodes', () => {
 //       still has exactly ≤15 keys in mergedNodes.
 //
 // Validates: Requirements 1.3
-// Feature: runtime-rewrite-dialogue-chunks, Property 2
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 2: Chunk size limit enforcement', () => {
+describe('Chunk size limit enforcement', () => {
   it('2a — chunk.nodes returned by resolveChunkForUser has at most 15 keys', async () => {
     await fc.assert(
       fc.asyncProperty(
@@ -335,7 +333,7 @@ describe('Property 2: Chunk size limit enforcement', () => {
   });
 });
 
-// ── Property 7: Overlay merge preserves base nodes ───────────
+// ── Overlay merge preserves base nodes ───────────────────────
 //
 // For any base chunk and overlay nodes, the merged result SHALL
 // contain all base nodes and all overlay nodes, with overlay nodes
@@ -353,10 +351,9 @@ describe('Property 2: Chunk size limit enforcement', () => {
 // no mocking needed.
 //
 // Validates: Requirements 1.6, 7.3
-// Feature: runtime-rewrite-dialogue-chunks, Property 7
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 7: Overlay merge preserves base nodes', () => {
+describe('Overlay merge preserves base nodes', () => {
   it('7a — all base node keys appear in the merged result', () => {
     fc.assert(
       fc.property(

@@ -21,6 +21,10 @@ import {
 } from '../../src/routes/dialogue-response-helpers.js';
 import type { DialogueNode, DialogueChoice, Leaf } from '@las-flores/shared';
 
+// ISO 8601 regex: matches the output of Date.toISOString()
+const ISO_8601_RE =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
 // ── Arbitraries ───────────────────────────────────────────────
 
 /** Generates a valid node id string. */
@@ -118,7 +122,7 @@ const chunkPayloadArb = () =>
 const tbAmountArb = (): fc.Arbitrary<number> =>
   fc.integer({ min: 0, max: 168 }); // 0-168 TB (1 week of hours)
 
-// ── Property 10: Response helper contract (buildDialogueResponse) ──
+// ── Response helper contract (buildDialogueResponse) ──────────
 //
 // For ANY call to buildDialogueResponse with a valid chunk, the
 // returned object SHALL have exactly the required top-level fields:
@@ -138,12 +142,9 @@ const tbAmountArb = (): fc.Arbitrary<number> =>
 //   10j: timestamp is a valid ISO 8601 UTC string
 //
 // Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5
-// Feature: runtime-rewrite-dialogue-chunks, Property 10
 // ─────────────────────────────────────────────────────────────
 
-const ISO_8601_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
-
-describe('Property 10: buildDialogueResponse contract', () => {
+describe('buildDialogueResponse contract', () => {
   it('10a — success is exactly true', () => {
     fc.assert(
       fc.property(
@@ -416,7 +417,7 @@ describe('Property 10: buildDialogueResponse contract', () => {
   });
 });
 
-// ── Property 10: buildChooseResponse contract ─────────────────
+// ── buildChooseResponse contract ──────────────────────────────
 //
 // For ANY call to buildChooseResponse with a valid next chunk,
 // the returned object SHALL have the required fields:
@@ -432,10 +433,9 @@ describe('Property 10: buildDialogueResponse contract', () => {
 //   10q: is_chunk_boundary_crossing is included in response
 //
 // Validates: Requirements 2.1, 2.2, 2.3
-// Feature: runtime-rewrite-dialogue-chunks, Property 10
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 10: buildChooseResponse contract', () => {
+describe('buildChooseResponse contract', () => {
   it('10k — success is exactly true', () => {
     fc.assert(
       fc.property(

@@ -19,7 +19,7 @@ const mockRedis = {
 };
 
 jest.mock('../../src/database/redis.js', () => ({
-  redis: mockRedis,
+  getRedis: () => mockRedis,
 }));
 
 // Import inside beforeAll so the mock is registered first. Top-level

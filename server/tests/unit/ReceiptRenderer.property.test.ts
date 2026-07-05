@@ -58,7 +58,7 @@ const tbAmountArb = (): fc.Arbitrary<number> =>
 const ISO_8601_RE =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
-// ── Property 6: TB receipt format correctness ────────────────
+// ── TB receipt format correctness ────────────────────────────
 //
 // For ANY TB expenditure, the receipt SHALL be formatted exactly
 // as `[TB EXPENDED: {amount} — {timestamp}]` where timestamp is
@@ -74,10 +74,9 @@ const ISO_8601_RE =
 //   6e: The returned node is a new object (not same reference).
 //
 // Validates: Requirements 5.2, 5.4
-// Feature: runtime-rewrite-dialogue-chunks, Property 6
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 6: TB receipt format correctness', () => {
+describe('TB receipt format correctness', () => {
   it('6a — receipt in thought matches exact format [TB EXPENDED: {amount} — {ISO timestamp}]', () => {
     fc.assert(
       fc.property(

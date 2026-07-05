@@ -47,7 +47,7 @@ export async function handleChoose(req: any, res: any): Promise<any> {
     const currentChunk = chunkResult.rows[0];
     const leaves = currentChunk.leaves as Record<string, any>;
     const chunkNodes = currentChunk.nodes as Record<string, any>;
-    const leaf = leaves[choice_id];
+    const leaf = leaves[choice_id] ?? findLeafByChoiceId(leaves, choice_id);
 
     if (!leaf) {
       return handleIntraChunkChoice(id, userId, current_chunk_id, choice_id, currentChunk, chunkNodes, leaves, res);
@@ -132,6 +132,14 @@ function findChoiceInNodes(chunkNodes: Record<string, any>, choiceId: string) {
     }
   }
   return null;
+}
+
+export function findLeafByChoiceId(leaves: Record<string, any>, choiceId: string): any | undefined {
+  const suffix = `:${choiceId}`;
+  for (const [key, leaf] of Object.entries(leaves)) {
+    if (key.endsWith(suffix)) return leaf;
+  }
+  return undefined;
 }
 
 function sendChoiceError(res: any, error: string | undefined) {

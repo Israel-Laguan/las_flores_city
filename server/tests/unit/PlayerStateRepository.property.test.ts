@@ -95,17 +95,16 @@ function makeFakeClient(): pg.PoolClient & { query: jest.Mock } {
   } as unknown as pg.PoolClient & { query: jest.Mock };
 }
 
-// ── Property 8a: Both fields updated in single UPDATE (no choiceEntry) ──
+// ── Both fields updated in single UPDATE (no choiceEntry) ────
 //
 // setDialogueChunkCursor with no choiceEntry MUST issue exactly
 // one SQL statement that sets both current_node_id AND
 // current_chunk_id.
 //
 // Validates: Requirement 8.3
-// Feature: runtime-rewrite-dialogue-chunks, Property 8
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 8: Chunk state persistence', () => {
+describe('Chunk state persistence', () => {
   describe('8a — setDialogueChunkCursor (no choiceEntry): both fields SET in one query', () => {
     it('single UPDATE sets both current_node_id and current_chunk_id', async () => {
       await fc.assert(
@@ -137,14 +136,13 @@ describe('Property 8: Chunk state persistence', () => {
     });
   });
 
-  // ── Property 8b: Both fields updated in single UPDATE (with choiceEntry) ──
+  // ── Both fields updated in single UPDATE (with choiceEntry) ─
   //
   // Even when a choiceEntry is appended to choices_made in the same
   // statement, the update MUST still set both fields atomically in
   // a single query.
   //
   // Validates: Requirement 8.3
-  // Feature: runtime-rewrite-dialogue-chunks, Property 8
   // ─────────────────────────────────────────────────────────────
 
   describe('8b — setDialogueChunkCursor (with choiceEntry): both fields SET in one query', () => {
@@ -182,7 +180,7 @@ describe('Property 8: Chunk state persistence', () => {
     });
   });
 
-  // ── Property 8c: initDialogueChunkState also persists both fields ────────
+  // ── initDialogueChunkState also persists both fields ─────────
   //
   // The dialogue-start upsert (initDialogueChunkState) MUST set
   // both current_node_id AND current_chunk_id in a single
@@ -190,7 +188,6 @@ describe('Property 8: Chunk state persistence', () => {
   // feeds into 8.3 for the initial boundary crossing).
   //
   // Validates: Requirement 8.3
-  // Feature: runtime-rewrite-dialogue-chunks, Property 8
   // ─────────────────────────────────────────────────────────────
 
   describe('8c — initDialogueChunkState: both fields SET in one upsert', () => {
@@ -233,7 +230,7 @@ describe('Property 8: Chunk state persistence', () => {
     });
   });
 
-  // ── Property 8d: Values round-trip without transposition ─────────────────
+  // ── Values round-trip without transposition ──────────────────
   //
   // The bound values [$nodeId, $chunkId, ...] MUST appear at the
   // correct positions matching the SET clause order so that
@@ -244,7 +241,6 @@ describe('Property 8: Chunk state persistence', () => {
   //   $1 = nodeId, $2 = chunkId
   //
   // Validates: Requirement 8.3
-  // Feature: runtime-rewrite-dialogue-chunks, Property 8
   // ─────────────────────────────────────────────────────────────
 
   describe('8d — setDialogueChunkCursor: values match correct parameter positions', () => {
@@ -309,7 +305,7 @@ describe('Property 8: Chunk state persistence', () => {
     });
   });
 
-  // ── Property 8e: Atomicity guarantee — single call only ──────────────────
+  // ── Atomicity guarantee — single call only ───────────────────
   //
   // The write MUST be issued as a single client.query call.
   // Two separate queries for chunk_id and node_id would mean a
@@ -317,7 +313,6 @@ describe('Property 8: Chunk state persistence', () => {
   // atomicity requirement.
   //
   // Validates: Requirement 8.3
-  // Feature: runtime-rewrite-dialogue-chunks, Property 8
   // ─────────────────────────────────────────────────────────────
 
   describe('8e — single-call atomicity: exactly one client.query per cursor update', () => {

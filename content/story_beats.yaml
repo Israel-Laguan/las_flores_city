@@ -1,0 +1,35 @@
+beats:
+  - slug: prologue
+    label: "Prologue"
+    order: 0
+    description: "Default state. Player has just arrived in Las Flores and has not yet begun the main story arc."
+
+  - slug: act1_awakening
+    label: "Act 1 – Awakening"
+    order: 10
+    description: "After dialogue_awakening.yaml — Vance explains the contract and the player commits to their role in the city."
+
+  - slug: act1_city_arrived
+    label: "Act 1 – City Arrived"
+    order: 20
+    description: "After welcome_dialogue.yaml — the player completes orientation and begins exploring the city on their own."
+
+  - slug: act1_first_contact
+    label: "Act 1 – First Contact"
+    order: 30
+    description: "After dialogue_first_contact.yaml — the player meets the barista and makes initial contact with the mystery network."
+
+  - slug: act2_mystery_active
+    label: "Act 2 – Mystery Active"
+    order: 100
+    description: "An active mystery is in progress. Set server-side when the player joins a mystery via the join_mystery flow."
+
+  - slug: act3_finale_unlocked
+    label: "Act 3 – Finale Unlocked"
+    order: 200
+    description: "The finale has been unlocked. Set server-side by LeaderboardWorker when a mystery is solved and the finale becomes accessible."
+
+  - slug: finale_complete
+    label: "Finale Complete"
+    order: 300
+    description: "After dialogue_finale.yaml — the player has reached one of the finale endings, completing the main story arc."

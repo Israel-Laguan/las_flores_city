@@ -19,7 +19,7 @@ import { authRouter } from '../src/routes/auth.js';
 import { playerRouter } from '../src/routes/player.js';
 import { dialogueRouter } from '../src/routes/dialogue.js';
 import { generateToken } from '../src/middleware/auth.js';
-import { closeRedis, redis } from '../src/database/redis.js';
+import { closeRedis, getRedis } from '../src/database/redis.js';
 
 const { Pool } = pg;
 
@@ -171,7 +171,7 @@ async function resetPlayer(overrides: Partial<{
     [tb, loc, node, TEST_USER_ID]
   );
   // Flush cached player state so every route reads fresh DB values
-  await redis.del(`user:state:${TEST_USER_ID}`);
+  await getRedis().del(`user:state:${TEST_USER_ID}`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -250,10 +250,10 @@ describe('Dialogue Traversal', () => {
 
   test('GET /player/state reflects null currentNodeId after dialogue ends', async () => {
     // Flush the player-state cache using the exact key the route uses
-    await redis.del(`user:state:${TEST_USER_ID}`);
+  await getRedis().del(`user:state:${TEST_USER_ID}`);
     // Also flush user-scoped location caches that may hold stale node data
-    const keys = await redis.keys(`user:*:${TEST_USER_ID}:*`);
-    if (keys.length) await redis.del(...keys);
+    const keys = await getRedis().keys(`user:*:${TEST_USER_ID}:*`);
+    if (keys.length) await getRedis().del(...keys);
 
     const res  = await get('/player/state');
     const data = await res.json();

@@ -11,7 +11,7 @@ This roadmap outlines the phased development of the admin panel, organized into 
 | M1: Security Foundation | ✅ Complete | Auth middleware, path traversal, sanitization, rate limiting |
 | M2: Admin Authentication | ✅ Complete | Role column, adminMiddleware, admin login flow, auth gate |
 | M3: Content Pipeline Dashboard | ✅ Complete | Server endpoints + admin UI pages |
-| M4: Story Beat Definition | ⏳ Pending | Content YAML + schema work |
+| M4: Story Beat Definition | ✅ Complete | Registry YAML, schema, migration, validation, content annotations |
 | M5: Story Beat Admin UI | ⏳ Pending | CRUD UI for beats |
 | M6: Content List Views | ⏳ Pending | Read-only browsers for dialogues/scenes/characters |
 
@@ -99,19 +99,36 @@ This would be **M2.4/M2.5** if implemented, but is not currently required.
 
 ---
 
-## Milestone 4: Story Beat Definition
+## Milestone 4: Story Beat Definition ✅
 
 **Goal**: Establish canonical beats and start using them in content.
 
-**Estimated effort**: 2-3 days
+**Status**: Complete
 
-### Tasks
-1. Create `content/story_beats.yaml` — a registry of canonical beat slugs with metadata
-2. Add `StoryBeatRegistrySchema` to `shared/src/schemas/`
-3. Migrate `story_beats.yaml` into a `story_beats` table (or cache in Redis)
-4. Add validation: `effects.story_beat` values must exist in the registry
-5. Add `story_beat` to key dialogue YAML files (the 7 beats from `STORY_PROGRESSION_CONTEXT.md`)
-6. Add `required_story_beat` to scene `metadata` where gating is needed
+### Completed Tasks
+1. ✅ Create `content/story_beats.yaml` — 7 canonical beat slugs with metadata
+2. ✅ Add `StoryBeatRegistrySchema` to `shared/src/schemas/story-beat.ts` — validates slug format, dedup
+3. ✅ Migration `044_story_beats.sql` — `story_beats` table with PK on slug, UNIQUE on order
+4. ✅ Migration `045_migration_log_text_id.sql` — widen `content_id` from UUID to TEXT for slug PKs
+5. ✅ Validation in `validate.ts` — cross-references `effects.story_beat` (dialogues) and `required_story_beat` (scenes) against registry
+6. ✅ Add `effects.story_beat` to dialogue YAML files: `dialogue_awakening` → `act1_awakening`, `welcome_dialogue` → `act1_city_arrived`, `dialogue_first_contact` → `act1_first_contact`, `dialogue_finale` → `finale_complete`
+7. ✅ Add `required_story_beat: act1_awakening` to `scene_cafe.yaml` and `old_town_cafe.yaml`
+8. ✅ Upsert logic in `upsert.ts` with Redis cache (TTL 0 = persist until explicit delete)
+9. ✅ Processing order: `story_beat` before `dialogue` and `scene` in migration pipeline
+10. ✅ Property-based unit tests + integration pipeline tests
+
+**Key Files**:
+- `content/story_beats.yaml` — canonical beat registry
+- `shared/src/schemas/story-beat.ts` — `StoryBeatSchema` + `StoryBeatRegistrySchema`
+- `server/src/database/migrations/044_story_beats.sql` — table creation
+- `server/src/database/migrations/045_migration_log_text_id.sql` — content_id type change
+- `server/src/content/validate.ts` — beat slug cross-reference validation
+- `server/src/content/upsert.ts` — `processStoryBeatData()` upsert + cache
+- `server/src/content/migrate.ts` — story_beat processing order + cache invalidation
+- `server/tests/unit/storyBeatSchema.property.test.ts` — comprehensive property tests
+- `server/tests/integration/story-beat-pipeline.integration.test.ts` — end-to-end pipeline test
+
+**Note**: `act2_mystery_active` and `act3_finale_unlocked` are set server-side (mystery join flow, LeaderboardWorker), not in content YAML.
 
 **Why fourth**: This unblocks the story progression system. Authors need a controlled vocabulary before they can use `story_beat` consistently.
 
@@ -213,7 +230,7 @@ M1 and M2 are prerequisites for everything. M3 can ship independently of M4-M6. 
 Each milestone builds a foundation for the next, with clear value delivered at each step:
 - M1: Secure system ✅
 - M2: Admin access control ✅
-- M3: One-click content pipeline (READY)
-- M4: Structured story progression
+- M3: One-click content pipeline ✅
+- M4: Structured story progression ✅
 - M5: Beat management UI
 - M6: Content visibility

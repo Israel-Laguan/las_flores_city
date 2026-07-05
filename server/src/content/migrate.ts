@@ -21,6 +21,7 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   vault: 'vault_items',
   shop_item: 'shop_items',
   map_tile: 'map_tiles',
+  story_beat: 'story_beats',
 };
 
 export interface MigrationResult {
@@ -54,6 +55,9 @@ export function extractContentIds(contentType: ContentType, data: Record<string,
       return ((data.gigs as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
     case 'shop_item':
       return ((data.shop_items as Array<{ id: string }>) || []).map((item) => item.id);
+    case 'story_beat':
+      // story_beat uses slug as PK — return slugs instead of UUIDs
+      return ((data.beats as Array<{ slug: string }>) || []).map((item) => item.slug);
     default:
       return [(data as { id: string }).id];
   }
@@ -62,6 +66,16 @@ export function extractContentIds(contentType: ContentType, data: Record<string,
 async function isTargetContentPresent(contentType: ContentType, ids: string[]): Promise<boolean> {
   if (ids.length === 0) {
     return false;
+  }
+
+  // story_beat uses slug as PK (not UUID) — check by slug count
+  if (contentType === 'story_beat') {
+    const slugs = ids; // for story_beat, ids array holds slugs (comma-joined, split by caller)
+    const result = await queryOLTP<{ count: number }>(
+      `SELECT COUNT(*)::int AS count FROM story_beats WHERE slug = ANY($1::text[])`,
+      [slugs]
+    );
+    return result.rows[0].count === slugs.length;
   }
 
   const table = CONTENT_TYPE_TABLE[contentType];
@@ -193,6 +207,10 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
     return 'map_tile';
   }
   
+  if (normalizedPath.endsWith('story_beats.yaml')) {
+    return 'story_beat';
+  }
+
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
     return 'gig';
   }
@@ -201,7 +219,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['character', 'scene', 'location', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile'];
+  const order: ContentType[] = ['story_beat', 'character', 'scene', 'location', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);
@@ -331,6 +349,14 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
   try {
     await invalidatePattern('map:*');
     console.log('🗑️  Cleared map caches');
+  } catch (error: any) {
+    console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
+  }
+
+  // Clear stale story beat caches.
+  try {
+    await invalidatePattern('story_beats:*');
+    console.log('🗑️  Cleared story_beats caches');
   } catch (error: any) {
     console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
   }

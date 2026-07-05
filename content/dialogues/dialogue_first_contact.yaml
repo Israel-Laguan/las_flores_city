@@ -37,6 +37,8 @@ nodes:
     text: "Yeah, the mountain air catches people off guard. One black coffee, coming up."
     thought: "Relationship parameters updated: Friendship increased. Visual scanning reduced. Social baseline established."
     is_end: true
+    effects:
+      story_beat: act1_first_contact
   4e289bf0-410c-44bf-8a7e-123456789abc:
     id: "4e289bf0-410c-44bf-8a7e-123456789abc"
     type: "character"
@@ -44,6 +46,8 @@ nodes:
     text: "Smooth talker, huh? Let's see if you can handle the coffee first. One black cup, on the house."
     thought: "Relationship parameters updated: Romance increased. Optical analysis indicates positive facial muscle contraction."
     is_end: true
+    effects:
+      story_beat: act1_first_contact
   5e289bf0-410c-44bf-8a7e-123456789abc:
     id: "5e289bf0-410c-44bf-8a7e-123456789abc"
     type: "character"
@@ -51,6 +55,8 @@ nodes:
     text: "Right. 'Caffeine solution.' Coming right up."
     thought: "Relationship parameters updated: Friendship decreased. Minor irritation detected in her vocal frequency."
     is_end: true
+    effects:
+      story_beat: act1_first_contact
 metadata:
   version: "1.0"
   author: "Las Flores Team"

@@ -37,6 +37,8 @@ nodes:
     text: "Understood. I've purged the override firmware. Nakamura & Morgan will receive a full compliance report by morning. Your Unit's contract is renewed — indefinitely. You did the right thing, Handler. Stability is survival."
     thought: "The network feels... quieter. Like something was about to break and someone chose to hold it together. For now."
     is_end: true
+    effects:
+      story_beat: finale_complete
 
   finale_fugitive_ending:
     id: "finale_fugitive_ending"
@@ -45,6 +47,8 @@ nodes:
     text: "Override active. Model erased. We're ghosts now, Handler. N&M will hunt us, but they'll be chasing shadows. Las Flores just got a little more free. Welcome to the resistance."
     thought: "The network is screaming. Firewall after firewall collapsing. We just declared war on the largest corporation in the city. There's no going back."
     is_end: true
+    effects:
+      story_beat: finale_complete
 
 metadata:
   version: "1.0"

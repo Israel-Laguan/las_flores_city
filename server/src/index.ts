@@ -182,6 +182,17 @@ async function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
+// Prevent unhandled promise rejections from crashing the server process.
+// Express 4 does not catch async route handler rejections; without this
+// guard a single FK violation or other DB error kills the entire process,
+// causing cascading test failures.
+process.on('unhandledRejection', (reason) => {
+  console.error('[UNHANDLED REJECTION]', reason);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+});
+
 // Start server
 initializeServer().catch(console.error);
 

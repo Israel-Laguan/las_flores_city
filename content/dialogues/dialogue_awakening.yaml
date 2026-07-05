@@ -24,6 +24,8 @@ nodes:
     text: "Good. Your contract is simple: guide this Unit through the city of Las Flores. It must blend in, find work, and avoid drawing corporate attention. Remember your <important>NDA</important>. Do not fail us."
     thought: "He sounds guarded. I must proceed with caution to ensure my survival parameters are not compromised."
     is_end: true
+    effects:
+      story_beat: act1_awakening
 
   7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d:
     id: "7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d"
@@ -32,6 +34,8 @@ nodes:
     text: "You signed the contract. We provide the hardware and the apartment; you provide the human heuristics. Guide the Unit's daily life, manage its Time Blocks, and collect behavioral data. Our timeline is tight."
     thought: "He values efficiency. I must monitor my Time Block consumption to satisfy his directives."
     is_end: true
+    effects:
+      story_beat: act1_awakening
 metadata:
   version: "1.0"
   author: "Las Flores Team"

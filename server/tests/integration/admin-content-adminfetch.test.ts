@@ -8,7 +8,7 @@ import { join } from 'path';
 describe('Admin API Routes Use adminFetch Helper', () => {
   const projectRoot = join(__dirname, '..', '..', '..');
 
-  describe('Property 1: Admin API Routes Use adminFetch Helper', () => {
+  describe('Admin API routes use adminFetch helper', () => {
     it('migrate route should use adminFetch helper', () => {
       const routePath = join(projectRoot, 'admin', 'src', 'app', 'api', 'admin', 'content', 'migrate', 'route.ts');
       const content = readFileSync(routePath, 'utf-8');
@@ -43,7 +43,7 @@ describe('Admin API Routes Use adminFetch Helper', () => {
     });
   });
 
-  describe('Property 2: Status Endpoint Normalizes File Fields', () => {
+  describe('Status endpoint normalizes file fields', () => {
     it('status endpoint should transform files array to camelCase', () => {
       const serverPath = join(projectRoot, 'server', 'src', 'routes', 'admin-content.ts');
       const content = readFileSync(serverPath, 'utf-8');

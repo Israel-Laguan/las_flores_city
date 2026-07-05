@@ -115,17 +115,16 @@ beforeEach(() => {
   (fakePgClient.query as jest.Mock).mockResolvedValue({ rows: [] });
 });
 
-// ── Property 3: Free leaf allows seamless transition ─────────
+// ── Free leaf allows seamless transition ─────────────────────
 //
 // For ANY FREE leaf and ANY userId/chunkId/choiceId, validateChoice
 // MUST return { success: true } immediately, without invoking any
 // guard validation or database calls.
 //
 // Validates: Requirement 3.3
-// Feature: runtime-rewrite-dialogue-chunks, Property 3
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 3: Free leaf allows seamless transition', () => {
+describe('Free leaf allows seamless transition', () => {
   it('returns success:true for any FREE leaf without touching the DB', async () => {
     await fc.assert(
       fc.asyncProperty(
@@ -155,7 +154,7 @@ describe('Property 3: Free leaf allows seamless transition', () => {
   });
 });
 
-// ── Property 4: Guarded leaf enforces all reasons ────────────
+// ── Guarded leaf enforces all reasons ────────────────────────
 //
 // Sub-property 4a: When ALL guard conditions are satisfiable
 // (no TB cost, no mystery_solve, no effects — only pass-through
@@ -171,10 +170,9 @@ describe('Property 3: Free leaf allows seamless transition', () => {
 // return { success: false, error: 'mystery_not_eligible' }.
 //
 // Validates: Requirements 3.4, 3.10
-// Feature: runtime-rewrite-dialogue-chunks, Property 4
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 4: Guarded leaf enforces all reasons', () => {
+describe('Guarded leaf enforces all reasons', () => {
   it('4a — returns success:true when all guard reasons pass (no DB-blocking reasons)', async () => {
     await fc.assert(
       fc.asyncProperty(
@@ -313,7 +311,7 @@ describe('Property 4: Guarded leaf enforces all reasons', () => {
   });
 });
 
-// ── Property 5: TB deduction is atomic ───────────────────────
+// ── TB deduction is atomic ───────────────────────────────────
 //
 // For any GUARDED leaf with 'time_block_cost' and a player whose
 // TB balance is SUFFICIENT:
@@ -325,10 +323,9 @@ describe('Property 4: Guarded leaf enforces all reasons', () => {
 //   d) result.tbDeducted MUST equal leaf.tb_cost exactly.
 //
 // Validates: Requirements 3.5, 3.10
-// Feature: runtime-rewrite-dialogue-chunks, Property 5
 // ─────────────────────────────────────────────────────────────
 
-describe('Property 5: TB deduction is atomic', () => {
+describe('TB deduction is atomic', () => {
   it('deducts exactly tb_cost and reports it in tbDeducted when balance is sufficient', async () => {
     await fc.assert(
       fc.asyncProperty(

@@ -5,28 +5,37 @@ import dotenv from 'dotenv';
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
-// Redis connection
-export const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-  maxRetriesPerRequest: 3,
-  retryStrategy(times) {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-});
+// Lazy Redis connection — only created when first accessed.
+// Prevents Jest from hanging on open TCPWRAP handles when tests
+// import modules that transitively pull in this file without
+// actually needing Redis.
+let _redis: Redis | null = null;
 
-// Redis event handlers
-redis.on('connect', () => {
-  console.log('✅ Redis connected');
-});
+export function getRedis(): Redis {
+  if (!_redis) {
+    _redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+      maxRetriesPerRequest: 3,
+      retryStrategy(times) {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
+    });
 
-redis.on('error', (err) => {
-  console.error('❌ Redis error:', err);
-});
+    _redis.on('connect', () => {
+      console.log('✅ Redis connected');
+    });
+
+    _redis.on('error', (err) => {
+      console.error('❌ Redis error:', err);
+    });
+  }
+  return _redis;
+}
 
 // Cache helpers
 export async function getCache<T = any>(key: string): Promise<T | null> {
   try {
-    const data = await redis.get(key);
+    const data = await getRedis().get(key);
     if (data) {
       return JSON.parse(data);
     }
@@ -40,7 +49,12 @@ export async function getCache<T = any>(key: string): Promise<T | null> {
 export async function setCache(key: string, value: any, ttlSeconds: number = 3600): Promise<boolean> {
   try {
     const serialized = JSON.stringify(value);
-    await redis.setex(key, ttlSeconds, serialized);
+    if (ttlSeconds === 0) {
+      // TTL 0 means "no expiry" — persist until explicitly deleted
+      await getRedis().set(key, serialized);
+    } else {
+      await getRedis().setex(key, ttlSeconds, serialized);
+    }
     return true;
   } catch (error) {
     console.error('Cache set error:', error);
@@ -50,7 +64,7 @@ export async function setCache(key: string, value: any, ttlSeconds: number = 360
 
 export async function deleteCache(key: string): Promise<boolean> {
   try {
-    await redis.del(key);
+    await getRedis().del(key);
     return true;
   } catch (error) {
     console.error('Cache delete error:', error);
@@ -74,7 +88,7 @@ export async function invalidatePattern(pattern: string): Promise<number> {
   try {
     do {
       // SCAN returns [nextCursor, keys[]]; COUNT 100 is a hint, not a guarantee
-      const [nextCursor, keys] = await redis.scan(
+      const [nextCursor, keys] = await getRedis().scan(
         cursor,
         'MATCH', pattern,
         'COUNT', 100
@@ -83,7 +97,7 @@ export async function invalidatePattern(pattern: string): Promise<number> {
 
       if (keys.length > 0) {
         // UNLINK reclaims memory in a background thread — non-blocking
-        await redis.unlink(...keys);
+        await getRedis().unlink(...keys);
         totalDeleted += keys.length;
       }
     } while (cursor !== '0');
@@ -97,38 +111,40 @@ export async function invalidatePattern(pattern: string): Promise<number> {
 // Content versioning helpers
 export async function getContentVersion(contentType: string, contentId: string): Promise<number> {
   const key = `content:version:${contentType}:${contentId}`;
-  const version = await redis.get(key);
+  const version = await getRedis().get(key);
   return version ? parseInt(version, 10) : 0;
 }
 
 export async function setContentVersion(contentType: string, contentId: string, version: number): Promise<void> {
   const key = `content:version:${contentType}:${contentId}`;
-  await redis.set(key, version.toString());
+  await getRedis().set(key, version.toString());
 }
 
 export async function incrementContentVersion(contentType: string, contentId: string): Promise<number> {
   const key = `content:version:${contentType}:${contentId}`;
-  return redis.incr(key);
+  return getRedis().incr(key);
 }
 
 let redisClosed = false;
 
 // Close Redis connection
 export async function closeRedis(): Promise<void> {
-  if (redisClosed) {
+  if (redisClosed || !_redis) {
     return;
   }
 
   redisClosed = true;
-  if (redis.status === 'ready') {
+  const r = _redis;
+
+  if (r.status === 'ready') {
     try {
-      await redis.quit();
+      await r.quit();
     } catch {
-      redis.disconnect();
+      r.disconnect();
     }
   }
 
-  if (redis.status !== 'end' && redis.status !== 'close') {
-    redis.disconnect();
+  if (r.status !== 'end' && r.status !== 'close') {
+    r.disconnect();
   }
 }
