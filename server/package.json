@@ -11,7 +11,7 @@
     "migrate": "tsx src/content/migrate.ts ../content",
     "validate": "tsx src/content/validate.ts ../content",
     "lint": "eslint --ext .ts src/",
-    "test": "npx --no-install jest --detectOpenHandles",
+    "test": "npx --no-install jest --detectOpenHandles --forceExit",
     "test:smoke": "npx --no-install jest tests/smoke --detectOpenHandles",
     "test:integration": "npx --no-install jest tests/integration --detectOpenHandles",
     "test:load": "k6 run tests/load/breakthrough_rush.js",

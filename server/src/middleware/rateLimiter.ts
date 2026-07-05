@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
-import { redis } from '../database/redis.js';
+import { getRedis } from '../database/redis.js';
 
 // ============================================================
 // Rate Limiter Middleware Factory
@@ -36,19 +36,19 @@ export function createRateLimiter(config: RateLimiterConfig) {
     const key = `${prefix}:${req.path}:${identity}`;
 
     try {
-      const current = await redis.incr(key);
+      const current = await getRedis().incr(key);
 
       // Only set the TTL on the first request in a window. Subsequent
       // requests inherit the existing TTL — avoids resetting the window
       // on every hit.
       if (current === 1) {
-        await redis.expire(key, windowSeconds);
+        await getRedis().expire(key, windowSeconds);
       }
 
       if (current > maxRequests) {
         // Compute Retry-After from the key's remaining TTL. If TTL is
         // missing/expired (-1 or -2), fall back to the full window.
-        let ttl = await redis.ttl(key);
+        let ttl = await getRedis().ttl(key);
         if (ttl < 0) {
           ttl = windowSeconds;
         }

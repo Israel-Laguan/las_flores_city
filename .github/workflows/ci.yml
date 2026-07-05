@@ -103,7 +103,7 @@ jobs:
         run: npm run schema:migrate --workspace=server
 
       - name: Run server tests
-        run: npm run test:server
+        run: timeout 500 npm run test:server
         env:
           MINIO_ENDPOINT: localhost
           MINIO_PORT: 9000
