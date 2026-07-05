@@ -171,7 +171,7 @@ async function resetPlayer(overrides: Partial<{
     [tb, loc, node, TEST_USER_ID]
   );
   // Flush cached player state so every route reads fresh DB values
-  await redis.del(`user:state:${TEST_USER_ID}`);
+  await getRedis().del(`user:state:${TEST_USER_ID}`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
