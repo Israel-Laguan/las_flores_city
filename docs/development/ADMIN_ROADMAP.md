@@ -10,7 +10,7 @@ This roadmap outlines the phased development of the admin panel, organized into 
 |-----------|--------|-------|
 | M1: Security Foundation | ✅ Complete | Auth middleware, path traversal, sanitization, rate limiting |
 | M2: Admin Authentication | ✅ Complete | Role column, adminMiddleware, admin login flow, auth gate |
-| M3: Content Pipeline Dashboard | 🚧 Ready | Server functions exist; just needs HTTP wrappers + UI |
+| M3: Content Pipeline Dashboard | ✅ Complete | Server endpoints + admin UI pages |
 | M4: Story Beat Definition | ⏳ Pending | Content YAML + schema work |
 | M5: Story Beat Admin UI | ⏳ Pending | CRUD UI for beats |
 | M6: Content List Views | ⏳ Pending | Read-only browsers for dialogues/scenes/characters |
@@ -75,26 +75,27 @@ This would be **M2.4/M2.5** if implemented, but is not currently required.
 
 ---
 
-## Milestone 3: Content Pipeline Dashboard
+## Milestone 3: Content Pipeline Dashboard ✅
 
 **Goal**: Expose existing CLI tools (validate + migrate) through the admin UI.
 
-**Status**: Ready — Server logic exists, needs HTTP wrappers
+**Status**: Complete
 
-### Prerequisites ✅ All Met
-- `validateContent(contentDir)` returns `ValidationResult { valid, errors[], warnings[] }` with file/line details
-- `migrateContent(contentDir)` returns `MigrationResult { success, filesProcessed, filesSkipped, filesFailed, appliedMigrations[] }`
-- `migration_log` table exists with `file_path`, `file_checksum`, `content_type`, `content_id`, `applied_at`
-- CHECK constraint on `migration_log.content_type` includes all current types
+### Completed Tasks
+1. ✅ New server endpoint: `POST /admin/content/validate` — runs `validateContent()` and returns results JSON
+2. ✅ New server endpoint: `POST /admin/content/migrate` — runs `migrateContent()` and returns results JSON
+3. ✅ New server endpoint: `GET /admin/content/status` — reads `migration_log` table, shows last-run per file
+4. ✅ Admin UI: `/migration` page — trigger migration, show success/failure per file
+5. ✅ Admin UI: `/validation` page — run validation, show errors grouped by file with severity
 
-### Remaining Tasks
-1. New server endpoint: `POST /admin/content/validate` — runs `validateContent()` and returns results JSON
-2. New server endpoint: `POST /admin/content/migrate` — runs `migrateContent()` and returns results JSON
-3. New server endpoint: `GET /admin/content/status` — reads `migration_log` table, shows last-run per file
-4. Admin UI: `/migration` page — trigger migration, show success/failure per file
-5. Admin UI: `/validation` page — run validation, show errors grouped by file with severity
-
-**Why third**: This is the highest-value, lowest-complexity admin feature. The server logic already exists — we're just wrapping it in HTTP + UI. It immediately helps authors who currently live in the terminal.
+**Key Files**:
+- `server/src/routes/admin-content.ts` — HTTP wrappers for validate, migrate, and status
+- `server/src/index.ts` — registers `/admin/content` routes
+- `admin/src/app/api/admin/content/validate/route.ts` — Next.js API route proxying to server
+- `admin/src/app/api/admin/content/migrate/route.ts` — Next.js API route proxying to server
+- `admin/src/app/api/admin/content/status/route.ts` — Next.js API route proxying to server
+- `admin/src/app/migration/page.tsx` — Migration dashboard UI with run/status views
+- `admin/src/app/validation/page.tsx` — Validation UI with file-grouped error display
 
 ---
 
