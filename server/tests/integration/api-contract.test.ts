@@ -319,11 +319,9 @@ describe('API Contract Tests', () => {
       });
       const data = await jsonResponse(res);
 
-      if (res.status !== 200) {
-        console.error(`[choose-debug] status=${res.status} body=${JSON.stringify(data)}`);
-        console.error(`[choose-debug] treeId=${treeId} currentChunkId=${currentChunkId} choice_id=${firstChoice.id}`);
+      if (res.status !== 200 || !data?.success) {
+        throw new Error(`[choose-debug] status=${res.status} body=${JSON.stringify(data)} treeId=${treeId} chunkId=${currentChunkId} choice=${firstChoice.id}`);
       }
-      expect(res.status).toBe(200);
       expect(data).toHaveProperty('success', true);
 
       const d = data.data;
