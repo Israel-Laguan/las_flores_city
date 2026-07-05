@@ -84,9 +84,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await new Promise<void>((resolve, reject) =>
-    server.close(e => (e ? reject(e) : resolve()))
-  );
+  if (server) {
+    await new Promise<void>((resolve, reject) =>
+      server.close(e => (e ? reject(e) : resolve()))
+    );
+  }
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);

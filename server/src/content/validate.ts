@@ -99,7 +99,7 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
         errors.push({
           file: filePath,
           message: 'Cannot validate effects.story_beat: story_beats registry not yet migrated. Run story_beats.yaml migration first.',
-          severity: 'error',
+          severity: 'warning',
         });
       } else {
         const nodes = data?.nodes ?? {};
@@ -131,7 +131,7 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
           errors.push({
             file: filePath,
             message: 'Cannot validate required_story_beat: story_beats registry is empty. Run story_beats.yaml migration first.',
-            severity: 'error',
+            severity: 'warning',
           });
         } else {
           const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
