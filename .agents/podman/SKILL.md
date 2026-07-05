@@ -79,6 +79,42 @@ podman run -d --name las-flores-server \
 podman exec las-flores-server wget -qO- http://localhost:3000/health
 ```
 
+### Host-Network Mode (When Backing Services Use Host Ports)
+
+When Postgres, Redis, and MinIO are already running on host-mapped ports (e.g., `0.0.0.0:5434`, `0.0.0.0:6379`), use `--network host` so the server can reach them via `localhost`. This avoids container-IP discovery entirely:
+
+```bash
+podman run -d --name las-flores-server \
+  --network host \
+  -v ./server/src:/app/server/src \
+  -v ./shared:/app/shared \
+  -v ./content:/app/content \
+  -v ./docs:/app/docs:ro \
+  -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores \
+  -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics \
+  -e REDIS_URL=redis://localhost:6379 \
+  -e MINIO_ENDPOINT=localhost \
+  -e MINIO_PORT=9000 \
+  -e MINIO_ACCESS_KEY=minioadmin \
+  -e MINIO_SECRET_KEY=minioadmin \
+  -e JWT_SECRET=your-jwt-secret-change-in-production \
+  -e PORT=3000 \
+  -e NODE_ENV=development \
+  -e CLIENT_ORIGIN_URL=http://localhost:5173 \
+  localhost/las-flores-server:latest npm run dev --workspace=server
+```
+
+**When to use host-network mode:**
+- Backing services are already started with `-p` port mappings to the host (the default in `podman-dev.md`).
+- Quick single-container dev server where you don't want to look up container IPs.
+- CI environments where all services bind to `localhost`.
+
+**When to use bridge-network mode:**
+- Running the full stack from scratch (no pre-existing host-port bindings).
+- Production-like isolation where containers should not share the host network namespace.
+
+With host-network mode, `curl http://localhost:3000/health` works directly from the host (no `wget` inside container needed).
+
 ### Clean Shutdown
 ```bash
 podman rm -f las-flores-server

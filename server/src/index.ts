@@ -188,6 +188,9 @@ process.on('SIGTERM', shutdown);
 // causing cascading test failures.
 process.on('unhandledRejection', (reason) => {
   console.error('[UNHANDLED REJECTION]', reason);
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 });
 
 // Start server

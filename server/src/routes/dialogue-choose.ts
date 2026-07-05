@@ -134,7 +134,7 @@ function findChoiceInNodes(chunkNodes: Record<string, any>, choiceId: string) {
   return null;
 }
 
-function findLeafByChoiceId(leaves: Record<string, any>, choiceId: string): any | undefined {
+export function findLeafByChoiceId(leaves: Record<string, any>, choiceId: string): any | undefined {
   const suffix = `:${choiceId}`;
   for (const [key, leaf] of Object.entries(leaves)) {
     if (key.endsWith(suffix)) return leaf;
