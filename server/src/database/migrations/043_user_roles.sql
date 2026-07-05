@@ -4,7 +4,7 @@
 BEGIN;
 
 -- Add role column with default 'player' and constraint
-ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'player';
+ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'player';
 
 -- Add constraint to restrict role values
 ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS users_role_check 
