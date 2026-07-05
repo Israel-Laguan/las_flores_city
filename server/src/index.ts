@@ -23,6 +23,7 @@ import { devRouter } from './routes/dev.js';
 import { mapRouter } from './routes/map.js';
 import { assetsRouter } from './routes/assets.js';
 import { assetsImportRouter } from './routes/assets-import.js';
+import { adminContentRouter } from './routes/admin-content.js';
 import { testConnections, closeConnections } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
@@ -121,6 +122,7 @@ app.use('/archive', archiveRouter);
 app.use('/map', mapRouter);
 app.use('/assets', assetsRouter);
 app.use('/assets', assetsImportRouter);
+app.use('/admin/content', adminContentRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {

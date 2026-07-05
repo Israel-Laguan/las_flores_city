@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import * as fs from 'fs';
-import { execSync } from 'child_process';
+import * as crypto from 'crypto';
 import { MediaSigner, __resetMediaSignerCacheForTests } from '../../src/services/MediaSigner.js';
 
 // ============================================================
@@ -28,7 +28,11 @@ function restoreEnv(prev: Record<string, string | undefined>) {
 }
 
 beforeAll(() => {
-  execSync(`openssl genrsa -out ${KEY_PATH} 2048 2>/dev/null`);
+  const { privateKey } = crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+  });
+  fs.writeFileSync(KEY_PATH, privateKey);
 });
 
 beforeEach(() => {

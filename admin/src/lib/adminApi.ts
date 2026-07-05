@@ -52,7 +52,9 @@ export async function adminFetch(url: string, options: RequestInit = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    const error = new Error(`API request failed: ${response.status}`) as Error & { status?: number };
+    error.status = response.status;
+    throw error;
   }
 
   return response.json();

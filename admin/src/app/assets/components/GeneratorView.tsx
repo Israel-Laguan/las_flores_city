@@ -4,7 +4,6 @@ import { useState } from 'react';
 import type { Category } from '../constants';
 import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
 import { API_BASE } from '../constants';
-import BaseCard from './BaseCard';
 import BasesSection from './BasesSection';
 import VariantCard from './VariantCard';
 import VariantForm from './VariantForm';
@@ -267,11 +266,12 @@ async function publishAsset(baseId: string | undefined, variantId: string | unde
   }
 }
 
+// eslint-disable-next-line max-lines-per-function
 export default function GeneratorView({
   selectedEntry,
   bases,
   variants,
-  groups,
+  groups: _groups,
   newBaseIds,
   loading,
   error,
@@ -289,9 +289,7 @@ export default function GeneratorView({
   const [variantPrompt, setVariantPrompt] = useState('');
   const [variantNegative, setVariantNegative] = useState('');
   const [i2iStrength, setI2iStrength] = useState(0.7);
-
   const chosenBase = bases.find(b => b.chosen);
-
   return (
     <div>
       <GeneratorHeader selectedEntry={selectedEntry} onBack={() => { setView('catalog'); setSelectedEntry(null); }} />

@@ -6,10 +6,22 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    env:
+      DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+      REDIS_URL: redis://localhost:6379
 
     services:
       postgres-oltp:
@@ -81,37 +93,104 @@ jobs:
       - name: Build shared types
         run: npm run build --workspace=shared
 
+      - name: Validate YAML content
+        run: npm run validate:content
+
       - name: Build server
         run: npm run build --workspace=server
 
       - name: Apply database migrations and seed content
         run: npm run schema:migrate --workspace=server
-        env:
-          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
-          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
-          REDIS_URL: redis://localhost:6379
 
       - name: Run server tests
         run: npm run test:server
         env:
-            DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
-            ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
-            REDIS_URL: redis://localhost:6379
-            MINIO_ENDPOINT: localhost
-            MINIO_PORT: 9000
-            MINIO_ACCESS_KEY: minioadmin
-            MINIO_SECRET_KEY: minioadmin
-            MINIO_BUCKET: las-flores
-            CDN_BASE_URL: https://cdn.lasflores2077.com
-            CDN_KEY_PAIR_ID: APKADEV00000000000000
-            CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
+          MINIO_ENDPOINT: localhost
+          MINIO_PORT: 9000
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+          MINIO_BUCKET: las-flores
+          CDN_BASE_URL: https://cdn.lasflores2077.com
+          CDN_KEY_PAIR_ID: APKADEV00000000000000
+          CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
+
+      - name: Start API server (background)
+        run: npm run start --workspace=server > /tmp/server.log 2>&1 &
+        env:
+          PORT: 3000
+          CLIENT_ORIGIN_URL: http://localhost:5173
+          NODE_ENV: development
+          CDN_BASE_URL: https://cdn.lasflores2077.com
+          CDN_KEY_PAIR_ID: APKADEV00000000000000
+          CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
+          MINIO_ENDPOINT: localhost
+          MINIO_PORT: 9000
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+          MINIO_BUCKET: las-flores
+
+      - name: Wait for API server
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health > /dev/null 2>&1; then
+              echo "API server is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::API server failed to start within 60 seconds"
+          cat /tmp/server.log 2>/dev/null || true
+          exit 1
+
+      - name: Build client (types only, skip Vite build — dev server proxies)
+        run: npx tsc --noEmit
+        working-directory: client
+
+      - name: Start Vite dev server (background)
+        run: npm run dev > /tmp/client.log 2>&1 &
+        working-directory: client
+        env:
+          VITE_API_PROXY_TARGET: http://localhost:3000
+          VITE_ABOUT_US_URL: https://example.com/about-us
+
+      - name: Wait for client
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              echo "Client is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Client failed to start within 60 seconds"
+          cat /tmp/client.log 2>/dev/null || true
+          exit 1
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: client
+
+      - name: E2E tests
+        run: npx playwright test
+        working-directory: client
+        env:
+          CI: 'true'
+          API_URL: http://localhost:5173
+          CLIENT_ORIGIN_URL: http://localhost:5173
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: client/playwright-report/
+          retention-days: 7
 
       - name: Run linter
         run: npm run lint
 
   build:
     runs-on: ubuntu-latest
-    needs: test
+    needs: validate
 
     steps:
       - name: Checkout code

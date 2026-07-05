@@ -173,12 +173,15 @@ log_info "Running tests..."
 log_info "Command: $TEST_COMMAND"
 
 # Run the test container
+# Mount an anonymous volume for .next/cache so lint/write tools work
+# even when the project root is mounted read-only
 podman run --rm \
     --network host \
     -v "$PROJECT_ROOT:/${CONTAINER_WORKDIR}:ro" \
+    -v "/${CONTAINER_WORKDIR}/.next/cache" \
     -w "${CONTAINER_WORKDIR}" \
     "${ENV_VARS[@]}" \
-    node:20-alpine \
+    node:20 \
     sh -c "$TEST_COMMAND"
 
 exit_code=$?
