@@ -1,6 +1,6 @@
 "use client";
 
-import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
+import type { AssetListAllResponse } from '@las-flores/shared';
 import type { Category } from '../constants';
 import { API_BASE } from '../constants';
 

@@ -78,7 +78,6 @@ export {
 
 // ── Repository Class (for static access pattern) ──────────────────
 
-import pg from 'pg';
 import * as readMethods from './PlayerStateRepository.read.js';
 import * as writeMethods from './PlayerStateRepository.write.js';
 

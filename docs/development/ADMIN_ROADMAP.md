@@ -4,43 +4,90 @@ This roadmap outlines the phased development of the admin panel, organized into 
 
 ---
 
-## Milestone 1: Security Foundation
-**Goal**: Close critical security holes before building any admin features on top of them.
+## Status
 
-**Estimated effort**: 1-2 days
-
-### Tasks
-1. Add `authMiddleware` to both asset routers (`assetsRouter` + `assetsImportRouter`)
-2. Add path traversal validation to `import-base` endpoint (restrict `file_path` to `PROMPT_ROOT`)
-3. Add `prompt_rel` sanitization (reject `..` sequences) across all import endpoints
-4. Add basic rate limiting to generate endpoints (prevent AI API abuse)
-
-**Why first**: It's irresponsible to build admin features on routes that are currently unauthenticated.
+| Milestone | Status | Notes |
+|-----------|--------|-------|
+| M1: Security Foundation | ✅ Complete | Auth middleware, path traversal, sanitization, rate limiting |
+| M2: Admin Authentication | ✅ Complete | Role column, adminMiddleware, admin login flow, auth gate |
+| M3: Content Pipeline Dashboard | 🚧 Ready | Server functions exist; just needs HTTP wrappers + UI |
+| M4: Story Beat Definition | ⏳ Pending | Content YAML + schema work |
+| M5: Story Beat Admin UI | ⏳ Pending | CRUD UI for beats |
+| M6: Content List Views | ⏳ Pending | Read-only browsers for dialogues/scenes/characters |
 
 ---
 
-## Milestone 2: Admin Authentication
+## Milestone 1: Security Foundation ✅
+
+**Goal**: Close critical security holes before building any admin features on top of them.
+
+**Status**: Complete
+
+### Completed Tasks
+1. ✅ Add `authMiddleware` to both asset routers (`assetsRouter` + `assetsImportRouter`)
+2. ✅ Add path traversal validation to `import-base` endpoint (restrict `file_path` to `PROMPT_ROOT`)
+3. ✅ Add `prompt_rel` sanitization (reject `..` sequences) across all import endpoints
+4. ✅ Add basic rate limiting to generate endpoints (30 req/min per user)
+
+**Key Files**:
+- `server/src/routes/assets.ts` — `adminMiddleware` applied to all routes
+- `server/src/routes/assets-import.ts` — `adminMiddleware` + `resolveAllowedImportFile()` + `sanitizePromptRel()`
+- `server/src/middleware/rateLimiter.ts` — `createRateLimiter()` factory
+
+---
+
+## Milestone 2: Admin Authentication ✅
+
 **Goal**: Establish admin identity before any admin UI features.
 
-**Estimated effort**: 2-3 days
+**Status**: Complete
 
-### Tasks
-1. Add `role` column to `users` table (`player` | `admin` | `developer`)
-2. Create `adminMiddleware` — checks `role === 'admin'` after `authMiddleware`
-3. Apply `adminMiddleware` to all `/assets/*` routes (after M1.1 adds `authMiddleware`)
-4. Add admin login flow to admin Next.js app (reuse JWT from main app or separate admin token)
-5. Protect the admin app with auth gate — redirect to login if no token
+### Completed Tasks
+1. ✅ Add `role` column to `users` table (`player` | `admin` | `developer`)
+2. ✅ Create `adminMiddleware` — checks `role === 'admin'` OR `role === 'developer'` after `authMiddleware`
+3. ✅ Apply `adminMiddleware` to all `/assets/*` routes (after M1.1 adds `authMiddleware`)
+4. ✅ Add admin login flow to admin Next.js app (JWT from main app)
+5. ✅ Protect the admin app with auth gate — redirect to login if no token
 
-**Why second**: Every subsequent admin feature depends on knowing *who* is making changes.
+**Key Files**:
+- `server/src/database/migrations/043_user_roles.sql` — Adds `role` column with CHECK constraint
+- `server/src/middleware/adminAuth.ts` — `adminMiddleware` + `authAndAdminMiddleware`
+- `server/src/routes/auth.ts` — `POST /auth/admin-login`, `POST /auth/dev-admin-login`
+- `admin/src/middleware.ts` — Next.js middleware checking `jwt_session` cookie
+- `admin/src/app/api/auth/admin-login/route.ts` — Admin login handler
+
+### Design Decision: Cookie Naming
+
+Both the player client and admin panel currently use the same cookie name `jwt_session`. This is **intentional and secure** because:
+
+1. **Different origins prevent collision**: Admin app runs on port 3001, player client on 5173, server on 3000. Cookies are scoped by origin, so a `jwt_session` set by the admin app is invisible to the player client and vice versa.
+
+2. **Admin middleware is a UX gate, not a security boundary**: It only checks for cookie *presence*. The real security happens server-side where `adminMiddleware` queries `users.role` on every API call and returns 403 if not admin/developer.
+
+3. **JWT is identical regardless of login path**: The token contains only `{ userId }` — no role claim. The server always re-checks role from the database.
+
+**If separate admin sessions are desired** (e.g., shorter TTL, JWT verification at the gate), the implementation would be:
+- Server sets a distinct `admin_session` cookie on `/auth/admin-login` with 4h TTL
+- Admin middleware verifies the JWT signature (not just presence)
+- Admin middleware checks an admin-specific claim embedded in the token
+
+This would be **M2.4/M2.5** if implemented, but is not currently required.
 
 ---
 
 ## Milestone 3: Content Pipeline Dashboard
+
 **Goal**: Expose existing CLI tools (validate + migrate) through the admin UI.
 
-**Estimated effort**: 3-4 days
+**Status**: Ready — Server logic exists, needs HTTP wrappers
 
-### Tasks
+### Prerequisites ✅ All Met
+- `validateContent(contentDir)` returns `ValidationResult { valid, errors[], warnings[] }` with file/line details
+- `migrateContent(contentDir)` returns `MigrationResult { success, filesProcessed, filesSkipped, filesFailed, appliedMigrations[] }`
+- `migration_log` table exists with `file_path`, `file_checksum`, `content_type`, `content_id`, `applied_at`
+- CHECK constraint on `migration_log.content_type` includes all current types
+
+### Remaining Tasks
 1. New server endpoint: `POST /admin/content/validate` — runs `validateContent()` and returns results JSON
 2. New server endpoint: `POST /admin/content/migrate` — runs `migrateContent()` and returns results JSON
 3. New server endpoint: `GET /admin/content/status` — reads `migration_log` table, shows last-run per file
@@ -52,6 +99,7 @@ This roadmap outlines the phased development of the admin panel, organized into 
 ---
 
 ## Milestone 4: Story Beat Definition
+
 **Goal**: Establish canonical beats and start using them in content.
 
 **Estimated effort**: 2-3 days
@@ -102,6 +150,7 @@ beats:
 ---
 
 ## Milestone 5: Story Beat Admin UI
+
 **Goal**: Simple CRUD for beats + visibility into which content uses them.
 
 **Estimated effort**: 3-4 days
@@ -117,6 +166,7 @@ beats:
 ---
 
 ## Milestone 6: Content List Views
+
 **Goal**: Read-only browsers for dialogues, scenes, and characters.
 
 **Estimated effort**: 3-4 days
@@ -160,9 +210,9 @@ M1 and M2 are prerequisites for everything. M3 can ship independently of M4-M6. 
 **~15-20 days** for all milestones, shippable incrementally.
 
 Each milestone builds a foundation for the next, with clear value delivered at each step:
-- M1: Secure system
-- M2: Admin access control
-- M3: One-click content pipeline
+- M1: Secure system ✅
+- M2: Admin access control ✅
+- M3: One-click content pipeline (READY)
 - M4: Structured story progression
 - M5: Beat management UI
 - M6: Content visibility

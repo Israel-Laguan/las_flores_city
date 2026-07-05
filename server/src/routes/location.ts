@@ -38,7 +38,7 @@ function selectMood(
 }
 
 // Check if NPC is visible via mystery overlays
-async function getOverlayNpcs(sceneId: string, userId: string): Promise<Array<{
+async function getOverlayNpcs(sceneId: string, _userId: string): Promise<Array<{
   character_id: string;
   is_permanent: boolean;
   default_mood: string;

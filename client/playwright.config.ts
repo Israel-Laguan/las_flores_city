@@ -19,5 +19,9 @@ export default defineConfig({
     timeout: 120_000,
     stdout: 'pipe',
     stderr: 'pipe',
+    env: {
+      VITE_ABOUT_US_URL: process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us',
+      VITE_API_PROXY_TARGET: process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:3000',
+    },
   },
 });

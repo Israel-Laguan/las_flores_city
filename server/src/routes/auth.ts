@@ -2,8 +2,10 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { queryOLTP } from '../database/connection.js';
 import { generateToken, authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { adminMiddleware } from '../middleware/adminAuth.js';
 import { setSessionCookie, clearSessionCookie } from '../utils/cookies.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
+import { handleChangePassword } from './auth.handlers.js';
 
 const START_LOCATION_ID = '550e8400-e29b-41d4-a716-446655440002';
 
@@ -111,15 +113,21 @@ authRouter.post('/login', async (req, res) => {
     const user = result.rows[0];
 
     // Check password
-    if (user.password_hash) {
-      const validPassword = await bcrypt.compare(password, user.password_hash);
-      if (!validPassword) {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid credentials',
-          timestamp: new Date().toISOString(),
-        });
-      }
+    if (!user.password_hash) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
     }
 
     // Update last_login
@@ -135,7 +143,12 @@ authRouter.post('/login', async (req, res) => {
     setSessionCookie(res, token);
 
     // Remove password_hash from response
-    const { password_hash, ...userWithoutPassword } = user;
+    const userWithoutPassword = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      display_name: user.display_name,
+    };
 
     res.json({
       success: true,
@@ -236,6 +249,215 @@ export async function handleDevLogin(req: express.Request, res: express.Response
 
 authRouter.post('/dev-login', handleDevLogin);
 
+// POST /auth/dev-admin-login - Quick dev admin login (no password required)
+export async function handleDevAdminLogin(req: express.Request, res: express.Response): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    res.status(403).json({
+      success: false,
+      error: 'Dev admin login is not available in production',
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
+  try {
+    const { userId } = req.body;
+
+    // Use provided userId or default test admin user
+    const targetUserId = userId || '00000000-0000-0000-0000-000000000001';
+
+    const result = await queryOLTP(
+      `INSERT INTO users (id, email, username, display_name, role)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (id) DO UPDATE SET
+         email = EXCLUDED.email,
+         username = EXCLUDED.username,
+         display_name = EXCLUDED.display_name,
+         role = EXCLUDED.role,
+         updated_at = NOW()
+       RETURNING id, email, username, display_name, role`,
+      [targetUserId, `dev-admin-${targetUserId}@example.com`, `dev_admin_${targetUserId.slice(0, 8)}`, 'Dev Admin', 'admin']
+    );
+
+    // Ensure player_states row exists (idempotent via ON CONFLICT)
+    const DEV_START_LOCATION = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+    await queryOLTP(
+      `INSERT INTO player_states (user_id, current_location_id, current_node_id, flags, time_blocks, credits, gold_credits, current_day, story_beat, alignment)
+       VALUES ($1, $2, NULL, '{}'::jsonb, 48, 100, 0, 1, 'prologue', 'neutral')
+       ON CONFLICT (user_id) DO UPDATE SET
+         current_location_id = EXCLUDED.current_location_id,
+         current_node_id = EXCLUDED.current_node_id,
+         flags = EXCLUDED.flags,
+         updated_at = NOW()`,
+      [targetUserId, DEV_START_LOCATION]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        error: 'User not found',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const user = result.rows[0];
+
+    // Update last_login
+    await queryOLTP(
+      'UPDATE users SET last_login = NOW() WHERE id = $1',
+      [user.id]
+    );
+
+    const token = generateToken(user.id);
+
+    // Set HttpOnly cookie — token no longer exposed in the response body
+    setSessionCookie(res, token);
+
+    res.json({
+      success: true,
+      data: {
+        user,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('Dev admin login error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to login',
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+authRouter.post('/dev-admin-login', handleDevAdminLogin);
+
+// POST /auth/admin-login - Admin login with email and password
+authRouter.post('/admin-login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and password are required',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Find user
+    const result = await queryOLTP(
+      'SELECT id, email, username, display_name, password_hash, role FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const user = result.rows[0];
+
+    // Check password
+    if (!user.password_hash) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Check that user has admin or developer role
+    if (user.role !== 'admin' && user.role !== 'developer') {
+      return res.status(403).json({
+        success: false,
+        error: 'Access denied. Admin privileges required.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Generate token
+    const token = generateToken(user.id);
+
+    // Set HttpOnly cookie — token no longer exposed in the response body
+    setSessionCookie(res, token);
+
+    // Remove password_hash from response
+    const userWithoutPassword = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      display_name: user.display_name,
+      role: user.role,
+    };
+
+    res.json({
+      success: true,
+      data: {
+        user: userWithoutPassword,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('Admin login error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to login',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// GET /auth/admin-me - Get current admin user info
+authRouter.get('/admin-me', adminMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId!;
+
+    // Get user info including role
+    const result = await queryOLTP(
+      'SELECT id, email, username, display_name, role FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const user = result.rows[0];
+
+    res.json({
+      success: true,
+      data: {
+        user,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('Admin-me error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get user info',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // POST /auth/logout - Clear session cookie
 authRouter.post('/logout', (_req, res) => {
   clearSessionCookie(res);
@@ -246,66 +468,4 @@ authRouter.post('/logout', (_req, res) => {
 });
 
 // POST /auth/change-password - Change password for authenticated user
-authRouter.post('/change-password', authMiddleware, async (req: AuthRequest, res) => {
-  try {
-    const userId = req.userId!;
-    const { current_password, new_password } = req.body;
-
-    if (!current_password || !new_password) {
-      return res.status(400).json({
-        success: false,
-        error: 'Current password and new password are required',
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    if (new_password.length < 6) {
-      return res.status(400).json({
-        success: false,
-        error: 'PASSWORD_TOO_SHORT',
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    const result = await queryOLTP(
-      'SELECT password_hash FROM users WHERE id = $1',
-      [userId]
-    );
-
-    if (!result.rows[0]?.password_hash) {
-      return res.status(400).json({
-        success: false,
-        error: 'NO_PASSWORD_SET',
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    const validPassword = await bcrypt.compare(current_password, result.rows[0].password_hash);
-    if (!validPassword) {
-      return res.status(401).json({
-        success: false,
-        error: 'INVALID_PASSWORD',
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    const passwordHash = await bcrypt.hash(new_password, 10);
-
-    await queryOLTP(
-      'UPDATE users SET password_hash = $1 WHERE id = $2',
-      [passwordHash, userId]
-    );
-
-    res.json({
-      success: true,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('Change password error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to change password',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
+authRouter.post('/change-password', authMiddleware, handleChangePassword);

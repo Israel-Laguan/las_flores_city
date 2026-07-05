@@ -33,7 +33,9 @@
     "038_character_portrait_urls.sql",
     "039_character_atlas_url.sql",
     "040_asset_generation.sql",
-    "041_asset_generation_enhancements.sql"
+    "041_asset_generation_enhancements.sql",
+    "042_asset_unique_constraints.sql",
+    "043_user_roles.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

@@ -57,7 +57,6 @@ async function loadGroups(setGroups: (v: AssetListAllResponse['groups']) => void
 export default function AssetsPage() {
   const [view, setView] = useState<View>('catalog');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedEntry, setSelectedEntry] = useState<Category['entries'][0] | null>(null);
   const [bases, setBases] = useState<AssetBase[]>([]);
   const [variants, setVariants] = useState<AssetVariant[]>([]);

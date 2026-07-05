@@ -128,7 +128,6 @@ export async function generateBaseImage(options: {
     steps: 4,
   };
 
-  let lastError: Error | null = null;
   let wait = INITIAL_BACKOFF_MS;
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -155,7 +154,6 @@ export async function generateBaseImage(options: {
 
       return buffer;
     } catch (err) {
-      lastError = err as Error;
       if (attempt < MAX_RETRIES) {
         await sleep(wait);
         wait = Math.min(wait * 1.5, 300000);
@@ -211,7 +209,6 @@ export async function generateVariantImage(options: {
         payload.strength = strength;
       }
 
-      let lastError: Error | null = null;
       let wait = INITIAL_BACKOFF_MS;
 
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -237,7 +234,6 @@ export async function generateVariantImage(options: {
 
           return buffer;
         } catch (err) {
-          lastError = err as Error;
           if (attempt < MAX_RETRIES) {
             await sleep(wait);
             wait = Math.min(wait * 1.5, 300000);

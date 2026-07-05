@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as api from '../utils/api';
 import { navigateTo } from '../router';
 import type { Tile } from '../types/map';
@@ -35,12 +35,194 @@ const TERRAIN_COLORS: Record<string, string> = {
   building_residential: '#B8956A',
 };
 
-export default function MapView({ initialDistrict, playerState }: { initialDistrict?: string; playerState?: any }) {
+interface WorldViewProps {
+  districts: District[];
+  dayNight: 'day' | 'night';
+  onDistrictClick: (slug: string) => void;
+  onToggleDayNight: () => void;
+}
+
+function WorldView({ districts, dayNight, onDistrictClick, onToggleDayNight }: WorldViewProps) {
+  const worldLabelStyle: React.CSSProperties = useMemo(() => ({
+    color: 'var(--color-off-white, #F5F5DC)',
+  }), []);
+
+  return (
+    <div className="map-container map-world" data-daynight={dayNight}>
+      <div className="world-header" style={worldLabelStyle}>
+        <h1>LAS FLORES 2077</h1>
+        <p className="world-subtitle">Una ciudad de dualidades</p>
+      </div>
+      <div className="district-cards">
+        {districts.map((d) => (
+          <button key={d.id} className="district-card" onClick={() => onDistrictClick(d.slug)}>
+            <div className="district-card-header">
+              <h3>{d.name}</h3>
+              <span className="district-count">{d.tileCount} zonas</span>
+            </div>
+            <p className="district-description">{typeof d.description === 'string' ? d.description : 'Sin descripción'}</p>
+            <div className="district-card-footer">
+              <span>✨ {d.landmarkCount} puntos de interés</span>
+              <span>Entrar →</span>
+            </div>
+          </button>
+        ))}
+      </div>
+      <div className="world-controls">
+        <button className="daynight-toggle" onClick={onToggleDayNight}>
+          {dayNight === 'day' ? '🌙 Noche' : '☀️ Día'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface DistrictViewProps {
+  district: DistrictDetail;
+  dayNight: 'day' | 'night';
+  currentLocationId?: string;
+  onTileClick: (tile: Tile) => void;
+  onBack: () => void;
+  onToggleDayNight: () => void;
+}
+
+function DistrictView({ district, dayNight, currentLocationId, onTileClick, onBack, onToggleDayNight }: DistrictViewProps) {
+  const tiles: Tile[] = district.tiles || [];
+  const minX = tiles.length ? Math.min(...tiles.map((t) => t.x)) : 0;
+  const maxX = tiles.length ? Math.max(...tiles.map((t) => t.x)) : 0;
+  const minY = tiles.length ? Math.min(...tiles.map((t) => t.y)) : 0;
+  const maxY = tiles.length ? Math.max(...tiles.map((t) => t.y)) : 0;
+  const cols = maxX - minX + 1;
+  const rows = maxY - minY + 1;
+
+  const districtLabelStyle: React.CSSProperties = useMemo(() => ({
+    color: 'var(--color-off-white, #F5F5DC)',
+  }), []);
+
+  if (tiles.length === 0) {
+    return (
+      <div className="map-container map-district" data-daynight={dayNight}>
+        <div className="district-header" style={districtLabelStyle}>
+          <button className="back-button" onClick={onBack}>← Volver</button>
+          <div className="district-title">
+            <h2>{district.name}</h2>
+            <p>{typeof district.description === 'string' ? district.description : ''}</p>
+          </div>
+          <button className="daynight-toggle" onClick={onToggleDayNight}>
+            {dayNight === 'day' ? '🌙 Noche' : '☀️ Día'}
+          </button>
+        </div>
+        <div className="district-empty">
+          <p>Este distrito aún no tiene mapa detallado.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="map-container map-district" data-daynight={dayNight}>
+      <div className="district-header" style={districtLabelStyle}>
+        <button className="back-button" onClick={onBack}>← Volver</button>
+        <div className="district-title">
+          <h2>{district.name}</h2>
+          <p>{typeof district.description === 'string' ? district.description : ''}</p>
+        </div>
+        <button className="daynight-toggle" onClick={onToggleDayNight}>
+          {dayNight === 'day' ? '🌙 Noche' : '☀️ Día'}
+        </button>
+      </div>
+
+      <TileGrid
+        tiles={tiles}
+        minX={minX}
+        minY={minY}
+        cols={cols}
+        rows={rows}
+        currentLocationId={currentLocationId}
+        onTileClick={onTileClick}
+      />
+    </div>
+  );
+}
+
+interface TileGridProps {
+  tiles: Tile[];
+  minX: number;
+  minY: number;
+  cols: number;
+  rows: number;
+  currentLocationId?: string;
+  onTileClick: (tile: Tile) => void;
+}
+
+function TileGrid({ tiles, minX, minY, cols, rows, currentLocationId, onTileClick }: TileGridProps) {
+  return (
+    <div
+      className="tile-grid"
+      style={{
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
+      }}
+    >
+      {tiles
+        .slice()
+        .sort((a, b) => a.y - b.y || a.x - b.x)
+        .map((tile: Tile) => {
+          const color = TERRAIN_COLORS[tile.terrainType] || '#2a2a2a';
+          const isCurrent = currentLocationId && tile.metadata?.location_id === currentLocationId;
+          const transforms = [
+            tile.rotation ? `rotate(${tile.rotation}deg)` : '',
+            tile.isFlipped ? 'scaleX(-1)' : '',
+          ].filter(Boolean).join(' ');
+          const baseStyle: React.CSSProperties = {
+            backgroundColor: color,
+            backgroundImage: tile.baseImageUrl ? `url(${tile.baseImageUrl})` : undefined,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            transform: transforms || undefined,
+            gridColumn: tile.x - minX + 1,
+            gridRow: tile.y - minY + 1,
+          };
+
+          return (
+            <div
+              key={tile.id}
+              className={`map-tile${tile.overlayImageUrl ? ' has-overlay' : ''}${isCurrent ? ' current-location' : ''}`}
+              style={baseStyle}
+              onClick={() => onTileClick(tile)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === ' ') e.preventDefault();
+                  onTileClick(tile);
+                }
+              }}
+              title={String(tile.metadata?.label || tile.terrainType)}
+            >
+              {tile.overlayImageUrl && (
+                <img src={tile.overlayImageUrl} alt="" className="landmark-overlay" draggable={false} />
+              )}
+              {!!tile.metadata?.label && !tile.overlayImageUrl && (
+                <span className="tile-dot" />
+              )}
+            </div>
+          );
+        })}
+    </div>
+  );
+}
+
+interface MapViewProps {
+  initialDistrict?: string;
+  playerState?: any;
+}
+
+function useMapEffects({ initialDistrict, playerState }: MapViewProps) {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [dayNight, setDayNight] = useState<'day' | 'night'>('day');
-
   const currentLocationId = playerState?.locationId as string | undefined;
 
   useEffect(() => {
@@ -87,13 +269,16 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
     navigateTo('/map');
   }, []);
 
-  const worldLabelStyle: React.CSSProperties = useMemo(() => ({
-    color: 'var(--color-off-white, #F5F5DC)',
-  }), []);
+  const handleToggleDayNight = useCallback(() => {
+    setDayNight((dn) => (dn === 'day' ? 'night' : 'day'));
+  }, []);
 
-  const districtLabelStyle: React.CSSProperties = useMemo(() => ({
-    color: 'var(--color-off-white, #F5F5DC)',
-  }), []);
+  return { districts, selectedDistrict, loading, dayNight, currentLocationId, handleDistrictClick, handleTileClick, handleBack, handleToggleDayNight };
+}
+
+export default function MapView({ initialDistrict, playerState }: MapViewProps) {
+  const { districts, selectedDistrict, loading, dayNight, currentLocationId, 
+    handleDistrictClick, handleTileClick, handleBack, handleToggleDayNight } = useMapEffects({ initialDistrict, playerState });
 
   if (loading) {
     return (
@@ -105,110 +290,35 @@ export default function MapView({ initialDistrict, playerState }: { initialDistr
 
   if (!initialDistrict) {
     return (
-      <div className="map-container map-world" data-daynight={dayNight}>
-        <div className="world-header" style={worldLabelStyle}>
-          <h1>LAS FLORES 2077</h1>
-          <p className="world-subtitle">Una ciudad de dualidades</p>
-        </div>
-        <div className="district-cards">
-          {districts.map((d) => (
-            <button key={d.id} className="district-card" onClick={() => handleDistrictClick(d.slug)}>
-              <div className="district-card-header">
-                <h3>{d.name}</h3>
-                <span className="district-count">{d.tileCount} zonas</span>
-              </div>
-              <p className="district-description">{typeof d.description === 'string' ? d.description : 'Sin descripción'}</p>
-              <div className="district-card-footer">
-                <span>✨ {d.landmarkCount} puntos de interés</span>
-                <span>Entrar →</span>
-              </div>
-            </button>
-          ))}
-        </div>
-        <div className="world-controls">
-          <button className="daynight-toggle" onClick={() => setDayNight((dn) => (dn === 'day' ? 'night' : 'day'))}>
-            {dayNight === 'day' ? '🌙 Noche' : '☀️ Día'}
-          </button>
+      <WorldView
+        districts={districts}
+        dayNight={dayNight}
+        onDistrictClick={handleDistrictClick}
+        onToggleDayNight={handleToggleDayNight}
+      />
+    );
+  }
+
+  if (!selectedDistrict) {
+    return (
+      <div className="map-container map-district" data-daynight={dayNight}>
+        <button className="back-button" onClick={handleBack}>← Volver</button>
+        <div className="district-empty">
+          <p>No se pudo cargar este distrito.</p>
         </div>
       </div>
     );
   }
 
-  if (!selectedDistrict) return null;
-
-  const tiles: Tile[] = selectedDistrict.tiles || [];
-  const minX = tiles.length ? Math.min(...tiles.map((t) => t.x)) : 0;
-  const maxX = tiles.length ? Math.max(...tiles.map((t) => t.x)) : 0;
-  const minY = tiles.length ? Math.min(...tiles.map((t) => t.y)) : 0;
-  const maxY = tiles.length ? Math.max(...tiles.map((t) => t.y)) : 0;
-  const cols = maxX - minX + 1;
-  const rows = maxY - minY + 1;
-
   return (
-    <div className="map-container map-district" data-daynight={dayNight}>
-      <div className="district-header" style={districtLabelStyle}>
-        <button className="back-button" onClick={handleBack}>← Volver</button>
-        <div className="district-title">
-          <h2>{selectedDistrict.name}</h2>
-          <p>{typeof selectedDistrict.description === 'string' ? selectedDistrict.description : ''}</p>
-        </div>
-        <button className="daynight-toggle" onClick={() => setDayNight((dn) => (dn === 'day' ? 'night' : 'day'))}>
-          {dayNight === 'day' ? '🌙 Noche' : '☀️ Día'}
-        </button>
-      </div>
-
-      {tiles.length === 0 ? (
-        <div className="district-empty">
-          <p>Este distrito aún no tiene mapa detallado.</p>
-        </div>
-      ) : (
-        <div
-          className="tile-grid"
-          style={{
-            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-            gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-          }}
-        >
-          {tiles
-            .slice()
-            .sort((a, b) => a.y - b.y || a.x - b.x)
-            .map((tile: Tile) => {
-            const color = TERRAIN_COLORS[tile.terrainType] || '#2a2a2a';
-            const isCurrent = currentLocationId && tile.metadata?.location_id === currentLocationId;
-            const baseStyle: React.CSSProperties = {
-              backgroundColor: color,
-              backgroundImage: tile.baseImageUrl ? `url(${tile.baseImageUrl})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              transform: tile.rotation ? `rotate(${tile.rotation}deg)` : undefined,
-              gridColumn: tile.x - minX + 1,
-              gridRow: tile.y - minY + 1,
-            };
-
-            return (
-              <div
-                key={tile.id}
-                className={`map-tile${tile.overlayImageUrl ? ' has-overlay' : ''}${isCurrent ? ' current-location' : ''}`}
-                style={baseStyle}
-                onClick={() => handleTileClick(tile)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') handleTileClick(tile);
-                }}
-                title={String(tile.metadata?.label || tile.terrainType)}
-              >
-                {tile.overlayImageUrl && (
-                  <img src={tile.overlayImageUrl} alt="" className="landmark-overlay" draggable={false} />
-                )}
-                {!!tile.metadata?.label && !tile.overlayImageUrl && (
-                  <span className="tile-dot" />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <DistrictView
+      district={selectedDistrict}
+      dayNight={dayNight}
+      currentLocationId={currentLocationId}
+      onTileClick={handleTileClick}
+      onBack={handleBack}
+      onToggleDayNight={handleToggleDayNight}
+    />
   );
 }
+

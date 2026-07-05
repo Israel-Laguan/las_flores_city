@@ -6,7 +6,7 @@ import {
   type PlayerInventoryItem,
 } from '@las-flores/shared';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
 import { userStateCacheKey } from './player-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';

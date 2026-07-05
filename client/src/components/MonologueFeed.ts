@@ -152,7 +152,7 @@ export class MonologueFeed {
       this.lastTravelTime = Date.now();
     });
 
-    eventBus.on('travel:complete', (data: any) => {
+    eventBus.on('travel:complete', () => {
       this.addEntry('Transition complete. New environmental parameters loading.', 'scan');
     });
 

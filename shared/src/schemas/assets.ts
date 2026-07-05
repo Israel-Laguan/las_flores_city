@@ -28,7 +28,7 @@ export const AssetVariantSchema = z.object({
   created_at: z.string().datetime(),
   // New fields from migration 041
   prompt_text: z.string().optional(),
-  negative_prompt: z.string().optional(),
+  negative_prompt: z.string().nullable().optional(),
   width: z.number().int().nullable().optional(),
   height: z.number().int().nullable().optional(),
   final_path: z.string().nullable().optional(),

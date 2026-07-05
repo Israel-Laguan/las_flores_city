@@ -1,4 +1,4 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import {
   filterChoices,
   getDialogState,

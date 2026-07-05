@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { signMinioUrl, uploadToMinio } from '../services/StorageService.js';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
-import { PromptCatalogResponseSchema, PublishAssetResponseSchema } from '@las-flores/shared';
+import { PromptCatalogResponseSchema } from '@las-flores/shared';
 import { z } from 'zod';
 
 export function getPromptRoot(): string {

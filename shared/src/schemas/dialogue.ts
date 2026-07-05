@@ -70,3 +70,16 @@ export const DialogueNodeSchema = z.object({
 });
 
 export type DialogueNode = z.infer<typeof DialogueNodeSchema>;
+
+export const DialogueTreeSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  start_node_id: z.string(),
+  nodes: z.record(z.string(), DialogueNodeSchema),
+  metadata: z.record(z.string(), z.any()).optional(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+export type DialogueTree = z.infer<typeof DialogueTreeSchema>;
