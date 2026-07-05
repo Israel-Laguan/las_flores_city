@@ -275,7 +275,7 @@ export default function MigrationPage() {
                       <tr key={i}>
                         <td style={styles.td}><code style={{ color: '#aaa' }}>{file.filePath}</code></td>
                         <td style={styles.td}><code style={{ color: '#aaa' }}>{file.contentId}</code></td>
-                        <td style={styles.td}>{new Date(file.appliedAt).toLocaleString()}</td>
+                        <td style={styles.td} suppressHydrationWarning>{new Date(file.appliedAt).toLocaleString()}</td>
                         <td style={styles.td}>{file.appliedBy || <span style={styles.muted}>system</span>}</td>
                       </tr>
                     ))}

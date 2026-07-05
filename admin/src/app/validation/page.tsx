@@ -79,7 +79,7 @@ export default function ValidationPage() {
   // Group errors by file
   const errorsByFile: Record<string, ValidationError[]> = {};
   const warningsByFile: Record<string, ValidationError[]> = {};
-  if (result) {
+  if (result?.errors) {
     for (const err of result.errors) {
       const file = err.file || 'unknown';
       if (err.severity === 'warning') {
@@ -92,8 +92,8 @@ export default function ValidationPage() {
     }
   }
 
-  const errorCount = result?.errors.filter(e => e.severity === 'error').length || 0;
-  const warningCount = result?.errors.filter(e => e.severity === 'warning').length || 0;
+  const errorCount = result?.errors?.filter(e => e.severity === 'error').length || 0;
+  const warningCount = result?.errors?.filter(e => e.severity === 'warning').length || 0;
 
   return (
     <main style={styles.main}>

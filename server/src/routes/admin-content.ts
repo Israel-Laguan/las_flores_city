@@ -28,8 +28,11 @@ adminContentRouter.use(authAndAdminMiddleware);
  */
 adminContentRouter.post('/validate', async (_req, res) => {
   try {
-    // Resolve content directory relative to server/src/../..
-    const contentDir = path.resolve(process.cwd(), '..', 'content');
+    // Resolve content directory relative to project root
+    const isSubdir = process.cwd().endsWith('server');
+    const contentDir = isSubdir
+      ? path.resolve(process.cwd(), '..', 'content')
+      : path.resolve(process.cwd(), 'content');
     console.log(`[admin-content] Validating content in: ${contentDir}`);
 
     const result = await validateContent(contentDir);
@@ -58,7 +61,11 @@ adminContentRouter.post('/validate', async (_req, res) => {
  */
 adminContentRouter.post('/migrate', async (_req, res) => {
   try {
-    const contentDir = path.resolve(process.cwd(), '..', 'content');
+    // Resolve content directory relative to project root
+    const isSubdir = process.cwd().endsWith('server');
+    const contentDir = isSubdir
+      ? path.resolve(process.cwd(), '..', 'content')
+      : path.resolve(process.cwd(), 'content');
     console.log(`[admin-content] Migrating content in: ${contentDir}`);
 
     const result = await migrateContent(contentDir);
@@ -99,29 +106,30 @@ adminContentRouter.get('/status', async (_req, res) => {
       ORDER BY ml.content_type, ml.file_path`
     );
 
-    // Group by content type
+    // Normalize rows once, then group by content type
+    const normalized = result.rows.map(row => ({
+      filePath: row.file_path,
+      checksum: row.file_checksum,
+      contentType: row.content_type,
+      contentId: row.content_id,
+      appliedAt: row.applied_at,
+      appliedBy: row.applied_by_username || null,
+    }));
     const grouped: Record<string, any[]> = {};
-    for (const row of result.rows) {
-      const type = row.content_type || 'unknown';
+    for (const file of normalized) {
+      const type = file.contentType || 'unknown';
       if (!grouped[type]) {
         grouped[type] = [];
       }
-      grouped[type].push({
-        filePath: row.file_path,
-        checksum: row.file_checksum,
-        contentType: row.content_type,
-        contentId: row.content_id,
-        appliedAt: row.applied_at,
-        appliedBy: row.applied_by_username || null,
-      });
+      grouped[type].push(file);
     }
 
     res.json({
       success: true,
       data: {
-        totalFiles: result.rows.length,
+        totalFiles: normalized.length,
         byType: grouped,
-        files: result.rows,
+        files: normalized,
       },
       timestamp: new Date().toISOString(),
     });

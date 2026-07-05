@@ -10,10 +10,18 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    env:
+      DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
+      REDIS_URL: redis://localhost:6379
 
     services:
       postgres-oltp:
@@ -93,17 +101,10 @@ jobs:
 
       - name: Apply database migrations and seed content
         run: npm run schema:migrate --workspace=server
-        env:
-          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
-          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
-          REDIS_URL: redis://localhost:6379
 
       - name: Run server tests
         run: npm run test:server
         env:
-          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
-          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
-          REDIS_URL: redis://localhost:6379
           MINIO_ENDPOINT: localhost
           MINIO_PORT: 9000
           MINIO_ACCESS_KEY: minioadmin
@@ -116,9 +117,6 @@ jobs:
       - name: Start API server (background)
         run: npm run start --workspace=server > /tmp/server.log 2>&1 &
         env:
-          DATABASE_URL: postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores
-          ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics
-          REDIS_URL: redis://localhost:6379
           PORT: 3000
           CLIENT_ORIGIN_URL: http://localhost:5173
           NODE_ENV: development
