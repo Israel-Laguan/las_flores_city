@@ -13,9 +13,9 @@ import { PhoneOverlay } from './components/PhoneOverlay';
 import { SleepOverlay } from './components/SleepOverlay';
 import { LoginMenu } from './components/LoginMenu';
 import { ViewportManager } from './bridge/ViewportManager';
-import { initThemeEngine, restorePersistedTheme } from './utils/themeEngine';
+import { initThemeEngine, _restorePersistedTheme } from './utils/themeEngine';
 import { eventBus } from './utils/EventBus';
-import { registerRoute, navigateTo, startRouter } from './router';
+import { navigateTo, startRouter } from './router';
 import { registerRoutes } from './router/routes.js';
 
 declare global {

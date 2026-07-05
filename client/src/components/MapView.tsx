@@ -218,12 +218,11 @@ interface MapViewProps {
   playerState?: any;
 }
 
-export default function MapView({ initialDistrict, playerState }: MapViewProps) {
+function useMapEffects({ initialDistrict, playerState }: MapViewProps) {
   const [districts, setDistricts] = useState<District[]>([]);
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [dayNight, setDayNight] = useState<'day' | 'night'>('day');
-
   const currentLocationId = playerState?.locationId as string | undefined;
 
   useEffect(() => {
@@ -274,6 +273,13 @@ export default function MapView({ initialDistrict, playerState }: MapViewProps) 
     setDayNight((dn) => (dn === 'day' ? 'night' : 'day'));
   }, []);
 
+  return { districts, selectedDistrict, loading, dayNight, currentLocationId, handleDistrictClick, handleTileClick, handleBack, handleToggleDayNight };
+}
+
+export default function MapView({ initialDistrict, playerState }: MapViewProps) {
+  const { districts, selectedDistrict, loading, dayNight, currentLocationId, 
+    handleDistrictClick, handleTileClick, handleBack, handleToggleDayNight } = useMapEffects({ initialDistrict, playerState });
+
   if (loading) {
     return (
       <div className="map-container" data-daynight={dayNight}>
@@ -315,3 +321,4 @@ export default function MapView({ initialDistrict, playerState }: MapViewProps) 
     />
   );
 }
+
