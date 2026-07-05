@@ -88,6 +88,7 @@ let port: number;
 
 let TEST_PROMPT_REL: string;
 let adminToken: string;
+const ADMIN_USER_ID = '00000000-0000-0000-0000-000000000001';
 
 beforeAll(async () => {
   const { assetsRouter } = await import('../../src/routes/assets.js');
@@ -128,13 +129,21 @@ beforeAll(async () => {
   await oltpPool.query('DELETE FROM asset_variants WHERE prompt_text LIKE $1 OR variant_name LIKE $1', ['%test%']);
   await oltpPool.query('DELETE FROM asset_bases WHERE prompt_rel = $1', [TEST_PROMPT_REL]);
 
+  // Create/promote the admin fixture explicitly so the test is independent of
+  // local dev seed data and works against CI's freshly migrated database.
+  await oltpPool.query(
+    `INSERT INTO users (id, email, username, display_name, role)
+     VALUES ($1, $2, $3, $4, 'admin')
+     ON CONFLICT (id) DO UPDATE SET role = 'admin'`,
+    [ADMIN_USER_ID, 'assets-admin-test@example.com', 'assets_admin_test', 'Assets Admin Test']
+  );
+
   server = await new Promise<ReturnType<typeof app.listen>>((resolve) => {
     const s = app.listen(0, () => resolve(s));
   });
   port = (server.address() as { port: number }).port;
 
   // Generate admin token for authenticated requests (matching pattern used by other integration tests)
-  const ADMIN_USER_ID = '00000000-0000-0000-0000-000000000001';
   adminToken = generateToken(ADMIN_USER_ID);
 });
 
@@ -147,6 +156,7 @@ afterAll(async () => {
   
   await oltpPool.query('DELETE FROM asset_variants WHERE prompt_text LIKE $1 OR variant_name LIKE $1', ['%test%']);
   await oltpPool.query('DELETE FROM asset_bases WHERE prompt_rel = $1', [TEST_PROMPT_REL]);
+  await oltpPool.query('DELETE FROM users WHERE id = $1 AND email = $2', [ADMIN_USER_ID, 'assets-admin-test@example.com']);
   
   await oltpPool.end();
   await closeRedis();
