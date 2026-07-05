@@ -127,6 +127,12 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
             message: 'Beat registry unavailable: required_story_beat cross-reference checks skipped',
             severity: 'warning',
           });
+        } else if (validSlugs.size === 0) {
+          errors.push({
+            file: filePath,
+            message: 'Cannot validate required_story_beat: story_beats registry is empty. Run story_beats.yaml migration first.',
+            severity: 'error',
+          });
         } else {
           const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
           for (const slug of slugsToCheck) {
