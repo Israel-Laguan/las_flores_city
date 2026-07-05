@@ -15,7 +15,7 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS story_beats (
     slug        VARCHAR(100) PRIMARY KEY,
     label       VARCHAR(100) NOT NULL,
-    "order"     INTEGER      NOT NULL,
+    "order"     INTEGER      NOT NULL CHECK ("order" >= 0),
     description TEXT         NOT NULL,
     created_at  TIMESTAMPTZ  DEFAULT NOW(),
     updated_at  TIMESTAMPTZ  DEFAULT NOW()

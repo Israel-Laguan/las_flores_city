@@ -15,12 +15,20 @@ export const StoryBeatRegistrySchema = z.object({
 
   const dupSlug = slugs.find((s, i) => slugs.indexOf(s) !== i);
   if (dupSlug) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate slug: "${dupSlug}"` });
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Duplicate slug: "${dupSlug}"`,
+      path: ['beats', slugs.lastIndexOf(dupSlug), 'slug'],
+    });
   }
 
   const dupOrder = orders.find((o, i) => orders.indexOf(o) !== i);
   if (dupOrder !== undefined) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate order: ${dupOrder}` });
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Duplicate order: ${dupOrder}`,
+      path: ['beats', orders.lastIndexOf(dupOrder), 'order'],
+    });
   }
 });
 

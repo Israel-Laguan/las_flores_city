@@ -50,8 +50,12 @@ describe('Story Beat Pipeline Integration', () => {
       connectionTimeoutMillis: 5000,
     });
 
-    // Clean up any existing story_beats data from previous test runs
-    await pool.query('DELETE FROM story_beats WHERE slug LIKE $1', ['%']);
+    // Clean up only the canonical slugs this suite manages (collision-avoidance:
+    // these are the fixed slugs from content/story_beats.yaml under test).
+    await pool.query(
+      'DELETE FROM story_beats WHERE slug = ANY($1::text[])',
+      [EXPECTED_BEATS.map(b => b.slug)],
+    );
 
     // Run the SQL migration to create the table
     const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
@@ -60,8 +64,12 @@ describe('Story Beat Pipeline Integration', () => {
   });
 
   afterAll(async () => {
-    // Clean up test data
-    await pool.query('DELETE FROM story_beats WHERE slug LIKE $1', ['%']);
+    // Clean up only the canonical slugs this suite manages (collision-avoidance:
+    // these are the fixed slugs from content/story_beats.yaml under test).
+    await pool.query(
+      'DELETE FROM story_beats WHERE slug = ANY($1::text[])',
+      [EXPECTED_BEATS.map(b => b.slug)],
+    );
     await pool.end();
   });
 

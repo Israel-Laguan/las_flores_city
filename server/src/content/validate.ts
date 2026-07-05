@@ -121,7 +121,13 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
       const requiredBeat = data?.metadata?.required_story_beat;
       if (requiredBeat !== undefined && requiredBeat !== null) {
         const validSlugs = await loadValidBeatSlugs();
-        if (validSlugs !== null) {
+        if (validSlugs === null) {
+          errors.push({
+            file: filePath,
+            message: 'Beat registry unavailable: required_story_beat cross-reference checks skipped',
+            severity: 'warning',
+          });
+        } else {
           const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
           for (const slug of slugsToCheck) {
             if (!validSlugs.has(slug)) {
