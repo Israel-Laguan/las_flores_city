@@ -18,6 +18,21 @@ export function resolvePromptFile(prompt_rel: string): string {
   return path.join(getPromptRoot(), `${prompt_rel}.prompt.md`);
 }
 
+/**
+ * Returns all three prompt root directories:
+ * 1. The existing ui-concepts root (respecting PROMPT_ROOT env var)
+ * 2. docs/lore/figures — character portrait prompts
+ * 3. docs/lore/landmarks — location background prompts
+ */
+export function getPromptRoots(): string[] {
+  const cwd = process.cwd();
+  return [
+    getPromptRoot(),
+    path.resolve(cwd, 'docs/lore/figures'),
+    path.resolve(cwd, 'docs/lore/landmarks'),
+  ];
+}
+
 export const DEFAULT_DIMENSIONS: Record<string, { width: number; height: number }> = {
   tile: { width: 1024, height: 1024 },
   overlay: { width: 1024, height: 1024 },
@@ -75,15 +90,32 @@ export interface ParsedPromptFile {
   variants: PromptVariant[];
 }
 
+/**
+ * Pure helper: extracts the asset_type from prompt file markdown content.
+ *
+ * Looks for a line containing `**Type:** <value>` and returns the value.
+ * Returns `'unknown'` if the field is absent.
+ *
+ * This function is intentionally root-agnostic — it reads only from the
+ * content string, not from any filesystem path, so the result is the same
+ * regardless of which root directory the file originated from.
+ */
+export function extractAssetType(content: string): string {
+  const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
+  return typeMatch ? typeMatch[1].trim() : 'unknown';
+}
+
 export async function parsePromptFile(filePath: string): Promise<ParsedPromptFile | null> {
   try {
     const content = await fs.readFile(filePath, 'utf-8');
-    const relFromRoot = path.relative(getPromptRoot(), filePath);
+    // Determine which root this file belongs to by finding the first matching prefix
+    const roots = getPromptRoots();
+    const matchedRoot = roots.find(r => filePath.startsWith(r + path.sep) || filePath === r);
+    const relFromRoot = path.relative(matchedRoot ?? getPromptRoot(), filePath);
     const prompt_rel = relFromRoot.replace(/\.prompt\.md$/, '');
     const baseName = path.basename(filePath, '.prompt.md');
 
-    const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
-    const asset_type = typeMatch ? typeMatch[1].trim() : 'unknown';
+    const asset_type = extractAssetType(content);
 
     const dimMatch = content.match(/\*\*Dimensions:\*\* (\d+)\s*[x×]\s*(\d+)/i);
     let width = 1024;
@@ -102,7 +134,14 @@ export async function parsePromptFile(filePath: string): Promise<ParsedPromptFil
     width = resolved.width;
     height = resolved.height;
 
-    const category = path.dirname(relFromRoot).split(path.sep)[0] || 'uncategorized';
+    const category = (() => {
+      const dir = path.dirname(relFromRoot);
+      if (dir === '.' && matchedRoot) {
+        // File is at the root of the prompt directory — use the root basename
+        return path.basename(matchedRoot);
+      }
+      return dir.split(path.sep)[0] || 'uncategorized';
+    })();
 
     const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
     const variants: PromptVariant[] = [];
@@ -136,13 +175,21 @@ export async function parsePromptFile(filePath: string): Promise<ParsedPromptFil
 }
 
 export async function getPromptCatalog(): Promise<z.infer<typeof PromptCatalogResponseSchema>> {
-  const promptRoot = getPromptRoot();
-  try {
-    await fs.access(promptRoot);
-  } catch {
-    return { categories: [] };
-  }
+  return buildPromptCatalogFromRoots(getPromptRoots());
+}
 
+/**
+ * Testable catalog builder — accepts an explicit list of roots instead of
+ * reading from `getPromptRoots()`. Each root that does not exist on the
+ * filesystem is silently skipped. Results from all roots are merged into
+ * a single catalog.
+ *
+ * This function is the core implementation; `getPromptCatalog()` delegates
+ * to it with the standard roots from `getPromptRoots()`.
+ */
+export async function buildPromptCatalogFromRoots(
+  roots: string[],
+): Promise<z.infer<typeof PromptCatalogResponseSchema>> {
   const entries = new Map<string, ParsedPromptFile[]>();
 
   async function walk(dir: string) {
@@ -162,18 +209,30 @@ export async function getPromptCatalog(): Promise<z.infer<typeof PromptCatalogRe
     }
   }
 
-  await walk(promptRoot);
+  for (const root of roots) {
+    try {
+      await fs.access(root);
+    } catch {
+      // Root does not exist — skip without error
+      continue;
+    }
+    await walk(root);
+  }
 
   const categoryLabels: Record<string, string> = {
     'isometric-map': '🗺️ Isometric Map',
     'vn-interface': '🎭 VN Interface',
     'phone-terminal': '📱 Phone & Terminal',
+    figures: '🎭 Character Portraits',
+    landmarks: '🏙️ Location Backgrounds',
   };
 
   const categoryIcons: Record<string, string> = {
     'isometric-map': '🗺️',
     'vn-interface': '🎭',
     'phone-terminal': '📱',
+    figures: '🎭',
+    landmarks: '🏙️',
   };
 
   const categories = Array.from(entries.entries()).map(([id, catEntries]) => ({
