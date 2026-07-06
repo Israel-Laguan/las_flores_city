@@ -2,17 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-interface OverlayItem {
+interface VaultItem {
   id: string;
-  name: string;
-  targetTreeId: string;
-  targetTreeName: string | null;
-  isNsfw: boolean;
-  priority: number;
+  title: string;
+  description: string;
+  itemType: string;
   mysteryId: string | null;
   mysteryTitle: string | null;
-  gateNodeId: string | null;
-  createdAt: string;
+  mediaUrl: string;
+  updatedAt: string;
 }
 
 const styles = {
@@ -27,14 +25,13 @@ const styles = {
   th: { textAlign: 'left' as const, padding: '0.5rem', borderBottom: '1px solid #00ff00', color: '#00ff00' },
   td: { padding: '0.5rem', borderBottom: '1px solid #333' },
   badge: { padding: '0.25rem 0.5rem', borderRadius: '3px', fontSize: '0.8rem', fontWeight: 'bold' },
-  nsfwBadge: { backgroundColor: '#ff4444', color: '#fff' },
   infoBadge: { backgroundColor: '#0066ff', color: '#fff' },
   errorBox: { background: '#ff000033', border: '1px solid #ff4444', padding: '1rem', borderRadius: '5px', marginTop: '1rem' },
   muted: { color: '#888' },
 };
 
-export default function OverlaysPage() {
-  const [items, setItems] = useState<OverlayItem[]>([]);
+export default function VaultPage() {
+  const [items, setItems] = useState<VaultItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -43,16 +40,16 @@ export default function OverlaysPage() {
 
   const fetchPage = useCallback(async (p: number) => {
     try {
-      const res = await fetch(`/api/admin/overlays?page=${p}&pageSize=${pageSize}`);
+      const res = await fetch(`/api/admin/vault?page=${p}&pageSize=${pageSize}`);
       const data = await res.json();
       if (data.success) {
         setItems(data.data.items);
         setTotal(data.data.total);
       } else {
-        setError(data.error || 'Failed to fetch overlays');
+        setError(data.error || 'Failed to fetch vault items');
       }
     } catch {
-      setError('Failed to fetch overlays');
+      setError('Failed to fetch vault items');
     } finally {
       setLoading(false);
     }
@@ -62,45 +59,33 @@ export default function OverlaysPage() {
 
   return (
     <main style={styles.main}>
-      <h1 style={styles.heading}>🔄 Dialogue Overlays</h1>
+      <h1 style={styles.heading}>🔐 Vault Items</h1>
       {error && <div style={styles.errorBox}>{error}</div>}
       <div style={styles.section}>
-        <h2 style={styles.sectionHeading}>Overlay List</h2>
+        <h2 style={styles.sectionHeading}>Vault Item List</h2>
         {loading && items.length === 0 ? (
           <p style={styles.muted}>Loading...</p>
         ) : (
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Name</th>
-                <th style={styles.th}>Target Dialogue</th>
-                <th style={styles.th}>Priority</th>
-                <th style={styles.th}>NSFW</th>
+                <th style={styles.th}>Title</th>
+                <th style={styles.th}>Type</th>
                 <th style={styles.th}>Mystery</th>
-                <th style={styles.th}>Created</th>
+                <th style={styles.th}>Updated</th>
               </tr>
             </thead>
             <tbody>
               {items.map(item => (
-                <tr key={item.id} onClick={() => { window.location.href = `/overlays/${item.id}`; }} style={{ cursor: 'pointer' }}>
-                  <td style={styles.td}>{item.name}</td>
-                  <td style={styles.td}>{item.targetTreeName || item.targetTreeId?.slice(0, 8)}</td>
-                  <td style={styles.td}>{item.priority}</td>
-                  <td style={styles.td}>
-                    {item.isNsfw
-                      ? <span style={{ ...styles.badge, ...styles.nsfwBadge }}>NSFW</span>
-                      : '—'}
-                  </td>
-                  <td style={styles.td}>
-                    {item.mysteryTitle
-                      ? <span style={{ ...styles.badge, ...styles.infoBadge }}>{item.mysteryTitle}</span>
-                      : '—'}
-                  </td>
-                  <td style={styles.td}>{new Date(item.createdAt).toLocaleDateString()}</td>
+                <tr key={item.id} onClick={() => { window.location.href = `/vault/${item.id}`; }} style={{ cursor: 'pointer' }}>
+                  <td style={styles.td}>{item.title}</td>
+                  <td style={styles.td}><span style={{ ...styles.badge, ...styles.infoBadge }}>{item.itemType}</span></td>
+                  <td style={styles.td}>{item.mysteryTitle || '—'}</td>
+                  <td style={styles.td}>{new Date(item.updatedAt).toLocaleDateString()}</td>
                 </tr>
               ))}
               {!loading && items.length === 0 && (
-                <tr><td colSpan={6} style={{ ...styles.td, ...styles.muted, textAlign: 'center' }}>No overlays found.</td></tr>
+                <tr><td colSpan={4} style={{ ...styles.td, ...styles.muted, textAlign: 'center' }}>No vault items found.</td></tr>
               )}
             </tbody>
           </table>

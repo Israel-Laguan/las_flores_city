@@ -26,7 +26,7 @@ export default async function RootLayout({
 }
 
 function AdminNav({ user }: { user: any }) {
-  const styles = {
+  const styles: Record<string, React.CSSProperties> = {
     nav: {
       backgroundColor: '#0d0d1a',
       padding: '1rem 2rem',
@@ -68,6 +68,9 @@ function AdminNav({ user }: { user: any }) {
       backgroundColor: '#0d0d1a',
       padding: '0.5rem 2rem',
       borderBottom: '1px solid #333',
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '0.25rem 1.5rem',
     },
   }
 
@@ -75,8 +78,15 @@ function AdminNav({ user }: { user: any }) {
     color: '#00ff00',
     fontFamily: 'monospace',
     textDecoration: 'none',
-    marginRight: '1rem',
     fontSize: '0.9rem',
+  }
+
+  const navSectionStyle: React.CSSProperties = {
+    color: '#555',
+    fontFamily: 'monospace',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    alignSelf: 'center',
   }
 
   return (
@@ -96,9 +106,22 @@ function AdminNav({ user }: { user: any }) {
         </div>
       </nav>
       <div style={styles.navLinksRow}>
+        <span style={navSectionStyle}>Content:</span>
         <Link href="/dialogues" style={navLinkStyle}>💬 Dialogues</Link>
         <Link href="/scenes" style={navLinkStyle}>🗺️ Scenes</Link>
         <Link href="/characters" style={navLinkStyle}>👤 Characters</Link>
+        <Link href="/story-beats" style={navLinkStyle}>📖 Story Beats</Link>
+        <Link href="/mysteries" style={navLinkStyle}>🔍 Mysteries</Link>
+        <Link href="/overlays" style={navLinkStyle}>🔄 Overlays</Link>
+        <Link href="/locations" style={navLinkStyle}>📍 Locations</Link>
+        <Link href="/vault" style={navLinkStyle}>🔐 Vault</Link>
+        <Link href="/gigs" style={navLinkStyle}>💼 Gigs</Link>
+        <Link href="/shop" style={navLinkStyle}>🛒 Shop</Link>
+        <Link href="/maps" style={navLinkStyle}>🗺️ Maps</Link>
+        <span style={{ ...navSectionStyle, marginLeft: '0.75rem' }}>System:</span>
+        <Link href="/migration" style={navLinkStyle}>🚀 Migration</Link>
+        <Link href="/validation" style={navLinkStyle}>✅ Validation</Link>
+        <Link href="/analytics" style={navLinkStyle}>📊 Analytics</Link>
       </div>
     </>
   )

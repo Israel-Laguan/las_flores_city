@@ -1,5 +1,7 @@
 import express from 'express';
 import path from 'node:path';
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
@@ -138,6 +140,91 @@ adminContentRouter.get('/status', async (_req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to fetch migration status',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * POST /admin/content/diff
+ *
+ * Reads each YAML file in the content directory, computes a SHA-256
+ * checksum, and compares it against migration_log.file_checksum to
+ * return per-file status: unchanged, new, or modified.
+ */
+adminContentRouter.post('/diff', async (_req, res) => {
+  try {
+    const isSubdir = process.cwd().endsWith('server');
+    const contentDir = isSubdir
+      ? path.resolve(process.cwd(), '..', 'content')
+      : path.resolve(process.cwd(), 'content');
+
+    // Collect all YAML files recursively
+    const files: string[] = [];
+    async function walkDir(dir: string) {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          await walkDir(fullPath);
+        } else if (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml')) {
+          files.push(fullPath);
+        }
+      }
+    }
+    await walkDir(contentDir);
+
+    // Load existing checksums from migration_log
+    const checksumResult = await queryOLTP(
+      `SELECT file_path, file_checksum FROM migration_log`
+    );
+    const knownChecksums = new Map<string, string>();
+    for (const row of checksumResult.rows) {
+      knownChecksums.set(row.file_path, row.file_checksum);
+    }
+
+    // Compare each file
+    const results = await Promise.all(
+      files.map(async (filePath) => {
+        const content = await fs.readFile(filePath, 'utf8');
+        const checksum = crypto.createHash('sha256').update(content).digest('hex');
+        const relativePath = path.relative(contentDir, filePath);
+        const known = knownChecksums.get(relativePath);
+
+        let status: 'unchanged' | 'new' | 'modified';
+        if (!known) {
+          status = 'new';
+        } else if (known === checksum) {
+          status = 'unchanged';
+        } else {
+          status = 'modified';
+        }
+
+        return {
+          filePath: relativePath,
+          checksum,
+          status,
+          knownChecksum: known || null,
+        };
+      })
+    );
+
+    res.json({
+      success: true,
+      data: {
+        totalFiles: results.length,
+        newFiles: results.filter(r => r.status === 'new').length,
+        modifiedFiles: results.filter(r => r.status === 'modified').length,
+        unchangedFiles: results.filter(r => r.status === 'unchanged').length,
+        files: results,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[admin-content] Diff error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to compute diff',
       timestamp: new Date().toISOString(),
     });
   }

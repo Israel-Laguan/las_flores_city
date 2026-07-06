@@ -2,16 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-interface OverlayItem {
+interface MysteryItem {
   id: string;
-  name: string;
-  targetTreeId: string;
-  targetTreeName: string | null;
-  isNsfw: boolean;
-  priority: number;
-  mysteryId: string | null;
-  mysteryTitle: string | null;
-  gateNodeId: string | null;
+  title: string;
+  description: string;
+  status: string;
+  expiresAt: string | null;
   createdAt: string;
 }
 
@@ -21,20 +17,29 @@ const styles = {
   section: { border: '1px solid #00ff00', padding: '1.5rem', borderRadius: '5px', marginBottom: '2rem' },
   sectionHeading: { color: '#00ff00', marginBottom: '1rem', borderBottom: '1px solid #00ff00', paddingBottom: '0.5rem' },
   button: { padding: '0.75rem 1.5rem', borderRadius: '5px', fontWeight: 'bold', fontFamily: 'monospace', cursor: 'pointer', border: 'none', fontSize: '1rem' },
+  primaryButton: { backgroundColor: '#00ff00', color: '#000' },
   secondaryButton: { backgroundColor: 'transparent', color: '#00ff00', border: '1px solid #00ff00' },
   disabledButton: { backgroundColor: '#555', color: '#999', cursor: 'not-allowed' },
   table: { width: '100%', borderCollapse: 'collapse' as const, marginTop: '1rem' },
   th: { textAlign: 'left' as const, padding: '0.5rem', borderBottom: '1px solid #00ff00', color: '#00ff00' },
   td: { padding: '0.5rem', borderBottom: '1px solid #333' },
   badge: { padding: '0.25rem 0.5rem', borderRadius: '3px', fontSize: '0.8rem', fontWeight: 'bold' },
-  nsfwBadge: { backgroundColor: '#ff4444', color: '#fff' },
-  infoBadge: { backgroundColor: '#0066ff', color: '#fff' },
+  activeBadge: { backgroundColor: '#00ff00', color: '#000' },
+  resolvingBadge: { backgroundColor: '#ffaa00', color: '#000' },
+  archivedBadge: { backgroundColor: '#888', color: '#fff' },
   errorBox: { background: '#ff000033', border: '1px solid #ff4444', padding: '1rem', borderRadius: '5px', marginTop: '1rem' },
   muted: { color: '#888' },
 };
 
-export default function OverlaysPage() {
-  const [items, setItems] = useState<OverlayItem[]>([]);
+function StatusBadge({ status }: { status: string }) {
+  const badgeStyle = status === 'ACTIVE' ? styles.activeBadge
+    : status === 'RESOLVING' ? styles.resolvingBadge
+    : styles.archivedBadge;
+  return <span style={{ ...styles.badge, ...badgeStyle }}>{status}</span>;
+}
+
+export default function MysteriesPage() {
+  const [items, setItems] = useState<MysteryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -43,16 +48,16 @@ export default function OverlaysPage() {
 
   const fetchPage = useCallback(async (p: number) => {
     try {
-      const res = await fetch(`/api/admin/overlays?page=${p}&pageSize=${pageSize}`);
+      const res = await fetch(`/api/admin/mysteries?page=${p}&pageSize=${pageSize}`);
       const data = await res.json();
       if (data.success) {
         setItems(data.data.items);
         setTotal(data.data.total);
       } else {
-        setError(data.error || 'Failed to fetch overlays');
+        setError(data.error || 'Failed to fetch mysteries');
       }
     } catch {
-      setError('Failed to fetch overlays');
+      setError('Failed to fetch mysteries');
     } finally {
       setLoading(false);
     }
@@ -62,45 +67,33 @@ export default function OverlaysPage() {
 
   return (
     <main style={styles.main}>
-      <h1 style={styles.heading}>🔄 Dialogue Overlays</h1>
+      <h1 style={styles.heading}>🔍 Mysteries</h1>
       {error && <div style={styles.errorBox}>{error}</div>}
       <div style={styles.section}>
-        <h2 style={styles.sectionHeading}>Overlay List</h2>
+        <h2 style={styles.sectionHeading}>Mystery List</h2>
         {loading && items.length === 0 ? (
           <p style={styles.muted}>Loading...</p>
         ) : (
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Name</th>
-                <th style={styles.th}>Target Dialogue</th>
-                <th style={styles.th}>Priority</th>
-                <th style={styles.th}>NSFW</th>
-                <th style={styles.th}>Mystery</th>
+                <th style={styles.th}>Title</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Expires</th>
                 <th style={styles.th}>Created</th>
               </tr>
             </thead>
             <tbody>
               {items.map(item => (
-                <tr key={item.id} onClick={() => { window.location.href = `/overlays/${item.id}`; }} style={{ cursor: 'pointer' }}>
-                  <td style={styles.td}>{item.name}</td>
-                  <td style={styles.td}>{item.targetTreeName || item.targetTreeId?.slice(0, 8)}</td>
-                  <td style={styles.td}>{item.priority}</td>
-                  <td style={styles.td}>
-                    {item.isNsfw
-                      ? <span style={{ ...styles.badge, ...styles.nsfwBadge }}>NSFW</span>
-                      : '—'}
-                  </td>
-                  <td style={styles.td}>
-                    {item.mysteryTitle
-                      ? <span style={{ ...styles.badge, ...styles.infoBadge }}>{item.mysteryTitle}</span>
-                      : '—'}
-                  </td>
+                <tr key={item.id} onClick={() => { window.location.href = `/mysteries/${item.id}`; }} style={{ cursor: 'pointer' }}>
+                  <td style={styles.td}>{item.title}</td>
+                  <td style={styles.td}><StatusBadge status={item.status} /></td>
+                  <td style={styles.td}>{item.expiresAt ? new Date(item.expiresAt).toLocaleDateString() : '—'}</td>
                   <td style={styles.td}>{new Date(item.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
               {!loading && items.length === 0 && (
-                <tr><td colSpan={6} style={{ ...styles.td, ...styles.muted, textAlign: 'center' }}>No overlays found.</td></tr>
+                <tr><td colSpan={4} style={{ ...styles.td, ...styles.muted, textAlign: 'center' }}>No mysteries found.</td></tr>
               )}
             </tbody>
           </table>

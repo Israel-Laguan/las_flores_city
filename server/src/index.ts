@@ -26,6 +26,8 @@ import { assetsImportRouter } from './routes/assets-import.js';
 import { adminContentRouter } from './routes/admin-content.js';
 import { adminStoryBeatsRouter } from './routes/admin-story-beats.js';
 import { adminListViewsRouter } from './routes/admin-list-views.js';
+import { adminStatsRouter } from './routes/admin-stats.js';
+import { adminAnalyticsRouter } from './routes/admin-analytics.js';
 import { testConnections, closeConnections } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
@@ -126,6 +128,8 @@ app.use('/assets', assetsRouter);
 app.use('/assets', assetsImportRouter);
 app.use('/admin/content', adminContentRouter);
 app.use('/admin/story-beats', adminStoryBeatsRouter);
+app.use('/admin/stats', adminStatsRouter);
+app.use('/admin/analytics', adminAnalyticsRouter);
 app.use('/admin', adminListViewsRouter);
 
 // Error handling middleware
