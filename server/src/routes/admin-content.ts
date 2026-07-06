@@ -151,6 +151,13 @@ adminContentRouter.post('/quality', async (_req, res) => {
       result.inconsistency.length +
       result.completeness.length;
 
+    const allIssues = [
+      ...result.density,
+      ...result.length,
+      ...result.inconsistency,
+      ...result.completeness,
+    ];
+
     res.json({
       success: true,
       data: {
@@ -161,18 +168,8 @@ adminContentRouter.post('/quality', async (_req, res) => {
           inconsistency: result.inconsistency.length,
           completeness: result.completeness.length,
           total: totalIssues,
-          errors: [
-            ...result.density,
-            ...result.length,
-            ...result.inconsistency,
-            ...result.completeness,
-          ].filter(i => i.severity === 'error').length,
-          warnings: [
-            ...result.density,
-            ...result.length,
-            ...result.inconsistency,
-            ...result.completeness,
-          ].filter(i => i.severity === 'warning').length,
+          errors: allIssues.filter(i => i.severity === 'error').length,
+          warnings: allIssues.filter(i => i.severity === 'warning').length,
         },
       },
       timestamp: new Date().toISOString(),

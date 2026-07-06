@@ -57,11 +57,12 @@ function getAllIds(data: any): string[] {
 }
 
 function extractItems(data: any): any[] {
+  if (!data) return [];
   if (Array.isArray(data)) return data;
   for (const key of ['characters', 'missions', 'stories', 'vault_items', 'gigs', 'shop_items', 'overlays', 'beats']) {
     if (Array.isArray(data[key])) return data[key];
   }
-  return data ? [data] : [];
+  return [data];
 }
 
 function getContentTypeFromPath(filePath: string): ContentType | null {
@@ -83,9 +84,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 async function loadAllContent(contentDir: string): Promise<LoadedContent[]> {
-  const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
-  const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
-  const allFiles = [...yamlFiles, ...ymlFiles];
+  const allFiles = await glob(`${contentDir}/**/*.{yaml,yml}`, { absolute: true });
   const items: LoadedContent[] = [];
 
   for (const file of allFiles) {
@@ -161,6 +160,15 @@ function checkDensity(items: LoadedContent[], report: QualityReport) {
     const npcs = scene.data?.metadata?.npcs;
     if (Array.isArray(npcs)) {
       for (const npcId of npcs) characterIdsUsed.add(npcId);
+    }
+  }
+  for (const [, dialogue] of dialogues) {
+    const nodes = dialogue.data?.nodes;
+    if (nodes) {
+      for (const node of Object.values(nodes as Record<string, any>)) {
+        const speakerId = (node as any)?.speaker_id;
+        if (speakerId) characterIdsUsed.add(speakerId);
+      }
     }
   }
   for (const [charId, char] of characters) {

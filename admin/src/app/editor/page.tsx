@@ -263,7 +263,13 @@ export default function EditorPage() {
             ) : (
               Object.entries(grouped).map(([type, files]) => (
                 <div key={type} style={styles.typeGroup}>
-                  <div style={styles.typeHeader} onClick={() => toggleType(type)}>
+                  <div
+                    style={styles.typeHeader}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => toggleType(type)}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleType(type); } }}
+                  >
                     <span>{TYPE_ICONS[type] || '📄'} {type} ({files.length})</span>
                     <span style={{ color: '#555' }}>{expandedTypes.has(type) ? '▲' : '▼'}</span>
                   </div>
@@ -271,9 +277,18 @@ export default function EditorPage() {
                     <div
                       key={file.path}
                       style={selectedPath === file.path ? styles.fileItemActive : styles.fileItem}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => {
                         if (dirty && !confirm('Unsaved changes will be lost. Continue?')) return;
                         setSelectedPath(file.path);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (dirty && !confirm('Unsaved changes will be lost. Continue?')) return;
+                          setSelectedPath(file.path);
+                        }
                       }}
                     >
                       {file.name}

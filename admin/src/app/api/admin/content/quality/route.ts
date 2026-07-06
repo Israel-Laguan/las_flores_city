@@ -10,8 +10,9 @@ export async function POST() {
   } catch (error) {
     console.error('Admin content quality error:', error);
     const status = (error as { status?: number })?.status ?? 500;
+    const message = (error as { message?: string })?.message || 'Internal server error';
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: message },
       { status }
     );
   }

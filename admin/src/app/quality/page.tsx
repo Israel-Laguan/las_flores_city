@@ -149,6 +149,15 @@ export default function QualityPage() {
         <div
           style={styles.collapsibleHeader}
           onClick={() => toggleSection(label.toLowerCase())}
+          role="button"
+          tabIndex={0}
+          aria-expanded={isExpanded}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleSection(label.toLowerCase());
+            }
+          }}
         >
           <span style={{ color, fontWeight: 'bold' }}>
             {label} ({filtered.length})
@@ -163,7 +172,7 @@ export default function QualityPage() {
             <div style={styles.issueBody}>
               <div style={styles.issueMessage}>
                 {issue.message}
-                <span style={{ ...styles.errorBadge, marginLeft: '0.5rem' }}>{issue.severity}</span>
+                <span style={{ ...(issue.severity === 'error' ? styles.errorBadge : styles.warningBadge), marginLeft: '0.5rem' }}>{issue.severity}</span>
               </div>
               {issue.file && (
                 <div style={styles.issueFile}>

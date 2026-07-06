@@ -75,6 +75,10 @@ function generateUUID(): string {
   });
 }
 
+function yamlEscape(s: string): string {
+  return JSON.stringify(s);
+}
+
 // --- Step sub-components ----------------------------------------------------
 
 function StepMission({ title, setTitle, description, setDescription, status, setStatus, loreRef, setLoreRef, styles }: any) {
@@ -245,7 +249,8 @@ export default function MissionWizardPage() {
     for (const { url, setter } of endpoints) {
       fetch(url).then(r => r.json()).then(d => {
         if (d.success) setter(d.data.items || []);
-      }).catch(() => {});
+        else setError(d.error || `Failed to load ${url}`);
+      }).catch(() => setError(`Failed to load ${url}`));
     }
   }, []);
 
@@ -256,6 +261,7 @@ export default function MissionWizardPage() {
   };
 
   const missionId = generateUUID();
+  const shortId = missionId.slice(0, 8);
   const slug = slugify(title);
 
   const handleGenerate = async () => {
@@ -265,17 +271,37 @@ export default function MissionWizardPage() {
     const links: string[] = [];
 
     try {
-      // 1. Create mission YAML
-      const missionYaml = `missions:\n  - id: "${missionId}"\n    title: "${title}"\n    description: "${description.replace(/"/g, '\\"')}"\n    status: "${status}"\n${loreRef ? `    lore_ref: "${loreRef}"\n` : ''}`;
-      const missionPath = `missions/mission_${slug}.yaml`;
+      const missionYaml = `missions:\n  - id: ${yamlEscape(missionId)}\n    title: ${yamlEscape(title)}\n    description: ${yamlEscape(description)}\n    status: ${yamlEscape(status)}${loreRef ? `\n    lore_ref: ${yamlEscape(loreRef)}` : ''}`;
+      const missionPath = `missions/mission_${slug}_${shortId}.yaml`;
       await writeYaml(missionPath, missionYaml);
       links.push(missionPath);
 
-      // 2. Create story YAML (if enabled)
+      const vaultItemIds: string[] = [];
+      for (const item of vaultItems) {
+        const itemId = generateUUID();
+        vaultItemIds.push(itemId);
+        const itemSlug = slugify(item.title);
+        const itemYaml = `vault_items:\n  - id: ${yamlEscape(itemId)}\n    title: ${yamlEscape(item.title)}\n    description: ${yamlEscape(item.description)}\n    item_type: ${yamlEscape(item.item_type)}\n    mission_id: ${yamlEscape(missionId)}`;
+        const itemPath = `vault/vault_${itemSlug}_${itemId.slice(0, 8)}.yaml`;
+        await writeYaml(itemPath, itemYaml);
+        links.push(itemPath);
+      }
+
+      const overlayIds: string[] = [];
+      for (const overlay of overlays) {
+        const overlayId = generateUUID();
+        overlayIds.push(overlayId);
+        const overlaySlug = slugify(overlay.name);
+        const overlayYaml = `overlays:\n  - id: ${yamlEscape(overlayId)}\n    name: ${yamlEscape(overlay.name)}\n    target_tree_id: ${yamlEscape(overlay.target_tree_id)}\n    mission_id: ${yamlEscape(missionId)}`;
+        const overlayPath = `overlays/overlay_${overlaySlug}_${overlayId.slice(0, 8)}.yaml`;
+        await writeYaml(overlayPath, overlayYaml);
+        links.push(overlayPath);
+      }
+
       if (createStory) {
         const storyId = generateUUID();
-        const storyYaml = `stories:\n  - id: "${storyId}"\n    title: "${storyTitle || title}"\n    description: "${(storyDescription || description).replace(/"/g, '\\"')}"\n    mission_id: "${missionId}"\n    characters: [${[...selectedCharacters].map(id => `"${id}"`).join(', ')}]\n    scenes: [${[...selectedScenes].map(id => `"${id}"`).join(', ')}]\n    dialogues: [${[...selectedDialogues].map(id => `"${id}"`).join(', ')}]\n    overlays: [${overlays.map(() => `"${generateUUID()}"`).join(', ')}]\n    vault_items: [${vaultItems.map(() => `"${generateUUID()}"`).join(', ')}]\n${storyLoreRef ? `    lore_ref: "${storyLoreRef}"\n` : ''}`;
-        const storyPath = `stories/story_${slug}.yaml`;
+        const storyYaml = `stories:\n  - id: ${yamlEscape(storyId)}\n    title: ${yamlEscape(storyTitle || title)}\n    description: ${yamlEscape(storyDescription || description)}\n    mission_id: ${yamlEscape(missionId)}\n    characters: [${[...selectedCharacters].map(id => yamlEscape(id)).join(', ')}]\n    scenes: [${[...selectedScenes].map(id => yamlEscape(id)).join(', ')}]\n    dialogues: [${[...selectedDialogues].map(id => yamlEscape(id)).join(', ')}]\n    overlays: [${overlayIds.map(id => yamlEscape(id)).join(', ')}]\n    vault_items: [${vaultItemIds.map(id => yamlEscape(id)).join(', ')}]${storyLoreRef ? `\n    lore_ref: ${yamlEscape(storyLoreRef)}` : ''}`;
+        const storyPath = `stories/story_${slug}_${storyId.slice(0, 8)}.yaml`;
         await writeYaml(storyPath, storyYaml);
         links.push(storyPath);
       }
@@ -328,7 +354,7 @@ export default function MissionWizardPage() {
           <Link href="/missions" style={{ ...styles.button, ...styles.primaryButton, textDecoration: 'none' }}>View Missions</Link>
           <Link href="/stories" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>View Stories</Link>
           <Link href="/editor" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>Edit in YAML Editor</Link>
-          <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={() => { setGenerated(false); setStep(1); setTitle(''); setDescription(''); setLoreRef(''); setSelectedCharacters(new Set()); setSelectedScenes(new Set()); setSelectedDialogues(new Set()); setVaultItems([]); setOverlays([]); setCreateStory(true); }}>Create Another</button>
+          <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={() => { setGenerated(false); setStep(1); setTitle(''); setDescription(''); setStatus('ACTIVE'); setLoreRef(''); setSelectedCharacters(new Set()); setSelectedScenes(new Set()); setSelectedDialogues(new Set()); setVaultItems([]); setOverlays([]); setCreateStory(true); setStoryTitle(''); setStoryDescription(''); setStoryLoreRef(''); setGeneratedLinks([]); }}>Create Another</button>
         </div>
       </main>
     );

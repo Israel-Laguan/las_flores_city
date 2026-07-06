@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable max-lines */
 
 import { useState, useEffect, useCallback } from 'react';
 
@@ -120,6 +121,7 @@ export default function ContentLinkerPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const config = TAB_CONFIG[tab];
 
@@ -135,11 +137,15 @@ export default function ContentLinkerPage() {
       setPendingOps([]);
       setError(null);
       setSuccess(false);
+      setLoadError(null);
       try {
         const res = await fetch(config.listEndpoint);
         const data = await res.json();
         if (active && data.success) setEntities(data.data.items || []);
-      } catch { /* ignore */ } finally {
+        else if (active && !data.success) setLoadError(data.error || 'Failed to load items');
+      } catch {
+        if (active) setLoadError('Failed to load items');
+      } finally {
         if (active) setLoading(false);
       }
     })();
@@ -155,22 +161,23 @@ export default function ContentLinkerPage() {
     let active = true;
     (async () => {
       try {
-        // Load entity detail
         const detailRes = await fetch(`${config.listEndpoint}/${selectedId}`);
         const detailData = await detailRes.json();
         if (active && detailData.success) setSelectedData(detailData.data);
 
-        // Load available items for each section
+        const availResults = await Promise.all(
+          config.sections.map(section =>
+            fetch(section.availableEndpoint).then(r => r.json()).then(d => [section.field, d] as const)
+          )
+        );
         const availMap: Record<string, ListItem[]> = {};
-        for (const section of config.sections) {
-          const availRes = await fetch(section.availableEndpoint);
-          const availData = await availRes.json();
-          if (active && availData.success) {
-            availMap[section.field] = availData.data.items || [];
-          }
+        for (const [field, d] of availResults) {
+          if (d.success) availMap[field] = d.data.items || [];
         }
         if (active) setAvailable(availMap);
-      } catch { /* ignore */ }
+      } catch {
+        if (active) setError('Failed to load data');
+      }
     })();
     return () => { active = false; };
   }, [selectedId, config]);
@@ -182,6 +189,50 @@ export default function ContentLinkerPage() {
   const removePendingOp = useCallback((index: number) => {
     setPendingOps(prev => prev.filter((_, i) => i !== index));
   }, []);
+
+  const getLinkOpParams = useCallback((
+    action: 'add' | 'remove' | 'set',
+    section: SectionConfig,
+    itemId: string
+  ): LinkOp => {
+    if (tab === 'scenes') {
+      return {
+        contentPath: `scenes/${selectedId}.yaml`,
+        fieldPath: section.field,
+        action,
+        value: itemId,
+      };
+    } else if (tab === 'stories') {
+      return {
+        contentPath: `stories/${selectedId}.yaml`,
+        fieldPath: section.field,
+        action,
+        value: itemId,
+      };
+    } else if (tab === 'missions') {
+      if (section.field === 'mission_id') {
+        return {
+          contentPath: `overlays/${itemId}.yaml`,
+          fieldPath: 'mission_id',
+          action: 'set',
+          value: action === 'remove' ? '' : selectedId,
+        };
+      } else if (section.field === 'vault_items') {
+        return {
+          contentPath: `vault/${itemId}.yaml`,
+          fieldPath: 'mission_id',
+          action: 'set',
+          value: action === 'remove' ? '' : selectedId,
+        };
+      }
+    }
+    return {
+      contentPath: `${section.yamlDir}/${itemId}.yaml`,
+      fieldPath: section.field,
+      action,
+      value: itemId,
+    };
+  }, [tab, selectedId]);
 
   const handleSave = async () => {
     if (pendingOps.length === 0) return;
@@ -242,17 +293,7 @@ export default function ContentLinkerPage() {
           {currentValue ? (
             <button
               style={{ ...styles.button, ...styles.removeButton }}
-              onClick={() => {
-                // Find the YAML file path for this entity
-                // For overlays/vault, we need to know which file contains this entity
-                // Use the selectedData's file path if available, or derive it
-                addPendingOp({
-                  contentPath: `${section.yamlDir}/${currentValue}.yaml`,
-                  fieldPath: section.field,
-                  action: 'set',
-                  value: '',
-                });
-              }}
+              onClick={() => addPendingOp(getLinkOpParams('remove', section, currentValue))}
             >
               Remove
             </button>
@@ -261,12 +302,7 @@ export default function ContentLinkerPage() {
               style={styles.select}
               onChange={e => {
                 if (e.target.value) {
-                  addPendingOp({
-                    contentPath: `${section.yamlDir}/${selectedId}.yaml`,
-                    fieldPath: section.field,
-                    action: 'set',
-                    value: e.target.value,
-                  });
+                  addPendingOp(getLinkOpParams('set', section, e.target.value));
                   e.target.value = '';
                 }
               }}
@@ -302,12 +338,7 @@ export default function ContentLinkerPage() {
             <span style={styles.itemName}>{item[section.nameField] || item.id}</span>
             <button
               style={{ ...styles.button, ...styles.removeButton }}
-              onClick={() => addPendingOp({
-                contentPath: `${section.yamlDir}/${item.id}.yaml`,
-                fieldPath: section.field,
-                action: 'remove',
-                value: item.id,
-              })}
+              onClick={() => addPendingOp(getLinkOpParams('remove', section, item.id))}
             >
               Remove
             </button>
@@ -319,12 +350,7 @@ export default function ContentLinkerPage() {
               style={styles.select}
               onChange={e => {
                 if (e.target.value) {
-                  addPendingOp({
-                    contentPath: `${section.yamlDir}/${e.target.value}.yaml`,
-                    fieldPath: section.field,
-                    action: 'add',
-                    value: e.target.value,
-                  });
+                  addPendingOp(getLinkOpParams('add', section, e.target.value));
                   e.target.value = '';
                 }
               }}
@@ -357,6 +383,8 @@ export default function ContentLinkerPage() {
       </div>
 
       {loading && <p style={styles.muted}>Loading...</p>}
+
+      {loadError && <div style={styles.errorBox}>{loadError}</div>}
 
       {!loading && entities.length > 0 && (
         <>
