@@ -14,6 +14,7 @@ const sections: Section[] = [
       { href: '/dialogues', label: '💬 Dialogues' },
       { href: '/scenes', label: '🏙️ Scenes' },
       { href: '/story-beats', label: '📖 Story Beats' },
+      { href: '/story-arc', label: '📊 Story Arc' },
       { href: '/mysteries', label: '🔍 Mysteries' },
       { href: '/overlays', label: '🔄 Overlays' },
       { href: '/locations', label: '📍 Locations' },

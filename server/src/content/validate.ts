@@ -17,8 +17,8 @@ import {
 } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { getCache } from '../database/redis.js';
+import { validateStoryFlow } from './storyFlow.js';
 
-// Content validation results
 export interface ValidationResult {
   valid: boolean;
   errors: ValidationError[];
@@ -33,9 +33,6 @@ export interface ValidationError {
   severity: 'error' | 'warning';
 }
 
-// Load the set of valid beat slugs from the DB (primary) or Redis (fallback).
-// Returns null when neither source has any data, which means the registry
-// has not been migrated yet — callers should emit a warning, not an error.
 async function loadValidBeatSlugs(): Promise<Set<string> | null> {
   try {
     const result = await queryOLTP<{ slug: string }>('SELECT slug FROM story_beats');
@@ -83,7 +80,6 @@ async function validateSceneBeatSlugs(filePath: string, data: any, errors: Valid
   }
 }
 
-// Validate a single YAML file
 export async function validateYAMLFile(filePath: string): Promise<ValidationResult> {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
@@ -129,8 +125,6 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
   }
 }
 
-// Validate content by type (exported for direct use by validateContentString
-// and the future UGC submission endpoint)
 export function validateContentByType(type: ContentType, data: any): ValidationResult {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
@@ -142,7 +136,6 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         break;
       case 'dialogue':
         YAMLDialogueSchema.parse(data);
-        // Check for cycles in dialogue nodes
         const cycleErrors = detectCycles(data.nodes || {});
         errors.push(...cycleErrors);
         break;
@@ -177,7 +170,6 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         StoryBeatRegistrySchema.parse(data);
         break;
       case 'map_tile':
-        // Map tile files are validated by MapTileFileSchema during migration
         break;
     }
   } catch (e: any) {
@@ -190,7 +182,6 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
   return { valid: errors.length === 0, errors, warnings };
 }
 
-// Detect cycles in dialogue nodes
 function detectCycles(nodes: Record<string, any>): ValidationError[] {
   const errors: ValidationError[] = [];
   const visited = new Set<string>();
@@ -203,7 +194,6 @@ function detectCycles(nodes: Record<string, any>): ValidationError[] {
     const node = nodes[nodeId];
     if (!node) return false;
 
-    // Check choices
     if (node.choices) {
       for (const choice of node.choices) {
         if (!visited.has(choice.next_node_id)) {
@@ -224,7 +214,6 @@ function detectCycles(nodes: Record<string, any>): ValidationError[] {
     return false;
   }
 
-  // Check all nodes
   for (const nodeId of Object.keys(nodes)) {
     if (!visited.has(nodeId)) {
       dfs(nodeId);
@@ -234,7 +223,6 @@ function detectCycles(nodes: Record<string, any>): ValidationError[] {
   return errors;
 }
 
-// Get content type from file path
 function getContentTypeFromPath(filePath: string): ContentType | null {
   const normalizedPath = filePath.toLowerCase();
   
@@ -256,38 +244,35 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
-   if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
-     return 'mystery';
-   }
-   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
-     return 'shop_item';
-   }
-   if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
-     return 'location';
-   }
+  if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
+    return 'mystery';
+  }
+  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
+    return 'shop_item';
+  }
+  if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
+    return 'location';
+  }
 
-   if (normalizedPath.endsWith('story_beats.yaml')) {
-     return 'story_beat';
-   }
+  if (normalizedPath.endsWith('story_beats.yaml')) {
+    return 'story_beat';
+  }
 
-   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
-     return 'gig';
-   }
-    
-   return null;
+  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
+    return 'gig';
+  }
+  
+  return null;
 }
 
-// Validate all content files
 export async function validateAllContent(contentDir: string): Promise<ValidationResult> {
   const allErrors: ValidationError[] = [];
   const allWarnings: string[] = [];
 
-  // Find all YAML files
   const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
   const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
   const allFiles = [...yamlFiles, ...ymlFiles];
 
-  // Validate each file
   for (const file of allFiles) {
     const result = await validateYAMLFile(file);
     allErrors.push(...result.errors);
@@ -301,19 +286,15 @@ export async function validateAllContent(contentDir: string): Promise<Validation
   };
 }
 
-// XSS protection - sanitize user-facing text
 export function sanitizeText(text: string): string {
-  // Preserve whitelisted tags before stripping
   const preservedTags: string[] = [];
   let sanitized = text.replace(/<(important|\/important)>/g, (match) => {
     preservedTags.push(match);
     return `__PRESERVED_TAG_${preservedTags.length - 1}__`;
   });
 
-  // Remove all other HTML tags
   sanitized = sanitized.replace(/<[^>]*>/g, '');
 
-  // Escape special characters
   sanitized = sanitized
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -321,19 +302,16 @@ export function sanitizeText(text: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
 
-  // Restore whitelisted tags
   sanitized = sanitized.replace(/__PRESERVED_TAG_(\d+)__/g, (_, index) => preservedTags[parseInt(index)]);
 
   return sanitized;
 }
 
-// Check for XSS in dialogue content
 export function checkForXSS(content: any): ValidationError[] {
   const errors: ValidationError[] = [];
   
   function checkValue(value: any, path: string) {
     if (typeof value === 'string') {
-      // Check for script tags
       if (/<script/i.test(value)) {
         errors.push({
           message: `Potential XSS in ${path}: script tag detected`,
@@ -341,7 +319,6 @@ export function checkForXSS(content: any): ValidationError[] {
         });
       }
       
-      // Check for event handlers
       if (/on\w+\s*=/i.test(value)) {
         errors.push({
           message: `Potential XSS in ${path}: event handler detected`,
@@ -349,7 +326,6 @@ export function checkForXSS(content: any): ValidationError[] {
         });
       }
       
-      // Check for javascript: protocol
       if (/javascript:/i.test(value)) {
         errors.push({
           message: `Potential XSS in ${path}: javascript: protocol detected`,
@@ -367,9 +343,6 @@ export function checkForXSS(content: any): ValidationError[] {
   return errors;
 }
 
-// Validate a YAML content string directly (no file I/O).
-// Used by the UGC submission endpoint to validate request-body YAML.
-// contentType is required because there's no file path to infer it from.
 export async function validateContentString(
   yamlString: string,
   contentType: ContentType
@@ -377,7 +350,6 @@ export async function validateContentString(
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
 
-  // Parse YAML
   let data: any;
   try {
     data = yaml.load(yamlString);
@@ -389,14 +361,10 @@ export async function validateContentString(
     return { valid: false, errors, warnings };
   }
 
-  // Schema + cycle validation
   const typeResult = validateContentByType(contentType, data);
   errors.push(...typeResult.errors);
   warnings.push(...typeResult.warnings);
 
-  // XSS check (the file-based validateYAMLFile omits this; the full
-  // validateContent CLI pipeline runs it separately. For request-body
-  // validation we run both passes here.)
   const xssErrors = checkForXSS(data);
   errors.push(...xssErrors);
 
@@ -407,14 +375,11 @@ export async function validateContentString(
   };
 }
 
-// Main validation function
 export async function validateContent(contentDir: string): Promise<ValidationResult> {
   console.log(`🔍 Validating content in: ${contentDir}`);
   
-  // Run all validations
   const schemaResult = await validateAllContent(contentDir);
   
-  // Additional XSS checks
   const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
   const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
   const allFiles = [...yamlFiles, ...ymlFiles];
@@ -432,7 +397,10 @@ export async function validateContent(contentDir: string): Promise<ValidationRes
       // Skip files that failed schema validation
     }
   }
-  
+
+  const storyFlow = await validateStoryFlow();
+  allWarnings.push(...storyFlow.issues);
+
   return {
     valid: allErrors.filter(e => e.severity === 'error').length === 0,
     errors: allErrors,
@@ -440,7 +408,6 @@ export async function validateContent(contentDir: string): Promise<ValidationRes
   };
 }
 
-// CLI entry point
 const isCli = process.argv[1]
   ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'validate.ts'))
   : false;
