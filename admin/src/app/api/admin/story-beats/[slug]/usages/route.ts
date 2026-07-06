@@ -7,7 +7,7 @@ export async function GET(
   _req: NextRequest,
   context: { params: { slug: string } }
 ) {
-  const { slug } = context.params;
+  const slug = encodeURIComponent(context.params.slug);
   try {
     const data = await adminFetch(`/admin/story-beats/${slug}/usages`, {
       method: 'GET',

@@ -290,7 +290,13 @@ describe('Property 4: Delete removes from list', () => {
         jest.clearAllMocks();
         const app = makeApp();
 
-        // DELETE: rowCount = 1 means it was found and deleted
+        // 1. Check if slug exists: rowCount = 1 (found)
+        mockQuery.mockResolvedValueOnce({ rows: [{ slug }], rowCount: 1 } as any);
+        // 2. Dialogue reference check: no references
+        mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+        // 3. Scene reference check: no references
+        mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+        // 4. DELETE: rowCount = 1 means it was found and deleted
         mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 1 } as any);
         // refreshSlugCache
         mockDeleteCache.mockResolvedValueOnce(true as any);
@@ -418,7 +424,13 @@ describe('Property 5: Cache reflects DB state after any mutation', () => {
 
           const slugsAfterDelete = remainingBeats.map(b => b.slug);
 
-          // DELETE rowCount=1
+          // 1. Check if slug exists: rowCount = 1 (found)
+          mockQuery.mockResolvedValueOnce({ rows: [{ slug }], rowCount: 1 } as any);
+          // 2. Dialogue reference check: no references
+          mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+          // 3. Scene reference check: no references
+          mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 0 } as any);
+          // 4. DELETE rowCount=1
           mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 1 } as any);
           // refreshSlugCache SELECT
           mockDeleteCache.mockResolvedValueOnce(true as any);

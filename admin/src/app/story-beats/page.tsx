@@ -120,7 +120,11 @@ export default function StoryBeatsPage() {
 
   const handleEditStart = (beat: StoryBeat) => {
     setEditingSlug(beat.slug);
-    setEditState({ label: beat.label, order: String(beat.order), description: beat.description });
+    setEditState({
+      label: beat.label ?? '',
+      order: beat.order != null ? String(beat.order) : '',
+      description: beat.description ?? '',
+    });
   };
 
   const handleEditSave = async (slug: string) => {

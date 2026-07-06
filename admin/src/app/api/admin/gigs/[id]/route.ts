@@ -13,6 +13,7 @@ export async function GET(
     return NextResponse.json(data);
   } catch (error) {
     const status = (error as { status?: number })?.status ?? 500;
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status });
+    const message = status === 404 ? 'Gig not found' : 'Internal server error';
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface CharacterItem {
   id: string;
@@ -55,11 +55,18 @@ export default function CharactersPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(50);
   const [total, setTotal] = useState(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchPage = useCallback(async (p: number) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/characters?page=${p}&pageSize=${pageSize}`);
+      const res = await fetch(`/api/admin/characters?page=${p}&pageSize=${pageSize}`, {
+        signal: controller.signal,
+      });
       const data = await res.json();
       if (data.success) {
         setItems(data.data.items);
@@ -67,7 +74,8 @@ export default function CharactersPage() {
       } else {
         setError(data.error || 'Failed to fetch characters');
       }
-    } catch {
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setError('Failed to fetch characters');
     } finally {
       setLoading(false);
@@ -76,6 +84,7 @@ export default function CharactersPage() {
 
   useEffect(() => {
     fetchPage(page);
+    return () => { abortRef.current?.abort(); };
   }, [page, fetchPage]);
 
   return (
@@ -108,6 +117,14 @@ export default function CharactersPage() {
                   key={item.id}
                   onClick={() => { window.location.href = `/characters/${item.id}`; }}
                   style={{ cursor: 'pointer' }}
+                  tabIndex={0}
+                  role="link"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      window.location.href = `/characters/${item.id}`;
+                    }
+                  }}
                 >
                   <td style={styles.td}>{item.name}</td>
                   <td style={styles.td}>{item.title}</td>

@@ -17,7 +17,6 @@ const styles = {
   section: { border: '1px solid #00ff00', padding: '1.5rem', borderRadius: '5px', marginBottom: '2rem' },
   sectionHeading: { color: '#00ff00', marginBottom: '1rem', borderBottom: '1px solid #00ff00', paddingBottom: '0.5rem' },
   button: { padding: '0.75rem 1.5rem', borderRadius: '5px', fontWeight: 'bold', fontFamily: 'monospace', cursor: 'pointer', border: 'none', fontSize: '1rem' },
-  primaryButton: { backgroundColor: '#00ff00', color: '#000' },
   secondaryButton: { backgroundColor: 'transparent', color: '#00ff00', border: '1px solid #00ff00' },
   disabledButton: { backgroundColor: '#555', color: '#999', cursor: 'not-allowed' },
   table: { width: '100%', borderCollapse: 'collapse' as const, marginTop: '1rem' },

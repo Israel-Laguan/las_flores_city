@@ -89,15 +89,15 @@ export default function AnalyticsPage() {
               <div style={styles.statLabel}>Total Players</div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statValue}>{data.dialogueRates.length}</div>
+              <div style={styles.statValue}>{(data.dialogueRates ?? []).length}</div>
               <div style={styles.statLabel}>Dialogues Tracked</div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statValue}>{data.storyBeatReach.length}</div>
+              <div style={styles.statValue}>{(data.storyBeatReach ?? []).length}</div>
               <div style={styles.statLabel}>Story Beats Set</div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statValue}>{data.mysteryStatus.reduce((s, m) => s + m.count, 0)}</div>
+              <div style={styles.statValue}>{(data.mysteryStatus ?? []).reduce((s, m) => s + m.count, 0)}</div>
               <div style={styles.statLabel}>Total Mysteries</div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function AnalyticsPage() {
             {/* Dialogue Completion Rates */}
             <div style={styles.section}>
               <h2 style={styles.sectionHeading}>Dialogue Completion Rates</h2>
-              {data.dialogueRates.length === 0 ? (
+              {(data.dialogueRates ?? []).length === 0 ? (
                 <p style={styles.muted}>No dialogue events recorded yet.</p>
               ) : (
                 <table style={styles.table}>
@@ -140,7 +140,7 @@ export default function AnalyticsPage() {
             {/* Story Beat Reach */}
             <div style={styles.section}>
               <h2 style={styles.sectionHeading}>Story Beat Reach</h2>
-              {data.storyBeatReach.length === 0 ? (
+              {(data.storyBeatReach ?? []).length === 0 ? (
                 <p style={styles.muted}>No story beat events recorded yet.</p>
               ) : (
                 <table style={styles.table}>
@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
             {/* Mystery Status Distribution */}
             <div style={styles.section}>
               <h2 style={styles.sectionHeading}>Mystery Status Distribution</h2>
-              {data.mysteryStatus.length === 0 ? (
+              {(data.mysteryStatus ?? []).length === 0 ? (
                 <p style={styles.muted}>No mysteries found.</p>
               ) : (
                 <table style={styles.table}>
@@ -204,7 +204,7 @@ export default function AnalyticsPage() {
             {/* Time-Block Spend per Content Type */}
             <div style={styles.section}>
               <h2 style={styles.sectionHeading}>Time-Block Spend by Content</h2>
-              {data.timeBlockSpend.length === 0 ? (
+              {(data.timeBlockSpend ?? []).length === 0 ? (
                 <p style={styles.muted}>No time-block events recorded yet.</p>
               ) : (
                 <table style={styles.table}>

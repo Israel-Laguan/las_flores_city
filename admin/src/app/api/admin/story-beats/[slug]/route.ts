@@ -7,7 +7,7 @@ export async function PUT(
   req: NextRequest,
   context: { params: { slug: string } }
 ) {
-  const { slug } = context.params;
+  const slug = encodeURIComponent(context.params.slug);
   try {
     const body = await req.json();
     const data = await adminFetch(`/admin/story-beats/${slug}`, {
@@ -29,7 +29,7 @@ export async function DELETE(
   _req: NextRequest,
   context: { params: { slug: string } }
 ) {
-  const { slug } = context.params;
+  const slug = encodeURIComponent(context.params.slug);
   try {
     const data = await adminFetch(`/admin/story-beats/${slug}`, {
       method: 'DELETE',

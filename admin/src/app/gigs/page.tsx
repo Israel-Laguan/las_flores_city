@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface GigItem {
   id: string;
@@ -37,25 +37,37 @@ export default function GigsPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(50);
   const [total, setTotal] = useState(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchPage = useCallback(async (p: number) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
-      const res = await fetch(`/api/admin/gigs?page=${p}&pageSize=${pageSize}`);
+      const res = await fetch(`/api/admin/gigs?page=${p}&pageSize=${pageSize}`, {
+        signal: controller.signal,
+      });
       const data = await res.json();
       if (data.success) {
         setItems(data.data.items);
         setTotal(data.data.total);
+        setError(null);
       } else {
         setError(data.error || 'Failed to fetch gigs');
       }
-    } catch {
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setError('Failed to fetch gigs');
     } finally {
       setLoading(false);
     }
   }, [pageSize]);
 
-  useEffect(() => { fetchPage(page); }, [page, fetchPage]);
+  useEffect(() => {
+    fetchPage(page);
+    return () => { abortRef.current?.abort(); };
+  }, [page, fetchPage]);
 
   return (
     <main style={styles.main}>
@@ -79,7 +91,19 @@ export default function GigsPage() {
             </thead>
             <tbody>
               {items.map(item => (
-                <tr key={item.id} onClick={() => { window.location.href = `/gigs/${item.id}`; }} style={{ cursor: 'pointer' }}>
+                <tr
+                  key={item.id}
+                  onClick={() => { window.location.href = `/gigs/${item.id}`; }}
+                  style={{ cursor: 'pointer' }}
+                  tabIndex={0}
+                  role="link"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      window.location.href = `/gigs/${item.id}`;
+                    }
+                  }}
+                >
                   <td style={styles.td}>{item.title}</td>
                   <td style={styles.td}>{item.timeBlockCost}</td>
                   <td style={styles.td}>{item.creditPayout}</td>

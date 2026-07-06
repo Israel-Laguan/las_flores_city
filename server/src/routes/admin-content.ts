@@ -183,8 +183,11 @@ adminContentRouter.post('/diff', async (_req, res) => {
       knownChecksums.set(row.file_path, row.file_checksum);
     }
 
+    // Build set of relative paths currently on disk
+    const currentPaths = new Set(files.map(f => path.relative(contentDir, f)));
+
     // Compare each file
-    const results = await Promise.all(
+    const fileResults = await Promise.all(
       files.map(async (filePath) => {
         const content = await fs.readFile(filePath, 'utf8');
         const checksum = crypto.createHash('sha256').update(content).digest('hex');
@@ -209,6 +212,21 @@ adminContentRouter.post('/diff', async (_req, res) => {
       })
     );
 
+    // Detect deleted files (in migration_log but not on disk)
+    const deletedResults: Array<{ filePath: string; checksum: null; status: 'deleted'; knownChecksum: string }> = [];
+    for (const [filePath, checksum] of knownChecksums) {
+      if (!currentPaths.has(filePath)) {
+        deletedResults.push({
+          filePath,
+          checksum: null,
+          status: 'deleted',
+          knownChecksum: checksum,
+        });
+      }
+    }
+
+    const results = [...fileResults, ...deletedResults];
+
     res.json({
       success: true,
       data: {
@@ -216,6 +234,7 @@ adminContentRouter.post('/diff', async (_req, res) => {
         newFiles: results.filter(r => r.status === 'new').length,
         modifiedFiles: results.filter(r => r.status === 'modified').length,
         unchangedFiles: results.filter(r => r.status === 'unchanged').length,
+        deletedFiles: results.filter(r => r.status === 'deleted').length,
         files: results,
       },
       timestamp: new Date().toISOString(),

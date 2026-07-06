@@ -181,18 +181,46 @@ adminStoryBeatsRouter.delete('/:slug', async (req, res) => {
   const { slug } = req.params;
 
   try {
-    const result = await queryOLTP(
-      `DELETE FROM story_beats WHERE slug = $1`,
+    // Check if the story beat exists first
+    const existsResult = await queryOLTP(
+      `SELECT slug FROM story_beats WHERE slug = $1`,
       [slug]
     );
 
-    if (result.rowCount === 0) {
+    if (existsResult.rowCount === 0) {
       return res.status(404).json({
         success: false,
         error: `Story beat not found: "${slug}"`,
         timestamp: new Date().toISOString(),
       });
     }
+
+    // Check for active references in dialogues and scenes before deletion
+    const dialogueCheck = await queryOLTP(
+      `SELECT dt.id FROM dialogue_trees dt
+       CROSS JOIN LATERAL jsonb_each(dt.nodes) AS node_entry
+       WHERE dt.nodes IS NOT NULL
+         AND node_entry.value -> 'effects' ->> 'story_beat' = $1
+       LIMIT 1`,
+      [slug]
+    );
+    const sceneCheck = await queryOLTP(
+      `SELECT id FROM scenes WHERE metadata ->> 'required_story_beat' = $1 LIMIT 1`,
+      [slug]
+    );
+
+    if ((dialogueCheck.rowCount ?? 0) > 0 || (sceneCheck.rowCount ?? 0) > 0) {
+      return res.status(409).json({
+        success: false,
+        error: `Cannot delete story beat "${slug}" because it is currently in use.`,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const result = await queryOLTP(
+      `DELETE FROM story_beats WHERE slug = $1`,
+      [slug]
+    );
 
     await refreshSlugCache();
 
@@ -233,24 +261,26 @@ adminStoryBeatsRouter.get('/:slug/usages', async (req, res) => {
       });
     }
 
-    // Dialogue nodes that set this beat via effects.story_beat
-    const dialogueResult = await queryOLTP(
-      `SELECT dt.id AS dialogue_id,
-              dt.name AS dialogue_name,
-              node_entry.key AS node_id
-       FROM dialogue_trees dt,
-            jsonb_each(dt.nodes) AS node_entry
-       WHERE node_entry.value -> 'effects' ->> 'story_beat' = $1`,
-      [slug]
-    );
-
-    // Scenes that require this beat via metadata.required_story_beat
-    const sceneResult = await queryOLTP(
-      `SELECT id AS scene_id, name AS scene_name
-       FROM scenes
-       WHERE metadata ->> 'required_story_beat' = $1`,
-      [slug]
-    );
+    // Dialogue and scene queries are independent — run in parallel
+    const [dialogueResult, sceneResult] = await Promise.all([
+      // Dialogue nodes that set this beat via effects.story_beat
+      queryOLTP(
+        `SELECT dt.id AS dialogue_id,
+                dt.name AS dialogue_name,
+                node_entry.key AS node_id
+         FROM dialogue_trees dt,
+              jsonb_each(dt.nodes) AS node_entry
+         WHERE node_entry.value -> 'effects' ->> 'story_beat' = $1`,
+        [slug]
+      ),
+      // Scenes that require this beat via metadata.required_story_beat
+      queryOLTP(
+        `SELECT id AS scene_id, name AS scene_name
+         FROM scenes
+         WHERE metadata ->> 'required_story_beat' = $1`,
+        [slug]
+      ),
+    ]);
 
     const dialogueUsages = dialogueResult.rows.map((row: any) => ({
       dialogueId: row.dialogue_id,
