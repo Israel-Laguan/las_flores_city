@@ -41,7 +41,7 @@ export const YAMLOverlaySchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   target_tree_id: z.string().uuid(),
-  mystery_id: z.string().uuid().optional(),
+  mission_id: z.string().uuid().optional(),
   modifications: z.array(z.object({
     node_id: z.string(),
     action: z.enum(['replace', 'add_choice', 'remove_choice', 'modify_text']),
@@ -57,7 +57,7 @@ export const YAMLOverlaySchema = z.object({
 
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
 
-export const YAMLMysterySchema = z.object({
+export const YAMLMissionSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(1).max(255),
   description: z.string().min(1),
@@ -68,13 +68,13 @@ export const YAMLMysterySchema = z.object({
   lore_ref: z.string().max(255).optional(),
 });
 
-export type YAMLMystery = z.infer<typeof YAMLMysterySchema>;
+export type YAMLMission = z.infer<typeof YAMLMissionSchema>;
 
-export const YAMLMysteryFileSchema = z.object({
-  mysteries: z.array(YAMLMysterySchema),
+export const YAMLMissionFileSchema = z.object({
+  missions: z.array(YAMLMissionSchema),
 });
 
-export type YAMLMysteryFile = z.infer<typeof YAMLMysteryFileSchema>;
+export type YAMLMissionFile = z.infer<typeof YAMLMissionFileSchema>;
 
 export const YAMLSceneSchema = z.object({
   id: z.string().uuid(),

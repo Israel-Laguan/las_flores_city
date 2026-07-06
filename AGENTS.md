@@ -189,6 +189,29 @@ Find and clean development artifacts:
 
 Categories: `temp`, `task`, `debug`, `build`, `ide`
 
+#### `scripts/podman-workflow.sh`
+Comprehensive workflow script for Podman-based development:
+
+```bash
+# Initial setup (build images, start services, apply migrations)
+./scripts/podman-workflow.sh setup
+
+# Run all tests (lint, build, server tests, e2e)
+./scripts/podman-workflow.sh test
+
+# Individual commands
+./scripts/podman-workflow.sh lint
+./scripts/podman-workflow.sh build
+./scripts/podman-workflow.sh server-test
+./scripts/podman-workflow.sh e2e
+
+# Check status of all services
+./scripts/podman-workflow.sh status
+
+# Clean up all containers and volumes
+./scripts/podman-workflow.sh clean
+```
+
 ### Podman gotchas
 
 - **Rootless networking**: If `podman run` errors with `exec: "pasta": executable file not found in $PATH`, install `slirp4netns` and set `~/.config/containers/containers.conf`:
@@ -201,3 +224,12 @@ Categories: `temp`, `task`, `debug`, `build`, `ide`
   ```
 - **DNS resolution**: Without `aardvark-dns`, container hostnames do not resolve. Use the container IPs from `podman network inspect las-flores-net` in the server's `DATABASE_URL`/`REDIS_URL`/`MINIO_ENDPOINT`.
 - **Container IPs change after recreate**: If you recreate containers, refresh the IPs by re-running `podman network inspect las-flores-net`.
+
+### Migration Idempotency
+
+All SQL migrations now use `DROP TRIGGER IF EXISTS` before `CREATE TRIGGER` to ensure idempotent execution. This fixes the migration drift test failures. When adding new triggers, follow this pattern:
+
+```sql
+DROP TRIGGER IF EXISTS trigger_name ON table_name;
+CREATE TRIGGER trigger_name ...;
+```

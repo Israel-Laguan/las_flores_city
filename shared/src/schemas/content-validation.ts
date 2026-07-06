@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile', 'story_beat']);
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

@@ -21,7 +21,7 @@ export {
   matchFiguresToCharacters,
   matchDistrictsToScenes,
   matchLandmarksToScenes,
-  matchStoriesToMysteries,
+  matchStoriesToMissions,
   figureStem,
   characterStem,
   normalizeName,
@@ -37,7 +37,7 @@ adminCoverageRouter.get('/', async (_req, res) => {
       figures: matchers.matchFiguresToCharacters(filesData.figurePaths, filesData.characterYamlPaths),
       districts: matchers.matchDistrictsToScenes(filesData.districtPaths, parsedData.sceneObjects),
       landmarks: matchers.matchLandmarksToScenes(filesData.landmarkPaths, parsedData.sceneObjects),
-      stories: matchers.matchStoriesToMysteries(filesData.storyPaths, parsedData.mysteryObjects),
+      stories: matchers.matchStoriesToMissions(filesData.storyPaths, parsedData.missionObjects),
     };
     await enrichWithDatabaseResults(matchingResults.figures, matchingResults.districts, matchingResults.landmarks);
     res.json(assembleResponse(matchingResults.figures, matchingResults.districts, matchingResults.landmarks, matchingResults.stories));

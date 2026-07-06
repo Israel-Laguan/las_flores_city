@@ -92,6 +92,7 @@ END;
 $$ language 'plpgsql';
 
 -- Create trigger to refresh leaderboard when mystery completes
+DROP TRIGGER IF EXISTS refresh_leaderboard_on_completion ON mystery_progress;
 CREATE TRIGGER refresh_leaderboard_on_completion
     AFTER INSERT OR UPDATE ON mystery_progress
     FOR EACH ROW
@@ -110,6 +111,7 @@ END;
 $$ language 'plpgsql';
 
 -- Apply session duration trigger
+DROP TRIGGER IF EXISTS update_session_duration_trigger ON player_sessions;
 CREATE TRIGGER update_session_duration_trigger
     BEFORE UPDATE ON player_sessions
     FOR EACH ROW

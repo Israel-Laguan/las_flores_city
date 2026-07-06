@@ -58,6 +58,88 @@ adminStoryBeatsRouter.get('/', async (_req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// GET /story-arc — full story arc with beat→dialogue→scene linkage
+// ---------------------------------------------------------------------------
+
+const SERVER_SIDE_BEATS = new Set(['act2_mystery_active', 'act3_finale_unlocked']);
+
+async function loadStoryArcData() {
+  const [beatsResult, dialogueResult, sceneResult] = await Promise.all([
+    queryOLTP(
+      `SELECT slug, label, "order", description FROM story_beats ORDER BY "order" ASC`
+    ),
+    queryOLTP(
+      `SELECT dt.id AS dialogue_id, dt.name AS dialogue_name, node_entry.key AS node_id,
+              node_entry.value -> 'effects' ->> 'story_beat' AS beat_slug
+       FROM dialogue_trees dt,
+            jsonb_each(COALESCE(dt.nodes, '{}'::jsonb)) AS node_entry
+       WHERE node_entry.value -> 'effects' ->> 'story_beat' IS NOT NULL`
+    ),
+    queryOLTP(
+      `SELECT id AS scene_id, name AS scene_name,
+              metadata ->> 'required_story_beat' AS beat_slug
+       FROM scenes
+       WHERE metadata ->> 'required_story_beat' IS NOT NULL`
+    ),
+  ]);
+
+  const beatToDialogues = new Map<string, Array<{ id: string; name: string; nodeId: string }>>();
+  for (const row of dialogueResult.rows) {
+    if (!beatToDialogues.has(row.beat_slug)) beatToDialogues.set(row.beat_slug, []);
+    beatToDialogues.get(row.beat_slug)!.push({
+      id: row.dialogue_id, name: row.dialogue_name, nodeId: row.node_id,
+    });
+  }
+
+  const beatToScenes = new Map<string, Array<{ id: string; name: string }>>();
+  for (const row of sceneResult.rows) {
+    if (!beatToScenes.has(row.beat_slug)) beatToScenes.set(row.beat_slug, []);
+    beatToScenes.get(row.beat_slug)!.push({ id: row.scene_id, name: row.scene_name });
+  }
+
+  const beats = beatsResult.rows.map((row: any) => {
+    const slug: string = row.slug;
+    const setByDialogues = beatToDialogues.get(slug) ?? [];
+    const requiredByScenes = beatToScenes.get(slug) ?? [];
+    const isServerSide = SERVER_SIDE_BEATS.has(slug);
+    return {
+      slug, label: row.label, order: row.order, description: row.description,
+      setByDialogues, requiredByScenes,
+      isReachable: isServerSide || setByDialogues.length > 0 || slug === 'prologue',
+      isServerSide,
+    };
+  });
+
+  const totalBeats = beats.length;
+  const reachableBeats = beats.filter(b => b.isReachable).length;
+  return {
+    beats,
+    coverage: {
+      totalBeats,
+      reachableBeats,
+      unreachableBeats: totalBeats - reachableBeats,
+      serverSideBeats: beats.filter(b => b.isServerSide).length,
+      dialoguesSettingBeat: beatToDialogues.size,
+      scenesRequiringBeat: beatToScenes.size,
+    },
+  };
+}
+
+adminStoryBeatsRouter.get('/story-arc', async (_req, res) => {
+  try {
+    const data = await loadStoryArcData();
+    res.json({ success: true, data, timestamp: new Date().toISOString() });
+  } catch (error: any) {
+    console.error('[admin-story-beats] GET /story-arc error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch story arc',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // POST / — create a new story beat
 // ---------------------------------------------------------------------------
 

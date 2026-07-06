@@ -5,7 +5,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_clue_usb_drive.png"
     media_path: "/clues/clue_usb_drive.png"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440002"
     title: "Internal Safety Report — Container Facility (2048)"
@@ -13,7 +13,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_safety_report.png"
     media_path: "/clues/clue_safety_report.jpg"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440003"
     title: "Email Chain: Zhang Liang Delays Containment Upgrade"
@@ -21,7 +21,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_email_chain.png"
     media_path: "/clues/clue_email_chain.png"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440004"
     title: "Li Wei Emergency Meeting Transcript (Aug 18, 2052)"
@@ -29,7 +29,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_meeting_transcript.png"
     media_path: "/clues/clue_transcript.pdf"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440005"
     title: "Financial Records — Bribes to City Officials"
@@ -37,7 +37,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_bank_records.png"
     media_path: "/clues/clue_bank_records.csv"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440006"
     title: "Security Footage Metadata — Aug 15, 2052"
@@ -45,7 +45,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_security_logs.png"
     media_path: "/clues/clue_security_logs.txt"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440007"
     title: "Cecilia Perez Audit Report (Original, Unsuppressed)"
@@ -53,7 +53,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_audit_report.png"
     media_path: "/clues/clue_audit_report.pdf"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440008"
     title: "New Container Facility Blueprints (2055)"
@@ -61,7 +61,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_blueprints.png"
     media_path: "/clues/clue_blueprints.png"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440009"
     title: "Liu Fang's Personal Notebook Excerpts"
@@ -69,7 +69,7 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_notebook.png"
     media_path: "/clues/clue_notebook.jpg"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"
 
   - id: "b0000000-e29b-41d4-a716-446655440010"
     title: "Minera Estrella Cover-Up Memo"
@@ -77,4 +77,4 @@ vault_items:
     thumbnail_url: "https://cdn.lasflores2077.com/clues/thumb_memo.png"
     media_path: "/clues/clue_memo.pdf"
     item_type: "clue"
-    mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+    mission_id: "a0000000-e29b-41d4-a716-446655440001"

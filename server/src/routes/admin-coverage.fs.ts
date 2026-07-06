@@ -57,9 +57,9 @@ export async function processFileSystem(
   storyPaths: string[];
   characterYamlPaths: string[];
   sceneYamlPaths: string[];
-  mysteryYamlPaths: string[];
+  missionYamlPaths: string[];
 }> {
-  const [figurePaths, districtPaths, landmarkPaths, storyPaths, characterYamlPaths, sceneYamlPaths, mysteryYamlPaths] =
+  const [figurePaths, districtPaths, landmarkPaths, storyPaths, characterYamlPaths, sceneYamlPaths, missionYamlPaths] =
     await Promise.all([
       listMdFiles(path.join(loreDir, 'figures')).then(ps => ps.map(p => `figures/${p}`)),
       listMdFiles(path.join(loreDir, 'districts')).then(ps => ps.map(p => `districts/${p}`)),
@@ -67,7 +67,7 @@ export async function processFileSystem(
       listMdFiles(path.join(loreDir, 'stories')).then(ps => ps.map(p => `stories/${p}`)),
       listYamlFiles(contentDir, 'characters'),
       listYamlFiles(contentDir, 'scenes'),
-      listYamlFiles(contentDir, 'mysteries'),
+      listYamlFiles(contentDir, 'missions'),
     ]);
 
   return {
@@ -77,16 +77,16 @@ export async function processFileSystem(
     storyPaths,
     characterYamlPaths,
     sceneYamlPaths,
-    mysteryYamlPaths,
+    missionYamlPaths,
   };
 }
 
 export async function parseYamlFiles(
   contentDir: string,
-  filesData: { sceneYamlPaths: string[]; mysteryYamlPaths: string[] },
+  filesData: { sceneYamlPaths: string[]; missionYamlPaths: string[] },
 ): Promise<{
   sceneObjects: Array<{ district?: string; name?: string }>;
-  mysteryObjects: Array<{ title?: string }>;
+  missionObjects: Array<{ title?: string }>;
 }> {
   const sceneObjects: Array<{ district?: string; name?: string }> = (
     await Promise.all(
@@ -104,14 +104,14 @@ export async function parseYamlFiles(
     )
   ).filter((s): s is NonNullable<typeof s> => s !== null);
 
-  const mysteryObjects: Array<{ title?: string }> = (
+  const missionObjects: Array<{ title?: string }> = (
     await Promise.all(
-      filesData.mysteryYamlPaths.map(async relPath => {
+      filesData.missionYamlPaths.map(async relPath => {
         const parsed = await parseYamlFile(path.join(contentDir, relPath));
         if (!parsed || typeof parsed !== 'object') return [];
         const obj = parsed as Record<string, unknown>;
-        if (Array.isArray(obj['mysteries'])) {
-          return (obj['mysteries'] as unknown[])
+        if (Array.isArray(obj['missions'])) {
+          return (obj['missions'] as unknown[])
             .filter((m): m is Record<string, unknown> => typeof m === 'object' && m !== null)
             .map(m => ({ title: typeof m['title'] === 'string' ? m['title'] : undefined }));
         }
@@ -123,5 +123,5 @@ export async function parseYamlFiles(
     )
   ).flat();
 
-  return { sceneObjects, mysteryObjects };
+  return { sceneObjects, missionObjects };
 }

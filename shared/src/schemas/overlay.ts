@@ -29,7 +29,7 @@ export const OverlaySchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   target_tree_id: z.string().uuid(),
-  mystery_id: z.string().uuid().nullable().optional(),
+  mission_id: z.string().uuid().nullable().optional(),
   gate_node_id: z.string().uuid().optional().describe('Documentation: where the branch diverges'),
   priority: z.number().int().default(0),
   is_nsfw: z.boolean().default(false),

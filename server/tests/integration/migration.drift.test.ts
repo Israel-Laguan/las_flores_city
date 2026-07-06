@@ -6,9 +6,9 @@ import { closeRedis } from '../../src/database/redis.js';
 
 const { Pool } = pg;
 
-// Dedicated test UUID — matches content/mysteries/mystery_great_lithium_leak.yaml; cleaned up in afterAll.
+// Dedicated test UUID — matches content/missions/mission_great_lithium_leak.yaml; cleaned up in afterAll.
 const MYSTERY_ID = 'a0000000-e29b-41d4-a716-446655440001';
-const MYSTERY_FILE = 'mysteries/mystery_great_lithium_leak.yaml';
+const MISSION_FILE = 'missions/mission_great_lithium_leak.yaml';
 const VAULT_FILE = 'vault/great_lithium_leak_clues.yaml';
 const OVERLAY_FILE = 'overlays/overlay_great_lithium_leak.yaml';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
@@ -25,8 +25,22 @@ async function applyMigration(filename: string): Promise<void> {
   );
   try {
     await queryOLTP(sql);
-  } catch {
-    // Column may already exist
+  } catch (error: any) {
+    // For migration_log constraint updates, force apply even if it "fails"
+    if (filename === '046_stories.sql' && error.message?.includes('migration_log_content_type_check')) {
+      await queryOLTP(`
+        ALTER TABLE migration_log
+          DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
+        ALTER TABLE migration_log
+          ADD CONSTRAINT migration_log_content_type_check
+          CHECK (content_type IN (
+            'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
+            'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
+          ));
+      `);
+    } else {
+      throw error;
+    }
   }
 }
 
@@ -37,16 +51,17 @@ describe('Migration drift guard', () => {
         process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
       connectionTimeoutMillis: 5000,
     });
-    // Apply migrations needed for vault_items columns
+    // Apply migrations needed for vault_items columns and mission content type
     await applyMigration('017_mystery_state.sql');
     await applyMigration('018_vault_system.sql');
     await applyMigration('026_vault_signed_urls.sql');
+    await applyMigration('046_stories.sql');
   });
 
   afterAll(async () => {
     await pool.query(
       `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3)`,
-      [MYSTERY_FILE, VAULT_FILE, OVERLAY_FILE]
+      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE]
     );
     await pool.end();
     await closeRedis();
@@ -54,8 +69,8 @@ describe('Migration drift guard', () => {
 
   test('extractContentIds parses multi-entity YAML shapes', () => {
     expect(
-      extractContentIds('mystery', {
-        mysteries: [{ id: MYSTERY_ID }],
+      extractContentIds('mission', {
+        missions: [{ id: MYSTERY_ID }],
       })
     ).toEqual([MYSTERY_ID]);
 
@@ -70,14 +85,14 @@ describe('Migration drift guard', () => {
     const logBefore = await pool.query(
       `SELECT id FROM migration_log
        WHERE file_path = $1 OR file_path LIKE $2`,
-      [MYSTERY_FILE, `%${MYSTERY_FILE}`]
+      [MISSION_FILE, `%${MISSION_FILE}`]
     );
 
     if (logBefore.rows.length === 0) {
       await pool.query(
         `INSERT INTO migration_log (file_path, file_checksum, content_type, content_id)
-         VALUES ($1, $2, 'mystery', $3)`,
-        [MYSTERY_FILE, 'drift-test-bogus-checksum', MYSTERY_ID]
+         VALUES ($1, $2, 'mission', $3)`,
+        [MISSION_FILE, 'drift-test-bogus-checksum', MYSTERY_ID]
       );
     }
 
@@ -106,8 +121,8 @@ describe('Migration drift guard', () => {
 
     const drift = await pool.query(
       `SELECT ml.file_path FROM migration_log ml
-       LEFT JOIN mysteries m ON ml.content_id::uuid = m.id
-       WHERE ml.content_type = 'mystery' AND m.id IS NULL`
+        LEFT JOIN mysteries m ON ml.content_id::uuid = m.id
+        WHERE ml.content_type = 'mission' AND m.id IS NULL`
     );
     expect(drift.rows).toHaveLength(0);
   });

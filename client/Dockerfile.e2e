@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.61.0-jammy
+FROM node:20-jammy
 
 WORKDIR /app
 
@@ -7,6 +7,9 @@ COPY client/package*.json ./client/
 COPY shared/package*.json ./shared/
 
 RUN npm ci
+
+# Install Playwright browsers matching the version resolved by npm
+RUN npx playwright install --with-deps
 
 COPY client/ ./client/
 COPY shared/ ./shared/

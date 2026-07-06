@@ -33,6 +33,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_vault_items_updated_at ON vault_items;
 CREATE TRIGGER update_vault_items_updated_at
     BEFORE UPDATE ON vault_items
     FOR EACH ROW EXECUTE FUNCTION update_vault_items_updated_at();
