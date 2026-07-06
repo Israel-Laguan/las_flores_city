@@ -1,24 +1,29 @@
 "use client";
 
-import PlaceholderPage from '@/components/PlaceholderPage';
+import ContentListPage from '@/app/_components/ContentListPage';
+import { adminStyles } from '@/lib/adminStyles';
+
+const columns = [
+  { key: 'name', label: 'Name' },
+  { key: 'description', label: 'Description', render: (item: any) => item.description?.slice(0, 80) },
+  { key: 'nodeCount', label: 'Node Count' },
+  {
+    key: 'beatAssociation', label: 'Beat Association',
+    render: (item: any) => item.beatAssociation != null
+      ? <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.beatAssociation}</span>
+      : '—',
+  },
+  { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
+];
 
 export default function DialoguesPage() {
   return (
-    <PlaceholderPage
-      icon="💬"
-      title="Dialogues"
-      badge="📌 Milestone 6 — Content List Views"
-      badgeColor="#9900ff"
-      heading="Dialogue Tree Browser"
-      description="This page will provide a read-only browser for all dialogue trees, showing node counts, beat associations, character references, and YAML preview."
-      features={[
-        'Table of all dialogue trees with node count, character, and beat columns',
-        'Filter by character, beat, or dialogue type',
-        'Click-through to dialogue detail with node tree visualization',
-        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/dialogues</code> API endpoint</>,
-      ]}
-      footnote="Server-side API endpoint to be implemented as part of M6."
-      buttonLabel="🔍 Refresh (Coming in M6)"
+    <ContentListPage
+      title="💬 Dialogues"
+      heading="Dialogue Trees"
+      endpoint="/api/admin/dialogues"
+      detailPath="/dialogues"
+      columns={columns}
     />
   );
 }

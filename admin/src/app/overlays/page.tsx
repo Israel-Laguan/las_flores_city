@@ -1,24 +1,35 @@
 "use client";
 
-import PlaceholderPage from '@/components/PlaceholderPage';
+import ContentListPage from '@/app/_components/ContentListPage';
+import { adminStyles } from '@/lib/adminStyles';
+
+const columns = [
+  { key: 'name', label: 'Name' },
+  { key: 'targetTreeName', label: 'Target Dialogue', render: (item: any) => item.targetTreeName || item.targetTreeId?.slice(0, 8) },
+  { key: 'priority', label: 'Priority' },
+  {
+    key: 'isNsfw', label: 'NSFW',
+    render: (item: any) => item.isNsfw
+      ? <span style={{ ...adminStyles.badge, backgroundColor: '#ff4444', color: '#fff' }}>NSFW</span>
+      : '—',
+  },
+  {
+    key: 'mysteryTitle', label: 'Mystery',
+    render: (item: any) => item.mysteryTitle
+      ? <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.mysteryTitle}</span>
+      : '—',
+  },
+  { key: 'createdAt', label: 'Created', render: (item: any) => new Date(item.createdAt).toLocaleDateString() },
+];
 
 export default function OverlaysPage() {
   return (
-    <PlaceholderPage
-      icon="🔄"
-      title="Overlays"
-      badge="📌 Milestone 6 — Content List Views"
-      badgeColor="#9900ff"
-      heading="Dialogue Overlay Browser"
-      description="This page will provide a read-only browser for all dialogue overlays, showing overlay type, associated dialogue trees, node modifications, and YAML preview."
-      features={[
-        'Table of all overlays with type, dialogue reference, and node count columns',
-        'Filter by overlay type or associated dialogue',
-        'Click-through to overlay detail with modification diff view',
-        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/overlays</code> API endpoint</>,
-      ]}
-      footnote="Server-side API endpoint to be implemented as part of M6."
-      buttonLabel="🔍 Refresh (Coming in M6)"
+    <ContentListPage
+      title="🔄 Dialogue Overlays"
+      heading="Overlay List"
+      endpoint="/api/admin/overlays"
+      detailPath="/overlays"
+      columns={columns}
     />
   );
 }

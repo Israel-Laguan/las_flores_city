@@ -1,24 +1,29 @@
 "use client";
 
-import PlaceholderPage from '@/components/PlaceholderPage';
+import ContentListPage from '@/app/_components/ContentListPage';
+import { adminStyles } from '@/lib/adminStyles';
+
+const columns = [
+  { key: 'name', label: 'Name' },
+  { key: 'description', label: 'Description', render: (item: any) => item.description?.slice(0, 80) },
+  { key: 'district', label: 'District' },
+  {
+    key: 'requiredStoryBeat', label: 'Required Story Beat',
+    render: (item: any) => item.requiredStoryBeat != null
+      ? <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.requiredStoryBeat}</span>
+      : '—',
+  },
+  { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
+];
 
 export default function ScenesPage() {
   return (
-    <PlaceholderPage
-      icon="🏙️"
-      title="Scenes"
-      badge="📌 Milestone 6 — Content List Views"
-      badgeColor="#9900ff"
+    <ContentListPage
+      title="🏙️ Scenes"
       heading="Scene Browser"
-      description="This page will provide a read-only browser for all scenes, showing district, location, required story beats, and YAML preview."
-      features={[
-        'Table of all scenes with district, location, and required_story_beat columns',
-        'Filter by district, location, or story beat',
-        'Click-through to scene detail with YAML preview',
-        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/scenes</code> API endpoint</>,
-      ]}
-      footnote="Server-side API endpoint to be implemented as part of M6."
-      buttonLabel="🔍 Refresh (Coming in M6)"
+      endpoint="/api/admin/scenes"
+      detailPath="/scenes"
+      columns={columns}
     />
   );
 }

@@ -68,7 +68,45 @@ When the client later calls `GET /location/:id` or `POST /dialogue/start`, the s
 
 ---
 
-## Proposed Solution (not implemented yet)
+## What M5 Delivers
+
+Milestone 5 implemented a live admin CRUD interface for the story beat registry. Authors can now manage beats directly from the admin panel without editing YAML migrations.
+
+### Admin API Endpoints (`/admin/story-beats`)
+
+All endpoints are protected by `authAndAdminMiddleware` and return the standard `{ success, data, timestamp }` envelope.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/admin/story-beats` | List all beats ordered by `order` ASC |
+| `POST` | `/admin/story-beats` | Create a new beat (validates against `StoryBeatSchema`) |
+| `PUT` | `/admin/story-beats/:slug` | Update `label`, `order`, `description` for an existing beat |
+| `DELETE` | `/admin/story-beats/:slug` | Delete a beat by slug |
+| `GET` | `/admin/story-beats/:slug/usages` | Return cross-references: dialogue nodes and scenes that reference this beat |
+
+After any successful write, the `story_beats:slugs` Redis cache entry is invalidated and repopulated so the slug list stays consistent with the DB.
+
+### Beat List Page (`/story-beats`)
+
+The admin app at `/story-beats` provides a terminal-green table UI with:
+- All beats displayed in narrative order (ascending by `order`)
+- Inline add form for creating new beats
+- Per-row edit mode (label, order, description are editable in-place)
+- Per-row delete with confirmation prompt
+- Link to the Beat Detail View for each beat
+
+### Beat Detail View (`/story-beats/[slug]`)
+
+Each beat has a detail page showing cross-reference data:
+- **Dialogue usages** — every dialogue node whose `effects.story_beat` equals this slug, showing the dialogue name and node ID
+- **Scene usages** — every scene whose `metadata.required_story_beat` equals this slug, showing the scene name
+- Explicit empty-state messages when no references exist
+
+---
+
+## Player-Facing Story Beat Features (still pending)
+
+The following changes are **not yet implemented** and require future milestones:
 
 ### 1. DB: add `story_beat` to `player_states`
 ```sql
@@ -132,7 +170,19 @@ These are proposals based on the current content files. The actual beat names sh
 
 ---
 
-## Key Files to Touch
+## Key Files Already Touched (M5)
+
+| File | What M5 Did |
+|---|---|
+| `server/src/routes/admin-story-beats.ts` | New Express router with 5 CRUD + usages endpoints |
+| `server/src/index.ts` | Mounted `adminStoryBeatsRouter` at `/admin/story-beats` |
+| `admin/src/app/api/admin/story-beats/route.ts` | Next.js proxy for GET list + POST create |
+| `admin/src/app/api/admin/story-beats/[slug]/route.ts` | Next.js proxy for PUT update + DELETE delete |
+| `admin/src/app/api/admin/story-beats/[slug]/usages/route.ts` | Next.js proxy for GET usages |
+| `admin/src/app/story-beats/page.tsx` | Beat List Page UI |
+| `admin/src/app/story-beats/[slug]/page.tsx` | Beat Detail View UI |
+
+## Key Files to Touch (player-facing — still pending)
 
 | File | Change |
 |---|---|

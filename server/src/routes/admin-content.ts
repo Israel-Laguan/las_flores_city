@@ -4,6 +4,7 @@ import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
+import { computeContentDiff } from './utils/contentDiff.js';
 
 /**
  * Admin Content Pipeline Router
@@ -19,6 +20,17 @@ export const adminContentRouter = express.Router();
 // All routes need admin auth
 adminContentRouter.use(authAndAdminMiddleware);
 
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+
+function resolveContentDir(): string {
+  const isSubdir = process.cwd().endsWith('server');
+  return isSubdir
+    ? path.resolve(process.cwd(), '..', 'content')
+    : path.resolve(process.cwd(), 'content');
+}
+
 /**
  * POST /admin/content/validate
  *
@@ -28,11 +40,7 @@ adminContentRouter.use(authAndAdminMiddleware);
  */
 adminContentRouter.post('/validate', async (_req, res) => {
   try {
-    // Resolve content directory relative to project root
-    const isSubdir = process.cwd().endsWith('server');
-    const contentDir = isSubdir
-      ? path.resolve(process.cwd(), '..', 'content')
-      : path.resolve(process.cwd(), 'content');
+    const contentDir = resolveContentDir();
     console.log(`[admin-content] Validating content in: ${contentDir}`);
 
     const result = await validateContent(contentDir);
@@ -61,11 +69,7 @@ adminContentRouter.post('/validate', async (_req, res) => {
  */
 adminContentRouter.post('/migrate', async (_req, res) => {
   try {
-    // Resolve content directory relative to project root
-    const isSubdir = process.cwd().endsWith('server');
-    const contentDir = isSubdir
-      ? path.resolve(process.cwd(), '..', 'content')
-      : path.resolve(process.cwd(), 'content');
+    const contentDir = resolveContentDir();
     console.log(`[admin-content] Migrating content in: ${contentDir}`);
 
     const result = await migrateContent(contentDir);
@@ -138,6 +142,33 @@ adminContentRouter.get('/status', async (_req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to fetch migration status',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * POST /admin/content/diff
+ *
+ * Reads each YAML file in the content directory, computes a SHA-256
+ * checksum, and compares it against migration_log.file_checksum to
+ * return per-file status: unchanged, new, or modified.
+ */
+adminContentRouter.post('/diff', async (_req, res) => {
+  try {
+    const contentDir = resolveContentDir();
+    const data = await computeContentDiff(contentDir);
+
+    res.json({
+      success: true,
+      data,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[admin-content] Diff error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to compute diff',
       timestamp: new Date().toISOString(),
     });
   }

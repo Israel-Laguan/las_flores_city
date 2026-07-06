@@ -1,24 +1,29 @@
 "use client";
 
-import PlaceholderPage from '@/components/PlaceholderPage';
+import ContentListPage from '@/app/_components/ContentListPage';
+import { adminStyles } from '@/lib/adminStyles';
+
+const columns = [
+  { key: 'name', label: 'Name' },
+  { key: 'title', label: 'Title' },
+  { key: 'description', label: 'Description', render: (item: any) => item.description?.slice(0, 80) },
+  {
+    key: 'portraitStatus', label: 'Portrait Status',
+    render: (item: any) => item.portraitStatus === 'ready'
+      ? <span style={{ ...adminStyles.badge, ...adminStyles.successBadge }}>ready</span>
+      : <span style={{ ...adminStyles.badge, ...adminStyles.warningBadge }}>missing</span>,
+  },
+  { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
+];
 
 export default function CharactersPage() {
   return (
-    <PlaceholderPage
-      icon="📋"
-      title="Characters"
-      badge="📌 Milestone 6 — Content List Views"
-      badgeColor="#9900ff"
+    <ContentListPage
+      title="👤 Characters"
       heading="Character Browser"
-      description="This page will provide a read-only browser for all characters, showing portrait status, NPC type, faction affiliations, and YAML preview."
-      features={[
-        'Table of all characters with name, type, faction, and portrait status columns',
-        'Filter by faction, type, or district',
-        'Click-through to character detail with YAML preview',
-        <>Integration with <code style={{ color: "#aaa" }}>GET /admin/characters</code> API endpoint</>,
-      ]}
-      footnote="Server-side API endpoint to be implemented as part of M6."
-      buttonLabel="🔍 Refresh (Coming in M6)"
+      endpoint="/api/admin/characters"
+      detailPath="/characters"
+      columns={columns}
     />
   );
 }

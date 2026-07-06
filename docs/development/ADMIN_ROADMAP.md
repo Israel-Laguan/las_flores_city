@@ -12,8 +12,9 @@ This roadmap outlines the phased development of the admin panel, organized into 
 | M2: Admin Authentication | ✅ Complete | Role column, adminMiddleware, admin login flow, auth gate |
 | M3: Content Pipeline Dashboard | ✅ Complete | Server endpoints + admin UI pages |
 | M4: Story Beat Definition | ✅ Complete | Registry YAML, schema, migration, validation, content annotations |
-| M5: Story Beat Admin UI | ⏳ Pending | CRUD UI for beats |
-| M6: Content List Views | ⏳ Pending | Read-only browsers for dialogues/scenes/characters |
+| M5: Story Beat Admin UI | ✅ Complete | CRUD endpoints + list/detail pages + tests |
+| M6: Content List Views | ✅ Complete | Paginated list + detail views for dialogues/scenes/characters |
+| M7: Authoring Flow Completion | 🔲 Planned | Remaining list views, dashboard, nav, diff preview, analytics |
 
 ---
 
@@ -167,46 +168,54 @@ beats:
 
 ---
 
-## Milestone 5: Story Beat Admin UI
+## Milestone 5: Story Beat Admin UI ✅
 
 **Goal**: Simple CRUD for beats + visibility into which content uses them.
 
-**Estimated effort**: 3-4 days
+**Status**: Complete
 
-### Tasks
-1. Server endpoints: `GET/POST/PUT/DELETE /admin/story-beats` — CRUD for beat registry
-2. Admin UI: `/story-beats` page — list beats in order, add/edit/delete beats
-3. Admin UI: Beat detail view — shows which dialogues set this beat, which scenes require it
-4. Update `STORY_PROGRESSION_CONTEXT.md` to reflect implemented state
+### Completed Tasks
+1. ✅ Server endpoints: `GET/POST/PUT/DELETE /admin/story-beats` + `GET /:slug/usages` — CRUD with cross-reference
+2. ✅ Admin UI: `/story-beats/page.tsx` — list beats in order, inline edit, add/delete with confirmation
+3. ✅ Admin UI: `/story-beats/[slug]/page.tsx` — detail view showing dialogue/scene usages
+4. ✅ Next.js API proxies for all endpoints
+5. ✅ Test coverage: loading states, CRUD operations, badge rendering, property-based tests
 
-**Why fifth**: Now that beats exist in content, authors need a way to manage them without editing YAML by hand. Simple forms, not visual editors.
+**Key Files**:
+- `server/src/routes/admin-story-beats.ts` — Express CRUD + usages endpoint
+- `admin/src/app/story-beats/page.tsx` — List page with inline editing
+- `admin/src/app/story-beats/[slug]/page.tsx` — Detail view with cross-references
+- `admin/src/app/api/admin/story-beats/route.ts` — Next.js API proxy (GET, POST)
+- `admin/src/app/api/admin/story-beats/[slug]/route.ts` — Next.js API proxy (PUT, DELETE)
+- `admin/src/app/api/admin/story-beats/[slug]/usages/route.ts` — Next.js API proxy (GET)
+- `admin/src/app/story-beats/__tests__/page.test.tsx` — Test coverage
 
 ---
 
-## Milestone 6: Content List Views
+## Milestone 6: Content List Views ✅
 
 **Goal**: Read-only browsers for dialogues, scenes, and characters.
 
-**Estimated effort**: 3-4 days
+**Status**: Complete
 
-### Tasks
-1. Server endpoints: `GET /admin/dialogues`, `GET /admin/scenes`, `GET /admin/characters` — list with pagination
-2. Admin UI: `/dialogues` page — table of dialogue trees with node count, beat associations
-3. Admin UI: `/scenes` page — table of scenes with `required_story_beat` column
-4. Admin UI: `/characters` page — table of characters with portrait status
-5. Click-through to detail views (read-only YAML preview)
+### Completed Tasks
+1. ✅ Server endpoints: `GET /admin/dialogues`, `GET /admin/scenes`, `GET /admin/characters` — paginated lists with metadata
+2. ✅ Server endpoints: `GET /admin/dialogues/:id`, `GET /admin/scenes/:id`, `GET /admin/characters/:id` — detail views
+3. ✅ Admin UI: `/dialogues/page.tsx` — table with node count, beat association badge, pagination
+4. ✅ Admin UI: `/scenes/page.tsx` — table with district, required story beat badge, pagination
+5. ✅ Admin UI: `/characters/page.tsx` — table with portrait status badge (ready/missing), pagination
+6. ✅ Detail views: read-only JSON preview for each content type with back navigation
+7. ✅ Test coverage: pagination, badge rendering, navigation, property-based tests
 
-**Why sixth**: Before editors, authors need to *see* what exists. Read-only is fast to build and immediately useful.
-
----
-
-## Future Roadmap (Not in this milestone)
-- Dialogue tree visual editor (drag-and-drop nodes)
-- Scene map view with district layout
-- Character relationship matrix
-- Overlay diff viewer
-- Inline YAML editor with live validation
-- Story arc timeline visualization
+**Key Files**:
+- `server/src/routes/admin-list-views.ts` — Express paginated list + detail endpoints
+- `admin/src/app/dialogues/page.tsx` — Dialogue list page
+- `admin/src/app/dialogues/[id]/page.tsx` — Dialogue detail (JSON preview)
+- `admin/src/app/scenes/page.tsx` — Scene list page
+- `admin/src/app/scenes/[id]/page.tsx` — Scene detail (JSON preview)
+- `admin/src/app/characters/page.tsx` — Character list page
+- `admin/src/app/characters/[id]/page.tsx` — Character detail (JSON preview)
+- `admin/src/app/__tests__/contentListViews.test.tsx` — Test coverage
 
 ---
 
@@ -217,20 +226,224 @@ M1 (Security) → M2 (Admin Auth) → M3 (Pipeline Dashboard)
                                       ↓
                                    M4 (Beat Definition) → M5 (Beat UI)
                                       ↓
-                                   M6 (Content List Views)
+                                   M6 (Content List Views) → M7 (Authoring Flow Completion)
 ```
 
-M1 and M2 are prerequisites for everything. M3 can ship independently of M4-M6. M4 is content work (YAML + schema), M5 is UI for M4. M6 is independent read-only views.
+M1-M6 are complete. The admin panel now supports:
+- Content pipeline execution (validate + migrate)
+- Story beat CRUD with cross-reference visibility
+- Read-only browsing of dialogues, scenes, and characters
 
 ---
 
-## Total Estimated Effort
-**~15-20 days** for all milestones, shippable incrementally.
+## Current Authoring Flow
 
-Each milestone builds a foundation for the next, with clear value delivered at each step:
-- M1: Secure system ✅
-- M2: Admin access control ✅
-- M3: One-click content pipeline ✅
-- M4: Structured story progression ✅
-- M5: Beat management UI
-- M6: Content visibility
+With M1-M6 complete, the end-to-end authoring flow is:
+
+### 1. Write Content (YAML)
+Authors create/edit YAML files in `content/` organized by type:
+```
+content/
+├── characters/     # NPC definitions
+├── dialogues/      # Interactive conversation trees
+├── overlays/       # SFW/NSFW content overlays
+├── scenes/         # Location definitions
+├── locations/      # Location metadata
+├── mysteries/      # Mystery quest lines
+├── vault/          # Collectible items
+├── gigs/           # Side jobs
+├── shop/           # Cosmetics and items
+├── maps/           # District tile maps
+└── story_beats.yaml  # Narrative beat registry
+```
+
+### 2. Validate Content
+Two paths:
+- **CLI**: `npm run validate:content` (runs `server/src/content/validate.ts`)
+- **Admin UI**: Visit `/validation` and click "Run Validation"
+
+Validation checks:
+- Schema validation per content type (Zod schemas in `shared/src/schemas/`)
+- Dialogue cycle detection (DFS)
+- XSS protection in user-facing text
+- Cross-reference: dialogue `effects.story_beat` vs beat registry
+- Cross-reference: scene `metadata.required_story_beat` vs beat registry
+
+### 3. Migrate Content (Push to DB)
+Two paths:
+- **CLI**: `npm run migrate` (runs `server/src/content/migrate.ts`)
+- **Admin UI**: Visit `/migration` and click "Run Migration"
+
+Processing order (dependency-aware):
+1. `story_beat` — must precede dialogues and scenes (cross-refs)
+2. `character` — may be referenced by scenes
+3. `scene` — may be referenced by dialogues
+4. `location` — upserted as scenes
+5. `mystery` — referenced by overlays, vault items
+6. `vault` — may reference mysteries
+7. `dialogue` — references characters, beats
+8. `overlay` — modifies dialogue trees
+9. `gig`, `shop_item`, `map_tile`
+
+Post-migration:
+- Dialogue tree chunk compilation (AOT, ≤15-node chunks)
+- Redis cache invalidation for dialogue, map, and story_beat caches
+
+### 4. Browse Content (Admin UI)
+- `/dialogues` — paginated list with node count + beat association
+- `/scenes` — paginated list with district + required beat
+- `/characters` — paginated list with portrait status
+- `/story-beats` — full CRUD + usage cross-references
+- `/overlays` — placeholder (real list view planned in M7.1)
+
+### 5. Manage Story Beats (Admin UI)
+- `/story-beats` — list, add, inline-edit, delete beats
+- `/story-beats/{slug}` — see which dialogues set this beat, which scenes require it
+
+---
+
+## Milestone 7: Authoring Flow Completion ✅
+
+**Goal**: Close remaining gaps so authors can browse all content types, see real dashboard data, navigate the full admin panel, and preview changes before migration.
+
+**Status**: Complete
+
+### Tasks
+
+#### 7.1 — Extend List Views to All Content Types
+M6 covers dialogues, scenes, and characters. Add paginated list + detail views for:
+
+| Content Type | Server Table | Columns to Show | Priority |
+|---|---|---|---|
+| Mysteries | `mysteries` | title, status (ACTIVE/RESOLVING/ARCHIVED), expiry | High |
+| Overlays | `dialogue_overlays` | name, target_tree_id, is_nsfw, priority | High |
+| Locations | `scenes` (type='location') | name, district (reuse scenes endpoint with filter) | High |
+| Vault items | `vault_items` | title, item_type, mystery_id | Medium |
+| Gigs | `gigs` | title, time_block_cost, credit_payout | Medium |
+| Shop items | `shop_items` | name, item_type, price, is_active | Low |
+| Map tiles | `map_tiles` | district, x, y, terrain_type | Low |
+
+**Approach**: Extend `server/src/routes/admin-list-views.ts` with new endpoints, add Next.js API proxies, create `admin/src/app/{type}/page.tsx` list pages and `admin/src/app/{type}/[id]/page.tsx` detail pages. Follow the M6 pattern (paginated table with metadata badges, read-only JSON detail).
+
+**Note on locations**: Locations are upserted into the `scenes` table with `metadata.type = 'location'`. The list view can either add a filter to the existing scenes endpoint or create a separate endpoint that queries `scenes WHERE metadata->>'type' = 'location'`.
+
+#### 7.2 — Fix Dashboard Stats
+The admin home page (`admin/src/app/page.tsx:33-38`) has hardcoded `"1"` for all stats. Add a server endpoint `GET /admin/stats` that returns real counts:
+- Characters: `SELECT count(*) FROM characters`
+- Dialogues: `SELECT count(*) FROM dialogue_trees`
+- Scenes: `SELECT count(*) FROM scenes`
+- Overlays: `SELECT count(*) FROM dialogue_overlays`
+- Mysteries: `SELECT count(*) FROM mysteries`
+
+Convert the dashboard to a client component that fetches from this endpoint. Also update the "Recent Activity" panel to show the last 5 migration_log entries instead of "No recent activity".
+
+#### 7.3 — Complete Navigation
+The nav bar (`admin/src/app/layout.tsx:98-102`) currently links only to Dialogues, Scenes, and Characters. Add links for:
+
+**Content section**:
+- Story Beats (`/story-beats`)
+- Mysteries (`/mysteries`) — after 7.1
+- Overlays (`/overlays`) — after 7.1
+
+**System section** (grouped under a dropdown or secondary row):
+- Migration (`/migration`)
+- Validation (`/validation`)
+- Assets (`/assets`)
+- Analytics (`/analytics`)
+
+Also update the dashboard's "Content Management" section to include links to Story Beats and all new content list views from 7.1.
+
+#### 7.4 — Pre-Migration Diff Preview
+Add a `POST /admin/content/diff` endpoint that:
+1. Reads each YAML file in `content/`
+2. Compares its checksum against `migration_log.file_checksum`
+3. Returns per-file status: `unchanged`, `new`, `modified`
+4. For modified files, shows a summary: "N rows will be created, M rows will be updated"
+
+Add a UI page `/diff` (or integrate into `/migration`) that displays this before the user clicks "Run Migration". This prevents accidental overwrites.
+
+#### 7.5 — Content Authoring Analytics
+Replace the analytics placeholder page (`admin/src/app/analytics/page.tsx`) with a real dashboard. Add `GET /admin/analytics/summary` endpoint that queries the OLAP `player_events` table for:
+
+- Dialogue completion rates (which dialogues are started vs completed)
+- Story beat reach percentages (what % of players have each beat set)
+- Mystery status distribution (how many ACTIVE vs RESOLVING vs ARCHIVED)
+- Time-block spend per content type
+
+Use the existing `queryOLAP(...)` pattern. Charts can start as simple tables or bar charts; full visualization is a later milestone.
+
+#### 7.6 — Placeholder Page Cleanup
+Four admin pages are currently `PlaceholderPage` stubs with no functionality:
+- `/overlays` — will be replaced by 7.1
+- `/analytics` — will be replaced by 7.5
+- `/users` — keep as placeholder (user management is a separate concern)
+- `/settings` — keep as placeholder (configuration is a separate concern)
+
+After 7.1 and 7.5 are complete, the overlays and analytics placeholders are deleted. Users and settings remain as-is with their "Future Milestone" badges.
+
+### Dependency Order
+
+```
+7.1 (List Views)  ←  highest value, unblocks 7.3
+7.2 (Dashboard)   ←  independent, quick win
+7.3 (Navigation)  ←  depends on 7.1 for new links
+7.4 (Diff Preview) ← independent, requires only admin-content.ts extension
+7.5 (Analytics)   ←  independent, requires OLAP queries
+7.6 (Cleanup)     ←  depends on 7.1 and 7.5
+```
+
+### Key Files (to be created or modified)
+
+**Server**:
+- `server/src/routes/admin-list-views.ts` — add endpoints for mysteries, overlays, locations, vault, gigs, shop, maps
+- `server/src/routes/admin-content.ts` — add `POST /diff` endpoint
+- `server/src/routes/admin-stats.ts` — new file for dashboard stats + analytics summary
+
+**Admin UI**:
+- `admin/src/app/page.tsx` — convert to client component, fetch real stats
+- `admin/src/app/layout.tsx` — expand nav bar
+- `admin/src/app/mysteries/page.tsx` — new list page
+- `admin/src/app/mysteries/[id]/page.tsx` — new detail page
+- `admin/src/app/locations/page.tsx` — new list page
+- `admin/src/app/vault/page.tsx` — new list page
+- `admin/src/app/gigs/page.tsx` — new list page
+- `admin/src/app/shop/page.tsx` — new list page
+- `admin/src/app/maps/page.tsx` — new list page
+- `admin/src/app/analytics/page.tsx` — replace placeholder with real dashboard
+- `admin/src/app/overlays/page.tsx` — replace placeholder with real list view
+
+**API Proxies** (Next.js route handlers):
+- `admin/src/app/api/admin/stats/route.ts`
+- `admin/src/app/api/admin/content/diff/route.ts`
+- `admin/src/app/api/admin/analytics/summary/route.ts`
+- `admin/src/app/api/admin/mysteries/route.ts` + `[id]/route.ts`
+- (similar pattern for vault, gigs, shop, maps)
+
+---
+
+### Gap Resolution Summary
+
+The original "What's Missing" analysis identified 8 gaps. Here is the current status after codebase investigation:
+
+| Gap | Description | Status | Notes |
+|-----|-------------|--------|-------|
+| 1 | Missing list views | Open → M7.1 | Mysteries, overlays, vault, gigs, shop, maps, locations still need pages |
+| 2 | No inline content editing | Partial | Story beats have full CRUD; no other content type has editing |
+| 3 | Hardcoded dashboard stats | Open → M7.2 | Stats still show hardcoded "1" in `page.tsx:33-38` |
+| 4 | Incomplete navigation | Open → M7.3 | Nav bar only has 3 links (Dialogues, Scenes, Characters) |
+| 5 | No diff/preview before migration | Open → M7.4 | No diff endpoints or UI exist |
+| 6 | No publish workflow | Deferred | No draft/staging/publish tables — multi-author collaboration not yet needed |
+| 7 | Content README coverage | **Resolved** | `content/README.md` covers all 11 content types, processing order, and admin UI |
+| 8 | No content analytics | Open → M7.5 | Analytics page is a PlaceholderPage stub; no analytics endpoints |
+
+**Gap 2 (inline editing)** is partially resolved: story beats have full inline CRUD. Extending editing to other content types (dialogue YAML editor, scene forms) is a larger effort best suited for a future milestone focused on visual editing tools.
+
+**Gap 6 (publish workflow)** is deferred: the current YAML → migration → database pipeline works for a single-author workflow. A staging/publish system becomes necessary when multiple authors collaborate, which is not yet the case.
+
+### Future Roadmap (Beyond M7)
+
+- Dialogue tree visual editor (drag-and-drop nodes)
+- Scene map view with district layout
+- Character relationship matrix
+- Story arc timeline visualization
+- Content staging/publish workflow (when multi-author collaboration begins)
