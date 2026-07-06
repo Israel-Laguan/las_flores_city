@@ -36,7 +36,7 @@ adminCoverageRouter.get('/', async (_req, res) => {
     const matchingResults = {
       figures: matchers.matchFiguresToCharacters(filesData.figurePaths, filesData.characterYamlPaths),
       districts: matchers.matchDistrictsToScenes(filesData.districtPaths, parsedData.sceneObjects),
-      landmarks: matchers.matchLandmarksToScenes(filesData.landmarkAbsSubpaths, parsedData.sceneObjects),
+      landmarks: matchers.matchLandmarksToScenes(filesData.landmarkPaths, parsedData.sceneObjects),
       stories: matchers.matchStoriesToMysteries(filesData.storyPaths, parsedData.mysteryObjects),
     };
     await enrichWithDatabaseResults(matchingResults.figures, matchingResults.districts, matchingResults.landmarks);

@@ -7,6 +7,7 @@ import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
 import { computeContentDiff } from './utils/contentDiff.js';
+import { assignAsset } from '../services/ContentAssetService.js';
 
 /**
  * Admin Content Pipeline Router
@@ -460,8 +461,6 @@ adminContentRouter.get('/tree', async (_req, res) => {
 // Assigns an asset URL to a field in a content YAML file.
 // ---------------------------------------------------------------------------
 
-import { assignAsset } from '../services/ContentAssetService.js';
-
 adminContentRouter.post('/assign-asset', async (req, res) => {
   try {
     const { contentPath, fieldPath, assetUrl } = req.body;
@@ -504,12 +503,11 @@ adminContentRouter.post('/assign-asset', async (req, res) => {
     }
 
     // Validate content path (no traversal)
-    const contentDir = resolveContentDir();
-    const absolutePath = path.join(contentDir, contentPath);
-    if (!absolutePath.startsWith(contentDir + path.sep) && absolutePath !== contentDir) {
+    const pathCheck = validateContentPath(contentPath);
+    if (!pathCheck.valid) {
       res.status(400).json({
         success: false,
-        error: 'Path traversal not allowed',
+        error: pathCheck.reason,
         timestamp: new Date().toISOString(),
       });
       return;
@@ -534,10 +532,11 @@ adminContentRouter.post('/assign-asset', async (req, res) => {
       return;
     }
 
+    const isValidation = message.includes('Path traversal') || message.includes('Invalid field path') || message.includes('Invalid YAML');
     console.error('[admin-content] POST /assign-asset error:', error);
-    res.status(400).json({
+    res.status(isValidation ? 400 : 500).json({
       success: false,
-      error: message,
+      error: isValidation ? message : 'Internal server error',
       timestamp: new Date().toISOString(),
     });
   }

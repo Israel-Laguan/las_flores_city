@@ -53,13 +53,13 @@ export async function processFileSystem(
 ): Promise<{
   figurePaths: string[];
   districtPaths: string[];
-  landmarkAbsSubpaths: string[];
+  landmarkPaths: string[];
   storyPaths: string[];
   characterYamlPaths: string[];
   sceneYamlPaths: string[];
   mysteryYamlPaths: string[];
 }> {
-  const [figurePaths, districtPaths, landmarkAbsSubpaths, storyPaths, characterYamlPaths, sceneYamlPaths, mysteryYamlPaths] =
+  const [figurePaths, districtPaths, landmarkPaths, storyPaths, characterYamlPaths, sceneYamlPaths, mysteryYamlPaths] =
     await Promise.all([
       listMdFiles(path.join(loreDir, 'figures')).then(ps => ps.map(p => `figures/${p}`)),
       listMdFiles(path.join(loreDir, 'districts')).then(ps => ps.map(p => `districts/${p}`)),
@@ -73,7 +73,7 @@ export async function processFileSystem(
   return {
     figurePaths,
     districtPaths,
-    landmarkAbsSubpaths,
+    landmarkPaths,
     storyPaths,
     characterYamlPaths,
     sceneYamlPaths,

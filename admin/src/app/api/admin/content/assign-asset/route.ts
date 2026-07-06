@@ -11,11 +11,13 @@ export async function POST(req: Request) {
       body: JSON.stringify(body),
     });
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Admin content assign-asset error:', error);
     const status = (error as { status?: number })?.status ?? 500;
+    const message = (error as { body?: { error?: string } })?.body?.error
+      ?? 'Internal server error';
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: message },
       { status }
     );
   }

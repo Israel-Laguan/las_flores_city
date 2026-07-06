@@ -15,8 +15,13 @@ export const markdownComponents: Components = {
       </a>
     );
   },
+  pre: ({ children }) => (
+    <pre style={{ backgroundColor: '#0d0d1a', padding: '0.75rem', borderRadius: '4px', overflowX: 'auto', fontFamily: 'monospace' }}>
+      {children}
+    </pre>
+  ),
   code: ({ children }) => (
-    <code style={{ backgroundColor: '#0d0d1a', padding: '0.15rem 0.4rem', borderRadius: '3px', fontSize: '0.85rem', color: '#ffaa00' }}>
+    <code style={{ padding: '0.15rem 0.4rem', borderRadius: '3px', fontSize: '0.85rem', color: '#ffaa00' }}>
       {children}
     </code>
   ),

@@ -39,7 +39,8 @@ export function useAssetCoverage() {
         } else {
           setError('Failed to load asset coverage');
         }
-      } catch {
+      } catch (err) {
+        console.error('Failed to fetch asset coverage', err);
         setError('Failed to load asset coverage');
       } finally {
         setLoading(false);
