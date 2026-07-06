@@ -63,23 +63,43 @@ function AdminNav({ user }: { user: any }) {
       borderRadius: '4px',
       textDecoration: 'none',
       fontWeight: 'bold'
-    }
+    },
+    navLinksRow: {
+      backgroundColor: '#0d0d1a',
+      padding: '0.5rem 2rem',
+      borderBottom: '1px solid #333',
+    },
+  }
+
+  const navLinkStyle: React.CSSProperties = {
+    color: '#00ff00',
+    fontFamily: 'monospace',
+    textDecoration: 'none',
+    marginRight: '1rem',
+    fontSize: '0.9rem',
   }
 
   return (
-    <nav style={styles.nav}>
-      <div style={styles.logo}>🎮 Las Flores 2077 Admin</div>
-      <div style={styles.userInfo}>
-        {user ? (
-          <>
-            <span style={styles.userName}>{user.username || user.email}</span>
-            <span style={styles.roleBadge}>{user.role}</span>
-            <Link href="/api/auth/logout" style={styles.logoutButton}>LOGOUT</Link>
-          </>
-        ) : (
-          <Link href="/login" style={styles.logoutButton}>LOGIN</Link>
-        )}
+    <>
+      <nav style={styles.nav}>
+        <div style={styles.logo}>🎮 Las Flores 2077 Admin</div>
+        <div style={styles.userInfo}>
+          {user ? (
+            <>
+              <span style={styles.userName}>{user.username || user.email}</span>
+              <span style={styles.roleBadge}>{user.role}</span>
+              <Link href="/api/auth/logout" style={styles.logoutButton}>LOGOUT</Link>
+            </>
+          ) : (
+            <Link href="/login" style={styles.logoutButton}>LOGIN</Link>
+          )}
+        </div>
+      </nav>
+      <div style={styles.navLinksRow}>
+        <Link href="/dialogues" style={navLinkStyle}>💬 Dialogues</Link>
+        <Link href="/scenes" style={navLinkStyle}>🗺️ Scenes</Link>
+        <Link href="/characters" style={navLinkStyle}>👤 Characters</Link>
       </div>
-    </nav>
+    </>
   )
 }
