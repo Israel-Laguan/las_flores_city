@@ -133,22 +133,26 @@ export default function AnalyticsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchAnalytics() {
       try {
         const res = await fetch('/api/admin/analytics/summary');
         const result = await res.json();
+        if (cancelled) return;
         if (result.success) {
           setData(result.data);
         } else {
           setError(result.error || 'Failed to fetch analytics');
         }
       } catch {
+        if (cancelled) return;
         setError('Failed to fetch analytics');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchAnalytics();
+    return () => { cancelled = true; };
   }, []);
 
   return (

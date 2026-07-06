@@ -14,8 +14,8 @@ const columns = [
   {
     key: 'isActive', label: 'Active',
     render: (item: any) => item.isActive
-      ? <span style={{ ...adminStyles.badge, backgroundColor: '#00ff00', color: '#000' }}>Active</span>
-      : <span style={{ ...adminStyles.badge, backgroundColor: '#ff4444', color: '#fff' }}>Inactive</span>,
+      ? <span style={{ ...adminStyles.badge, ...adminStyles.successBadge }}>Active</span>
+      : <span style={{ ...adminStyles.badge, ...adminStyles.dangerBadge }}>Inactive</span>,
   },
   { key: 'createdAt', label: 'Created', render: (item: any) => new Date(item.createdAt).toLocaleDateString() },
 ];

@@ -63,22 +63,25 @@ export default function BeatDetailPage() {
 
   useEffect(() => {
     if (!slug) return;
+    const controller = new AbortController();
     const fetchUsages = async () => {
       try {
-        const res = await fetch(`/api/admin/story-beats/${slug}/usages`);
+        const res = await fetch(`/api/admin/story-beats/${slug}/usages`, { signal: controller.signal });
         const data = await res.json();
         if (data.success) {
           setUsages(data.data);
         } else {
           setError(data.error || 'Failed to fetch usages');
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
         setError('Failed to fetch beat usages');
       } finally {
         setLoading(false);
       }
     };
     fetchUsages();
+    return () => { controller.abort(); };
   }, [slug]);
 
   return (

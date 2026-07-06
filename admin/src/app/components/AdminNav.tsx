@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import type { CSSProperties } from 'react';
 
-const navLinkStyle: React.CSSProperties = { color: '#00ff00', fontFamily: 'monospace', textDecoration: 'none', fontSize: '0.9rem' };
-const navSectionStyle: React.CSSProperties = { color: '#555', fontFamily: 'monospace', fontSize: '0.8rem', fontWeight: 'bold', alignSelf: 'center' };
+const navLinkStyle: CSSProperties = { color: '#00ff00', fontFamily: 'monospace', textDecoration: 'none', fontSize: '0.9rem' };
+const navSectionStyle: CSSProperties = { color: '#555', fontFamily: 'monospace', fontSize: '0.8rem', fontWeight: 'bold', alignSelf: 'center' };
 
 function NavLinksRow() {
   return (
@@ -26,7 +27,7 @@ function NavLinksRow() {
   );
 }
 
-export default function AdminNav({ user }: { user: any }) {
+export default function AdminNav({ user }: { user?: { username?: string; email?: string; role?: string } | null }) {
   return (
     <>
       <nav style={{ backgroundColor: '#0d0d1a', padding: '1rem 2rem', borderBottom: '1px solid #00ff00', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

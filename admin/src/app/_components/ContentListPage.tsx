@@ -58,7 +58,7 @@ export default function ContentListPage<T extends Record<string, unknown>>({ tit
     try {
       const res = await fetch(`${endpoint}?page=${p}&pageSize=${pageSize}`, { signal: controller.signal });
       const data = await res.json();
-      if (data.success) { setItems(data.data.items); setTotal(data.data.total); setError(null); }
+      if (data.success) { setItems(data.data?.items ?? []); setTotal(data.data?.total ?? 0); setError(null); }
       else { setError(data.error || `Failed to fetch ${heading}`); }
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') return;

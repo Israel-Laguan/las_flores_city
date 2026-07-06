@@ -17,6 +17,8 @@ const styles = {
   unchangedBadge: { backgroundColor: '#555', color: '#999' },
   newBadge: { backgroundColor: '#00ff00', color: '#000' },
   modifiedBadge: { backgroundColor: '#ffaa00', color: '#000' },
+  deletedBadge: { backgroundColor: '#ff4444', color: '#fff' },
+  errorBadge: { backgroundColor: '#ff0000', color: '#fff' },
   summaryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '1.5rem' },
   summaryCard: { textAlign: 'center' as const, padding: '1rem', backgroundColor: '#0d0d1a', borderRadius: '5px' },
   summaryValue: { fontSize: '2rem', fontWeight: 'bold' },
@@ -28,8 +30,8 @@ const styles = {
 
 interface DiffFile {
   filePath: string;
-  checksum: string;
-  status: 'unchanged' | 'new' | 'modified';
+  checksum: string | null;
+  status: 'unchanged' | 'new' | 'modified' | 'deleted' | 'error';
   knownChecksum: string | null;
 }
 
@@ -38,6 +40,7 @@ interface DiffResult {
   newFiles: number;
   modifiedFiles: number;
   unchangedFiles: number;
+  deletedFiles: number;
   files: DiffFile[];
 }
 
@@ -45,6 +48,8 @@ function statusBadgeStyle(status: string) {
   switch (status) {
     case 'new': return styles.newBadge;
     case 'modified': return styles.modifiedBadge;
+    case 'deleted': return styles.deletedBadge;
+    case 'error': return styles.errorBadge;
     default: return styles.unchangedBadge;
   }
 }
@@ -69,7 +74,9 @@ function FileChangesTable({ files }: { files: DiffFile[] }) {
               <td style={styles.td}>
                 <span style={{ ...styles.badge, ...statusBadgeStyle(file.status) }}>{file.status}</span>
               </td>
-              <td style={styles.td} title={file.checksum}>{file.checksum.slice(0, 12)}...</td>
+              <td style={styles.td} title={file.checksum ?? ''}>
+                {file.checksum ? `${file.checksum.slice(0, 12)}...` : '—'}
+              </td>
               <td style={styles.td} title={file.knownChecksum ?? ''}>
                 {file.knownChecksum ? `${file.knownChecksum.slice(0, 12)}...` : '—'}
               </td>
@@ -145,7 +152,7 @@ export default function DiffPage() {
             </div>
           </div>
 
-          {result.modifiedFiles === 0 && result.newFiles === 0 ? (
+          {result.modifiedFiles === 0 && result.newFiles === 0 && result.deletedFiles === 0 ? (
             <div style={styles.successBox}>
               <p>All files are unchanged. No migration needed.</p>
             </div>

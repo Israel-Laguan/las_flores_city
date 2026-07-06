@@ -10,8 +10,8 @@ const columns = [
   {
     key: 'portraitStatus', label: 'Portrait Status',
     render: (item: any) => item.portraitStatus === 'ready'
-      ? <span style={{ ...adminStyles.badge, backgroundColor: '#00ff00', color: '#000' }}>ready</span>
-      : <span style={{ ...adminStyles.badge, backgroundColor: '#ffaa00', color: '#000' }}>missing</span>,
+      ? <span style={{ ...adminStyles.badge, ...adminStyles.successBadge }}>ready</span>
+      : <span style={{ ...adminStyles.badge, ...adminStyles.warningBadge }}>missing</span>,
   },
   { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
 ];

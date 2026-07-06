@@ -77,7 +77,8 @@ export function createPaginatedProxyHandler(endpoint: string) {
       return NextResponse.json(data);
     } catch (error) {
       const status = (error as { status?: number })?.status ?? 500;
-      return NextResponse.json({ success: false, error: 'Internal server error' }, { status });
+      const message = (error as { message?: string })?.message ?? 'Internal server error';
+      return NextResponse.json({ success: false, error: message }, { status });
     }
   };
 }
@@ -90,7 +91,8 @@ export function createDetailProxyHandler(endpoint: string) {
       return NextResponse.json(data);
     } catch (error) {
       const status = (error as { status?: number })?.status ?? 500;
-      return NextResponse.json({ success: false, error: 'Internal server error' }, { status });
+      const message = (error as { message?: string })?.message ?? 'Internal server error';
+      return NextResponse.json({ success: false, error: message }, { status });
     }
   };
 }

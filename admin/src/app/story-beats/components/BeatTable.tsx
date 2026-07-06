@@ -19,14 +19,14 @@ interface BeatTableProps {
 }
 
 const inputStyle: React.CSSProperties = {
-  backgroundColor: '#0d0d1a',
-  border: '1px solid #00ff00',
-  color: '#fff',
-  fontFamily: 'monospace',
-  padding: '0.25rem 0.5rem',
-  borderRadius: '3px',
-  width: '100%',
+  ...styles.input,
 };
+
+const variantStyles = {
+  primary: styles.primaryButton,
+  danger: styles.dangerButton,
+  secondary: styles.secondaryButton,
+} as const;
 
 function smallButtonStyle(variant: 'primary' | 'danger' | 'secondary', submitting: boolean): React.CSSProperties {
   return {
@@ -34,7 +34,7 @@ function smallButtonStyle(variant: 'primary' | 'danger' | 'secondary', submittin
     padding: '0.25rem 0.75rem',
     fontSize: '0.85rem',
     marginRight: '0.25rem',
-    ...(submitting ? styles.disabledButton : variant === 'primary' ? styles.primaryButton : variant === 'danger' ? styles.dangerButton : styles.secondaryButton),
+    ...(submitting ? styles.disabledButton : variantStyles[variant]),
   };
 }
 
@@ -61,14 +61,14 @@ export default function BeatTable({ beats, loading, editingSlug, editState, subm
                 {editingSlug === beat.slug ? (
                   <>
                     <td style={styles.td}>
-                      <input type="number" value={editState.order} onChange={e => onEditStateChange(s => ({ ...s, order: e.target.value }))} min={0} style={{ ...inputStyle, width: '70px' }} />
+                      <input aria-label="Order" type="number" value={editState.order} onChange={e => onEditStateChange(s => ({ ...s, order: e.target.value }))} min={0} style={{ ...inputStyle, width: '70px' }} />
                     </td>
                     <td style={styles.td}><code style={{ color: '#aaa' }}>{beat.slug}</code></td>
                     <td style={styles.td}>
-                      <input type="text" value={editState.label} onChange={e => onEditStateChange(s => ({ ...s, label: e.target.value }))} style={inputStyle} />
+                      <input aria-label="Label" type="text" value={editState.label} onChange={e => onEditStateChange(s => ({ ...s, label: e.target.value }))} style={inputStyle} />
                     </td>
                     <td style={styles.td}>
-                      <input type="text" value={editState.description} onChange={e => onEditStateChange(s => ({ ...s, description: e.target.value }))} style={inputStyle} />
+                      <input aria-label="Description" type="text" value={editState.description} onChange={e => onEditStateChange(s => ({ ...s, description: e.target.value }))} style={inputStyle} />
                     </td>
                     <td style={styles.td}>
                       <button onClick={() => onEditSave(beat.slug)} disabled={submitting} style={smallButtonStyle('primary', submitting)}>Save</button>

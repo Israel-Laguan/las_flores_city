@@ -21,6 +21,18 @@ export const adminStyles = {
   td: { padding: '0.5rem', borderBottom: '1px solid #333' },
   badge: { padding: '0.25rem 0.5rem', borderRadius: '3px', fontSize: '0.8rem', fontWeight: 'bold' },
   infoBadge: { backgroundColor: '#0066ff', color: '#fff' },
+  successBadge: { backgroundColor: '#00ff00', color: '#000' },
+  dangerBadge: { backgroundColor: '#ff4444', color: '#fff' },
+  warningBadge: { backgroundColor: '#ffaa00', color: '#000' },
+  input: {
+    backgroundColor: '#0d0d1a',
+    border: '1px solid #00ff00',
+    color: '#fff',
+    fontFamily: 'monospace',
+    padding: '0.25rem 0.5rem',
+    borderRadius: '3px',
+    width: '100%',
+  },
   errorBox: { background: '#ff000033', border: '1px solid #ff4444', padding: '1rem', borderRadius: '5px', marginTop: '1rem' },
   muted: { color: '#888' },
 };

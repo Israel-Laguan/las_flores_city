@@ -16,13 +16,7 @@ interface BeatFormProps {
 }
 
 const inputStyle: React.CSSProperties = {
-  backgroundColor: '#0d0d1a',
-  border: '1px solid #00ff00',
-  color: '#fff',
-  fontFamily: 'monospace',
-  padding: '0.25rem 0.5rem',
-  borderRadius: '3px',
-  width: '100%',
+  ...styles.input,
 };
 
 export default function BeatForm({
