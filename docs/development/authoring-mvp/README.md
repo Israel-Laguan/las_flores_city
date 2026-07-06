@@ -45,10 +45,10 @@ Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 | Phase | Status | Description |
 |-------|--------|-------------|
 | [Phase 0](phase-0-foundation.md) | ✅ Complete | Server foundation: lore/coverage/file endpoints |
-| [Phase 1](phase-1-base-world.md) | 🔲 Planned | Base world: lore browser, coverage, asset linking |
-| [Phase 2](phase-2-main-story.md) | 🔲 Planned | Main story: story arc, flow validation |
-| [Phase 3](phase-3-mission-authoring.md) | 🔲 Planned | Missions: schema rename, stories type, YAML editor, linker, wizard |
-| [Phase 4](phase-4-quality-checks.md) | 🔲 Planned | Quality: density, length, inconsistency checks |
+| [Phase 1](phase-1-base-world.md) | ✅ Complete | Base world: lore browser, coverage, asset linking |
+| [Phase 2](phase-2-main-story.md) | ✅ Complete | Main story: story arc, flow validation |
+| [Phase 3](phase-3-mission-authoring.md) | ✅ Complete | Missions: rename, stories, editor, linker, wizard |
+| [Phase 4](phase-4-quality-checks.md) | ✅ Complete | Quality: density, length, inconsistency checks |
 
 ---
 
@@ -97,3 +97,20 @@ To begin implementing:
 2. Follow the tasks in order
 3. Verify each task before moving to the next
 4. Update the status table above
+
+---
+
+## What's Next
+
+All 5 phases are complete. Future enhancements:
+
+### Phase 4C (optional)
+- Optional quality gate in `migrate.ts` that blocks migration when inconsistency errors exist
+
+### Post-MVP
+- Auto-save in the editor (debounced 30s)
+- Monaco editor integration (optional, ~5MB lazy load)
+- ReactFlow story arc visualization (optional)
+- Undo/redo in content linker
+- Batch migration from admin UI
+- Create new characters/scenes/dialogues inline from the wizard

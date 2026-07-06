@@ -16,6 +16,7 @@ const sections: Section[] = [
       { href: '/story-beats', label: '📖 Story Beats' },
       { href: '/story-arc', label: '📊 Story Arc' },
       { href: '/missions', label: '🔍 Missions' },
+      { href: '/stories', label: '📚 Stories' },
       { href: '/overlays', label: '🔄 Overlays' },
       { href: '/locations', label: '📍 Locations' },
       { href: '/vault', label: '🔐 Vault' },
@@ -28,8 +29,11 @@ const sections: Section[] = [
   {
     title: 'System',
     items: [
+      { href: '/editor', label: '📝 YAML Editor' },
+      { href: '/content-linker', label: '🔗 Content Linker' },
       { href: '/migration', label: '🚀 Content Migration' },
       { href: '/validation', label: '✅ Validate Content' },
+      { href: '/quality', label: '📊 Quality Dashboard' },
       { href: '/analytics', label: '📊 Analytics' },
       { href: '/users', label: '👥 User Management' },
       { href: '/settings', label: '⚙️ Settings' },

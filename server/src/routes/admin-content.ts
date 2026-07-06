@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { validateContent } from '../content/validate.js';
+import { validateContent, checkContentQuality } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
 import { computeContentDiff } from './utils/contentDiff.js';
@@ -127,6 +127,62 @@ adminContentRouter.post('/migrate', async (_req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Migration failed',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * POST /admin/content/quality
+ *
+ * Runs content quality checks (density, length, inconsistency, completeness)
+ * and returns the full QualityReport. These are advisory — they never block
+ * migration.
+ */
+adminContentRouter.post('/quality', async (_req, res) => {
+  try {
+    const contentDir = resolveContentDir();
+    console.log(`[admin-content] Running quality checks in: ${contentDir}`);
+
+    const result = await checkContentQuality(contentDir);
+
+    const totalIssues =
+      result.density.length +
+      result.length.length +
+      result.inconsistency.length +
+      result.completeness.length;
+
+    res.json({
+      success: true,
+      data: {
+        report: result,
+        summary: {
+          density: result.density.length,
+          length: result.length.length,
+          inconsistency: result.inconsistency.length,
+          completeness: result.completeness.length,
+          total: totalIssues,
+          errors: [
+            ...result.density,
+            ...result.length,
+            ...result.inconsistency,
+            ...result.completeness,
+          ].filter(i => i.severity === 'error').length,
+          warnings: [
+            ...result.density,
+            ...result.length,
+            ...result.inconsistency,
+            ...result.completeness,
+          ].filter(i => i.severity === 'warning').length,
+        },
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[admin-content] Quality check error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Quality check failed',
       timestamp: new Date().toISOString(),
     });
   }
@@ -539,5 +595,118 @@ adminContentRouter.post('/assign-asset', async (req, res) => {
       error: isValidation ? message : 'Internal server error',
       timestamp: new Date().toISOString(),
     });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /admin/content/link
+//
+// Generic content linking endpoint. Reads a YAML file, modifies a field,
+// validates, and writes back atomically.
+//
+// Request body:
+//   contentPath: "scenes/scene_cafe.yaml"  (relative to content/)
+//   fieldPath:   "available_dialogues"     (dot-separated field path)
+//   action:      "add" | "remove" | "set"
+//   value:       "uuid-string"             (the value to add/remove/set)
+// ---------------------------------------------------------------------------
+
+adminContentRouter.post('/link', async (req, res) => {
+  const { contentPath, fieldPath, action, value } = req.body as {
+    contentPath?: unknown;
+    fieldPath?: unknown;
+    action?: unknown;
+    value?: unknown;
+  };
+
+  // Validate inputs
+  if (!contentPath || typeof contentPath !== 'string') {
+    res.status(400).json({ success: false, error: 'contentPath is required', timestamp: new Date().toISOString() });
+    return;
+  }
+  if (!fieldPath || typeof fieldPath !== 'string') {
+    res.status(400).json({ success: false, error: 'fieldPath is required', timestamp: new Date().toISOString() });
+    return;
+  }
+  if (!action || !['add', 'remove', 'set'].includes(action as string)) {
+    res.status(400).json({ success: false, error: 'action must be "add", "remove", or "set"', timestamp: new Date().toISOString() });
+    return;
+  }
+  if (value === undefined || value === null || typeof value !== 'string') {
+    res.status(400).json({ success: false, error: 'value is required (string)', timestamp: new Date().toISOString() });
+    return;
+  }
+
+  const pathCheck = validateContentPath(contentPath);
+  if (!pathCheck.valid) {
+    res.status(400).json({ success: false, error: pathCheck.reason, timestamp: new Date().toISOString() });
+    return;
+  }
+
+  const contentDir = resolveContentDir();
+  const absolutePath = path.resolve(contentDir, contentPath as string);
+
+  try {
+    // Read and parse YAML
+    const raw = await fs.promises.readFile(absolutePath, 'utf-8');
+    const data = jsYaml.load(raw) as Record<string, unknown>;
+
+    // Navigate to the target field
+    const fieldParts = (fieldPath as string).split('.');
+    let target = data as any;
+    for (let i = 0; i < fieldParts.length - 1; i++) {
+      if (target === undefined || target === null) {
+        res.status(400).json({ success: false, error: `Field path "${fieldPath}" not found in YAML`, timestamp: new Date().toISOString() });
+        return;
+      }
+      target = target[fieldParts[i]];
+    }
+    const lastField = fieldParts[fieldParts.length - 1];
+    const currentValue = target?.[lastField];
+
+    // Apply action
+    if (action === 'set') {
+      if (target) target[lastField] = value;
+    } else if (action === 'add') {
+      if (!Array.isArray(currentValue)) {
+        if (target) target[lastField] = [value];
+      } else if (!currentValue.includes(value as string)) {
+        currentValue.push(value);
+      }
+    } else if (action === 'remove') {
+      if (Array.isArray(currentValue)) {
+        const idx = currentValue.indexOf(value as string);
+        if (idx !== -1) currentValue.splice(idx, 1);
+      }
+    }
+
+    // Serialize and validate YAML
+    const newYaml = jsYaml.dump(data, { lineWidth: -1, noRefs: true });
+
+    // Re-parse to validate
+    try {
+      jsYaml.load(newYaml);
+    } catch (e: any) {
+      res.status(400).json({ success: false, error: `YAML validation failed: ${e.message}`, timestamp: new Date().toISOString() });
+      return;
+    }
+
+    // Atomic write
+    const tmpPath = `${absolutePath}.${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
+    await fs.promises.writeFile(tmpPath, newYaml, 'utf-8');
+    await fs.promises.rename(tmpPath, absolutePath);
+
+    res.json({
+      success: true,
+      data: { contentPath, fieldPath, action, value, content: newYaml },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      res.status(404).json({ success: false, error: `File not found: ${contentPath}`, timestamp: new Date().toISOString() });
+      return;
+    }
+    console.error('[admin-content] POST /link error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Internal server error', timestamp: new Date().toISOString() });
   }
 });
