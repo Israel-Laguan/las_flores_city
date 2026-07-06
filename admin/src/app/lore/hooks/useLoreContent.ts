@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 interface LoreFileResponse {
   success: boolean;
@@ -10,31 +10,39 @@ export function useLoreContent(selectedPath: string | null) {
   const [contentLoading, setContentLoading] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
 
-  const fetchContent = useCallback(async (path: string) => {
-    setContentLoading(true);
-    setContentError(null);
-    try {
-      const res = await fetch(`/api/admin/lore/file?path=${encodeURIComponent(path)}`);
-      const data: LoreFileResponse = await res.json();
-      if (data.success) {
-        setContent(data.data.content);
-      } else {
-        setContentError('Failed to load file content');
-      }
-    } catch {
-      setContentError('Failed to load file content');
-    } finally {
-      setContentLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
+    let active = true;
     if (selectedPath) {
-      fetchContent(selectedPath);
+      setContentLoading(true);
+      setContentError(null);
+      fetch(`/api/admin/lore/file?path=${encodeURIComponent(selectedPath)}`)
+        .then((res) => res.json())
+        .then((data: LoreFileResponse) => {
+          if (active) {
+            if (data.success) {
+              setContent(data.data.content);
+            } else {
+              setContentError('Failed to load file content');
+            }
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setContentError('Failed to load file content');
+          }
+        })
+        .finally(() => {
+          if (active) {
+            setContentLoading(false);
+          }
+        });
     } else {
       setContent(null);
     }
-  }, [selectedPath, fetchContent]);
+    return () => {
+      active = false;
+    };
+  }, [selectedPath]);
 
   return { content, contentLoading, contentError };
 }

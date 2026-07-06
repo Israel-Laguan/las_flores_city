@@ -38,6 +38,8 @@ export function useLoreTree() {
           setTree(data.data.tree);
           const types = new Set(Object.keys(groupByType(data.data.tree)));
           setExpandedTypes(types);
+        } else {
+          setTreeError('Failed to load lore tree');
         }
       } catch {
         setTreeError('Failed to load lore tree');

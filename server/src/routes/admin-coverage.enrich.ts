@@ -29,7 +29,7 @@ function buildDialogueIdSet(
   for (const tree of dialogueTrees.rows) {
     if (tree.nodes && typeof tree.nodes === 'object') {
       for (const node of Object.values(tree.nodes)) {
-        if (node.speaker_id) {
+        if (node?.speaker_id) {
           characterIdsWithDialogue.add(node.speaker_id);
         }
       }

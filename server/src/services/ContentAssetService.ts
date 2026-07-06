@@ -22,11 +22,16 @@ function resolveContentDir(): string {
  *
  * Returns the value at the path, or undefined if any part is missing.
  */
+const PROTOTYPE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
 function getValueAtPath(obj: Record<string, unknown>, fieldPath: string): unknown {
   const parts = fieldPath.replace(/\[(\d+)\]/g, '.$1').split('.');
   let current: unknown = obj;
 
   for (const part of parts) {
+    if (PROTOTYPE_KEYS.has(part)) {
+      return undefined;
+    }
     if (current === null || current === undefined || typeof current !== 'object') {
       return undefined;
     }
@@ -46,6 +51,10 @@ function getValueAtPath(obj: Record<string, unknown>, fieldPath: string): unknow
  */
 function setValueAtPath(obj: Record<string, unknown>, fieldPath: string, value: unknown): unknown {
   const parts = fieldPath.replace(/\[(\d+)\]/g, '.$1').split('.');
+
+  if (parts.some(part => PROTOTYPE_KEYS.has(part))) {
+    throw new Error('Invalid field path: prototype pollution attempt detected');
+  }
 
   if (parts.length === 1) {
     obj[parts[0]] = value;

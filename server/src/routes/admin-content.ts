@@ -506,7 +506,7 @@ adminContentRouter.post('/assign-asset', async (req, res) => {
     // Validate content path (no traversal)
     const contentDir = resolveContentDir();
     const absolutePath = path.join(contentDir, contentPath);
-    if (!absolutePath.startsWith(contentDir)) {
+    if (!absolutePath.startsWith(contentDir + path.sep) && absolutePath !== contentDir) {
       res.status(400).json({
         success: false,
         error: 'Path traversal not allowed',

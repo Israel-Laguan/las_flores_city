@@ -14,7 +14,7 @@ export default function LoreBrowserPage() {
   const router = useRouter();
   const selectedPath = searchParams.get('path') || null;
 
-  const { tree, treeLoading, expandedTypes, toggleType, groupByType } = useLoreTree();
+  const { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType } = useLoreTree();
   const { content, contentLoading, contentError } = useLoreContent(selectedPath);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -51,6 +51,7 @@ export default function LoreBrowserPage() {
           flexDirection: 'column',
         }}>
           <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+          {treeError && <div style={{ ...styles.errorBox, margin: '0.5rem' }}>{treeError}</div>}
           <TreePanel
             treeLoading={treeLoading}
             filteredGroups={filteredGroups}

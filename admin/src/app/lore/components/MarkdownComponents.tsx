@@ -7,11 +7,14 @@ export const markdownComponents: Components = {
   p: ({ children }) => <p style={{ color: '#ccc', lineHeight: '1.6', marginBottom: '1rem' }}>{children}</p>,
   strong: ({ children }) => <strong style={{ color: '#fff' }}>{children}</strong>,
   em: ({ children }) => <em style={{ color: '#aaa' }}>{children}</em>,
-  a: ({ href, children }) => (
-    <a href={href} style={{ color: '#00ff00', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">
-      {children}
-    </a>
-  ),
+  a: ({ href, children }) => {
+    const isSafe = href && /^(https?|mailto|tel):|^\//i.test(href);
+    return (
+      <a href={isSafe ? href : '#'} style={{ color: '#00ff00', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    );
+  },
   code: ({ children }) => (
     <code style={{ backgroundColor: '#0d0d1a', padding: '0.15rem 0.4rem', borderRadius: '3px', fontSize: '0.85rem', color: '#ffaa00' }}>
       {children}

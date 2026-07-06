@@ -15,21 +15,38 @@ function extractFrontmatter(content: string): { tags: string[]; body: string } {
   const tags: string[] = [];
   let bodyStart = 0;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (line.startsWith('Tags:') || line.startsWith('tags:')) {
-      const tagPart = line.slice(line.indexOf(':') + 1).trim();
-      const matches = tagPart.match(/`#[^`]+`/g);
-      if (matches) {
-        for (const m of matches) {
-          tags.push(m.replace(/`/g, ''));
+  if (lines[0]?.trim() === '---') {
+    const closingIndex = lines.indexOf('---', 1);
+    if (closingIndex !== -1) {
+      for (let i = 1; i < closingIndex; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('Tags:') || line.startsWith('tags:')) {
+          const tagPart = line.slice(line.indexOf(':') + 1).trim();
+          const matches = tagPart.match(/`#[^`]+`/g);
+          if (matches) {
+            for (const m of matches) {
+              tags.push(m.replace(/`/g, ''));
+            }
+          }
         }
       }
-      bodyStart = i + 1;
-    } else if (line === '---' && i === 0) {
-      bodyStart = i + 1;
-    } else if (line !== '' && bodyStart === 0) {
-      break;
+      bodyStart = closingIndex + 1;
+    }
+  } else {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith('Tags:') || line.startsWith('tags:')) {
+        const tagPart = line.slice(line.indexOf(':') + 1).trim();
+        const matches = tagPart.match(/`#[^`]+`/g);
+        if (matches) {
+          for (const m of matches) {
+            tags.push(m.replace(/`/g, ''));
+          }
+        }
+        bodyStart = i + 1;
+      } else if (line !== '') {
+        break;
+      }
     }
   }
 
