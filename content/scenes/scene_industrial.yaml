@@ -1,0 +1,13 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567003"
+name: "Industrial District"
+description: "Factories and warehouses line the streets, their smokestacks mixing with the humid air. The backbone of Las Flores' manufacturing economy."
+district: "Industrial"
+district_lore: "industrial"
+district_subzone: "Industrial"
+mood: "gritty"
+available_dialogues: []
+metadata:
+  idle_thoughts:
+    - "Machine hum dominates the soundscape. Shift change is approaching."
+    - "The air carries traces of industrial compounds. Filtration systems are operational."
+    - "Workers move between buildings with practiced efficiency. The pace is relentless."

@@ -19,10 +19,13 @@ function NavLinksRow() {
       <Link href="/gigs" style={navLinkStyle}>💼 Gigs</Link>
       <Link href="/shop" style={navLinkStyle}>🛒 Shop</Link>
       <Link href="/maps" style={navLinkStyle}>🗺️ Maps</Link>
+      <Link href="/lore" style={navLinkStyle}>📚 Lore</Link>
       <span style={{ ...navSectionStyle, marginLeft: '0.75rem' }}>System:</span>
       <Link href="/migration" style={navLinkStyle}>🚀 Migration</Link>
       <Link href="/validation" style={navLinkStyle}>✅ Validation</Link>
       <Link href="/analytics" style={navLinkStyle}>📊 Analytics</Link>
+      <Link href="/coverage" style={navLinkStyle}>📊 Coverage</Link>
+      <Link href="/asset-coverage" style={navLinkStyle}>🖼️ Assets</Link>
     </div>
   );
 }

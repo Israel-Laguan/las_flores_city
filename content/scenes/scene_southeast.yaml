@@ -1,0 +1,13 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567008"
+name: "Southeast Barrio"
+description: "A vibrant working-class neighborhood with strong community ties. Murals cover every wall, telling stories of resistance and hope."
+district: "Southeast"
+district_lore: "southeast"
+district_subzone: "Southeast"
+mood: "resilient"
+available_dialogues: []
+metadata:
+  idle_thoughts:
+    - "Murals depict scenes of struggle and triumph. Art is a form of collective memory."
+    - "Community members gather at the local park. Social bonds are visible and tactile."
+    - "The neighborhood radio plays local music. Cultural identity is actively maintained."
