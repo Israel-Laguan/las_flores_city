@@ -18,8 +18,9 @@ export async function PUT(
   } catch (error) {
     console.error('Admin story-beats PUT error:', error);
     const status = (error as { status?: number })?.status ?? 500;
+    const message = (error as Error)?.message || 'Internal server error';
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: message },
       { status }
     );
   }
@@ -38,8 +39,9 @@ export async function DELETE(
   } catch (error) {
     console.error('Admin story-beats DELETE error:', error);
     const status = (error as { status?: number })?.status ?? 500;
+    const message = (error as Error)?.message || 'Internal server error';
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: message },
       { status }
     );
   }

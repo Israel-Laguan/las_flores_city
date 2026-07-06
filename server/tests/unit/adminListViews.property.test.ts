@@ -109,6 +109,7 @@ describe('Property 1: Pagination slice correctness', () => {
   const endpoints = [
     {
       path: '/dialogues',
+      orderKey: 'name',
       makeRow: (item: { id: string; name: string; description: string }) => ({
         ...item,
         nodeCount: 0,
@@ -119,6 +120,7 @@ describe('Property 1: Pagination slice correctness', () => {
     },
     {
       path: '/scenes',
+      orderKey: 'name',
       makeRow: (item: { id: string; name: string; description: string }) => ({
         ...item,
         district: 'downtown',
@@ -129,10 +131,104 @@ describe('Property 1: Pagination slice correctness', () => {
     },
     {
       path: '/characters',
+      orderKey: 'name',
       makeRow: (item: { id: string; name: string; description: string }) => ({
         ...item,
         title: 'Resident',
         portraitStatus: 'missing' as const,
+        createdAt: new Date('2025-01-01').toISOString(),
+        updatedAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/mysteries',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        id: item.id,
+        title: item.name,
+        description: item.description,
+        status: 'ACTIVE',
+        expiresAt: null,
+        createdAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/overlays',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        id: item.id,
+        name: item.name,
+        targetTreeId: '00000000-0000-0000-0000-000000000001',
+        targetTreeName: null,
+        isNsfw: false,
+        priority: 1,
+        mysteryId: null,
+        mysteryTitle: null,
+        gateNodeId: null,
+        createdAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/locations',
+      orderKey: 'name',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        ...item,
+        district: 'downtown',
+        requiredStoryBeat: null,
+        createdAt: new Date('2025-01-01').toISOString(),
+        updatedAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/vault',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        id: item.id,
+        title: item.name,
+        description: item.description,
+        itemType: 'clue',
+        mysteryId: null,
+        mysteryTitle: null,
+        mediaUrl: null,
+        updatedAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/gigs',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        id: item.id,
+        title: item.name,
+        description: item.description,
+        timeBlockCost: 1,
+        creditPayout: 10,
+        reputationTarget: null,
+        reputationReward: null,
+        locationRestrictionId: null,
+        locationName: null,
+        createdAt: new Date('2025-01-01').toISOString(),
+        updatedAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/shop',
+      orderKey: 'name',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        ...item,
+        itemType: 'consumable',
+        price: 100,
+        currencyType: 'credits',
+        isActive: true,
+        createdAt: new Date('2025-01-01').toISOString(),
+        updatedAt: new Date('2025-01-01').toISOString(),
+      }),
+    },
+    {
+      path: '/maps',
+      makeRow: (item: { id: string; name: string; description: string }) => ({
+        id: item.id,
+        x: 0,
+        y: 0,
+        terrainType: 'ground',
+        rotation: 0,
+        isFlipped: false,
+        districtName: null,
         createdAt: new Date('2025-01-01').toISOString(),
         updatedAt: new Date('2025-01-01').toISOString(),
       }),
@@ -149,7 +245,7 @@ describe('Property 1: Pagination slice correctness', () => {
           async (dataset, pageSize) => {
             const total = dataset.length;
             const maxPage = Math.ceil(total / pageSize);
-            const page = Math.max(1, Math.min(maxPage, 1 + (Math.abs(Math.round(Math.random() * (maxPage - 1))) || 0)));
+            const page = fc.sample(pageArb(total, pageSize), 1)[0];
 
             jest.clearAllMocks();
             const app = makeApp();
@@ -175,10 +271,14 @@ describe('Property 1: Pagination slice correctness', () => {
             const expectedItemCount = Math.min(pageSize, Math.max(0, total - (page - 1) * pageSize));
             expect(res.body.data.items.length).toBe(expectedItemCount);
 
-            // Assert name ASC order (alphanumeric names → plain string comparison is stable)
-            const items = res.body.data.items as Array<{ name: string }>;
-            for (let i = 1; i < items.length; i++) {
-              expect(items[i - 1].name <= items[i].name).toBe(true);
+            // Assert ordering when endpoint specifies an order key
+            if (endpoint.orderKey) {
+              const items = res.body.data.items as Array<Record<string, unknown>>;
+              for (let i = 1; i < items.length; i++) {
+                const prev = String(items[i - 1][endpoint.orderKey] ?? '');
+                const curr = String(items[i][endpoint.orderKey] ?? '');
+                expect(prev <= curr).toBe(true);
+              }
             }
           },
         ),
@@ -388,7 +488,7 @@ describe('Property 3: Pagination parameter validation', () => {
     fc.string({ minLength: 1 }).filter(s => isNaN(Number(s))),
   );
 
-  const listEndpoints = ['/dialogues', '/scenes', '/characters'];
+  const listEndpoints = ['/dialogues', '/scenes', '/characters', '/mysteries', '/overlays', '/locations', '/vault', '/gigs', '/shop', '/maps'];
 
   for (const path of listEndpoints) {
     describe(`GET ${path}`, () => {

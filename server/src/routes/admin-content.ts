@@ -1,11 +1,10 @@
 import express from 'express';
 import path from 'node:path';
-import fs from 'node:fs/promises';
-import crypto from 'node:crypto';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
+import { computeContentDiff } from './utils/contentDiff.js';
 
 /**
  * Admin Content Pipeline Router
@@ -21,6 +20,17 @@ export const adminContentRouter = express.Router();
 // All routes need admin auth
 adminContentRouter.use(authAndAdminMiddleware);
 
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+
+function resolveContentDir(): string {
+  const isSubdir = process.cwd().endsWith('server');
+  return isSubdir
+    ? path.resolve(process.cwd(), '..', 'content')
+    : path.resolve(process.cwd(), 'content');
+}
+
 /**
  * POST /admin/content/validate
  *
@@ -30,11 +40,7 @@ adminContentRouter.use(authAndAdminMiddleware);
  */
 adminContentRouter.post('/validate', async (_req, res) => {
   try {
-    // Resolve content directory relative to project root
-    const isSubdir = process.cwd().endsWith('server');
-    const contentDir = isSubdir
-      ? path.resolve(process.cwd(), '..', 'content')
-      : path.resolve(process.cwd(), 'content');
+    const contentDir = resolveContentDir();
     console.log(`[admin-content] Validating content in: ${contentDir}`);
 
     const result = await validateContent(contentDir);
@@ -63,11 +69,7 @@ adminContentRouter.post('/validate', async (_req, res) => {
  */
 adminContentRouter.post('/migrate', async (_req, res) => {
   try {
-    // Resolve content directory relative to project root
-    const isSubdir = process.cwd().endsWith('server');
-    const contentDir = isSubdir
-      ? path.resolve(process.cwd(), '..', 'content')
-      : path.resolve(process.cwd(), 'content');
+    const contentDir = resolveContentDir();
     console.log(`[admin-content] Migrating content in: ${contentDir}`);
 
     const result = await migrateContent(contentDir);
@@ -154,89 +156,12 @@ adminContentRouter.get('/status', async (_req, res) => {
  */
 adminContentRouter.post('/diff', async (_req, res) => {
   try {
-    const isSubdir = process.cwd().endsWith('server');
-    const contentDir = isSubdir
-      ? path.resolve(process.cwd(), '..', 'content')
-      : path.resolve(process.cwd(), 'content');
-
-    // Collect all YAML files recursively
-    const files: string[] = [];
-    async function walkDir(dir: string) {
-      const entries = await fs.readdir(dir, { withFileTypes: true });
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          await walkDir(fullPath);
-        } else if (entry.name.endsWith('.yaml') || entry.name.endsWith('.yml')) {
-          files.push(fullPath);
-        }
-      }
-    }
-    await walkDir(contentDir);
-
-    // Load existing checksums from migration_log
-    const checksumResult = await queryOLTP(
-      `SELECT file_path, file_checksum FROM migration_log`
-    );
-    const knownChecksums = new Map<string, string>();
-    for (const row of checksumResult.rows) {
-      knownChecksums.set(row.file_path, row.file_checksum);
-    }
-
-    // Build set of relative paths currently on disk
-    const currentPaths = new Set(files.map(f => path.relative(contentDir, f)));
-
-    // Compare each file
-    const fileResults = await Promise.all(
-      files.map(async (filePath) => {
-        const content = await fs.readFile(filePath, 'utf8');
-        const checksum = crypto.createHash('sha256').update(content).digest('hex');
-        const relativePath = path.relative(contentDir, filePath);
-        const known = knownChecksums.get(relativePath);
-
-        let status: 'unchanged' | 'new' | 'modified';
-        if (!known) {
-          status = 'new';
-        } else if (known === checksum) {
-          status = 'unchanged';
-        } else {
-          status = 'modified';
-        }
-
-        return {
-          filePath: relativePath,
-          checksum,
-          status,
-          knownChecksum: known || null,
-        };
-      })
-    );
-
-    // Detect deleted files (in migration_log but not on disk)
-    const deletedResults: Array<{ filePath: string; checksum: null; status: 'deleted'; knownChecksum: string }> = [];
-    for (const [filePath, checksum] of knownChecksums) {
-      if (!currentPaths.has(filePath)) {
-        deletedResults.push({
-          filePath,
-          checksum: null,
-          status: 'deleted',
-          knownChecksum: checksum,
-        });
-      }
-    }
-
-    const results = [...fileResults, ...deletedResults];
+    const contentDir = resolveContentDir();
+    const data = await computeContentDiff(contentDir);
 
     res.json({
       success: true,
-      data: {
-        totalFiles: results.length,
-        newFiles: results.filter(r => r.status === 'new').length,
-        modifiedFiles: results.filter(r => r.status === 'modified').length,
-        unchangedFiles: results.filter(r => r.status === 'unchanged').length,
-        deletedFiles: results.filter(r => r.status === 'deleted').length,
-        files: results,
-      },
+      data,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

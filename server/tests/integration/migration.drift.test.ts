@@ -9,6 +9,8 @@ const { Pool } = pg;
 // Dedicated test UUID — matches content/mysteries/mystery_great_lithium_leak.yaml; cleaned up in afterAll.
 const MYSTERY_ID = 'a0000000-e29b-41d4-a716-446655440001';
 const MYSTERY_FILE = 'mysteries/mystery_great_lithium_leak.yaml';
+const VAULT_FILE = 'vault/great_lithium_leak_clues.yaml';
+const OVERLAY_FILE = 'overlays/overlay_great_lithium_leak.yaml';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
@@ -42,6 +44,10 @@ describe('Migration drift guard', () => {
   });
 
   afterAll(async () => {
+    await pool.query(
+      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3)`,
+      [MYSTERY_FILE, VAULT_FILE, OVERLAY_FILE]
+    );
     await pool.end();
     await closeRedis();
   });

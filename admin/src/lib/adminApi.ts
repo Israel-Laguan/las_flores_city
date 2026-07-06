@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function getAdminUser() {
   try {
@@ -58,4 +59,38 @@ export async function adminFetch(url: string, options: RequestInit = {}) {
   }
 
   return response.json();
+}
+
+// ---------------------------------------------------------------------------
+// Shared proxy-route factories
+// ---------------------------------------------------------------------------
+
+export function createPaginatedProxyHandler(endpoint: string) {
+  return async function GET(req: Request) {
+    try {
+      const { searchParams } = new URL(req.url);
+      const params = new URLSearchParams({
+        page: searchParams.get('page') ?? '1',
+        pageSize: searchParams.get('pageSize') ?? '50',
+      });
+      const data = await adminFetch(`${endpoint}?${params.toString()}`);
+      return NextResponse.json(data);
+    } catch (error) {
+      const status = (error as { status?: number })?.status ?? 500;
+      return NextResponse.json({ success: false, error: 'Internal server error' }, { status });
+    }
+  };
+}
+
+export function createDetailProxyHandler(endpoint: string) {
+  return async function GET(_req: NextRequest, context: { params: { id: string } }) {
+    const { id } = context.params;
+    try {
+      const data = await adminFetch(`${endpoint}/${encodeURIComponent(id)}`);
+      return NextResponse.json(data);
+    } catch (error) {
+      const status = (error as { status?: number })?.status ?? 500;
+      return NextResponse.json({ success: false, error: 'Internal server error' }, { status });
+    }
+  };
 }

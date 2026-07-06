@@ -48,103 +48,73 @@ async function loadValidBeatSlugs(): Promise<Set<string> | null> {
   return null;
 }
 
+async function validateDialogueBeatSlugs(filePath: string, data: any, errors: ValidationError[]) {
+  const validSlugs = await loadValidBeatSlugs();
+  if (validSlugs === null) {
+    errors.push({ file: filePath, message: 'Beat registry unavailable: story_beat cross-reference checks skipped', severity: 'warning' });
+  } else if (validSlugs.size === 0) {
+    errors.push({ file: filePath, message: 'Cannot validate effects.story_beat: story_beats registry not yet migrated. Run story_beats.yaml migration first.', severity: 'warning' });
+  } else {
+    const nodes = data?.nodes ?? {};
+    for (const [nodeId, node] of Object.entries(nodes as Record<string, any>)) {
+      const beatSlug = (node as any)?.effects?.story_beat;
+      if (beatSlug && !validSlugs.has(beatSlug)) {
+        errors.push({ file: filePath, message: `Unknown story_beat slug "${beatSlug}" on node "${nodeId}" — not in registry`, severity: 'error' });
+      }
+    }
+  }
+}
+
+async function validateSceneBeatSlugs(filePath: string, data: any, errors: ValidationError[]) {
+  const requiredBeat = data?.metadata?.required_story_beat;
+  if (requiredBeat === undefined || requiredBeat === null) return;
+  const validSlugs = await loadValidBeatSlugs();
+  if (validSlugs === null) {
+    errors.push({ file: filePath, message: 'Beat registry unavailable: required_story_beat cross-reference checks skipped', severity: 'warning' });
+  } else if (validSlugs.size === 0) {
+    errors.push({ file: filePath, message: 'Cannot validate required_story_beat: story_beats registry is empty. Run story_beats.yaml migration first.', severity: 'warning' });
+  } else {
+    const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
+    for (const slug of slugsToCheck) {
+      if (!validSlugs.has(slug)) {
+        errors.push({ file: filePath, message: `Unknown required_story_beat slug "${slug}" in scene — not in registry`, severity: 'error' });
+      }
+    }
+  }
+}
+
 // Validate a single YAML file
 export async function validateYAMLFile(filePath: string): Promise<ValidationResult> {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
 
   try {
-    // Read file
     const content = await fs.readFile(filePath, 'utf-8');
-    
-    // Parse YAML
+
     let data: any;
     try {
       data = yaml.load(content);
     } catch (e: any) {
-      errors.push({
-        file: filePath,
-        message: `YAML parse error: ${e.message}`,
-        severity: 'error',
-      });
+      errors.push({ file: filePath, message: `YAML parse error: ${e.message}`, severity: 'error' });
       return { valid: false, errors, warnings };
     }
 
-    // Determine content type from path
     const contentType = getContentTypeFromPath(filePath);
     if (!contentType) {
-      errors.push({
-        file: filePath,
-        message: 'Could not determine content type from file path',
-        severity: 'error',
-      });
+      errors.push({ file: filePath, message: 'Could not determine content type from file path', severity: 'error' });
       return { valid: false, errors, warnings };
     }
 
-    // Validate based on type
     const validationResult = validateContentByType(contentType, data);
     errors.push(...validationResult.errors.map(e => ({ ...e, file: filePath })));
     warnings.push(...validationResult.warnings);
 
-    // Beat slug cross-reference for dialogues
-    if (contentType === 'dialogue' && validationResult.errors.filter(e => e.severity === 'error').length === 0) {
-      const validSlugs = await loadValidBeatSlugs();
-      if (validSlugs === null) {
-        errors.push({
-          file: filePath,
-          message: 'Beat registry unavailable: story_beat cross-reference checks skipped',
-          severity: 'warning',
-        });
-      } else if (validSlugs.size === 0) {
-        errors.push({
-          file: filePath,
-          message: 'Cannot validate effects.story_beat: story_beats registry not yet migrated. Run story_beats.yaml migration first.',
-          severity: 'warning',
-        });
-      } else {
-        const nodes = data?.nodes ?? {};
-        for (const [nodeId, node] of Object.entries(nodes as Record<string, any>)) {
-          const beatSlug = (node as any)?.effects?.story_beat;
-          if (beatSlug && !validSlugs.has(beatSlug)) {
-            errors.push({
-              file: filePath,
-              message: `Unknown story_beat slug "${beatSlug}" on node "${nodeId}" — not in registry`,
-              severity: 'error',
-            });
-          }
-        }
-      }
-    }
-
-    // Beat slug cross-reference for scenes
-    if (contentType === 'scene' && validationResult.errors.filter(e => e.severity === 'error').length === 0) {
-      const requiredBeat = data?.metadata?.required_story_beat;
-      if (requiredBeat !== undefined && requiredBeat !== null) {
-        const validSlugs = await loadValidBeatSlugs();
-        if (validSlugs === null) {
-          errors.push({
-            file: filePath,
-            message: 'Beat registry unavailable: required_story_beat cross-reference checks skipped',
-            severity: 'warning',
-          });
-        } else if (validSlugs.size === 0) {
-          errors.push({
-            file: filePath,
-            message: 'Cannot validate required_story_beat: story_beats registry is empty. Run story_beats.yaml migration first.',
-            severity: 'warning',
-          });
-        } else {
-          const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
-          for (const slug of slugsToCheck) {
-            if (!validSlugs.has(slug)) {
-              errors.push({
-                file: filePath,
-                message: `Unknown required_story_beat slug "${slug}" in scene — not in registry`,
-                severity: 'error',
-              });
-            }
-          }
-        }
+    const hasSchemaErrors = validationResult.errors.some(e => e.severity === 'error');
+    if (!hasSchemaErrors) {
+      if (contentType === 'dialogue') {
+        await validateDialogueBeatSlugs(filePath, data, errors);
+      } else if (contentType === 'scene') {
+        await validateSceneBeatSlugs(filePath, data, errors);
       }
     }
 
@@ -154,11 +124,7 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
       warnings,
     };
   } catch (error: any) {
-    errors.push({
-      file: filePath,
-      message: `File read error: ${error.message}`,
-      severity: 'error',
-    });
+    errors.push({ file: filePath, message: `File read error: ${error.message}`, severity: 'error' });
     return { valid: false, errors, warnings };
   }
 }

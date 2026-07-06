@@ -81,7 +81,9 @@ adminStoryBeatsRouter.post('/', async (req, res) => {
       [slug, label, order, description]
     );
 
-    await refreshSlugCache();
+    refreshSlugCache().catch(err =>
+      console.error('[admin-story-beats] cache refresh failed after POST:', err)
+    );
 
     return res.status(201).json({
       success: true,
@@ -147,7 +149,9 @@ adminStoryBeatsRouter.put('/:slug', async (req, res) => {
       });
     }
 
-    await refreshSlugCache();
+    refreshSlugCache().catch(err =>
+      console.error('[admin-story-beats] cache refresh failed after PUT:', err)
+    );
 
     return res.status(200).json({
       success: true,
@@ -195,19 +199,21 @@ adminStoryBeatsRouter.delete('/:slug', async (req, res) => {
       });
     }
 
-    // Check for active references in dialogues and scenes before deletion
-    const dialogueCheck = await queryOLTP(
-      `SELECT dt.id FROM dialogue_trees dt
-       CROSS JOIN LATERAL jsonb_each(dt.nodes) AS node_entry
-       WHERE dt.nodes IS NOT NULL
-         AND node_entry.value -> 'effects' ->> 'story_beat' = $1
-       LIMIT 1`,
-      [slug]
-    );
-    const sceneCheck = await queryOLTP(
-      `SELECT id FROM scenes WHERE metadata ->> 'required_story_beat' = $1 LIMIT 1`,
-      [slug]
-    );
+    // Check for active references in dialogues and scenes (independent queries)
+    const [dialogueCheck, sceneCheck] = await Promise.all([
+      queryOLTP(
+        `SELECT dt.id FROM dialogue_trees dt
+         CROSS JOIN LATERAL jsonb_each(dt.nodes) AS node_entry
+         WHERE dt.nodes IS NOT NULL
+           AND node_entry.value -> 'effects' ->> 'story_beat' = $1
+         LIMIT 1`,
+        [slug]
+      ),
+      queryOLTP(
+        `SELECT id FROM scenes WHERE metadata ->> 'required_story_beat' = $1 LIMIT 1`,
+        [slug]
+      ),
+    ]);
 
     if ((dialogueCheck.rowCount ?? 0) > 0 || (sceneCheck.rowCount ?? 0) > 0) {
       return res.status(409).json({
@@ -217,12 +223,14 @@ adminStoryBeatsRouter.delete('/:slug', async (req, res) => {
       });
     }
 
-    const result = await queryOLTP(
+    await queryOLTP(
       `DELETE FROM story_beats WHERE slug = $1`,
       [slug]
     );
 
-    await refreshSlugCache();
+    refreshSlugCache().catch(err =>
+      console.error('[admin-story-beats] cache refresh failed after DELETE:', err)
+    );
 
     return res.status(200).json({
       success: true,
