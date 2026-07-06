@@ -4,16 +4,16 @@
 >
 > **Dependencies:** None (uses existing `fs/promises`, `js-yaml`, `glob`, `zod`)
 >
-> **Status:** 🔲 Planned
+> **Status:** ✅ Complete
 
 ---
 
 ## Prerequisites
 
-- [ ] Server is running and healthy
-- [ ] `authAndAdminMiddleware` is working (all admin routes authenticated)
-- [ ] `docs/` volume mount is present (read-only is fine)
-- [ ] `content/` volume mount is present (read-write)
+- [x] Server is running and healthy
+- [x] `authAndAdminMiddleware` is working (all admin routes authenticated)
+- [x] `docs/` volume mount is present (read-only is fine)
+- [x] `content/` volume mount is present (read-write)
 
 ---
 
@@ -36,9 +36,9 @@
 **Purpose:** Each content YAML can optionally point to its source lore markdown file. This enables the coverage dashboard to cross-reference lore → content.
 
 **Verification:**
-- [ ] `npm run build --workspace=shared` passes
-- [ ] Existing YAML files still validate (field is optional)
-- [ ] New YAML files with `lore_ref` validate
+- [x] `npm run build --workspace=shared` passes
+- [x] Existing YAML files still validate (field is optional)
+- [x] New YAML files with `lore_ref` validate
 
 ---
 
@@ -127,12 +127,12 @@ Returns search results across all lore markdown files.
 - Skip binary files (`.png`, `.jpg`)
 
 **Verification:**
-- [ ] `GET /admin/lore/tree` returns all markdown files
-- [ ] `GET /admin/lore/file?path=figures/ana_kim.md` returns content
-- [ ] `GET /admin/lore/file?path=../.env` returns 400 (path traversal blocked)
-- [ ] `GET /admin/lore/file?path=figures/ana_kim.prompt.md` returns 400 (prompt files rejected)
-- [ ] `GET /admin/lore/search?q=Ana+Kim` returns results
-- [ ] All endpoints return 401/403 without valid admin auth
+- [x] `GET /admin/lore/tree` returns all markdown files
+- [x] `GET /admin/lore/file?path=figures/ana_kim.md` returns content
+- [x] `GET /admin/lore/file?path=../.env` returns 400 (path traversal blocked)
+- [x] `GET /admin/lore/file?path=figures/ana_kim.prompt.md` returns 400 (prompt files rejected)
+- [x] `GET /admin/lore/search?q=Ana+Kim` returns results
+- [x] All endpoints return 401/403 without valid admin auth
 
 ---
 
@@ -220,12 +220,12 @@ Returns a directory tree of all YAML files under `content/`.
 - Infer `type` from subdirectory name (e.g., `characters/` → `character`, `scenes/` → `scene`)
 
 **Verification:**
-- [ ] `GET /admin/content/tree` returns all YAML files
-- [ ] `GET /admin/content/file` returns YAML content
-- [ ] `PUT /admin/content/file` writes new YAML file
-- [ ] `PUT /admin/content/file` with invalid YAML returns 400
-- [ ] Path traversal attacks are blocked (returns 400)
-- [ ] Non-admin user gets 403 on PUT
+- [x] `GET /admin/content/tree` returns all YAML files
+- [x] `GET /admin/content/file` returns YAML content
+- [x] `PUT /admin/content/file` writes new YAML file
+- [x] `PUT /admin/content/file` with invalid YAML returns 400
+- [x] Path traversal attacks are blocked (returns 400)
+- [x] Non-admin user gets 403 on PUT
 
 ---
 
@@ -298,11 +298,11 @@ Returns a coverage report showing which lore entities have corresponding content
 - Check DB tables for portrait_urls, background_url completeness
 
 **Verification:**
-- [ ] `GET /admin/coverage` returns a comprehensive report
-- [ ] Report correctly identifies which figures have character YAMLs
-- [ ] Report correctly identifies which districts have scenes
-- [ ] Report correctly identifies characters without portraits
-- [ ] Report correctly identifies scenes without backgrounds
+- [x] `GET /admin/coverage` returns a comprehensive report
+- [x] Report correctly identifies which figures have character YAMLs
+- [x] Report correctly identifies which districts have scenes
+- [x] Report correctly identifies characters without portraits
+- [x] Report correctly identifies scenes without backgrounds
 
 ---
 
@@ -325,23 +325,23 @@ Returns a coverage report showing which lore entities have corresponding content
 4. Ensure the `**Type:**` field in prompt files is correctly parsed to differentiate `portrait` vs `background` vs existing types
 
 **Verification:**
-- [ ] `GET /assets/prompt-catalog` now shows 5 categories (existing 3 + 2 new)
-- [ ] Character portrait prompts from `docs/lore/figures/*.prompt.md` appear
-- [ ] Location background prompts from `docs/lore/landmarks/**/*.prompt.md` appear
-- [ ] Existing `ui-concepts` prompts still work
+- [x] `GET /assets/prompt-catalog` now shows 5 categories (existing 3 + 2 new)
+- [x] Character portrait prompts from `docs/lore/figures/*.prompt.md` appear
+- [x] Location background prompts from `docs/lore/landmarks/**/*.prompt.md` appear
+- [x] Existing `ui-concepts` prompts still work
 
 ---
 
 ## Verification Checklist
 
-- [ ] All new server endpoints work with valid admin auth
-- [ ] All new server endpoints return 401/403 without auth
-- [ ] Path traversal is blocked on all file endpoints
-- [ ] Shared schemas build successfully
-- [ ] Coverage report is accurate
-- [ ] Prompt catalog includes figures and landmarks
-- [ ] `npm run lint --workspace=server` passes
-- [ ] `npm run build --workspace=server` passes
+- [x] All new server endpoints work with valid admin auth
+- [x] All new server endpoints return 401/403 without auth
+- [x] Path traversal is blocked on all file endpoints
+- [x] Shared schemas build successfully
+- [x] Coverage report is accurate
+- [x] Prompt catalog includes figures and landmarks
+- [x] `npm run lint --workspace=server` passes
+- [x] `npm run build --workspace=server` passes
 
 ## Registration in index.ts
 

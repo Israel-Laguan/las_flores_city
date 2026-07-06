@@ -43,7 +43,7 @@ Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| [Phase 0](phase-0-foundation.md) | 🔲 Planned | Server foundation: lore/coverage/file endpoints |
+| [Phase 0](phase-0-foundation.md) | ✅ Complete | Server foundation: lore/coverage/file endpoints |
 | [Phase 1](phase-1-base-world.md) | 🔲 Planned | Base world: lore browser, coverage, asset linking |
 | [Phase 2](phase-2-main-story.md) | 🔲 Planned | Main story: story arc, flow validation |
 | [Phase 3](phase-3-mission-authoring.md) | 🔲 Planned | Missions: YAML editor, mission wizard |
