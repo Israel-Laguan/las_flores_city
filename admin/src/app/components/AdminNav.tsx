@@ -13,7 +13,7 @@ function NavLinksRow() {
       <Link href="/characters" style={navLinkStyle}>👤 Characters</Link>
       <Link href="/story-beats" style={navLinkStyle}>📖 Story Beats</Link>
       <Link href="/story-arc" style={navLinkStyle}>📊 Story Arc</Link>
-      <Link href="/mysteries" style={navLinkStyle}>🔍 Mysteries</Link>
+      <Link href="/missions" style={navLinkStyle}>🔍 Missions</Link>
       <Link href="/overlays" style={navLinkStyle}>🔄 Overlays</Link>
       <Link href="/locations" style={navLinkStyle}>📍 Locations</Link>
       <Link href="/vault" style={navLinkStyle}>🔐 Vault</Link>

@@ -12,7 +12,7 @@ import * as fc from 'fast-check';
 import {
   YAMLCharacterSchema,
   YAMLSceneSchema,
-  YAMLMysterySchema,
+  YAMLMissionSchema,
   YAMLDialogueSchema,
   YAMLOverlaySchema,
   YAMLLocationSchema,
@@ -170,13 +170,13 @@ describe('lore_ref optional field acceptance across all schemas (Property 1)', (
     });
   });
 
-  // --- YAMLMysterySchema ---
+  // --- YAMLMissionSchema ---
 
-  describe('YAMLMysterySchema', () => {
+  describe('YAMLMissionSchema', () => {
     it('accepts valid objects without lore_ref (Req 1.3)', () => {
       fc.assert(
         fc.property(baseMystery, (obj) => {
-          return parseSucceeds(YAMLMysterySchema, obj);
+          return parseSucceeds(YAMLMissionSchema, obj);
         }),
         { numRuns: NUM_RUNS },
       );
@@ -185,7 +185,7 @@ describe('lore_ref optional field acceptance across all schemas (Property 1)', (
     it('accepts valid objects with lore_ref of 0–255 chars (Req 1.3)', () => {
       fc.assert(
         fc.property(baseMystery, validLoreRef, (obj, loreRef) => {
-          return parseSucceeds(YAMLMysterySchema, { ...obj, lore_ref: loreRef });
+          return parseSucceeds(YAMLMissionSchema, { ...obj, lore_ref: loreRef });
         }),
         { numRuns: NUM_RUNS },
       );
@@ -194,7 +194,7 @@ describe('lore_ref optional field acceptance across all schemas (Property 1)', (
     it('rejects objects with lore_ref longer than 255 chars (Req 1.3)', () => {
       fc.assert(
         fc.property(baseMystery, tooLongLoreRef, (obj, loreRef) => {
-          return parseFails(YAMLMysterySchema, { ...obj, lore_ref: loreRef });
+          return parseFails(YAMLMissionSchema, { ...obj, lore_ref: loreRef });
         }),
         { numRuns: NUM_RUNS },
       );

@@ -17,13 +17,13 @@ const columns = [
   { key: 'createdAt', label: 'Created', render: (item: any) => new Date(item.createdAt).toLocaleDateString() },
 ];
 
-export default function MysteriesPage() {
+export default function MissionsPage() {
   return (
     <ContentListPage
-      title="🔍 Mysteries"
-      heading="Mystery List"
+      title="🔍 Missions"
+      heading="Mission List"
       endpoint="/api/admin/mysteries"
-      detailPath="/mysteries"
+      detailPath="/missions"
       columns={columns}
     />
   );

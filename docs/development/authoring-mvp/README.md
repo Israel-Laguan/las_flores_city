@@ -19,7 +19,8 @@ LORE (markdown)    →    CONTENT (yaml)    →    DB (postgres)
   Figures (128)          Characters (160)       characters
   Landmarks (~70)        Scenes (10)            scenes
   Districts (11)         Dialogues (8)          dialogue_trees
-  Stories (40)           Mysteries (1)          mysteries
+  Stories (40)           Missions (1)           mysteries (table stays as 'mysteries')
+                         Stories (new)          stories (new table)
                          Vault items            vault_items
                          Gigs                   gigs
                          Story beats (7)        story_beats
@@ -46,7 +47,7 @@ Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 | [Phase 0](phase-0-foundation.md) | ✅ Complete | Server foundation: lore/coverage/file endpoints |
 | [Phase 1](phase-1-base-world.md) | 🔲 Planned | Base world: lore browser, coverage, asset linking |
 | [Phase 2](phase-2-main-story.md) | 🔲 Planned | Main story: story arc, flow validation |
-| [Phase 3](phase-3-mission-authoring.md) | 🔲 Planned | Missions: YAML editor, mission wizard |
+| [Phase 3](phase-3-mission-authoring.md) | 🔲 Planned | Missions: schema rename, stories type, YAML editor, linker, wizard |
 | [Phase 4](phase-4-quality-checks.md) | 🔲 Planned | Quality: density, length, inconsistency checks |
 
 ---
@@ -60,7 +61,7 @@ Phase 1 (admin UI: lore browser, coverage, asset linking)
     ↓
 Phase 2 (story arc + validation)
     ↓
-Phase 3 (YAML editor + mission wizard)
+Phase 3 (schema rename + stories type + YAML editor + content linker + mission wizard)
     ↓
 Phase 4 (quality checks)
 ```

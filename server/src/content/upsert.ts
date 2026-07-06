@@ -1,7 +1,7 @@
 import yaml from 'js-yaml';
 import fs from 'fs/promises';
 import path from 'path';
-import { VaultFileSchema, YAMLMysterySchema, ShopItemFileSchema } from '@las-flores/shared';
+import { VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { setCache, deleteCache } from '../database/redis.js';
 import { sanitizeText } from './validate.js';
@@ -17,7 +17,8 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) return 'gig';
   if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) return 'location';
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) return 'vault';
-  if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) return 'mystery';
+  if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) return 'mission';
+  if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) return 'story';
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) return 'shop_item';
   if (normalizedPath.endsWith('story_beats.yaml')) return 'story_beat';
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) return 'gig';
@@ -76,7 +77,7 @@ async function upsertDialogueOverlay(data: any): Promise<string> {
         is_nsfw = EXCLUDED.is_nsfw,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.name, data.description || null, data.target_tree_id, data.mystery_id || null, JSON.stringify(data.modifications || []), JSON.stringify(data.nodes || {}), JSON.stringify(data.conditions || {}), data.priority || 0, data.is_nsfw || false]
+    [data.id, data.name, data.description || null, data.target_tree_id, data.mission_id || null, JSON.stringify(data.modifications || []), JSON.stringify(data.nodes || {}), JSON.stringify(data.conditions || {}), data.priority || 0, data.is_nsfw || false]
   );
   return result.rows[0].id;
 }
@@ -170,7 +171,7 @@ async function upsertVaultItem(data: any): Promise<string> {
         requires_signed_url = EXCLUDED.requires_signed_url,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.title, sanitizeText(data.description), data.thumbnail_url, data.media_path, data.item_type || 'clue', data.mystery_id || null, requiresSignedUrl]
+    [data.id, data.title, sanitizeText(data.description), data.thumbnail_url, data.media_path, data.item_type || 'clue', data.mission_id || null, requiresSignedUrl]
   );
   return result.rows[0].id;
 }
@@ -243,16 +244,54 @@ async function processVaultData(data: any): Promise<string> {
   return vaultIds.join(',');
 }
 
-async function processMysteryData(data: any): Promise<string> {
-  if (!data) throw new Error("Invalid mystery data: content is empty");
-  const mysteries = data.mysteries || [data];
-  const mysteryIds: string[] = [];
-  for (const mystery of mysteries) {
-    YAMLMysterySchema.parse(mystery);
-    const id = await upsertMystery(mystery);
-    mysteryIds.push(id);
+async function processMissionData(data: any): Promise<string> {
+  if (!data) throw new Error("Invalid mission data: content is empty");
+  const missions = data.missions || [data];
+  const missionIds: string[] = [];
+  for (const mission of missions) {
+    YAMLMissionSchema.parse(mission);
+    const id = await upsertMystery(mission);
+    missionIds.push(id);
   }
-  return mysteryIds.join(',');
+  return missionIds.join(',');
+}
+
+async function upsertStory(data: any): Promise<string> {
+  const result = await queryOLTP(
+    `INSERT INTO stories (id, title, description, mission_id, characters, scenes, dialogues, overlays, vault_items, written_by, lore_ref)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      ON CONFLICT (id) DO UPDATE SET
+        title = EXCLUDED.title,
+        description = EXCLUDED.description,
+        mission_id = EXCLUDED.mission_id,
+        characters = EXCLUDED.characters,
+        scenes = EXCLUDED.scenes,
+        dialogues = EXCLUDED.dialogues,
+        overlays = EXCLUDED.overlays,
+        vault_items = EXCLUDED.vault_items,
+        written_by = EXCLUDED.written_by,
+        lore_ref = EXCLUDED.lore_ref,
+        updated_at = NOW()
+      RETURNING id`,
+    [
+      data.id, data.title, data.description || null, data.mission_id || null,
+      data.characters || [], data.scenes || [], data.dialogues || [],
+      data.overlays || [], data.vault_items || [],
+      data.written_by || null, data.lore_ref || null
+    ]
+  );
+  return result.rows[0].id;
+}
+
+async function processStoryData(data: any): Promise<string> {
+  if (!data) throw new Error("Invalid story data: content is empty");
+  const stories = data.stories || [data];
+  const storyIds: string[] = [];
+  for (const story of stories) {
+    const id = await upsertStory(story);
+    storyIds.push(id);
+  }
+  return storyIds.join(',');
 }
 
 async function processShopItemData(data: any): Promise<string> {
@@ -390,7 +429,8 @@ export async function processContentFile(filePath: string): Promise<AppliedMigra
     case 'scene': contentId = await processSceneData(data); break;
     case 'gig': contentId = await processGigData(data); break;
     case 'vault': contentId = await processVaultData(data); break;
-    case 'mystery': contentId = await processMysteryData(data); break;
+    case 'mission': contentId = await processMissionData(data); break;
+    case 'story': contentId = await processStoryData(data); break;
     case 'shop_item': contentId = await processShopItemData(data); break;
     case 'location': contentId = await processLocationData(data); break;
     case 'map_tile': contentId = await processMapTileData(data); break;

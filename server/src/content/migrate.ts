@@ -17,7 +17,8 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   scene: 'scenes',
   location: 'scenes',
   gig: 'gigs',
-  mystery: 'mysteries',
+  mission: 'mysteries',
+  story: 'stories',
   vault: 'vault_items',
   shop_item: 'shop_items',
   map_tile: 'map_tiles',
@@ -47,8 +48,10 @@ async function calculateChecksum(filePath: string): Promise<string> {
 
 export function extractContentIds(contentType: ContentType, data: Record<string, unknown>): string[] {
   switch (contentType) {
-    case 'mystery':
-      return ((data.mysteries as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
+    case 'mission':
+      return ((data.missions as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
+    case 'story':
+      return ((data.stories as Array<{ id: string }>) || []).map((item) => item.id);
     case 'vault':
       return ((data.vault_items as Array<{ id: string }>) || []).map((item) => item.id);
     case 'gig':
@@ -88,14 +91,14 @@ async function isTargetContentPresent(contentType: ContentType, ids: string[]): 
 
 async function areContentReferencesPresent(contentType: ContentType, data: Record<string, unknown>): Promise<boolean> {
   if (contentType === 'vault') {
-    const items = (data.vault_items as Array<{ id: string; mystery_id?: string }>) || [];
+    const items = (data.vault_items as Array<{ id: string; mission_id?: string }>) || [];
 
     for (const item of items) {
-      if (!item.mystery_id) {
+      if (!item.mission_id) {
         continue;
       }
 
-      const mysteryResult = await queryOLTP('SELECT id FROM mysteries WHERE id = $1', [item.mystery_id]);
+      const mysteryResult = await queryOLTP('SELECT id FROM mysteries WHERE id = $1', [item.mission_id]);
       if (mysteryResult.rows.length === 0) {
         return false;
       }
@@ -104,7 +107,7 @@ async function areContentReferencesPresent(contentType: ContentType, data: Recor
         'SELECT mystery_id FROM vault_items WHERE id = $1',
         [item.id]
       );
-      if (vaultResult.rows.length > 0 && vaultResult.rows[0].mystery_id !== item.mystery_id) {
+      if (vaultResult.rows.length > 0 && vaultResult.rows[0].mystery_id !== item.mission_id) {
         return false;
       }
     }
@@ -113,7 +116,7 @@ async function areContentReferencesPresent(contentType: ContentType, data: Recor
   }
 
   if (contentType === 'overlay') {
-    const mysteryId = (data as { mystery_id?: string }).mystery_id;
+    const mysteryId = (data as { mission_id?: string }).mission_id;
     if (!mysteryId) {
       return true;
     }
@@ -197,8 +200,11 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
-  if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
-    return 'mystery';
+  if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
+    return 'mission';
+  }
+  if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) {
+    return 'story';
   }
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
     return 'shop_item';
@@ -219,7 +225,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
 }
 
 function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['story_beat', 'character', 'scene', 'location', 'mystery', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile'];
+  const order: ContentType[] = ['story_beat', 'character', 'scene', 'location', 'mission', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile', 'story'];
   
   return files.sort((a, b) => {
     const typeA = getContentTypeFromPath(a);

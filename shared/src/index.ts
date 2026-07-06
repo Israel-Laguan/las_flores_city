@@ -318,7 +318,7 @@ export const YAMLOverlaySchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   target_tree_id: z.string().uuid(),
-  mystery_id: z.string().uuid().optional(),
+  mission_id: z.string().uuid().optional(),
   modifications: z.array(z.object({
     node_id: z.string(),
     action: z.enum(['replace', 'add_choice', 'remove_choice', 'modify_text']),
@@ -334,7 +334,7 @@ export const YAMLOverlaySchema = z.object({
 
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
 
-export const YAMLMysterySchema = z.object({
+export const YAMLMissionSchema = z.object({
   id: z.string().uuid(),
   title: z.string().min(1).max(255),
   description: z.string().min(1),
@@ -343,18 +343,18 @@ export const YAMLMysterySchema = z.object({
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),
   // Aftermath directives executed atomically by the
-  // LeaderboardWorker when this mystery's Breakthrough window
-  // closes. Defaults to {} so existing mystery YAMLs still parse.
+  // LeaderboardWorker when this mission's Breakthrough window
+  // closes. Defaults to {} so existing mission YAMLs still parse.
   aftermath_payload: AftermathSchema.optional().default({}),
 });
 
-export type YAMLMystery = z.infer<typeof YAMLMysterySchema>;
+export type YAMLMission = z.infer<typeof YAMLMissionSchema>;
 
-export const YAMLMysteryFileSchema = z.object({
-  mysteries: z.array(YAMLMysterySchema),
+export const YAMLMissionFileSchema = z.object({
+  missions: z.array(YAMLMissionSchema),
 });
 
-export type YAMLMysteryFile = z.infer<typeof YAMLMysteryFileSchema>;
+export type YAMLMissionFile = z.infer<typeof YAMLMissionFileSchema>;
 
 export const YAMLSceneSchema = z.object({
   id: z.string().uuid(),
@@ -403,7 +403,7 @@ export const MigrationLogSchema = z.object({
   id: z.string().uuid(),
   file_path: z.string(),
   file_checksum: z.string(),
-  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile', 'story_beat']),
+  content_type: z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat']),
   content_id: z.string(),
   applied_at: z.string().datetime(),
   applied_by: z.string().uuid().optional(),
@@ -509,7 +509,10 @@ export type { Gig } from './schemas/gig.js';
 export { StoryBeatSchema, StoryBeatRegistrySchema } from './schemas/story-beat.js';
 export type { StoryBeat, StoryBeatRegistry } from './schemas/story-beat.js';
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mystery', 'shop_item', 'location', 'map_tile', 'story_beat']);
+export { YAMLStorySchema, YAMLStoryFileSchema } from './schemas/story.js';
+export type { YAMLStory, YAMLStoryFile } from './schemas/story.js';
+
+export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat']);
 
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 

@@ -7,13 +7,14 @@ import {
   YAMLDialogueSchema,
   YAMLOverlaySchema,
   YAMLSceneSchema,
-  YAMLMysterySchema,
+  YAMLMissionSchema,
   YAMLLocationSchema,
   VaultFileSchema,
   ShopItemFileSchema,
   GigFileSchema,
   StoryBeatRegistrySchema,
   ContentType,
+  YAMLStoryFileSchema,
 } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { getCache } from '../database/redis.js';
@@ -142,14 +143,17 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
       case 'overlay':
         YAMLOverlaySchema.parse(data);
         break;
-      case 'mystery':
-        if (data.mysteries) {
-          for (const mystery of data.mysteries) {
-            YAMLMysterySchema.parse(mystery);
+      case 'mission':
+        if (data.missions) {
+          for (const mission of data.missions) {
+            YAMLMissionSchema.parse(mission);
           }
         } else {
-          YAMLMysterySchema.parse(data);
+          YAMLMissionSchema.parse(data);
         }
+        break;
+      case 'story':
+        YAMLStoryFileSchema.parse(data);
         break;
       case 'scene':
         YAMLSceneSchema.parse(data);
@@ -244,8 +248,8 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
     return 'vault';
   }
-  if (normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
-    return 'mystery';
+  if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
+    return 'mission';
   }
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
     return 'shop_item';

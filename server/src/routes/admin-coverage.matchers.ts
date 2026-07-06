@@ -23,7 +23,7 @@ export interface LandmarkCoverageItem {
 export interface StoryCoverageItem {
   name: string;
   lorePath: string;
-  hasMysteryYaml: boolean;
+  hasMissionYaml: boolean;
 }
 
 export function figureStem(figurePath: string): string {
@@ -82,13 +82,13 @@ export function matchLandmarksToScenes(
 
 export function matchStoriesToMysteries(
   storyPaths: string[],
-  mysteries: Array<{ title?: string }>,
+  missions: Array<{ title?: string }>,
 ): StoryCoverageItem[] {
-  const mysteryTitles = mysteries.map(m => normalizeName(m.title ?? '')).filter(t => t.length > 0);
+  const missionTitles = missions.map(m => normalizeName(m.title ?? '')).filter(t => t.length > 0);
   return storyPaths.map(lorePath => {
     const stem = figureStem(lorePath);
     const normalizedStem = normalizeName(stem.replace(/_/g, ' '));
-    const hasMysteryYaml = mysteryTitles.some(mt => mt.includes(normalizedStem) || normalizedStem.includes(mt));
-    return { name: stem, lorePath, hasMysteryYaml };
+    const hasMissionYaml = missionTitles.some(mt => mt.includes(normalizedStem) || normalizedStem.includes(mt));
+    return { name: stem, lorePath, hasMissionYaml };
   });
 }

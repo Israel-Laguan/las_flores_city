@@ -2,7 +2,7 @@ id: "c0000000-e29b-41d4-a716-446655440001"
 name: "The Great Lithium Leak Overlay"
 description: "Injects mystery hook and investigation dialogue into the Barista's base tree for players investigating the Great Lithium Leak cover-up"
 target_tree_id: "f6a7b8c9-d0e1-2345-fabc-456789012345"
-mystery_id: "a0000000-e29b-41d4-a716-446655440001"
+mission_id: "a0000000-e29b-41d4-a716-446655440001"
 priority: 10
 nodes:
   "marco_greeting":
