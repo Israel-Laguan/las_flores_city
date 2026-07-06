@@ -453,3 +453,92 @@ adminContentRouter.get('/tree', async (_req, res) => {
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// POST /admin/content/assign-asset
+//
+// Assigns an asset URL to a field in a content YAML file.
+// ---------------------------------------------------------------------------
+
+import { assignAsset } from '../services/ContentAssetService.js';
+
+adminContentRouter.post('/assign-asset', async (req, res) => {
+  try {
+    const { contentPath, fieldPath, assetUrl } = req.body;
+
+    // Validate required fields
+    if (!contentPath || typeof contentPath !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing required field: contentPath',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    if (!contentPath.endsWith('.yaml')) {
+      res.status(400).json({
+        success: false,
+        error: 'contentPath must end with .yaml',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    if (!fieldPath || typeof fieldPath !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing required field: fieldPath',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    if (!assetUrl || typeof assetUrl !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing required field: assetUrl',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Validate content path (no traversal)
+    const contentDir = resolveContentDir();
+    const absolutePath = path.join(contentDir, contentPath);
+    if (!absolutePath.startsWith(contentDir)) {
+      res.status(400).json({
+        success: false,
+        error: 'Path traversal not allowed',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const result = await assignAsset(contentPath, fieldPath, assetUrl);
+
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+
+    if (message.includes('File not found')) {
+      res.status(404).json({
+        success: false,
+        error: message,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    console.error('[admin-content] POST /assign-asset error:', error);
+    res.status(400).json({
+      success: false,
+      error: message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});

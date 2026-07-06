@@ -1,0 +1,13 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567005"
+name: "Northern District"
+description: "A mixed-use area with residential blocks and small commercial zones. The middle class lives and works within walking distance."
+district: "North"
+district_lore: "north"
+district_subzone: "North"
+mood: "ordinary"
+available_dialogues: []
+metadata:
+  idle_thoughts:
+    - "Residents move through their daily routines. Predictability is a form of comfort."
+    - "Small shops line the main avenue. Commerce is steady, not spectacular."
+    - "The neighborhood watch app shows normal activity levels. All quiet."

@@ -1,0 +1,13 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567006"
+name: "Northeast Quarter"
+description: "A rapidly developing area with new construction alongside older buildings. Change is the only constant here."
+district: "Northeast"
+district_lore: "northeast"
+district_subzone: "Northeast"
+mood: "transitional"
+available_dialogues: []
+metadata:
+  idle_thoughts:
+    - "Construction equipment dominates the skyline. Development permits are flowing."
+    - "Old and new architecture clash at every corner. The aesthetic is chaotic but alive."
+    - "Property values are rising. Displacement pressure is building beneath the surface."
