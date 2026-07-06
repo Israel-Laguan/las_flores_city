@@ -472,30 +472,58 @@ async function enrichWithDatabaseResults(
   landmarks: LandmarkCoverageItem[],
 ): Promise<void> {
   try {
-    const [charWithNames, sceneWithBg] = await Promise.all([
+    const [charWithNames, sceneWithBg, dialogueTrees] = await Promise.all([
       queryOLTP<{ id: string; name: string; portrait_urls: string[] | null }>(
         'SELECT id, name, portrait_urls FROM characters',
       ),
       queryOLTP<{ id: string; name: string; background_url: string | null }>(
         'SELECT id, name, background_url FROM scenes',
       ),
+      queryOLTP<{ id: string; nodes: Record<string, { speaker_id?: string }> }>(
+        'SELECT id, nodes FROM dialogue_trees',
+      ),
     ]);
 
-    // For figures: match by name similarity; set hasPortraitUrl if character
-    // has a non-empty portrait_urls array.
+    // Pre-compute normalized names for characters
+    const normalizedChars = charWithNames.rows.map(row => ({
+      ...row,
+      normalizedName: normalizeName(row.name),
+      lowerId: row.id.toLowerCase(),
+    }));
+
+    // Pre-compute normalized names for scenes
+    const normalizedScenes = sceneWithBg.rows.map(row => ({
+      ...row,
+      normalizedName: normalizeName(row.name),
+      lowerId: row.id.toLowerCase(),
+    }));
+
+    // Build a set of character IDs that appear as speakers in any dialogue tree
+    const characterIdsWithDialogue = new Set<string>();
+    for (const tree of dialogueTrees.rows) {
+      if (tree.nodes && typeof tree.nodes === 'object') {
+        for (const node of Object.values(tree.nodes)) {
+          if (node.speaker_id) {
+            characterIdsWithDialogue.add(node.speaker_id);
+          }
+        }
+      }
+    }
+
+    // For figures: match by name similarity; set hasPortraitUrl and hasDialogue.
     for (const item of figures) {
       const lowerFigStem = item.name.toLowerCase();
-      const matchingChar = charWithNames.rows.find(row => {
-        const dbNameNorm = row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const matchingChar = normalizedChars.find(row => {
         return (
-          dbNameNorm.includes(lowerFigStem) ||
-          lowerFigStem.includes(dbNameNorm) ||
-          row.id.toLowerCase().includes(lowerFigStem)
+          row.normalizedName.includes(lowerFigStem) ||
+          lowerFigStem.includes(row.normalizedName) ||
+          row.lowerId.includes(lowerFigStem)
         );
       });
       if (matchingChar) {
         item.hasPortraitUrl =
           Array.isArray(matchingChar.portrait_urls) && matchingChar.portrait_urls.length > 0;
+        item.hasDialogue = characterIdsWithDialogue.has(matchingChar.id);
       }
     }
 
@@ -503,12 +531,11 @@ async function enrichWithDatabaseResults(
     // has a non-empty background_url string.
     for (const item of districts) {
       const lowerStem = item.name.toLowerCase();
-      const matchingScene = sceneWithBg.rows.find(row => {
-        const dbNameNorm = row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const matchingScene = normalizedScenes.find(row => {
         return (
-          dbNameNorm.includes(lowerStem) ||
-          lowerStem.includes(dbNameNorm) ||
-          row.id.toLowerCase().includes(lowerStem)
+          row.normalizedName.includes(lowerStem) ||
+          lowerStem.includes(row.normalizedName) ||
+          row.lowerId.includes(lowerStem)
         );
       });
       if (matchingScene) {
@@ -517,14 +544,13 @@ async function enrichWithDatabaseResults(
       }
     }
 
-    // For landmarks: same name-similarity matching approach.
+    // For landmarks: use shared normalizeName for consistent matching.
     for (const item of landmarks) {
-      const normalizedLandmark = item.name.toLowerCase().replace(/_/g, ' ');
-      const matchingScene = sceneWithBg.rows.find(row => {
-        const dbNameNorm = row.name.toLowerCase();
+      const normalizedLandmark = normalizeName(item.name.replace(/_/g, ' '));
+      const matchingScene = normalizedScenes.find(row => {
         return (
-          dbNameNorm.includes(normalizedLandmark) ||
-          normalizedLandmark.includes(dbNameNorm)
+          row.normalizedName.includes(normalizedLandmark) ||
+          normalizedLandmark.includes(row.normalizedName)
         );
       });
       if (matchingScene) {

@@ -72,12 +72,14 @@ export type LoreSubdir = typeof LORE_SUBDIRS[number];
  */
 export function inferLoreType(relativePath: string): string {
   const firstSegment = relativePath.split('/')[0] ?? '';
-  // Strip a single trailing 's' to get the singular form.
-  // e.g. "figures" → "figure", "districts" → "district"
+  // Handle common plural forms: -ies → -y, -s → strip trailing s
+  // e.g. "mysteries" → "mystery", "companies" → "company", "figures" → "figure"
   // "humanity_first" has no trailing 's', so it stays unchanged.
-  return firstSegment.endsWith('s')
-    ? firstSegment.slice(0, -1)
-    : firstSegment;
+  return firstSegment.endsWith('ies')
+    ? `${firstSegment.slice(0, -3)}y`
+    : firstSegment.endsWith('s')
+      ? firstSegment.slice(0, -1)
+      : firstSegment;
 }
 
 /**
@@ -128,6 +130,43 @@ export interface LoreFileEntry {
 }
 
 // ---------------------------------------------------------------------------
+// walkLoreMdFiles — shared helper for recursive lore directory traversal
+//
+// Returns all lore markdown files (excluding .prompt.md) under the given
+// directory as { relativePath, absolutePath } pairs. Used by both /tree
+// and /search to avoid duplicating the directory walk logic.
+// ---------------------------------------------------------------------------
+
+async function walkLoreMdFiles(
+  loreDir: string,
+): Promise<Array<{ relativePath: string; absolutePath: string }>> {
+  const dirents = await fs.promises.readdir(loreDir, {
+    withFileTypes: true,
+    recursive: true,
+  });
+
+  const files: Array<{ relativePath: string; absolutePath: string }> = [];
+
+  for (const dirent of dirents) {
+    if (!dirent.isFile()) continue;
+
+    const filename = dirent.name;
+    if (!filename.endsWith('.md') || filename.endsWith('.prompt.md')) continue;
+
+    // In Node 20, recursive Dirent.parentPath is the parent directory path.
+    const absolutePath = path.join(dirent.parentPath, filename);
+    const relativePath = path
+      .relative(loreDir, absolutePath)
+      .split(path.sep)
+      .join('/');
+
+    files.push({ relativePath, absolutePath });
+  }
+
+  return files;
+}
+
+// ---------------------------------------------------------------------------
 // GET /admin/lore/tree
 //
 // Recursively walks getLoreDir(), filters to .md files (excluding
@@ -156,47 +195,23 @@ adminLoreRouter.get('/tree', async (_req, res) => {
       return;
     }
 
-    // Walk the lore directory recursively (Node 18.17+ / 20+).
-    // Each Dirent in the result has a `path` property (the directory
-    // containing the entry) when returned from a recursive readdir.
-    const dirents = await fs.promises.readdir(loreDir, {
-      withFileTypes: true,
-      recursive: true,
-    });
+    // Walk the lore directory recursively and collect lore file paths.
+    const loreFiles = await walkLoreMdFiles(loreDir);
 
-    const tree: LoreFileEntry[] = [];
-
-    for (const dirent of dirents) {
-      if (!dirent.isFile()) continue;
-
-      const filename = dirent.name;
-
-      // Apply the lore file filter: include only .md, exclude .prompt.md
-      if (!filename.endsWith('.md') || filename.endsWith('.prompt.md')) {
-        continue;
-      }
-
-      // Reconstruct the absolute path.
-      // In Node 20, recursive Dirent.path is the *parent directory* path.
-      const absolutePath = path.join(dirent.path, filename);
-
-      // Compute the path relative to loreDir, normalised to forward slashes.
-      const relativePath = path
-        .relative(loreDir, absolutePath)
-        .split(path.sep)
-        .join('/');
-
-      // Stat the file for size and mtime.
-      const stat = await fs.promises.stat(absolutePath);
-
-      tree.push({
-        path: relativePath,
-        name: filename.slice(0, -'.md'.length),
-        type: inferLoreType(relativePath),
-        size: stat.size,
-        modifiedAt: stat.mtime.toISOString(),
-      });
-    }
+    // Stat all files in parallel
+    const tree = await Promise.all(
+      loreFiles.map(async ({ relativePath, absolutePath }) => {
+        const stat = await fs.promises.stat(absolutePath);
+        const filename = relativePath.split('/').pop() ?? relativePath;
+        return {
+          path: relativePath,
+          name: filename.slice(0, -'.md'.length),
+          type: inferLoreType(relativePath),
+          size: stat.size,
+          modifiedAt: stat.mtime.toISOString(),
+        };
+      })
+    );
 
     res.json({
       success: true,
@@ -398,33 +413,16 @@ adminLoreRouter.get('/search', async (req, res) => {
       return;
     }
 
-    // Walk the lore directory recursively and collect lore file records.
-    const dirents = await fs.promises.readdir(loreDir, {
-      withFileTypes: true,
-      recursive: true,
-    });
+    // Walk the lore directory recursively and collect lore file paths.
+    const loreFiles = await walkLoreMdFiles(loreDir);
 
-    const fileRecords: LoreFileRecord[] = [];
-
-    for (const dirent of dirents) {
-      if (!dirent.isFile()) continue;
-
-      const filename = dirent.name;
-
-      // Apply the same lore file filter: .md but not .prompt.md
-      if (!filename.endsWith('.md') || filename.endsWith('.prompt.md')) {
-        continue;
-      }
-
-      const absolutePath = path.join(dirent.path, filename);
-      const relativePath = path
-        .relative(loreDir, absolutePath)
-        .split(path.sep)
-        .join('/');
-
-      const content = await fs.promises.readFile(absolutePath, 'utf-8');
-      fileRecords.push({ relativePath, content });
-    }
+    // Read all files in parallel
+    const fileRecords = await Promise.all(
+      loreFiles.map(async ({ relativePath, absolutePath }) => {
+        const content = await fs.promises.readFile(absolutePath, 'utf-8');
+        return { relativePath, content };
+      })
+    );
 
     const results = searchLoreFiles(q, fileRecords);
 

@@ -163,7 +163,12 @@ describe('Property 3: Type inference from subdirectory', () => {
   const LORE_SUBDIRS_ARRAY = LORE_SUBDIRS as readonly string[];
 
   function expectedSingular(subdir: string): string {
-    return subdir.endsWith('s') ? subdir.slice(0, -1) : subdir;
+    // Match inferLoreType: -ies → -y, -s → strip trailing s
+    return subdir.endsWith('ies')
+      ? `${subdir.slice(0, -3)}y`
+      : subdir.endsWith('s')
+        ? subdir.slice(0, -1)
+        : subdir;
   }
 
   it('returns the consistent singular form for every known LORE_SUBDIR (flat path)', () => {
@@ -215,23 +220,21 @@ describe('Property 3: Type inference from subdirectory', () => {
   });
 
   it('spot-check: known subdirs map to their expected singular types', () => {
-    // inferLoreType strips a single trailing 's' from the first path segment.
-    // This matches the design spec: "strips trailing 's' for singular form".
-    // e.g. "figures" → "figure", "districts" → "district", "landmarks" → "landmark".
-    // Subdirs ending in vowel+'s' (stories → storie) follow the same mechanical rule.
+    // inferLoreType handles common plural forms: -ies → -y, -s → strip trailing s.
+    // e.g. "figures" → "figure", "stories" → "story", "communities" → "community".
     // Subdirs without trailing 's' (humanity_first, media, governance) are unchanged.
     const cases: [string, string][] = [
       ['figures/ana_kim.md', 'figure'],
       ['districts/south.md', 'district'],
       ['landmarks/city/foo.md', 'landmark'],
-      // 'stories' → strip trailing 's' → 'storie' (mechanical strip)
-      ['stories/the_fall.md', 'storie'],
+      // 'stories' → strip trailing 's' → 'story'
+      ['stories/the_fall.md', 'story'],
       // 'communities' → strip trailing 's' → 'communitie'
-      ['communities/barrio_verde.md', 'communitie'],
-      ['companies/omnicorp.md', 'companie'],
+      ['communities/barrio_verde.md', 'community'],
+      ['companies/omnicorp.md', 'company'],
       ['events/the_riots.md', 'event'],
       ['organizations/police.md', 'organization'],
-      ['families/the_kims.md', 'familie'],
+      ['families/the_kims.md', 'family'],
       // 'media' has no trailing 's' — unchanged
       ['media/news_net.md', 'media'],
       ['platforms/social_net.md', 'platform'],

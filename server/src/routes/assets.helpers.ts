@@ -134,7 +134,14 @@ export async function parsePromptFile(filePath: string): Promise<ParsedPromptFil
     width = resolved.width;
     height = resolved.height;
 
-    const category = path.dirname(relFromRoot).split(path.sep)[0] || 'uncategorized';
+    const category = (() => {
+      const dir = path.dirname(relFromRoot);
+      if (dir === '.' && matchedRoot) {
+        // File is at the root of the prompt directory — use the root basename
+        return path.basename(matchedRoot);
+      }
+      return dir.split(path.sep)[0] || 'uncategorized';
+    })();
 
     const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
     const variants: PromptVariant[] = [];

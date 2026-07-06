@@ -279,8 +279,8 @@ adminContentRouter.put('/file', async (req, res) => {
     const parentDir = path.dirname(resolvedPath);
     await fs.promises.mkdir(parentDir, { recursive: true });
 
-    // Step 4: atomic write via .tmp then rename
-    const tmpPath = `${resolvedPath}.tmp`;
+    // Step 4: atomic write via unique .tmp then rename (unique per request to avoid races)
+    const tmpPath = `${resolvedPath}.${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
     await fs.promises.writeFile(tmpPath, content, 'utf-8');
     await fs.promises.rename(tmpPath, resolvedPath);
 
@@ -343,10 +343,20 @@ adminContentRouter.get('/file', async (req, res) => {
   const contentDir = resolveContentDir();
   const absolutePath = path.resolve(contentDir, safeRelPath);
 
-  // Resolve to an existing file
-  let stat: fs.Stats;
   try {
-    stat = await fs.promises.stat(absolutePath);
+    const stat = await fs.promises.stat(absolutePath);
+    const content = await fs.promises.readFile(absolutePath, 'utf-8');
+
+    res.json({
+      success: true,
+      data: {
+        path: safeRelPath,
+        content,
+        size: stat.size,
+        modifiedAt: stat.mtime.toISOString(),
+      },
+      timestamp: new Date().toISOString(),
+    });
   } catch (err: any) {
     if (err.code === 'ENOENT') {
       res.status(404).json({
@@ -356,21 +366,13 @@ adminContentRouter.get('/file', async (req, res) => {
       });
       return;
     }
-    throw err;
+    console.error('[admin-content] GET /file error:', err);
+    res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to read file',
+      timestamp: new Date().toISOString(),
+    });
   }
-
-  const content = await fs.promises.readFile(absolutePath, 'utf-8');
-
-  res.json({
-    success: true,
-    data: {
-      path: safeRelPath,
-      content,
-      size: stat.size,
-      modifiedAt: stat.mtime.toISOString(),
-    },
-    timestamp: new Date().toISOString(),
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -402,34 +404,40 @@ adminContentRouter.get('/tree', async (_req, res) => {
       recursive: true,
     });
 
-    const tree: ContentTreeEntry[] = [];
-
-    for (const dirent of dirents) {
-      if (!dirent.isFile()) continue;
-      if (!dirent.name.endsWith('.yaml')) continue;
-
-      const absolutePath = path.join(dirent.path, dirent.name);
-      const relativePath = path
-        .relative(contentDir, absolutePath)
-        .split(path.sep)
-        .join('/');
-
-      const stat = await fs.promises.stat(absolutePath);
-
-      // Infer type from first directory segment
-      const firstSegment = relativePath.split('/')[0] ?? 'unknown';
-      const type = firstSegment.endsWith('s')
-        ? firstSegment.slice(0, -1)
-        : firstSegment;
-
-      tree.push({
-        path: relativePath,
-        name: dirent.name.slice(0, -'.yaml'.length),
-        type,
-        size: stat.size,
-        modifiedAt: stat.mtime.toISOString(),
+    // Collect files to stat, then stat them in parallel
+    const filesToStat = dirents
+      .filter(dirent => {
+        if (!dirent.isFile()) return false;
+        return dirent.name.endsWith('.yaml');
+      })
+      .map(dirent => {
+        const absolutePath = path.join(dirent.parentPath, dirent.name);
+        const relativePath = path
+          .relative(contentDir, absolutePath)
+          .split(path.sep)
+          .join('/');
+        return { absolutePath, relativePath, filename: dirent.name };
       });
-    }
+
+    const tree = await Promise.all(
+      filesToStat.map(async ({ absolutePath, relativePath, filename }) => {
+        const stat = await fs.promises.stat(absolutePath);
+        const firstSegment = relativePath.split('/')[0] ?? 'unknown';
+        const type = firstSegment.endsWith('ies')
+          ? `${firstSegment.slice(0, -3)}y`
+          : firstSegment.endsWith('s')
+            ? firstSegment.slice(0, -1)
+            : firstSegment;
+
+        return {
+          path: relativePath,
+          name: filename.slice(0, -'.yaml'.length),
+          type,
+          size: stat.size,
+          modifiedAt: stat.mtime.toISOString(),
+        };
+      })
+    );
 
     res.json({
       success: true,
