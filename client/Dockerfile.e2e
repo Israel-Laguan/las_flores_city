@@ -8,6 +8,9 @@ COPY shared/package*.json ./shared/
 
 RUN npm ci
 
+# Install Playwright browsers matching the version in package.json
+RUN npx playwright install --with-deps
+
 COPY client/ ./client/
 COPY shared/ ./shared/
 

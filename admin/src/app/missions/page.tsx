@@ -22,7 +22,7 @@ export default function MissionsPage() {
     <ContentListPage
       title="🔍 Missions"
       heading="Mission List"
-      endpoint="/api/admin/mysteries"
+      endpoint="/api/admin/missions"
       detailPath="/missions"
       columns={columns}
     />

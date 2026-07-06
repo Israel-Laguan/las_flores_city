@@ -38,6 +38,8 @@ async function applyMigration(filename: string): Promise<void> {
             'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
           ));
       `);
+    } else {
+      throw error;
     }
   }
 }

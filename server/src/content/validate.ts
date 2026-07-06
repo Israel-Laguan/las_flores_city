@@ -251,6 +251,9 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
     return 'mission';
   }
+  if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) {
+    return 'story';
+  }
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
     return 'shop_item';
   }

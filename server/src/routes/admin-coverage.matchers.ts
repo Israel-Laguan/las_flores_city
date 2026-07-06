@@ -80,7 +80,7 @@ export function matchLandmarksToScenes(
   });
 }
 
-export function matchStoriesToMysteries(
+export function matchStoriesToMissions(
   storyPaths: string[],
   missions: Array<{ title?: string }>,
 ): StoryCoverageItem[] {

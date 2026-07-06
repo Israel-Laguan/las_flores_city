@@ -72,9 +72,8 @@ async function loadStoryArcData() {
       `SELECT dt.id AS dialogue_id, dt.name AS dialogue_name, node_entry.key AS node_id,
               node_entry.value -> 'effects' ->> 'story_beat' AS beat_slug
        FROM dialogue_trees dt,
-            jsonb_each(dt.nodes) AS node_entry
-       WHERE dt.nodes IS NOT NULL
-         AND node_entry.value -> 'effects' ->> 'story_beat' IS NOT NULL`
+            jsonb_each(COALESCE(dt.nodes, '{}'::jsonb)) AS node_entry
+       WHERE node_entry.value -> 'effects' ->> 'story_beat' IS NOT NULL`
     ),
     queryOLTP(
       `SELECT id AS scene_id, name AS scene_name,
@@ -112,12 +111,13 @@ async function loadStoryArcData() {
   });
 
   const totalBeats = beats.length;
+  const reachableBeats = beats.filter(b => b.isReachable).length;
   return {
     beats,
     coverage: {
       totalBeats,
-      reachableBeats: beats.filter(b => b.isReachable).length,
-      unreachableBeats: totalBeats - beats.filter(b => b.isReachable).length,
+      reachableBeats,
+      unreachableBeats: totalBeats - reachableBeats,
       serverSideBeats: beats.filter(b => b.isServerSide).length,
       dialoguesSettingBeat: beatToDialogues.size,
       scenesRequiringBeat: beatToScenes.size,

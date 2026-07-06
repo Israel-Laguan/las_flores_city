@@ -512,17 +512,8 @@ export type { StoryBeat, StoryBeatRegistry } from './schemas/story-beat.js';
 export { YAMLStorySchema, YAMLStoryFileSchema } from './schemas/story.js';
 export type { YAMLStory, YAMLStoryFile } from './schemas/story.js';
 
-export const ContentTypeSchema = z.enum(['character', 'dialogue', 'overlay', 'scene', 'gig', 'vault', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat']);
-
-export type ContentType = z.infer<typeof ContentTypeSchema>;
-
-export const ContentFileSchema = z.object({
-  type: ContentTypeSchema,
-  id: z.string().uuid(),
-  data: z.record(z.string(), z.any()),
-});
-
-export type ContentFile = z.infer<typeof ContentFileSchema>;
+export { ContentTypeSchema, ContentFileSchema } from './schemas/content-validation.js';
+export type { ContentType, ContentFile } from './schemas/content-validation.js';
 
 // ==================== Map Tiles ====================
 

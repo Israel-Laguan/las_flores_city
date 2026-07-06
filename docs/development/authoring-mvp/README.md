@@ -19,8 +19,8 @@ LORE (markdown)    →    CONTENT (yaml)    →    DB (postgres)
   Figures (128)          Characters (160)       characters
   Landmarks (~70)        Scenes (10)            scenes
   Districts (11)         Dialogues (8)          dialogue_trees
-  Stories (40)           Missions (1)           mysteries (table stays as 'mysteries')
-                         Stories (new)          stories (new table)
+  Lore Stories (40)      Missions (1)           mysteries (table stays as 'mysteries')
+                         Story records (new)    stories (new table)
                          Vault items            vault_items
                          Gigs                   gigs
                          Story beats (7)        story_beats

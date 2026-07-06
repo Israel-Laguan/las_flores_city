@@ -306,7 +306,7 @@ CREATE TABLE stories (
 
 **UI Layout — Mission Linker:**
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │ Content Linker — Missions                   │
 ├─────────────────────────────────────────────┤
@@ -370,7 +370,7 @@ CREATE TABLE stories (
 
 **Wizard Steps:**
 
-```
+```text
 Step 1: Define Mission
   ┌─────────────────────────────────────────────┐
   │ Title: [The Great Lithium Leak             ]│

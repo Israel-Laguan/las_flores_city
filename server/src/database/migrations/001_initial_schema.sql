@@ -243,19 +243,32 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Apply updated_at triggers
+-- Apply updated_at triggers (DROP IF EXISTS for idempotency)
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_user_entitlements_updated_at ON user_entitlements;
 CREATE TRIGGER update_user_entitlements_updated_at BEFORE UPDATE ON user_entitlements FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_time_blocks_updated_at ON time_blocks;
 CREATE TRIGGER update_time_blocks_updated_at BEFORE UPDATE ON time_blocks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_characters_updated_at ON characters;
 CREATE TRIGGER update_characters_updated_at BEFORE UPDATE ON characters FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_dialogue_trees_updated_at ON dialogue_trees;
 CREATE TRIGGER update_dialogue_trees_updated_at BEFORE UPDATE ON dialogue_trees FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_dialogue_overlays_updated_at ON dialogue_overlays;
 CREATE TRIGGER update_dialogue_overlays_updated_at BEFORE UPDATE ON dialogue_overlays FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_scenes_updated_at ON scenes;
 CREATE TRIGGER update_scenes_updated_at BEFORE UPDATE ON scenes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_player_states_updated_at ON player_states;
 CREATE TRIGGER update_player_states_updated_at BEFORE UPDATE ON player_states FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_player_sms_threads_updated_at ON player_sms_threads;
 CREATE TRIGGER update_player_sms_threads_updated_at BEFORE UPDATE ON player_sms_threads FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_public_profiles_updated_at ON public_profiles;
 CREATE TRIGGER update_public_profiles_updated_at BEFORE UPDATE ON public_profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_scene_characters_updated_at ON scene_characters;
 CREATE TRIGGER update_scene_characters_updated_at BEFORE UPDATE ON scene_characters FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_user_relationships_updated_at ON user_relationships;
 CREATE TRIGGER update_user_relationships_updated_at BEFORE UPDATE ON user_relationships FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_player_dialogue_states_updated_at ON player_dialogue_states;
 CREATE TRIGGER update_player_dialogue_states_updated_at BEFORE UPDATE ON player_dialogue_states FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 COMMIT;

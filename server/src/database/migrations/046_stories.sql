@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS stories (
 CREATE INDEX IF NOT EXISTS idx_stories_mission_id ON stories(mission_id);
 
 -- Update migration_log.content_type CHECK to use 'mission' and add 'story'
+-- First, migrate existing 'mystery' rows to 'mission' before tightening the constraint
+UPDATE migration_log SET content_type = 'mission' WHERE content_type = 'mystery';
+
 ALTER TABLE migration_log
     DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
 
