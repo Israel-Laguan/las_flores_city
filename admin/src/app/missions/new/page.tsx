@@ -75,6 +75,134 @@ function generateUUID(): string {
   });
 }
 
+// --- Step sub-components ----------------------------------------------------
+
+function StepMission({ title, setTitle, description, setDescription, status, setStatus, loreRef, setLoreRef, styles }: any) {
+  return (
+    <div style={styles.section}>
+      <h2 style={styles.sectionHeading}>Step 1: Define Mission</h2>
+      <div style={styles.field}>
+        <label style={styles.label}>Title *</label>
+        <input style={styles.input} value={title} onChange={e => setTitle(e.target.value)} placeholder="The Great Lithium Leak" />
+      </div>
+      <div style={styles.field}>
+        <label style={styles.label}>Description</label>
+        <textarea style={styles.textarea} value={description} onChange={e => setDescription(e.target.value)} placeholder="Decades after the lithium spill..." />
+      </div>
+      <div style={styles.field}>
+        <label style={styles.label}>Status</label>
+        <select style={styles.select} value={status} onChange={e => setStatus(e.target.value)}>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="RESOLVING">RESOLVING</option>
+          <option value="ARCHIVED">ARCHIVED</option>
+        </select>
+      </div>
+      <div style={styles.field}>
+        <label style={styles.label}>Lore Reference</label>
+        <input style={styles.input} value={loreRef} onChange={e => setLoreRef(e.target.value)} placeholder="stories/the_great_lithium_leak.md" />
+      </div>
+    </div>
+  );
+}
+
+function CheckboxList({ heading, items, selected, onToggle, labelKey, styles }: any) {
+  return (
+    <div style={styles.section}>
+      <h2 style={styles.sectionHeading}>{heading}</h2>
+      {items.length === 0 ? <p style={styles.muted}>Loading...</p> : (
+        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          {items.map((item: any) => (
+            <label key={item.id} style={styles.checkboxLabel}>
+              <input type="checkbox" style={styles.checkbox} checked={selected.has(item.id)} onChange={() => onToggle(item.id)} />
+              {item[labelKey] || item.id}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepContent({ vaultItems, setVaultItems, overlays, setOverlays, styles }: any) {
+  return (
+    <div style={styles.section}>
+      <h2 style={styles.sectionHeading}>Step 5: Add Content</h2>
+      <div style={styles.subsection}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.75rem', fontSize: '0.9rem' }}>Vault Items ({vaultItems.length})</h3>
+        {vaultItems.map((v: any, i: number) => (
+          <div key={i} style={{ ...styles.addRow, marginBottom: '0.5rem' }}>
+            <input style={{ ...styles.miniInput, flex: 1 }} value={v.title} onChange={e => {
+              const next = [...vaultItems]; next[i] = { ...next[i], title: e.target.value }; setVaultItems(next);
+            }} placeholder="Title" />
+            <select style={styles.miniInput} value={v.item_type} onChange={e => {
+              const next = [...vaultItems]; next[i] = { ...next[i], item_type: e.target.value as any }; setVaultItems(next);
+            }}>
+              <option value="clue">Clue</option>
+              <option value="memento">Memento</option>
+              <option value="premium_cg">Premium CG</option>
+            </select>
+            <button style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.7rem', padding: '0.3rem 0.5rem' }} onClick={() => setVaultItems(vaultItems.filter((_: any, j: number) => j !== i))}>✕</button>
+          </div>
+        ))}
+        <div style={styles.addRow}>
+          <button style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.8rem' }} onClick={() => setVaultItems([...vaultItems, { title: '', description: '', item_type: 'clue' }])}>+ Add Vault Item</button>
+        </div>
+      </div>
+      <div style={styles.subsection}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.75rem', fontSize: '0.9rem' }}>Overlays ({overlays.length})</h3>
+        {overlays.map((_o: any, i: number) => (
+          <div key={i} style={{ ...styles.addRow, marginBottom: '0.5rem' }}>
+            <input style={{ ...styles.miniInput, flex: 1 }} value={overlays[i].name} onChange={e => {
+              const next = [...overlays]; next[i] = { ...next[i], name: e.target.value }; setOverlays(next);
+            }} placeholder="Overlay name" />
+            <input style={{ ...styles.miniInput, flex: 1 }} value={overlays[i].target_tree_id} onChange={e => {
+              const next = [...overlays]; next[i] = { ...next[i], target_tree_id: e.target.value }; setOverlays(next);
+            }} placeholder="Target dialogue tree UUID" />
+            <button style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.7rem', padding: '0.3rem 0.5rem' }} onClick={() => setOverlays(overlays.filter((_: any, j: number) => j !== i))}>✕</button>
+          </div>
+        ))}
+        <div style={styles.addRow}>
+          <button style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.8rem' }} onClick={() => setOverlays([...overlays, { name: '', target_tree_id: '' }])}>+ Add Overlay</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StepStory({ createStory, setCreateStory, storyTitle, setStoryTitle, storyDescription, setStoryDescription, storyLoreRef, setStoryLoreRef, title, selectedCharacters, selectedScenes, selectedDialogues, overlays, vaultItems, styles }: any) {
+  return (
+    <div style={styles.section}>
+      <h2 style={styles.sectionHeading}>Step 6: Package as Story</h2>
+      <label style={styles.checkboxLabel}>
+        <input type="checkbox" style={styles.checkbox} checked={createStory} onChange={e => setCreateStory(e.target.checked)} />
+        Create a story package
+      </label>
+      {createStory && (
+        <div style={{ marginTop: '1rem' }}>
+          <div style={styles.field}>
+            <label style={styles.label}>Story Title</label>
+            <input style={styles.input} value={storyTitle} onChange={e => setStoryTitle(e.target.value)} placeholder={title ? `${title} — Complete Package` : 'Story title'} />
+          </div>
+          <div style={styles.field}>
+            <label style={styles.label}>Story Description</label>
+            <textarea style={styles.textarea} value={storyDescription} onChange={e => setStoryDescription(e.target.value)} placeholder="Complete mission package..." />
+          </div>
+          <div style={styles.field}>
+            <label style={styles.label}>Story Lore Reference</label>
+            <input style={styles.input} value={storyLoreRef} onChange={e => setStoryLoreRef(e.target.value)} placeholder="stories/my_story.md" />
+          </div>
+          <div style={styles.subsection}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Story Package Summary</h3>
+            <p style={{ fontSize: '0.85rem', color: '#aaa' }}>
+              This story will link to: mission &quot;{title || '(untitled)'}&quot;, {selectedCharacters.size} characters, {selectedScenes.size} scenes, {selectedDialogues.size} dialogues, {overlays.length} overlays, {vaultItems.length} vault items.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // eslint-disable-next-line max-lines-per-function
 export default function MissionWizardPage() {
   const [step, setStep] = useState(1);
@@ -173,156 +301,12 @@ export default function MissionWizardPage() {
 
   const renderStep = () => {
     switch (step) {
-      case 1: return (
-        <div style={styles.section}>
-          <h2 style={styles.sectionHeading}>Step 1: Define Mission</h2>
-          <div style={styles.field}>
-            <label style={styles.label}>Title *</label>
-            <input style={styles.input} value={title} onChange={e => setTitle(e.target.value)} placeholder="The Great Lithium Leak" />
-          </div>
-          <div style={styles.field}>
-            <label style={styles.label}>Description</label>
-            <textarea style={styles.textarea} value={description} onChange={e => setDescription(e.target.value)} placeholder="Decades after the lithium spill..." />
-          </div>
-          <div style={styles.field}>
-            <label style={styles.label}>Status</label>
-            <select style={styles.select} value={status} onChange={e => setStatus(e.target.value)}>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="RESOLVING">RESOLVING</option>
-              <option value="ARCHIVED">ARCHIVED</option>
-            </select>
-          </div>
-          <div style={styles.field}>
-            <label style={styles.label}>Lore Reference</label>
-            <input style={styles.input} value={loreRef} onChange={e => setLoreRef(e.target.value)} placeholder="stories/the_great_lithium_leak.md" />
-          </div>
-        </div>
-      );
-
-      case 2: return (
-        <div style={styles.section}>
-          <h2 style={styles.sectionHeading}>Step 2: Add Characters ({selectedCharacters.size} selected)</h2>
-          {allCharacters.length === 0 ? <p style={styles.muted}>Loading characters...</p> : (
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              {allCharacters.map(c => (
-                <label key={c.id} style={styles.checkboxLabel}>
-                  <input type="checkbox" style={styles.checkbox} checked={selectedCharacters.has(c.id)} onChange={() => toggleSet(selectedCharacters, setSelectedCharacters, c.id)} />
-                  {c.name || c.id}
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-
-      case 3: return (
-        <div style={styles.section}>
-          <h2 style={styles.sectionHeading}>Step 3: Add Scenes ({selectedScenes.size} selected)</h2>
-          {allScenes.length === 0 ? <p style={styles.muted}>Loading scenes...</p> : (
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              {allScenes.map(s => (
-                <label key={s.id} style={styles.checkboxLabel}>
-                  <input type="checkbox" style={styles.checkbox} checked={selectedScenes.has(s.id)} onChange={() => toggleSet(selectedScenes, setSelectedScenes, s.id)} />
-                  {s.name || s.id}
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-
-      case 4: return (
-        <div style={styles.section}>
-          <h2 style={styles.sectionHeading}>Step 4: Add Dialogues ({selectedDialogues.size} selected)</h2>
-          {allDialogues.length === 0 ? <p style={styles.muted}>Loading dialogues...</p> : (
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              {allDialogues.map(d => (
-                <label key={d.id} style={styles.checkboxLabel}>
-                  <input type="checkbox" style={styles.checkbox} checked={selectedDialogues.has(d.id)} onChange={() => toggleSet(selectedDialogues, setSelectedDialogues, d.id)} />
-                  {d.name || d.id}
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-
-      case 5: return (
-        <div style={styles.section}>
-          <h2 style={styles.sectionHeading}>Step 5: Add Content</h2>
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.75rem', fontSize: '0.9rem' }}>Vault Items ({vaultItems.length})</h3>
-            {vaultItems.map((v, i) => (
-              <div key={i} style={{ ...styles.addRow, marginBottom: '0.5rem' }}>
-                <input style={{ ...styles.miniInput, flex: 1 }} value={v.title} onChange={e => {
-                  const next = [...vaultItems]; next[i] = { ...next[i], title: e.target.value }; setVaultItems(next);
-                }} placeholder="Title" />
-                <select style={styles.miniInput} value={v.item_type} onChange={e => {
-                  const next = [...vaultItems]; next[i] = { ...next[i], item_type: e.target.value as any }; setVaultItems(next);
-                }}>
-                  <option value="clue">Clue</option>
-                  <option value="memento">Memento</option>
-                  <option value="premium_cg">Premium CG</option>
-                </select>
-                <button style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.7rem', padding: '0.3rem 0.5rem' }} onClick={() => setVaultItems(vaultItems.filter((_, j) => j !== i))}>✕</button>
-              </div>
-            ))}
-            <div style={styles.addRow}>
-              <button style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.8rem' }} onClick={() => setVaultItems([...vaultItems, { title: '', description: '', item_type: 'clue' }])}>+ Add Vault Item</button>
-            </div>
-          </div>
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.75rem', fontSize: '0.9rem' }}>Overlays ({overlays.length})</h3>
-            {overlays.map((o, i) => (
-              <div key={i} style={{ ...styles.addRow, marginBottom: '0.5rem' }}>
-                <input style={{ ...styles.miniInput, flex: 1 }} value={o.name} onChange={e => {
-                  const next = [...overlays]; next[i] = { ...next[i], name: e.target.value }; setOverlays(next);
-                }} placeholder="Overlay name" />
-                <input style={{ ...styles.miniInput, flex: 1 }} value={o.target_tree_id} onChange={e => {
-                  const next = [...overlays]; next[i] = { ...next[i], target_tree_id: e.target.value }; setOverlays(next);
-                }} placeholder="Target dialogue tree UUID" />
-                <button style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.7rem', padding: '0.3rem 0.5rem' }} onClick={() => setOverlays(overlays.filter((_, j) => j !== i))}>✕</button>
-              </div>
-            ))}
-            <div style={styles.addRow}>
-              <button style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.8rem' }} onClick={() => setOverlays([...overlays, { name: '', target_tree_id: '' }])}>+ Add Overlay</button>
-            </div>
-          </div>
-        </div>
-      );
-
-      case 6: return (
-        <div style={styles.section}>
-          <h2 style={styles.sectionHeading}>Step 6: Package as Story</h2>
-          <label style={styles.checkboxLabel}>
-            <input type="checkbox" style={styles.checkbox} checked={createStory} onChange={e => setCreateStory(e.target.checked)} />
-            Create a story package
-          </label>
-          {createStory && (
-            <div style={{ marginTop: '1rem' }}>
-              <div style={styles.field}>
-                <label style={styles.label}>Story Title</label>
-                <input style={styles.input} value={storyTitle} onChange={e => setStoryTitle(e.target.value)} placeholder={title ? `${title} — Complete Package` : 'Story title'} />
-              </div>
-              <div style={styles.field}>
-                <label style={styles.label}>Story Description</label>
-                <textarea style={styles.textarea} value={storyDescription} onChange={e => setStoryDescription(e.target.value)} placeholder="Complete mission package..." />
-              </div>
-              <div style={styles.field}>
-                <label style={styles.label}>Story Lore Reference</label>
-                <input style={styles.input} value={storyLoreRef} onChange={e => setStoryLoreRef(e.target.value)} placeholder="stories/my_story.md" />
-              </div>
-              <div style={styles.subsection}>
-                <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Story Package Summary</h3>
-                <p style={{ fontSize: '0.85rem', color: '#aaa' }}>
-                  This story will link to: mission &quot;{title || '(untitled)'}&quot;, {selectedCharacters.size} characters, {selectedScenes.size} scenes, {selectedDialogues.size} dialogues, {overlays.length} overlays, {vaultItems.length} vault items.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-
+      case 1: return <StepMission title={title} setTitle={setTitle} description={description} setDescription={setDescription} status={status} setStatus={setStatus} loreRef={loreRef} setLoreRef={setLoreRef} styles={styles} />;
+      case 2: return <CheckboxList heading={`Step 2: Add Characters (${selectedCharacters.size} selected)`} items={allCharacters} selected={selectedCharacters} onToggle={(id: string) => toggleSet(selectedCharacters, setSelectedCharacters, id)} labelKey="name" styles={styles} />;
+      case 3: return <CheckboxList heading={`Step 3: Add Scenes (${selectedScenes.size} selected)`} items={allScenes} selected={selectedScenes} onToggle={(id: string) => toggleSet(selectedScenes, setSelectedScenes, id)} labelKey="name" styles={styles} />;
+      case 4: return <CheckboxList heading={`Step 4: Add Dialogues (${selectedDialogues.size} selected)`} items={allDialogues} selected={selectedDialogues} onToggle={(id: string) => toggleSet(selectedDialogues, setSelectedDialogues, id)} labelKey="name" styles={styles} />;
+      case 5: return <StepContent vaultItems={vaultItems} setVaultItems={setVaultItems} overlays={overlays} setOverlays={setOverlays} styles={styles} />;
+      case 6: return <StepStory createStory={createStory} setCreateStory={setCreateStory} storyTitle={storyTitle} setStoryTitle={setStoryTitle} storyDescription={storyDescription} setStoryDescription={setStoryDescription} storyLoreRef={storyLoreRef} setStoryLoreRef={setStoryLoreRef} title={title} selectedCharacters={selectedCharacters} selectedScenes={selectedScenes} selectedDialogues={selectedDialogues} overlays={overlays} vaultItems={vaultItems} styles={styles} />;
       default: return null;
     }
   };
