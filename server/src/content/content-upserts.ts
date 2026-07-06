@@ -111,7 +111,7 @@ export async function upsertGig(data: any): Promise<string> {
         location_restriction_id = EXCLUDED.location_restriction_id,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.title, sanitizeText(data.description), data.time_block_cost, data.credit_payout, data.revenue_target || null, data.revenue_reward || null, data.location_restriction_id || null]
+    [data.id, data.title, sanitizeText(data.description), data.time_block_cost, data.credit_payout, data.reputation_target || null, data.reputation_reward || null, data.location_restriction_id || null]
   );
   return result.rows[0].id;
 }

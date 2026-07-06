@@ -52,12 +52,12 @@ check_compose() {
     return 0
 }
 
-# Wait for a container to be healthy
+# Wait for a container to be healthy (uses HEALTHCHECK if available)
 wait_healthy() {
     local container="$1"
     local max_wait="${2:-60}"
     local count=0
-    
+
     log_info "Waiting for $container to be healthy..."
     while [ $count -lt $max_wait ]; do
         local status=$(podman inspect --format='{{.State.Health.Status}}' "$container" 2>/dev/null || echo "missing")
@@ -68,8 +68,48 @@ wait_healthy() {
         sleep 2
         count=$((count + 2))
     done
-    
+
     log_error "$container did not become healthy within ${max_wait}s"
+    return 1
+}
+
+# Wait for a postgres container to accept connections
+wait_postgres() {
+    local container="$1"
+    local max_wait="${2:-60}"
+    local count=0
+
+    log_info "Waiting for $container to accept connections..."
+    while [ $count -lt $max_wait ]; do
+        if podman exec "$container" pg_isready -q 2>/dev/null; then
+            log_info "$container is ready"
+            return 0
+        fi
+        sleep 2
+        count=$((count + 2))
+    done
+
+    log_error "$container did not become ready within ${max_wait}s"
+    return 1
+}
+
+# Wait for redis to respond to PING
+wait_redis() {
+    local container="$1"
+    local max_wait="${2:-60}"
+    local count=0
+
+    log_info "Waiting for $container to respond to PING..."
+    while [ $count -lt $max_wait ]; do
+        if podman exec "$container" redis-cli ping 2>/dev/null | grep -q PONG; then
+            log_info "$container is ready"
+            return 0
+        fi
+        sleep 2
+        count=$((count + 2))
+    done
+
+    log_error "$container did not become ready within ${max_wait}s"
     return 1
 }
 
@@ -119,10 +159,10 @@ setup() {
         -v minio-data:/data \
         docker.io/minio/minio:latest server /data --console-address ":9001" 2>/dev/null || log_warn "Container already exists"
     
-    # Wait for databases to be healthy
-    wait_healthy "las-flores-postgres-oltp" 30
-    wait_healthy "las-flores-postgres-olap" 30
-    wait_healthy "las-flores-redis" 30
+    # Wait for databases to be ready
+    wait_postgres "las-flores-postgres-oltp" 30
+    wait_postgres "las-flores-postgres-olap" 30
+    wait_redis "las-flores-redis" 30
     
     # Get container IPs
     OLTP_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-postgres-oltp)
@@ -151,10 +191,10 @@ setup() {
         -v "$PROJECT_ROOT/shared:/app/shared" \
         -v "$PROJECT_ROOT/content:/app/content" \
         -v "$PROJECT_ROOT/docs:/app/docs:ro" \
-        -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@${OLTP_IP}:5432/las_flores \
-        -e ANALYTICS_DATABASE_URL=postgresql://las_flores_analytics:las_flores_analytics_dev_password@${OLAP_IP}:5432/las_flores_analytics \
-        -e REDIS_URL=redis://${REDIS_IP}:6379 \
-        -e MINIO_ENDPOINT=${MINIO_IP} \
+        -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@${OLTP_IP}:5432/las_flores" \
+        -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@${OLAP_IP}:5432/las_flores_analytics" \
+        -e REDIS_URL="redis://${REDIS_IP}:6379" \
+        -e MINIO_ENDPOINT="${MINIO_IP}" \
         -e MINIO_PORT=9000 \
         -e MINIO_ACCESS_KEY=minioadmin \
         -e MINIO_SECRET_KEY=minioadmin \
@@ -207,8 +247,8 @@ run_server_test() {
         --network las-flores-net \
         -v "$(pwd):/app" \
         -w /app \
-        -e DATABASE_URL=postgresql://las_flores:las_flores_dev_password@${OLTP_IP}:5432/las_flores \
-        -e REDIS_URL=redis://${REDIS_IP}:6379 \
+        -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@${OLTP_IP}:5432/las_flores" \
+        -e REDIS_URL="redis://${REDIS_IP}:6379" \
         -e NODE_ENV=test \
         node:20 \
         npm run test:server
@@ -241,7 +281,7 @@ run_e2e() {
         -v "$(pwd)/client:/app/client" \
         -v "$(pwd)/shared:/app/shared" \
         -v /app/client/node_modules \
-        -e API_URL=http://${SERVER_IP}:3000 \
+        -e API_URL="http://${SERVER_IP}:3000" \
         -w /app/client \
         las-flores-e2e \
         npx playwright test --config playwright.docker.config.ts

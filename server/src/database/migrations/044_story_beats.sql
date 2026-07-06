@@ -43,7 +43,7 @@ ALTER TABLE migration_log
         'scene',
         'gig',
         'vault',
-        'mystery',
+        'mission',
         'shop_item',
         'location',
         'map_tile',
