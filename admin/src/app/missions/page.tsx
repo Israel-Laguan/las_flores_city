@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import ContentListPage from '@/app/_components/ContentListPage';
 import { adminStyles } from '@/lib/adminStyles';
 
@@ -19,12 +20,27 @@ const columns = [
 
 export default function MissionsPage() {
   return (
-    <ContentListPage
-      title="🔍 Missions"
-      heading="Mission List"
-      endpoint="/api/admin/missions"
-      detailPath="/missions"
-      columns={columns}
-    />
+    <div>
+      <div style={{ padding: '2rem 2rem 0' }}>
+        <Link
+          href="/missions/new"
+          style={{
+            ...adminStyles.button,
+            ...adminStyles.primaryButton,
+            textDecoration: 'none',
+            display: 'inline-block',
+          }}
+        >
+          + Create Mission
+        </Link>
+      </div>
+      <ContentListPage
+        title="🔍 Missions"
+        heading="Mission List"
+        endpoint="/api/admin/missions"
+        detailPath="/missions"
+        columns={columns}
+      />
+    </div>
   );
 }

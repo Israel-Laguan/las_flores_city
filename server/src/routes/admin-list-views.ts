@@ -379,3 +379,33 @@ adminListViewsRouter.get('/maps/:id', makeDetailHandler({
   sql: 'SELECT * FROM map_tiles WHERE id = $1',
   entityLabel: 'Map tile',
 }));
+
+// ---------------------------------------------------------------------------
+// Stories
+// ---------------------------------------------------------------------------
+
+adminListViewsRouter.get('/stories', makeListHandler({
+  countSql: 'SELECT count(*)::int FROM stories',
+  listSql: `SELECT
+    s.id,
+    s.title,
+    s.description,
+    s.mission_id AS "missionId",
+    m.title AS "missionTitle",
+    array_length(s.characters, 1) AS "characterCount",
+    array_length(s.scenes, 1) AS "sceneCount",
+    array_length(s.dialogues, 1) AS "dialogueCount",
+    s.written_by AS "writtenBy",
+    s.created_at AS "createdAt",
+    s.updated_at AS "updatedAt"
+  FROM stories s
+  LEFT JOIN mysteries m ON s.mission_id = m.id
+  ORDER BY s.created_at DESC
+  LIMIT $1 OFFSET $2`,
+  entityLabel: 'stories',
+}));
+
+adminListViewsRouter.get('/stories/:id', makeDetailHandler({
+  sql: 'SELECT * FROM stories WHERE id = $1',
+  entityLabel: 'Story',
+}));

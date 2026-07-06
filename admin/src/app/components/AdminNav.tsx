@@ -14,6 +14,7 @@ function NavLinksRow() {
       <Link href="/story-beats" style={navLinkStyle}>📖 Story Beats</Link>
       <Link href="/story-arc" style={navLinkStyle}>📊 Story Arc</Link>
       <Link href="/missions" style={navLinkStyle}>🔍 Missions</Link>
+      <Link href="/stories" style={navLinkStyle}>📚 Stories</Link>
       <Link href="/overlays" style={navLinkStyle}>🔄 Overlays</Link>
       <Link href="/locations" style={navLinkStyle}>📍 Locations</Link>
       <Link href="/vault" style={navLinkStyle}>🔐 Vault</Link>
@@ -21,9 +22,13 @@ function NavLinksRow() {
       <Link href="/shop" style={navLinkStyle}>🛒 Shop</Link>
       <Link href="/maps" style={navLinkStyle}>🗺️ Maps</Link>
       <Link href="/lore" style={navLinkStyle}>📚 Lore</Link>
+      <span style={{ ...navSectionStyle, marginLeft: '0.75rem' }}>Tools:</span>
+      <Link href="/editor" style={navLinkStyle}>📝 Editor</Link>
+      <Link href="/content-linker" style={navLinkStyle}>🔗 Linker</Link>
       <span style={{ ...navSectionStyle, marginLeft: '0.75rem' }}>System:</span>
       <Link href="/migration" style={navLinkStyle}>🚀 Migration</Link>
       <Link href="/validation" style={navLinkStyle}>✅ Validation</Link>
+      <Link href="/quality" style={navLinkStyle}>📊 Quality</Link>
       <Link href="/analytics" style={navLinkStyle}>📊 Analytics</Link>
       <Link href="/coverage" style={navLinkStyle}>📊 Coverage</Link>
       <Link href="/asset-coverage" style={navLinkStyle}>🖼️ Assets</Link>

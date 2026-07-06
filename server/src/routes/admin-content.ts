@@ -3,11 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { validateContent } from '../content/validate.js';
+import { validateContent, checkContentQuality } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
 import { computeContentDiff } from './utils/contentDiff.js';
-import { assignAsset } from '../services/ContentAssetService.js';
 
 /**
  * Admin Content Pipeline Router
@@ -127,6 +126,59 @@ adminContentRouter.post('/migrate', async (_req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Migration failed',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * POST /admin/content/quality
+ *
+ * Runs content quality checks (density, length, inconsistency, completeness)
+ * and returns the full QualityReport. These are advisory — they never block
+ * migration.
+ */
+adminContentRouter.post('/quality', async (_req, res) => {
+  try {
+    const contentDir = resolveContentDir();
+    console.log(`[admin-content] Running quality checks in: ${contentDir}`);
+
+    const result = await checkContentQuality(contentDir);
+
+    const totalIssues =
+      result.density.length +
+      result.length.length +
+      result.inconsistency.length +
+      result.completeness.length;
+
+    const allIssues = [
+      ...result.density,
+      ...result.length,
+      ...result.inconsistency,
+      ...result.completeness,
+    ];
+
+    res.json({
+      success: true,
+      data: {
+        report: result,
+        summary: {
+          density: result.density.length,
+          length: result.length.length,
+          inconsistency: result.inconsistency.length,
+          completeness: result.completeness.length,
+          total: totalIssues,
+          errors: allIssues.filter(i => i.severity === 'error').length,
+          warnings: allIssues.filter(i => i.severity === 'warning').length,
+        },
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[admin-content] Quality check error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Quality check failed',
       timestamp: new Date().toISOString(),
     });
   }
@@ -450,93 +502,6 @@ adminContentRouter.get('/tree', async (_req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to list content tree',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// POST /admin/content/assign-asset
-//
-// Assigns an asset URL to a field in a content YAML file.
-// ---------------------------------------------------------------------------
-
-adminContentRouter.post('/assign-asset', async (req, res) => {
-  try {
-    const { contentPath, fieldPath, assetUrl } = req.body;
-
-    // Validate required fields
-    if (!contentPath || typeof contentPath !== 'string') {
-      res.status(400).json({
-        success: false,
-        error: 'Missing required field: contentPath',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    if (!contentPath.endsWith('.yaml')) {
-      res.status(400).json({
-        success: false,
-        error: 'contentPath must end with .yaml',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    if (!fieldPath || typeof fieldPath !== 'string') {
-      res.status(400).json({
-        success: false,
-        error: 'Missing required field: fieldPath',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    if (!assetUrl || typeof assetUrl !== 'string') {
-      res.status(400).json({
-        success: false,
-        error: 'Missing required field: assetUrl',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    // Validate content path (no traversal)
-    const pathCheck = validateContentPath(contentPath);
-    if (!pathCheck.valid) {
-      res.status(400).json({
-        success: false,
-        error: pathCheck.reason,
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    const result = await assignAsset(contentPath, fieldPath, assetUrl);
-
-    res.json({
-      success: true,
-      data: result,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-
-    if (message.includes('File not found')) {
-      res.status(404).json({
-        success: false,
-        error: message,
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    const isValidation = message.includes('Path traversal') || message.includes('Invalid field path') || message.includes('Invalid YAML');
-    console.error('[admin-content] POST /assign-asset error:', error);
-    res.status(isValidation ? 400 : 500).json({
-      success: false,
-      error: isValidation ? message : 'Internal server error',
       timestamp: new Date().toISOString(),
     });
   }

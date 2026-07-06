@@ -415,6 +415,9 @@ export async function validateContent(contentDir: string): Promise<ValidationRes
   };
 }
 
+export { checkContentQuality } from './quality.js';
+export type { QualityIssue, QualityReport } from './quality.js';
+
 const isCli = process.argv[1]
   ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'validate.ts'))
   : false;
