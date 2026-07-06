@@ -3,6 +3,8 @@ import './globals.css'
 import { getAdminUser } from '../lib/adminApi'
 import AdminNav from './components/AdminNav'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Las Flores 2077 - Admin Panel',
   description: 'Admin interface for managing Las Flores 2077 game content',
