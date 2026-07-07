@@ -6,6 +6,20 @@
 > **Role:** Former Engineer, Whistleblower, Shadow Investigator, Vigilante
 > **Status:** Active (through 2077)
 
+## Physical Description
+- Hair: Dark brown with premature gray streaks, usually tied back in a practical ponytail
+- Eyes: Steel blue, cold and calculating, rarely blinks
+- Build: Lean and wiry, moves with predatory efficiency
+- Skin: Fair, weathered and lined beyond her years, small scars on hands
+- Distinguishing features: Thin white scar along left jawline from the gang attack, worn leather jacket always within reach, no jewelry except a plain silver watch, carries herself like a coiled spring
+
+## Physical Description
+- Hair: Dark brown, streaked with gray, cut short and practical
+- Eyes: Gray-blue, cold and calculating, with deep-set dark circles
+- Build: Lean and wiry, moves with controlled precision
+- Skin: Fair, pale from years of operating in shadows, lined around mouth and eyes
+- Distinguishing features: Thin scar along left jawline from the gang attack, dark circles under eyes, always dressed in dark practical clothing, carries a small flashlight clipped to her belt
+
 ## Overview
 
 Evelyn Ruthenberg is a former engineer at Luz del Rio, a small electric company that served Minera Estrella's facilities. After witnessing the cover-up of the Great Lithium Leak, she became the keeper of crucial evidence and a central figure in the fight for justice. What began as a straightforward whistleblower mission evolved into something far more complex: a shadow investigation running parallel to the public restoration effort, blending manipulation, covert intelligence gathering, and a relentless pursuit of those who got away with murder.

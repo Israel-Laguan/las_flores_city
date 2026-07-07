@@ -6,6 +6,13 @@
 > **Role:** Politician
 > **Status:** Disgraced, retired to beach house
 
+## Physical Description
+- Hair: Dark brown, slicked back with pomade, slightly thinning
+- Eyes: Dark brown, tired and haunted
+- Build: Medium height, broad-shouldered but softening with age
+- Skin: Medium tan, lined around eyes from squinting in coastal sun
+- Distinguishing features: Gold chain visible at open collar, expensive watch, slight alcohol flush on cheeks, perpetual five o'clock shadow
+
 ## Overview
 Emilio Santos was born into a prominent Pacific District family with deep political roots. His father, a respected local figure, expected Emilio to follow in his footsteps. The allure of power and familial pressure eventually drew him into politics in his late forties.
 

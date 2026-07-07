@@ -18,7 +18,13 @@ Alex does not arrive in Las Flores as a hero. They arrive late to class, anxious
 
 ## Physical Appearance
 
-Alex is lean and of medium height, with the kind of frame that reads as younger than they are—an effect reinforced by the worn backpack they always carry, perpetually overstuffed with sketchbooks, dog-eared urban planning texts, and a battered thermos of coffee. Their hair is dark and usually in need of a cut. Their hands are covered in pencil marks and the occasional ink stain. They dress practically—jeans, a hoodie, old sneakers—because practicality is what the scholarship budget allows.
+- Hair: Thick black hair, unkempt and slightly overgrown, falling across the forehead
+- Eyes: Dark brown, warm and attentive, with faint dark circles from late-night studying
+- Build: Lean and medium height, wiry frame that reads younger than their years
+- Skin: Light brown, smooth complexion with a few acne scars on the left cheek
+- Distinguishing features: Ink-stained fingers, a small mole below the right ear, perpetually worn sneakers, carries an overstuffed backpack with sketchbooks poking out
+
+Alex is lean and of medium height, with the kind of frame that reads as younger than they are—an effect reinforced by the worn backpack they always carry, perpetually overstuffed with sketchbooks, dog-eared urban planning texts, and a battered thermos of coffee. Their hands are covered in pencil marks and the occasional ink stain. They dress practically—jeans, a hoodie, old sneakers—because practicality is what the scholarship budget allows.
 
 By the time the movement is in full swing, Alex has traded the hoodie for a jacket that has passed through too many hands to have a clear owner anymore. They look older. Not harder, exactly. Just more sure of the weight they carry.
 

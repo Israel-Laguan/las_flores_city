@@ -2,6 +2,13 @@
 
 > Tags: `#criminal` `#flowers_syndicate` `#van_der_meer` `#industrial_zone`
 
+## Physical Description
+- Hair: Black, thinning and receding, kept short and practical
+- Eyes: Dark brown, cold and calculating, hooded with age
+- Build: Broad-shouldered but softening around the midsection, walks with slight limp from old injury
+- Skin: Light olive complexion, weathered and lined from stress
+- Distinguishing features: Thin scar along right jawline from the shootout, heavy-lidded eyes, gold cufflinks with the Van der Meer crest, always impeccably dressed despite rough surroundings
+
 ## Overview
 
 **Role:** Leader of the Flowers Syndicate
@@ -9,6 +16,13 @@
 **Affiliation:** Van der Meer Family (estranged), Flowers Syndicate
 **Base of Operations:** Industrial Zone District
 **Status:** Active (2077)
+
+## Physical Description
+- Hair: Black, thick, slicked back with gray at the temples
+- Eyes: Dark brown, cold and calculating, hooded lids
+- Build: Tall and lean, slightly gaunt from stress and drinking
+- Skin: Pale with a sallow undertone, deep lines around mouth and eyes
+- Distinguishing features: Thin scar along right jawline from a shootout, rings on multiple fingers, gold watch, permanent tension in his shoulders, a slight limp from an old leg injury
 
 Dong van der Meer is the most controversial figure in the Van der Meer dynasty. While his family built a legitimate mining empire, Dong chose a different path — building the Flowers Syndicate into the most powerful criminal organization in Las Flores. His operations span drug trafficking, extortion, cybercrime, and illegal transport, with influence reaching into the Industrial Zone, Port District, and Far South smuggling routes.
 

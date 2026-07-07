@@ -2,6 +2,20 @@
 
 **Title:** Final Year Medicine Student & Shipibo Advocate
 
+## Physical Description
+- Hair: Dark brown, long and thick, often worn in traditional braids or flowing loose
+- Eyes: Dark brown, bright and confident
+- Build: Slender and graceful, moves with poise
+- Skin: Warm brown, smooth and radiant
+- Distinguishing features: Traditional beaded jewelry, radiant smile, often wears Shipibo-patterned clothing, confident posture
+
+**Physical Description:**
+- Hair: Jet black, long and straight with traditional beads woven into braids
+- Eyes: Dark brown, bright and confident
+- Build: Slender and graceful, moves with poise
+- Skin: Warm brown complexion, smooth and radiant
+- Distinguishing features: High cheekbones, bright smile, traditional Shipibo embroidered clothing, gold nose stud, always carries a beaded medicine bag
+
 **Description (full):**
 
 Maria Chicham hails from a remote village along the banks of Rio Las Flores, where she grew up immersed in Shipibo culture and traditions. From a young age, her parents recognized her exceptional intellect and encouraged her to pursue higher education. When an opportunity arose for a Dutch scholarship at Universidad Nacional de Las Flores, Maria seized it with determination.

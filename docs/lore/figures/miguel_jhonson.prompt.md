@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Miguel Jhonson, a 24-year-old Logistics from Las Flores's Western District. Build:  Physically large, broad shoulders. Movement:  Unhurried, deliberate. Presence:  Grounding — makes a room feel more stable simply by entering. Expression:  Calm, subtle humor in the eyes. Posture:  Solid, stable, protective without being controlling. Style:  Practical work clothes, functional. Shape:  Square, solid forms. Color Palette:  Deep browns (#5D4037), forest greens (#2E7D32), warm accents (#FF8F00). Texture:  Worn but reliable materials (denim, sturdy cotton). Symbol:  Shield, anchor, foundation. --. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Western District. Lighting: dramatic, high contrast, casting sharp shadows. tense. Multicultural heritage (Anglo-Caribbean), emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a broad  24-year-old Caribbean Photorealistic portrait of Miguel Jhonson. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical clothing suited to their environment, with personal items reflecting their role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Miguel Jhonson, a 24-year-old Logistics from Las Flor
 - [ ] Action shot: Miguel Jhonson in their element
 - [ ] Emotional: Miguel Jhonson in a quiet moment
 - [ ] Group: Miguel Jhonson with their closest allies
+
+

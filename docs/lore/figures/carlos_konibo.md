@@ -2,6 +2,13 @@
 
 **Title (full):** Shipibo-Konibo Artisan and Cultural Entrepreneur, Founder of Shipibo Artesanias
 
+**Physical Description:**
+- Hair: Thick black hair, worn in a short practical cut with a few silver strands at the temples
+- Eyes: Deep brown, warm and observant
+- Build: Medium height, broad-shouldered, strong hands weathered from craftwork
+- Skin: Warm brown complexion, weathered from outdoor work
+- Distinguishing features: Traditional geometric tattoo on his right forearm, beaded necklace of his own making, calloused fingers stained with natural dyes
+
 **Description (full):**
 
 Carlos Konibo is a proud member of the Shipibo-Konibo tribe and accomplished artisan in his late 30s. Born along the banks of Rio Las Flores, he grew up surrounded by lush greenery and the rhythmic sounds of the river's flow. From an early age, Carlos learned the traditional techniques passed down through generations—the intricate patterns, vibrant colors, and the sacred geometry that defines Shipibo art.

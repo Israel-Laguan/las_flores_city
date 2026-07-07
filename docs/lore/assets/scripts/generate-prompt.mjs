@@ -3,14 +3,18 @@
 /**
  * generate-prompt.mjs
  *
- * Reads lore markdown files from docs/lore/ and generates .prompt.md files
- * co-located next to the source. Each .prompt.md contains a copy-pasteable
- * AI prompt for generating an asset (image, audio, video).
+ * Reads lore markdown files or registry YAMLs from docs/lore/ and generates
+ * .prompt.md files. Each .prompt.md contains a copy-pasteable AI prompt for
+ * generating an asset (image, audio, video).
  *
- * Usage:
+ * Usage (lore-based):
  *   node generate-prompt.mjs --type portrait --source docs/lore/figures/miguel_jhonson.md
  *   node generate-prompt.mjs --type portrait --batch docs/lore/figures/
  *   node generate-prompt.mjs --type portrait --batch docs/lore/figures/ --force
+ *
+ * Usage (registry-based):
+ *   node generate-prompt.mjs --type tile --registry docs/lore/assets/registries/tiles.yaml --output-dir docs/lore/assets/tiles/
+ *   node generate-prompt.mjs --type overlay --registry docs/lore/assets/registries/landmarks.yaml --output-dir docs/lore/assets/overlays/
  */
 
 import fs from 'node:fs';
@@ -55,6 +59,21 @@ const TEMPLATES = {
     const clothingDesc = (clothing && clothing !== 'undefined') ? clothing : 'practical clothing suited to their environment';
     const accessoriesDesc = (accessories && accessories !== 'undefined') ? accessories : 'personal items reflecting their role';
 
+    const ageLabel = /^\d+$/.test(age) ? age + '-year-old' : age;
+    const heritageNote = heritage ? `Multicultural heritage (${heritage}).` : '';
+
+    const draftPrompt = `[CONSUMER: portrait] ${name}, ${ageLabel} ${role}, ${district}. ${physicalDesc}. ${expressionDesc}. ${clothingDesc}, ${accessoriesDesc}. ${setting}. ${lighting}, ${shadows}. ${heritageNote} Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.`;
+
+    const fullPrompt = `[CONSUMER: portrait]
+Bust portrait of ${name}, a ${ageLabel} ${role} from Las Flores's ${district}.
+${physicalDesc}.
+${expressionDesc}.
+Dressed in ${clothingDesc}, with ${accessoriesDesc}.
+Background: ${setting}.
+Lighting: ${lighting}, casting ${shadows}.
+${mood}. ${heritageNote}
+Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.`;
+
     return `# Prompt: ${name} (portrait)
 
 [CONSUMER: portrait]
@@ -64,8 +83,11 @@ const TEMPLATES = {
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
+## Prompt (Draft)
+${draftPrompt}
+
 ## Prompt
-Bust portrait of ${name}, a ${/^\d+$/.test(age) ? age + '-year-old' : age} ${role} from Las Flores's ${district}. ${physicalDesc}. ${expressionDesc}. Dressed in ${clothingDesc}, with ${accessoriesDesc}. Background: ${setting}. Lighting: ${lighting}, casting ${shadows}. ${mood}. ${heritage ? `Multicultural heritage (${heritage}),` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, 3:4 aspect ratio, 512×768.
+${fullPrompt}
 
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches${negatives ? `, ${negatives}` : ''}
@@ -84,6 +106,11 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
    * Pipeline stage: draft (NIM/Pollinations) → refine (Flux)
    */
   background({ name, timeOfDay, keyElements, lighting, atmosphere, mood, contrast }) {
+    // Deduplicate mood words and use only once
+    const moodWords = mood.split(',').map(w => w.trim()).filter(Boolean);
+    const uniqueMoodWords = [...new Set(moodWords)];
+    const cleanMood = uniqueMoodWords.join(', ');
+
     return `# Prompt: ${name}
 
 [CONSUMER: html-background]
@@ -94,7 +121,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 **Pipeline stage:** draft → refine
 
 ## Prompt
-Scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${lighting}, ${atmosphere}, ${mood}${contrast ? `, capturing the contrast between ${contrast}` : ''}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos, 1920×1080.
+Scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${lighting}, ${cleanMood}${contrast ? `, capturing the contrast between ${contrast}` : ''}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos, 1920×1080.
 
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
@@ -113,12 +140,17 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
    * Pipeline stage: draft (NIM/Pollinations) → refine (Flux)
    */
   tile({ name, terrainType, description, colors }) {
-    return `# Prompt: ${name} (${terrainType} tile)
+    // Avoid redundant title: if name already contains the terrain type, don't repeat it
+    const title = name.toLowerCase().includes(terrainType.toLowerCase())
+      ? name
+      : `${name} (${terrainType})`;
+
+    return `# Prompt: ${title}
 
 [CONSUMER: tile]
 **Type:** tile
-**Source:** docs/lore/districts/${slugify(name)}.md
-**Target field:** \`base_image_url\` in \`content/maps/map_${slugify(name)}.yaml\`
+**Source:** docs/lore/assets/registries/tiles.yaml
+**Target field:** \`base_image_url\` in \`content/maps/map_*.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
@@ -249,13 +281,14 @@ theme, ${mood.toLowerCase()}, cinematic, las flores, cyberpunk
 **Type:** phone-wallpaper
 **Dimensions:** 1080×1920
 **Target:** Phone OS home screen wallpaper
-**Tool:** MidJourney --v 6 --ar 9:16 --style raw
+**Tool:** NIM (draft) → Flux/Seedance (refine)
+**Pipeline stage:** draft → refine
 
 ## Prompt
-Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay || 'ambient time of day'}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Vertical composition, no text, no logos, soft cyberpunk pastel aesthetic, photorealistic, 1080x1920.
+Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay || 'ambient time of day'}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Vertical composition, no text, no logos, 1080×1920.
 
 ## Negative Prompt
---no androids, no robots, no neon signs, no modern 2020s buildings, no cartoon, no anime, no text, no logos
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
 - [ ] Lock screen: same scene with subtle clock-friendly top area
@@ -275,13 +308,14 @@ Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay || 'ambient tim
 **Type:** app-icon
 **Dimensions:** 128×128
 **Target:** Phone OS app grid icon
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
+**Tool:** NIM (draft) → Flux/Seedance (refine)
+**Pipeline stage:** draft → refine
 
 ## Prompt
-Phone app icon design: ${description}, Las Flores 2077 style, soft cyberpunk pastel, ${iconStyle || 'minimalist geometric icon'}, transparent background, centered, 128x128, sharp edges, no text.
+Phone app icon design: ${description}, Las Flores 2077 style, ${iconStyle || 'minimalist geometric icon'}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered, 128×128, sharp edges, no text.
 
 ## Negative Prompt
---no text, no complex details, no shadows, no gradients, no neon glow, no cartoon, no anime
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, text, complex details, neon glow, cartoon, anime
 
 ## Variations
 - [ ] Alt color: same icon in alternate color palette
@@ -309,11 +343,25 @@ Phone app icon design: ${description}, Las Flores 2077 style, soft cyberpunk pas
     const skeletalStr = skeletal_description || 'average build';
     const physicalStr = physical_description || '';
 
-    const horizontalFace = `Multi-panel portrait reference strip, horizontal layout, 5 panels on clean white background. Same character in all panels. Camera arcs horizontally: Panel 1 — far left profile, Panel 2 — 3/4 left, Panel 3 (center) — front-facing eye level, Panel 4 — 3/4 right, Panel 5 — far right profile. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent. ${phenotypeStr}. ${physicalStr} Completely neutral expression, relaxed facial muscles, bare natural lips, bare skin, zero makeup, zero jewelry. Hair is tightly pulled back, not obstructing the face or neck.`;
+    const charDesc = `A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent.`;
+    const neutralFace = 'Completely neutral expression, relaxed facial muscles, bare natural lips, bare skin, zero makeup, zero jewelry. Hair is tightly pulled back, not obstructing the face or neck.';
 
-    const verticalFace = `Multi-panel portrait reference strip, vertical layout, 5 panels on clean white background. Same character front-facing in all panels. Camera arcs vertically: Panel 1 — extreme low angle worm's eye view, Panel 2 — slight low angle, Panel 3 (center) — front-facing eye level, Panel 4 — slight high angle, Panel 5 — extreme high angle bird's eye view. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent. ${phenotypeStr}. ${physicalStr} Completely neutral expression, relaxed facial muscles, bare natural lips, bare skin, zero makeup, zero jewelry. Hair is tightly pulled back, not obstructing the face or neck.`;
+    // Short draft versions (≤800 chars each)
+    const hFaceDraft = `[CONSUMER: biometric] 5-panel horizontal face arc, white bg. Left profile → 3/4 left → front → 3/4 right → right profile. Even studio lighting, no shadows. Photorealistic, hyper-detailed, 8k. ${charDesc} ${phenotypeStr}. ${physicalStr} ${neutralFace}`;
 
-    const bodySheet = `Orthographic character full-body reference sheet, clean white background, 3 panels. Same character in all panels: front view, side profile view, rear view. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent with a ${skeletalStr}. Neutral standing A-pose. Wears minimal form-fitting black athletic gym clothes consisting of a plain compression tank top and basic athletic leggings to clearly reveal body mass and geometry. Hair is tightly pulled back. Zero makeup, zero accessories, zero tech.`;
+    const vFaceDraft = `[CONSUMER: biometric] 5-panel vertical face arc, white bg. Worm's eye → slight low → front eye level → slight high → bird's eye. Even studio lighting, no shadows. Photorealistic, hyper-detailed, 8k. ${charDesc} ${phenotypeStr}. ${physicalStr} ${neutralFace}`;
+
+    const bodyDraft = `[CONSUMER: biometric] 3-panel orthographic body sheet, white bg. Front, side, rear views. Even studio lighting, no shadows. Photorealistic, hyper-detailed, 8k. ${charDesc} ${skeletalStr}. Neutral A-pose. Minimal form-fitting black gym clothes (compression tank + athletic leggings). Hair pulled back. Zero makeup, zero accessories, zero tech.`;
+
+    // Full versions (unbounded)
+    const horizontalFace = `[CONSUMER: biometric]
+Multi-panel portrait reference strip, horizontal layout, 5 panels on clean white background. Same character in all panels. Camera arcs horizontally: Panel 1 — far left profile, Panel 2 — 3/4 left, Panel 3 (center) — front-facing eye level, Panel 4 — 3/4 right, Panel 5 — far right profile. Soft flat even studio lighting, no cast shadows. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. ${charDesc} ${phenotypeStr}. ${physicalStr} ${neutralFace}`;
+
+    const verticalFace = `[CONSUMER: biometric]
+Multi-panel portrait reference strip, vertical layout, 5 panels on clean white background. Same character front-facing in all panels. Camera arcs vertically: Panel 1 — extreme low angle worm's eye view, Panel 2 — slight low angle, Panel 3 (center) — front-facing eye level, Panel 4 — slight high angle, Panel 5 — extreme high angle bird's eye view. Soft flat even studio lighting, no cast shadows. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. ${charDesc} ${phenotypeStr}. ${physicalStr} ${neutralFace}`;
+
+    const bodySheet = `[CONSUMER: biometric]
+Orthographic character full-body reference sheet, clean white background, 3 panels. Same character in all panels: front view, side profile view, rear view. Soft flat even studio lighting, no cast shadows. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. ${charDesc} ${skeletalStr}. Neutral standing A-pose. Wears minimal form-fitting black athletic gym clothes consisting of a plain compression tank top and basic athletic leggings to clearly reveal body mass and geometry. Hair is tightly pulled back. Zero makeup, zero accessories, zero tech.`;
 
     return `# Biometric Reference Sheets: ${name}
 
@@ -331,6 +379,9 @@ Phone app icon design: ${description}, Las Flores 2077 style, soft cyberpunk pas
 **File:** \`horizontal_face.png\`
 **Dimensions:** Multi-panel horizontal strip
 
+### Prompt (Draft)
+${hFaceDraft}
+
 ### Prompt
 ${horizontalFace}
 
@@ -344,6 +395,9 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 **File:** \`vertical_face.png\`
 **Dimensions:** Multi-panel vertical strip
 
+### Prompt (Draft)
+${vFaceDraft}
+
 ### Prompt
 ${verticalFace}
 
@@ -356,6 +410,9 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
 **File:** \`body_sheet.png\`
 **Dimensions:** 3-panel orthographic (front, side, rear)
+
+### Prompt (Draft)
+${bodyDraft}
 
 ### Prompt
 ${bodySheet}
@@ -400,6 +457,13 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
       return `Panel ${i + 1} — ${expr}: ${desc}`;
     }).join('\n');
 
+    const exprNames = expressionList.join(', ');
+    const draftPrompt = `[CONSUMER: biometric] Horizontal expression strip, white bg. Head and shoulders, same character all panels. Expressions: ${exprNames}. Even studio lighting, no shadows. Photorealistic, hyper-detailed, 8k. Hair pulled back, no makeup, bare skin.`;
+
+    const fullPrompt = `Horizontal expression reference strip, clean white background. Same character in all panels, head and shoulders framing.
+${stripPanels}.
+Soft flat even studio lighting, no cast shadows. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Hair is pulled back, no makeup, no jewelry, bare skin.`;
+
     return `# Expression Strip: ${name}
 
 [CONSUMER: biometric]
@@ -410,8 +474,11 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 **Recommended tools:** NIM (draft), Flux/Seedance (refine)
 **Reference:** ${face_base_ref || 'Use face base from biometric sheets for consistency'}
 
+## Prompt (Draft)
+${draftPrompt}
+
 ## Prompt
-Horizontal expression reference strip, clean white background. Same character in all panels, head and shoulders framing. ${stripPanels}. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Hair is pulled back, no makeup, no jewelry, bare skin.
+${fullPrompt}
 
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, stylized poses, dynamic angles, heavy clothing, jackets, loose fabric, makeup, lipstick, earrings, necklaces, glasses, text, watermarks
@@ -437,8 +504,11 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 **Recommended tools:** NIM (draft), Flux/Seedance (refine)
 **Body reference:** ${body_ref || 'Use body sheet from biometric phase'}
 
+## Prompt (Draft)
+[CONSUMER: phaser-sprite] ${character_description || name} in ${outfit_description}. ${pose_description}. Photorealistic, hyper-detailed, 8k. White bg, front view, flat studio lighting.
+
 ## Prompt
-Full-body character portrait, clean white background, front view. ${character_description || name}. Wearing ${outfit_description}. ${pose_description}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Flat studio lighting with subtle volumetric shading, no harsh cast shadows.
+Full-body character portrait, clean white background, front view. ${character_description || name}. Wearing ${outfit_description}. ${pose_description}. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Flat studio lighting with subtle volumetric shading, no harsh cast shadows.
 
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, wristwatches
@@ -455,6 +525,134 @@ function slugify(text) {
     .replace(/^_|_$/g, '');
 }
 
+// ── Simple YAML Parser (no deps) ───────────────────────────────────────────
+
+/**
+ * Parse a simple flat YAML array of objects (no nesting beyond 2 levels).
+ * Handles: keys, quoted strings, unquoted strings, booleans, inline arrays.
+ */
+function parseSimpleYaml(text) {
+  const lines = text.split('\n');
+  const result = {};
+  let currentKey = null;
+  let currentObj = null;
+  let inArray = false;
+
+  for (const raw of lines) {
+    const line = raw.replace(/\r$/, '');
+    // Skip comments and blank lines
+    if (/^\s*#/.test(line) || line.trim() === '') continue;
+
+    // Top-level key (e.g., "tiles:")
+    const topLevel = line.match(/^(\w[\w_]*):\s*$/);
+    if (topLevel) {
+      currentKey = topLevel[1];
+      result[currentKey] = [];
+      inArray = true;
+      continue;
+    }
+
+    // Array item start (e.g., "  - id: tile_street")
+    const arrayItem = line.match(/^\s+- (\w+):\s*(.*)$/);
+    if (arrayItem && inArray) {
+      currentObj = {};
+      const val = parseYamlValue(arrayItem[2]);
+      currentObj[arrayItem[1]] = val;
+      result[currentKey].push(currentObj);
+      continue;
+    }
+
+    // Object property (e.g., "    name: Street")
+    const prop = line.match(/^\s{4,}(\w[\w_]*):\s*(.*)$/);
+    if (prop && currentObj) {
+      currentObj[prop[1]] = parseYamlValue(prop[2]);
+      continue;
+    }
+  }
+
+  return result;
+}
+
+function parseYamlValue(val) {
+  if (!val || val.trim() === '') return '';
+  val = val.trim();
+  // Quoted string
+  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+    return val.slice(1, -1);
+  }
+  // Boolean
+  if (val === 'true') return true;
+  if (val === 'false') return false;
+  return val;
+}
+
+/**
+ * Read registry YAML and extract entries for a given type.
+ * Returns an array of metadata objects matching the template's expected fields.
+ */
+function readRegistryEntries(registryPath, type) {
+  if (!fs.existsSync(registryPath)) {
+    console.error(`Error: Registry not found: ${registryPath}`);
+    process.exit(1);
+  }
+
+  const content = fs.readFileSync(registryPath, 'utf-8');
+  const yaml = parseSimpleYaml(content);
+
+  // The top-level key depends on the registry file
+  const entries = yaml.tiles || yaml.landmarks || yaml.backgrounds
+    || yaml.app_icons || yaml.phone_wallpapers
+    || yaml[Object.keys(yaml)[0]] || [];
+
+  if (entries.length === 0) {
+    console.error(`Error: No entries found in ${registryPath}`);
+    process.exit(1);
+  }
+
+  return entries.map(entry => {
+    switch (type) {
+      case 'tile':
+        return {
+          name: entry.name || entry.id,
+          terrainType: entry.id?.replace(/^tile_/, '').replace(/_/g, ' ') || 'terrain',
+          description: entry.description || '',
+          colors: entry.colors || '',
+        };
+      case 'overlay':
+        return {
+          name: entry.name || entry.id,
+          description: entry.description || '',
+        };
+      case 'background':
+        return {
+          name: entry.name || entry.id,
+          timeOfDay: entry.time_of_day || 'daytime',
+          keyElements: entry.description || '',
+          lighting: 'atmospheric',
+          atmosphere: entry.mood || 'atmospheric',
+          mood: entry.mood || 'atmospheric',
+          contrast: '',
+        };
+      case 'phone-wallpaper':
+        return {
+          name: entry.name || entry.id,
+          description: entry.description || '',
+          timeOfDay: entry.time_of_day || 'night',
+          mood: entry.mood || 'peaceful',
+          colors: entry.colors || '',
+        };
+      case 'app-icon':
+        return {
+          name: entry.name || entry.id,
+          description: entry.description || '',
+          iconStyle: entry.icon_style || 'minimalist geometric icon',
+        };
+      default:
+        return { name: entry.name || entry.id, ...entry };
+    }
+  });
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
   const opts = {};
@@ -469,6 +667,12 @@ function parseArgs() {
         break;
       case '--batch':
         opts.batch = args[++i];
+        break;
+      case '--registry':
+        opts.registry = args[++i];
+        break;
+      case '--output-dir':
+        opts.outputDir = args[++i];
         break;
       case '--force':
         opts.force = true;
@@ -491,8 +695,13 @@ function parseArgs() {
     process.exit(1);
   }
 
-  if (!opts.source && !opts.batch) {
-    console.error('Error: Either --source or --batch is required');
+  if (!opts.source && !opts.batch && !opts.registry) {
+    console.error('Error: One of --source, --batch, or --registry is required');
+    process.exit(1);
+  }
+
+  if (opts.registry && !opts.outputDir) {
+    console.error('Error: --output-dir is required when using --registry');
     process.exit(1);
   }
 
@@ -501,22 +710,28 @@ function parseArgs() {
 
 function printHelp() {
   console.log(`
-generate-prompt.mjs — Generate AI asset prompts from lore files
+generate-prompt.mjs — Generate AI asset prompts from lore files or registries
 
-Usage:
+Usage (lore-based):
   node generate-prompt.mjs --type <type> --source <file>
   node generate-prompt.mjs --type <type> --batch <directory>
   node generate-prompt.mjs --type <type> --batch <directory> --force
+
+Usage (registry-based):
+  node generate-prompt.mjs --type tile --registry registries/tiles.yaml --output-dir tiles/
+  node generate-prompt.mjs --type overlay --registry registries/landmarks.yaml --output-dir overlays/
 
 Types:
   ${PROMPT_TYPES.join(', ')}
 
 Options:
-  --type      Prompt type (required)
-  --source    Single lore file to process
-  --batch     Directory of lore files to process
-  --force     Overwrite existing .prompt.md files
-  --help, -h  Show this help
+  --type         Prompt type (required)
+  --source       Single lore file to process
+  --batch        Directory of lore files to process
+  --registry     Registry YAML file to read asset entries from
+  --output-dir   Output directory for registry-based generation
+  --force        Overwrite existing .prompt.md files
+  --help, -h     Show this help
 `);
 }
 
@@ -756,9 +971,50 @@ function main() {
 
   console.log(`\n📝 Generating ${opts.type} prompts...\n`);
 
+  // Registry-based generation
+  if (opts.registry) {
+    const entries = readRegistryEntries(opts.registry, opts.type);
+    const outDir = path.resolve(opts.outputDir);
+    fs.mkdirSync(outDir, { recursive: true });
+
+    let success = 0;
+    let skipped = 0;
+    let failed = 0;
+
+    for (const entry of entries) {
+      const slug = slugify(entry.name);
+      const outputPath = path.join(outDir, `${slug}.prompt.md`);
+
+      if (fs.existsSync(outputPath) && !opts.force) {
+        console.log(`  ⏭️  Skipping (exists): ${path.basename(outputPath)}`);
+        skipped++;
+        continue;
+      }
+
+      entry.negatives = '';
+      const prompt = generatePrompt(opts.type, entry);
+      if (!prompt) {
+        failed++;
+        continue;
+      }
+
+      fs.writeFileSync(outputPath, prompt, 'utf-8');
+      console.log(`  ✅ Created: ${path.basename(outputPath)}`);
+      success++;
+    }
+
+    console.log(`\n📊 Results: ${success} created, ${skipped} skipped, ${failed} failed\n`);
+    return;
+  }
+
+  // Lore-based single file
   if (opts.source) {
     processFile(opts.source, opts.type, opts.force);
-  } else if (opts.batch) {
+    return;
+  }
+
+  // Lore-based batch
+  if (opts.batch) {
     const dir = opts.batch;
     if (!fs.existsSync(dir)) {
       console.error(`Error: Directory not found: ${dir}`);

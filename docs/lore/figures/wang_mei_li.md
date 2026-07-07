@@ -2,6 +2,20 @@
 
 **Title:** Founder, Dragon Phoenix Trading
 
+## Physical Description
+- Hair: Jet black, worn in a sleek professional style
+- Eyes: Dark brown, sharp and determined
+- Build: Slender and poised, moves with confidence
+- Skin: Fair, smooth and carefully maintained
+- Distinguishing features: Minimalist gold jewelry, tailored business suits, commanding presence, composed expression
+
+**Physical Description:**
+- Hair: Jet black, worn in a sleek professional bob
+- Eyes: Dark brown, sharp and determined
+- Build: Slender and poised, moves with confidence
+- Skin: Fair with a warm undertone
+- Distinguishing features: Minimalist gold jewelry, designer clothing, perfect posture, calm measured gestures, subtle smile
+
 **Description (full):**
 
 Born in 2028 as the eldest child of Wang Wei and Chen Yu, a wealthy Shanghai couple who immigrated to Las Flores to establish a successful trading company, Mei Li grew up surrounded by luxury but was instilled with a strong work ethic and entrepreneurial spirit by her parents.

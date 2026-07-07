@@ -1,5 +1,12 @@
 # Elisa Pérez
 
+**Physical Description:**
+- Hair: Dark brown, thick and wavy, often in a messy bun or loose curls
+- Eyes: Warm brown, bright and alert, always scanning screens
+- Build: Petite and energetic, moves quickly
+- Skin: Light brown with warm undertones
+- Distinguishing features: Small nose ring, earbuds perpetually around neck, colorful beaded bracelet, phone always in hand
+
 **Title (full):** Social Media & Community Manager, El Informador de Las Flores
 **Title (short):** Elisa Pérez, Social Media Manager
 

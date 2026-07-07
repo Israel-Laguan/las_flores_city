@@ -30,6 +30,7 @@ export function getPromptRoots(): string[] {
     getPromptRoot(),
     path.resolve(cwd, 'docs/lore/figures'),
     path.resolve(cwd, 'docs/lore/landmarks'),
+    path.resolve(cwd, 'docs/lore/shared/assets'),
   ];
 }
 

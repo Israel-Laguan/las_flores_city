@@ -18,6 +18,8 @@
 8. [Negative Prompts](#negative-prompts)
 9. [Tool-Specific Tips](#tool-specific-tips)
 
+> **For automated character generation:** See [Visual Style Translator](visual_style_translator.md) — the system prompt for converting raw character descriptions into structured face/body reference prompts.
+
 ---
 
 ## 🔧 PROMPT STRUCTURE & BEST PRACTICES

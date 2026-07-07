@@ -6,6 +6,13 @@
 > **Role:** Politician, ELU member
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Dark brown, thinning on top, combed carefully to cover, neatly trimmed at the sides
+- Eyes: Dark brown, slightly hooded, with the practiced warmth of a career politician
+- Build: Medium height, slightly paunchy, compensates with well-tailored suits
+- Skin: Medium brown, smooth but lined around the eyes and mouth
+- Distinguishing features: Silver-framed glasses, a practiced politician's smile that doesn't quite reach the eyes, manicured hands, a gold signet ring on his pinky finger
+
 ## Overview
 Carlos Alberto Hernandez is the son of Carlos Hernandez, the influential politician who led Las Flores through its early lithium boom years. His 2038 marriage to Elisabeth van der Meer was intended as a strategic alliance between two powerful families, but it accelerated his father's political downfall by alienating the Chinese community.
 

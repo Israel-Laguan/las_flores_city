@@ -6,6 +6,13 @@
 > **Role:** President, UDV Chinese Students Association
 > **Status:** Active (as of 2075)
 
+## Physical Description
+- Hair: Black, neatly styled in a modern cut
+- Eyes: Dark brown, sharp and ambitious
+- Build: Average height, lean and energetic
+- Skin: Fair, clear and youthful
+- Distinguishing features: Confident posture, trendy but professional clothing, always carries a laptop, charismatic smile
+
 ## Overview
 
 Born in 2055 in Beijing, China, Yifan Wang grew up in a household that instilled a deep sense of national pride and cultural identity. In 2075, at age 20, he moved to Las Flores to pursue a degree in International Relations at Universidad del Valle (UDV), one of the city's most prestigious institutions.

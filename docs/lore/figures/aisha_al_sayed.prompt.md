@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Aisha Al-Sayed, a young adult resident from Las Flores's Las Flores. distinctive appearance fitting their background. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Las Flores cityscape. Lighting: atmospheric, casting sharp shadows. atmospheric.  emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean  in her late 30s Chinese Photorealistic portrait of Aisha Al-Sayed. Her frame is lean, angular. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, deep amber-brown, sharp focused. Her expression is stern, as she meets the viewer with steady, composed bearing. Her dark brown wavy hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing with a safety vest over her blouse. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Aisha Al-Sayed, a young adult resident from Las Flore
 - [ ] Action shot: Aisha Al-Sayed in their element
 - [ ] Emotional: Aisha Al-Sayed in a quiet moment
 - [ ] Group: Aisha Al-Sayed with their closest allies
+
+

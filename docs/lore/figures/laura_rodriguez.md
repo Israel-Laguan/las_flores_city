@@ -6,6 +6,13 @@
 
 **Occupation:** Human Rights Lawyer, Founder & Director of COFAVIC (Comité de Familiares Víctimas del Conflicto)
 
+**Physical Description:**
+- Hair: Dark brown, streaked with gray, worn in a practical bun
+- Eyes: Dark brown, intense and compassionate
+- Build: Medium height, slender but strong, carries herself with quiet authority
+- Skin: Medium brown, lined around eyes from stress and long hours
+- Distinguishing features: Small reading glasses on a chain, simple gold earrings, always carries a worn leather briefcase, thin scar on left hand from a protest incident
+
 **Background:**
 Laura was born and raised in a working-class neighborhood of Las Flores. Her life’s work began when her younger brother went missing after being caught in the crossfire between criminal organizations and security forces. The trauma of his disappearance sparked her passion for advocating on behalf of victims’ families. She earned her law degree at a prestigious university in the capital, specializing in human rights and international law.
 

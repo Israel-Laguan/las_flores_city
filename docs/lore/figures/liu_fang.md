@@ -5,6 +5,20 @@
 > **Role:** Whistleblower, Former LW Group Employee
 > **Status:** Deceased (disappeared 2055)
 
+## Physical Description
+- Hair: Black, shoulder-length, usually pulled back in a neat clip
+- Eyes: Dark brown, intelligent and wary
+- Build: Slender and average height, moves with quiet efficiency
+- Skin: Fair, unlined
+- Distinguishing features: Small rectangular glasses, always carries a leather portfolio, nervous habit of checking over her shoulder, simple pearl stud earrings
+
+## Physical Description
+- Hair: Jet black, cut in a sensible shoulder-length bob
+- Eyes: Dark brown, intelligent and cautious
+- Build: Average height, slim and precise in movements
+- Skin: Fair, unblemished
+- Distinguishing features: Wire-rimmed glasses, small jade stud earrings, always carried a slim leather portfolio, neat professional appearance
+
 ## Overview
 Liu Fang was a whistleblower from within the LW Group who provided damning evidence of bribery to local officials. She disappeared under mysterious circumstances just days before she was set to testify at the Minera Estrella trial.
 

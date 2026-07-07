@@ -6,6 +6,20 @@
 > **Role:** Political secretary, whistleblower
 > **Status:** In exile (Andean forest)
 
+## Physical Description
+- Hair: Dark brown, thick and straight, worn in a practical ponytail
+- Eyes: Dark brown, alert and cautious
+- Build: Petite and slight, moves quietly
+- Skin: Warm brown, smooth with high cheekbones
+- Distinguishing features: Traditional woven shawl, small gold cross necklace, nervous habit of glancing over shoulder, worn leather satchel with hidden documents
+
+## Physical Description
+- Hair: Dark brown, thick and wavy, worn in a practical braid
+- Eyes: Dark brown, alert and cautious
+- Build: Petite and wiry, moves quickly and quietly
+- Skin: Warm brown, slightly weathered from living in the Andean forest
+- Distinguishing features: Small nose, determined set to her mouth, simple cotton blouse, woven shawl, always carries a worn leather satchel with documents
+
 ## Overview
 Maria Sanchez Sulca was born to humble shopkeepers in the Andean District. She earned a political science degree and joined the Techno-Progressive Forum (TPF) as a secretary, believing in its progressive mission.
 

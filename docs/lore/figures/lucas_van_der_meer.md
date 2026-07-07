@@ -2,6 +2,20 @@
 
 **Title (full):** Youngest Son of the van der Meer Family, Struggling with Addiction and Mental Health
 
+## Physical Description
+- Hair: Sandy blond like his father, unkempt and unwashed, falling across forehead
+- Eyes: Pale blue, bloodshot and unfocused, haunted
+- Build: Thin and gaunt, cheekbones prominent from substance abuse
+- Skin: Pale and sallow, dark circles under eyes
+- Distinguishing features: Trembling hands, bitten fingernails, expensive but disheveled clothing, vacant expression alternating with manic intensity
+
+**Physical Description:**
+- Hair: Sandy blond, once neatly styled but now often unkempt and greasy
+- Eyes: Pale blue, vacant and unfocused during episodes, sharp and guilt-ridden during clarity
+- Build: Tall and gaunt, wasting from substance abuse
+- Skin: Fair, pallid with dark circles under eyes, track marks on inner arms
+- Distinguishing features: Trembling hands, missing front tooth from a fight, disheveled expensive clothing, always smells of alcohol and cigarettes
+
 **Description (full):**
 
 Lucas van der Meer is the youngest child of Jan and Maria van der Meer, born into the immense privilege and pressure of the van der Meer lithium mining dynasty. As the baby of the family, he was constantly overshadowed by his older siblings Peter and Anna, whose accomplishments and public profiles set an impossible standard for him to meet.

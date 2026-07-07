@@ -7,6 +7,13 @@
 > **Role:** Former CEO of GLC, Head of van der Meer Lithium Mining Dynasty
 > **Status:** Deceased
 
+## Physical Description
+- Hair: Sandy blond, neatly combed, slightly wavy
+- Eyes: Pale blue, thoughtful and reserved
+- Build: Tall and lean, slightly stooped from long hours at a desk
+- Skin: Fair, freckled on the nose from outdoor surveys
+- Distinguishing features: Wire-rimmed glasses, gentle smile, always carried a leather-bound notebook, wore a simple wedding band
+
 ## Overview
 
 Jan van der Meer was the youngest child of Pieter and Annabella van der Meer, born into a world of privilege and opportunity. He moved to Las Flores with his family in 2030 at the age of 12, where he attended an exclusive private school and met the influential people who would shape his future. Unlike his more flamboyant older brother Alexander, Jan was reserved and thoughtful, preferring observation to active participation in the social whirlwind of being a van der Meer.

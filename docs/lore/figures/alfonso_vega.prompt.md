@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Alfonso Vega, a young adult Former Mayor of Las Flores from Las Flores's Las Flores. distinctive appearance fitting their background. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Las Flores cityscape. Lighting: atmospheric, casting sharp shadows. atmospheric.  emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky  in his late 50s Latin Photorealistic portrait of Alfonso Vega. Her frame is stocky, broad-shouldered. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, heavy-lidded with a politician's practiced warmth. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her silver thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a tailored suit with a mayoral pin. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Alfonso Vega, a young adult Former Mayor of Las Flore
 - [ ] Action shot: Alfonso Vega in their element
 - [ ] Emotional: Alfonso Vega in a quiet moment
 - [ ] Group: Alfonso Vega with their closest allies
+
+

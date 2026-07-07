@@ -6,6 +6,20 @@
 > **Role:** Environmental Scientist, Phytoremediation Expert
 > **Status:** Covert collaborator with Evelyn Ruthenberg (publicly aligned with Minera Estrella/city council as of 2059)
 
+## Physical Description
+- Hair: Black with significant gray at the temples, kept short and neat
+- Eyes: Dark brown, sharp and analytical behind thick-framed glasses
+- Build: Slender and slightly stooped, precise deliberate movements
+- Skin: Pale, unlined except for deep concentration lines between the brows
+- Distinguishing features: perpetually ink-stained fingertips, worn leather notebook always in hand, quiet unassuming presence that belies his sharp mind
+
+## Physical Description
+- Hair: Gray-black, thinning, kept neat but slightly unkempt
+- Eyes: Dark brown, deep-set and observant, with dark circles from sleepless research nights
+- Build: Slender and slightly hunched, moves quietly
+- Skin: Pale with a yellowish undertone, lined around the eyes
+- Distinguishing features: Round wire-rimmed glasses, ink-stained fingers from lab work, always wears the same worn brown cardigan, carries a small notebook in his breast pocket
+
 ## Overview
 
 Dr. Wei Zhang is a reclusive chemist in his fifties, specializing in environmental chemistry and phytoremediation. He lives a quiet, introspective life, his unassuming presence masking a brilliant mind and a deep, personal stake in environmental justice. While details of his past remain veiled, a formative trauma—likely the environmental ruination of his ancestral village or the silencing of a mentor who championed similar research—instilled in him a profound empathy for ecosystems ravaged by unchecked industry. This fueled an obsession with developing innovative, *sustainable* purification methods, a silent rebellion against the destructive status quo.

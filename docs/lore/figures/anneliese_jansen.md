@@ -2,6 +2,13 @@
 
 **Title (full):** Companion for Hire - Las Flores Port District
 
+**Physical Description:**
+- Hair: Honey blonde, long and flowing, often styled in loose curls or a sleek straight look
+- Eyes: Gray-blue, expressive and shifting between confidence and vulnerability
+- Build: Slender and toned, careful about fitness and posture
+- Skin: Fair with a light tan, smooth complexion
+- Distinguishing features: Full lips often painted in muted rose, high cheekbones, a small tattoo of a compass rose behind her left ear, long manicured nails
+
 **Description (full):**
 
 Anneliese Jansen is a 27-year-old woman of Dutch and French descent raised near the bustling port area of Las Flores. Her Dutch father left when she was young, leaving scars that deeply influenced her relationships with men and her understanding of intimacy.

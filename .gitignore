@@ -38,6 +38,7 @@ yarn-error.log*
 *.swo
 .kilo/
 .kiro/
+.mimocode/
 docs/superpowers/
 
 # OS

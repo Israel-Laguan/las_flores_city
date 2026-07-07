@@ -7,6 +7,13 @@
 > **Role:** Mid-level executive manager, LW Group
 > **Status:** Active
 
+## Physical Description
+- Hair: Jet black, thick and lustrous, worn in a sleek blowout or elegant updo
+- Eyes: Dark brown, sharp and commanding, lined with subtle kohl
+- Build: Slender and poised, moves with confident grace
+- Skin: Warm olive complexion, smooth and carefully maintained
+- Distinguishing features: Gold hoop earrings, designer glasses, signature red lipstick, manicured nails, carries herself with regal bearing
+
 ## Overview
 
 Fatima El-Kholi is a charismatic and assertive Middle Eastern executive based in Las Flores. With an MBA from the American University in Cairo and five years of experience at LW Group, she straddles the worlds of high-stakes logistics management and the city's upscale social circuit. Outwardly polished and in control, she privately battles the isolation of cultural displacement and the quiet frustration of pay disparity.

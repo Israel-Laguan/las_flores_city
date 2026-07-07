@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Amina Patel, a young adult Mid-level finance manager at China Lithium & Metals from Las Flores's Las Flores. distinctive appearance fitting their background. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Las Flores cityscape. Lighting: atmospheric, casting sharp shadows. atmospheric.  emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite  in her mid 30s Chinese Photorealistic portrait of Amina Patel. Her frame is compact, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, almost black, observant cautious. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her jet black thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a professional blouse and tailored trousers with a blazer. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Amina Patel, a young adult Mid-level finance manager 
 - [ ] Action shot: Amina Patel in their element
 - [ ] Emotional: Amina Patel in a quiet moment
 - [ ] Group: Amina Patel with their closest allies
+
+

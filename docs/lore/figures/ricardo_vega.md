@@ -6,6 +6,13 @@
 > **Role:** Politician, store owner
 > **Status:** Retired/disgraced
 
+## Physical Description
+- Hair: Dark brown, once thick now thinning, combed back with pomade
+- Eyes: Dark brown, expressive and animated when speaking
+- Build: Medium height, slightly paunchy from years of campaign trail dining
+- Skin: Medium brown, lined around eyes from squinting at cameras
+- Distinguishing features: Flashy campaign buttons still pinned to his jacket, practiced politician's smile, gold watch, always carries a smartphone for social media
+
 ## Overview
 Ricardo Vega was a charismatic politician from the Industrial District, known for his exceptional oratory skills and social media savvy. He built a reputation as a fierce communicator who could connect with ordinary voters through eloquent speeches and witty online jabs.
 

@@ -2,6 +2,13 @@
 
 **Title:** Senior Manager for a Beijing-based Public Relations Firm
 
+**Physical Description:**
+- Hair: Jet black, neatly styled in a modern side-part
+- Eyes: Dark brown, sharp and calculating
+- Build: Average height, lean and fit
+- Skin: Fair with a healthy glow
+- Distinguishing features: Perfect white teeth from a recent veneer, always impeccably dressed in designer clothing, subtle cologne, Apple Watch on wrist
+
 **Description (full):**
 
 Hongbin Li is a charismatic and highly strategic early 30s professional from Shanghai, China, now based in Las Flores as part of a government initiative to expand Chinese influence and investment in the region. He earned his degree in Communications from Fudan University and works as a senior manager for a Beijing-based PR firm specializing in digital media and influencer marketing.

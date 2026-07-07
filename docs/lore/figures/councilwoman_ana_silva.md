@@ -5,6 +5,20 @@
 > **Role:** Progressive City Council Member
 > **Status:** Active
 
+## Physical Description
+- Hair: Black, thick and curly, worn in a voluminous natural style
+- Eyes: Dark brown, fiery and determined
+- Build: Medium height, sturdy and imposing presence
+- Skin: Deep brown, smooth complexion
+- Distinguishing features: Strong jaw, expressive eyebrows, silver hoop earrings, carries a worn leather folder of case documents
+
+## Physical Description
+- Hair: Dark brown, thick and curly, worn in a natural afro style
+- Eyes: Dark brown, fierce and passionate
+- Build: Medium height, sturdy and strong, carries herself with conviction
+- Skin: Deep brown, radiant complexion
+- Distinguishing features: Wide expressive mouth, gold hoop earrings, a small scar on her right eyebrow from a protest incident, natural nails kept short for practicality
+
 ## Overview
 
 Councilwoman Ana Silva is a progressive voice and fierce champion of the poor in the Las Flores City Council. She is one of the only elected officials who consistently advocates for marginalized communities against the influence of the Business Coalition and corporate interests.

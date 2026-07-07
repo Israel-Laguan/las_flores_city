@@ -5,6 +5,13 @@
 > **Role:** Former Mayor of Las Flores
 > **Status:** Retired (as of 2077)
 
+## Physical Description
+- Hair: Silver-gray, thick and wavy, swept back in a distinguished style
+- Eyes: Dark brown, heavy-lidded with a politician's practiced warmth
+- Build: Stocky and broad-shouldered, carries weight in the midsection
+- Skin: Medium brown, deeply lined forehead and around the mouth from years of public speaking
+- Distinguishing features: Thick mustache neatly trimmed, large hands often gesturing while speaking, gold watch on left wrist, teeth slightly yellowed from years of coffee
+
 ## Overview
 
 Alfonso Vega is a significant figure in the political landscape of Las Flores, having served as the city's mayor during one of its most tumultuous periods. His tenure, marked by the catastrophic tailings dam failure in 2052, showcased his ability to navigate complex situations, albeit under a cloud of controversy.

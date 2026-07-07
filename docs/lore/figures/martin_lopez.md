@@ -2,6 +2,20 @@
 
 **Title:** 55-year-old Veteran Journalist & Investigative Reporter at El Diario de Las Flores
 
+## Physical Description
+- Hair: Gray-brown, thinning and combed back
+- Eyes: Dark brown, weary but sharp
+- Build: Average height, slightly stooped from years at a desk
+- Skin: Medium brown, lined from stress and long hours
+- Distinguishing features: Wire-rimmed glasses, rumpled blazer, ink-stained fingers, permanent five o'clock shadow, carries a worn leather satchel overflowing with notes
+
+**Physical Description:**
+- Hair: Gray, thinning, worn in a casual unstyled manner
+- Eyes: Dark brown, tired but sharp from years of late-night research
+- Build: Average height, slightly stooped from decades at a desk
+- Skin: Medium brown, lined around eyes and mouth
+- Distinguishing features: Perpetual stubble, ink-stained fingers, worn leather satchel, always has a notebook and pen ready, no-nonsense demeanor
+
 **Description (full):**
 
 Martín López is a 55-year-old veteran journalist and investigative reporter at El Diario de Las Flores. He began his career as a reporter for a small local newspaper in Las Flores. His tenacious pursuit of the truth led him to uncover numerous cases of corruption and organized crime within the city. Despite facing threats and pushback from powerful figures, he continued his work, earning a reputation as one of the most respected journalists in Las Flores.

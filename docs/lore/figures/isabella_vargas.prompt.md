@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Isabella Vargas, a 23-year-old Intelligence from Las Flores's Eastern District. Build:  Observant, still in movement. Movement:  Patient, deliberate. Presence:  Not easy to read, exterior calm in high-pressure situations. Expression:  Focused, subtle intensity in eyes. Posture:  Attentive, analytical. Style:  Practical, student-appropriate. Shape:  Geometric, interconnected (patterns, networks). Color Palette:  Deep purples (#7B1FA2), metallics (#9E9E9E), muted blues (#607D8B). Texture:  Smooth, reflective (analysis), precise. Symbol:  Eye, web, spreadsheet, blueprint. --. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Eastern District. Lighting: dramatic, high contrast, casting sharp shadows. tense. Multicultural heritage (Latin American), emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender  23-year-old Latin American Photorealistic portrait of Isabella Vargas. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a fitted blazer over a casual top. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Isabella Vargas, a 23-year-old Intelligence from Las 
 - [ ] Action shot: Isabella Vargas in their element
 - [ ] Emotional: Isabella Vargas in a quiet moment
 - [ ] Group: Isabella Vargas with their closest allies
+
+

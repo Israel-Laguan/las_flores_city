@@ -11,6 +11,12 @@ Alexandra Isabel Morales, known affectionately as Izzy, is a 28-year-old languag
 
 ## Appearance
 
+- Hair: Long, straight black hair, often styled in loose waves or a sleek low ponytail
+- Eyes: Dark brown, almond-shaped, expressive and bright
+- Build: Petite and slender, graceful posture
+- Skin: Warm ivory with a natural flush to the cheeks
+- Distinguishing features: High cheekbones, a delicate nose, carefully manicured nails, wears small gold hoop earrings
+
 Izzy carries herself with a polished demeanor that reflects her desire to be perceived as a classy city girl. She favors stylish, fashionable outfits that often blend modern trends with touches of elegance, such as tailored blazers and chic accessories. Her long, flowing hair is often styled elegantly, and her makeup is always immaculate, adding to her vibrant appearance.
 
 ## Personality

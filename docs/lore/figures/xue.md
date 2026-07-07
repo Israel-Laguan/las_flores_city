@@ -6,6 +6,20 @@
 > **Role:** Former military operative, restaurateur
 > **Status:** Active (as of 2059)
 
+## Physical Description
+- Hair: Black with significant gray, worn in a practical bun
+- Eyes: Dark brown, sharp and watchful
+- Build: Compact and wiry, moves with military precision
+- Skin: Fair, weathered with fine lines
+- Distinguishing features: Calloused hands from cooking, minimalist clothing, quiet commanding presence, eyes that miss nothing
+
+## Physical Description
+- Hair: Black with silver streaks, worn in a practical bun
+- Eyes: Dark brown, sharp and alert from years of covert work
+- Build: Slender and strong, moves with military precision
+- Skin: Fair with weathered lines from decades of cooking
+- Distinguishing features: Small scar on left cheekbone, simple cotton apron, always alert posture, calloused hands from kitchen work
+
 ## Overview
 Xue was dispatched from China as part of a covert operation to monitor influential figures overseeing the mines in Las Flores. Her original cover was a small restaurant in Old Las Flores, where she operated for decades while sending regular reports to handlers back home.
 

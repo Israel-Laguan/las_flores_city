@@ -9,6 +9,20 @@
 > **Sister-in-law:** Xiu Li van der Meer
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Dark brown, sleek and professionally styled
+- Eyes: Dark brown, confident and polished
+- Build: Slender and poised, moves with practiced grace
+- Skin: Light brown with warm undertones, carefully maintained
+- Distinguishing features: Designer clothing, subtle gold jewelry, perfect manicure, always camera-ready, warm but measured smile
+
+## Physical Description
+- Hair: Dark brown, sleek and glossy, worn in a polished style
+- Eyes: Dark brown, intelligent and poised
+- Build: Slender and graceful, moves with practiced elegance
+- Skin: Light brown, smooth and carefully maintained
+- Distinguishing features: Designer clothing, delicate gold jewelry, impeccable grooming, confident bearing
+
 ## Overview
 
 Sofia Rodriguez Krol represents the new generation of Las Flores elite - sophisticated, socially conscious, and strategically connected. As the wife of Liam Krol and sister-in-law of Xiu Li van der Meer, Sofia occupies a unique position at the intersection of Latin American political power and Dutch business interests.

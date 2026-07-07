@@ -10,6 +10,13 @@
 > **Core traits:** Astute, compassionate, haunted by the injustices she witnesses
 > **Mannerisms:** Direct, assertive, fiercely committed to supporting the fight for justice
 
+## Physical Description
+- Hair: Dark brown, long and wavy, often worn loose or in a practical ponytail
+- Eyes: Dark brown, warm and determined
+- Build: Medium height, strong and athletic from field work
+- Skin: Warm brown, smooth with faint lines from sun exposure
+- Distinguishing features: Simple gold hoop earrings, practical business attire, carries a worn leather portfolio, confident determined expression
+
 ## Overview
 
 Yara Rossi was a successful businesswoman who became an environmental activist after meeting Evelyn Ruthenberg. Born in Ecuador in 2019, she moved to Las Flores with her family in 2024 at age 5, when the port burst into activity amid the lithium mine's opening. She built a successful import-export firm specializing in sustainable goods long before "green" became a buzzword, driven by her grandmother's teachings that "true wealth is measured in integrity, not just profit." She used her wealth, influence, and charisma to champion the cause of justice for the Great Lithium Leak victims.

@@ -2,6 +2,20 @@
 
 **Title (full):** International Relations Student at UILF, Chinese Cultural Purist
 
+## Physical Description
+- Hair: Jet black, long and straight, often worn in a sleek low bun or flowing down her back
+- Eyes: Dark brown, almond-shaped, sharp and imperious
+- Build: Slender and poised, graceful posture
+- Skin: Fair with warm undertones, smooth complexion
+- Distinguishing features: High cheekbones, delicate jawline, small jade pendant earrings, perfectly manicured nails, carries herself with regal bearing
+
+**Physical Description:**
+- Hair: Jet black, sleek and straight, cut in a sharp asymmetric bob
+- Eyes: Dark brown, sharp and appraising
+- Build: Slender and poised, moves with deliberate grace
+- Skin: Fair porcelain complexion, meticulously maintained
+- Distinguishing features: Precise red lipstick, manicured nails in dark lacquer, jade pendant necklace, always impeccably dressed in designer clothing
+
 **Description (full):**
 
 Daiyu Liu is a highly intelligent and ambitious woman in her mid-20s, born in China but moved to Las Flores with her family at a young age. Growing up in an affluent neighborhood near the Universidad Internacional de Las Flores (UILF) campus, she developed a sophisticated worldview and strong sense of her cultural identity.

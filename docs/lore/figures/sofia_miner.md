@@ -6,6 +6,13 @@
 > **Role:** Mineral sorter, later street survivor
 > **Status:** Alive (as of 2050s)
 
+## Physical Description
+- Hair: Black, worn in a practical braid
+- Eyes: Dark brown, alert and observant
+- Build: Petite and wiry, walks with a cane
+- Skin: Deep brown, weathered from sun and hardship
+- Distinguishing features: Twisted leg requiring a cane, worn clothing, always watches people's lips to lip-read, small gold locket with daughter's photo
+
 ## Overview
 Sofia was born deaf in a small Andean village. She learned to communicate through hand gestures and lip-reading, and despite her disability, she earned a job sorting minerals at the local mine. Her keen eyes and strong work ethic earned her the respect of her coworkers.
 

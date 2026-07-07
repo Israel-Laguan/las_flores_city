@@ -3,7 +3,7 @@
 /**
  * generate-pollinations-drafts.mjs
  *
- * Reads .prompt.md files from docs/lore/assets/ui-concepts/ and generates
+ * Reads .prompt.md files from docs/lore/assets/ (recursively) and generates
  * first-draft images via Pollinations free endpoint for each prompt variant.
  *
  * Drafts are saved to a `drafts/` subdirectory next to each prompt file.
@@ -24,7 +24,11 @@ import https from 'node:https';
 // ── Config ──────────────────────────────────────────────────────────────────
 
 const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt';
-const PROMPT_ROOT = path.resolve('docs/lore/assets/ui-concepts');
+const PROMPT_ROOTS = [
+  path.resolve('docs/lore/shared/assets'),
+  path.resolve('docs/lore/landmarks'),
+  path.resolve('docs/lore/figures'),
+];
 
 const DEFAULT_DIMENSIONS = {
   tile: { width: 512, height: 512 },
@@ -37,8 +41,8 @@ const DEFAULT_DIMENSIONS = {
 };
 
 const REQUEST_DELAY_MS = 30000; // 30s between requests (Pollinations rate limit)
-const MAX_RETRIES = 6;
-const INITIAL_BACKOFF_MS = 60000;
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 15000;
 const MIN_FILE_SIZE = 5000;
 
 // ── CLI Flags ───────────────────────────────────────────────────────────────
@@ -180,6 +184,26 @@ function parsePromptFile(filePath) {
     }
   }
 
+  // Fallback: if no named variants found, try single ## Prompt section
+  if (results.length === 0) {
+    const singlePromptMatch = content.match(/## Prompt\n([\s\S]*?)(?=## Negative Prompt|$)/);
+    if (singlePromptMatch) {
+      const promptText = singlePromptMatch[1].trim();
+      const negMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=## |$)/);
+      const negativeText = negMatch ? negMatch[1].trim() : '';
+      if (promptText) {
+        results.push({
+          variantName: 'default',
+          promptText,
+          negativeText,
+          type,
+          width,
+          height,
+        });
+      }
+    }
+  }
+
   return results;
 }
 
@@ -236,9 +260,10 @@ async function downloadDraft(promptData, outDir, baseName, force) {
       lastError = err;
 
       if (attempt < MAX_RETRIES) {
-
+        console.log(`    ⚠️  attempt ${attempt}/${MAX_RETRIES} failed: ${err.message.substring(0, 80)}`);
+        console.log(`    ⏳ retrying in ${wait / 1000}s...`);
         await sleep(wait);
-        wait = Math.min(wait * 1.5, 300000);
+        wait = Math.min(wait * 1.5, 60000);
       }
     }
   }
@@ -252,7 +277,7 @@ async function main() {
   const opts = parseArgs();
 
   console.log(`\n🎨 Pollinations Draft Generator\n`);
-  console.log(`  Root: ${PROMPT_ROOT}`);
+  console.log(`  Roots: ${PROMPT_ROOTS.join(', ')}`);
   if (opts.filterSet) {
     console.log(`  Filter: ${Array.from(opts.filterSet).join(', ')}`);
   }
@@ -267,6 +292,7 @@ async function main() {
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        if (entry.name === 'references') continue;
         walk(full);
       } else if (entry.isFile() && entry.name.endsWith('.prompt.md')) {
         promptFiles.push(full);
@@ -274,7 +300,9 @@ async function main() {
     }
   }
 
-  walk(PROMPT_ROOT);
+  for (const root of PROMPT_ROOTS) {
+    if (fs.existsSync(root)) walk(root);
+  }
 
   let totalPrompts = 0;
   let skipped = 0;
@@ -283,7 +311,7 @@ async function main() {
   const failures = [];
 
   for (const promptFile of promptFiles) {
-    const relFromRoot = path.relative(PROMPT_ROOT, promptFile);
+    const relFromRoot = path.basename(promptFile);
     const variants = parsePromptFile(promptFile);
 
     // Filter by type if specified

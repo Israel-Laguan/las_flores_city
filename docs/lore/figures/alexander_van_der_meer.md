@@ -8,6 +8,13 @@
 > **Children:** Xiu Li van der Meer, Dong van der Meer
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Steel-gray, once blond, neatly combed back with a precise side part
+- Eyes: Pale blue, steady and calculating
+- Build: Tall and lean, straight-backed posture maintained through discipline
+- Skin: Fair with age spots on the hands and forehead, weathered from years of sun exposure in Las Flores
+- Distinguishing features: Sharp angular jaw, thin lips often pressed into a neutral line, wire-rimmed reading glasses on a gold chain, a small gold signet ring on his right hand bearing the Van der Meer family crest
+
 ## Overview
 
 Alexander van der Meer is the current patriarch of the Van der Meer family and CEO of Van der Meer Mining. Born in the Netherlands but raised with strong connections to Las Flores, Alexander represents the bridge between the family's Dutch heritage and their South American empire. His marriage to Mei Li, a prominent Chinese-Latin American businesswoman, symbolizes the complex interplay between European and Asian interests in the city.

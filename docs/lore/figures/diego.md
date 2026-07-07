@@ -6,6 +6,13 @@
 > **Role:** Mina Escondida guide, reluctant hero
 > **Status:** Active
 
+## Physical Description
+- Hair: Dark brown, short and tousled, perpetually dusty
+- Eyes: Warm brown, alert and resourceful
+- Build: Medium height, lean and agile from climbing through mine tunnels
+- Skin: Sun-browned, weathered from outdoor work
+- Distinguishing features: Thin scar across left eyebrow from the cave-in, strong hands with calloused palms, always carries a worn headlamp around his neck
+
 ## Overview
 Diego is a young local from Old Las Flores who became a guide for extreme adventure tourists at Mina Escondida, the abandoned copper/silver mine across the Río de las Flores. He grew up hearing stories about the old mine from community elders and knew its labyrinthine tunnels better than anyone.
 

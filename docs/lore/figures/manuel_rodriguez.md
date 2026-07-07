@@ -6,6 +6,13 @@
 > **Role:** Governor's representative, Pacific District
 > **Status:** Disgraced
 
+## Physical Description
+- Hair: Dark brown, neatly combed, slightly thinning at temples
+- Eyes: Dark brown, charming but shifty
+- Build: Medium height, slightly paunchy from fine dining
+- Skin: Medium brown, smooth with a perpetual flush from drinking
+- Distinguishing features: Expensive gold watch, tailored suits slightly too tight, practiced smile that doesn't reach eyes, manicured hands
+
 ## Overview
 Manuel Rodriguez was appointed as the Governor's representative in the Pacific District, tasked with overseeing local administration and acting as a liaison between the Governor and district residents. Initially charismatic and dedicated, he quickly proved corrupt.
 

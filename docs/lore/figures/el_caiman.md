@@ -5,6 +5,20 @@
 > **Role:** Leader of Las Flores' most powerful criminal syndicate
 > **Status:** Active
 
+## Physical Description
+- Hair: Salt-and-pepper, slicked back, thinning at crown
+- Eyes: Dark brown, hooded and calculating, never quite smile
+- Build: Stocky and powerful, thick neck, carries weight like authority
+- Skin: Deep olive, weathered and lined from years underground
+- Distinguishing features: Thick gold chain around neck, heavy rings on fingers, distinctive crocodile-tooth pendant, walks with a deliberate slow stride
+
+## Physical Description
+- Hair: Black, slicked back, slightly receding at the temples
+- Eyes: Dark brown, cold and calculating, heavy-lidded
+- Build: Medium height, stocky and powerful, thick neck
+- Skin: Medium brown, weathered and scarred
+- Distinguishing features: Thick mustache, gold chains around neck, tattoos on forearms, missing left pinky finger, gold-capped front tooth
+
 ## Overview
 
 El Caimán is the enigmatic head of Las Flores' most powerful criminal syndicate. His organization controls much of the city's illegal activity and maintains an uneasy alliance with Dragon Head's Chinese mafia group.

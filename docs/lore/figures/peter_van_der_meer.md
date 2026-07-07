@@ -5,6 +5,13 @@
 > **Role:** Van der Meer family member, GLC Executive, LGBTQ+ rights advocate
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Sandy blond, neatly styled in a modern cut
+- Eyes: Pale blue, warm and empathetic
+- Build: Tall and athletic, well-maintained
+- Skin: Fair, healthy and well-groomed
+- Distinguishing features: Designer suits, warm charismatic smile, small scar on chin from a childhood accident, always carries a leather briefcase, subtle cologne
+
 ## Overview
 
 Peter van der Meer, the charismatic eldest son of Jan and Maria van der Meer, was born into the privilege and expectation of Old Las Flores society. Groomed to be a leader in the Van der Meer family business, Peter's journey has been marked by personal evolution—from questioning his predetermined path to becoming a trailblazer for LGBTQ+ rights, all while proving himself as a highly capable, empathetic executive.

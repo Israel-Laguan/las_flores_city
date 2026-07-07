@@ -6,6 +6,13 @@
 > **Role:** Bus driver, "La Diabla"
 > **Status:** Active
 
+## Physical Description
+- Hair: Gray and thinning, cropped short and rough
+- Eyes: Dark brown, tired but kind
+- Build: Stocky and weathered, bent slightly from years of mining
+- Skin: Deep brown, heavily lined and rough from sun and labor
+- Distinguishing features: Calloused scarred hands, traditional woven cap, faded work clothes, quiet melancholic smile
+
 ## Overview
 Mauro (also known as Kusi — which means "joy" or "happiness" in Quechua) is a grizzled Quechua elder who spent most of his life working in the Andean mines. When the Chinese investors phased out older indigenous workers, he retrained as a bus driver in Old Las Flores.
 

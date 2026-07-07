@@ -11,6 +11,13 @@
 **Faction:** `civil_society`
 **Personality:** `passionate_intelligent_humble`
 
+## Physical Description
+- Hair: Thick dark brown hair with natural copper highlights, worn in a long braid down her back
+- Eyes: Deep amber, warm and fierce with conviction
+- Build: Athletic and strong, toned arms from outdoor fieldwork
+- Skin: Warm copper-brown complexion, weathered slightly from sun exposure
+- Distinguishing features: High cheekbones, strong jaw, traditional woven bracelet on left wrist, small scar on chin from a childhood fall
+
 Ana Ramirez is a passionate indigenous political leader who heads La Coalición por la Justicia Social (CJS). She champions the rights of marginalized communities and fights against environmental destruction caused by unchecked mining expansion in Las Flores.
 
 ---

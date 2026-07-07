@@ -5,6 +5,13 @@
 > **Role:** Professor, Las Flores University
 > **Status:** Active (as of 2065)
 
+## Physical Description
+- Hair: Dark brown with streaks of gray, shoulder-length, usually pulled back in a practical clip
+- Eyes: Dark brown, thoughtful and scholarly behind wire-rimmed glasses
+- Build: Average height, sturdy and practical, slight stoop from years at lab benches
+- Skin: Medium brown, lined forehead from concentration
+- Distinguishing features: Ink-stained fingers from marking papers, small gold cross necklace, always carries a leather satchel full of research notes
+
 ## Overview
 Dr. Maria Hernandez is a respected environmental scientist at Las Flores University. She led a campaign to test water samples from around the city, proving the extent of Minera Estrella's pollution.
 

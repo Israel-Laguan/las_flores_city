@@ -6,6 +6,13 @@
 > **Role:** Geologist, Global Lithium Corp
 > **Status:** Active
 
+## Physical Description
+- Hair: Silver-white, once strawberry blond, cut in a practical bob
+- Eyes: Pale blue-green, bright and scholarly
+- Build: Tall and sturdy, slightly stooped from decades of fieldwork
+- Skin: Fair, freckled and weathered from sun exposure on mining surveys
+- Distinguishing features: Strong capable hands with dirt under the nails, reading glasses perpetually perched on her head, a faded field notebook always in her jacket pocket
+
 ## Overview
 Dr. Annabella van der Meer is a renowned Dutch geologist who led the team that discovered the major lithium vein near Las Flores in 2029. Her discovery launched the Dutch consortium's involvement in the region and shaped the city's trajectory for decades.
 

@@ -7,6 +7,20 @@
 > **Role:** Community matriarch, port district
 > **Status:** Active
 
+## Physical Description
+- Hair: Dark brown, thick and curly, often worn loose or in a messy bun
+- Eyes: Warm brown, bright and welcoming
+- Build: Curvy and strong, carries herself with confidence
+- Skin: Warm tan, naturally glowing
+- Distinguishing features: Wide infectious smile, gold hoop earrings, colorful beaded bracelets, floral perfume, always has a cooking scent on her clothes
+
+## Physical Description
+- Hair: Dark brown, thick and curly, worn loose or in a messy bun
+- Eyes: Warm brown, lively and expressive
+- Build: Curvaceous and strong, moves with confident grace
+- Skin: Warm brown, smooth with laugh lines around eyes and mouth
+- Distinguishing features: Wide infectious smile, gold hoop earrings, floral print dresses, always has a scent of tropical flowers
+
 ## Overview
 
 Isabella Marquez, known to friends and neighbors as Bella, is a vibrant and magnetic figure in Las Flores's port district. A widow-by-disappearance three times over, she is the devoted single mother of Joaquín (10), Mateo (8), and Luis (5). Raised in a small coastal village where family and tradition are paramount, she has carried that warmth into the port's transient community, opening her home to sailors, dockworkers, and neighbors alike.

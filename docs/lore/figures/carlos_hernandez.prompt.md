@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Carlos Hernandez, a young adult Mayor of Old Las Flores (2000–2034) from Las Flores's Las Flores. Age:  ~25 (2000), ~51 (2026), ~63 (2038), ~84 (2059), ~102 (2077). Height:  5'9". Weight:  180 lbs. Hair:  Black in early adulthood, graying by 2025, predominantly gray/white by 2059, neatly groomed, receding hairline. Eyes:  Dark brown, warm and engaging. Facial Features:  Round face, friendly smile, distinctive mole on his right cheek. Build:  Slightly overweight. Style:  Often seen wearing guayaberas, symbolizing his Las Flores heritage and his connection to the people; preference for loose-fitting, comfortable clothing reflecting his laid-back demeanor. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Las Flores cityscape. Lighting: cinematic, high contrast, casting sharp shadows. dramatic.  emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Slight 25-year-old Chinese Photorealistic portrait of Carlos Hernandez. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, ** dark brown, warm engaging. His expression is warm, as he offers a subtle, knowing half-smile. His black receding hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless guayaberas, symbolizing his local heritage and his connection to the people; preference for loose-fitting, comfortable clothing reflecting his laid-back demeanor. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Carlos Hernandez, a young adult Mayor of Old Las Flor
 - [ ] Action shot: Carlos Hernandez in their element
 - [ ] Emotional: Carlos Hernandez in a quiet moment
 - [ ] Group: Carlos Hernandez with their closest allies
+
+

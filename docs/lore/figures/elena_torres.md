@@ -6,6 +6,13 @@
 > **Role:** Sustainability Lead, LW Group (2077)
 > **Status:** Active
 
+## Physical Description
+- Hair: Dark brown with silver threads, worn in a neat professional bob
+- Eyes: Warm brown, shrewd and experienced
+- Build: Average height, poised and controlled posture
+- Skin: Light brown, smooth with fine lines around eyes and mouth
+- Distinguishing features: Small jade stud earrings, tailored designer suits, always carries a slim portfolio, measured gestures
+
 ## Career Arc
 
 ### 1. Translator & Local Guide (2024–2025)

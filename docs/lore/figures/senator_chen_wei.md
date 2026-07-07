@@ -5,6 +5,20 @@
 > **Role:** Chinese Senator & Businessman
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Black, neatly combed, slightly graying at temples
+- Eyes: Dark brown, calculating and ambitious
+- Build: Average height, well-maintained
+- Skin: Fair with a warm undertone
+- Distinguishing features: Impeccable tailored suits, gold cufflinks, confident smile, always surrounded by an entourage
+
+## Physical Description
+- Hair: Black with silver at temples, neatly combed back
+- Eyes: Dark brown, shrewd and calculating
+- Build: Average height, well-maintained and imposing
+- Skin: Fair, smooth and carefully maintained
+- Distinguishing features: Impeccable tailored suits, gold cufflinks, confident authoritative manner, subtle smile that masks political calculations
+
 ## Overview
 
 Senator Chen Wei is a prominent Chinese politician and businessman who has been the driving force behind the lithium boom that transformed Las Flores from a sleepy backwater into a global hub for the critical metal. As evidence of widespread corruption and environmental degradation mounts, questions about his influence and intentions have grown.

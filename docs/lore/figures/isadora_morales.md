@@ -2,6 +2,13 @@
 
 **Title (full):** Mother, Nightlife Enthusiast, and Aspiring Social Climber of Old Las Flores
 
+**Physical Description:**
+- Hair: Dark brown with reddish highlights from sun exposure, long and wavy, often styled in loose curls
+- Eyes: Dark brown, flirtatious and lively
+- Build: Petite and curvy, moves with practiced grace
+- Skin: Light brown with a natural tan
+- Distinguishing features: Full lips often painted in bright colors, small nose ring, hoop earrings, always dressed in the latest fashion even on a budget, tattoo of a rose on her right ankle
+
 **Description (full):**
 
 Isadora "Izzy" Morales is a vivacious Far South native who came of age in one of the most unforgiving environments on the frontier. Born into a family of original desert settlers, she grew up steeped in the harsh traditions and values of the Far South, surrounded by the stark beauty and demanding realities of desert life. Her parents instilled in her a deep respect for resilience and community, lessons that would echo throughout her turbulent life.

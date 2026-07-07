@@ -7,6 +7,13 @@
 > **Role:** Public relations, CLM/LW Group
 > **Status:** Deceased
 
+## Physical Description
+- Hair: Gray and thinning, kept neat but unpretentious
+- Eyes: Dark brown, warm and distant
+- Build: Slight and stooped, walks with quiet dignity
+- Skin: Fair, lined from age and sun exposure
+- Distinguishing features: Simple cotton shirts, worn sandals, gentle smile, always carries a small notebook
+
 ## Overview
 Yang Chen was a PR strategist for China Lithium & Metals who masterminded the narrative framing of the Las Flores partnership as a "symbiotic dance of progress and respect." His gift for storytelling made him invaluable during the mine's inception, though he was little known outside the inner circle.
 

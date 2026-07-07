@@ -11,6 +11,20 @@
 
 ---
 
+## Physical Description
+- Hair: Dark brown with silver streaks, styled in an elegant updo
+- Eyes: Dark brown, sharp and calculating
+- Build: Tall and poised, commanding presence
+- Skin: Medium brown, carefully maintained with cosmetic procedures
+- Distinguishing features: Designer suits, pearl necklace, practiced politician's smile, manicured nails, subtle but expensive jewelry
+
+## Physical Description
+- Hair: Silver-blonde, once dark brown, styled in an elegant updo
+- Eyes: Pale green, cold and calculating behind designer glasses
+- Build: Tall and imposing, maintains excellent posture despite age
+- Skin: Fair, carefully maintained with subtle cosmetic enhancements
+- Distinguishing features: Designer clothing, pearl necklace, perfect manicure, commanding presence, practiced smile that never reaches her eyes
+
 ## Overview
 
 Sofia Duarte is a charismatic and sophisticated politician from a wealthy and influential family in Las Flores. She serves as a Councilwoman and is one of the most prominent figures in the city's political landscape, using her influence to further her family's business interests—including deep ties to Minera Estrella and the mining companies responsible for the Great Lithium Leak.

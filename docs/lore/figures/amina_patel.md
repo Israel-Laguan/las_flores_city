@@ -11,6 +11,13 @@
 **Faction:** `minera_estrella`  
 **Personality:** `meticulous_private`
 
+## Physical Description
+- Hair: Jet black, thick and straight, worn in a neat bun at the nape of her neck
+- Eyes: Dark brown, almost black, observant and cautious
+- Build: Petite, compact frame with precise deliberate movements
+- Skin: Deep brown, smooth complexion
+- Distinguishing features: Small gold nose stud on left nostril, round wire-rimmed glasses, a thin silver bangle on her right wrist that she turns when thinking
+
 Amina Patel is a South Asian Indian finance professional working in the finance department at China Lithium & Metals, Las Flores' largest conglomerate. Intelligent, meticulous, and reserved, she is highly competent at analyzing complex financial data but avoids drawing attention to herself or her achievements.
 
 ---

@@ -2,6 +2,13 @@
 
 **Title:** Senator, Chinese Community Representative
 
+**Physical Description:**
+- Hair: Black, neatly combed with a few gray strands
+- Eyes: Dark brown, sharp and calculating
+- Build: Average height, well-maintained and poised
+- Skin: Fair with a warm undertone
+- Distinguishing features: Impeccable tailored suits, gold cufflinks, confident authoritative manner, subtle smile that masks political calculations
+
 **Description (full):**
 
 Ricardo Chen (born Chen Guangming) serves as a senator representing Chinese community interests in Las Flores. The son of Chinese immigrants who established an export business in Latin America, Chen embodies the complex interplay between heritage and political ambition in the city's multicultural landscape. His background straddles two worlds—he spent part of his youth studying in China before completing a political science degree locally—giving him unique insight into both Eastern and Western political systems.

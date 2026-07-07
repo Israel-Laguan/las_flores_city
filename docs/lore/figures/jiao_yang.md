@@ -2,6 +2,20 @@
 
 **Title (full):** Community Advocate and Aspiring Graphic Designer
 
+## Physical Description
+- Hair: Jet black, long and straight, often in a high ponytail or loose
+- Eyes: Dark brown, bright and warm
+- Build: Petite and energetic, moves with quick graceful steps
+- Skin: Fair with warm undertones, clear complexion
+- Distinguishing features: Colorful graphic tees with Chinese-inspired designs, small enamel pins on jacket, always carries a tablet for sketching, natural smile
+
+**Physical Description:**
+- Hair: Jet black, long and straight, often in a high ponytail or loose
+- Eyes: Dark brown, bright and enthusiastic
+- Build: Petite and energetic, moves with dancer's grace
+- Skin: Fair with a warm undertone
+- Distinguishing features: Infectious smile, small stud earrings, often wears traditional Chinese accessories mixed with modern fashion, digital drawing tablet always in her bag
+
 **Description (full):**
 
 Jiao Yang is a vibrant second-generation Chinese-American born and raised in the Chinatown neighborhood of Las Flores' Northeast district. Growing up between two cultures, she developed a deep appreciation for both her heritage and the opportunities of her American upbringing. After earning a Business Administration degree from a local university, Jiao secured a position as an office assistant at a multinational corporation in the city's financial district—her first step toward building a professional career.

@@ -2,6 +2,20 @@
 
 **Title:** Prominent News Anchor, Investigative Journalist
 
+**Physical Description:**
+- Hair: Dark brown, styled in a sleek professional blowout
+- Eyes: Dark brown, sharp and penetrating on camera
+- Build: Tall and poised, commanding presence
+- Skin: Light brown, flawless on-air complexion
+- Distinguishing features: Signature red lipstick, pearl earrings, always impeccably dressed in camera-ready attire, confident posture
+
+## Physical Description
+- Hair: Dark brown, styled in a sleek professional bob
+- Eyes: Dark brown, sharp and authoritative
+- Build: Average height, poised and commanding presence
+- Skin: Light brown, smooth and camera-ready
+- Distinguishing features: Structured blazers, statement earrings, confident posture, piercing gaze
+
 **Description (full):**
 
 María Fernanda Rodriguez is one of the most influential voices in Las Flores. A prominent news anchor and fearless investigative journalist, she has dedicated her career to uncovering corruption and challenging the city's power structures. Known for her tenacity and unwavering commitment to the truth, María Fernanda uses her platform not just to report the news, but to amplify the voices of the marginalized and hold public officials accountable.

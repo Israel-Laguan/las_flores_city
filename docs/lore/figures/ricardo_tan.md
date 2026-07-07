@@ -37,6 +37,12 @@ Driven by a desire for genuine connection and community empowerment, Ricardo's j
 - **Resilient and Ambitious:** Driven by his roots, he is determined to succeed on his own terms.
 
 **Physical Description:**
+- Hair: Black, styled in a trendy modern cut, always camera-ready
+- Eyes: Dark brown, expressive and lively, light up when speaking
+- Build: Average height, lean and energetic
+- Skin: Fair with warm undertone, youthful appearance
+- Distinguishing features: Playful knowing smirk, sharp facial features, trendy casual wardrobe, perfect teeth, charismatic presence
+
 Ricardo has a youthful, energetic presence. He typically wears a casual yet stylish wardrobe—blending contemporary trends with an approachable edge that appeals to a younger demographic. He has sharp facial features and expressive eyes that light up when he speaks, often accompanied by a playful, knowing smirk. His hair is styled in a trendy, modern fashion, completing the image of a man who is perfectly in sync with the current cultural moment.
 
 **Key Relationships:**

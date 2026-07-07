@@ -7,6 +7,13 @@
 > **Role:** Safety Auditor → Independent Researcher (grant-funded)
 > **Status:** Deceased — murder suspected
 
+## Physical Description
+- Hair: Dark brown, shoulder-length, often tied back in a messy bun while working
+- Eyes: Warm brown, intense and focused when examining data
+- Build: Slender and slightly below average height, wiry strength
+- Skin: Light brown with a natural olive undertone
+- Distinguishing features: Small wire-framed glasses she's constantly pushing up, ink stains on fingers from lab work, a thin scar on her left hand from a glassware accident, minimal jewelry except a small silver locket
+
 ## Career Arc
 
 ### Phase 1: Safety Auditor (~2047–2048)

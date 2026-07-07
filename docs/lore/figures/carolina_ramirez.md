@@ -6,6 +6,13 @@
 > **Role:** District official, whistleblower
 > **Status:** Active
 
+## Physical Description
+- Hair: Dark brown, thick and wavy, worn in a professional low ponytail
+- Eyes: Warm brown, alert and intelligent
+- Build: Petite, slender with upright posture
+- Skin: Light brown with warm undertones
+- Distinguishing features: Small mole below right eye, thin gold chain necklace, neat professional appearance
+
 ## Overview
 Carolina Ramirez is a young district official whose diligence uncovered the corruption of Manuel Rodriguez, the Governor's representative in the Pacific District. She was the first to notice discrepancies in his travel expense reports ("gastos de viáticos"), triggering the investigation that ultimately exposed his misuse of public funds.
 

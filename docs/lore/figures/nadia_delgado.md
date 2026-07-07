@@ -2,6 +2,13 @@
 
 **Title:** Beachside Seafood Vendor, Bahía de las Olas
 
+**Physical Description:**
+- Hair: Dark brown, long and curly, often tied up in a messy bun or loose
+- Eyes: Warm brown, bright and flirtatious
+- Build: Slender and energetic, moves with practiced grace
+- Skin: Warm tan from constant sun exposure
+- Distinguishing features: Wide infectious smile, gold hoop earrings, colorful beaded anklet, always smells of grilled seafood and ocean salt, sun-bleached highlights in hair
+
 **Description (full):**
 
 Nadia Delgado is a charismatic young woman who embodies the vibrant spirit of Bahía de las Olas. Operating a bustling seafood stall directly on the beach, she represents the fusion of traditional coastal culture with modern entrepreneurial ambition. Her infectious personality and marketing savvy make her stall a magnet for tourists seeking authentic local flavors.

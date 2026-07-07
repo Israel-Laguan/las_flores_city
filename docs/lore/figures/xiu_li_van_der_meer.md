@@ -8,6 +8,20 @@
 > **Spouse:** Liam Krol (Dutch-Latin American businessman)
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Dark brown, thick and straight, worn in a practical professional style
+- Eyes: Hazel, a blend of her Chinese mother and Dutch father, sharp and determined
+- Build: Average height, strong and poised from years in mining operations
+- Skin: Light olive, smooth with subtle signs of outdoor work
+- Distinguishing features: Practical jewelry, tailored business attire, confident authoritative bearing, no-nonsense demeanor
+
+## Physical Description
+- Hair: Dark brown with occasional gray strands, worn in a professional low bun
+- Eyes: Pale blue from her father, with the warmth of her mother's dark brown irises
+- Build: Tall and athletic, strong and poised
+- Skin: Fair with warm undertone, a blend of her dual heritage
+- Distinguishing features: Minimalist silver jewelry, tailored suits, confident measured smile, always carries a leather portfolio
+
 ## Overview
 
 Xiu Li van der Meer Krol is a mining executive and local councilwoman who has spent her career bridging the practical world of resource extraction with a commitment to social justice. The eldest child of Alexander van der Meer and Wang Mei Li, she grew up at the intersection of two powerful families and two distinct cultures — a position that shaped both her ambitions and the resistance she faced in pursuing them.

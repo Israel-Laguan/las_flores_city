@@ -2,6 +2,20 @@
 
 **Title (full):** Engineering Student at Universidad Nacional de Las Flores, Navigating Mixed Heritage
 
+## Physical Description
+- Hair: Black, thick and straight, kept neat and slightly long on top
+- Eyes: Dark brown, thoughtful and reserved
+- Build: Medium height, lean and wiry from walking between campus and village
+- Skin: Warm brown, smooth with high cheekbones reflecting mixed heritage
+- Distinguishing features: Traditional beaded bracelet from his mother on left wrist, always carries engineering textbooks, quiet watchful demeanor
+
+**Physical Description:**
+- Hair: Dark brown, thick and wavy, worn slightly long
+- Eyes: Dark brown, thoughtful and searching
+- Build: Medium height, lean and athletic from manual work
+- Skin: Warm brown, a blend of his dual heritage
+- Distinguishing features: Strong jawline, small scar on chin from childhood, always carries engineering textbooks, wears a simple woven bracelet from his mother's community
+
 **Description (full):**
 
 Luis Contreras is a third-year engineering student at Universidad Nacional de Las Flores, whose life has been defined by the complex negotiation of identity between two very different worlds. Born in a small village along the Rio Las Flores, Luis carries within him the heritage of both his Shipibo-Konibo mother and his Peruvian father from Lima—a duality that has shaped his entire existence.

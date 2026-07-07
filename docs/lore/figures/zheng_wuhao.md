@@ -5,6 +5,13 @@
 > **Role:** Facility Supervisor, Minera Estrella
 > **Status:** Unknown
 
+## Physical Description
+- Hair: Black with gray at temples, kept short and practical
+- Eyes: Dark brown, tired and guarded
+- Build: Stocky and solid, moves with purpose
+- Skin: Fair, weathered from years at the facility
+- Distinguishing features: Work-worn hands, always wears safety boots, practical clothing, carries a clipboard
+
 ## Overview
 Zheng Wuhao was the Facility Supervisor at Minera Estrella's container facility. He was the first to respond to the Great Lithium Leak on the night of August 15, 2052.
 

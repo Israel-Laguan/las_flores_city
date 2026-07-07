@@ -5,6 +5,13 @@
 > **Role:** Leader of Las Flores' Chinese mafia
 > **Status:** Active
 
+## Physical Description
+- Hair: Silver-white, cropped close in a military-style cut
+- Eyes: Dark brown, cold and penetrating, heavy-lidded
+- Build: Tall and lean, carries himself with controlled precision
+- Skin: Pale, weathered with fine lines around eyes and mouth
+- Distinguishing features: Thin gold-rimmed spectacles, jade ring on right pinky finger, immaculate tailored suits, moves with silent grace
+
 ## Overview
 
 Dragon Head, whose real name is **Hong Kou**, is the enigmatic leader of Las Flores' most formidable Chinese mafia group. With roots stretching back to the earliest days of Chinese immigration to the city, his organization has grown and adapted over generations into a powerful syndicate that controls much of the illegal activity in Chinatown.

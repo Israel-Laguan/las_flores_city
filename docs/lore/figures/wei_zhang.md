@@ -2,6 +2,13 @@
 
 **Title (full):** Reclusive Chemist & Phytoremediation Expert
 
+**Physical Description:**
+- Hair: Gray-black, thinning, kept neat but slightly unkempt
+- Eyes: Dark brown, deep-set and observant
+- Build: Slender and slightly hunched, moves quietly
+- Skin: Pale with a yellowish undertone
+- Distinguishing features: Round wire-rimmed glasses, ink-stained fingers, worn brown cardigan, small notebook in breast pocket
+
 **Description (full):**
 
 Dr. Wei Zhang is a reclusive chemist in his fifties, specializing in environmental chemistry and phytoremediation. He lives a quiet, introspective life, his unassuming presence masking a brilliant mind and a deep, personal stake in environmental justice. While details of his past remain veiled, a formative trauma—likely the environmental ruination of his ancestral village or the silencing of a mentor who championed similar research—instilled in him a profound empathy for ecosystems ravaged by unchecked industry. This fueled an obsession with developing innovative, *sustainable* purification methods, a silent rebellion against the destructive status quo.

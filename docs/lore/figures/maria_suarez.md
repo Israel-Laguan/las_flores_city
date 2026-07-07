@@ -7,6 +7,13 @@
 > **Status:** Active
 > **Also Known As:** Mentor to young journalists
 
+## Physical Description
+- Hair: Dark brown with silver threads, worn in a sensible shoulder-length cut
+- Eyes: Dark brown, sharp and analytical
+- Build: Average height, sturdy and practical, slight stoop from desk work
+- Skin: Medium brown, lined from years of field work
+- Distinguishing features: Reading glasses perpetually on head, ink-stained fingers, worn leather notebook always in hand, no-nonsense demeanor
+
 ## Overview
 
 María Suárez is one of El Informador de Las Flores' most prominent voices, known for her investigative pieces on corruption and social inequality in Las Flores. She began her career as a stringer covering local news and politics, and has since become a respected journalist and mentor to aspiring reporters.

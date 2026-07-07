@@ -7,7 +7,7 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Photorealistic portrait of Lucas van der Meer, a young adult resident from Las Flores's Las Flores. distinctive appearance fitting their background. calm and determined. Dressed in practical clothing suited to their environment, with personal items reflecting their role. Background: Las Flores cityscape. Lighting: dramatic, high contrast, casting sharp shadows. tense.  emotional depth, 8K.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in his early 30s van der Meer Photorealistic portrait of Lucas van der Meer. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, pale blue, bloodshot and unfocused, haunted. His expression is haunted, as he stares past the viewer with distant, haunted eyes. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -16,3 +16,5 @@ Photorealistic portrait of Lucas van der Meer, a young adult resident from Las F
 - [ ] Action shot: Lucas van der Meer in their element
 - [ ] Emotional: Lucas van der Meer in a quiet moment
 - [ ] Group: Lucas van der Meer with their closest allies
+
+

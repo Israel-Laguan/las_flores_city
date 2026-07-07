@@ -2,6 +2,13 @@
 
 **Title (full):** Community Organizer & Activist, Afro-Latino Rights Advocate
 
+**Physical Description:**
+- Hair: Black, closely cropped with receding hairline
+- Eyes: Dark brown, intense and passionate
+- Build: Tall and broad-shouldered, imposing presence
+- Skin: Deep brown, smooth and radiant
+- Distinguishing features: Strong square jaw, gold-capped tooth, thick mustache, powerful hands often used for gesturing while speaking, always wears a COFAVIC t-shirt under his jacket
+
 **Description (full):**
 
 Juan Carlos Pérez is a 45-year-old community organizer and activist born and raised in Old Las Flores. From a young age, he has been passionate about empowering his community, witnessing firsthand the struggles and marginalization faced by Afro-Latinos in politics and society. This drove him to become a vocal advocate for their rights and a prominent figure in the fight for social justice.

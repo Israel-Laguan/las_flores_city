@@ -2,6 +2,13 @@
 
 **Title:** Singer-Songwriter, TV Personality, Social Activist (Músicos en Acción)
 
+**Physical Description:**
+- Hair: Dark brown, long and flowing, often in loose curls or a sleek straight look
+- Eyes: Dark brown, expressive and passionate on stage
+- Build: Slender and graceful, moves with performer's poise
+- Skin: Light brown with warm undertones
+- Distinguishing features: Wide charismatic smile, often wears traditional jewelry, stage makeup, guitar calluses on fingertips, always carries a notebook for songwriting
+
 **Description (full):**
 
 Sofia Diaz is a prominent singer-songwriter and television personality who has become a powerful voice for social change in Las Flores. Raised in a working-class neighborhood of Old Las Flores, she discovered her passion for music at an early age. After gaining popularity as a local musician, she used her platform to raise awareness about social issues affecting her community, eventually creating Músicos en Acción, a collective of artists dedicated to supporting various causes through their art.

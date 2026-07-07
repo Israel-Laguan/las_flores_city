@@ -2,6 +2,13 @@
 
 **Title (full):** Retired Textile Factory Supervisor, Chinese Community Elder
 
+**Physical Description:**
+- Hair: White, thin and wispy, kept neat
+- Eyes: Dark brown, wise and cautious
+- Build: Slightly stooped, thin but dignified
+- Skin: Fair, deeply lined from age and years of factory work
+- Distinguishing features: Traditional jade pendant, simple cotton shirt always buttoned to the top, hands permanently stained from decades of textile work, quiet measured gestures
+
 **Description (full):**
 
 Kun Zhang is a respected elder in Las Flores' Chinese community, born in China as part of the first generation to immigrate to the city. Arriving as a young man with little more than determination and the cultural values instilled in him from childhood, he quickly proved himself through hard work and astute understanding of both Chinese and local business practices.

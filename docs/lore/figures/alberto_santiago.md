@@ -7,6 +7,13 @@
 > **Status:** Active
 > **Nickname:** "El Pescador" (The Fisherman)
 
+## Physical Description
+- Hair: Thick black hair, slightly sun-bleached at the tips, kept short on the sides with longer waves on top
+- Eyes: Dark brown, crinkled at the corners from squinting in the sun
+- Build: Medium height, broad shoulders, sturdy and weathered from years on the water
+- Skin: Deep tan with sun-weathered texture, laugh lines around his mouth
+- Distinguishing features: Wide charismatic smile showing slightly crooked front teeth, calloused hands, a faded rope-burn scar on his right palm
+
 ## Overview
 Alberto Santiago, known affectionately as "El Pescador," is a vibrant and charismatic seafood vendor who brings the flavors of the Pacific Coast to the heart of Las Flores. Born into a family of fishermen, Alberto has spent his life on and around the water, evolving from a humble fisherman to a beloved supplier of fresh seafood to the city's restaurants.
 

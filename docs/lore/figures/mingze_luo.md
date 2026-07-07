@@ -5,6 +5,13 @@
 > **Role:** President of Minera Estrella
 > **Status:** Unknown
 
+## Physical Description
+- Hair: Black, thinning and combed carefully to cover
+- Eyes: Dark brown, cold and evasive
+- Build: Medium height, slightly overweight from corporate lifestyle
+- Skin: Fair, pale from indoor existence
+- Distinguishing features: Gold-rimmed glasses, expensive watch, practiced corporate smile, always wears tailored suits
+
 ## Overview
 Míngzé Luo was the President of Minera Estrella during the Great Lithium Leak and the subsequent trial. He denied any corporate responsibility for the disaster.
 

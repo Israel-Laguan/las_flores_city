@@ -9,6 +9,13 @@
 > **Status:** Active (as of 2077)
 > **Nickname:** "Sofi" (used affectionately by the community)
 
+## Physical Description
+- Hair: Dark brown, tangled and unwashed from life on the streets
+- Eyes: Dark brown, alert and observant despite her circumstances
+- Build: Thin and gaunt from hardship, walks with a cane
+- Skin: Light brown, weathered and lined beyond her years
+- Distinguishing features: Twisted leg requiring a cane, worn clothing, always watches people's lips to lip-read, small gold locket with daughter's photo
+
 ## Overview
 
 Sofi Garcia, known affectionately as "Sofi" by the people of Old Las Flores, is the youngest daughter of the Garcia family who worked in the flower fields and later in the mines. Her life story represents the human cost of industrial exploitation and environmental contamination in Las Flores.

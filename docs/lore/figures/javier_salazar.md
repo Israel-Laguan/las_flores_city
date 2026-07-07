@@ -9,6 +9,13 @@
 **Base of Operations:** Far South District
 **Status:** Active
 
+## Physical Description
+- Hair: Dark brown, styled in a trendy fade with volume on top
+- Eyes: Dark brown, confident and flirtatious
+- Build: Athletic and toned, broad shoulders from flight training
+- Skin: Medium brown, sun-kissed from outdoor patrols
+- Distinguishing features: Flashy knock-off designer watch, aviator sunglasses perpetually on head, strong jawline, perfect white teeth, always smelling of cologne
+
 Javier "Javi" Salazar is a 35-year-old police official assigned to the Far South region of Las Flores, where he serves as a helicopter pilot running aerial patrols and pursuing smugglers along the rugged frontier. Originally from Central Las Flores, he chafes at the isolation of his remote posting and yearns for the city's nightlife, fine dining, and live music.
 
 ## Personality

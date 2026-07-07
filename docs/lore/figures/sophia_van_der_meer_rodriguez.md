@@ -8,6 +8,13 @@
 > **Spouse:** Carlos Rodriguez Jr. (divorced 2070)
 > **Status:** Active (as of 2077)
 
+## Physical Description
+- Hair: Dark blond with golden highlights, worn in an elegant style
+- Eyes: Pale blue-green, refined and compassionate
+- Build: Tall and slender, graceful posture
+- Skin: Fair with warm undertone, carefully maintained
+- Distinguishing features: Pearl earrings, elegant designer gowns, warm charismatic smile, poised bearing
+
 ## Overview
 
 Sophia van der Meer Rodriguez is the elegant and sophisticated daughter of Elisabeth van der Meer and Carlos Alberto Hernandez. Known throughout Las Flores high society for her beauty, intelligence, and commitment to social causes, Sophia represents the more refined and philanthropic side of her complex family lineage, torn between Dutch aristocratic heritage and local political dynasties.
