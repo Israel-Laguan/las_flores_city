@@ -1,0 +1,12 @@
+# Phone Wallpaper Registry
+# Vertical wallpapers for phone lock-screen/home-screen
+
+phone_wallpapers:
+  - id: wallpaper_las_flores
+    name: "Las Flores Skyline"
+    description: "Night city skyline of Las Flores, distant neon lights reflecting on water, soft pastel glow"
+    time_of_day: "night"
+    mood: "peaceful, atmospheric"
+    colors: "deep blues, soft pinks, neon cyan accents"
+    dimensions: "1080×1920"
+    minio_path: "las-flores/phone/wallpaper_las_flores.jpg"

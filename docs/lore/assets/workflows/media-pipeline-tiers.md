@@ -140,15 +140,44 @@
 
 ---
 
+## Biometric Pipeline Tier — `feat/biometric-asset-pipeline`
+
+**Goal:** Implement the biometric isolation phase as the foundation for all character asset generation. This tier creates the registries, prompt generator extensions, schema updates, and documentation.
+
+**Branch:** `feat/biometric-asset-pipeline`
+
+### Tasks
+
+- [x] Create registry YAML files (style_prefix, body_shapes, ethnicities, personality_poses, poses, expressions)
+- [x] Add `biometric`, `expression`, `outfit-pose` prompt types to `generate-prompt.mjs`
+- [x] Extend `YAMLCharacterSchema` with `biometric_refs` and `asset_manifest` in both `shared/src/schemas/yaml-content.ts` and `shared/src/index.ts`
+- [x] Generate Diego Huamán biometric prompts (MVP pilot)
+- [x] Update `asset_pipeline.md` with biometric phase + two-track delivery
+- [ ] Create `scripts/generate-character-assets.mjs` — reads character YAML + registries → generates all biometric/expression/outfit prompts
+- [ ] Create `docs/lore/assets/scripts/compose-sprite.mjs` — layers body + face + hair → final sprite
+- [ ] Create `docs/lore/assets/scripts/validate-biometric.mjs` — validates biometric images have correct dimensions/anchor points
+- [ ] Add biometric fields to content migration pipeline (`server/src/content/migrate.ts`)
+- [x] Update existing prompt types (`tile`, `overlay`, `background`, `portrait`, `phone-wallpaper`, `app-icon`) with new style prefix
+- [x] Create non-character asset registries (`tiles.yaml`, `landmarks.yaml`, `backgrounds.yaml`, `app_icons.yaml`, `phone_wallpapers.yaml`)
+- [x] Archive legacy assets to `docs/lore/assets/references/` with migration README
+
+### Deliverable
+- Character YAMLs can reference biometric sheets and asset manifests
+- Prompt generator can produce biometric, expression, and outfit-pose prompts
+- Documentation covers the full biometric isolation workflow
+
+---
+
 ## Quick Reference: Branch Strategy
 
 ```
 main
-  └── feat/media-pipeline-tier0          ← Tier 0: DB + pipeline + content
-        └── feat/media-pipeline-tier1-vn-aesthetic   ← Tier 1: Phaser VN aesthetic
-              └── feat/media-pipeline-tier2-sprite-atlas  ← Tier 2: Atlas loading
-                    └── feat/media-pipeline-tier3-docs     ← Tier 3: Docs + tooling
-                          └── feat/media-pipeline-cleanup   ← Cleanup dev artifacts
+  └── feat/biometric-asset-pipeline        ← Biometric isolation + registries
+        └── feat/media-pipeline-tier0          ← Tier 0: DB + pipeline + content
+              └── feat/media-pipeline-tier1-vn-aesthetic   ← Tier 1: Phaser VN aesthetic
+                    └── feat/media-pipeline-tier2-sprite-atlas  ← Tier 2: Atlas loading
+                          └── feat/media-pipeline-tier3-docs     ← Tier 3: Docs + tooling
+                                └── feat/media-pipeline-cleanup   ← Cleanup dev artifacts
 ```
 
 Each tier branch is rebased off the previous tier's merge to main.

@@ -1,0 +1,345 @@
+# Personality → Pose/Expression Mapping Registry
+# Maps personality tags (from character YAML metadata.personality)
+# to default poses, signature gestures, and available expressions.
+# Used by the prompt generator to auto-select asset generation targets.
+
+personalities:
+  outgoing_charming:
+    default_pose: pose_hand_on_hip
+    default_expression: smirk
+    signature_poses:
+      - pose_open_arms
+      - pose_leaning_forward
+    expressions:
+      - smirk
+      - happy
+      - flirty
+      - surprised
+      - sad
+
+  reformist_police_chief:
+    default_pose: pose_arms_crossed
+    default_expression: stern
+    signature_poses:
+      - pose_pointing
+      - pose_hands_behind_back
+    expressions:
+      - stern
+      - serious
+      - thoughtful
+      - angry
+      - gentle_smile
+
+  confident_assertive_appreciative_of_luxury:
+    default_pose: pose_hand_on_hip
+    default_expression: smirk
+    signature_poses:
+      - pose_cross_legs_sitting
+      - pose_drinking_wine
+    expressions:
+      - smirk
+      - happy
+      - angry
+      - surprised
+      - sad
+      - flirty
+
+  ambitious_curious_resilient:
+    default_pose: pose_hands_in_pockets
+    default_expression: thoughtful
+    signature_poses:
+      - pose_carrying_bag
+      - pose_gesturing_excitedly
+    expressions:
+      - happy
+      - thoughtful
+      - surprised
+      - sad
+      - determined
+
+  loyal_companion:
+    default_pose: pose_neutral_stand
+    default_expression: gentle_smile
+    signature_poses:
+      - pose_hand_on_shoulder
+    expressions:
+      - gentle_smile
+      - neutral
+      - sad
+      - surprised
+
+  intelligent_ambitious_arrogant:
+    default_pose: pose_arms_crossed
+    default_expression: smirk
+    signature_poses:
+      - pose_hand_on_chin
+      - pose_pointing
+    expressions:
+      - smirk
+      - stern
+      - surprised
+      - angry
+      - thoughtful
+
+  shy:
+    default_pose: pose_shy_clasp
+    default_expression: blush
+    signature_poses:
+      - pose_looking_down
+      - pose_hands_behind_back
+    expressions:
+      - blush
+      - gentle_smile
+      - surprised
+      - sad
+      - neutral
+
+  strict:
+    default_pose: pose_arms_crossed
+    default_expression: stern
+    signature_poses:
+      - pose_pointing
+      - pose_hands_on_desk
+    expressions:
+      - stern
+      - angry
+      - serious
+      - thoughtful
+      - gentle_smile
+
+  childish:
+    default_pose: pose_pouting_stomp
+    default_expression: pout
+    signature_poses:
+      - pose_jumping
+      - pose_arms_flailing
+    expressions:
+      - pout
+      - happy
+      - sad
+      - surprised
+      - crying
+
+  elegant:
+    default_pose: pose_hand_on_chest
+    default_expression: soft_smile
+    signature_poses:
+      - pose_drinking_tea
+      - pose_hand_graceful
+    expressions:
+      - soft_smile
+      - neutral
+      - surprised
+      - sad
+      - thoughtful
+
+  villain:
+    default_pose: pose_hand_stroking_chin
+    default_expression: evil_grin
+    signature_poses:
+      - pose_arms_crossed
+      - pose_leaning_back
+    expressions:
+      - evil_grin
+      - smirk
+      - angry
+      - surprised
+      - stern
+
+  # ── Compound personalities (from integrate-characters.mjs) ──────────────
+
+  ambitious_resourceful:
+    default_pose: pose_hands_in_pockets
+    default_expression: determined
+    signature_poses:
+      - pose_pointing
+      - pose_carrying_bag
+    expressions:
+      - determined
+      - happy
+      - thoughtful
+      - surprised
+      - sad
+
+  determined_pragmatic:
+    default_pose: pose_arms_crossed
+    default_expression: serious
+    signature_poses:
+      - pose_hands_behind_back
+      - pose_pointing
+    expressions:
+      - serious
+      - thoughtful
+      - determined
+      - angry
+      - gentle_smile
+
+  bubbly_socialite:
+    default_pose: pose_open_arms
+    default_expression: happy
+    signature_poses:
+      - pose_jumping
+      - pose_hand_on_hip
+    expressions:
+      - happy
+      - surprised
+      - flirty
+      - pout
+      - sad
+
+  reserved_observer:
+    default_pose: pose_hands_behind_back
+    default_expression: neutral
+    signature_poses:
+      - pose_leaning_on_wall
+      - pose_arms_crossed
+    expressions:
+      - neutral
+      - thoughtful
+      - gentle_smile
+      - surprised
+      - sad
+
+  charismatic_driven:
+    default_pose: pose_hand_on_hip
+    default_expression: smirk
+    signature_poses:
+      - pose_pointing
+      - pose_open_arms
+    expressions:
+      - smirk
+      - happy
+      - determined
+      - thoughtful
+      - angry
+
+  community_caretaker:
+    default_pose: pose_hands_clasped
+    default_expression: gentle_smile
+    signature_poses:
+      - pose_hand_on_shoulder
+      - pose_offering
+    expressions:
+      - gentle_smile
+      - happy
+      - sad
+      - thoughtful
+      - neutral
+
+  cunning_manipulator:
+    default_pose: pose_hand_stroking_chin
+    default_expression: smirk
+    signature_poses:
+      - pose_leaning_back
+      - pose_arms_crossed
+    expressions:
+      - smirk
+      - evil_grin
+      - angry
+      - surprised
+      - stern
+
+  passionate_activist:
+    default_pose: pose_pointing
+    default_expression: determined
+    signature_poses:
+      - pose_open_arms
+      - pose_gesturing_excitedly
+    expressions:
+      - determined
+      - angry
+      - happy
+      - sad
+      - surprised
+
+  strong_leader:
+    default_pose: pose_arms_crossed
+    default_expression: stern
+    signature_poses:
+      - pose_pointing
+      - pose_hands_behind_back
+    expressions:
+      - stern
+      - determined
+      - thoughtful
+      - gentle_smile
+      - angry
+
+  analytical_thinker:
+    default_pose: pose_hand_on_chin
+    default_expression: thoughtful
+    signature_poses:
+      - pose_arms_crossed
+      - pose_holding_book
+    expressions:
+      - thoughtful
+      - neutral
+      - surprised
+      - gentle_smile
+      - determined
+
+  gentle_soul:
+    default_pose: pose_hands_clasped
+    default_expression: gentle_smile
+    signature_poses:
+      - pose_offering
+      - pose_looking_down
+    expressions:
+      - gentle_smile
+      - happy
+      - sad
+      - neutral
+      - surprised
+
+  confident_leader:
+    default_pose: pose_hand_on_hip
+    default_expression: smirk
+    signature_poses:
+      - pose_pointing
+      - pose_arms_crossed
+    expressions:
+      - smirk
+      - determined
+      - happy
+      - stern
+      - thoughtful
+
+  creative_spirit:
+    default_pose: pose_gesturing_excitedly
+    default_expression: happy
+    signature_poses:
+      - pose_holding_brush
+      - pose_hand_on_chin
+    expressions:
+      - happy
+      - thoughtful
+      - surprised
+      - sad
+      - determined
+
+  tenacious_investigator:
+    default_pose: pose_hand_on_chin
+    default_expression: thoughtful
+    signature_poses:
+      - pose_pointing
+      - pose_holding_notebook
+    expressions:
+      - thoughtful
+      - determined
+      - surprised
+      - stern
+      - smirk
+
+  # ── Fallback ────────────────────────────────────────────────────────────
+
+  independent_npc:
+    default_pose: pose_neutral_stand
+    default_expression: neutral
+    signature_poses:
+      - pose_hands_in_pockets
+    expressions:
+      - neutral
+      - happy
+      - sad
+      - surprised
+      - thoughtful

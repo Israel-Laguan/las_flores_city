@@ -1,0 +1,122 @@
+# Terrain Tile Registry
+# Seamless top-down textures for the isometric map grid
+
+tiles:
+  - id: tile_street
+    name: "Street"
+    description: "Urban asphalt street with subtle wear, tire marks, and faded lane markings"
+    colors: "dark gray asphalt, faded white lines, oil sheen rainbows"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_street.png"
+
+  - id: tile_beach_sand
+    name: "Beach Sand"
+    description: "Golden sand with fine grain texture, scattered seashells, footprints"
+    colors: "warm golden beige, pale seashell whites, wet sand darker tan"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_beach_sand.png"
+
+  - id: tile_water_ocean
+    name: "Ocean Water"
+    description: "Deep ocean water with gentle wave patterns, foam crests, light refraction"
+    colors: "deep teal blue, turquoise highlights, white foam"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_water_ocean.png"
+
+  - id: tile_water_river
+    name: "River Water"
+    description: "Shallow river with visible current, smooth stones beneath surface, ripples"
+    colors: "clear blue-green, brown river stones, white ripples"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_water_river.png"
+
+  - id: tile_grass_park
+    name: "Park Grass"
+    description: "Well-maintained park grass with mowing patterns, scattered leaves, small flowers"
+    colors: "vibrant green, yellow-green highlights, wildflower purples"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_grass_park.png"
+
+  - id: tile_cobblestone
+    name: "Cobblestone"
+    description: "Historic cobblestone pavement with weathered stones, moss in gaps, worn smooth"
+    colors: "gray-brown stones, green moss, cream mortar"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_cobblestone.png"
+
+  - id: tile_industrial_concrete
+    name: "Industrial Concrete"
+    description: "Rough industrial concrete with stains, cracks, oil spots, metal drain covers"
+    colors: "gray concrete, rust orange stains, black oil spots"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_industrial_concrete.png"
+
+  - id: tile_desert_sand
+    name: "Desert Sand"
+    description: "Arid desert sand with wind patterns, scattered rocks, heat haze texture"
+    colors: "pale orange-tan, yellow highlights, brown rock shadows"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_desert_sand.png"
+
+  - id: tile_building_civic
+    name: "Civic Building"
+    description: "Government building rooftop with helipad, AC units, antenna arrays"
+    colors: "gray concrete, blue-tinted glass, white AC units"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_building_civic.png"
+
+  - id: tile_building_residential
+    name: "Residential Building"
+    description: "Residential building rooftop with laundry lines, water tanks, small garden pots"
+    colors: "concrete gray, terracotta pots, green plants"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_building_residential.png"
+
+  - id: tile_sidewalk
+    name: "Sidewalk"
+    description: "Concrete sidewalk with expansion joints, gum stains, leaf litter, cracks"
+    colors: "light gray concrete, brown stains, green moss"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_sidewalk.png"
+
+  - id: tile_port_asphalt
+    name: "Port Asphalt"
+    description: "Heavy-duty port asphalt with cargo markings, oil stains, tire tracks"
+    colors: "dark black asphalt, yellow cargo lines, rust stains"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_port_asphalt.png"
+
+  - id: tile_mountain_rock
+    name: "Mountain Rock"
+    description: "Rugged mountain rock with cracks, lichen patches, scree fragments"
+    colors: "gray-brown rock, green lichen, white mineral streaks"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_mountain_rock.png"
+
+  - id: tile_forest
+    name: "Forest Floor"
+    description: "Dense forest floor with pine needles, fallen branches, moss, mushrooms"
+    colors: "brown pine needles, green moss, red mushroom caps"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_forest.png"
+
+  - id: tile_swamp
+    name: "Swamp"
+    description: "Swampy marsh with murky water, lily pads, cypress roots, fog texture"
+    colors: "murky brown water, green lily pads, gray cypress knees"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_swamp.png"
+
+  - id: tile_farmland
+    name: "Farmland"
+    description: "Cultivated farmland with crop rows, irrigation channels, soil texture"
+    colors: "brown soil, green crop rows, blue irrigation water"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_farmland.png"
+
+  - id: tile_runway
+    name: "Runway"
+    description: "Airport runway with painted markings, tire burns, runway lights embedded"
+    colors: "dark gray asphalt, white markings, yellow caution lines"
+    seamless: true
+    minio_path: "las-flores/tiles/tile_runway.png"

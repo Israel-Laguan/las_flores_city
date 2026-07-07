@@ -1,0 +1,182 @@
+# Expression Recipe Registry
+# Defines named expressions as combinations of eye + mouth + extras parts.
+# Used by the prompt generator to select which expression variations to generate.
+# Each expression references part IDs from the parts library.
+
+expressions:
+  # ── Core Expressions (should exist for all characters) ──────────────────
+  neutral:
+    label: "Neutral"
+    eyes: normal_open
+    mouth: neutral_closed
+    extras: []
+    prompt: "completely neutral expression, relaxed facial muscles, bare natural lips, no emotion"
+
+  happy:
+    label: "Happy"
+    eyes: happy_crescent
+    mouth: smile_open
+    extras: []
+    prompt: "warm genuine smile, eyes crinkled at corners, happy expression"
+
+  sad:
+    label: "Sad"
+    eyes: half_closed_sad
+    mouth: frown
+    extras:
+      - tear
+    prompt: "sad expression, downturned mouth, eyes half-closed with slight moisture"
+
+  surprised:
+    label: "Surprised"
+    eyes: wide_surprised
+    mouth: open_o
+    extras: []
+    prompt: "surprised expression, eyes wide open, mouth slightly open in shock"
+
+  angry:
+    label: "Angry"
+    eyes: angry_glare
+    mouth: gritted_teeth
+    extras:
+      - anger_vein
+    prompt: "angry glare, furrowed brows, gritted teeth, intense expression"
+
+  # ── Extended Expressions ────────────────────────────────────────────────
+  smirk:
+    label: "Smirk"
+    eyes: half_closed_smirk
+    mouth: smirk
+    extras: []
+    prompt: "confident smirk, one side of mouth raised, knowing half-lidded eyes"
+
+  thoughtful:
+    label: "Thoughtful"
+    eyes: narrow_suspicious
+    mouth: neutral_closed
+    extras: []
+    prompt: "thoughtful expression, slight frown, eyes narrowed in contemplation"
+
+  stern:
+    label: "Stern"
+    eyes: angry_glare
+    mouth: neutral_closed
+    extras: []
+    prompt: "stern expression, serious eyes, firm set mouth, authoritative"
+
+  blushing:
+    label: "Blushing"
+    eyes: normal_open
+    mouth: smile_closed
+    extras:
+      - blush
+    prompt: "shy blushing expression, slight closed-mouth smile, rosy cheeks"
+
+  gentle_smile:
+    label: "Gentle Smile"
+    eyes: happy_crescent
+    mouth: smile_closed
+    extras: []
+    prompt: "soft gentle smile, warm eyes, peaceful expression"
+
+  determined:
+    label: "Determined"
+    eyes: angry_glare
+    mouth: gritted_teeth
+    extras: []
+    prompt: "determined expression, focused eyes, set jaw, resolute"
+
+  evil_grin:
+    label: "Evil Grin"
+    eyes: narrow_suspicious
+    mouth: smirk
+    extras: []
+    prompt: "menacing grin, narrowed eyes, cruel confident expression"
+
+  flirty:
+    label: "Flirty"
+    eyes: flirty_half_lidded
+    mouth: smirk
+    extras: []
+    prompt: "playful flirty expression, half-lidded eyes, teasing smirk"
+
+  serious:
+    label: "Serious"
+    eyes: normal_open
+    mouth: neutral_closed
+    extras: []
+    prompt: "serious expression, neutral eyes, straight mouth, professional"
+
+  pout:
+    label: "Pout"
+    eyes: normal_open
+    mouth: pout
+    extras:
+      - blush
+    prompt: "pouting expression, pushed-out lower lip, slight blush, petulant"
+
+  crying:
+    label: "Crying"
+    eyes: crying_closed
+    mouth: open_o
+    extras:
+      - tear
+    prompt: "crying expression, eyes squeezed shut, tears streaming, mouth open in distress"
+
+  soft_smile:
+    label: "Soft Smile"
+    eyes: normal_open
+    mouth: smile_closed
+    extras: []
+    prompt: "soft subtle smile, warm gentle expression, peaceful"
+
+  # ── Part Definitions (reference for generation) ─────────────────────────
+  # These define the individual parts that compose expressions.
+  # Parts are generated per face base or per character.
+
+  part_library:
+    eyes:
+      normal_open:
+        prompt: "normal open eyes, neutral expression, standard eye size, bare no makeup"
+      happy_crescent:
+        prompt: "happily crinkled crescent-shaped eyes, corners turned up"
+      wide_surprised:
+        prompt: "wide open eyes, surprised, enlarged pupils visible"
+      half_closed_sad:
+        prompt: "half-closed eyes, eyelids heavy, sad tired expression"
+      angry_glare:
+        prompt: "angry glare, eyebrows lowered and pulled together, intense"
+      narrow_suspicious:
+        prompt: "narrowed eyes, squinting, suspicious or evaluating"
+      crying_closed:
+        prompt: "eyes squeezed tightly shut, crying, tear ducts active"
+      flirty_half_lidded:
+        prompt: "half-lidded eyes, seductive coy expression"
+      half_closed_smirk:
+        prompt: "half-closed eyes, confident knowing expression, slight lid droop"
+
+    mouth:
+      neutral_closed:
+        prompt: "closed mouth, neutral expression, lips together, no emotion"
+      smile_open:
+        prompt: "open-mouthed smile, teeth showing, genuine happiness"
+      smile_closed:
+        prompt: "closed-lip smile, slight upward curve, gentle expression"
+      frown:
+        prompt: "downturned frown, lips pressed together, sad or displeased"
+      open_o:
+        prompt: "mouth open in a small o shape, surprised or shocked"
+      gritted_teeth:
+        prompt: "gritted teeth visible, jaw clenched, angry or determined"
+      smirk:
+        prompt: "one-sided smirk, higher on one side, smug knowing expression"
+      pout:
+        prompt: "pouting expression, lower lip pushed out slightly forward"
+
+    extras:
+      blush:
+        prompt: "subtle pink blush across cheekbones, warm flush"
+      tear:
+        prompt: "single tear or tear streaks on cheek, sad emotional"
+      anger_vein:
+        prompt: "visible anger vein on forehead or temple, frustrated"

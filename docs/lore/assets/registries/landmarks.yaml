@@ -1,0 +1,93 @@
+# Landmark Overlay Registry
+# Transparent PNG overlays for isometric map tiles
+
+landmarks:
+  - id: lm_palacio_municipal
+    name: "Palacio Municipal"
+    description: "Grand colonial government palace with arched doorways, central courtyard, flagpole"
+    district: "centro"
+    minio_path: "las-flores/overlays/lm_palacio_municipal.png"
+
+  - id: lm_world_trade_center
+    name: "World Trade Center"
+    description: "Modern glass tower complex with skybridge, helipad, corporate logos"
+    district: "puerto"
+    minio_path: "las-flores/overlays/lm_world_trade_center.png"
+
+  - id: lm_playa_entrada
+    name: "Playa Entrance"
+    description: "Beach access point with lifeguard tower, boardwalk, palm trees, signage"
+    district: "playa"
+    minio_path: "las-flores/overlays/lm_playa_entrada.png"
+
+  - id: lm_teatro_nacional
+    name: "Teatro Nacional"
+    description: "Historic theater with marquee, columned entrance, neon signage"
+    district: "centro"
+    minio_path: "las-flores/overlays/lm_teatro_nacional.png"
+
+  - id: lm_electra
+    name: "Electra Battery"
+    description: "Power station with cooling towers, transformer arrays, power lines"
+    district: "industrial"
+    minio_path: "las-flores/overlays/lm_electra.png"
+
+  - id: lm_iglesia_vieja
+    name: "Iglesia Vieja"
+    description: "Old stone church with bell tower, cemetery, wrought iron gates"
+    district: "old_town"
+    minio_path: "las-flores/overlays/lm_iglesia_vieja.png"
+
+  - id: lm_governor_offices
+    name: "Governor's Offices"
+    description: "Administrative building with security checkpoint, flag plaza, entrance canopy"
+    district: "centro"
+    minio_path: "las-flores/overlays/lm_governor_offices.png"
+
+  - id: lm_mercado_central
+    name: "Mercado Central"
+    description: "Open-air market with stalls, awnings, vendor carts, crowded layout"
+    district: "centro"
+    minio_path: "las-flores/overlays/lm_mercado_central.png"
+
+  - id: lm_universidad_nacional
+    name: "Universidad Nacional"
+    description: "University campus with lecture halls, library dome, sports fields"
+    district: "university"
+    minio_path: "las-flores/overlays/lm_universidad_nacional.png"
+
+  - id: lm_luz_del_rio
+    name: "Luz del Río"
+    description: "Riverside district with bridges, walkways, café terraces, boat dock"
+    district: "riverside"
+    minio_path: "las-flores/overlays/lm_luz_del_rio.png"
+
+  - id: lm_puerto_de_las_flores
+    name: "Puerto de Las Flores"
+    description: "Harbor with shipping containers, cranes, docked boats, warehouses"
+    district: "puerto"
+    minio_path: "las-flores/overlays/lm_puerto_de_las_flores.png"
+
+  - id: lm_parque_de_las_montanas
+    name: "Parque de las Montañas"
+    description: "Mountain park with hiking trails, viewpoints, picnic areas, forest canopy"
+    district: "mountains"
+    minio_path: "las-flores/overlays/lm_parque_de_las_montanas.png"
+
+  - id: lm_mall_de_las_estrellas
+    name: "Mall de las Estrellas"
+    description: "Shopping mall with parking structure, entrance plaza, neon signage"
+    district: "commercial"
+    minio_path: "las-flores/overlays/lm_mall_de_las_estrellas.png"
+
+  - id: lm_van_der_meer_northern_mine
+    name: "Van der Meer Northern Mine"
+    description: "Mining operation with pit head, processing buildings, conveyor systems"
+    district: "north"
+    minio_path: "las-flores/overlays/lm_van_der_meer_northern_mine.png"
+
+  - id: lm_far_south_outpost
+    name: "Far South Outpost"
+    description: "Remote outpost with watchtower, perimeter fence, communications array"
+    district: "south"
+    minio_path: "las-flores/overlays/lm_far_south_outpost.png"

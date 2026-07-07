@@ -32,15 +32,22 @@ const PROMPT_TYPES = [
   'music',
   'phone-wallpaper',
   'app-icon',
+  'biometric',
+  'expression',
+  'outfit-pose',
 ];
 
 // ── Template Library ────────────────────────────────────────────────────────
 
 const TEMPLATES = {
   /**
-   * portrait – for character portraits (MidJourney, --ar 3:4)
+   * portrait – for character bust portraits (MidJourney, --ar 3:4)
    * Source: docs/lore/figures/<name>.md
    * Target: content/characters/char_<name>.yaml → portrait_urls[].url
+   * Pipeline stage: draft (NIM/Pollinations) → refine (Flux)
+   * 
+   * This is a FACE-ONLY portrait (bust shot, shoulders up).
+   * For full-body outfit+pose, use the outfit-pose type instead.
    */
   portrait({ name, age, role, district, physical, expression, clothing, accessories, setting, lighting, shadows, mood, heritage, negatives }) {
     const physicalDesc = (physical && physical !== 'Distinctive appearance') ? physical : 'distinctive appearance fitting their background';
@@ -48,19 +55,20 @@ const TEMPLATES = {
     const clothingDesc = (clothing && clothing !== 'undefined') ? clothing : 'practical clothing suited to their environment';
     const accessoriesDesc = (accessories && accessories !== 'undefined') ? accessories : 'personal items reflecting their role';
 
-    return `# Prompt: ${name}
+    return `# Prompt: ${name} (portrait)
 
 [CONSUMER: portrait]
 **Type:** portrait
 **Source:** docs/lore/figures/${slugify(name)}.md
 **Target field:** \`portrait_urls[].url\` in \`content/characters/char_${slugify(name)}.yaml\`
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+**Tool:** NIM (draft) → Flux/Seedance (refine)
+**Pipeline stage:** draft → refine
 
 ## Prompt
-Photorealistic portrait of ${name}, a ${/^\d+$/.test(age) ? age + '-year-old' : age} ${role} from Las Flores's ${district}. ${physicalDesc}. ${expressionDesc}. Dressed in ${clothingDesc}, with ${accessoriesDesc}. Background: ${setting}. Lighting: ${lighting}, casting ${shadows}. ${mood}. ${heritage ? `Multicultural heritage (${heritage}),` : ''} emotional depth, 8K.
+Bust portrait of ${name}, a ${/^\d+$/.test(age) ? age + '-year-old' : age} ${role} from Las Flores's ${district}. ${physicalDesc}. ${expressionDesc}. Dressed in ${clothingDesc}, with ${accessoriesDesc}. Background: ${setting}. Lighting: ${lighting}, casting ${shadows}. ${mood}. ${heritage ? `Multicultural heritage (${heritage}),` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, 3:4 aspect ratio, 512×768.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing${negatives ? `, ${negatives}` : ''}
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches${negatives ? `, ${negatives}` : ''}
 
 ## Variations
 - [ ] Action shot: ${name} in their element
@@ -73,6 +81,7 @@ Photorealistic portrait of ${name}, a ${/^\d+$/.test(age) ? age + '-year-old' : 
    * background – for location scene backgrounds (MidJourney, --ar 16:9)
    * Source: docs/lore/landmarks/<name>.md
    * Target: content/locations/location_<name>.yaml → scene.background_url
+   * Pipeline stage: draft (NIM/Pollinations) → refine (Flux)
    */
   background({ name, timeOfDay, keyElements, lighting, atmosphere, mood, contrast }) {
     return `# Prompt: ${name}
@@ -81,13 +90,14 @@ Photorealistic portrait of ${name}, a ${/^\d+$/.test(age) ? age + '-year-old' : 
 **Type:** background
 **Source:** docs/lore/landmarks/${slugify(name)}.md
 **Target field:** \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
+**Tool:** NIM (draft) → Flux/Seedance (refine)
+**Pipeline stage:** draft → refine
 
 ## Prompt
-Photorealistic scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${lighting}, ${atmosphere}, ${mood}${contrast ? `, capturing the contrast between ${contrast}` : ''}. Soft cyberpunk aesthetic, 8K, cinematic, 800×600.
+Scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${lighting}, ${atmosphere}, ${mood}${contrast ? `, capturing the contrast between ${contrast}` : ''}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos, 1920×1080.
 
 ## Negative Prompt
---no androids, no robots, no neon, no people, no clean environments, no cartoonish, no anime
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
 ## Variations
 - [ ] Night version: same scene at night with different lighting
@@ -100,6 +110,7 @@ Photorealistic scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${l
    * tile – for base terrain tile textures (MidJourney, --ar 1:1)
    * Source: docs/lore/districts/<name>.md
    * Target: content/maps/map_<name>.yaml → base_image_url
+   * Pipeline stage: draft (NIM/Pollinations) → refine (Flux)
    */
   tile({ name, terrainType, description, colors }) {
     return `# Prompt: ${name} (${terrainType} tile)
@@ -108,13 +119,14 @@ Photorealistic scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${l
 **Type:** tile
 **Source:** docs/lore/districts/${slugify(name)}.md
 **Target field:** \`base_image_url\` in \`content/maps/map_${slugify(name)}.yaml\`
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
+**Tool:** NIM (draft) → Flux/Seedance (refine)
+**Pipeline stage:** draft → refine
 
 ## Prompt
-Seamless top-down tile texture of ${description}, Las Flores 2077, soft cyberpunk aesthetic. ${colors ? `Color palette: ${colors}.` : ''} Photorealistic, 8K, tileable, no objects, no people, no external shadows, no horizon, no sky.
+Seamless top-down tile texture of ${description}, Las Flores 2077. ${colors ? `Color palette: ${colors}.` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No objects, no people, no external shadows, no horizon, no sky, tileable, 256×256.
 
 ## Negative Prompt
---no androids, no robots, no neon, no modern objects, no buildings
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 `;
   },
 
@@ -122,6 +134,7 @@ Seamless top-down tile texture of ${description}, Las Flores 2077, soft cyberpun
    * overlay – for landmark overlay images (transparent PNG)
    * Source: docs/lore/landmarks/<name>.md
    * Target: content/maps/map_<district>.yaml → overlay_image_url
+   * Pipeline stage: draft (NIM/Pollinations) → refine (Flux)
    */
   overlay({ name, description }) {
     return `# Prompt: ${name} (landmark overlay)
@@ -130,13 +143,14 @@ Seamless top-down tile texture of ${description}, Las Flores 2077, soft cyberpun
 **Type:** overlay
 **Source:** docs/lore/landmarks/${slugify(name)}.md
 **Target field:** \`overlay_image_url\` in \`content/maps/map_*.yaml\`
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
+**Tool:** NIM (draft) → Flux/Seedance (refine)
+**Pipeline stage:** draft → refine
 
 ## Prompt
-Top-down view of ${name}, Las Flores 2077, ${description}. Photorealistic, 8K, transparent background, centered composition, no external shadows.
+Top-down view of ${name}, Las Flores 2077, ${description}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered composition, no external shadows, 256×256.
 
 ## Negative Prompt
---no androids, no robots, no neon, no modern vehicles, no people
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 `;
   },
 
@@ -273,6 +287,161 @@ Phone app icon design: ${description}, Las Flores 2077 style, soft cyberpunk pas
 - [ ] Alt color: same icon in alternate color palette
 - [ ] Badge variant: icon with notification badge overlay
 - [ ] Disabled variant: grayscale version for locked apps
+`;
+  },
+
+  /**
+   * biometric – for biometric reference sheets (3-sheet output)
+   * Source: content/characters/char_<name>.yaml
+   * Target: docs/lore/assets/biometric/<name>/ (horizontal_face, vertical_face, body_sheet)
+   * 
+   * This template implements the Biometric Isolation Rule:
+   * - Minimal gym clothes to reveal body geometry
+   * - Hair pulled back, no makeup, no jewelry
+   * - Neutral expression, A-pose for body
+   * - Multiple angles for face (horizontal arc + vertical arc)
+   */
+  biometric({ name, age, gender, ethnicity, phenotype, body_shape, skeletal_description, physical_description }) {
+    const ageStr = age || 'young adult';
+    const genderStr = gender || 'person';
+    const ethnicityStr = ethnicity || 'mixed ancestry';
+    const phenotypeStr = phenotype || 'distinctive facial features';
+    const skeletalStr = skeletal_description || 'average build';
+    const physicalStr = physical_description || '';
+
+    const horizontalFace = `Multi-panel portrait reference strip, horizontal layout, 5 panels on clean white background. Same character in all panels. Camera arcs horizontally: Panel 1 — far left profile, Panel 2 — 3/4 left, Panel 3 (center) — front-facing eye level, Panel 4 — 3/4 right, Panel 5 — far right profile. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent. ${phenotypeStr}. ${physicalStr} Completely neutral expression, relaxed facial muscles, bare natural lips, bare skin, zero makeup, zero jewelry. Hair is tightly pulled back, not obstructing the face or neck.`;
+
+    const verticalFace = `Multi-panel portrait reference strip, vertical layout, 5 panels on clean white background. Same character front-facing in all panels. Camera arcs vertically: Panel 1 — extreme low angle worm's eye view, Panel 2 — slight low angle, Panel 3 (center) — front-facing eye level, Panel 4 — slight high angle, Panel 5 — extreme high angle bird's eye view. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent. ${phenotypeStr}. ${physicalStr} Completely neutral expression, relaxed facial muscles, bare natural lips, bare skin, zero makeup, zero jewelry. Hair is tightly pulled back, not obstructing the face or neck.`;
+
+    const bodySheet = `Orthographic character full-body reference sheet, clean white background, 3 panels. Same character in all panels: front view, side profile view, rear view. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. A ${ageStr}-year-old ${genderStr} of ${ethnicityStr} descent with a ${skeletalStr}. Neutral standing A-pose. Wears minimal form-fitting black athletic gym clothes consisting of a plain compression tank top and basic athletic leggings to clearly reveal body mass and geometry. Hair is tightly pulled back. Zero makeup, zero accessories, zero tech.`;
+
+    return `# Biometric Reference Sheets: ${name}
+
+[CONSUMER: biometric]
+**Type:** biometric
+**Source:** content/characters/char_${slugify(name)}.yaml
+**Target:** docs/lore/assets/biometric/${slugify(name)}/
+**Pipeline stage:** draft → refine
+**Recommended tools:** NIM (draft), Flux/Seedance (refine)
+
+---
+
+## Sheet 1: Horizontal Face Arc
+
+**File:** \`horizontal_face.png\`
+**Dimensions:** Multi-panel horizontal strip
+
+### Prompt
+${horizontalFace}
+
+### Negative Prompt
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, stylized poses, dynamic angles, heavy clothing, jackets, loose fabric, makeup, lipstick, earrings, necklaces, glasses, text, watermarks
+
+---
+
+## Sheet 2: Vertical Face Arc
+
+**File:** \`vertical_face.png\`
+**Dimensions:** Multi-panel vertical strip
+
+### Prompt
+${verticalFace}
+
+### Negative Prompt
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, stylized poses, dynamic angles, heavy clothing, jackets, loose fabric, makeup, lipstick, earrings, necklaces, glasses, text, watermarks
+
+---
+
+## Sheet 3: Body Reference Sheet
+
+**File:** \`body_sheet.png\`
+**Dimensions:** 3-panel orthographic (front, side, rear)
+
+### Prompt
+${bodySheet}
+
+### Negative Prompt
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, stylized poses, dynamic angles, heavy clothing, jackets, loose fabric, makeup, lipstick, earrings, necklaces, glasses, text, watermarks
+`;
+  },
+
+  /**
+   * expression – for expression strip generation (face parts)
+   * Source: content/characters/char_<name>.yaml
+   * Target: docs/lore/assets/expressions/<name>/expression_strip.png
+   * 
+   * Generates a horizontal strip of all expressions for a character.
+   * Uses the face base as reference for consistency.
+   */
+  expression({ name, expressions, face_base_ref }) {
+    const expressionList = expressions || ['neutral', 'happy', 'sad', 'surprised', 'angry'];
+    const expressionDescriptions = {
+      neutral: 'completely neutral expression, relaxed facial muscles, bare natural lips, no emotion',
+      happy: 'warm genuine smile, eyes crinkled at corners, happy expression',
+      sad: 'sad expression, downturned mouth, eyes half-closed with slight moisture',
+      surprised: 'surprised expression, eyes wide open, mouth slightly open in shock',
+      angry: 'angry glare, furrowed brows, gritted teeth, intense expression',
+      smirk: 'confident smirk, one side of mouth raised, knowing half-lidded eyes',
+      thoughtful: 'thoughtful expression, slight frown, eyes narrowed in contemplation',
+      stern: 'stern expression, serious eyes, firm set mouth, authoritative',
+      blushing: 'shy blushing expression, slight closed-mouth smile, rosy cheeks',
+      gentle_smile: 'soft gentle smile, warm eyes, peaceful expression',
+      determined: 'determined expression, focused eyes, set jaw, resolute',
+      evil_grin: 'menacing grin, narrowed eyes, cruel confident expression',
+      flirty: 'playful flirty expression, half-lidded eyes, teasing smirk',
+      serious: 'serious expression, neutral eyes, straight mouth, professional',
+      pout: 'pouting expression, pushed-out lower lip, slight blush, petulant',
+      crying: 'crying expression, eyes squeezed shut, tears streaming, mouth open in distress',
+      soft_smile: 'soft subtle smile, warm gentle expression, peaceful',
+    };
+
+    const stripPanels = expressionList.map((expr, i) => {
+      const desc = expressionDescriptions[expr] || `${expr} expression`;
+      return `Panel ${i + 1} — ${expr}: ${desc}`;
+    }).join('\n');
+
+    return `# Expression Strip: ${name}
+
+[CONSUMER: biometric]
+**Type:** expression
+**Source:** content/characters/char_${slugify(name)}.yaml
+**Target:** docs/lore/assets/expressions/${slugify(name)}/expression_strip.png
+**Pipeline stage:** draft → refine
+**Recommended tools:** NIM (draft), Flux/Seedance (refine)
+**Reference:** ${face_base_ref || 'Use face base from biometric sheets for consistency'}
+
+## Prompt
+Horizontal expression reference strip, clean white background. Same character in all panels, head and shoulders framing. ${stripPanels}. Soft flat even studio lighting, no cast shadows. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Hair is pulled back, no makeup, no jewelry, bare skin.
+
+## Negative Prompt
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, stylized poses, dynamic angles, heavy clothing, jackets, loose fabric, makeup, lipstick, earrings, necklaces, glasses, text, watermarks
+`;
+  },
+
+  /**
+   * outfit-pose – for outfit-on-pose generation
+   * Source: content/characters/char_<name>.yaml
+   * Target: docs/lore/assets/outfits/<name>/<outfit_id>/<pose_id>.png
+   * 
+   * Generates a character in a specific outfit and pose.
+   * Uses the body sheet as reference for body geometry.
+   */
+  'outfit-pose'({ name, outfit_label, outfit_description, pose_description, body_ref, character_description }) {
+    return `# Outfit Pose: ${name} — ${outfit_label}
+
+[CONSUMER: phaser-sprite]
+**Type:** outfit-pose
+**Source:** content/characters/char_${slugify(name)}.yaml
+**Target:** docs/lore/assets/outfits/${slugify(name)}/
+**Pipeline stage:** draft → refine
+**Recommended tools:** NIM (draft), Flux/Seedance (refine)
+**Body reference:** ${body_ref || 'Use body sheet from biometric phase'}
+
+## Prompt
+Full-body character portrait, clean white background, front view. ${character_description || name}. Wearing ${outfit_description}. ${pose_description}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Flat studio lighting with subtle volumetric shading, no harsh cast shadows.
+
+## Negative Prompt
+photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, wristwatches
 `;
   },
 };

@@ -1,0 +1,138 @@
+# Ethnicity Face Base Registry
+# Defines the facial phenotype bases used as face templates.
+# Each entry maps to characters who share that facial structure.
+# These are used for biometric reference sheet generation.
+
+ethnicities:
+  latino_mestizo:
+    label: "Mestizo (Mixed Indigenous-European)"
+    phenotype_description: "mixed indigenous-European features, warm olive skin tones, variable bone structure, prominent cheekbones, straight to wavy dark hair"
+    communities:
+      - latin_american
+    characters:
+      - alberto_santiago
+      - ana_castillo
+      - javier_mendoza
+      - carolina_ramirez
+      - alejandro_flores
+      - alejandro_garcia
+      - alejandro_ruiz
+      - alfonso_vega
+      - alicia_quevedo
+      - alonzo_morales
+      - alisha_morales
+      - alexandra_isabel_morales
+      - camila_reyes
+      - camila_santander
+      - carlos_lacan
+      - carlos_lopez
+      - carlos_mendoza
+      - carlos_rodriguez
+      - clara_torres
+      - diego_lopez
+      - diego_reyes
+      - diego_ruiz
+      - elena_ramirez
+      - elisa_perez
+      - emilio_navarro
+      - emilio_santos
+      - isabella_cortez
+      - isabella_garcia
+      - isabella_marquez
+      - isabella_rodriguez
+      - isabella_vargas
+      - isabella_vasquez
+      - isadora_morales
+      - javier_ramirez
+      - javier_salazar
+      - javier_torres
+      - juan_carlos_perez
+      - juan_pablo_hernandez
+      - juan_rodriguez
+      - laura_rodriguez
+      - laura_silva
+
+  indigenous_andes:
+    label: "Andean Indigenous (Quechua)"
+    phenotype_description: "high cheekbones, straight dark hair, almond-shaped eyes, warm brown skin, prominent nose bridge, compact frame"
+    communities:
+      - indigenous
+    characters:
+      - diego_huaman
+      - kusi
+      - diego_sulca
+      - carlos_konibo
+
+  indigenous_amazon:
+    label: "Amazonian Indigenous (Huachipaeri/Shipibo-Konibo)"
+    phenotype_description: "broader facial features, diverse skin tones from copper to deep brown, distinctive facial geometry, straight dark hair"
+    communities:
+      - indigenous
+      - mountain_communities
+    characters:
+      - carlos_konibo
+
+  east_asian:
+    label: "East Asian (Chinese)"
+    phenotype_description: "epicanthic fold, straight dark hair, varied jawline structure, fair to olive skin tones"
+    communities:
+      - chinese
+    characters:
+      - daiyu_liu
+      - kun_zhang
+      - li_wei
+      - hongbin_li
+      - jianhua
+      - jiao_yang
+      - dong_van_der_meer
+      - ethan_zhang_morales
+
+  southeast_asian:
+    label: "Southeast Asian"
+    phenotype_description: "softer facial features, brown skin tones, wider nose variation, straight to wavy dark hair"
+    communities:
+      - international
+    characters:
+      - amina_patel
+
+  arab_north_african:
+    label: "Arab/North African (Egyptian)"
+    phenotype_description: "Mediterranean-Arab features, olive to tan skin tones, strong brow ridge, dark hair, prominent nose"
+    communities:
+      - international
+    characters:
+      - fatima_el_kholi
+      - aisha_al_sayed
+
+  african:
+    label: "African/African diaspora"
+    phenotype_description: "diverse sub-Saharan features, dark skin tones, varied hair textures from curly to coily, full lips, broad nose variation"
+    communities:
+      - african_american
+      - afro_latino
+    characters:
+      - chief_inspector_adeyemi
+      - adeyemi
+
+  european:
+    label: "European descent"
+    phenotype_description: "varied European features, fair to olive skin tones, narrow to medium nose bridge, varied eye shapes"
+    communities:
+      - dutch
+      - international
+    characters:
+      - alexander_van_der_meer
+      - alexander_van_der_meer_jr
+      - claire_moreau
+      - anneliese_jansen
+      - anna_van_der_meer
+      - annabella_van_der_meer
+      - elisabeth_van_der_meer
+      - jan_van_der_meer
+      - jan_van_der_meer_jr
+      - jan_van_dijk
+      - julian_schneider
+      - levi_de_jong
+      - liam_van_der_meer
+      - evelyn_ruthenberg
+      - daniel_carter

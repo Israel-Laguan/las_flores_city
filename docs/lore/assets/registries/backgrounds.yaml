@@ -1,0 +1,67 @@
+# Scene Background Registry
+# Full-screen backgrounds for VN dialogue scenes
+
+backgrounds:
+  - id: bg_puerto_noche
+    name: "Puerto Noche"
+    description: "Harbor district at night, neon signs reflecting on wet asphalt, cargo containers stacked"
+    time_of_day: "night"
+    mood: "mysterious, tense"
+    location: "Puerto de Las Flores"
+    minio_path: "las-flores/backgrounds/bg_puerto_noche.jpg"
+
+  - id: bg_callejon_centro
+    name: "Callejón Centro"
+    description: "Narrow downtown alley, hanging laundry, street food stalls, graffiti walls"
+    time_of_day: "daytime"
+    mood: "gritty, vibrant"
+    location: "Centro Histórico"
+    minio_path: "las-flores/backgrounds/bg_callejon_centro.jpg"
+
+  - id: bg_laboratorio
+    name: "Laboratorio"
+    description: "Underground laboratory, medical equipment, monitors, sterile lighting"
+    time_of_day: "indoor"
+    mood: "clinical, tense"
+    location: "Secret Facility"
+    minio_path: "las-flores/backgrounds/bg_laboratorio.jpg"
+
+  - id: bg_governor_offices
+    name: "Governor's Offices"
+    description: "Grand government office, mahogany desk, city views through floor-to-ceiling windows"
+    time_of_day: "daytime"
+    mood: "formal, oppressive"
+    location: "Palacio Municipal"
+    minio_path: "las-flores/backgrounds/bg_governor_offices.jpg"
+
+  - id: bg_mercado_central
+    name: "Mercado Central"
+    description: "Bustling market, colorful stalls, hanging lanterns, crowds of people"
+    time_of_day: "morning"
+    mood: "vibrant, chaotic"
+    location: "Mercado Central"
+    minio_path: "las-flores/backgrounds/bg_mercado_central.jpg"
+
+  - id: bg_puerto_de_las_flores
+    name: "Puerto de Las Flores"
+    description: "Sunset harbor, fishing boats, palm trees, golden light on water"
+    time_of_day: "sunset"
+    mood: "peaceful, nostalgic"
+    location: "Puerto de Las Flores"
+    minio_path: "las-flores/backgrounds/bg_puerto_de_las_flores.jpg"
+
+  - id: bg_luz_del_rio
+    name: "Luz del Río"
+    description: "Riverside café terrace, string lights, water reflections, evening ambiance"
+    time_of_day: "evening"
+    mood: "serene, romantic"
+    location: "Luz del Río"
+    minio_path: "las-flores/backgrounds/bg_luz_del_rio.jpg"
+
+  - id: bg_van_der_meer_mine
+    name: "Van der Meer Mine"
+    description: "Open-pit mine, industrial machinery, dust haze, dramatic lighting"
+    time_of_day: "daytime"
+    mood: "gritty, oppressive"
+    location: "Northern Mine"
+    minio_path: "las-flores/backgrounds/bg_van_der_meer_mine.jpg"

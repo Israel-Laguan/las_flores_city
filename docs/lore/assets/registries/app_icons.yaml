@@ -1,0 +1,51 @@
+# App Icon Registry
+# Phone app icons for the terminal/phone UI
+
+app_icons:
+  - id: app_mapa
+    name: "Mapa"
+    description: "Map and navigation app, stylized location pin with grid lines"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_mapa.png"
+
+  - id: app_chat
+    name: "Chat"
+    description: "Messaging app, speech bubble with message dots"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_chat.png"
+
+  - id: app_misiones
+    name: "Misiones"
+    description: "Missions/quests app, clipboard with checkmark"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_misiones.png"
+
+  - id: app_agenda
+    name: "Agenda"
+    description: "Calendar/schedule app, calendar page with date ring"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_agenda.png"
+
+  - id: app_noticias
+    name: "Noticias"
+    description: "News app, newspaper with headline text lines"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_noticias.png"
+
+  - id: app_radio
+    name: "Radio"
+    description: "Radio/music app, broadcast tower with signal waves"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_radio.png"
+
+  - id: app_mercado
+    name: "Mercado"
+    description: "Market/shop app, shopping bag with currency symbol"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_mercado.png"
+
+  - id: app_ajustes
+    name: "Ajustes"
+    description: "Settings app, gear/cog with adjustment sliders"
+    icon_style: "minimalist geometric icon, flat design"
+    minio_path: "las-flores/phone/app_ajustes.png"

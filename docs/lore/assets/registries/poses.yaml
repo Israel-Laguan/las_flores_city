@@ -1,0 +1,201 @@
+# Universal Pose Catalogue
+# Defines all available poses with prompt descriptions for generation.
+# Each pose can be used with any body type.
+# Categories help filter poses by context.
+
+poses:
+  # ── Neutral / Idle ──────────────────────────────────────────────────────
+  pose_neutral_stand:
+    category: neutral
+    description: "standing straight, arms at sides, palms facing inward, relaxed posture, front view"
+    prompt_keywords: "standing straight, arms at sides, relaxed neutral posture"
+
+  pose_hands_in_pockets:
+    category: neutral
+    description: "standing casually, hands in side pockets, relaxed shoulders, slight slouch"
+    prompt_keywords: "standing casually, hands in pockets, relaxed slouched posture"
+
+  pose_hands_behind_back:
+    category: neutral
+    description: "standing upright, hands clasped behind back, chest slightly forward, formal posture"
+    prompt_keywords: "standing upright, hands clasped behind back, formal posture"
+
+  pose_arms_crossed:
+    category: neutral
+    description: "standing with arms crossed over chest, weight on one leg, defensive or confident posture"
+    prompt_keywords: "standing with arms crossed over chest, weight shifted to one leg"
+
+  pose_hand_on_hip:
+    category: neutral
+    description: "standing with one hand on hip, other arm at side, confident casual stance"
+    prompt_keywords: "standing with one hand on hip, confident casual stance"
+
+  pose_leaning_on_wall:
+    category: neutral
+    description: "leaning sideways against a wall, one shoulder touching, arms relaxed, casual"
+    prompt_keywords: "leaning against wall, one shoulder touching, casual relaxed"
+
+  pose_sitting_neutral:
+    category: neutral
+    description: "sitting on a chair, back straight, hands on knees or lap, neutral posture"
+    prompt_keywords: "sitting on chair, back straight, hands on lap, neutral"
+
+  # ── Emotional Expressive ────────────────────────────────────────────────
+  pose_hand_on_chest:
+    category: emotional
+    description: "one hand placed over heart or chest, sincere or emotional gesture"
+    prompt_keywords: "one hand over heart, sincere emotional gesture"
+
+  pose_open_arms:
+    category: emotional
+    description: "arms open wide, palms facing outward, welcoming or expressive gesture"
+    prompt_keywords: "arms open wide, welcoming expressive gesture"
+
+  pose_hands_clasped:
+    category: emotional
+    description: "hands clasped together at chest level, pleading or hopeful gesture"
+    prompt_keywords: "hands clasped at chest, pleading hopeful gesture"
+
+  pose_facepalm:
+    category: emotional
+    description: "one hand covering face, palm to forehead, frustrated or embarrassed"
+    prompt_keywords: "hand covering face, palm to forehead, frustrated"
+
+  pose_arms_flailing:
+    category: emotional
+    description: "arms raised in excitement or distress, dynamic emotional gesture"
+    prompt_keywords: "arms raised excitedly, dynamic emotional gesture"
+
+  pose_looking_down:
+    category: emotional
+    description: "head tilted down, eyes cast downward, shy or sad posture"
+    prompt_keywords: "head tilted down, eyes cast downward, shy sad posture"
+
+  pose_hand_on_shoulder:
+    category: emotional
+    description: "one hand reaching to touch someone's shoulder, comforting gesture"
+    prompt_keywords: "hand reaching to touch shoulder, comforting gesture"
+
+  # ── Action / Interaction ────────────────────────────────────────────────
+  pose_pointing:
+    category: action
+    description: "one arm extended, finger pointing forward or to the side, directing attention"
+    prompt_keywords: "arm extended, finger pointing, directing attention"
+
+  pose_hand_on_chin:
+    category: action
+    description: "one hand touching chin or stroking beard, thinking or evaluating"
+    prompt_keywords: "hand touching chin, thinking evaluating posture"
+
+  pose_hand_stroking_chin:
+    category: action
+    description: "hand under chin, fingers stroking, scheming or deep in thought"
+    prompt_keywords: "hand under chin stroking, scheming thoughtful"
+
+  pose_carrying_bag:
+    category: action
+    description: "one arm holding a bag or strap over shoulder, walking or standing"
+    prompt_keywords: "holding bag over shoulder, carrying posture"
+
+  pose_gesturing_excitedly:
+    category: action
+    description: "both hands gesturing while speaking, animated conversation posture"
+    prompt_keywords: "both hands gesturing, animated conversation"
+
+  pose_holding_book:
+    category: action
+    description: "holding a book or tablet in both hands, reading posture"
+    prompt_keywords: "holding book in both hands, reading posture"
+
+  pose_holding_notebook:
+    category: action
+    description: "holding a small notebook and pen, taking notes posture"
+    prompt_keywords: "holding notebook and pen, taking notes"
+
+  pose_offering:
+    category: action
+    description: "both hands extended forward, palms up, offering or presenting something"
+    prompt_keywords: "hands extended forward palms up, offering gesture"
+
+  pose_hand_graceful:
+    category: action
+    description: "one hand raised with elegant finger positioning, refined delicate gesture"
+    prompt_keywords: "hand raised with elegant finger positioning, refined gesture"
+
+  # ── Personality-Bound Archetypes ────────────────────────────────────────
+  pose_shy_clasp:
+    category: personality
+    personality_tags: [shy, gentle_soul, reserved_observer]
+    description: "hands clasped in front, shoulders slightly hunched, looking slightly away"
+    prompt_keywords: "hands clasped in front, shoulders hunched, shy posture"
+
+  pose_pouting_stomp:
+    category: personality
+    personality_tags: [childish, bubbly_socialite]
+    description: "one foot stomping, arms crossed or at sides, pouting expression, petulant stance"
+    prompt_keywords: "one foot stomping, pouting, petulant childish stance"
+
+  pose_commanding_point:
+    category: personality
+    personality_tags: [strict, strong_leader, reformist_police_chief]
+    description: "arm extended with authoritative pointing, upright commanding posture"
+    prompt_keywords: "arm extended pointing authoritatively, commanding posture"
+
+  pose_cross_legs_sitting:
+    category: personality
+    personality_tags: [elegant, confident_assertive_appreciative_of_luxury]
+    description: "sitting with legs crossed elegantly, one hand resting on knee, refined posture"
+    prompt_keywords: "sitting legs crossed elegantly, refined sophisticated posture"
+
+  pose_drinking_wine:
+    category: personality
+    personality_tags: [confident_assertive_appreciative_of_luxury, elegant]
+    description: "holding a wine glass by the stem, arm slightly raised, sophisticated posture"
+    prompt_keywords: "holding wine glass by stem, sophisticated posture"
+
+  pose_drinking_tea:
+    category: personality
+    personality_tags: [elegant, gentle_soul]
+    description: "holding a tea cup with both hands or saucer, calm refined posture"
+    prompt_keywords: "holding tea cup, calm refined posture"
+
+  pose_leaning_back:
+    category: personality
+    personality_tags: [villain, cunning_manipulator, confident_leader]
+    description: "leaning back in chair or against surface, arms spread, relaxed dominant posture"
+    prompt_keywords: "leaning back, arms spread, relaxed dominant posture"
+
+  pose_hands_on_desk:
+    category: personality
+    personality_tags: [strict, strong_leader]
+    description: "both hands placed firmly on a desk surface, leaning forward slightly, authoritative"
+    prompt_keywords: "hands on desk, leaning forward, authoritative posture"
+
+  pose_jumping:
+    category: personality
+    personality_tags: [childish, bubbly_socialite]
+    description: "both feet off the ground, arms raised, joyful jumping posture"
+    prompt_keywords: "jumping, feet off ground, arms raised, joyful"
+
+  pose_holding_brush:
+    category: personality
+    personality_tags: [creative_spirit]
+    description: "holding a paintbrush or pencil, arm extended toward canvas, artistic posture"
+    prompt_keywords: "holding paintbrush, arm extended toward canvas, artistic"
+
+  # ── Mannerism-Based (from character YAML) ───────────────────────────────
+  pose_playing_instrument:
+    category: mannerism
+    description: "holding and playing a musical instrument (specify which), focused posture"
+    prompt_keywords: "playing musical instrument, focused posture"
+    note: "Requires instrument specification per character (e.g., charango, quena, guqin)"
+
+  pose_writing:
+    category: mannerism
+    description: "sitting at a desk, writing with pen or stylus, focused downward gaze"
+    prompt_keywords: "sitting at desk writing, focused downward gaze"
+
+  pose_on_phone:
+    category: mannerism
+    description: "holding a smartphone to ear or looking at screen, casual standing posture"
+    prompt_keywords: "holding smartphone, casual standing posture"

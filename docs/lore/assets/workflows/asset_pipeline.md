@@ -150,16 +150,21 @@ docker exec las-flores-server wget -qO- http://localhost:3000/health
 
 ## 3. Prompt Types Reference
 
-| `--type` | Source Directory | Output | Target Content Field |
-|---|---|---|---|
-| `portrait` | `docs/lore/figures/` | Image prompt | `content/characters/*.yaml` → `portrait_urls[].url` |
-| `background` | `docs/lore/landmarks/` | Image prompt | `content/locations/*.yaml` → `scene.background_url` |
-| `tile` | `docs/lore/districts/` | Image prompt | `content/maps/*.yaml` → `base_image_url` |
-| `overlay` | `docs/lore/landmarks/` | Image prompt | `content/maps/*.yaml` → `overlay_image_url` |
-| `thematic` | `docs/lore/events/` | Image prompt | Vault entries, loading screens |
-| `ambient` | `docs/lore/landmarks/` | Audio prompt (Suno) | `content/locations/*.yaml` → `scene.ambient_sound_url` |
-| `sfx` | `docs/lore/events/` | Audio prompt (ElevenLabs) | Sound effect references |
-| `music` | `docs/lore/figures/` or `docs/lore/events/` | Audio prompt (Suno) | Musical theme references |
+| `--type` | Source Directory | Output | Target Content Field | Consumer Tag |
+|---|---|---|---|---|
+| `portrait` | `docs/lore/figures/` | Image prompt (bust, 3:4) | `content/characters/*.yaml` → `portrait_urls[].url` | `[CONSUMER: portrait]` |
+| `background` | `docs/lore/landmarks/` | Image prompt (16:9) | `content/locations/*.yaml` → `scene.background_url` | `[CONSUMER: html-background]` |
+| `tile` | `docs/lore/districts/` | Image prompt (1:1 seamless) | `content/maps/*.yaml` → `base_image_url` | `[CONSUMER: tile]` |
+| `overlay` | `docs/lore/landmarks/` | Image prompt (1:1 transparent) | `content/maps/*.yaml` → `overlay_image_url` | `[CONSUMER: phaser-sprite]` |
+| `thematic` | `docs/lore/events/` | Image prompt (16:9) | Vault entries, loading screens | — |
+| `ambient` | `docs/lore/landmarks/` | Audio prompt (Suno) | `content/locations/*.yaml` → `scene.ambient_sound_url` | — |
+| `sfx` | `docs/lore/events/` | Audio prompt (ElevenLabs) | Sound effect references | — |
+| `music` | `docs/lore/figures/` or `docs/lore/events/` | Audio prompt (Suno) | Musical theme references | — |
+| `phone-wallpaper` | `docs/lore/districts/` | Image prompt (9:16) | Phone OS wallpaper | `[CONSUMER: html-background]` |
+| `app-icon` | `docs/lore/districts/` | Image prompt (1:1) | Phone app grid icons | `[CONSUMER: phaser-sprite]` |
+| `biometric` | `content/characters/*.yaml` | 3-sheet prompt | `docs/lore/assets/biometric/<slug>/` | `[CONSUMER: biometric]` |
+| `expression` | `content/characters/*.yaml` | Expression strip prompt | `docs/lore/assets/expressions/<slug>/` | `[CONSUMER: biometric]` |
+| `outfit-pose` | `content/characters/*.yaml` | Full-body prompt | `docs/lore/assets/outfits/<slug>/` | `[CONSUMER: phaser-sprite]` |
 
 ---
 
@@ -206,7 +211,113 @@ Before marking an asset as complete:
 
 ---
 
-## 6. Sprite Atlas Convention (Future)
+## 6. Biometric Isolation Phase
+
+Before generating final character art, each character must go through a **biometric isolation** phase that captures their raw physical geometry without styling.
+
+### 6.1 Purpose
+
+Biometric reference sheets strip away makeup, complex hair, and bulky clothing to force the generation nodes to focus purely on bone structure, volumetric mass, and anatomical asymmetry. These sheets become the stable latent anchor for all downstream generations.
+
+### 6.2 The Three Reference Sheets
+
+| Sheet | Description | Format |
+|---|---|---|
+| **Horizontal Face Arc** | 5-panel strip: far left profile, 3/4 left, front-facing, 3/4 right, far right profile | Multi-panel horizontal strip |
+| **Vertical Face Arc** | 5-panel strip: extreme low angle, slight low angle, eye level, slight high angle, extreme high angle | Multi-panel vertical strip |
+| **Body Reference Sheet** | 3-panel orthographic: front view, side profile view, rear view | 3-panel orthographic |
+
+### 6.3 Biometric Isolation Rules
+
+- **Clothing:** Minimal form-fitting black athletic gym clothes (compression tank top, basic athletic leggings)
+- **Hair:** Tightly pulled back, not obstructing face, jawline, or shoulders
+- **Face:** Zero makeup, bare natural lips, bare skin
+- **Accessories:** Zero jewelry, zero earrings, zero tech
+- **Expression:** Completely neutral, relaxed facial muscles
+- **Pose:** Neutral standing A-pose for body
+
+### 6.4 Generation Pipeline Stages
+
+| Stage | Tools | Purpose |
+|---|---|---|
+| **Draft** | NIM, Pollinations, Higgsfield, Akool | Fast iteration on composition and pose |
+| **Refine** | Flux, Seedance, Qwen | Higher quality using draft as reference |
+| **Final/LoRA** | Flux, Stable Diffusion | Train character-specific LoRA from refined dataset (future, needs 10-20 images per character) |
+
+### 6.5 Prompt Generation
+
+Use the `biometric` type in the prompt generator:
+```bash
+node docs/lore/assets/scripts/generate-prompt.mjs \
+  --type biometric \
+  --source content/characters/char_diego_huaman.yaml
+```
+
+This outputs a `.biometric.prompt.md` file with all three sheet prompts.
+
+### 6.6 Output Structure
+```
+docs/lore/assets/biometric/{slug}/
+  horizontal_face.png
+  vertical_face.png
+  body_sheet.png
+```
+
+---
+
+## 7. Two-Track Asset Delivery
+
+The game has two rendering contexts that require different asset formats:
+
+### 7.1 HTML / Phone Overlay (Pre-Baked Sprites)
+
+The phone overlay UI uses pre-composited final sprites — a single PNG per pose/expression combination. These are generated by compositing body + outfit + face strip + hair into one image.
+
+**Generation:** Use the `outfit-pose` prompt type to generate each combination:
+```bash
+node docs/lore/assets/scripts/generate-prompt.mjs \
+  --type outfit-pose \
+  --source content/characters/char_diego_huaman.yaml
+```
+
+**Storage:** MinIO bucket `portraits/{slug}/{outfit_id}/{pose_id}_{expression_id}.png`
+
+**Schema reference:** `portrait_urls[]` in character YAML
+
+### 7.2 Phaser (Runtime Compositing)
+
+The Phaser canvas loads separate layers and composites them at runtime:
+
+```
+Phaser Container:
+  └── Body sprite (outfit + pose, selected)
+      └── Face strip (cropped to expression)
+      └── Hair front layer
+```
+
+**Storage:** MinIO buckets for each layer type:
+- `bodies/{body_type}/{pose_id}.png` — mannequin poses
+- `outfits/{slug}/{outfit_id}/{pose_id}.png` — outfit overlays
+- `faces/{slug}/expression_strip.png` — expression strip
+- `hair/{slug}/front.png`, `hair/{slug}/back.png` — hair layers
+
+**Schema reference:** `asset_manifest` in character YAML
+
+### 7.3 Consumer Intent Tags
+
+Each prompt file includes a `[CONSUMER: ...]` tag that tells the generation tool which rendering context the asset is for:
+
+| Tag | Context | Format |
+|---|---|---|
+| `[CONSUMER: portrait]` | HTML phone overlay | Single pre-baked PNG |
+| `[CONSUMER: phaser-sprite]` | Phaser runtime | Layer-ready PNG |
+| `[CONSUMER: biometric]` | Reference sheets | Multi-panel strip |
+| `[CONSUMER: html-background]` | HTML background | Full scene image |
+| `[CONSUMER: tile]` | Map tile | Seamless texture |
+
+---
+
+## 8. Sprite Atlas Convention (Future)
 
 For animated character portraits (blink, mouth-flap), store frames and package them as a Phaser Texture Atlas.
 
@@ -241,7 +352,7 @@ portrait_urls:
 
 ---
 
-## 7. Git Strategy
+## 9. Git Strategy
 
 - **`docs/lore/**/*.prompt.md`** — tracked (prompts are source metadata, alongside lore)
 - **`content/**/*.yaml`** — tracked (compiled game data with asset URLs)
