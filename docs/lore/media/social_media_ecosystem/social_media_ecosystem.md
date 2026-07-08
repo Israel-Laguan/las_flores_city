@@ -15,25 +15,25 @@ Las Flores' social media landscape reflects the city's unique position as a mult
 - **Free with heavy microtransactions**
 - Dominate in user numbers but with lower individual value
 - Focus on AR, e-commerce, and influencer culture
-- Example: [ShénShǒu](platforms/shenshou.md)
+- Example: [ShénShǒu](media/platforms/shenshou/shenshou.md)
 
 ### Latin American Platforms
 - **Ad-supported with optional premium features**
 - Focus on local community building and cultural content
 - Strong emphasis on humor, memes, and viral challenges
-- Example: [Vitrina](platforms/vitrina.md)
+- Example: [Vitrina](media/platforms/vitrina/vitrina.md)
 
 ### European Platforms
 - **Subscription-based with premium content**
 - Maintain stronger revenue per user
 - Focus on intellectual content and professional networking
-- Examples: [LinkPulse](platforms/linkpulse.md), [VoxStream](platforms/voxstream.md)
+- Examples: [LinkPulse](media/platforms/linkpulse/linkpulse.md), [VoxStream](media/platforms/voxstream/voxstream.md)
 
 ### American Platforms
 - **Mixed model with ads and premium features**
 - Gamified engagement and competitive environments
 - Focus on youth culture and entertainment
-- Example: [PlayNetix](platforms/playnetix.md)
+- Example: [PlayNetix](media/platforms/playnetix/playnetix.md)
 
 ---
 

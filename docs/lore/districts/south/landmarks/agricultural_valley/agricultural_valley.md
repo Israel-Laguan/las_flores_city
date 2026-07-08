@@ -195,5 +195,5 @@ The Agricultural Valley is also home to significant mining activities:
 - [San Miguel Dam](../../landmarks/south/san_miguel_dam.md) *(to be created)*
 - [Río de las Flores](../../natural/rio_de_las_flores.md)
 - [Industrial Zone](../../districts/industrial.md)
-- [Mineria Estrella Valley Mine](../../companies/chinese/mineria_estrella_valley_mine.md) *(to be created)*
-- [Van der Meer Southerns Mine](../../companies/european/van_der_meer_mining.md)
+- [Mineria Estrella Valley Mine](../../organizations/companies/mineria_estrella_valley_mine.md) *(to be created)*
+- [Van der Meer Southerns Mine](../../organizations/companies/van_der_meer_mining.md)

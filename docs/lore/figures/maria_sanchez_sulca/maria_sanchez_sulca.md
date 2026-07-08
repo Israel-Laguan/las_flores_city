@@ -36,4 +36,4 @@ Maria's act of courage exposed the rot at the heart of Las Flores politics and d
 
 ## Related Lore
 - [Maria Sanchez Sulca - The Whistleblower](../stories/maria_sanchez_sulca.md)
-- [Minera Estrella](../companies/lw_group/minera_estrella.md)
+- [Minera Estrella](../organizations/companies/minera_estrella.md)

@@ -28,5 +28,5 @@ Las Flores began to transform, its streets becoming a tapestry of languages, mus
 The mine remained at the heart of it all, a symbol of opportunity and progress. As the years went by, the families of Las Flores would face challenges and triumphs, but they would always remember the great migration that brought them together.
 
 ## Related Lore
-- [Minera Estrella](../companies/lw_group/minera_estrella.md)
+- [Minera Estrella](../organizations/companies/minera_estrella/minera_estrella.md)
 - [The Great Lithium Leak](../events/the_great_lithium_leak.md)

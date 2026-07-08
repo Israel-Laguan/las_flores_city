@@ -91,10 +91,10 @@ Dong is characterized by:
 
 | Entity | Relationship |
 |---|---|
-| [Van der Meer Family](../families/van_der_meer.md) | Estranged; tacit mutual benefit |
+| [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md) | Estranged; tacit mutual benefit |
 | [Industrial Zone](../districts/industrial.md) | Primary base of operations and territory |
-| [Flowers Syndicate](../organizations/flowers_syndicate.md) | Founder and leader |
-| [LW Group](../companies/lw_group/overview.md) | Adversarial; Syndicate targets LW businesses |
+| [Flowers Syndicate](../organizations/criminal/flowers_syndicate/flowers_syndicate.md) | Founder and leader |
+| [LW Group](../organizations/companies/overview/overview.md) | Adversarial; Syndicate targets LW businesses |
 | [Las Flores Police](../districts/city.md) | Ongoing conflict; corruption within ranks |
 
 ---

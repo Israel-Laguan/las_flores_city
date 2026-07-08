@@ -69,7 +69,7 @@ CJS has forged strong alliances with progressive members of the City Council, wh
 | **[GreenWatch Las Flores](greenwatch.md)** | Environmental justice projects and joint campaigns |
 | **[COFAVIC](cofavic.md)** | Human rights cases, particularly those involving indigenous victims |
 | **[Fundación Esperanza](fundacion_esperanza.md)** | Community development and social welfare initiatives |
-| **[Humanity First](../humanity_first/overview.md)** | Environmental and social justice collaborations |
+| **[Humanity First](../../movements/humanity_first/overview/overview.md)** | Environmental and social justice collaborations |
 | **Progressive City Council Members** | Policy influence, legislative support, political allyship |
 
 ---

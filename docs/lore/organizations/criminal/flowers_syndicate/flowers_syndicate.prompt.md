@@ -1,7 +1,8 @@
 # Prompt: Flowers Syndicate (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/organizations/flowers_syndicate/flowers_syndicate.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/criminal/flowers_syndicate/flowers_syndicate.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

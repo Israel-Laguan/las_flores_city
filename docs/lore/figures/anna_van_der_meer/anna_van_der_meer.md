@@ -97,4 +97,4 @@ Her life remains a touchstone for future generations of Las Flores activists who
 ## Content Reference
 
 - Dev Mode character file: `content/characters/char_anna_van_der_meer.yaml`
-- Family lore: `docs/lore/families/van_der_meer.md`
+- Family lore: `docs/lore/organizations/families/van_der_meer.md`

@@ -313,8 +313,8 @@ For the region, Puerto de Las Flores is more than just a port—it is the econom
 - [Port District](../../port.md) - Comprehensive district information
 - [Port Area](./port_area.md) - The community surrounding the port facilities
 - [Centro Empresarial Chino-Latino](./centro_empresarial_chino_latino.md) - Chino-Latino Business Center
-- [Jade Dragon Ports & Logistics](../../../companies/lw_group/jade_dragon_ports.md) - LW Group's port operations company
-- [Neptunes Haven](../../../companies/european/neptunes_haven.md) - Dutch mining group's port partner
-- [LW Group Overview](../../../companies/lw_group/overview.md) - Major port investor and operator
+- [Jade Dragon Ports & Logistics](../../../organizations/companies/jade_dragon_ports.md) - LW Group's port operations company
+- [Neptunes Haven](../../../organizations/companies/neptunes_haven.md) - Dutch mining group's port partner
+- [LW Group Overview](../../../organizations/companies/overview/overview.md) - Major port investor and operator
 - [Industrial Zone District](../../industrial.md) - Connected manufacturing area
 - [Free Trade Zone](zona_franca.md) - Adjacent duty-free trade area (file to be created)

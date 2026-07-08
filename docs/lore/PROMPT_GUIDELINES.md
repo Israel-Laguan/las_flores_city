@@ -181,6 +181,8 @@ These terms frequently cause CONTENT_FILTERED responses:
 - **Violent:** blood, murder, kill, weapon, fight, attack, war
 - **Urban decay:** slum, ghetto, abandoned, ruined, decaying
 - **Emotional extremes:** oppressive, menacing, terrifying, horrifying
+- **Lighting extremes:** blinding (use "bright" instead), intense glare
+- **Crowd descriptors:** densely packed, dense crowd (use "busy" or "close together")
 - **Controversial:** religious symbols in certain contexts, explicit content
 
 When in doubt, **describe what you want to see, not how it should feel**.

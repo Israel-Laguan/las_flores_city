@@ -44,5 +44,5 @@ Fatima's defining tension lies in her drive for control colliding with the emoti
 
 ## Related Lore
 
-- [LW Group Overview](../companies/lw_group/overview.md)
+- [LW Group Overview](../organizations/companies/overview/overview.md)
 - [Las Flores Nightlife](../stories/nightlife.md) *(if created)*

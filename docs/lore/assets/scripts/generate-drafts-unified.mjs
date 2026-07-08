@@ -35,7 +35,6 @@ const PROMPT_ROOTS = [
   ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
   path.resolve('docs/lore/media'),
-  path.resolve('docs/lore/companies'),
   path.resolve('docs/lore/organizations'),
 ];
 
@@ -77,6 +76,7 @@ const DEFAULT_DIMENSIONS = {
   biometric: { width: 1344, height: 768 },
   expression: { width: 1344, height: 768 },
   'outfit-pose': { width: 768, height: 1344 },
+  thematic: { width: 1280, height: 720 },
 };
 
 const NIM_MAX_RETRIES = 2;
@@ -255,7 +255,7 @@ function parsePromptFile(filePath) {
   return results;
 }
 
-function buildNimPrompt(fullPromptText, fileLabel) {
+function buildNimPrompt(fullPromptText, fileLabel, assetType) {
   if (!fileLabel) fileLabel = 'unknown';
 
   let scene = fullPromptText;
@@ -269,8 +269,15 @@ function buildNimPrompt(fullPromptText, fileLabel) {
   scene = scene.replace(/\s*NO\s+photorealistic[\s\S]*?(?=\n|$)/gi, '');
   scene = scene.replace(/\s*NO\s+3D\s+render[\s\S]*?(?=\n|$)/gi, '');
 
-  const STYLE = 'photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k';
-  const NEG = 'photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality';
+  // Thematic prompts are conceptual art (no people) — use a different style
+  // than the portrait style used for character/figure prompts.
+  const isThematic = assetType === 'thematic';
+  const STYLE = isThematic
+    ? 'conceptual art, dramatic high contrast, symbolic, environmental storytelling, 8k'
+    : 'photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k';
+  const NEG = isThematic
+    ? 'photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, people, faces, portraits'
+    : 'photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality';
 
   scene = scene
     .replace(/Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k\.?\s*/gi, '')
@@ -358,7 +365,7 @@ function buildNimPrompt(fullPromptText, fileLabel) {
 // ── NIM Generation ──────────────────────────────────────────────────────────
 
 async function generateNIM(variant, outPath, fileLabel) {
-  const prompt = buildNimPrompt(variant.promptText, fileLabel);
+  const prompt = buildNimPrompt(variant.promptText, fileLabel, variant.type);
 
   for (let attempt = 1; attempt <= NIM_MAX_RETRIES; attempt++) {
     try {

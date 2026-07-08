@@ -91,7 +91,7 @@ The Afro-Latino community actively participates in initiatives to promote divers
 | Ally | Organization | Focus |
 |---|---|---|
 | **Juan Carlos Pérez** | Afro-Latino Rights advocacy | Racial profiling, police brutality, systemic reform |
-| **Laura Rodriguez** | [COFAVIC](../organizations/cofavic.md) | Human rights cases affecting marginalized communities |
+| **Laura Rodriguez** | [COFAVIC](../organizations/civil_society/cofavic/cofavic.md) | Human rights cases affecting marginalized communities |
 
 ---
 

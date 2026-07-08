@@ -39,4 +39,4 @@ In 2033, a proposal for the Free City of Las Flores was formally presented. The 
 
 ## Related Lore
 - [Constitution Backstory](../figures/constitution_backstory.md)
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)

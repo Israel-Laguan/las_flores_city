@@ -30,7 +30,7 @@ Este movimiento generoso por parte de los Van der Meer ha sido ampliamente elogi
 
 ## Related Lore
 
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)
 - [Indigenous Community](../communities/indigenous_community.md)
 - [Elisabeth van der Meer](../figures/elisabeth_van_der_meer.md)
 

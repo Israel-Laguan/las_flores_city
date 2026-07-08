@@ -20,17 +20,12 @@ const DRY_RUN = process.argv.includes('--dry-run');
 // Categories that were migrated
 const CATEGORIES = [
   'communities',
-  'companies',
   'districts',
   'events',
-  'families',
   'governance',
   'guides',
-  'humanity_first',
   'media',
   'organizations',
-  'partnerships',
-  'platforms',
   'stories',
 ];
 

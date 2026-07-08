@@ -1,7 +1,8 @@
 # Prompt: Jade Phoenix Technologies (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/chinese/jade_phoenix_technologies/jade_phoenix_technologies.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/jade_phoenix_technologies/jade_phoenix_technologies.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

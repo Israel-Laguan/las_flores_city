@@ -44,7 +44,7 @@ Luz del Rio filed for bankruptcy in December 2057 after losing critical contract
 ---
 
 ## Related Lore
-- [The Great Lithium Leak](../events/the_great_lithium_leak.md)
-- [Evelyn Ruthenberg](../figures/evelyn_ruthenberg.md)
-- [LW Group](../companies/lw_group/overview.md)
-- [Minera Estrella](../companies/lw_group/minera_estrella.md)
+- [The Great Lithium Leak](../../../events/the_great_lithium_leak/the_great_lithium_leak.md)
+- [Evelyn Ruthenberg](../../../figures/evelyn_ruthenberg/evelyn_ruthenberg.md)
+- [LW Group](../overview/overview.md)
+- [Minera Estrella](../minera_estrella/minera_estrella.md)

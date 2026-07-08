@@ -23,5 +23,5 @@ In 2069, when Yang Chen breathed his last, surrounded by the love of his family 
 His meticulously nurtured fortune became his posthumous gift to his heirs. The "crazy old man" had bequeathed them not just a heritage, but a stark lesson: true brilliance often operates in quiet corners, leaving its greatest impact unveiled until the final, resounding curtain call.
 
 ## Related Lore
-- [LW Group](../companies/lw_group/overview.md)
+- [LW Group](../organizations/companies/overview/overview.md)
 - [Chinese Community](../communities/chinese_community.md)

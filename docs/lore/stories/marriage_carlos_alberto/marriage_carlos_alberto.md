@@ -33,5 +33,5 @@ Elisabeth, while initially enjoying the luxury and high-end restaurants that cam
 Elisabeth maintained close ties with her Dutch family, who visited their house regularly. These visits provided a sense of comfort and familiarity for Elisabeth, but they also highlighted the growing divide between her and Carlos Alberto. The Dutch family, with their strong values and independent spirit, never truly clicked with Carlos Alberto, who was deeply entrenched in the corrupt political culture of the ELU.
 
 ## Related Lore
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)
 - [Hernandez Family](./)

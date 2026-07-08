@@ -61,4 +61,4 @@ Bella copes by living fully in the present, teaching her sons to do the same. Sh
 
 - [Las Flores Port District](../districts/port.md)
 - [Las Flores Nightlife & Culture](../stories/nightlife.md) *(if created)*
-- [LW Group Port Operations](../companies/lw_group/jade_dragon_ports.md)
+- [LW Group Port Operations](../organizations/companies/jade_dragon_ports/jade_dragon_ports.md)

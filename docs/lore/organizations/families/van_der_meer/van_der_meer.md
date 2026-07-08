@@ -202,10 +202,10 @@ The family is characterized by:
 
 ## Related Lore
 
-- [Van der Meer Mining Company](../companies/european/van_der_meer_mining.md)
-- [Peter van der Meer — LGBTQ+ Advocate](../figures/peter_van_der_meer.md)
-- [Senator Chen Wei — Rival](../figures/senator_chen_wei.md)
-- [Business Coalitions — Political Manipulation](../stories/business_elite_manipulate_politics.md)
-- [Van der Meer Women — Philanthropy & Style](../stories/van_der_meer_women.md)
-- [GLC Scholarship Program — Futuro Brillante](../stories/glc_scholarship_program.md)
-- [Neptune's Haven B.V.](../companies/european/neptunes_haven.md)
+- [Van der Meer Mining Company](../../companies/van_der_meer_mining/van_der_meer_mining.md)
+- [Peter van der Meer — LGBTQ+ Advocate](../../../figures/peter_van_der_meer/peter_van_der_meer.md)
+- [Senator Chen Wei — Rival](../../../figures/senator_chen_wei/senator_chen_wei.md)
+- [Business Coalitions — Political Manipulation](../../../stories/business_elite_manipulate_politics/business_elite_manipulate_politics.md)
+- [Van der Meer Women — Philanthropy & Style](../../../stories/van_der_meer_women/van_der_meer_women.md)
+- [GLC Scholarship Program — Futuro Brillante](../../../stories/glc_scholarship_program/glc_scholarship_program.md)
+- [Neptune's Haven B.V.](../../companies/neptunes_haven/neptunes_haven.md)

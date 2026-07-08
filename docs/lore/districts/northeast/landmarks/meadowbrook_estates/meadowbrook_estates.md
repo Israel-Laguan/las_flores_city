@@ -230,6 +230,6 @@ For more information about the surrounding district, see: [Northeast District](.
 - [Colegio Chino-Latino](./colegio_chino_latino.md) — bilingual school in Meadowbrook Estates
 - [Universidad del Valle](./universidad_del_valle.md) — major university in the district
 - [Vista Del Sol](./vista_del_sol.md) — neighboring high-end residential area
-- [LW Group](../../../companies/lw_group/overview.md) — original developer of the community
+- [LW Group](../../../organizations/companies/overview/overview.md) — original developer of the community
 - [Education System](../../education.md) *(to be created)* — city-wide educational overview
 - [Chinese Community](../../../communities/chinese.md) *(to be created)* — cultural community profile

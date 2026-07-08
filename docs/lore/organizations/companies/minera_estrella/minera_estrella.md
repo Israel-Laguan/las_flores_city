@@ -151,6 +151,6 @@ In essence, Minera Estrella stands as a testament to the transformative impact o
 
 ## Related Lore
 - [LW Group](../overview.md) — Parent conglomerate
-- [The Great Lithium Leak](../events/the_great_lithium_leak.md) — Full disaster narrative
-- [Lithium Leak Trial](../events/lithium_leak_trial.md) — Trial details
-- [Restoration Plan](../events/restoration_plan.md) — Cleanup efforts
+- [The Great Lithium Leak](../../../events/the_great_lithium_leak/the_great_lithium_leak.md) — Full disaster narrative
+- [Lithium Leak Trial](../../../events/lithium_leak_trial/lithium_leak_trial.md) — Trial details
+- [Restoration Plan](../../../events/restoration_plan/restoration_plan.md) — Cleanup efforts

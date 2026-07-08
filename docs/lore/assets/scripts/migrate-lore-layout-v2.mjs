@@ -7,7 +7,8 @@
  *   <category>/<name>/<name>.md + <name>.prompt.md + assets/
  *
  * Preserves existing subdirectory structure for:
- *   - companies/ (chinese/, european/, lw_group/)
+ *   - organizations/ (companies/, families/, movements/, civil_society/, criminal/, partnerships/)
+ *   - media/ (press/, platforms/)
  *   - landmarks/ (region subdirectories)
  *
  * Also rewrites:
@@ -31,22 +32,18 @@ const SPECIFIC_CATEGORY = process.argv.find(a => a.startsWith('--category='))?.s
 const CATEGORIES = [
   'communities',
   'conflicts',
-  'companies',
   'districts',
   'events',
-  'families',
   'governance',
   'guides',
-  'humanity_first',
   'media',
   'organizations',
-  'partnerships',
-  'platforms',
   'stories',
 ];
 
 // Categories with existing meaningful subdirectory structure to preserve
-const PRESERVE_SUBDIRS = new Set(['companies']);
+// (organizations/ and media/ now hold the former top-level categories as subdirs)
+const PRESERVE_SUBDIRS = new Set(['organizations', 'media']);
 
 function log(...args) {
   console.log(...args);

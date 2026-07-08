@@ -1,7 +1,8 @@
 # Prompt: AquaDragon (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/chinese/aquadragon/aquadragon.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/aquadragon/aquadragon.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

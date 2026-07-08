@@ -175,13 +175,13 @@ The Electra Battery Factory offers multiple story potential:
 - [Minera Estrella Andes Mine](../andes/minera_estrella_andes_mine.md) — Primary lithium source
 - [Minera Estrella Valley Mine](../andes/minera_estrella_valley_mine.md) — Secondary lithium source
 - [Centro Empresarial](../city/centro_empresarial.md) — Corporate offices location
-- [Great Dragon Energy](../../companies/lw_group/great_dragon_energy.md) — Power supplier (Rio Grande Dam)
-- [Jade Dragon Ports](../../companies/lw_group/jade_dragon_ports.md) — Export logistics
+- [Great Dragon Energy](../../organizations/companies/great_dragon_energy.md) — Power supplier (Rio Grande Dam)
+- [Jade Dragon Ports](../../organizations/companies/jade_dragon_ports.md) — Export logistics
 - [Industrial Zone District](../../districts/industrial.md) — Surrounding district
 
 ## Related Companies
 
-- [Electra Battery Factory](../../companies/lw_group/electra_battery_factory.md) — Company overview in lore
-- [LW Group Overview](../../companies/lw_group/overview.md) — Parent conglomerate
-- [Great Dragon Energy](../../companies/lw_group/great_dragon_energy.md) — Energy subsidiary
-- [Minera Estrella](../../companies/lw_group/minera_estrella.md) — Mining joint venture
+- [Electra Battery Factory](../../organizations/companies/electra_battery_factory.md) — Company overview in lore
+- [LW Group Overview](../../organizations/companies/overview/overview.md) — Parent conglomerate
+- [Great Dragon Energy](../../organizations/companies/great_dragon_energy.md) — Energy subsidiary
+- [Minera Estrella](../../organizations/companies/minera_estrella.md) — Mining joint venture

@@ -46,7 +46,7 @@ By operating within the framework of the PPP, Jade Dragon Ports & Logistics Ltd.
 
 ## Rivalry with Neptune's Haven
 
-Jade Dragon operates the main port infrastructure, while [Neptune's Haven B.V.](../european/neptunes_haven.md) manages the Dutch mining group's dedicated pier independently. This creates a **parallel port infrastructure** — one Chinese-controlled, one Dutch-controlled — reflecting the broader power competition in Las Flores.
+Jade Dragon operates the main port infrastructure, while [Neptune's Haven B.V.](../neptunes_haven/neptunes_haven.md) manages the Dutch mining group's dedicated pier independently. This creates a **parallel port infrastructure** — one Chinese-controlled, one Dutch-controlled — reflecting the broader power competition in Las Flores.
 
 ---
 

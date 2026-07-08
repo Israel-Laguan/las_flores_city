@@ -208,6 +208,6 @@ The LW Group's underground operations included:
 - [Lithium Leak Trial](lithium_leak_trial.md) — Full trial details
 - [Scientific Report](scientific_report.md) — Lithium hydroxide chemistry and contamination pathways
 - [Restoration Plan](restoration_plan.md) — Cleanup and rehabilitation efforts
-- [Minera Estrella](../companies/lw_group/minera_estrella.md) — The mining company
-- [LW Group](../companies/lw_group/overview.md) — Parent conglomerate
+- [Minera Estrella](../organizations/companies/minera_estrella/minera_estrella.md) — The mining company
+- [LW Group](../organizations/companies/overview/overview.md) — Parent conglomerate
 - [Timeline](../timeline.md) — Historical timeline

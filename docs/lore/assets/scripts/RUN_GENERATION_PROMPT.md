@@ -5,7 +5,7 @@
 The project has ~200 `.prompt.md` files across these directories, all needing image generation:
 - `docs/lore/landmarks/` — 55 background/overlay prompts
 - `docs/lore/figures/` — 128 portrait prompts
-- `docs/lore/companies/` — 15 thematic prompts
+- `docs/lore/organizations/companies/` — 15 thematic prompts
 - `docs/lore/organizations/` — 9 thematic prompts
 - `docs/lore/media/` — 5 thematic prompts
 - `docs/lore/shared/assets/phone/` — 9 app icon prompts

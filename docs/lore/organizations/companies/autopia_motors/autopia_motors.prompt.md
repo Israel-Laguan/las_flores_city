@@ -1,7 +1,8 @@
 # Prompt: Autopia Motors (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/chinese/autopia_motors/autopia_motors.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/autopia_motors/autopia_motors.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

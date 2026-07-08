@@ -30,4 +30,4 @@ Her work laid the financial foundation for CLM's — later Minera Estrella's —
 
 ## Related Lore
 - [CLM Contact with Carlos Hernandez](./)
-- [LW Group Overview](../companies/lw_group/overview.md)
+- [LW Group Overview](../organizations/companies/overview/overview.md)

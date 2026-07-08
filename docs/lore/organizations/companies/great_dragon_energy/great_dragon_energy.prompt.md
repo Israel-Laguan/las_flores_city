@@ -1,12 +1,11 @@
 # Prompt: Great Dragon Energy (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/lw_group/great_dragon_energy/great_dragon_energy.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/great_dragon_energy/great_dragon_energy.md
 **Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
-
 ## Prompt
-Conceptual art capturing **Type:** Energy / Hydroelectric Power **Parent:** LW Group **Key Asset:** Rio Grande Dam **Role:** Primary energy provider for Las Flores industries in Las Flores.  dramatic. High contrast, symbolic, environmental storytelling, 8K.
+A massive hydroelectric dam with water cascading over turbines, steel structures, sunrise lighting, high detail, 8K resolution.
 
 ## Negative Prompt
---no utopia, no dystopia, no clean divide, no androids, no robots, no neon
+--no utopia, no dystopia, no neon, no androids, no robots, no text, no watermark, no low quality, no 3d render, no cartoon

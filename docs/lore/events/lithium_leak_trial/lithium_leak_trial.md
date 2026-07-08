@@ -119,4 +119,4 @@ Despite compelling evidence, the defense's narrative of an unforeseeable catastr
 - [The Great Lithium Leak](the_great_lithium_leak.md) — The disaster
 - [Scientific Report](scientific_report.md) — Contamination details
 - [Restoration Plan](restoration_plan.md) — Cleanup efforts
-- [Minera Estrella](../companies/lw_group/minera_estrella.md)
+- [Minera Estrella](../organizations/companies/minera_estrella.md)

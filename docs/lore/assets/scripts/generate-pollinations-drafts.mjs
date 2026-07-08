@@ -52,6 +52,7 @@ const DEFAULT_DIMENSIONS = {
   biometric: { width: 1344, height: 768 },
   expression: { width: 1344, height: 768 },
   'outfit-pose': { width: 768, height: 1344 },
+  thematic: { width: 1280, height: 720 },
 };
 
 const COOLDOWN_MS = 30000;
@@ -297,7 +298,7 @@ async function main() {
       const charName = path.basename(promptFile, '.prompt.md');
       promptDir = path.join(figuresRoot, charName);
     }
-    const draftDir = path.join(promptDir, 'drafts');
+    const draftDir = path.join(promptDir, 'assets');
     const baseName = path.basename(promptFile, '.prompt.md');
 
     for (const variant of filtered) {

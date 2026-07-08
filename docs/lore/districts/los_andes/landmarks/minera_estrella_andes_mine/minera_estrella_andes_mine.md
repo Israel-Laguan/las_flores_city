@@ -17,7 +17,7 @@
 
 Nestled in the rugged embrace of the Andean foothills lies the Minera Estrella Andes Mine, a testament to human ingenuity and perseverance. Located just 5 kilometers northeast of the river, this mine leverages its strategic position to tap into the mountain's generous mineral deposits, primarily lithium, while utilizing the river to streamline the transportation of materials. As the oldest and largest lithium mine in the region, Minera Estrella Andes carries with it a legacy that spans around half a century.
 
-For more information about the mining company, see: [Minera Estrella](../../../companies/lw_group/minera_estrella.md)
+For more information about the mining company, see: [Minera Estrella](../../../organizations/companies/minera_estrella/minera_estrella.md)
 
 For more information about the surrounding district, see: [Los Andes District](../../los_andes.md)
 
@@ -249,11 +249,11 @@ For more information about the surrounding district, see: [Los Andes District](.
 ## Related Lore
 
 - [Los Andes District](../../los_andes.md) — district profile
-- [Minera Estrella](../../../companies/lw_group/minera_estrella.md) — mining company operations
+- [Minera Estrella](../../../organizations/companies/minera_estrella/minera_estrella.md) — mining company operations
 - [Luz del Río Energy Plant](../luz_del_rio_energy_plant.md) — power supplier to mining operations
 - [The Great Lithium Leak](../../../events/the_great_lithium_leak.md) — environmental disaster
 - [Lithium Leak Trial](../../../events/lithium_leak_trial.md) — legal proceedings
 - [Restoration Plan](../../../events/restoration_plan.md) — cleanup and recovery efforts
-- [LW Group](../../../companies/lw_group/overview.md) — parent conglomerate
+- [LW Group](../../../organizations/companies/overview/overview.md) — parent conglomerate
 - [Rio Grande Dam](../rio_grande_dam.md) — related infrastructure
 - [Andean Mountains](andean_mountains.md) — natural context

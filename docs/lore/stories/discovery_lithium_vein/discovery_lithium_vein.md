@@ -30,5 +30,5 @@ To her surprise, the team members did not blame her. Instead, they thanked her f
 Annabella and Pieter were deeply moved by the resilience and forgiveness of the local team members. They admired the strength and spirit of the Latin American locals and vowed to always support and help the community in any way they could. This experience shaped the Van der Meer family's philosophy, instilling in them a deep respect for the local population and a commitment to their well-being.
 
 ## Related Lore
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)
 - [Dutch Community](../communities/dutch_community.md)

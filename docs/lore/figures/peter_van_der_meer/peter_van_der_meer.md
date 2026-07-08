@@ -50,4 +50,4 @@ Peter possesses a complex character shaped by privilege, responsibility, and per
 - **Responsible:** Despite his personal struggles and journey, he has never shirked his family duties or business obligations.
 
 ## Related Lore
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)

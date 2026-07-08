@@ -54,8 +54,8 @@ Alexander's leadership has been marked by the challenge of maintaining family un
 | [Mei Li](../figures/mei_xiang.md) | Wife and business partner |
 | [Xiu Li van der Meer](../figures/xiu_li_van_der_meer.md) | Eldest child and heir |
 | [Dong van der Meer](../figures/dong_van_der_meer.md) | Second child (estranged but connected) |
-| [Van der Meer Mining](../companies/european/van_der_meer_mining.md) | Family business |
-| [Global Lithium Corp](../companies/european/van_der_meer_mining.md) | Parent company |
+| [Van der Meer Mining](../organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Family business |
+| [Global Lithium Corp](../organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Parent company |
 
 ## In-Game References
 

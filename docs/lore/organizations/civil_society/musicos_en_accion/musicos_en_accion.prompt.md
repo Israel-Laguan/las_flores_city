@@ -1,7 +1,8 @@
 # Prompt: Músicos en Acción (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/organizations/musicos_en_accion/musicos_en_accion.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/civil_society/musicos_en_accion/musicos_en_accion.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

@@ -1,7 +1,8 @@
 # Prompt: COFAVIC — Comité de Familiares Víctimas del Conflicto (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/organizations/cofavic/cofavic.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/civil_society/cofavic/cofavic.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

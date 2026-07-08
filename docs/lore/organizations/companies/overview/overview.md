@@ -38,7 +38,7 @@ This structure means that LW Group decisions are never purely commercial — the
 | [Jade Dragon Ports](jade_dragon_ports.md) | Port infrastructure & logistics |
 | [Great Dragon Energy](great_dragon_energy.md) | Rio Grande Dam / energy |
 | [Electra Battery Factory](electra_battery_factory.md) | Lithium-to-battery manufacturing |
-| LW Logistics | Airport cargo operations (via [LFAA](../../partnerships/las_flores_airport_authority.md)) |
+| LW Logistics | Airport cargo operations (via [LFAA](../../../partnerships/las_flores_airport_authority/las_flores_airport_authority.md)) |
 
 ---
 

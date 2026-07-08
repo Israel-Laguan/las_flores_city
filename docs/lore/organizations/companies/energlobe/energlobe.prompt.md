@@ -1,12 +1,12 @@
 # Prompt: EnerGlobe Inc. (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/european/energlobe/energlobe.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/energlobe/energlobe.md
 **Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt
-Conceptual art capturing **Type:** Multinational Energy Corporation **Roots:** USA **Operations:** Significant presence across Europe and Latin America **Focus:** Sustainable and renewable energy solutions **Las Flores Presence:** Corporate offices in Centro Empresarial in Las Flores.  dramatic. High contrast, symbolic, environmental storytelling, 8K.
+A high-tech energy research facility with glass buildings, solar panels on rooftops, scientists in lab coats, digital data displays, modern architecture, 8K resolution.
 
 ## Negative Prompt
---no utopia, no dystopia, no clean divide, no androids, no robots, no neon
+--no utopia, no dystopia, no neon, no androids, no robots, no text, no watermark, no low quality, no 3d render, no cartoon

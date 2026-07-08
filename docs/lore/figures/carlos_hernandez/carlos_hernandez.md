@@ -101,4 +101,4 @@ In **2059**, at age 84, Hernandez was still visible in the community — attendi
 - [Carlos Alberto Hernandez](../figures/carlos_alberto_hernandez.md) — his son
 - [Timeline](../timeline.md) — Free City founding and governor succession
 - [The Dutch Maneuvers](../stories/dutch_maneuvers.md) — political machinations behind the Free City
-- [Van der Meer Family](../families/van_der_meer.md) — European mining dynasty
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md) — European mining dynasty

@@ -305,8 +305,8 @@ New source material proposes alternate dates for three foundational events. The 
 - [Lithium Leak Trial](../events/lithium_leak_trial.md) — Full trial details
 - [Scientific Report](../events/scientific_report.md) — LiOH properties and health impacts
 - [Restoration Plan](../events/restoration_plan.md) — Evelyn & Yara's project
-- [LW Group](../companies/lw_group/overview.md) — Chinese conglomerate
-- [Minera Estrella](../companies/lw_group/minera_estrella.md) — Mining company
+- [LW Group](../organizations/companies/overview/overview.md) — Chinese conglomerate
+- [Minera Estrella](../organizations/companies/minera_estrella/minera_estrella.md) — Mining company
 
 > **✅ RESOLVED**: The full 9-governor succession has been established. Ramos served 2033–2041 (two terms), succeeded by 8 additional governors through 2077. See [Governor Succession Table](#governor-succession-table) above.
 

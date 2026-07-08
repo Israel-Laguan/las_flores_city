@@ -95,5 +95,5 @@ The artistic response to the Great Lithium Leak did more than document the crisi
 - [Crisis Daily Life](crisis_daily_life.md)
 - [Sofia Diaz](../figures/sofia_diaz.md)
 - [Lina Kim](../figures/lina_kim.md)
-- [Músicos en Acción](../organizations/musicos_en_accion.md)
+- [Músicos en Acción](../organizations/civil_society/musicos_en_accion.md)
 - [Social Media Ecosystem](../media/social_media_ecosystem.md)

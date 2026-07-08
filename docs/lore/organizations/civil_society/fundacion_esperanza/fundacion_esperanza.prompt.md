@@ -1,7 +1,8 @@
 # Prompt: Fundación Esperanza (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/organizations/fundacion_esperanza/fundacion_esperanza.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

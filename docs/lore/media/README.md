@@ -8,10 +8,17 @@
 ```
 docs/lore/media/
 ├── README.md                  # This file
-├── el_informador.md           # Voice of marginalized communities
-├── la_prensa.md               # Investigative journalism
-├── las_flores_chronicle.md    # Elite gossip & society magazine
-├── social_media_ecosystem.md  # Comprehensive social media landscape
+├── press/                     # Newspapers & magazines
+│   ├── el_informador/         # Voice of marginalized communities
+│   ├── la_prensa/             # Investigative journalism
+│   └── las_flores_chronicle/  # Elite gossip & society magazine
+├── platforms/                 # Social media platforms
+│   ├── shenshou.md            # Chinese AR + e-commerce
+│   ├── linkpulse.md           # European intellectual
+│   ├── playnetix.md           # North American gaming
+│   ├── vitrina.md             # Latin American community
+│   └── voxstream.md           # Professional streaming
+└── social_media_ecosystem/    # Comprehensive social media landscape
 ```
 
 ---
@@ -22,18 +29,18 @@ docs/lore/media/
 
 | Publication | Focus | Audience |
 |---|---|---|
-| [El Informador](el_informador/el_informador.md) | Marginalized communities | Working-class, indigenous |
-| [La Prensa](la_prensa/la_prensa.md) | Investigative journalism | General public |
-| [Las Flores Chronicle](las_flores_chronicle/las_flores_chronicle.md) | Elite gossip & society | Upper-class, expats |
+| [El Informador](press/el_informador/el_informador.md) | Marginalized communities | Working-class, indigenous |
+| [La Prensa](press/la_prensa/la_prensa.md) | Investigative journalism | General public |
+| [Las Flores Chronicle](press/las_flores_chronicle/las_flores_chronicle.md) | Elite gossip & society | Upper-class, expats |
 
 ### Social Media Platforms
 
 See [Social Media Ecosystem](social_media_ecosystem/social_media_ecosystem.md) for comprehensive coverage of:
-- [ShénShǒu](../platforms/shenshou.md) — Chinese AR + e-commerce
-- [LinkPulse](../platforms/linkpulse.md) — European intellectual
-- [PlayNetix](../platforms/playnetix.md) — North American gaming
-- [Vitrina](../platforms/vitrina.md) — Latin American community
-- [VoxStream](../platforms/voxstream.md) — Professional streaming
+- [ShénShǒu](platforms/shenshou/shenshou.md) — Chinese AR + e-commerce
+- [LinkPulse](platforms/linkpulse/linkpulse.md) — European intellectual
+- [PlayNetix](platforms/playnetix/playnetix.md) — North American gaming
+- [Vitrina](platforms/vitrina/vitrina.md) — Latin American community
+- [VoxStream](platforms/voxstream/voxstream.md) — Professional streaming
 
 ---
 

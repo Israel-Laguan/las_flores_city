@@ -40,4 +40,4 @@ After her eventual divorce from Carlos Alberto, Elisabeth focused on raising her
 
 ## Related Lore
 - [Marriage of Carlos Alberto and Elisabeth](../stories/marriage_carlos_alberto.md)
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)

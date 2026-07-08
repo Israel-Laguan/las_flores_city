@@ -1,7 +1,8 @@
 # Prompt: Lotus Capital (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/chinese/lotus_capital/lotus_capital.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/lotus_capital/lotus_capital.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

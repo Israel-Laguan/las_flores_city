@@ -37,5 +37,5 @@ The apparently contradictory roles of "young translator" (2024–2025), "crisis 
 ## Related Lore
 - [Timeline](../timeline.md)
 - [The Great Lithium Leak](../events/the_great_lithium_leak.md)
-- [LW Group](../companies/lw_group/overview.md)
-- [Li Wei](../companies/lw_group/overview.md)
+- [LW Group](../organizations/companies/overview/overview.md)
+- [Li Wei](../organizations/companies/overview/overview.md)

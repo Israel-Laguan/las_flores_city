@@ -26,4 +26,4 @@ The experience shaped the Van der Meer family's philosophy: a commitment to resp
 
 ## Related Lore
 - [Discovery of the Lithium Vein](../stories/discovery_lithium_vein.md)
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)

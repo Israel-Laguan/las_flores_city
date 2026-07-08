@@ -1,12 +1,11 @@
 # Prompt: Electra Battery Factory (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/lw_group/electra_battery_factory/electra_battery_factory.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/electra_battery_factory/electra_battery_factory.md
 **Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
-
 ## Prompt
-Conceptual art capturing **Type:** Battery Manufacturing **Parent:** LW Group **Purpose:** Localize lithium processing → battery production pipeline **Power Source:** Great Dragon Energy (Rio Grande Dam) in Las Flores.  dramatic. High contrast, symbolic, environmental storytelling, 8K.
+A large industrial battery manufacturing plant with solar panels on the roof, metallic walls, busy assembly lines, shipping containers in the foreground, dramatic lighting, high contrast, 8K resolution.
 
 ## Negative Prompt
---no utopia, no dystopia, no clean divide, no androids, no robots, no neon
+--no utopia, no dystopia, no neon, no androids, no robots, no text, no watermark, no low quality, no 3d render, no cartoon

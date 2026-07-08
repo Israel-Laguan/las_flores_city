@@ -413,6 +413,6 @@ For the wealthy residents who call it homeâ€”whether permanently or seasonallyâ€
 
 - [North District Overview](../../north.md) - Comprehensive district information
 - [Electric Vehicle Zone](electric_vehicle_zone.md) - Green transportation hub within the district
-- [LW Group Overview](../../../companies/lw_group/overview.md) - Developer of luxury rural mansions
+- [LW Group Overview](../../../organizations/companies/overview/overview.md) - Developer of luxury rural mansions
 - [Northeast District](../../northeast.md) - Complementary affluent district
 - [Central District](../../central.md) - Adjacent suburban area

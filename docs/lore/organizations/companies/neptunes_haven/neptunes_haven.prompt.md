@@ -1,12 +1,12 @@
 # Prompt: Neptunes Haven B.V. (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/european/neptunes_haven/neptunes_haven.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/neptunes_haven/neptunes_haven.md
 **Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt
-Conceptual art capturing **Type:** Port Operations & Management **Incorporation:** Dutch law (B.V.) **Allegiance:** Dutch Mining Group (Van der Meer / GLC) **Location:** Dedicated pier with independent entrance, Las Flores Free Zone in Las Flores.  dramatic. High contrast, symbolic, environmental storytelling, 8K.
+A modern maritime port facility with loading cranes, shipping containers, calm harbor waters, industrial pier, soft natural lighting, high detail, 8K resolution.
 
 ## Negative Prompt
---no utopia, no dystopia, no clean divide, no androids, no robots, no neon
+--no utopia, no dystopia, no neon, no androids, no robots, no text, no watermark, no low quality, no 3d render, no cartoon

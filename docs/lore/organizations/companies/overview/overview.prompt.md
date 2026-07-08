@@ -1,12 +1,11 @@
 # Prompt: LW Group (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/lw_group/overview/overview.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/overview/overview.md
 **Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
-
 ## Prompt
-Conceptual art capturing **Type:** Diversified Conglomerate (Chinese state-controlled entity) **Also Known As:** LW Group **Focus:** Logistics, energy, natural resources **CEO (2077):** Xiao Chen (appointed 2065) **Founding Key Investor:** Li Wei **Key Political Figure:** Senator Ricardo Chen **Strategic Role:** Pivotal in Las Flores through port operations, Rio Grande Dam, and close association with Minera Estrella in Las Flores.  dramatic. High contrast, symbolic, environmental storytelling, 8K.
+A high-tech executive corporate boardroom with a panoramic window overlooking a modern industrial port and cityscape, dramatic architectural lines, high contrast, warm lighting, high detail, 8K resolution.
 
 ## Negative Prompt
---no utopia, no dystopia, no clean divide, no androids, no robots, no neon
+--no utopia, no dystopia, no neon, no androids, no robots, no text, no watermark, no low quality, no 3d render, no cartoon

@@ -104,7 +104,7 @@ The airport's partnership with LW Logistics creates a powerful logistics network
 
 ## Related Lore
 
-- [Las Flores Airport Authority](../../partnerships/las_flores_airport_authority.md)
+- [Las Flores Airport Authority](../../organizations/partnerships/las_flores_airport_authority/las_flores_airport_authority.md)
 - [Southeast District](../../districts/southeast.md)
-- [LW Group](../../companies/lw_group/overview.md)
+- [LW Group](../../organizations/companies/overview/overview.md)
 - [Port District](../../districts/port.md)

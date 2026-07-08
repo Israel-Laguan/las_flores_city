@@ -24,7 +24,7 @@ Great Dragon Energy manages the Rio Grande Dam and plays a critical role in Las 
 
 ## Role in Dam Authority PPP
 
-Great Dragon Energy is one of three partners in the [Las Flores Dam Authority](../../partnerships/las_flores_dam_authority.md):
+Great Dragon Energy is one of three partners in the [Las Flores Dam Authority](../../../partnerships/las_flores_dam_authority/las_flores_dam_authority.md):
 - Great Dragon Energy → Rio Grande Dam (northern, stronger flow)
 - EBF (Dutch) → San Miguel Dam (southern)
 - Governor's Office → Public interest representation

@@ -34,7 +34,7 @@ A catastrophic failure of high-pressure pipes at Minera Estrella's processing fa
 
 ## The Karla Encounter (February 2053)
 
-Evelyn's life changed forever when she stumbled into a dark alleyway and witnessed the murder of **Karla**, an internal employee at Minera Estrella who knew Cecilia Pérez. Karla was brutally attacked by [Li Wei's](../companies/lw_group/li_wei.md) corporate enforcers because she was trying to leak the truth. Before Karla died, she pressed a small green pouch into Evelyn's hands. Inside was a key, a note for her missing sister Nubia, and the ultimate proof: **Carinata seeds** and a study conducted by biologist **Cecilia Pérez**. The study demonstrated that the plants had shown lithium resistance **a full year before** the public disaster, proving pre-leak contamination had been documented and ignored.
+Evelyn's life changed forever when she stumbled into a dark alleyway and witnessed the murder of **Karla**, an internal employee at Minera Estrella who knew Cecilia Pérez. Karla was brutally attacked by [Li Wei's](../organizations/companies/li_wei.md) corporate enforcers because she was trying to leak the truth. Before Karla died, she pressed a small green pouch into Evelyn's hands. Inside was a key, a note for her missing sister Nubia, and the ultimate proof: **Carinata seeds** and a study conducted by biologist **Cecilia Pérez**. The study demonstrated that the plants had shown lithium resistance **a full year before** the public disaster, proving pre-leak contamination had been documented and ignored.
 
 ## The Apartment Discovery (September 2053)
 

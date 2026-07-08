@@ -216,9 +216,9 @@ Activists push for indigenous representation in local government, planning board
 |---|---|
 | **Kusi** | Indigenous activist and cultural leader |
 | **Maria Sanchez Sulca** | Community elder and traditional medicine practitioner |
-| **Ana Ramirez** | Leader of [La Coalición por la Justicia Social (CJS)](../organizations/cjs.md), indigenous political leader |
-| **Laura Rodriguez** | [COFAVIC](../organizations/cofavic.md) ally on human rights cases affecting indigenous communities |
-| **[CJS](../organizations/cjs.md)** | Grassroots advocacy organization defending indigenous land rights and environmental protection |
+| **Ana Ramirez** | Leader of [La Coalición por la Justicia Social (CJS)](../organizations/civil_society/cjs/cjs.md), indigenous political leader |
+| **Laura Rodriguez** | [COFAVIC](../organizations/civil_society/cofavic/cofavic.md) ally on human rights cases affecting indigenous communities |
+| **[CJS](../organizations/civil_society/cjs/cjs.md)** | Grassroots advocacy organization defending indigenous land rights and environmental protection |
 | **Environmental NGOs** | Allies in land rights and anti-pollution campaigns |
 
 ---

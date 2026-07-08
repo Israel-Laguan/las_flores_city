@@ -1,7 +1,8 @@
 # Prompt: Van der Meer Mining Company (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/european/van_der_meer_mining/van_der_meer_mining.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/van_der_meer_mining/van_der_meer_mining.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

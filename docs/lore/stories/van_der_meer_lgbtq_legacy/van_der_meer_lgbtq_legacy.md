@@ -63,5 +63,5 @@ The van der Meer family's unconventional love stories have helped shape a more i
 
 ## Related Lore
 - [Peter van der Meer Figure](../../figures/peter_van_der_meer.md)
-- [Van der Meer Family](../../families/van_der_meer.md)
+- [Van der Meer Family](../../organizations/families/van_der_meer/van_der_meer.md)
 - [Las Flores Timeline](../timeline.md)

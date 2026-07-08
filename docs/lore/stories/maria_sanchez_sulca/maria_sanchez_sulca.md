@@ -44,4 +44,4 @@ As the years passed, Maria continued to follow the political developments in Las
 
 ## Related Lore
 - [Techno-Progressive Forum](./)
-- [Minera Estrella](../companies/lw_group/minera_estrella.md)
+- [Minera Estrella](../organizations/companies/minera_estrella/minera_estrella.md)

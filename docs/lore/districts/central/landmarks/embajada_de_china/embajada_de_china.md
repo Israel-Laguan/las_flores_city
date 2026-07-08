@@ -23,5 +23,5 @@ the LW Group conglomerate and the broader Chinese business community.
 ## Related Lore
 
 - [Central District](central.md) — district profile
-- [LW Group](../../../companies/lw_group/overview.md) — Chinese state-linked conglomerate
+- [LW Group](../../../organizations/companies/overview/overview.md) — Chinese state-linked conglomerate
 - [Chinese Community](../../../communities/chinese_community.md) — cultural community profile

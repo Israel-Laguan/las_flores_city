@@ -47,6 +47,6 @@ While van der Meer women have consolidated their position in Las Flores high soc
 Van der Meer women have been fundamental to the family's success — with their elegance, real estate investments, and social commitment, they have become a reference for women seeking to follow in their footsteps.
 
 ## Related Lore
-- [Van der Meer Family](../../families/van_der_meer.md)
+- [Van der Meer Family](../../organizations/families/van_der_meer/van_der_meer.md)
 - [Elisabeth van der Meer](../../figures/elisabeth_van_der_meer.md)
 - [Anna van der Meer](../../characters/char_anna_van_der_meer.yaml)

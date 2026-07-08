@@ -1,7 +1,8 @@
 # Prompt: The Quechua (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/organizations/quechua/quechua.md
+**size:** 1280×720
+**Source:** docs/lore/communities/quechua/quechua.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

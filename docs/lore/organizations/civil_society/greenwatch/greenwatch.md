@@ -50,7 +50,7 @@ GreenWatch Las Flores maintains a close relationship with **La Coalición por la
 |---|---|---|
 | **Close ally** | [CJS](cjs.md) | Environmental + social justice intersection |
 | **Conflict** | Mining companies | Corporate accountability confrontations |
-| **Ally** | [Humanity First](../humanity_first/overview.md) | Environmental justice collaboration |
+| **Ally** | [Humanity First](../../movements/humanity_first/overview/overview.md) | Environmental justice collaboration |
 
 ---
 

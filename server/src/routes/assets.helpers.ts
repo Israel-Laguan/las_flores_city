@@ -55,6 +55,7 @@ export const DEFAULT_DIMENSIONS: Record<string, { width: number; height: number 
   portrait: { width: 832, height: 1248 },
   'phone-wallpaper': { width: 752, height: 1392 },
   'app-icon': { width: 1024, height: 1024 },
+  thematic: { width: 1280, height: 720 },
 };
 
 export const SUPPORTED_RESOLUTIONS = [

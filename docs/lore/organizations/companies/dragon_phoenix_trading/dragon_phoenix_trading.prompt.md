@@ -1,7 +1,8 @@
 # Prompt: Dragon Phoenix Trading (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/companies/chinese/dragon_phoenix_trading/dragon_phoenix_trading.md
+**size:** 1280×720
+**Source:** docs/lore/organizations/companies/dragon_phoenix_trading/dragon_phoenix_trading.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 

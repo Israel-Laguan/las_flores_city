@@ -23,5 +23,5 @@ His years of accumulated savings, once untouched in the mine's austere existence
 Wei Li (the retired miner) is a **distinct person** from LW Group CEO Li Wei. They share a Chinese naming pattern (surname/given-name reversal) but have entirely separate life arcs. The miner Wei Li lived a humble, anonymous life in the mines and retired to Chinatown — backgrounds incompatible with LW Group's billionaire political operator.
 
 ## Related Lore
-- [Minera Estrella](../companies/lw_group/minera_estrella.md)
+- [Minera Estrella](../organizations/companies/minera_estrella/minera_estrella.md)
 - [Chinese Community](../communities/chinese_community.md)

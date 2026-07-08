@@ -240,7 +240,7 @@ Nestled in the heart of Southeast Las Flores, Camino Verde is a charming residen
 
 - [Southeast District](../../districts/southeast.md)
 - [Aeropuerto Internacional de Las Flores](../../landmarks/southeast/aeropuerto_internacional_de_las_flores.md)
-- [Centro Cultural Las Flores](../../platforms/centro_cultural_las_flores.md) *(to be created)*
+- [Centro Cultural Las Flores](../../media/platforms/centro_cultural_las_flores.md) *(to be created)*
 - [Airport Hospitality Industry](../../economy/hospitality.md) *(to be created)*
 - [Working Class Communities](../../communities/working_class.md) *(to be created)*
 - [Shift Work Culture](../../culture/shift_work.md) *(to be created)*

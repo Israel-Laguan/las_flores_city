@@ -31,5 +31,5 @@ He thinks about the future, about the next generation who will shape Las Flores.
 Carlos sits on the shore, watching the sunset. The sea, ever-changing yet constant, mirrors his own journey. He smiles, grateful for the life he's lived and the memories he's made. As the waves lap against the shore, he knows that the tides of time will continue to shape Las Flores, just as they have shaped him.
 
 ## Related Lore
-- [Jade Dragon Ports](../companies/lw_group/jade_dragon_ports.md)
+- [Jade Dragon Ports](../organizations/companies/jade_dragon_ports/jade_dragon_ports.md)
 - [Pacific District](../districts/pacific.md)

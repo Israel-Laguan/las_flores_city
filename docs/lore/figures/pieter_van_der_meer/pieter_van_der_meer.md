@@ -48,4 +48,4 @@ Pieter is pragmatic, ruthless in negotiation, and convinced that his actions ser
 
 ## Related Lore
 - [The Dutch Maneuvers](../stories/dutch_maneuvers.md)
-- [Van der Meer Family](../families/van_der_meer.md)
+- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)

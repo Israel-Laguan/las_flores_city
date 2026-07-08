@@ -53,12 +53,12 @@ A second mine established after the vein proved to be substantially larger than 
 
 | Entity | Relationship |
 |---|---|
-| [Van der Meer Industries](../../families/van_der_meer.md) | Family holding company umbrella |
+| [Van der Meer Industries](../../families/van_der_meer/van_der_meer.md) | Family holding company umbrella |
 | [Neptune's Haven B.V.](neptunes_haven.md) | Port operator for Dutch mining exports |
-| [LW Group](../lw_group/overview.md) | Competitor / rival for lithium control |
-| [Van der Meer Family](../../families/van_der_meer.md) | Founding family / owners |
-| [EBF](../../partnerships/las_flores_dam_authority.md) | Dutch partner in San Miguel Dam |
-| [Minera Estrella](../lw_group/minera_estrella.md) | Direct competitor (Chinese-backed mining) |
+| [LW Group](../overview/overview.md) | Competitor / rival for lithium control |
+| [Van der Meer Family](../../families/van_der_meer/van_der_meer.md) | Founding family / owners |
+| [EBF](../../partnerships/las_flores_dam_authority/las_flores_dam_authority.md) | Dutch partner in San Miguel Dam |
+| [Minera Estrella](../minera_estrella/minera_estrella.md) | Direct competitor (Chinese-backed mining) |
 
 ---
 
