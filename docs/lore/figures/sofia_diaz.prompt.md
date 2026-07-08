@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofia Diaz in their element
-- [ ] Emotional: Sofia Diaz in a quiet moment
-- [ ] Group: Sofia Diaz with their closest allies
 
+- [ ] Sofia Diaz performing with her guitar, expressing emotion through music on stage
+- [ ] Sofia Diaz in a quiet moment of reflection, considering the emotional resonance of her latest song
+- [ ] Sofia Diaz rehearsing with her band, preparing for an upcoming performance
 

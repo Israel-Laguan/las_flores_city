@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Mei Xiang in their element
-- [ ] Emotional: Mei Xiang in a quiet moment
-- [ ] Group: Mei Xiang with their closest allies
 
+- [ ] Mei Xiang at work in their professional environment, focused on their tasks
+- [ ] Mei Xiang in a moment of reflection, considering their next steps
+- [ ] Mei Xiang with colleagues in a professional setting, engaged in discussion
 

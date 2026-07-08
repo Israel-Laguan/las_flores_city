@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Yara Rossi in their element
-- [ ] Emotional: Yara Rossi in a quiet moment
-- [ ] Group: Yara Rossi with their closest allies
 
+- [ ] Yara Rossi studying intently at a desk, surrounded by books and notes
+- [ ] Yara Rossi deep in thought about their studies, determined to succeed
+- [ ] Yara Rossi studying with classmates in a library, working together on a project
 

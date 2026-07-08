@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sophia van der Meer Rodriguez in their element
-- [ ] Emotional: Sophia van der Meer Rodriguez in a quiet moment
-- [ ] Group: Sophia van der Meer Rodriguez with their closest allies
 
+- [ ] Sophia van der Meer Rodriguez in a meeting, reviewing documents with colleagues
+- [ ] Sophia van der Meer Rodriguez considering a strategic decision, weighing options thoughtfully
+- [ ] Sophia van der Meer Rodriguez in a business meeting, collaborating with team members on a strategy
 

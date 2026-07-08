@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alex's Friends — The 2077 Core Group in their element
-- [ ] Emotional: Alex's Friends — The 2077 Core Group in a quiet moment
-- [ ] Group: Alex's Friends — The 2077 Core Group with their closest allies
 
+- [ ] Alex's Friends — The 2077 Core Group studying intently at a desk, surrounded by books and notes
+- [ ] Alex's Friends — The 2077 Core Group deep in thought about their studies, determined to succeed
+- [ ] Alex's Friends — The 2077 Core Group studying with classmates in a library, working together on a project
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Mateo Vargas in their element
-- [ ] Emotional: Mateo Vargas in a quiet moment
-- [ ] Group: Mateo Vargas with their closest allies
 
+- [ ] Mateo Vargas at work in their professional environment, focused on their tasks
+- [ ] Mateo Vargas in a moment of reflection, considering their next steps
+- [ ] Mateo Vargas with colleagues in a professional setting, engaged in discussion
 

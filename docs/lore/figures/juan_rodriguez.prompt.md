@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Juan Rodríguez in their element
-- [ ] Emotional: Juan Rodríguez in a quiet moment
-- [ ] Group: Juan Rodríguez with their closest allies
 
+- [ ] Juan Rodríguez with notebook in hand, interviewing a local source for a cultural feature story
+- [ ] Juan Rodríguez reviewing interview notes at their desk, thoughtfully considering story angles
+- [ ] Juan Rodríguez with colleagues in the newsroom, collaborating on a breaking story
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Wang Mei Li in their element
-- [ ] Emotional: Wang Mei Li in a quiet moment
-- [ ] Group: Wang Mei Li with their closest allies
 
+- [ ] Wang Mei Li in a meeting, reviewing documents with colleagues
+- [ ] Wang Mei Li considering a strategic decision, weighing options thoughtfully
+- [ ] Wang Mei Li in a business meeting, collaborating with team members on a strategy
 

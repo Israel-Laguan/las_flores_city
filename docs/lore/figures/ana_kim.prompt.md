@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Ana Kim in their element
-- [ ] Emotional: Ana Kim in a quiet moment
-- [ ] Group: Ana Kim with their closest allies
 
+- [ ] Ana Kim studying intently at a desk, surrounded by books and notes
+- [ ] Ana Kim deep in thought about their studies, determined to succeed
+- [ ] Ana Kim studying with classmates in a library, working together on a project
 

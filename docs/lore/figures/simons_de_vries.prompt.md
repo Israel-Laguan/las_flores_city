@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Simon De Vries in their element
-- [ ] Emotional: Simon De Vries in a quiet moment
-- [ ] Group: Simon De Vries with their closest allies
 
+- [ ] Simon De Vries at work in their professional environment, focused on their tasks
+- [ ] Simon De Vries in a moment of reflection, considering their next steps
+- [ ] Simon De Vries with colleagues in a professional setting, engaged in discussion
 

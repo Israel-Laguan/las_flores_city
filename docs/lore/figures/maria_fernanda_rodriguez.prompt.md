@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: María Fernanda Rodriguez in their element
-- [ ] Emotional: María Fernanda Rodriguez in a quiet moment
-- [ ] Group: María Fernanda Rodriguez with their closest allies
 
+- [ ] María Fernanda Rodriguez preparing for broadcast, reviewing notes with professional composure
+- [ ] María Fernanda Rodriguez with the news team, preparing for a broadcast together
+- [ ] María Fernanda Rodriguez thoughtfully reviewing evidence, determined to uncover the truth
 

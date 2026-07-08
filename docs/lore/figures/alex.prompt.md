@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alex Garcia in their element
-- [ ] Emotional: Alex Garcia in a quiet moment
-- [ ] Group: Alex Garcia with their closest allies
 
+- [ ] Alex Garcia at the front of a classroom, engaged in teaching with students attentively listening
+- [ ] Alex Garcia grading papers with care, thinking about how to best support their students
+- [ ] Alex Garcia with students in a classroom, facilitating a group discussion
 

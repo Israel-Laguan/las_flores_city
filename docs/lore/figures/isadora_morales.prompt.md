@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Isadora Morales in their element
-- [ ] Emotional: Isadora Morales in a quiet moment
-- [ ] Group: Isadora Morales with their closest allies
 
+- [ ] Isadora Morales selling her wares at a bustling street market, charming customers with her lively personality
+- [ ] Isadora Morales getting ready for a night out, carefully applying makeup and admiring her fashionable outfit in the mirror
+- [ ] Isadora Morales at a lively bar, confidently working the room with her magnetic personality and warm smile
 

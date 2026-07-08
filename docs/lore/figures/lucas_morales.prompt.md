@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Lucas Morales in their element
-- [ ] Emotional: Lucas Morales in a quiet moment
-- [ ] Group: Lucas Morales with their closest allies
 
+- [ ] Lucas Morales studying intently at a desk, surrounded by books and notes
+- [ ] Lucas Morales deep in thought about their studies, determined to succeed
+- [ ] Lucas Morales studying with classmates in a library, working together on a project
 

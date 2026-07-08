@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Maria Sanchez Sulca in their element
-- [ ] Emotional: Maria Sanchez Sulca in a quiet moment
-- [ ] Group: Maria Sanchez Sulca with their closest allies
 
+- [ ] Maria Sanchez Sulca with notebook in hand, interviewing a local source for a cultural feature story
+- [ ] Maria Sanchez Sulca reviewing interview notes at their desk, thoughtfully considering story angles
+- [ ] Maria Sanchez Sulca with colleagues in the newsroom, collaborating on a breaking story
 

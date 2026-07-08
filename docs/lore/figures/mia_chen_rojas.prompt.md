@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Mia Chen-Rojas in their element
-- [ ] Emotional: Mia Chen-Rojas in a quiet moment
-- [ ] Group: Mia Chen-Rojas with their closest allies
 
+- [ ] Mia Chen-Rojas at work in their professional environment, focused on their tasks
+- [ ] Mia Chen-Rojas in a moment of reflection, considering their next steps
+- [ ] Mia Chen-Rojas with colleagues in a professional setting, engaged in discussion
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Anna van der Meer in their element
-- [ ] Emotional: Anna van der Meer in a quiet moment
-- [ ] Group: Anna van der Meer with their closest allies
 
+- [ ] Anna van der Meer working on a painting or sketch, focused on their creative work
+- [ ] Anna van der Meer gazing at their finished work, contemplating the emotional impact
+- [ ] Anna van der Meer with other artists in a studio, sharing creative insights and techniques
 

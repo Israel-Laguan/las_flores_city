@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: El Caimán in their element
-- [ ] Emotional: El Caimán in a quiet moment
-- [ ] Group: El Caimán with their closest allies
 
+- [ ] El Caimán at work in their professional environment, focused on their tasks
+- [ ] El Caimán in a moment of reflection, considering their next steps
+- [ ] El Caimán with colleagues in a professional setting, engaged in discussion
 

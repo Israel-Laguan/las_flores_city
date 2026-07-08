@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: The Free City Constitution — Backstory in their element
-- [ ] Emotional: The Free City Constitution — Backstory in a quiet moment
-- [ ] Group: The Free City Constitution — Backstory with their closest allies
 
+- [ ] The Free City Constitution — Backstory in a meeting, reviewing documents with colleagues
+- [ ] The Free City Constitution — Backstory considering a strategic decision, weighing options thoughtfully
+- [ ] The Free City Constitution — Backstory in a business meeting, collaborating with team members on a strategy
 

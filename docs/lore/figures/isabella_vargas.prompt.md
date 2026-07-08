@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Isabella Vargas in their element
-- [ ] Emotional: Isabella Vargas in a quiet moment
-- [ ] Group: Isabella Vargas with their closest allies
 
+- [ ] Isabella Vargas studying intently at a desk, surrounded by books and notes
+- [ ] Isabella Vargas deep in thought about their studies, determined to succeed
+- [ ] Isabella Vargas studying with classmates in a library, working together on a project
 

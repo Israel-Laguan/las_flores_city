@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alonzo Morales in their element
-- [ ] Emotional: Alonzo Morales in a quiet moment
-- [ ] Group: Alonzo Morales with their closest allies
 
+- [ ] Alonzo Morales in a meeting, reviewing documents with colleagues
+- [ ] Alonzo Morales considering a strategic decision, weighing options thoughtfully
+- [ ] Alonzo Morales in a business meeting, collaborating with team members on a strategy
 

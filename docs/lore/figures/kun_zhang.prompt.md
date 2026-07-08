@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Kun Zhang in their element
-- [ ] Emotional: Kun Zhang in a quiet moment
-- [ ] Group: Kun Zhang with their closest allies
 
+- [ ] Kun Zhang in a meeting, reviewing documents with colleagues
+- [ ] Kun Zhang considering a strategic decision, weighing options thoughtfully
+- [ ] Kun Zhang in a business meeting, collaborating with team members on a strategy
 

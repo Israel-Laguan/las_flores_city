@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Ethan Zhang-Morales in their element
-- [ ] Emotional: Ethan Zhang-Morales in a quiet moment
-- [ ] Group: Ethan Zhang-Morales with their closest allies
 
+- [ ] Ethan Zhang-Morales studying intently at a desk, surrounded by books and notes
+- [ ] Ethan Zhang-Morales deep in thought about their studies, determined to succeed
+- [ ] Ethan Zhang-Morales studying with classmates in a library, working together on a project
 

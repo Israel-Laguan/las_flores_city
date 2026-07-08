@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Marco Rossi in their element
-- [ ] Emotional: Marco Rossi in a quiet moment
-- [ ] Group: Marco Rossi with their closest allies
 
+- [ ] Marco Rossi studying intently at a desk, surrounded by books and notes
+- [ ] Marco Rossi deep in thought about their studies, determined to succeed
+- [ ] Marco Rossi studying with classmates in a library, working together on a project
 

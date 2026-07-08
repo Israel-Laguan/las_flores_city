@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Nubia in their element
-- [ ] Emotional: Nubia in a quiet moment
-- [ ] Group: Nubia with their closest allies
 
+- [ ] Nubia at work in their professional environment, focused on their tasks
+- [ ] Nubia in a moment of reflection, considering their next steps
+- [ ] Nubia with colleagues in a professional setting, engaged in discussion
 

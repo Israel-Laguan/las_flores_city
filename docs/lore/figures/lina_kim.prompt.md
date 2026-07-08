@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Lina Kim in their element
-- [ ] Emotional: Lina Kim in a quiet moment
-- [ ] Group: Lina Kim with their closest allies
 
+- [ ] Lina Kim with notebook in hand, interviewing a local source for a cultural feature story
+- [ ] Lina Kim reviewing interview notes at their desk, thoughtfully considering story angles
+- [ ] Lina Kim with colleagues in the newsroom, collaborating on a breaking story
 

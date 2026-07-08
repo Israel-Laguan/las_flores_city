@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofia Ramirez in their element
-- [ ] Emotional: Sofia Ramirez in a quiet moment
-- [ ] Group: Sofia Ramirez with their closest allies
 
+- [ ] Sofia Ramirez at work in their professional environment, focused on their tasks
+- [ ] Sofia Ramirez in a moment of reflection, considering their next steps
+- [ ] Sofia Ramirez with colleagues in a professional setting, engaged in discussion
 

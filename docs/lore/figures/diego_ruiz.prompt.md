@@ -7,14 +7,15 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height  Latin Photorealistic portrait of Diego Ruiz. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical clothing suited to their environment, with personal items reflecting their role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 26-year-old Latino airport cleaner. Diego Ruiz has a fit, athletic build from his physical work, standing at medium height. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression shows quiet determination mixed with hopeful ambition, revealing his desire to climb the social ladder. His dark hair is carefully styled, reflecting his meticulous grooming habits when off-duty. He wears a practical airport cleaning uniform with a name badge, but the uniform is neat and well-maintained. The backdrop features the bustling Aeropuerto Internacional de Las Flores terminal with travelers in the background. Clean confident linework with vector-like cleanliness, painterly soft shading, urban professional palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Diego Ruiz in their element
-- [ ] Emotional: Diego Ruiz in a quiet moment
-- [ ] Group: Diego Ruiz with their closest allies
 
+- [ ] Diego Ruiz cleaning the airport terminal with focused efficiency, taking pride in his work
+- [ ] Diego Ruiz checking his appearance in a terminal mirror, preparing for his evening social outings
+- [ ] Diego Ruiz at a nightclub, practicing his seduction techniques with hopeful determination
+- [ ] Diego Ruiz studying self-improvement books during his break, dreaming of a better future
 

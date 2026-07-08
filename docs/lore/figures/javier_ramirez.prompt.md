@@ -7,14 +7,15 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a short   Latin Photorealistic portrait of Javier Ramirez. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical clothing suited to their environment, with personal items reflecting their role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 30-year-old Latino security guard. Javier "Javi" Ramirez stands at 5'10" with a sturdy, disciplined build from years of vigilant duty. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, sharp brown eyes that are always scanning, a straight nose, and a well-groomed beard. His expression is calm yet alert, showing quiet professionalism with an underlying determination. His short dark hair is neatly styled, reflecting his meticulous nature. A small communication earpiece is discreetly clipped to his ear. He wears a crisp, tailored security uniform with practical accessories - a walkie-talkie on his belt, polished shoes, and a name badge. The backdrop features the Centro Empresarial Chino-Latino entrance with its distinctive architecture, under the glow of security lighting. Clean confident linework with vector-like cleanliness, painterly soft shading, urban professional palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Javier Ramirez in their element
-- [ ] Emotional: Javier Ramirez in a quiet moment
-- [ ] Group: Javier Ramirez with their closest allies
 
+- [ ] Javier Ramirez patrolling the Centro Empresarial Chino-Latino, vigilant and professional
+- [ ] Javier Ramirez reviewing security monitors with focused attention, scanning for suspicious activity
+- [ ] Javier Ramirez assisting visitors with polite professionalism at the security checkpoint
+- [ ] Javier Ramirez in a moment of quiet reflection during his shift, showing the weight of responsibility
 

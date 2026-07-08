@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Elena Torres in their element
-- [ ] Emotional: Elena Torres in a quiet moment
-- [ ] Group: Elena Torres with their closest allies
 
+- [ ] Elena Torres at work in their professional environment, focused on their tasks
+- [ ] Elena Torres in a moment of reflection, considering their next steps
+- [ ] Elena Torres with colleagues in a professional setting, engaged in discussion
 

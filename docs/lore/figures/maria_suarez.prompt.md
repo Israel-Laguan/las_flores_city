@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: María Suárez in their element
-- [ ] Emotional: María Suárez in a quiet moment
-- [ ] Group: María Suárez with their closest allies
 
+- [ ] María Suárez with notebook in hand, interviewing a local source for a cultural feature story
+- [ ] María Suárez reviewing interview notes at their desk, thoughtfully considering story angles
+- [ ] María Suárez with colleagues in the newsroom, collaborating on a breaking story
 

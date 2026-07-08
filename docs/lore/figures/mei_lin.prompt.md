@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Mei Lin in their element
-- [ ] Emotional: Mei Lin in a quiet moment
-- [ ] Group: Mei Lin with their closest allies
 
+- [ ] Mei Lin studying intently at a desk, surrounded by books and notes
+- [ ] Mei Lin deep in thought about their studies, determined to succeed
+- [ ] Mei Lin studying with classmates in a library, working together on a project
 

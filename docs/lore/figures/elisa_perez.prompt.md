@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Elisa Pérez in their element
-- [ ] Emotional: Elisa Pérez in a quiet moment
-- [ ] Group: Elisa Pérez with their closest allies
 
+- [ ] Elisa Pérez at work in their professional environment, focused on their tasks
+- [ ] Elisa Pérez in a moment of reflection, considering their next steps
+- [ ] Elisa Pérez with colleagues in a professional setting, engaged in discussion
 

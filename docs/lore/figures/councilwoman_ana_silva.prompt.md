@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Councilwoman Ana Silva in their element
-- [ ] Emotional: Councilwoman Ana Silva in a quiet moment
-- [ ] Group: Councilwoman Ana Silva with their closest allies
 
+- [ ] Councilwoman Ana Silva in a meeting, reviewing documents with colleagues
+- [ ] Councilwoman Ana Silva considering a strategic decision, weighing options thoughtfully
+- [ ] Councilwoman Ana Silva in a business meeting, collaborating with team members on a strategy
 

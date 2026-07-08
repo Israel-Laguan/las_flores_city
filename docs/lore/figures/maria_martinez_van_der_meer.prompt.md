@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Maria Martinez van der Meer in their element
-- [ ] Emotional: Maria Martinez van der Meer in a quiet moment
-- [ ] Group: Maria Martinez van der Meer with their closest allies
 
+- [ ] Maria Martinez van der Meer in a meeting, reviewing documents with colleagues
+- [ ] Maria Martinez van der Meer considering a strategic decision, weighing options thoughtfully
+- [ ] Maria Martinez van der Meer in a business meeting, collaborating with team members on a strategy
 

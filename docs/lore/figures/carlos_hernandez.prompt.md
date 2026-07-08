@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Carlos Hernandez in their element
-- [ ] Emotional: Carlos Hernandez in a quiet moment
-- [ ] Group: Carlos Hernandez with their closest allies
 
+- [ ] Carlos Hernandez with notebook in hand, interviewing a local source for a cultural feature story
+- [ ] Carlos Hernandez reviewing interview notes at their desk, thoughtfully considering story angles
+- [ ] Carlos Hernandez with colleagues in the newsroom, collaborating on a breaking story
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Ricardo Vega in their element
-- [ ] Emotional: Ricardo Vega in a quiet moment
-- [ ] Group: Ricardo Vega with their closest allies
 
+- [ ] Ricardo Vega giving a speech, addressing an audience with conviction
+- [ ] Ricardo Vega in a moment of quiet contemplation, reflecting on the impact of their work
+- [ ] Ricardo Vega with constituents at a community event, listening attentively to concerns
 

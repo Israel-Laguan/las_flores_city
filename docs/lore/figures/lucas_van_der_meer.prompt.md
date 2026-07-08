@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Lucas van der Meer in their element
-- [ ] Emotional: Lucas van der Meer in a quiet moment
-- [ ] Group: Lucas van der Meer with their closest allies
 
+- [ ] Lucas van der Meer in a clinical setting, examining a patient with professional care
+- [ ] Lucas van der Meer taking a moment to reflect between patients, showing quiet compassion
+- [ ] Lucas van der Meer consulting with medical colleagues, discussing patient care approaches
 

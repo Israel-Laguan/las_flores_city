@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Liu Fang in their element
-- [ ] Emotional: Liu Fang in a quiet moment
-- [ ] Group: Liu Fang with their closest allies
 
+- [ ] Liu Fang at work in their professional environment, focused on their tasks
+- [ ] Liu Fang in a moment of reflection, considering their next steps
+- [ ] Liu Fang with colleagues in a professional setting, engaged in discussion
 

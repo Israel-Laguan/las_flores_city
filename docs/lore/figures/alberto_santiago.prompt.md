@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alberto Santiago (El Pescador) in their element
-- [ ] Emotional: Alberto Santiago (El Pescador) in a quiet moment
-- [ ] Group: Alberto Santiago (El Pescador) with their closest allies
 
+- [ ] Alberto Santiago (El Pescador) in a meeting, reviewing documents with colleagues
+- [ ] Alberto Santiago (El Pescador) considering a strategic decision, weighing options thoughtfully
+- [ ] Alberto Santiago (El Pescador) in a business meeting, collaborating with team members on a strategy
 

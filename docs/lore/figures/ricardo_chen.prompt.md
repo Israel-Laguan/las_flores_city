@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Ricardo Chen in their element
-- [ ] Emotional: Ricardo Chen in a quiet moment
-- [ ] Group: Ricardo Chen with their closest allies
 
+- [ ] Ricardo Chen in a meeting, reviewing documents with colleagues
+- [ ] Ricardo Chen considering a strategic decision, weighing options thoughtfully
+- [ ] Ricardo Chen in a business meeting, collaborating with team members on a strategy
 

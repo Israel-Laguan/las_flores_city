@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Valentina Rojas in their element
-- [ ] Emotional: Valentina Rojas in a quiet moment
-- [ ] Group: Valentina Rojas with their closest allies
 
+- [ ] Valentina Rojas working on a painting or sketch, focused on their creative work
+- [ ] Valentina Rojas gazing at their finished work, contemplating the emotional impact
+- [ ] Valentina Rojas with other artists in a studio, sharing creative insights and techniques
 

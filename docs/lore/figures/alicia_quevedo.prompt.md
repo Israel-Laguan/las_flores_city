@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alicia Quevedo in their element
-- [ ] Emotional: Alicia Quevedo in a quiet moment
-- [ ] Group: Alicia Quevedo with their closest allies
 
+- [ ] Alicia Quevedo at work in their professional environment, focused on their tasks
+- [ ] Alicia Quevedo in a moment of reflection, considering their next steps
+- [ ] Alicia Quevedo with colleagues in a professional setting, engaged in discussion
 

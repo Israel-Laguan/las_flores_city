@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Diego in their element
-- [ ] Emotional: Diego in a quiet moment
-- [ ] Group: Diego with their closest allies
 
+- [ ] Diego at work in their professional environment, focused on their tasks
+- [ ] Diego in a moment of reflection, considering their next steps
+- [ ] Diego with colleagues in a professional setting, engaged in discussion
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alexandra Isabel Morales in their element
-- [ ] Emotional: Alexandra Isabel Morales in a quiet moment
-- [ ] Group: Alexandra Isabel Morales with their closest allies
 
+- [ ] Alexandra Isabel Morales at the front of a classroom, engaged in teaching with students attentively listening
+- [ ] Alexandra Isabel Morales grading papers with care, thinking about how to best support their students
+- [ ] Alexandra Isabel Morales with students in a classroom, facilitating a group discussion
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alfonso Vega in their element
-- [ ] Emotional: Alfonso Vega in a quiet moment
-- [ ] Group: Alfonso Vega with their closest allies
 
+- [ ] Alfonso Vega giving a speech, addressing an audience with conviction
+- [ ] Alfonso Vega in a moment of quiet contemplation, reflecting on the impact of their work
+- [ ] Alfonso Vega with constituents at a community event, listening attentively to concerns
 

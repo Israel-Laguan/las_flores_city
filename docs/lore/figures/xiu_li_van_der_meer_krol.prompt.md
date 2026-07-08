@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Xiu Li van der Meer Krol in their element
-- [ ] Emotional: Xiu Li van der Meer Krol in a quiet moment
-- [ ] Group: Xiu Li van der Meer Krol with their closest allies
 
+- [ ] Xiu Li van der Meer Krol in a meeting, reviewing documents with colleagues
+- [ ] Xiu Li van der Meer Krol considering a strategic decision, weighing options thoughtfully
+- [ ] Xiu Li van der Meer Krol in a business meeting, collaborating with team members on a strategy
 

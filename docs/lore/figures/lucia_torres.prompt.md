@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Lucia Torres in their element
-- [ ] Emotional: Lucia Torres in a quiet moment
-- [ ] Group: Lucia Torres with their closest allies
 
+- [ ] Lucia Torres in a meeting, reviewing documents with colleagues
+- [ ] Lucia Torres considering a strategic decision, weighing options thoughtfully
+- [ ] Lucia Torres in a business meeting, collaborating with team members on a strategy
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Anneliese Jansen in their element
-- [ ] Emotional: Anneliese Jansen in a quiet moment
-- [ ] Group: Anneliese Jansen with their closest allies
 
+- [ ] Anneliese Jansen at work in their professional environment, focused on their tasks
+- [ ] Anneliese Jansen in a moment of reflection, considering their next steps
+- [ ] Anneliese Jansen with colleagues in a professional setting, engaged in discussion
 

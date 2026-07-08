@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Fatima El-Kholi in their element
-- [ ] Emotional: Fatima El-Kholi in a quiet moment
-- [ ] Group: Fatima El-Kholi with their closest allies
 
+- [ ] Fatima El-Kholi studying intently at a desk, surrounded by books and notes
+- [ ] Fatima El-Kholi deep in thought about their studies, determined to succeed
+- [ ] Fatima El-Kholi studying with classmates in a library, working together on a project
 

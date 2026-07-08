@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Emilio Reyes in their element
-- [ ] Emotional: Emilio Reyes in a quiet moment
-- [ ] Group: Emilio Reyes with their closest allies
 
+- [ ] Emilio Reyes at work in their professional environment, focused on their tasks
+- [ ] Emilio Reyes in a moment of reflection, considering their next steps
+- [ ] Emilio Reyes with colleagues in a professional setting, engaged in discussion
 

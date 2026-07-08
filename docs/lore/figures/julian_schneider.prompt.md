@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Julian Schneider in their element
-- [ ] Emotional: Julian Schneider in a quiet moment
-- [ ] Group: Julian Schneider with their closest allies
 
+- [ ] Julian Schneider in a meeting, reviewing documents with colleagues
+- [ ] Julian Schneider considering a strategic decision, weighing options thoughtfully
+- [ ] Julian Schneider in a business meeting, collaborating with team members on a strategy
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Jiao Yang in their element
-- [ ] Emotional: Jiao Yang in a quiet moment
-- [ ] Group: Jiao Yang with their closest allies
 
+- [ ] Jiao Yang in a meeting, reviewing documents with colleagues
+- [ ] Jiao Yang considering a strategic decision, weighing options thoughtfully
+- [ ] Jiao Yang in a business meeting, collaborating with team members on a strategy
 

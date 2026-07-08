@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Annabella van der Meer in their element
-- [ ] Emotional: Annabella van der Meer in a quiet moment
-- [ ] Group: Annabella van der Meer with their closest allies
 
+- [ ] Annabella van der Meer at work in their professional environment, focused on their tasks
+- [ ] Annabella van der Meer in a moment of reflection, considering their next steps
+- [ ] Annabella van der Meer with colleagues in a professional setting, engaged in discussion
 

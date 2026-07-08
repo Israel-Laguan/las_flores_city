@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Peter van der Meer in their element
-- [ ] Emotional: Peter van der Meer in a quiet moment
-- [ ] Group: Peter van der Meer with their closest allies
 
+- [ ] Peter van der Meer in a meeting, reviewing documents with colleagues
+- [ ] Peter van der Meer considering a strategic decision, weighing options thoughtfully
+- [ ] Peter van der Meer in a business meeting, collaborating with team members on a strategy
 

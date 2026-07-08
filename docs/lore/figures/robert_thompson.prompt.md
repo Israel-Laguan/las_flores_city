@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Robert Thompson in their element
-- [ ] Emotional: Robert Thompson in a quiet moment
-- [ ] Group: Robert Thompson with their closest allies
 
+- [ ] Robert Thompson in a meeting, reviewing documents with colleagues
+- [ ] Robert Thompson considering a strategic decision, weighing options thoughtfully
+- [ ] Robert Thompson in a business meeting, collaborating with team members on a strategy
 

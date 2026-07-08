@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Dr. Wei Zhang in their element
-- [ ] Emotional: Dr. Wei Zhang in a quiet moment
-- [ ] Group: Dr. Wei Zhang with their closest allies
 
+- [ ] Dr. Wei Zhang at work in their professional environment, focused on their tasks
+- [ ] Dr. Wei Zhang in a moment of reflection, considering their next steps
+- [ ] Dr. Wei Zhang with colleagues in a professional setting, engaged in discussion
 

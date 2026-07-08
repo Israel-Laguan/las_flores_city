@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Levi de Jong in their element
-- [ ] Emotional: Levi de Jong in a quiet moment
-- [ ] Group: Levi de Jong with their closest allies
 
+- [ ] Levi de Jong in a meeting, reviewing documents with colleagues
+- [ ] Levi de Jong considering a strategic decision, weighing options thoughtfully
+- [ ] Levi de Jong in a business meeting, collaborating with team members on a strategy
 

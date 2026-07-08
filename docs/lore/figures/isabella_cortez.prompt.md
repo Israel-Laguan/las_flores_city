@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Isabella Cortez in their element
-- [ ] Emotional: Isabella Cortez in a quiet moment
-- [ ] Group: Isabella Cortez with their closest allies
 
+- [ ] Isabella Cortez at work in their professional environment, focused on their tasks
+- [ ] Isabella Cortez in a moment of reflection, considering their next steps
+- [ ] Isabella Cortez with colleagues in a professional setting, engaged in discussion
 

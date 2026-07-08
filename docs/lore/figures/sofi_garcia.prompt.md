@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofi Garcia in their element
-- [ ] Emotional: Sofi Garcia in a quiet moment
-- [ ] Group: Sofi Garcia with their closest allies
 
+- [ ] Sofi Garcia in a clinical setting, examining a patient with professional care
+- [ ] Sofi Garcia taking a moment to reflect between patients, showing quiet compassion
+- [ ] Sofi Garcia consulting with medical colleagues, discussing patient care approaches
 

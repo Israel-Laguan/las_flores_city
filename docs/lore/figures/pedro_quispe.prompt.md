@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Pedro Quispe in their element
-- [ ] Emotional: Pedro Quispe in a quiet moment
-- [ ] Group: Pedro Quispe with their closest allies
 
+- [ ] Pedro Quispe studying intently at a desk, surrounded by books and notes
+- [ ] Pedro Quispe deep in thought about their studies, determined to succeed
+- [ ] Pedro Quispe studying with classmates in a library, working together on a project
 

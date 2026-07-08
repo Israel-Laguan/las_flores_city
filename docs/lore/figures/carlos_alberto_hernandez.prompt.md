@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Carlos Alberto Hernandez in their element
-- [ ] Emotional: Carlos Alberto Hernandez in a quiet moment
-- [ ] Group: Carlos Alberto Hernandez with their closest allies
 
+- [ ] Carlos Alberto Hernandez giving a speech, addressing an audience with conviction
+- [ ] Carlos Alberto Hernandez in a moment of quiet contemplation, reflecting on the impact of their work
+- [ ] Carlos Alberto Hernandez with constituents at a community event, listening attentively to concerns
 

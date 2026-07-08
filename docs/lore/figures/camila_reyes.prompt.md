@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Camila Reyes in their element
-- [ ] Emotional: Camila Reyes in a quiet moment
-- [ ] Group: Camila Reyes with their closest allies
 
+- [ ] Camila Reyes studying intently at a desk, surrounded by books and notes
+- [ ] Camila Reyes deep in thought about their studies, determined to succeed
+- [ ] Camila Reyes studying with classmates in a library, working together on a project
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Chief Inspector Adeyemi in their element
-- [ ] Emotional: Chief Inspector Adeyemi in a quiet moment
-- [ ] Group: Chief Inspector Adeyemi with their closest allies
 
+- [ ] Chief Inspector Adeyemi at work in their professional environment, focused on their tasks
+- [ ] Chief Inspector Adeyemi in a moment of reflection, considering their next steps
+- [ ] Chief Inspector Adeyemi with colleagues in a professional setting, engaged in discussion
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Karla in their element
-- [ ] Emotional: Karla in a quiet moment
-- [ ] Group: Karla with their closest allies
 
+- [ ] Karla at work in their professional environment, focused on their tasks
+- [ ] Karla in a moment of reflection, considering their next steps
+- [ ] Karla with colleagues in a professional setting, engaged in discussion
 

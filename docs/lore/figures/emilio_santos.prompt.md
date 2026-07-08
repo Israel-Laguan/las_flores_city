@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Emilio Santos in their element
-- [ ] Emotional: Emilio Santos in a quiet moment
-- [ ] Group: Emilio Santos with their closest allies
 
+- [ ] Emilio Santos giving a speech, addressing an audience with conviction
+- [ ] Emilio Santos in a moment of quiet contemplation, reflecting on the impact of their work
+- [ ] Emilio Santos with constituents at a community event, listening attentively to concerns
 

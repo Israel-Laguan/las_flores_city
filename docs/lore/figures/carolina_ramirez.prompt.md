@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Carolina Ramirez in their element
-- [ ] Emotional: Carolina Ramirez in a quiet moment
-- [ ] Group: Carolina Ramirez with their closest allies
 
+- [ ] Carolina Ramirez at her municipal office desk, carefully reviewing financial documents with a focused expression
+- [ ] Carolina Ramirez alone in her apartment, looking at her computer screen with a concerned expression as she reads troubling news
+- [ ] Carolina Ramirez standing with district leadership and colleagues, being recognized for her professional integrity
 

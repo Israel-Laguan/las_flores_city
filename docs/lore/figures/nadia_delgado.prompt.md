@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Nadia Delgado in their element
-- [ ] Emotional: Nadia Delgado in a quiet moment
-- [ ] Group: Nadia Delgado with their closest allies
 
+- [ ] Nadia Delgado in a meeting, reviewing documents with colleagues
+- [ ] Nadia Delgado considering a strategic decision, weighing options thoughtfully
+- [ ] Nadia Delgado in a business meeting, collaborating with team members on a strategy
 

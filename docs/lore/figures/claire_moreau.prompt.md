@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Claire Moreau in their element
-- [ ] Emotional: Claire Moreau in a quiet moment
-- [ ] Group: Claire Moreau with their closest allies
 
+- [ ] Claire Moreau working on a painting or sketch, focused on their creative work
+- [ ] Claire Moreau gazing at their finished work, contemplating the emotional impact
+- [ ] Claire Moreau with other artists in a studio, sharing creative insights and techniques
 

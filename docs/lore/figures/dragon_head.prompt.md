@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Dragon Head (Hong Kou) in their element
-- [ ] Emotional: Dragon Head (Hong Kou) in a quiet moment
-- [ ] Group: Dragon Head (Hong Kou) with their closest allies
 
+- [ ] Dragon Head (Hong Kou) in a meeting, reviewing documents with colleagues
+- [ ] Dragon Head (Hong Kou) considering a strategic decision, weighing options thoughtfully
+- [ ] Dragon Head (Hong Kou) in a business meeting, collaborating with team members on a strategy
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofia Aguirre in their element
-- [ ] Emotional: Sofia Aguirre in a quiet moment
-- [ ] Group: Sofia Aguirre with their closest allies
 
+- [ ] Sofia Aguirre studying intently at a desk, surrounded by books and notes
+- [ ] Sofia Aguirre deep in thought about their studies, determined to succeed
+- [ ] Sofia Aguirre studying with classmates in a library, working together on a project
 

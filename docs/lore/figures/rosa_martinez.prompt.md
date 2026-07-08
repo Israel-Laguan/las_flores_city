@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Rosa Marúñez in their element
-- [ ] Emotional: Rosa Marúñez in a quiet moment
-- [ ] Group: Rosa Marúñez with their closest allies
 
+- [ ] Rosa Marúñez serving customers with warm hospitality in a busy restaurant
+- [ ] Rosa Marúñez taking a moment to rest between tasks, showing satisfaction in their work
+- [ ] Rosa Marúñez with restaurant staff during a busy service, working as a team
 

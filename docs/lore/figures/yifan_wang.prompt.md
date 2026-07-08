@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Yifan Wang in their element
-- [ ] Emotional: Yifan Wang in a quiet moment
-- [ ] Group: Yifan Wang with their closest allies
 
+- [ ] Yifan Wang studying intently at a desk, surrounded by books and notes
+- [ ] Yifan Wang deep in thought about their studies, determined to succeed
+- [ ] Yifan Wang studying with classmates in a library, working together on a project
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Marco Jiménez in their element
-- [ ] Emotional: Marco Jiménez in a quiet moment
-- [ ] Group: Marco Jiménez with their closest allies
 
+- [ ] Marco Jiménez at work in their professional environment, focused on their tasks
+- [ ] Marco Jiménez in a moment of reflection, considering their next steps
+- [ ] Marco Jiménez with colleagues in a professional setting, engaged in discussion
 

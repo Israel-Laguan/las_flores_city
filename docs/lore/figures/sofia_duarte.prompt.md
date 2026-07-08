@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Councilwoman Sofia Duarte in their element
-- [ ] Emotional: Councilwoman Sofia Duarte in a quiet moment
-- [ ] Group: Councilwoman Sofia Duarte with their closest allies
 
+- [ ] Councilwoman Sofia Duarte in a meeting, reviewing documents with colleagues
+- [ ] Councilwoman Sofia Duarte considering a strategic decision, weighing options thoughtfully
+- [ ] Councilwoman Sofia Duarte in a business meeting, collaborating with team members on a strategy
 

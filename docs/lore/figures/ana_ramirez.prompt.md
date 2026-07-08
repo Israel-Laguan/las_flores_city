@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Ana Ramirez in their element
-- [ ] Emotional: Ana Ramirez in a quiet moment
-- [ ] Group: Ana Ramirez with their closest allies
 
+- [ ] Ana Ramirez giving a speech, addressing an audience with conviction
+- [ ] Ana Ramirez in a moment of quiet contemplation, reflecting on the impact of their work
+- [ ] Ana Ramirez with constituents at a community event, listening attentively to concerns
 

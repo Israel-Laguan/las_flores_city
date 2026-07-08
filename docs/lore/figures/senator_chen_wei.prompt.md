@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Senator Chen Wei in their element
-- [ ] Emotional: Senator Chen Wei in a quiet moment
-- [ ] Group: Senator Chen Wei with their closest allies
 
+- [ ] Senator Chen Wei in a meeting, reviewing documents with colleagues
+- [ ] Senator Chen Wei considering a strategic decision, weighing options thoughtfully
+- [ ] Senator Chen Wei in a business meeting, collaborating with team members on a strategy
 

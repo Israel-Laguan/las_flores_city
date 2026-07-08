@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Li Wei in their element
-- [ ] Emotional: Li Wei in a quiet moment
-- [ ] Group: Li Wei with their closest allies
 
+- [ ] Li Wei in a meeting, reviewing documents with colleagues
+- [ ] Li Wei considering a strategic decision, weighing options thoughtfully
+- [ ] Li Wei in a business meeting, collaborating with team members on a strategy
 

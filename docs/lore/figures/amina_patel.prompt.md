@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Amina Patel in their element
-- [ ] Emotional: Amina Patel in a quiet moment
-- [ ] Group: Amina Patel with their closest allies
 
+- [ ] Amina Patel at work in their professional environment, focused on their tasks
+- [ ] Amina Patel in a moment of reflection, considering their next steps
+- [ ] Amina Patel with colleagues in a professional setting, engaged in discussion
 

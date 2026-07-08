@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Dr. Maria Hernandez in their element
-- [ ] Emotional: Dr. Maria Hernandez in a quiet moment
-- [ ] Group: Dr. Maria Hernandez with their closest allies
 
+- [ ] Dr. Maria Hernandez studying intently at a desk, surrounded by books and notes
+- [ ] Dr. Maria Hernandez deep in thought about their studies, determined to succeed
+- [ ] Dr. Maria Hernandez studying with classmates in a library, working together on a project
 

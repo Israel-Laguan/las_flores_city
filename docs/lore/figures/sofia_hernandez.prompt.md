@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofia Hernánez in their element
-- [ ] Emotional: Sofia Hernánez in a quiet moment
-- [ ] Group: Sofia Hernánez with their closest allies
 
+- [ ] Sofia Hernánez at work in their professional environment, focused on their tasks
+- [ ] Sofia Hernánez in a moment of reflection, considering their next steps
+- [ ] Sofia Hernánez with colleagues in a professional setting, engaged in discussion
 

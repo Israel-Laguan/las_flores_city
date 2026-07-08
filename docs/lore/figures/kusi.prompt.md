@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Kusi in their element
-- [ ] Emotional: Kusi in a quiet moment
-- [ ] Group: Kusi with their closest allies
 
+- [ ] Kusi carrying firewood with practiced ease to Xue's restaurant, his calloused hands gripping the logs
+- [ ] Kusi offering a quiet, reserved smile as he helps with daily chores in the restaurant kitchen
+- [ ] Kusi sitting at Xue's restaurant counter, sharing a moment of companionship over a simple meal
 

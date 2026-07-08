@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Carlos Lacan in their element
-- [ ] Emotional: Carlos Lacan in a quiet moment
-- [ ] Group: Carlos Lacan with their closest allies
 
+- [ ] Carlos Lacan studying intently at a desk, surrounded by books and notes
+- [ ] Carlos Lacan deep in thought about their studies, determined to succeed
+- [ ] Carlos Lacan studying with classmates in a library, working together on a project
 

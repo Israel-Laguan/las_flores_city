@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Míngzé Luo in their element
-- [ ] Emotional: Míngzé Luo in a quiet moment
-- [ ] Group: Míngzé Luo with their closest allies
 
+- [ ] Míngzé Luo at work in their professional environment, focused on their tasks
+- [ ] Míngzé Luo in a moment of reflection, considering their next steps
+- [ ] Míngzé Luo with colleagues in a professional setting, engaged in discussion
 

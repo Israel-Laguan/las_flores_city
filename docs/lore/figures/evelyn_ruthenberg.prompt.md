@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Evelyn Ruthenberg in their element
-- [ ] Emotional: Evelyn Ruthenberg in a quiet moment
-- [ ] Group: Evelyn Ruthenberg with their closest allies
 
+- [ ] Evelyn Ruthenberg reviewing engineering documents in a shadowy room, cold calculation in her steel-blue eyes
+- [ ] Evelyn Ruthenberg in quiet contemplation, clutching the evidence box with evidence of the lithium cover-up
+- [ ] Evelyn Ruthenberg meeting a contact in a dark alleyway, exchanging intelligence for her shadow investigation
 

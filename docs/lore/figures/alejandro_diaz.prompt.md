@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alejandro "Alex" Díaz in their element
-- [ ] Emotional: Alejandro "Alex" Díaz in a quiet moment
-- [ ] Group: Alejandro "Alex" Díaz with their closest allies
 
+- [ ] Alejandro "Alex" Díaz in a meeting, reviewing documents with colleagues
+- [ ] Alejandro "Alex" Díaz considering a strategic decision, weighing options thoughtfully
+- [ ] Alejandro "Alex" Díaz in a business meeting, collaborating with team members on a strategy
 

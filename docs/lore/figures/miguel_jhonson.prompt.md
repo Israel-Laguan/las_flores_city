@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Miguel Jhonson in their element
-- [ ] Emotional: Miguel Jhonson in a quiet moment
-- [ ] Group: Miguel Jhonson with their closest allies
 
+- [ ] Miguel Jhonson studying intently at a desk, surrounded by books and notes
+- [ ] Miguel Jhonson deep in thought about their studies, determined to succeed
+- [ ] Miguel Jhonson studying with classmates in a library, working together on a project
 

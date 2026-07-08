@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Marco "Mar" Torres in their element
-- [ ] Emotional: Marco "Mar" Torres in a quiet moment
-- [ ] Group: Marco "Mar" Torres with their closest allies
 
+- [ ] Marco "Mar" Torres serving customers with warm hospitality in a busy restaurant
+- [ ] Marco "Mar" Torres taking a moment to rest between tasks, showing satisfaction in their work
+- [ ] Marco "Mar" Torres with restaurant staff during a busy service, working as a team
 

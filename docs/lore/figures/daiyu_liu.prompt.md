@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Daiyu Liu in their element
-- [ ] Emotional: Daiyu Liu in a quiet moment
-- [ ] Group: Daiyu Liu with their closest allies
 
+- [ ] Daiyu Liu working on a painting or sketch, focused on their creative work
+- [ ] Daiyu Liu gazing at their finished work, contemplating the emotional impact
+- [ ] Daiyu Liu with other artists in a studio, sharing creative insights and techniques
 

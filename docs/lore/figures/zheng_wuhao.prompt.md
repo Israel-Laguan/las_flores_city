@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Zheng Wuhao in their element
-- [ ] Emotional: Zheng Wuhao in a quiet moment
-- [ ] Group: Zheng Wuhao with their closest allies
 
+- [ ] Zheng Wuhao at work in their professional environment, focused on their tasks
+- [ ] Zheng Wuhao in a moment of reflection, considering their next steps
+- [ ] Zheng Wuhao with colleagues in a professional setting, engaged in discussion
 

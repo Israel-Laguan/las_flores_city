@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofia Rodriguez Krol in their element
-- [ ] Emotional: Sofia Rodriguez Krol in a quiet moment
-- [ ] Group: Sofia Rodriguez Krol with their closest allies
 
+- [ ] Sofia Rodriguez Krol working on a painting or sketch, focused on their creative work
+- [ ] Sofia Rodriguez Krol gazing at their finished work, contemplating the emotional impact
+- [ ] Sofia Rodriguez Krol with other artists in a studio, sharing creative insights and techniques
 

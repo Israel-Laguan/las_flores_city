@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Aisha Al-Sayed in their element
-- [ ] Emotional: Aisha Al-Sayed in a quiet moment
-- [ ] Group: Aisha Al-Sayed with their closest allies
 
+- [ ] Aisha Al-Sayed at work in their professional environment, focused on their tasks
+- [ ] Aisha Al-Sayed in a moment of reflection, considering their next steps
+- [ ] Aisha Al-Sayed with colleagues in a professional setting, engaged in discussion
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Zhang Hao in their element
-- [ ] Emotional: Zhang Hao in a quiet moment
-- [ ] Group: Zhang Hao with their closest allies
 
+- [ ] Zhang Hao in a meeting, reviewing documents with colleagues
+- [ ] Zhang Hao considering a strategic decision, weighing options thoughtfully
+- [ ] Zhang Hao in a business meeting, collaborating with team members on a strategy
 

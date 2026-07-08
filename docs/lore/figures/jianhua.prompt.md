@@ -7,14 +7,15 @@
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Slight in his late 70s chinese Photorealistic portrait of Jianhua. Her frame is slight, wiry. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, warm distant, often looking at festivals with quiet longing. Her expression is warm, as she offers a subtle, knowing half-smile. Her black thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese engineer in his 40s. Jianhua has a slightly stooped, wiry build from years of engineering work. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown warm and distant eyes that often gaze at festivals with quiet longing. His expression shows quiet contemplation mixed with nostalgic warmth, reflecting his cultural fascination. His gray-black thinning hair is cut short and practical. His calloused hands rest gently on a small notebook for sketches. He wears a simple cotton shirt and his signature worn canvas jacket, regardless of season. The backdrop features a vibrant indigenous festival with traditional drums and colors, or an engineering worksite showing his professional life. Clean confident linework with vector-like cleanliness, painterly soft shading, muted earthy palette with festival color accents, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Jianhua in their element
-- [ ] Emotional: Jianhua in a quiet moment
-- [ ] Group: Jianhua with their closest allies
 
+- [ ] Jianhua observing an indigenous festival from the fringes, his eyes alight with quiet fervor
+- [ ] Jianhua at an engineering worksite, sketching in his small notebook during a break
+- [ ] Jianhua photographing festival celebrations with his small camera, capturing cultural moments
+- [ ] Jianhua in quiet contemplation, the contrast between his engineering work and cultural fascination visible
 

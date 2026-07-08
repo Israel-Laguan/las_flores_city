@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Hongbin Li in their element
-- [ ] Emotional: Hongbin Li in a quiet moment
-- [ ] Group: Hongbin Li with their closest allies
 
+- [ ] Hongbin Li in a meeting, reviewing documents with colleagues
+- [ ] Hongbin Li considering a strategic decision, weighing options thoughtfully
+- [ ] Hongbin Li in a business meeting, collaborating with team members on a strategy
 

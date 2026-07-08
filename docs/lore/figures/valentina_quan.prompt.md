@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Valentina Quan in their element
-- [ ] Emotional: Valentina Quan in a quiet moment
-- [ ] Group: Valentina Quan with their closest allies
 
+- [ ] Valentina Quan at work in their professional environment, focused on their tasks
+- [ ] Valentina Quan in a moment of reflection, considering their next steps
+- [ ] Valentina Quan with colleagues in a professional setting, engaged in discussion
 

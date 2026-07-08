@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Valentina "Val" Reyes in their element
-- [ ] Emotional: Valentina "Val" Reyes in a quiet moment
-- [ ] Group: Valentina "Val" Reyes with their closest allies
 
+- [ ] Valentina "Val" Reyes studying intently at a desk, surrounded by books and notes
+- [ ] Valentina "Val" Reyes deep in thought about their studies, determined to succeed
+- [ ] Valentina "Val" Reyes studying with classmates in a library, working together on a project
 

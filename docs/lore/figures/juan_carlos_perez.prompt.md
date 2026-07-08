@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Juan Carlos Pérez in their element
-- [ ] Emotional: Juan Carlos Pérez in a quiet moment
-- [ ] Group: Juan Carlos Pérez with their closest allies
 
+- [ ] Juan Carlos Pérez giving a speech, addressing an audience with conviction
+- [ ] Juan Carlos Pérez in a moment of quiet contemplation, reflecting on the impact of their work
+- [ ] Juan Carlos Pérez with constituents at a community event, listening attentively to concerns
 

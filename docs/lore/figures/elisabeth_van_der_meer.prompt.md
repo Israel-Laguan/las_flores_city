@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Elisabeth van der Meer in their element
-- [ ] Emotional: Elisabeth van der Meer in a quiet moment
-- [ ] Group: Elisabeth van der Meer with their closest allies
 
+- [ ] Elisabeth van der Meer working on a painting or sketch, focused on their creative work
+- [ ] Elisabeth van der Meer gazing at their finished work, contemplating the emotional impact
+- [ ] Elisabeth van der Meer with other artists in a studio, sharing creative insights and techniques
 

@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Alejandro Flores in their element
-- [ ] Emotional: Alejandro Flores in a quiet moment
-- [ ] Group: Alejandro Flores with their closest allies
 
+- [ ] Alejandro Flores at work in their professional environment, focused on their tasks
+- [ ] Alejandro Flores in a moment of reflection, considering their next steps
+- [ ] Alejandro Flores with colleagues in a professional setting, engaged in discussion
 

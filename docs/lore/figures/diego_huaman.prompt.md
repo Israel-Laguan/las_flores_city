@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Diego Huamán in their element
-- [ ] Emotional: Diego Huamán in a quiet moment
-- [ ] Group: Diego Huamán with their closest allies
 
+- [ ] Diego Huamán studying intently at a desk, surrounded by books and notes
+- [ ] Diego Huamán deep in thought about their studies, determined to succeed
+- [ ] Diego Huamán studying with classmates in a library, working together on a project
 

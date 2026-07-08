@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Martín López in their element
-- [ ] Emotional: Martín López in a quiet moment
-- [ ] Group: Martín López with their closest allies
 
+- [ ] Martín López with notebook in hand, interviewing a local source for a cultural feature story
+- [ ] Martín López reviewing interview notes at their desk, thoughtfully considering story angles
+- [ ] Martín López with colleagues in the newsroom, collaborating on a breaking story
 

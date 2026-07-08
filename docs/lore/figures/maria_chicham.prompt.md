@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Maria Chicham in their element
-- [ ] Emotional: Maria Chicham in a quiet moment
-- [ ] Group: Maria Chicham with their closest allies
 
+- [ ] Maria Chicham studying intently at a desk, surrounded by books and notes
+- [ ] Maria Chicham deep in thought about their studies, determined to succeed
+- [ ] Maria Chicham studying with classmates in a library, working together on a project
 

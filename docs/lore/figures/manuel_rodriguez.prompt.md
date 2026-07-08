@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Manuel Rodriguez in their element
-- [ ] Emotional: Manuel Rodriguez in a quiet moment
-- [ ] Group: Manuel Rodriguez with their closest allies
 
+- [ ] Manuel Rodriguez at work in their professional environment, focused on their tasks
+- [ ] Manuel Rodriguez in a moment of reflection, considering their next steps
+- [ ] Manuel Rodriguez with colleagues in a professional setting, engaged in discussion
 

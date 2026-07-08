@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Tomás Coronado in their element
-- [ ] Emotional: Tomás Coronado in a quiet moment
-- [ ] Group: Tomás Coronado with their closest allies
 
+- [ ] Tomás Coronado studying intently at a desk, surrounded by books and notes
+- [ ] Tomás Coronado deep in thought about their studies, determined to succeed
+- [ ] Tomás Coronado studying with classmates in a library, working together on a project
 

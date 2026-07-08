@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Xue in their element
-- [ ] Emotional: Xue in a quiet moment
-- [ ] Group: Xue with their closest allies
 
+- [ ] Xue serving customers with warm hospitality in a busy restaurant
+- [ ] Xue taking a moment to rest between tasks, showing satisfaction in their work
+- [ ] Xue with restaurant staff during a busy service, working as a team
 

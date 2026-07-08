@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Sofia (Miner) in their element
-- [ ] Emotional: Sofia (Miner) in a quiet moment
-- [ ] Group: Sofia (Miner) with their closest allies
 
+- [ ] Sofia (Miner) in a clinical setting, examining a patient with professional care
+- [ ] Sofia (Miner) taking a moment to reflect between patients, showing quiet compassion
+- [ ] Sofia (Miner) consulting with medical colleagues, discussing patient care approaches
 

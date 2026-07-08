@@ -13,8 +13,8 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
-- [ ] Action shot: Diego Sulca in their element
-- [ ] Emotional: Diego Sulca in a quiet moment
-- [ ] Group: Diego Sulca with their closest allies
 
+- [ ] Diego Sulca studying intently at a desk, surrounded by books and notes
+- [ ] Diego Sulca deep in thought about their studies, determined to succeed
+- [ ] Diego Sulca studying with classmates in a library, working together on a project
 
