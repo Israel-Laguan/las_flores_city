@@ -6,6 +6,7 @@ import express from 'express';
 import { Pool, type Pool as PgPool } from 'pg';
 import type { Server } from 'node:http';
 import path from 'node:path';
+import fs from 'node:fs';
 
 // Set PROMPT_ROOT to the actual location relative to repo root
 // In CI and podman, process.cwd() is the server directory.
@@ -79,6 +80,46 @@ jestGlobals.doMock('../../src/services/AssetGenerationService.js', () => ({
     fetchImageAsBase64: mockFetchImageAsBase64,
   },
 }));
+
+// Mock fs.existsSync so the prompt-file check in the route handler
+// succeeds for our test prompt_rel without requiring the file on disk.
+const originalExistsSync = fs.existsSync;
+jestGlobals.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+  if (typeof p === 'string' && p.includes('app_misiones.prompt.md')) return true;
+  return originalExistsSync(p);
+});
+
+// Mock fs/promises readFile so parsePromptFile can read the prompt content
+// without the file existing on disk.
+jestGlobals.doMock('node:fs/promises', () => {
+  const real = jest.requireActual('node:fs/promises');
+  return {
+    ...real,
+    readFile: jestGlobals.fn().mockImplementation(async (filePath: string, encoding?: string) => {
+      if (typeof filePath === 'string' && filePath.includes('app_misiones.prompt.md')) {
+        return `---
+asset_type: app-icon
+width: 1024
+height: 1024
+---
+
+# App Misiones
+
+**Type:** app-icon
+**Dimensions:** 1024 × 1024
+
+## Prompt — Default
+
+A colorful mission tracker app icon for a phone terminal interface.
+
+## Negative Prompt
+
+blurry, low quality, distorted`;
+      }
+      return real.readFile(filePath, encoding as any);
+    }),
+  };
+});
 
 let app: express.Express;
 let closeRedis: () => Promise<void>;
