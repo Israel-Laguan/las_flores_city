@@ -21,11 +21,22 @@ import https from 'node:https';
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
+function getLandmarkDirs() {
+  const districtsRoot = path.resolve('docs/lore/districts');
+  if (!fs.existsSync(districtsRoot)) return [];
+  return fs.readdirSync(districtsRoot, { withFileTypes: true })
+    .filter(e => e.isDirectory())
+    .map(e => path.join(districtsRoot, e.name, 'landmarks'))
+    .filter(p => fs.existsSync(p));
+}
+
 const PROMPT_ROOTS = [
   path.resolve('docs/lore/shared/assets'),
   ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
   path.resolve('docs/lore/media'),
+  path.resolve('docs/lore/companies'),
+  path.resolve('docs/lore/organizations'),
 ];
 
 const NVIDIA_API_KEY = (() => {
@@ -60,7 +71,7 @@ const DEFAULT_DIMENSIONS = {
   overlay: { width: 1024, height: 1024 },
   background: { width: 1280, height: 768 },
   'html-background': { width: 1280, height: 768 },
-  portrait: { width: 1024, height: 1024 }, // Changed from 832×1280 (over pixel limit)
+  portrait: { width: 1024, height: 1024 },
   'phone-wallpaper': { width: 768, height: 1344 },
   'app-icon': { width: 1024, height: 1024 },
   biometric: { width: 1344, height: 768 },
@@ -147,9 +158,6 @@ const nimBucket = new TokenBucket(NIM_RPM_LIMIT, NIM_RPM_WINDOW_MS);
 
 // ── Frontmatter / Metadata Helpers ─────────────────────────────────────────
 
-/**
- * Parse YAML frontmatter from content. Returns null if no frontmatter found.
- */
 function parseFrontmatter(content) {
   const m = content.match(/^---\n([\s\S]*?)\n---\n/);
   if (!m) return null;
@@ -161,14 +169,9 @@ function parseFrontmatter(content) {
   return meta;
 }
 
-/**
- * Extract type and dimensions from content, checking frontmatter first,
- * then falling back to bold markdown lines.
- */
 function extractTypeAndSize(content) {
   const fm = parseFrontmatter(content);
 
-  // Try frontmatter first
   if (fm && fm.type) {
     const dimMatch = (fm.size || '').match(/^(\d+)\s*[x×]\s*(\d+)$/i);
     if (dimMatch) {
@@ -178,7 +181,6 @@ function extractTypeAndSize(content) {
         height: parseInt(dimMatch[2], 10),
       };
     }
-    // Type from frontmatter, size from defaults
     const def = DEFAULT_DIMENSIONS[fm.type];
     if (def) {
       return { type: fm.type, width: def.width, height: def.height };
@@ -186,7 +188,6 @@ function extractTypeAndSize(content) {
     return { type: fm.type, width: 1024, height: 1024 };
   }
 
-  // Fallback: bold markdown lines
   const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
   const type = typeMatch ? typeMatch[1].trim() : 'unknown';
 
@@ -213,7 +214,6 @@ function parsePromptFile(filePath) {
   const { type, width, height } = extractTypeAndSize(content);
   const resolved = pickSupportedResolution(width, height);
 
-  // 1. Try named variants first: ## Prompt — <name>
   const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
   let match;
   while ((match = promptRegex.exec(content)) !== null) {
@@ -226,7 +226,6 @@ function parsePromptFile(filePath) {
     }
   }
 
-  // 2. Dual-prompt files: ## Prompt (Draft) or ### Prompt (Draft) sections
   if (results.length === 0) {
     const draftRegex = /##{1,2} Prompt \(Draft\)\n([\s\S]*?)(?=##{1,2} (?:Prompt|Negative Prompt|Sheet|Variations)|$)/g;
     let draftMatch;
@@ -241,7 +240,6 @@ function parsePromptFile(filePath) {
     }
   }
 
-  // 3. Fallback: single ## Prompt or ### Prompt section
   if (results.length === 0) {
     const singleMatch = content.match(/##{1,2} Prompt\n([\s\S]*?)(?=##{1,2} Negative Prompt|$)/);
     if (singleMatch) {
@@ -257,57 +255,51 @@ function parsePromptFile(filePath) {
   return results;
 }
 
-// ── Prompt Builders ─────────────────────────────────────────────────────────
-
-/**
- * Build a NIM-compatible prompt (≤800 chars) from the full prompt.
- * This is a fallback for files without a dedicated ## Prompt (Draft) section.
- * Prefer using ## Prompt (Draft) directly from the prompt file.
- * Strips the long style prefix, uses compact negative.
- */
 function buildNimPrompt(fullPromptText, fileLabel) {
   if (!fileLabel) fileLabel = 'unknown';
-  console.warn(`  ⚠️  ${fileLabel}: no ## Prompt (Draft) found — using truncation fallback`);
+
+  let scene = fullPromptText;
+
+  // Strip any contradictory style suffix appended to Draft prompts.
+  // These look like: ". photorealistic portrait, hyper-detailed..." or
+  // ".. photorealistic portrait, hyper-detailed..." with optional leading dots/spaces.
+  scene = scene.replace(/\.?\s*photorealistic\s+portrait[\s\S]*?(?=\n|$)/gi, '');
+
+  // Strip negative NO/DO NOT blocks that were appended as part of the suffix.
+  scene = scene.replace(/\s*NO\s+photorealistic[\s\S]*?(?=\n|$)/gi, '');
+  scene = scene.replace(/\s*NO\s+3D\s+render[\s\S]*?(?=\n|$)/gi, '');
+
   const STYLE = 'photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k';
   const NEG = 'photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality';
 
-  let scene = fullPromptText
+  scene = scene
     .replace(/Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k\.?\s*/gi, '')
     .replace(/Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k\.?\s*/gi, '')
+    .replace(/photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k\.?\s*/gi, '')
     .replace(/\d+×\d+\./g, '')
     .trim();
 
-  // Content filtering safety: replace sensitive terms with neutral alternatives
   const contentSafeReplacements = [
-    // Political terms
     [/\bgovernor\b/gi, 'civic leader'],
     [/\bgovernment\b/gi, 'public'],
     [/\boppressive\b/gi, 'formal'],
     [/\bpresidential\b/gi, 'executive'],
     [/\bprotest\b/gi, 'gathering'],
-    [/\bdam\b/gi, 'water reservoir'], // Fix for san_miguel_dam filtering
-    
-    // Urban decay terms
+    [/\bdam\b/gi, 'water reservoir'],
     [/\bgritty\b/gi, 'textured'],
     [/\bgraffiti\b/gi, 'street art'],
     [/\bslum\b/gi, 'dense neighborhood'],
     [/\bghetto\b/gi, 'urban district'],
     [/\bandoned\b/gi, 'unoccupied'],
-    
-    // Emotional terms
     [/\btense\b/gi, ''],
     [/\bmenacing\b/gi, ''],
     [/\bterrifying\b/gi, ''],
     [/\bhorrifying\b/gi, ''],
-    
-    // Violence terms
     [/\bblood\b/gi, 'red liquid'],
     [/\bweapon\b/gi, 'object'],
     [/\bmurder\b/gi, 'incident'],
     [/\bfight\b/gi, 'confrontation'],
     [/\bwar\b/gi, 'conflict'],
-    
-    // Repetitive patterns (remove duplicates)
     [/(\b\w+\b)\s*,\s*\1/gi, '$1']
   ];
 
@@ -315,28 +307,20 @@ function buildNimPrompt(fullPromptText, fileLabel) {
     scene = scene.replace(pattern, replacement);
   });
 
-  // Remove excessive repetition - keep max 2 occurrences of any word
   const words = scene.split(/\s+/);
   const wordCount = {};
   const filteredWords = [];
   
   for (const word of words) {
     const cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
-    
-    // Always keep short words and punctuation
     if (!cleanWord || cleanWord.length <= 3) {
       filteredWords.push(word);
       continue;
     }
-    
-    // Track occurrences of this word
     wordCount[cleanWord] = (wordCount[cleanWord] || 0) + 1;
-    
-    // Keep only first 2 occurrences
     if (wordCount[cleanWord] <= 2) {
       filteredWords.push(word);
     }
-    // Skip additional occurrences
   }
   
   scene = filteredWords.join(' ');
@@ -506,7 +490,6 @@ async function main() {
   if (opts.force) console.log(`  Force: regenerate all`);
   if (opts.dryRun) console.log(`  Dry run — no downloads\n`);
 
-  // Discover all prompt files from all roots
   const promptFiles = [];
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -524,17 +507,14 @@ async function main() {
     if (fs.existsSync(root)) walk(root);
   }
 
-  // Build work items
+  const loreRoot = path.resolve('docs/lore');
   const workItems = [];
   for (const promptFile of promptFiles) {
-    const relFromRoot = path.relative(promptFile, promptFile); // unused but kept for compat
+    const relFromRoot = path.relative(loreRoot, promptFile);
     const variants = parsePromptFile(promptFile);
     const filtered = opts.filterSet ? variants.filter(v => opts.filterSet.has(v.type)) : variants;
     if (filtered.length === 0) continue;
 
-    // Drafts go to assets/ sibling directory
-    // For figure root-level prompts (docs/lore/figures/char.prompt.md),
-    // route to per-character dir (docs/lore/figures/char/assets/)
     let promptDir = path.dirname(promptFile);
     const figuresRoot = path.resolve('docs/lore/figures');
     if (promptDir === figuresRoot) {
@@ -547,7 +527,7 @@ async function main() {
     for (const variant of filtered) {
       const fileName = `${baseName}__${slugify(variant.variantName)}`;
       const basePath = path.join(draftDir, `${fileName}.png`);
-      workItems.push({ relFromRoot: path.relative(promptFile, promptFile), variant, basePath, draftDir, fileName, baseName });
+      workItems.push({ relFromRoot, variant, basePath, draftDir, fileName, baseName });
     }
   }
 
@@ -560,22 +540,19 @@ async function main() {
     return;
   }
 
-  // Process each work item: try NIM, fallback to Pollinations
   let nimOk = 0, nimSkipped = 0, pollOk = 0, pollFailed = 0;
-  let pollinationsNextAvailable = 0; // timestamp when next Pollinations request can fire
+  let pollinationsNextAvailable = 0;
 
   for (const item of workItems) {
     const { relFromRoot, variant, basePath, draftDir, fileName } = item;
     const label = `[${variant.variantName}]`;
 
-    // Skip if a valid version already exists and --force not used
     if (!opts.force && fs.existsSync(basePath) && !isErrorFile(basePath)) {
       console.log(`  ⏭️  ${relFromRoot} ${label} — exists`);
       nimSkipped++;
       continue;
     }
 
-    // Compute output path: add timestamp if file exists (preserve history)
     let outPath = basePath;
     if (fs.existsSync(basePath) || opts.force) {
       const ts = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
@@ -584,7 +561,6 @@ async function main() {
 
     console.log(`\n  📄 ${relFromRoot} ${label}`);
 
-    // --- Try NIM first ---
     if (NVIDIA_API_KEY) {
       const nimResult = await generateNIM(variant, outPath, item.baseName);
       if (nimResult.ok) {
@@ -595,8 +571,6 @@ async function main() {
       console.log(`     ⚠️  NIM failed: ${nimResult.error}`);
     }
 
-    // --- Pollinations fallback ---
-    // Respect 30s cooldown between Pollinations requests
     const now = Date.now();
     if (now < pollinationsNextAvailable) {
       const waitMs = pollinationsNextAvailable - now;
@@ -616,7 +590,6 @@ async function main() {
     }
   }
 
-  // Summary
   console.log(`\n${'='.repeat(60)}`);
   console.log(`📊 Summary`);
   console.log(`${'='.repeat(60)}`);

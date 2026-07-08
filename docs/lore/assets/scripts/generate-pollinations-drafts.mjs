@@ -23,11 +23,22 @@ import https from 'node:https';
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
+function getLandmarkDirs() {
+  const districtsRoot = path.resolve('docs/lore/districts');
+  if (!fs.existsSync(districtsRoot)) return [];
+  return fs.readdirSync(districtsRoot, { withFileTypes: true })
+    .filter(e => e.isDirectory())
+    .map(e => path.join(districtsRoot, e.name, 'landmarks'))
+    .filter(p => fs.existsSync(p));
+}
+
 const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt';
 const PROMPT_ROOTS = [
   path.resolve('docs/lore/shared/assets'),
   ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
+  path.resolve('docs/lore/companies'),
+  path.resolve('docs/lore/organizations'),
 ];
 
 const DEFAULT_DIMENSIONS = {
@@ -38,219 +49,24 @@ const DEFAULT_DIMENSIONS = {
   portrait: { width: 512, height: 768 },
   'phone-wallpaper': { width: 1080, height: 1920 },
   'app-icon': { width: 128, height: 128 },
+  biometric: { width: 1344, height: 768 },
+  expression: { width: 1344, height: 768 },
+  'outfit-pose': { width: 768, height: 1344 },
 };
 
-const REQUEST_DELAY_MS = 30000; // 30s between requests (Pollinations rate limit)
+const COOLDOWN_MS = 30000;
 const MAX_RETRIES = 3;
-const INITIAL_BACKOFF_MS = 15000;
 const MIN_FILE_SIZE = 5000;
-
-// ── CLI Flags ───────────────────────────────────────────────────────────────
-
-function parseArgs() {
-  const args = process.argv.slice(2);
-  const opts = { filter: null, force: false, dryRun: false };
-
-  for (let i = 0; i < args.length; i++) {
-    switch (args[i]) {
-      case '--filter':
-        opts.filter = args[++i];
-        break;
-      case '--force':
-        opts.force = true;
-        break;
-      case '--dry-run':
-        opts.dryRun = true;
-        break;
-      case '--help':
-      case '-h':
-        printHelp();
-        process.exit(0);
-    }
-  }
-
-  if (opts.filter) {
-    opts.filterSet = new Set(opts.filter.split(',').map(s => s.trim().toLowerCase()));
-  }
-
-  return opts;
-}
-
-function printHelp() {
-  console.log(`
-generate-pollinations-drafts.mjs — Generate Pollinations drafts from .prompt.md files
-
-Usage:
-  node generate-pollinations-drafts.mjs
-  node generate-pollinations-drafts.mjs --filter tile
-  node generate-pollinations-drafts.mjs --filter portrait,background
-  node generate-pollinations-drafts.mjs --force
-  node generate-pollinations-drafts.mjs --dry-run
-  node generate-pollinations-drafts.mjs --help
-
-Options:
-  --filter <types>   Comma-separated asset types to generate (tile, overlay, background, portrait, phone-wallpaper, app-icon)
-  --force            Regenerate drafts even if valid files already exist
-  --dry-run          Preview what would be generated without downloading
-  --help, -h         Show this help
-`);
-}
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function slugify(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_|_$/g, '');
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 }
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-function httpGet(url) {
-  return new Promise((resolve, reject) => {
-    const lib = url.startsWith('https') ? https : http;
-    const req = lib.get(url, { timeout: 30000 }, res => {
-      if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
-        reject(new Error(`Request failed with status code ${res.statusCode}`));
-        return;
-      }
-      const chunks = [];
-      res.on('data', c => chunks.push(c));
-      res.on('end', () => resolve(Buffer.concat(chunks)));
-      res.on('error', reject);
-    });
-    req.on('error', reject);
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('timeout'));
-    });
-  });
-}
-
-// ── Frontmatter / Metadata Helpers ─────────────────────────────────────────
-
-/**
- * Parse YAML frontmatter from content. Returns null if no frontmatter found.
- */
-function parseFrontmatter(content) {
-  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
-  if (!m) return null;
-  const meta = {};
-  for (const line of m[1].split('\n')) {
-    const [k, ...v] = line.split(': ');
-    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
-  }
-  return meta;
-}
-
-/**
- * Extract type and dimensions from content, checking frontmatter first,
- * then falling back to bold markdown lines.
- */
-function extractTypeAndSize(content) {
-  const fm = parseFrontmatter(content);
-
-  // Try frontmatter first
-  if (fm && fm.type) {
-    const dimMatch = (fm.size || '').match(/^(\d+)\s*[x×]\s*(\d+)$/i);
-    if (dimMatch) {
-      return {
-        type: fm.type,
-        width: parseInt(dimMatch[1], 10),
-        height: parseInt(dimMatch[2], 10),
-      };
-    }
-    const def = DEFAULT_DIMENSIONS[fm.type];
-    if (def) {
-      return { type: fm.type, width: def.width, height: def.height };
-    }
-    return { type: fm.type, width: 512, height: 512 };
-  }
-
-  // Fallback: bold markdown lines
-  const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
-  const type = typeMatch ? typeMatch[1].trim() : 'unknown';
-
-  const dimMatch = content.match(/\*\*Dimensions:\*\* (\d+)\s*[x×]\s*(\d+)/i);
-  let width = null;
-  let height = null;
-  if (dimMatch) {
-    width = parseInt(dimMatch[1], 10);
-    height = parseInt(dimMatch[2], 10);
-  }
-
-  if (!width || !height) {
-    const def = DEFAULT_DIMENSIONS[type];
-    if (def) {
-      width = def.width;
-      height = def.height;
-    } else {
-      width = 512;
-      height = 512;
-    }
-  }
-  return { type, width, height };
-}
-
-// ── Prompt File Parsing ─────────────────────────────────────────────────────
-
-function parsePromptFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
-  const results = [];
-
-  const { type, width, height } = extractTypeAndSize(content);
-
-  // Extract all prompt variants: ## Prompt — <name> ... until next ## Prompt — or ## Negative Prompt
-  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
-  let match;
-
-  while ((match = promptRegex.exec(content)) !== null) {
-    const variantName = match[1].trim();
-    const promptText = match[2].trim();
-
-    // Find the negative prompt that follows this prompt section
-    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/);
-    const negativeText = negMatch ? negMatch[1].trim() : '';
-
-    if (promptText) {
-      results.push({
-        variantName,
-        promptText,
-        negativeText,
-        type,
-        width,
-        height,
-      });
-    }
-  }
-
-  // Fallback: if no named variants found, try single ## Prompt section
-  if (results.length === 0) {
-    const singlePromptMatch = content.match(/## Prompt\n([\s\S]*?)(?=## Negative Prompt|$)/);
-    if (singlePromptMatch) {
-      const promptText = singlePromptMatch[1].trim();
-      const negMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=## |$)/);
-      const negativeText = negMatch ? negMatch[1].trim() : '';
-      if (promptText) {
-        results.push({
-          variantName: 'default',
-          promptText,
-          negativeText,
-          type,
-          width,
-          height,
-        });
-      }
-    }
-  }
-
-  return results;
-}
-
-// ── Download ────────────────────────────────────────────────────────────────
 
 function isErrorFile(filePath) {
   if (!fs.existsSync(filePath)) return true;
@@ -266,52 +82,179 @@ function isErrorFile(filePath) {
   return false;
 }
 
-async function downloadDraft(promptData, outDir, baseName, force) {
-  const fileName = `${baseName}__${slugify(promptData.variantName)}.png`;
-  const outPath = path.join(outDir, fileName);
+// ── Frontmatter / Metadata Helpers ─────────────────────────────────────────
 
-  if (!force && fs.existsSync(outPath) && !isErrorFile(outPath)) {
-    return { status: 'skipped', path: outPath };
+function parseFrontmatter(content) {
+  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return null;
+  const meta = {};
+  for (const line of m[1].split('\n')) {
+    const [k, ...v] = line.split(': ');
+    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
+  }
+  return meta;
+}
+
+function extractTypeAndSize(content) {
+  const fm = parseFrontmatter(content);
+
+  if (fm && fm.type) {
+    const dimMatch = (fm.size || '').match(/^(\d+)\s*[x×]\s*(\d+)$/i);
+    if (dimMatch) {
+      return {
+        type: fm.type,
+        width: parseInt(dimMatch[1], 10),
+        height: parseInt(dimMatch[2], 10),
+      };
+    }
+    const def = DEFAULT_DIMENSIONS[fm.type];
+    if (def) {
+      return { type: fm.type, width: def.width, height: def.height };
+    }
+    return { type: fm.type, width: 1024, height: 1024 };
   }
 
-  // Ensure the drafts directory exists
-  fs.mkdirSync(outDir, { recursive: true });
+  const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
+  const type = typeMatch ? typeMatch[1].trim() : 'unknown';
 
-  // Build prompt string: positive only, negative passed separately
-  const fullPrompt = promptData.promptText;
+  const dimMatch = content.match(/\*\*Dimensions:\*\* (\d+)\s*[x×]\s*(\d+)/i);
+  let width = null, height = null;
+  if (dimMatch) {
+    width = parseInt(dimMatch[1], 10);
+    height = parseInt(dimMatch[2], 10);
+  }
+  if (!width || !height) {
+    const def = DEFAULT_DIMENSIONS[type];
+    if (def) { width = def.width; height = def.height; }
+    else { width = 512; height = 512; }
+  }
+  return { type, width, height };
+}
 
-  const encoded = encodeURIComponent(fullPrompt);
-  const url = `${POLLINATIONS_BASE}/${encoded}?width=${promptData.width}&height=${promptData.height}&nologo=true${promptData.negativeText ? `&negative_prompt=${encodeURIComponent(promptData.negativeText)}` : ''}`;
+// ── Prompt File Parsing ────────────────────────────────────────────────────
 
+function parsePromptFile(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
+  const results = [];
 
-  let lastError;
-  let wait = INITIAL_BACKOFF_MS;
+  const { type, width, height } = extractTypeAndSize(content);
 
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      const buffer = await httpGet(url);
+  // 1. Try named variants first
+  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
+  let match;
+  while ((match = promptRegex.exec(content)) !== null) {
+    const variantName = match[1].trim();
+    const promptText = match[2].trim();
+    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/);
+    const negativeText = negMatch ? negMatch[1].trim() : '';
+    if (promptText) {
+      results.push({ variantName, promptText, negativeText, type, width, height });
+    }
+  }
 
-      fs.writeFileSync(outPath, buffer);
-
-      if (isErrorFile(outPath)) {
-        fs.unlinkSync(outPath);
-        throw new Error('downloaded file looks like an error response');
-      }
-
-      return { status: 'ok', path: outPath, size: buffer.length };
-    } catch (err) {
-      lastError = err;
-
-      if (attempt < MAX_RETRIES) {
-        console.log(`    ⚠️  attempt ${attempt}/${MAX_RETRIES} failed: ${err.message.substring(0, 80)}`);
-        console.log(`    ⏳ retrying in ${wait / 1000}s...`);
-        await sleep(wait);
-        wait = Math.min(wait * 1.5, 60000);
+  // 2. Dual-prompt files
+  if (results.length === 0) {
+    const draftRegex = /##{1,2} Prompt \(Draft\)\n([\s\S]*?)(?=##{1,2} (?:Prompt|Negative Prompt|Sheet|Variations)|$)/g;
+    let draftMatch;
+    while ((draftMatch = draftRegex.exec(content)) !== null) {
+      const promptText = draftMatch[1].trim();
+      const afterDraft = content.slice(draftMatch.index + draftMatch[0].length);
+      const negMatch = afterDraft.match(/##{1,2} Negative Prompt\n([\s\S]*?)(?=##{1,2} |$)/);
+      const negativeText = negMatch ? negMatch[1].trim() : '';
+      if (promptText) {
+        results.push({ variantName: 'default', promptText, negativeText, type, width, height });
       }
     }
   }
 
-  return { status: 'failed', path: outPath, error: lastError.message };
+  // 3. Fallback
+  if (results.length === 0) {
+    const singleMatch = content.match(/##{1,2} Prompt\n([\s\S]*?)(?=##{1,2} Negative Prompt|$)/);
+    if (singleMatch) {
+      const promptText = singleMatch[1].trim();
+      const negMatch = content.match(/##{1,2} Negative Prompt\n([\s\S]*?)(?=##{1,2} |$)/);
+      const negativeText = negMatch ? negMatch[1].trim() : '';
+      if (promptText) {
+        results.push({ variantName: 'default', promptText, negativeText, type, width, height });
+      }
+    }
+  }
+
+  return results;
+}
+
+// ── Pollinations Generation ─────────────────────────────────────────────────
+
+function httpGet(url) {
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https') ? https : http;
+    const req = lib.get(url, { timeout: 60000 }, res => {
+      if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
+        reject(new Error(`HTTP ${res.statusCode}`));
+        return;
+      }
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
+      res.on('error', reject);
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
+  });
+}
+
+async function generatePollinations(variant, outPath) {
+  const encoded = encodeURIComponent(variant.promptText);
+  const negParam = variant.negativeText ? `&negative_prompt=${encodeURIComponent(variant.negativeText)}` : '';
+  const url = `${POLLINATIONS_BASE}/${encoded}?width=${variant.width}&height=${variant.height}&nologo=true${negParam}`;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const buffer = await httpGet(url);
+      fs.mkdirSync(path.dirname(outPath), { recursive: true });
+      fs.writeFileSync(outPath, buffer);
+
+      if (isErrorFile(outPath)) {
+        fs.unlinkSync(outPath);
+        throw new Error('error file');
+      }
+      return { ok: true, size: buffer.length };
+    } catch (err) {
+      if (attempt < MAX_RETRIES) {
+        await sleep(5000);
+      } else {
+        return { ok: false, error: err.message.substring(0, 80) };
+      }
+    }
+  }
+  return { ok: false, error: 'max retries exceeded' };
+}
+
+// ── CLI ─────────────────────────────────────────────────────────────────────
+
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const opts = { filter: null, force: false, dryRun: false };
+  for (let i = 0; i < args.length; i++) {
+    switch (args[i]) {
+      case '--filter': opts.filter = args[++i]; break;
+      case '--force': opts.force = true; break;
+      case '--dry-run': opts.dryRun = true; break;
+      case '--help': case '-h':
+        console.log(`
+generate-pollinations-drafts.mjs — Generate draft images via Pollinations
+
+Usage:
+  node generate-pollinations-drafts.mjs
+  node generate-pollinations-drafts.mjs --filter tile,overlay
+  node generate-pollinations-drafts.mjs --force
+  node generate-pollinations-drafts.mjs --dry-run
+`);
+        process.exit(0);
+    }
+  }
+  if (opts.filter) opts.filterSet = new Set(opts.filter.split(',').map(s => s.trim().toLowerCase()));
+  return opts;
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
@@ -321,15 +264,11 @@ async function main() {
 
   console.log(`\n🎨 Pollinations Draft Generator\n`);
   console.log(`  Roots: ${PROMPT_ROOTS.join(', ')}`);
-  if (opts.filterSet) {
-    console.log(`  Filter: ${Array.from(opts.filterSet).join(', ')}`);
-  }
+  if (opts.filter) console.log(`  Filter: ${Array.from(opts.filterSet).join(', ')}`);
   if (opts.force) console.log(`  Force: regenerate all`);
   if (opts.dryRun) console.log(`  Dry run — no downloads\n`);
 
-  // Walk all .prompt.md files
   const promptFiles = [];
-
   function walk(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
@@ -342,98 +281,91 @@ async function main() {
       }
     }
   }
-
   for (const root of PROMPT_ROOTS) {
     if (fs.existsSync(root)) walk(root);
   }
 
-  let totalPrompts = 0;
-  let skipped = 0;
-  let ok = 0;
-  let failed = 0;
-  const failures = [];
-
+  const workItems = [];
   for (const promptFile of promptFiles) {
-    const relFromRoot = path.basename(promptFile);
     const variants = parsePromptFile(promptFile);
-
-    // Filter by type if specified
-    const filtered = opts.filterSet
-      ? variants.filter(v => opts.filterSet.has(v.type))
-      : variants;
-
+    const filtered = opts.filterSet ? variants.filter(v => opts.filterSet.has(v.type)) : variants;
     if (filtered.length === 0) continue;
 
-    const promptBase = promptFile.replace(/\.md$/, '');
-    const draftDir = path.join(promptBase, 'drafts');
+    let promptDir = path.dirname(promptFile);
+    const figuresRoot = path.resolve('docs/lore/figures');
+    if (promptDir === figuresRoot) {
+      const charName = path.basename(promptFile, '.prompt.md');
+      promptDir = path.join(figuresRoot, charName);
+    }
+    const draftDir = path.join(promptDir, 'drafts');
     const baseName = path.basename(promptFile, '.prompt.md');
 
-    console.log(`\n📄 ${relFromRoot} (${filtered.length} prompt(s))`);
-
     for (const variant of filtered) {
-      totalPrompts++;
-      const label = `  [${variant.variantName}]`;
-
-      if (opts.dryRun) {
-        console.log(`${label} would download ${variant.width}x${variant.height}`);
-        skipped++;
-        continue;
-      }
-
-      const result = await downloadDraft(variant, draftDir, baseName, opts.force);
-
-      switch (result.status) {
-        case 'ok':
-          console.log(`${label} ✅ ${path.basename(result.path)} (${result.size} bytes)`);
-          ok++;
-          break;
-        case 'skipped':
-          console.log(`${label} ⏭️  skipped (exists)`);
-          skipped++;
-          break;
-        case 'failed':
-          console.log(`${label} ❌ failed: ${result.error}`);
-          failed++;
-          failures.push({ file: relFromRoot, variant: variant.variantName, error: result.error });
-          break;
-      }
-
-      // Delay between requests to respect rate limits
-        // 30s delay between non-skipped requests to respect Pollinations rate limits
-      if (result.status !== 'skipped') {
-        console.log(`    ⏳ Waiting ${REQUEST_DELAY_MS / 1000}s before next request...`);
-        await sleep(REQUEST_DELAY_MS);
-      }
+      const fileName = `${baseName}__${slugify(variant.variantName)}`;
+      const basePath = path.join(draftDir, `${fileName}.png`);
+      workItems.push({ relPath: baseName, variant, basePath, draftDir, fileName });
     }
   }
 
-  // Summary
+  console.log(`  Found ${workItems.length} prompt variants\n`);
+
+  if (opts.dryRun) {
+    for (const item of workItems) {
+      console.log(`  📄 ${item.relPath} [${item.variant.variantName}] ${item.variant.width}×${item.variant.height}`);
+    }
+    return;
+  }
+
+  let ok = 0, skipped = 0, failed = 0;
+  let nextAvailable = 0;
+
+  for (const item of workItems) {
+    const { relPath, variant, basePath, draftDir, fileName } = item;
+    const label = `[${variant.variantName}]`;
+
+    if (!opts.force && fs.existsSync(basePath) && !isErrorFile(basePath)) {
+      console.log(`  ⏭️  ${relPath} ${label} — exists`);
+      skipped++;
+      continue;
+    }
+
+    let outPath = basePath;
+    if (fs.existsSync(basePath) || opts.force) {
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+      outPath = path.join(draftDir, `${fileName}__${ts}.png`);
+    }
+
+    const now = Date.now();
+    if (now < nextAvailable) {
+      const waitMs = nextAvailable - now;
+      console.log(`  ⏳ Cooldown: ${Math.ceil(waitMs / 1000)}s...`);
+      await sleep(waitMs);
+    }
+
+    console.log(`\n  📄 ${relPath} ${label}`);
+    const result = await generatePollinations(variant, outPath);
+    nextAvailable = Date.now() + COOLDOWN_MS;
+
+    if (result.ok) {
+      console.log(`     ✅ ${path.basename(outPath)} (${result.size} bytes)`);
+      ok++;
+    } else {
+      console.log(`     ❌ Failed: ${result.error}`);
+      failed++;
+    }
+  }
+
   console.log(`\n${'='.repeat(60)}`);
   console.log(`📊 Summary`);
   console.log(`${'='.repeat(60)}`);
-  console.log(`  Prompt files scanned: ${promptFiles.length}`);
-  console.log(`  Total prompt variants: ${totalPrompts}`);
-  console.log(`  ✅ Generated:         ${ok}`);
-  console.log(`  ⏭️  Skipped:          ${skipped}`);
-  console.log(`  ❌ Failed:            ${failed}`);
-  console.log();
-
-  if (failures.length > 0) {
-    console.log('Failed assets:');
-    for (const f of failures) {
-      console.log(`  - ${f.file} [${f.variant}]: ${f.error}`);
-    }
-    console.log();
-    process.exitCode = 1;
-  } else if (ok > 0) {
-    console.log('All drafts generated successfully. ✅');
-  }
-
-  console.log(`\n💡 Tip: Run with --filter to generate specific types, e.g.:`);
-  console.log(`   node ${process.argv[1]} --filter tile`);
-  console.log(`   node ${process.argv[1]} --filter portrait,background`);
-  console.log(`   node ${process.argv[1]} --filter overlay`);
+  console.log(`  Total prompts:  ${workItems.length}`);
+  console.log(`  ✅ Generated:   ${ok}`);
+  console.log(`  ⏭️  Skipped:    ${skipped}`);
+  console.log(`  ❌ Failed:      ${failed}`);
   console.log();
 }
 
-main();
+main().catch(err => {
+  console.error('Fatal error:', err);
+  process.exit(1);
+});

@@ -15,14 +15,25 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+function getLandmarkDirs() {
+  const districtsRoot = path.resolve('docs/lore/districts');
+  if (!fs.existsSync(districtsRoot)) return [];
+  return fs.readdirSync(districtsRoot, { withFileTypes: true })
+    .filter(e => e.isDirectory())
+    .map(e => path.join(districtsRoot, e.name, 'landmarks'))
+    .filter(p => fs.existsSync(p));
+}
+
 const PROMPT_ROOTS = [
-  path.resolve('docs/lore/shared/assets'),
   ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
+  path.resolve('docs/lore/shared/assets'),
   path.resolve('docs/lore/media'),
+  path.resolve('docs/lore/companies'),
+  path.resolve('docs/lore/organizations'),
 ];
-const MAX_NIM_LENGTH = 800; // Actual API limit for NIM (draft prompts)
-const DEFAULT_MIN_REPORT = 700; // Report prompts approaching the limit
+const MAX_NIM_LENGTH = 800;
+const DEFAULT_MIN_REPORT = 700;
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -69,9 +80,6 @@ function cleanNegativePrompt(text) {
   return t.trim();
 }
 
-/**
- * Parse YAML frontmatter from content. Returns null if no frontmatter found.
- */
 function parseFrontmatter(content) {
   const m = content.match(/^---\n([\s\S]*?)\n---\n/);
   if (!m) return null;
@@ -83,24 +91,15 @@ function parseFrontmatter(content) {
   return meta;
 }
 
-/**
- * Check if a file has a ## Prompt (Draft) section.
- */
 function hasDraftSection(content) {
   return /^#{2,3} Prompt \(Draft\)\s*\n/m.test(content);
 }
 
-/**
- * Extract text from ## Prompt (Draft) section.
- */
 function extractDraftPrompt(content) {
   const m = content.match(/^#{2,3} Prompt \(Draft\)\n([\s\S]*?)(?=^#{2,3}\s+(?:Prompt|Negative Prompt|Sheet|Variations)|$)/m);
   return m ? m[1].trim() : '';
 }
 
-/**
- * Extract type from frontmatter or bold markdown fallback.
- */
 function extractType(content) {
   const fm = parseFrontmatter(content);
   if (fm && fm.type) return fm.type;
@@ -114,7 +113,6 @@ function parsePromptFile(filePath) {
 
   const type = extractType(content);
 
-  // 1. Named variants: ## Prompt — <name>
   const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
   let match;
   while ((match = promptRegex.exec(content)) !== null) {
@@ -128,7 +126,6 @@ function parsePromptFile(filePath) {
     }
   }
 
-  // 2. Dual-prompt: ## Prompt (Draft) — this is the primary NIM prompt
   if (results.length === 0 && hasDraftSection(content)) {
     const draftText = extractDraftPrompt(content);
     const negMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
@@ -138,7 +135,6 @@ function parsePromptFile(filePath) {
     }
   }
 
-  // 3. Fallback: single ## Prompt section
   if (results.length === 0) {
     const singlePromptMatch = content.match(/## Prompt\n([\s\S]*?)(?=## Negative Prompt|$)/);
     if (singlePromptMatch) {
@@ -193,8 +189,6 @@ function main() {
     else stats.noDraft++;
 
     for (const variant of variants) {
-      // Draft sections are self-contained NIM prompts (include style + NO negatives).
-      // Do not append the separate ## Negative Prompt section — it's already embedded.
       const isDraft = variant.section === 'draft' || variant.section === 'named';
       const negativePrompt = isDraft ? '' : cleanNegativePrompt(variant.negativeText);
       const combinedPrompt = negativePrompt
@@ -246,7 +240,7 @@ function main() {
     console.log(`📋 Issues found:`);
     issues.forEach(issue => {
       const marker = issue.severity === 'ERROR' ? '❌' : '⚠️';
-      const color = issue.severity === 'ERROR' ? '31' : '33'; // red : yellow
+      const color = issue.severity === 'ERROR' ? '31' : '33';
       const sectionTag = issue.section === 'draft' ? ' (draft)' : issue.section === 'named' ? ' (named)' : '';
       console.log(`\x1b[${color}m${marker} ${issue.file} [${issue.variant}]${sectionTag} (${issue.type})`);
       console.log(`   Length: ${issue.length}/${MAX_NIM_LENGTH} chars`);
@@ -262,7 +256,6 @@ function main() {
     
     if (stats.overLimit > 0) {
       console.log(`💡 Tip: These prompts will fail with HTTP 422 "string_too_long"`);
-      console.log(`   Reduce prompt length by ${stats.overLimit} characters or more.`);
     }
     
     process.exitCode = stats.overLimit > 0 ? 1 : 0;

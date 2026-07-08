@@ -20,18 +20,28 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+function getLandmarkDirs() {
+  const districtsRoot = path.resolve('docs/lore/districts');
+  if (!fs.existsSync(districtsRoot)) return [];
+  return fs.readdirSync(districtsRoot, { withFileTypes: true })
+    .filter(e => e.isDirectory())
+    .map(e => path.join(districtsRoot, e.name, 'landmarks'))
+    .filter(p => fs.existsSync(p));
+}
+
 const PROMPT_ROOTS = [
   path.resolve('docs/lore/shared/assets'),
   ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
   path.resolve('docs/lore/media'),
+  path.resolve('docs/lore/companies'),
+  path.resolve('docs/lore/organizations'),
 ];
 
 const MAX_NIM_LENGTH = 800;
 const STYLE = 'photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k';
 const NEG = 'photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality';
 
-// Default size map by type (used when no Dimensions line exists)
 const DEFAULT_SIZES = {
   tile: '1024x1024',
   overlay: '1024x1024',
@@ -45,7 +55,6 @@ const DEFAULT_SIZES = {
   'outfit-pose': '768x1344',
 };
 
-// Content-safe replacements matching generate-drafts-unified.mjs
 const CONTENT_SAFE_REPLACEMENTS = [
   [/\bgovernor\b/gi, 'civic leader'],
   [/\bgovernment\b/gi, 'public'],
@@ -78,7 +87,6 @@ function hasFrontmatter(content) {
 }
 
 function hasDraftSection(content) {
-  // Look for ## Prompt (Draft) or ### Prompt (Draft)
   return /^#{2,3} Prompt \(Draft\)\s*\n/m.test(content);
 }
 
@@ -89,7 +97,6 @@ function parseBoldMetadata(line, key) {
 }
 
 function extractExistingMetadata(content) {
-  // Extract values from bold markdown lines in the header block
   const nameMatch = content.match(/^# Prompt:\s*(.+)$/m);
   const type = parseBoldMetadata(content, 'Type') || parseBoldMetadata(content, 'Consumer');
   const source = parseBoldMetadata(content, 'Source');
@@ -139,12 +146,10 @@ function buildDraftPrompt(fullPromptText, negativeText) {
     .replace(/\d+\s*[x×]\s*\d+\.?\s*/g, '')
     .trim();
 
-  // Apply content-safe replacements
   CONTENT_SAFE_REPLACEMENTS.forEach(([pattern, replacement]) => {
     scene = scene.replace(pattern, replacement);
   });
 
-  // Remove excessive repetition (>2 occurrences of any word)
   const words = scene.split(/\s+/);
   const wordCount = {};
   const filteredWords = [];
@@ -161,7 +166,6 @@ function buildDraftPrompt(fullPromptText, negativeText) {
   }
   scene = filteredWords.join(' ');
 
-  // Combine
   const neg = cleanNegativePrompt(negativeText);
   let combined = neg ? `${scene}. ${STYLE}. NO ${NEG}, ${neg}` : `${scene}. ${STYLE}. NO ${NEG}`;
   if (combined.length > MAX_NIM_LENGTH) {
@@ -169,7 +173,6 @@ function buildDraftPrompt(fullPromptText, negativeText) {
     scene = scene.substring(0, maxScene).trim();
     combined = neg ? `${scene}. ${STYLE}. NO ${NEG}, ${neg}` : `${scene}. ${STYLE}. NO ${NEG}`;
     if (combined.length > MAX_NIM_LENGTH) {
-      // Emergency truncation
       combined = combined.substring(0, MAX_NIM_LENGTH - 3) + '...';
     }
   }
@@ -211,7 +214,6 @@ function processFile(filePath, apply, force, cleanFm) {
   const original = fs.readFileSync(filePath, 'utf-8');
   let content = original;
 
-  // If --clean-fm, strip only tool from frontmatter (keep type)
   if (cleanFm) {
     const existingFm = extractExistingFrontmatterBlock(content);
     if (existingFm) {
@@ -224,7 +226,6 @@ function processFile(filePath, apply, force, cleanFm) {
     }
   }
 
-  // Check if draft section already exists
   if (hasDraftSection(content) && !force) {
     if (content !== original) {
       if (!apply) return { status: 'would-change-fm', file: path.basename(filePath) };
@@ -234,13 +235,11 @@ function processFile(filePath, apply, force, cleanFm) {
     return { status: 'skipped-draft', file: path.basename(filePath) };
   }
 
-  // Extract existing metadata from bold lines
   const meta = extractExistingMetadata(content);
   if (!meta.type) {
     return { status: 'skipped-no-type', file: path.basename(filePath) };
   }
 
-  // Extract prompt and negative
   const fullPrompt = extractFullPrompt(content);
   const negativeText = extractNegativePrompt(content);
 
@@ -248,29 +247,22 @@ function processFile(filePath, apply, force, cleanFm) {
     return { status: 'skipped-no-prompt', file: path.basename(filePath) };
   }
 
-  // Build draft prompt
   const draftText = buildDraftPrompt(fullPrompt, negativeText);
 
-  // Build frontmatter
   const existingFm = extractExistingFrontmatterBlock(content);
   let newContent;
 
   if (existingFm) {
-    // Update existing frontmatter with any missing fields
     const existingMeta = parseExistingFrontmatter(existingFm);
     const mergedMeta = { ...existingMeta, ...meta };
-    // Don't overwrite existing values
     Object.keys(existingMeta).forEach(k => { mergedMeta[k] = existingMeta[k]; });
     const newFm = buildFrontmatterYAML(mergedMeta);
     newContent = newFm + '\n' + stripFrontmatterBlock(content);
   } else {
-    // Add frontmatter
     newContent = buildFrontmatterYAML(meta) + '\n\n' + content;
   }
 
-  // Insert ## Prompt (Draft) before ## Prompt if missing
   if (!hasDraftSection(newContent)) {
-    // Find the ## Prompt line and insert before it
     const promptSectionStart = newContent.search(/^#{1,2}\s+Prompt\s*\n/m);
     if (promptSectionStart !== -1) {
       const before = newContent.substring(0, promptSectionStart);
@@ -279,7 +271,6 @@ function processFile(filePath, apply, force, cleanFm) {
     }
   }
 
-  // Skip if nothing changed
   if (newContent === original && !force) {
     return { status: 'unchanged', file: path.basename(filePath) };
   }
@@ -323,7 +314,6 @@ function main() {
   if (opts.force) console.log(`  ⚠️  Force mode (re-process all files)`);
   console.log(`  Roots: ${PROMPT_ROOTS.join(', ')}\n`);
 
-  // Walk all .prompt.md files
   const promptFiles = [];
   function walk(dir) {
     if (!fs.existsSync(dir)) return;
@@ -351,9 +341,7 @@ function main() {
       console.log(`  ✅ ${result.file}`);
     } else if (result.status === 'would-change') {
       console.log(`  📋 ${result.file} — would add draft + frontmatter`);
-    } else if (opts.apply && result.status === 'skipped-draft') {
-      // quiet for skipped-draft in apply mode (too many)
-    } else if (opts.apply && result.status === 'unchanged') {
+    } else if (opts.apply && (result.status === 'skipped-draft' || result.status === 'unchanged')) {
       // quiet
     } else {
       console.log(`  ℹ️  ${result.file} — ${result.status.replace('skipped-', 'no ')}`);
