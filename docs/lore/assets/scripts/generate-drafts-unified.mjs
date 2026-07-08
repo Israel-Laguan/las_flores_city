@@ -23,7 +23,7 @@ import https from 'node:https';
 
 const PROMPT_ROOTS = [
   path.resolve('docs/lore/shared/assets'),
-  path.resolve('docs/lore/landmarks'),
+  ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
   path.resolve('docs/lore/media'),
 ];
@@ -145,12 +145,48 @@ class TokenBucket {
 
 const nimBucket = new TokenBucket(NIM_RPM_LIMIT, NIM_RPM_WINDOW_MS);
 
-// ── Prompt File Parsing ────────────────────────────────────────────────────
+// ── Frontmatter / Metadata Helpers ─────────────────────────────────────────
 
-function parsePromptFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
-  const results = [];
+/**
+ * Parse YAML frontmatter from content. Returns null if no frontmatter found.
+ */
+function parseFrontmatter(content) {
+  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return null;
+  const meta = {};
+  for (const line of m[1].split('\n')) {
+    const [k, ...v] = line.split(': ');
+    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
+  }
+  return meta;
+}
 
+/**
+ * Extract type and dimensions from content, checking frontmatter first,
+ * then falling back to bold markdown lines.
+ */
+function extractTypeAndSize(content) {
+  const fm = parseFrontmatter(content);
+
+  // Try frontmatter first
+  if (fm && fm.type) {
+    const dimMatch = (fm.size || '').match(/^(\d+)\s*[x×]\s*(\d+)$/i);
+    if (dimMatch) {
+      return {
+        type: fm.type,
+        width: parseInt(dimMatch[1], 10),
+        height: parseInt(dimMatch[2], 10),
+      };
+    }
+    // Type from frontmatter, size from defaults
+    const def = DEFAULT_DIMENSIONS[fm.type];
+    if (def) {
+      return { type: fm.type, width: def.width, height: def.height };
+    }
+    return { type: fm.type, width: 1024, height: 1024 };
+  }
+
+  // Fallback: bold markdown lines
   const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
   const type = typeMatch ? typeMatch[1].trim() : 'unknown';
 
@@ -165,7 +201,16 @@ function parsePromptFile(filePath) {
     if (def) { width = def.width; height = def.height; }
     else { width = 1024; height = 1024; }
   }
+  return { type, width, height };
+}
 
+// ── Prompt File Parsing ────────────────────────────────────────────────────
+
+function parsePromptFile(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
+  const results = [];
+
+  const { type, width, height } = extractTypeAndSize(content);
   const resolved = pickSupportedResolution(width, height);
 
   // 1. Try named variants first: ## Prompt — <name>
@@ -215,10 +260,14 @@ function parsePromptFile(filePath) {
 // ── Prompt Builders ─────────────────────────────────────────────────────────
 
 /**
- * Build a NIM-compatible prompt (≤800 chars).
+ * Build a NIM-compatible prompt (≤800 chars) from the full prompt.
+ * This is a fallback for files without a dedicated ## Prompt (Draft) section.
+ * Prefer using ## Prompt (Draft) directly from the prompt file.
  * Strips the long style prefix, uses compact negative.
  */
-function buildNimPrompt(fullPromptText) {
+function buildNimPrompt(fullPromptText, fileLabel) {
+  if (!fileLabel) fileLabel = 'unknown';
+  console.warn(`  ⚠️  ${fileLabel}: no ## Prompt (Draft) found — using truncation fallback`);
   const STYLE = 'photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k';
   const NEG = 'photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality';
 
@@ -303,8 +352,8 @@ function buildNimPrompt(fullPromptText) {
 
 // ── NIM Generation ──────────────────────────────────────────────────────────
 
-async function generateNIM(variant, outPath) {
-  const prompt = buildNimPrompt(variant.promptText);
+async function generateNIM(variant, outPath, fileLabel) {
+  const prompt = buildNimPrompt(variant.promptText, fileLabel);
 
   for (let attempt = 1; attempt <= NIM_MAX_RETRIES; attempt++) {
     try {
@@ -537,7 +586,7 @@ async function main() {
 
     // --- Try NIM first ---
     if (NVIDIA_API_KEY) {
-      const nimResult = await generateNIM(variant, outPath);
+      const nimResult = await generateNIM(variant, outPath, item.baseName);
       if (nimResult.ok) {
         console.log(`     ✅ NIM: ${path.basename(outPath)} (${nimResult.size} bytes)`);
         nimOk++;

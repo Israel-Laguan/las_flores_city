@@ -26,7 +26,7 @@ import https from 'node:https';
 const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt';
 const PROMPT_ROOTS = [
   path.resolve('docs/lore/shared/assets'),
-  path.resolve('docs/lore/landmarks'),
+  ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
 ];
 
@@ -130,13 +130,47 @@ function httpGet(url) {
   });
 }
 
-// ── Prompt File Parsing ─────────────────────────────────────────────────────
+// ── Frontmatter / Metadata Helpers ─────────────────────────────────────────
 
-function parsePromptFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
-  const results = [];
+/**
+ * Parse YAML frontmatter from content. Returns null if no frontmatter found.
+ */
+function parseFrontmatter(content) {
+  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return null;
+  const meta = {};
+  for (const line of m[1].split('\n')) {
+    const [k, ...v] = line.split(': ');
+    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
+  }
+  return meta;
+}
 
-  // Extract metadata
+/**
+ * Extract type and dimensions from content, checking frontmatter first,
+ * then falling back to bold markdown lines.
+ */
+function extractTypeAndSize(content) {
+  const fm = parseFrontmatter(content);
+
+  // Try frontmatter first
+  if (fm && fm.type) {
+    const dimMatch = (fm.size || '').match(/^(\d+)\s*[x×]\s*(\d+)$/i);
+    if (dimMatch) {
+      return {
+        type: fm.type,
+        width: parseInt(dimMatch[1], 10),
+        height: parseInt(dimMatch[2], 10),
+      };
+    }
+    const def = DEFAULT_DIMENSIONS[fm.type];
+    if (def) {
+      return { type: fm.type, width: def.width, height: def.height };
+    }
+    return { type: fm.type, width: 512, height: 512 };
+  }
+
+  // Fallback: bold markdown lines
   const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
   const type = typeMatch ? typeMatch[1].trim() : 'unknown';
 
@@ -148,7 +182,6 @@ function parsePromptFile(filePath) {
     height = parseInt(dimMatch[2], 10);
   }
 
-  // Fallback dimensions from type
   if (!width || !height) {
     const def = DEFAULT_DIMENSIONS[type];
     if (def) {
@@ -159,6 +192,16 @@ function parsePromptFile(filePath) {
       height = 512;
     }
   }
+  return { type, width, height };
+}
+
+// ── Prompt File Parsing ─────────────────────────────────────────────────────
+
+function parsePromptFile(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n');
+  const results = [];
+
+  const { type, width, height } = extractTypeAndSize(content);
 
   // Extract all prompt variants: ## Prompt — <name> ... until next ## Prompt — or ## Negative Prompt
   const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;

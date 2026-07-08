@@ -1,0 +1,33 @@
+---
+name: The Free City Constitution — Backstory
+type: portrait
+size: 1024x1024
+source: docs/lore/figures/constitution_backstory/constitution_backstory.md
+target: `portrait_urls[].url` in `content/characters/char_the_free_city_constitution_backstory.yaml`
+consumer: portrait
+---
+
+
+# Prompt: The Free City Constitution — Backstory
+
+[CONSUMER: portrait]
+**Type:** portrait
+**Source:** docs/lore/figures/the_free_city_constitution_backstory.md
+**Target field:** `portrait_urls[].url` in `content/characters/char_the_free_city_constitution_backstory.yaml`
+**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+
+## Prompt (Draft)
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Chinese Photorealistic portrait of The Free City Constitution — Backstory. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a mini. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+## Prompt
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height  Chinese Photorealistic portrait of The Free City Constitution — Backstory. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical clothing suited to their environment, with personal items reflecting their role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+## Negative Prompt
+--no neon, no androids, no clean backgrounds, no modern clothing
+
+## Variations
+
+- [ ] The Free City Constitution — Backstory in a meeting, reviewing documents with colleagues
+- [ ] The Free City Constitution — Backstory considering a strategic decision, weighing options thoughtfully
+- [ ] The Free City Constitution — Backstory in a business meeting, collaborating with team members on a strategy
+

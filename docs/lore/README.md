@@ -218,3 +218,40 @@ Use these tags when referencing lore in dialogue YAML or vault entries:
 - `#cover_up` — corporate and political cover-up
 - `#trial` — Minera Estrella tribunal
 - `#restoration` — cleanup and rehabilitation efforts
+---
+
+## Lore folder convention
+
+### Figures
+Each character/figure lives in its own folder:
+
+```
+docs/lore/figures/<name>/
+  <name>.md          # lore / description
+  <name>.prompt.md   # generated asset prompt
+  assets/            # generated images, optional
+```
+
+Example: `docs/lore/figures/aisha_al_sayed/aisha_al_sayed.md`
+
+### Landmarks
+Each landmark lives inside its owning district, organized as:
+
+```
+docs/lore/districts/<district>/landmarks/<name>/
+  <name>.md
+  <name>.prompt.md
+  assets/
+```
+
+Example: `docs/lore/districts/city/landmarks/plaza_de_la_constitucion/plaza_de_la_constitucion.md`
+
+Cross-district natural spaces (rivers, mountains, forests) are placed in the
+primary owning district with `adjacent_districts` noted in frontmatter.
+
+### Why this layout?
+- Landmarks nest in their district (`districts/<d>/landmarks/`), which makes
+  district → scene → landmark a natural hierarchy.
+- Keeps related files together (lore, prompt, assets).
+- Matches the recursive discovery used by `docs/lore/assets/scripts/generate-drafts-unified.mjs`.
+- Matches the per-character asset routing already expected by the draft generator.

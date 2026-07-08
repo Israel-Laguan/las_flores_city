@@ -1,0 +1,87 @@
+# Occupation → Moveset Registry
+#
+# Maps a character's occupation (from content/characters metadata.occupation)
+# to a set of signature poses that define their UNIQUE MOVEMENT VOCABULARY
+# (a carpenter moves differently from a footballer). This is the "moveset"
+# layer of the character sheet, distinct from the generic neutral/personality
+# poses in poses.yaml.
+#
+# Consumed by: generate-prompt.mjs --type character-sheet
+# Matching:   the character's occupation string is lowercased and tested
+#             against each moveset's occupation_tags (substring match).
+#             First match wins; otherwise the Generic moveset is used.
+#
+# Pose IDs below must exist in poses.yaml (category: occupation).
+
+movesets:
+  - id: carpenter
+    label: "Carpenter / Builder"
+    occupation_tags: [carpenter, builder, woodworker, construction, joiner, cabinetmaker]
+    signature_poses: [pose_hammering, pose_measuring_tape, pose_carry_plank]
+    description: "Deliberate, tool-driven movement: measuring, striking, hauling lumber."
+
+  - id: athlete_football
+    label: "Footballer / Striker"
+    occupation_tags: [football, soccer, striker, midfielder, goalkeeper, footballer, player]
+    signature_poses: [pose_kicking_ball, pose_sprinting, pose_tackling]
+    description: "Explosive, dynamic athletic motion: sprinting, striking the ball, shoulder challenges."
+
+  - id: musician
+    label: "Musician / Performer"
+    occupation_tags: [musician, singer, guitarist, pianist, violinist, performer, dj, composer, drummer]
+    signature_poses: [pose_playing_instrument, pose_conducting, pose_bowing_stage]
+    description: "Expressive performance gestures tied to an instrument or the stage."
+
+  - id: chef
+    label: "Chef / Cook"
+    occupation_tags: [chef, cook, baker, kitchen, patissier]
+    signature_poses: [pose_knife_work, pose_plating, pose_tasting]
+    description: "Precise kitchen motion: knife work, plating, tasting."
+
+  - id: bartender
+    label: "Bartender / Server"
+    occupation_tags: [bartender, server, waiter, waitress, barkeep, barista]
+    signature_poses: [pose_pouring_drink, pose_tray_carry, pose_wiping_glass]
+    description: "Hospitality motion: pouring, carrying trays, polishing glassware."
+
+  - id: police_officer
+    label: "Police Officer"
+    occupation_tags: [police, officer, inspector, detective, patrol, cjs, lieutenant]
+    signature_poses: [pose_directing_traffic, pose_resting_hand_on_holster, pose_writing_report]
+    description: "Authoritative, controlled movement: directing, sidearm-ready stance, note-taking."
+
+  - id: office_worker
+    label: "Office / Knowledge Worker"
+    occupation_tags: [analyst, accountant, clerk, manager, executive, administrator, researcher, scientist, engineer, lawyer, judge, secretary, professor, student]
+    signature_poses: [pose_typing, pose_pointing_screen, pose_presenting]
+    description: "Desk-bound motion: typing, gesturing at screens, presenting."
+
+  - id: artist
+    label: "Artist / Designer"
+    occupation_tags: [artist, painter, sculptor, designer, illustrator, writer, author, journalist, photographer]
+    signature_poses: [pose_holding_brush, pose_sketching, pose_contemplating_canvas]
+    description: "Creative, observational motion: brushwork, sketching, studying the work."
+
+  - id: vendor
+    label: "Market Vendor / Merchant"
+    occupation_tags: [vendor, merchant, seller, shopkeeper, market, stall, trader]
+    signature_poses: [pose_weighing_goods, pose_hand_on_hip_waiting, pose_bagging]
+    description: "Trade motion: weighing produce, waiting at the stall, bagging goods."
+
+  - id: laborer
+    label: "General Laborer"
+    occupation_tags: [laborer, worker, miner, dockworker, farmer, field, cleaner, porter, fisherman]
+    signature_poses: [pose_lifting_load, pose_shoveling, pose_wiping_brow]
+    description: "Heavy, repetitive motion: lifting, digging, wiping sweat."
+
+  - id: fitness
+    label: "Athlete / Fitness"
+    occupation_tags: [trainer, gymnast, runner, boxer, wrestler, fitness, coach, athlete]
+    signature_poses: [pose_lifting_weights, pose_guard_stance, pose_stretching]
+    description: "Conditioned athletic motion: lifting, guarding, stretching."
+
+  - id: generic
+    label: "Generic Resident"
+    occupation_tags: [resident, citizen, unknown, independent]
+    signature_poses: [pose_neutral_stand, pose_hands_in_pockets, pose_looking_down]
+    description: "Everyday movement drawn from neutral and personality poses — no specialized occupation vocabulary."

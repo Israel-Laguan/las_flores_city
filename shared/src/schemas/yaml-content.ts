@@ -131,6 +131,17 @@ export const YAMLLocationSchema = z.object({
     description: z.string().max(500),
   })).optional(),
   conclusion: z.string().optional(),
+  map: z.object({
+    grid: z.object({ cols: z.number().int(), rows: z.number().int() }).optional(),
+    base_tile: z.string().optional(),
+    walkable_mask: z.string().optional(),
+    spawn: z.object({ x: z.number().int(), y: z.number().int() }).optional(),
+    waypoints: z.array(z.object({
+      name: z.string(),
+      x: z.number().int(),
+      y: z.number().int(),
+    })).optional(),
+  }).optional(),
   lore_ref: z.string().max(255).optional(),
 });
 

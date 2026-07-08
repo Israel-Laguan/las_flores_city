@@ -4,7 +4,8 @@
  * check-prompt-lengths.mjs
  * 
  * Scans all .prompt.md files and reports prompts that exceed NVIDIA NIM's
- * 800-character limit (including negative prompts combined with "\n\nNO ").
+ * 800-character limit. Checks the ## Prompt (Draft) section preferentially;
+ * falls back to ## Prompt if no draft section exists.
  * 
  * Usage:
  *   node check-prompt-lengths.mjs
@@ -16,10 +17,11 @@ import path from 'node:path';
 
 const PROMPT_ROOTS = [
   path.resolve('docs/lore/shared/assets'),
-  path.resolve('docs/lore/landmarks'),
+  ...getLandmarkDirs(),
   path.resolve('docs/lore/figures'),
+  path.resolve('docs/lore/media'),
 ];
-const MAX_NIM_LENGTH = 800; // Actual API limit
+const MAX_NIM_LENGTH = 800; // Actual API limit for NIM (draft prompts)
 const DEFAULT_MIN_REPORT = 700; // Report prompts approaching the limit
 
 function parseArgs() {
@@ -54,8 +56,8 @@ Options:
   --min-length <chars>  Minimum length to report (default: 700)
   --help, -h             Show this help
 
-The script checks the combined length of prompt + negative prompt
-(with "\\n\\nNO " separator) against NVIDIA NIM's 800-character limit.
+The script checks the ## Prompt (Draft) section (or ## Prompt if no draft)
+combined with negative prompt against NVIDIA NIM's 800-character limit.
 `);
 }
 
@@ -67,13 +69,52 @@ function cleanNegativePrompt(text) {
   return t.trim();
 }
 
+/**
+ * Parse YAML frontmatter from content. Returns null if no frontmatter found.
+ */
+function parseFrontmatter(content) {
+  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return null;
+  const meta = {};
+  for (const line of m[1].split('\n')) {
+    const [k, ...v] = line.split(': ');
+    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
+  }
+  return meta;
+}
+
+/**
+ * Check if a file has a ## Prompt (Draft) section.
+ */
+function hasDraftSection(content) {
+  return /^#{2,3} Prompt \(Draft\)\s*\n/m.test(content);
+}
+
+/**
+ * Extract text from ## Prompt (Draft) section.
+ */
+function extractDraftPrompt(content) {
+  const m = content.match(/^#{2,3} Prompt \(Draft\)\n([\s\S]*?)(?=^#{2,3}\s+(?:Prompt|Negative Prompt|Sheet|Variations)|$)/m);
+  return m ? m[1].trim() : '';
+}
+
+/**
+ * Extract type from frontmatter or bold markdown fallback.
+ */
+function extractType(content) {
+  const fm = parseFrontmatter(content);
+  if (fm && fm.type) return fm.type;
+  const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
+  return typeMatch ? typeMatch[1].trim() : 'unknown';
+}
+
 function parsePromptFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const results = [];
 
-  const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
-  const type = typeMatch ? typeMatch[1].trim() : 'unknown';
+  const type = extractType(content);
 
+  // 1. Named variants: ## Prompt — <name>
   const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
   let match;
   while ((match = promptRegex.exec(content)) !== null) {
@@ -83,11 +124,21 @@ function parsePromptFile(filePath) {
     const negativeText = negMatch ? negMatch[1].trim() : '';
 
     if (promptText) {
-      results.push({ variantName, promptText, negativeText, type });
+      results.push({ variantName, promptText, negativeText, type, section: 'named' });
     }
   }
 
-  // Fallback: single ## Prompt section (no named variants)
+  // 2. Dual-prompt: ## Prompt (Draft) — this is the primary NIM prompt
+  if (results.length === 0 && hasDraftSection(content)) {
+    const draftText = extractDraftPrompt(content);
+    const negMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
+    const negativeText = negMatch ? negMatch[1].trim() : '';
+    if (draftText) {
+      results.push({ variantName: 'default (draft)', promptText: draftText, negativeText, type, section: 'draft' });
+    }
+  }
+
+  // 3. Fallback: single ## Prompt section
   if (results.length === 0) {
     const singlePromptMatch = content.match(/## Prompt\n([\s\S]*?)(?=## Negative Prompt|$)/);
     if (singlePromptMatch) {
@@ -95,7 +146,7 @@ function parsePromptFile(filePath) {
       const negMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=## |$)/);
       const negativeText = negMatch ? negMatch[1].trim() : '';
       if (promptText) {
-        results.push({ variantName: 'default', promptText, negativeText, type });
+        results.push({ variantName: 'default', promptText, negativeText, type, section: 'full' });
       }
     }
   }
@@ -129,16 +180,23 @@ function main() {
   }
 
   const issues = [];
-  const stats = { totalFiles: 0, totalVariants: 0, overLimit: 0, approaching: 0 };
+  const stats = { totalFiles: 0, totalVariants: 0, overLimit: 0, approaching: 0, hasDraft: 0, noDraft: 0 };
 
   for (const promptFile of promptFiles) {
     stats.totalFiles++;
     const relPath = path.basename(promptFile);
+    const content = fs.readFileSync(promptFile, 'utf-8');
     const variants = parsePromptFile(promptFile);
     stats.totalVariants += variants.length;
 
+    if (hasDraftSection(content)) stats.hasDraft++;
+    else stats.noDraft++;
+
     for (const variant of variants) {
-      const negativePrompt = cleanNegativePrompt(variant.negativeText);
+      // Draft sections are self-contained NIM prompts (include style + NO negatives).
+      // Do not append the separate ## Negative Prompt section — it's already embedded.
+      const isDraft = variant.section === 'draft' || variant.section === 'named';
+      const negativePrompt = isDraft ? '' : cleanNegativePrompt(variant.negativeText);
       const combinedPrompt = negativePrompt
         ? `${variant.promptText}\n\nNO ${negativePrompt}`
         : variant.promptText;
@@ -150,6 +208,7 @@ function main() {
           file: relPath,
           variant: variant.variantName,
           type: variant.type,
+          section: variant.section || 'unknown',
           length,
           overLimit: length - MAX_NIM_LENGTH,
           promptLength: variant.promptText.length,
@@ -162,6 +221,7 @@ function main() {
           file: relPath,
           variant: variant.variantName,
           type: variant.type,
+          section: variant.section || 'unknown',
           length,
           headroom: MAX_NIM_LENGTH - length,
           promptLength: variant.promptText.length,
@@ -176,6 +236,8 @@ function main() {
   console.log(`📊 Summary`);
   console.log(`   Files scanned: ${stats.totalFiles}`);
   console.log(`   Prompt variants: ${stats.totalVariants}`);
+  console.log(`   ✅ Has draft section: ${stats.hasDraft}`);
+  console.log(`   ⚠️  No draft section: ${stats.noDraft}`);
   console.log(`   ⚠️  Approaching limit (≥ ${opts.minLength}): ${stats.approaching}`);
   console.log(`   ❌ Over limit (> ${MAX_NIM_LENGTH}): ${stats.overLimit}`);
   console.log();
@@ -185,7 +247,8 @@ function main() {
     issues.forEach(issue => {
       const marker = issue.severity === 'ERROR' ? '❌' : '⚠️';
       const color = issue.severity === 'ERROR' ? '31' : '33'; // red : yellow
-      console.log(`\x1b[${color}m${marker} ${issue.file} [${issue.variant}] (${issue.type})`);
+      const sectionTag = issue.section === 'draft' ? ' (draft)' : issue.section === 'named' ? ' (named)' : '';
+      console.log(`\x1b[${color}m${marker} ${issue.file} [${issue.variant}]${sectionTag} (${issue.type})`);
       console.log(`   Length: ${issue.length}/${MAX_NIM_LENGTH} chars`);
       if (issue.severity === 'ERROR') {
         console.log(`   Over by: ${issue.overLimit} characters`);

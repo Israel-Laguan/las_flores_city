@@ -54,3 +54,42 @@ conclusion: >
   present. The plaza's harmonious blend of history, governance, commerce, and community
   life makes it the beating heart of Las Flores, encapsulating the city's essence and
   its aspirations.
+
+# ── Walkable map / navmesh ──────────────────────────────────────────────────
+# General idea of the location's layout and where the player can walk.
+# `walkable_mask` is an ASCII grid (rows top→bottom, cols left→right):
+#   '#' = blocked (building / landmark footprint / edge)
+#   '.' = walkable ground
+# `waypoints` link to important_places above; coordinates are (x=col, y=row),
+# 0-indexed, matching the mask. Consumed by generate-prompt.mjs --type location-map
+# and by the Phaser LocationScene navmesh.
+map:
+  grid: { cols: 12, rows: 9 }
+  base_tile: tile_cobblestone
+  walkable_mask: |
+    ############
+    #..........#
+    #.##....##.#
+    #..........#
+    #....##....#
+    #..........#
+    #.##....##.#
+    #..........#
+    ############
+  spawn: { x: 1, y: 1 }
+  waypoints:
+    - name: Monument to Freedom
+      x: 4
+      y: 2
+    - name: Juan Pablo Ramos Memorial
+      x: 9
+      y: 2
+    - name: City Council Palace
+      x: 4
+      y: 4
+    - name: Train Station
+      x: 9
+      y: 4
+    - name: Modern Mall
+      x: 6
+      y: 6

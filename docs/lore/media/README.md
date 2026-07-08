@@ -22,13 +22,13 @@ docs/lore/media/
 
 | Publication | Focus | Audience |
 |---|---|---|
-| [El Informador](el_informador.md) | Marginalized communities | Working-class, indigenous |
-| [La Prensa](la_prensa.md) | Investigative journalism | General public |
-| [Las Flores Chronicle](las_flores_chronicle.md) | Elite gossip & society | Upper-class, expats |
+| [El Informador](el_informador/el_informador.md) | Marginalized communities | Working-class, indigenous |
+| [La Prensa](la_prensa/la_prensa.md) | Investigative journalism | General public |
+| [Las Flores Chronicle](las_flores_chronicle/las_flores_chronicle.md) | Elite gossip & society | Upper-class, expats |
 
 ### Social Media Platforms
 
-See [Social Media Ecosystem](social_media_ecosystem.md) for comprehensive coverage of:
+See [Social Media Ecosystem](social_media_ecosystem/social_media_ecosystem.md) for comprehensive coverage of:
 - [ShénShǒu](../platforms/shenshou.md) — Chinese AR + e-commerce
 - [LinkPulse](../platforms/linkpulse.md) — European intellectual
 - [PlayNetix](../platforms/playnetix.md) — North American gaming
@@ -39,7 +39,7 @@ See [Social Media Ecosystem](social_media_ecosystem.md) for comprehensive covera
 
 ## Social Media Integration
 
-The [Social Media Ecosystem](social_media_ecosystem.md) document provides:
+The [Social Media Ecosystem](social_media_ecosystem/social_media_ecosystem.md) document provides:
 - Platform comparisons and monetization strategies
 - User demographics and behavior patterns
 - Business opportunities and risks
