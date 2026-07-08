@@ -178,7 +178,6 @@ function processPromptFile(promptContent, loreContent, name) {
 
   // 1. Extract character-specific clothing
   const clothing = extractClothing(loreContent, name);
-  const defaultClothing = 'practical clothing suited to their environment, with personal items reflecting their role';
 
   if (clothing) {
     // Replace the generic clothing line in Full prompt

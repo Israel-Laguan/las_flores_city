@@ -10,19 +10,16 @@
  * Delegates to the unified generator with NIM-only mode (no Pollinations).
  */
 
-import { execSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const unified = path.join(__dirname, 'generate-drafts-unified.mjs');
 
-const args = process.argv.slice(2).join(' ');
+const args = process.argv.slice(2);
 
 console.log(`⚠️  generate-nim-drafts.mjs is deprecated — delegating to generate-drafts-unified.mjs\n`);
 
-try {
-  execSync(`node "${unified}" ${args}`, { stdio: 'inherit' });
-} catch (err) {
-  process.exit(err.status || 1);
-}
+const result = spawnSync('node', [unified, ...args], { stdio: 'inherit' });
+process.exit(result.status ?? 1);

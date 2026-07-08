@@ -50,7 +50,7 @@ const PROMPT_TYPES = [
 // ── Template Library ────────────────────────────────────────────────────────
 
 const TEMPLATES = {
-  portrait({ name, age, role, district, physical, expression, clothing, accessories, setting, lighting, shadows, mood, heritage, negatives }) {
+  portrait({ name, age, role, district, physical, expression, clothing, accessories, setting, lighting, shadows, mood, heritage, negatives, sourcePath }) {
     const physicalDesc = (physical && physical !== 'Distinctive appearance') ? physical : 'distinctive appearance fitting their background';
     const expressionDesc = (expression && expression !== 'undefined') ? expression : 'calm and determined';
     const clothingDesc = (clothing && clothing !== 'undefined') ? clothing : 'practical clothing suited to their environment';
@@ -71,7 +71,7 @@ Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asy
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/${slugify(name)}/${slugify(name)}.md
+**Source:** docs/lore/${sourcePath}
 **Target field:** \`portrait_urls[].url\` in \`content/characters/char_${slugify(name)}.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -92,7 +92,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 `;
   },
 
-  background({ name, timeOfDay, keyElements, lighting, atmosphere, mood, contrast }) {
+  background({ name, timeOfDay, keyElements, lighting, atmosphere, mood, contrast, sourcePath }) {
     const moodWords = mood.split(',').map(w => w.trim()).filter(Boolean);
     const uniqueMoodWords = [...new Set(moodWords)];
     const cleanMood = uniqueMoodWords.join(', ');
@@ -102,7 +102,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     return `---
 name: ${name}
 type: background
-source: docs/lore/landmarks/${slugify(name)}/${slugify(name)}.md
+source: docs/lore/${sourcePath}
 target: \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
 consumer: html-background
 ---
@@ -111,7 +111,7 @@ consumer: html-background
 
 [CONSUMER: html-background]
 **Type:** background
-**Source:** docs/lore/landmarks/${slugify(name)}/${slugify(name)}.md
+**Source:** docs/lore/${sourcePath}
 **Target field:** \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -164,13 +164,13 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 `;
   },
 
-  overlay({ name, description }) {
+  overlay({ name, description, sourcePath }) {
     const draftPrompt = `[CONSUMER: phaser-sprite] Top-down view of ${name}, Las Flores 2077, ${description}. Transparent background, centered.`;
     const fullPrompt = `Top-down view of ${name}, Las Flores 2077, ${description}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered composition, no external shadows, 256×256.`;
     return `---
 name: ${name}
 type: overlay
-source: docs/lore/landmarks/${slugify(name)}/${slugify(name)}.md
+source: docs/lore/${sourcePath}
 target: \`overlay_image_url\` in \`content/maps/map_*.yaml\`
 consumer: phaser-sprite
 ---
@@ -179,7 +179,7 @@ consumer: phaser-sprite
 
 [CONSUMER: phaser-sprite]
 **Type:** overlay
-**Source:** docs/lore/landmarks/${slugify(name)}/${slugify(name)}.md
+**Source:** docs/lore/${sourcePath}
 **Target field:** \`overlay_image_url\` in \`content/maps/map_*.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine

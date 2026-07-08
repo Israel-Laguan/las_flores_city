@@ -16,8 +16,6 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import http from 'node:http';
-import https from 'node:https';
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
@@ -434,22 +432,12 @@ async function generateNIM(variant, outPath, fileLabel) {
 
 // ── Pollinations Generation ─────────────────────────────────────────────────
 
-function httpGet(url) {
-  return new Promise((resolve, reject) => {
-    const lib = url.startsWith('https') ? https : http;
-    const req = lib.get(url, { timeout: 60000 }, res => {
-      if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
-        reject(new Error(`HTTP ${res.statusCode}`));
-        return;
-      }
-      const chunks = [];
-      res.on('data', c => chunks.push(c));
-      res.on('end', () => resolve(Buffer.concat(chunks)));
-      res.on('error', reject);
-    });
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
-  });
+async function httpGet(url) {
+  const res = await fetch(url, { signal: AbortSignal.timeout(60000) });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return Buffer.from(await res.arrayBuffer());
 }
 
 async function generatePollinations(variant, outPath) {

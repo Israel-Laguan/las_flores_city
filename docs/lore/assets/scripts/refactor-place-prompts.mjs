@@ -21,13 +21,8 @@ const APPLY = process.argv.includes("--apply");
 const VERBOSE = process.argv.includes("--verbose");
 
 // From the style guide
-const STYLE_TOKEN =
-  "Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, grounded human anatomy with natural asymmetry, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k";
-
 const NEGATIVE_PROMPT =
   "photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches";
-
-const LIGHTING = "intense vertical tropical sunlight casting short sharp shadows";
 
 // --- Parse a prompt file ---
 
