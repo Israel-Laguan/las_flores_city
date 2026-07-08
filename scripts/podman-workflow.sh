@@ -241,13 +241,15 @@ run_server_test() {
     
     # Get container IPs
     OLTP_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-postgres-oltp)
+    OLAP_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-postgres-olap)
     REDIS_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-redis)
-    
+
     podman run --rm \
         --network las-flores-net \
         -v "$(pwd):/app" \
         -w /app \
         -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@${OLTP_IP}:5432/las_flores" \
+        -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@${OLAP_IP}:5432/las_flores_analytics" \
         -e REDIS_URL="redis://${REDIS_IP}:6379" \
         -e NODE_ENV=test \
         node:20 \

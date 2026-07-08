@@ -1,0 +1,33 @@
+---
+name: Dragon Head (Hong Kou)
+type: portrait
+size: 1024x1024
+source: docs/lore/figures/dragon_head/dragon_head.md
+target: `portrait_urls[].url` in `content/characters/char_dragon_head_hong_kou.yaml`
+consumer: portrait
+---
+
+
+# Prompt: Dragon Head (Hong Kou)
+
+[CONSUMER: portrait]
+**Type:** portrait
+**Source:** docs/lore/figures/dragon_head_hong_kou.md
+**Target field:** `portrait_urls[].url` in `content/characters/char_dragon_head_hong_kou.yaml`
+**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+
+## Prompt (Draft)
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a tall 65-year-old chinese Photorealistic portrait of Dragon Head (Hong Kou). Her frame is lean, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, cold penetrating, heavy-lidded. Her expression is cold, as she regards the viewer with measured stillness. Her silver-white cropped hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practica. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+## Prompt
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a tall  65-year-old chinese Photorealistic portrait of Dragon Head (Hong Kou). Her frame is lean, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, cold penetrating, heavy-lidded. Her expression is cold, as she regards the viewer with cold, measured stillness. Her silver-white cropped hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+## Negative Prompt
+--no neon, no androids, no clean backgrounds, no modern clothing
+
+## Variations
+
+- [ ] Dragon Head (Hong Kou) in a meeting, reviewing documents with colleagues
+- [ ] Dragon Head (Hong Kou) considering a strategic decision, weighing options thoughtfully
+- [ ] Dragon Head (Hong Kou) in a business meeting, collaborating with team members on a strategy
+

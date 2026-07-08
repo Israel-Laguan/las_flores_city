@@ -293,6 +293,24 @@ export const YAMLCharacterSchema = z.object({
     expression: z.string().max(50).optional(),
   })).optional(),
   atlas_url: z.string().optional(),
+  biometric_refs: z.object({
+    horizontal_face_sheet: z.string().url().optional(),
+    vertical_face_sheet: z.string().url().optional(),
+    body_sheet: z.string().url().optional(),
+  }).optional(),
+  asset_manifest: z.object({
+    body_shape: z.string().optional(),
+    ethnicity: z.string().optional(),
+    face_base_url: z.string().url().optional(),
+    hair_front_url: z.string().url().optional(),
+    hair_back_url: z.string().url().optional(),
+    outfits: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      pose_urls: z.record(z.string(), z.string().url()),
+    })).optional(),
+    expression_strip_url: z.string().url().optional(),
+  }).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),

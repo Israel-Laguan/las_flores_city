@@ -22,14 +22,28 @@ export function resolvePromptFile(prompt_rel: string): string {
  * Returns all three prompt root directories:
  * 1. The existing ui-concepts root (respecting PROMPT_ROOT env var)
  * 2. docs/lore/figures — character portrait prompts
- * 3. docs/lore/landmarks — location background prompts
+ * 3. docs/lore/districts/*\/landmarks — location background prompts
  */
 export function getPromptRoots(): string[] {
   const cwd = process.cwd();
+  const districtsDir = path.resolve(cwd, 'docs/lore/districts');
+  const landmarkDirs: string[] = [];
+  try {
+    const districtNames = require('node:fs').readdirSync(districtsDir);
+    for (const d of districtNames) {
+      const landmarksPath = path.join(districtsDir, d, 'landmarks');
+      try {
+        if (require('node:fs').statSync(landmarksPath).isDirectory()) {
+          landmarkDirs.push(landmarksPath);
+        }
+      } catch { /* skip non-dir entries */ }
+    }
+  } catch { /* districts dir may not exist */ }
   return [
     getPromptRoot(),
     path.resolve(cwd, 'docs/lore/figures'),
-    path.resolve(cwd, 'docs/lore/landmarks'),
+    ...landmarkDirs,
+    path.resolve(cwd, 'docs/lore/shared/assets'),
   ];
 }
 
@@ -41,6 +55,7 @@ export const DEFAULT_DIMENSIONS: Record<string, { width: number; height: number 
   portrait: { width: 832, height: 1248 },
   'phone-wallpaper': { width: 752, height: 1392 },
   'app-icon': { width: 1024, height: 1024 },
+  thematic: { width: 1280, height: 720 },
 };
 
 export const SUPPORTED_RESOLUTIONS = [

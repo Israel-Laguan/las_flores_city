@@ -1,0 +1,84 @@
+# Body Shape Registry
+# Defines the skeletal silhouettes used as mannequin templates.
+# Each entry maps to characters who would use that body type.
+
+body_shapes:
+  m_slim:
+    label: "Male, lean build"
+    skeletal_description: "narrow shoulders, lean torso, slim limbs, average height"
+    height_range: "170-185cm"
+    characters:
+      - diego_huaman
+      - carlos_konibo
+      - juan_perez
+      - diego_sulca
+
+  m_average:
+    label: "Male, average build"
+    skeletal_description: "moderate shoulders, average torso mass, proportional limbs"
+    height_range: "170-180cm"
+    characters:
+      - alberto_santiago
+      - emilio_navarro
+      - javier_mendoza
+
+  m_heavy:
+    label: "Male, heavy-set frame"
+    skeletal_description: "broad heavy shoulders, soft heavy-set midsection, thick neck"
+    height_range: "175-190cm"
+    characters:
+      - don_pedro
+      - chief_inspector_adeyemi
+      - carlos_alberto_hernandez
+
+  m_athletic:
+    label: "Male, athletic build"
+    skeletal_description: "wide shoulders, developed chest, narrow waist, muscular limbs"
+    height_range: "178-195cm"
+    characters:
+      - alejandro_diaz
+      - emilio_santos
+
+  f_slim:
+    label: "Female, slim build"
+    skeletal_description: "slim torso, narrow hips, lean limbs, average height"
+    height_range: "160-175cm"
+    characters:
+      - daiyu_liu
+      - ana_kim
+      - anneliese_jansen
+      - elena_torres
+
+  f_curvy:
+    label: "Female, fuller figure"
+    skeletal_description: "wider hips, fuller torso, softer midsection, shorter stature"
+    height_range: "155-170cm"
+    characters:
+      - fatima_el_kholi
+      - isabella_vargas
+      - isadora_morales
+
+  f_athletic:
+    label: "Female, athletic frame"
+    skeletal_description: "inverted-triangle frame, wide shoulders tapering to narrow hips"
+    height_range: "165-180cm"
+    characters:
+      - karla
+      - camila_reyes
+      - claire_moreau
+
+  child:
+    label: "Child proportions (unisex)"
+    skeletal_description: "smaller frame, larger head-to-body ratio, shorter limbs"
+    height_range: "120-150cm"
+    characters:
+      - ana_student
+      - carlos_student
+
+  elderly:
+    label: "Elderly, stooped frame"
+    skeletal_description: "thinner limbs, slight stoop, reduced muscle mass, slower proportions"
+    height_range: "155-175cm"
+    characters:
+      - kusi
+      - annabella_van_der_meer

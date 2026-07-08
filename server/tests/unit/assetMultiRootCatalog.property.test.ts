@@ -124,7 +124,7 @@ const promptFilenamesArb = (minFiles = 0, maxFiles = 5): fc.Arbitrary<string[]> 
 /** The three canonical root paths used in tests. */
 const ROOT_UI = '/app/docs/lore/assets/ui-concepts';
 const ROOT_FIGURES = '/app/docs/lore/figures';
-const ROOT_LANDMARKS = '/app/docs/lore/landmarks';
+const ROOT_LANDMARKS = '/app/docs/lore/districts/city/landmarks';
 const ALL_ROOTS = [ROOT_UI, ROOT_FIGURES, ROOT_LANDMARKS];
 
 /**

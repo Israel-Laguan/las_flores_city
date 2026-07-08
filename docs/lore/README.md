@@ -40,17 +40,17 @@ docs/lore/
 │       ├── characters.txt  # Character portrait prompts
 │       └── scenes.txt      # Key story moment prompts
 │
-├── companies/
-│   ├── european/          # Dutch/European investor entities
-│   ├── lw_group/          # Chinese state-linked conglomerate
-│   └── chinese/           # Independent Chinese companies
-├── partnerships/          # Public-Private Partnerships (PPPs)
-├── media/                 # Newspapers & journalism
-├── platforms/             # Social media (non-interactive, referenced in ads/lore)
-├── organizations/         # Civil society & activist groups
-├── humanity_first/        # Dedicated folder — global movement
+├── organizations/         # Power groups hub
+│   ├── companies/         # All companies (origin documented in each file)
+│   ├── families/          # Powerful family dynasties
+│   ├── movements/         # Global movements (e.g. humanity_first)
+│   ├── civil_society/     # Civil society & activist groups
+│   ├── criminal/          # Criminal organizations
+│   └── partnerships/      # Public-Private Partnerships (PPPs)
+├── media/                 # Information channels
+│   ├── press/             # Newspapers & magazines
+│   └── platforms/         # Social media (non-interactive, referenced in ads/lore)
 ├── communities/           # Ethnic/cultural community profiles
-├── families/              # Powerful family dynasties
 ├── figures/               # Key individual profiles
 ├── districts/             # City district profiles (11 districts)
 ├── landmarks/             # Detailed landmark profiles by district
@@ -72,75 +72,75 @@ docs/lore/
 ### 🇪🇺 European / USA Interests
 | Entity | Type | Key Function |
 |---|---|---|
-| [Van der Meer Mining](companies/european/van_der_meer_mining.md) | Mining (GLC subsidiary) | Lithium extraction, 2 mines |
-| [Neptune's Haven B.V.](companies/european/neptunes_haven.md) | Port Operations | Dutch pier management |
-| [EnerGlobe Inc.](companies/european/energlobe.md) | Energy Corp | Renewable/sustainable energy |
-| [EBF](partnerships/las_flores_dam_authority.md) | Water/Energy | Manages San Miguel Dam |
+| [Van der Meer Mining](organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Mining (GLC subsidiary) | Lithium extraction, 2 mines |
+| [Neptune's Haven B.V.](organizations/companies/neptunes_haven/neptunes_haven.md) | Port Operations | Dutch pier management |
+| [EnerGlobe Inc.](organizations/companies/energlobe/energlobe.md) | Energy Corp | Renewable/sustainable energy |
+| [EBF](organizations/partnerships/las_flores_dam_authority/las_flores_dam_authority.md) | Water/Energy | Manages San Miguel Dam |
 
 ### 🇨🇳 Chinese State / LW Group
 | Entity | Type | Key Function |
 |---|---|---|
-| [LW Group](companies/lw_group/overview.md) | Conglomerate | Port, airport, energy, mining |
-| [Minera Estrella](companies/lw_group/minera_estrella.md) | Mining JV | Primary lithium extraction |
-| [Jade Dragon Ports](companies/lw_group/jade_dragon_ports.md) | Port Logistics | Port infrastructure PPP |
-| [Great Dragon Energy](companies/lw_group/great_dragon_energy.md) | Energy | Rio Grande Dam |
-| [Electra Battery Factory](companies/lw_group/electra_battery_factory.md) | Manufacturing | Lithium-to-battery pipeline |
+| [LW Group](organizations/companies/overview/overview.md) | Conglomerate | Port, airport, energy, mining |
+| [Minera Estrella](organizations/companies/minera_estrella/minera_estrella.md) | Mining JV | Primary lithium extraction |
+| [Jade Dragon Ports](organizations/companies/jade_dragon_ports/jade_dragon_ports.md) | Port Logistics | Port infrastructure PPP |
+| [Great Dragon Energy](organizations/companies/great_dragon_energy/great_dragon_energy.md) | Energy | Rio Grande Dam |
+| [Electra Battery Factory](organizations/companies/electra_battery_factory/electra_battery_factory.md) | Manufacturing | Lithium-to-battery pipeline |
 
 ### 🇨🇳 Independent Chinese Companies
 | Entity | Type | Key Function |
 |---|---|---|
-| [Zephyr Renewables](companies/chinese/zephyr_renewables.md) | Renewables | Solar & wind installations |
-| [Autopia Motors](companies/chinese/autopia_motors.md) | EV Manufacturer | AI-enhanced electric vehicles |
-| [Lotus Capital](companies/chinese/lotus_capital.md) | Investment Firm | VC for local startups |
-| [NetWave](companies/chinese/netwave.md) | Telecom | High-speed internet |
-| [AquaDragon](companies/chinese/aquadragon.md) | Water Management | Water distribution |
-| [Jade Phoenix Tech](companies/chinese/jade_phoenix_technologies.md) | Mining Automation | AI/robots for mines |
-| [Dragon Phoenix Trading](companies/chinese/dragon_phoenix_trading.md) | Import/Export | China–Las Flores trade |
+| [Zephyr Renewables](organizations/companies/zephyr_renewables/zephyr_renewables.md) | Renewables | Solar & wind installations |
+| [Autopia Motors](organizations/companies/autopia_motors/autopia_motors.md) | EV Manufacturer | AI-enhanced electric vehicles |
+| [Lotus Capital](organizations/companies/lotus_capital/lotus_capital.md) | Investment Firm | VC for local startups |
+| [NetWave](organizations/companies/netwave/netwave.md) | Telecom | High-speed internet |
+| [AquaDragon](organizations/companies/aquadragon/aquadragon.md) | Water Management | Water distribution |
+| [Jade Phoenix Tech](organizations/companies/jade_phoenix_technologies/jade_phoenix_technologies.md) | Mining Automation | AI/robots for mines |
+| [Dragon Phoenix Trading](organizations/companies/dragon_phoenix_trading/dragon_phoenix_trading.md) | Import/Export | China–Las Flores trade |
 
 ### 🏛️ Public-Private Partnerships
 | Entity | Partners | Key Function |
 |---|---|---|
-| [Dam Authority](partnerships/las_flores_dam_authority.md) | Great Dragon Energy + EBF + Governor | Water & hydroelectric |
-| [Airport Authority](partnerships/las_flores_airport_authority.md) | LFAA + LW Logistics | Air cargo & travel |
+| [Dam Authority](organizations/partnerships/las_flores_dam_authority/las_flores_dam_authority.md) | Great Dragon Energy + EBF + Governor | Water & hydroelectric |
+| [Airport Authority](organizations/partnerships/las_flores_airport_authority/las_flores_airport_authority.md) | LFAA + LW Logistics | Air cargo & travel |
 
 ### 📰 Media & Platforms
 | Entity | Type | Notes |
 |---|---|---|
-| [El Informador](media/el_informador.md) | Newspaper | Voice of marginalized communities |
-| [Las Flores Chronicle](media/las_flores_chronicle.md) | Magazine | Elite gossip & society |
-| [Social Media Ecosystem](media/social_media_ecosystem.md) | Overview | Comprehensive platform analysis |
-| [LinkPulse](platforms/linkpulse.md) | Social Media | European intellectual vibe |
-| [PlayNetix](platforms/playnetix.md) | Streaming/Gaming | Gamified youth platform |
-| [ShénShǒu 神兽](platforms/shenshou.md) | Social Commerce | Chinese AR + e-commerce |
-| [Vitrina](platforms/vitrina.md) | Video/Image Sharing | Latin American community platform |
-| [VoxStream](platforms/voxstream.md) | Professional Streaming | European/American serious content |
+| [El Informador](media/press/el_informador/el_informador.md) | Newspaper | Voice of marginalized communities |
+| [Las Flores Chronicle](media/press/las_flores_chronicle/las_flores_chronicle.md) | Magazine | Elite gossip & society |
+| [Social Media Ecosystem](media/social_media_ecosystem/social_media_ecosystem.md) | Overview | Comprehensive platform analysis |
+| [LinkPulse](media/platforms/linkpulse/linkpulse.md) | Social Media | European intellectual vibe |
+| [PlayNetix](media/platforms/playnetix/playnetix.md) | Streaming/Gaming | Gamified youth platform |
+| [ShénShǒu 神兽](media/platforms/shenshou/shenshou.md) | Social Commerce | Chinese AR + e-commerce |
+| [Vitrina](media/platforms/vitrina/vitrina.md) | Video/Image Sharing | Latin American community platform |
+| [VoxStream](media/platforms/voxstream/voxstream.md) | Professional Streaming | European/American serious content |
 
 ### ✊ Civil Organizations
 | Entity | Focus | Leader |
 |---|---|---|
-| [COFAVIC](organizations/cofavic.md) | Human Rights / Victims | Laura Rodriguez |
-| [Fundación Esperanza](organizations/fundacion_esperanza.md) | Sustainable Development | Board-led |
-| [GreenWatch](organizations/greenwatch.md) | Environmental Advocacy | Maria Lopez |
-| [CJS](organizations/cjs.md) | Indigenous Rights | Ana Ramirez |
-| [Músicos en Acción](organizations/musicos_en_accion.md) | Music Activism | Sofia Diaz |
+| [COFAVIC](organizations/civil_society/cofavic/cofavic.md) | Human Rights / Victims | Laura Rodriguez |
+| [Fundación Esperanza](organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md) | Sustainable Development | Board-led |
+| [GreenWatch](organizations/civil_society/greenwatch/greenwatch.md) | Environmental Advocacy | Maria Lopez |
+| [CJS](organizations/civil_society/cjs/cjs.md) | Indigenous Rights | Ana Ramirez |
+| [Músicos en Acción](organizations/civil_society/musicos_en_accion/musicos_en_accion.md) | Music Activism | Sofia Diaz |
 
 ### 🔪 Criminal Organizations
 
 | Entity | Type | Leader |
 |---|---|---|
-| [Flowers Syndicate](organizations/flowers_syndicate.md) | Street Gang / Criminal Syndicate | Dong van der Meer |
+| [Flowers Syndicate](organizations/criminal/flowers_syndicate/flowers_syndicate.md) | Street Gang / Criminal Syndicate | Dong van der Meer |
 
 ### 🌍 Global Movements
 | Entity | Scope | Status in 2077 |
 |---|---|---|
-| [Humanity First](humanity_first/overview.md) | Global movement | Deeply embedded in Las Flores culture |
+| [Humanity First](organizations/movements/humanity_first/overview/overview.md) | Global movement | Deeply embedded in Las Flores culture |
 
 ### 👨‍👩‍👧‍👦 Communities & Families
 | Entry | Type |
 |---|---|
 | [Chinese Community](communities/chinese_community.md) | Cultural community profile |
 | [Dutch Community](communities/dutch_community.md) | Cultural community profile |
-| [Van der Meer Family](families/van_der_meer.md) | Dynasty profile |
+| [Van der Meer Family](organizations/families/van_der_meer/van_der_meer.md) | Dynasty profile |
 | [Dong van der Meer](figures/dong_van_der_meer.md) | Key figure (criminal) |
 | [Constitution Backstory](figures/constitution_backstory.md) | Historical event |
 | [Evelyn Ruthenberg](figures/evelyn_ruthenberg.md) | Whistleblower, Luz del Rio engineer |
@@ -218,3 +218,40 @@ Use these tags when referencing lore in dialogue YAML or vault entries:
 - `#cover_up` — corporate and political cover-up
 - `#trial` — Minera Estrella tribunal
 - `#restoration` — cleanup and rehabilitation efforts
+---
+
+## Lore folder convention
+
+### Figures
+Each character/figure lives in its own folder:
+
+```
+docs/lore/figures/<name>/
+  <name>.md          # lore / description
+  <name>.prompt.md   # generated asset prompt
+  assets/            # generated images, optional
+```
+
+Example: `docs/lore/figures/aisha_al_sayed/aisha_al_sayed.md`
+
+### Landmarks
+Each landmark lives inside its owning district, organized as:
+
+```
+docs/lore/districts/<district>/landmarks/<name>/
+  <name>.md
+  <name>.prompt.md
+  assets/
+```
+
+Example: `docs/lore/districts/city/landmarks/plaza_de_la_constitucion/plaza_de_la_constitucion.md`
+
+Cross-district natural spaces (rivers, mountains, forests) are placed in the
+primary owning district with `adjacent_districts` noted in frontmatter.
+
+### Why this layout?
+- Landmarks nest in their district (`districts/<d>/landmarks/`), which makes
+  district → scene → landmark a natural hierarchy.
+- Keeps related files together (lore, prompt, assets).
+- Matches the recursive discovery used by `docs/lore/assets/scripts/generate-drafts-unified.mjs`.
+- Matches the per-character asset routing already expected by the draft generator.

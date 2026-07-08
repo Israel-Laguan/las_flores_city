@@ -1,0 +1,476 @@
+{
+  "audit_date": "2026-07-07",
+  "reference_matrix_combos": [
+    {"character": "Miguel", "face": "square", "jaw": "strong", "nose": "straight", "eyes": "deep-set"},
+    {"character": "Carlos", "face": "oval", "jaw": "soft", "nose": "straight", "eyes": "round"},
+    {"character": "Ana", "face": "angular", "jaw": "defined", "nose": "narrow", "eyes": "almond"},
+    {"character": "Isabella", "face": "angular", "jaw": "sharp", "nose": "straight", "eyes": "narrow"},
+    {"character": "Alex", "face": "angular", "jaw": "sharp", "nose": "straight", "eyes": "deep-set"},
+    {"character": "Mateo", "face": "round", "jaw": "soft", "nose": "wide", "eyes": "hooded"},
+    {"character": "Rosa", "face": "heart", "jaw": "pointed", "nose": "curved", "eyes": "round"}
+  ],
+  "characters": [
+    {
+      "name": "Carlos Lacan",
+      "age": 24,
+      "age_appropriate": true,
+      "ethnicity": "European/French-Caribbean",
+      "ethnicity_consistent": true,
+      "face_shape": "oval",
+      "jaw": "soft",
+      "nose": "pointed",
+      "eyes": "narrow",
+      "build": "lean-wiry",
+      "skin": "clear",
+      "hair": "wavy",
+      "has_imperfection": false,
+      "issues": [
+        "Lore has NO face geometry — all axes assigned to avoid duplicates",
+        "NO asymmetric/imperfect feature in lore — must add one per VST rules",
+        "French-Caribbean descent: appropriate for name Carlos (Spanish) + Lacan (French)"
+      ]
+    },
+    {
+      "name": "Carolina Ramirez",
+      "age": 57,
+      "age_appropriate": true,
+      "ethnicity": "Latina (Las Flores native, born ~2020s)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Age ~57 at 2077 — appropriate for district official, must show aging per VST rules",
+        "Ramirez is consistent with Latina identity"
+      ]
+    },
+    {
+      "name": "Cecilia Perez",
+      "age": 24,
+      "age_appropriate": true,
+      "ethnicity": "Latina (Las Flores native, born ~2025)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore (cecilia_biologist.md deprecated, points here)",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Died at 24 — age appropriate",
+        "Perez surname consistent with Latina identity"
+      ]
+    },
+    {
+      "name": "Chief Inspector Adeyemi",
+      "age": 50,
+      "age_appropriate": true,
+      "ethnicity": "Nigerian/Yoruba",
+      "ethnicity_consistent": true,
+      "face_shape": "angular",
+      "jaw": "chiseled",
+      "nose": "straight",
+      "eyes": "deep-set",
+      "build": "tall-skinny",
+      "skin": "smooth",
+      "hair": "curly",
+      "has_imperfection": true,
+      "issues": [
+        "Age not stated — estimated ~50 from career trajectory (rookie to chief inspector over decades)",
+        "Lore describes 'strong brow and high cheekbones' — cheekbone axis not in 4-axis combo",
+        "VST requires men over 40 to have receding hairline/gray/thicker brows — not specified",
+        "Adeyemi (Yoruba) name consistent with Nigerian ethnicity"
+      ]
+    },
+    {
+      "name": "Claire Moreau",
+      "age": 45,
+      "age_appropriate": true,
+      "ethnicity": "French",
+      "ethnicity_consistent": true,
+      "face_shape": "heart",
+      "jaw": "defined",
+      "nose": "narrow",
+      "eyes": "almond",
+      "build": "athletic-compact",
+      "skin": "clear",
+      "hair": "wavy",
+      "has_imperfection": false,
+      "issues": [
+        "Lore only states 'chestnut hair, green eyes' — face shape/jaw/nose assigned",
+        "VST requires women over 40 to have subtle lines/brow droop/texture — not in lore",
+        "No asymmetric feature specified — must add one",
+        "Moreau is consistent with French ethnicity"
+      ]
+    },
+    {
+      "name": "Councilwoman Ana Silva",
+      "age": 55,
+      "age_appropriate": true,
+      "ethnicity": "Latina",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Age estimated ~55 — progressive councilwoman, appropriate",
+        "Silva consistent with Latina identity; do NOT confuse with existing 'Ana' in reference matrix (Ana Kim)"
+      ]
+    },
+    {
+      "name": "Daiyu Liu",
+      "age": 25,
+      "age_appropriate": true,
+      "ethnicity": "Chinese",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Mid-20s university student — age appropriate",
+        "Liu is consistent with Chinese ethnicity"
+      ]
+    },
+    {
+      "name": "Dr. Maria Hernandez",
+      "age": 55,
+      "age_appropriate": true,
+      "ethnicity": "Latina",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Professor — age estimated ~55, appropriate",
+        "Hernandez consistent with Latina identity"
+      ]
+    },
+    {
+      "name": "Dragon Head (Hong Kou)",
+      "age": 60,
+      "age_appropriate": true,
+      "ethnicity": "Chinese",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Age estimated ~60 as long-standing mafia boss",
+        "Hong Kou consistent with Chinese ethnicity"
+      ]
+    },
+    {
+      "name": "El Caimán",
+      "age": 55,
+      "age_appropriate": true,
+      "ethnicity": "Latina",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Age estimated ~55 as syndicate leader",
+        "Spanish-language nickname consistent with Latina identity"
+      ]
+    },
+    {
+      "name": "Elena Torres",
+      "age": 75,
+      "age_appropriate": true,
+      "ethnicity": "Latina (bilingual Spanish-Mandarin)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Born ~2002, so ~75 in 2077 — must show significant aging per VST rules",
+        "Torres consistent with Latina identity; bilingual background from CLM work"
+      ]
+    },
+    {
+      "name": "Elisabeth van der Meer",
+      "age": 62,
+      "age_appropriate": true,
+      "ethnicity": "Dutch",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Born ~2015, so ~62 in 2077 — must show aging per VST rules",
+        "Van der Meer consistent with Dutch ethnicity"
+      ]
+    },
+    {
+      "name": "Emilio Navarro",
+      "age": 49,
+      "age_appropriate": true,
+      "ethnicity": "Latina (Las Flores native)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore beyond 'brown hair styled messily, warm smile'",
+        "CRITICAL: Most VST biometric axes undefined",
+        "Lore mentions 'messy brown hair' — partial data only",
+        "Navarro consistent with Latina identity; born and raised in Las Flores"
+      ]
+    },
+    {
+      "name": "Emilio Reyes",
+      "age": 60,
+      "age_appropriate": true,
+      "ethnicity": "Latina",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Age estimated ~60 as councilman/judge",
+        "Reyes consistent with Latina identity"
+      ]
+    },
+    {
+      "name": "Emilio Santos",
+      "age": 67,
+      "age_appropriate": true,
+      "ethnicity": "Latina (Pacific District prominent family)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Born ~2010s, drew into politics in late forties — age ~67 in 2077",
+        "Santos consistent with Latina identity"
+      ]
+    },
+    {
+      "name": "Ethan Zhang-Morales",
+      "age": 21,
+      "age_appropriate": true,
+      "ethnicity": "Mixed Chinese-Latino",
+      "ethnicity_consistent": true,
+      "face_shape": "round",
+      "jaw": "soft",
+      "nose": "wide",
+      "eyes": "round",
+      "build": "soft-rounded",
+      "skin": "clear",
+      "hair": "straight",
+      "has_imperfection": true,
+      "issues": [
+        "Lore provides good detail: 'somewhat chubby, rounded face, noticeable double chin, short messy black hair, round glasses, expressive brown eyes'",
+        "COMBO RISK: round/soft/wide/round matches Mateo (round/soft/wide/hooded) on 3 of 4 axes — eyes differ (round vs hooded) so technically unique, but very close",
+        "Glasses are an accessory — acceptable per VST tech rules",
+        "Zhang-Morales consistent with mixed Chinese-Latino heritage"
+      ]
+    },
+    {
+      "name": "Evelyn Ruthenberg",
+      "age": 48,
+      "age_appropriate": true,
+      "ethnicity": "German/Latina (Ruthenberg surname suggests German descent)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore despite being a central character",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Born ~2029, so ~48 in 2077 — must show some aging per VST rules",
+        "Ruthenberg surname suggests German/European descent; context implies Latina or mixed",
+        "Vigilante lifestyle should show scars/weathering — not mentioned"
+      ]
+    },
+    {
+      "name": "Fatima El-Kholi",
+      "age": 38,
+      "age_appropriate": true,
+      "ethnicity": "Egyptian/Middle Eastern",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Late 30s — age appropriate",
+        "El-Kholi consistent with Egyptian/Arab ethnicity"
+      ]
+    },
+    {
+      "name": "Hongbin Li",
+      "age": 32,
+      "age_appropriate": true,
+      "ethnicity": "Chinese (Shanghai)",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "N/A",
+      "build": "N/A",
+      "skin": "N/A",
+      "hair": "N/A",
+      "has_imperfection": false,
+      "issues": [
+        "CRITICAL: Zero physical description in lore",
+        "CRITICAL: All 10 VST biometric axes undefined",
+        "Early 30s — age appropriate",
+        "Li consistent with Chinese ethnicity"
+      ]
+    },
+    {
+      "name": "Isabella Cortez",
+      "age": 28,
+      "age_appropriate": true,
+      "ethnicity": "Latina",
+      "ethnicity_consistent": true,
+      "face_shape": "N/A",
+      "jaw": "N/A",
+      "nose": "N/A",
+      "eyes": "round",
+      "build": "lean",
+      "skin": "clear",
+      "hair": "wavy",
+      "has_imperfection": false,
+      "issues": [
+        "Lore provides partial detail: 'petite 5'3\", slender yet curvy, long wavy chestnut hair, sparkling green eyes, golden sun-kissed glow'",
+        "COMBO RISK: Isabella Cortez shares name with reference matrix 'Isabella' (Isabella Vargas) — could cause confusion in prompt generation",
+        "Round eyes assigned but nose/jaw/face shape undefined — must complete",
+        "Cortez consistent with Latina identity",
+        "Note: Substance abuse history mentioned — could inform skin/eye imperfections"
+      ]
+    }
+  ],
+  "duplicate_check": {
+    "potential_overlaps": [
+      {
+        "pair": "Ethan Zhang-Morales vs Mateo (reference)",
+        "ethan": {"face": "round", "jaw": "soft", "nose": "wide", "eyes": "round"},
+        "mateo": {"face": "round", "jaw": "soft", "nose": "wide", "eyes": "hooded"},
+        "shared_axes": 3,
+        "differentiating_axis": "eyes (round vs hooded)",
+        "verdict": "UNIQUE but borderline — consider changing Ethan's nose or jaw"
+      },
+      {
+        "pair": "Isabella Cortez (new) vs Isabella Vargas (reference)",
+        "issue": "Name collision — both named 'Isabella'",
+        "verdict": "NAMESPACE CONFLICT — rename one or add disambiguating detail"
+      },
+      {
+        "pair": "Claire Moreau vs Rosa (reference)",
+        "claire": {"face": "heart", "jaw": "defined", "nose": "narrow", "eyes": "almond"},
+        "rosa": {"face": "heart", "jaw": "pointed", "nose": "curved", "eyes": "round"},
+        "shared_axes": 1,
+        "verdict": "UNIQUE — no conflict"
+      }
+    ],
+    "confirmed_duplicates": [],
+    "note": "15 of 20 characters have NO physical description at all, so duplicate checking is impossible for them. Once biometrics are assigned, new duplicates may emerge."
+  },
+  "summary_statistics": {
+    "total_characters_audited": 20,
+    "with_physical_description": 5,
+    "with_partial_description": 3,
+    "with_no_description": 12,
+    "age_appropriate": 20,
+    "ethnicity_consistent": 20,
+    "has_imperfection": 2,
+    "missing_imperfection": 18,
+    "unique_face_jaw_nose_eyes_combos": 3,
+    "confirmed_duplicates": 0,
+    "name_collisions": 1,
+    "critical_issues": 12,
+    "moderate_issues": 8
+  }
+}
