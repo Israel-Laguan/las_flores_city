@@ -115,7 +115,11 @@ export class GeminiProvider implements LLMProvider {
     }
 
     const data = await response.json();
-    const planJson = JSON.parse(data.candidates[0].content.parts[0].text);
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      throw new Error('Gemini response did not contain any text candidates.');
+    }
+    const planJson = JSON.parse(text);
     return ContentPlanSchema.parse(planJson);
   }
 }
@@ -159,7 +163,11 @@ export class GroqProvider implements LLMProvider {
     }
 
     const data = await response.json();
-    const planJson = JSON.parse(data.choices[0].message.content);
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error('Groq response did not contain any message content.');
+    }
+    const planJson = JSON.parse(content);
     return ContentPlanSchema.parse(planJson);
   }
 }

@@ -68,9 +68,10 @@ adminStoryBuilderRouter.post('/execute', async (req, res) => {
     });
   } catch (error: any) {
     console.error('[story-builder] POST /execute error:', error);
-    res.status(500).json({
+    const isValidationError = error.name === 'ZodError';
+    res.status(isValidationError ? 400 : 500).json({
       success: false,
-      error: error.message || 'Failed to execute plan',
+      error: isValidationError ? error.errors || error.message : (error.message || 'Failed to execute plan'),
       timestamp: new Date().toISOString(),
     });
   }

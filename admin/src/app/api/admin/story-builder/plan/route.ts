@@ -23,9 +23,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Admin story-builder plan error:', error);
     const status = (error as { status?: number })?.status ?? 500;
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status }
-    );
+    return NextResponse.json({
+      success: false,
+      error: (error as Error).message || 'Internal server error'
+    }, { status });
   }
 }

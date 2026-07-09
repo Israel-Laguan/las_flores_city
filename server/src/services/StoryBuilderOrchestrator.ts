@@ -33,6 +33,21 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
         const fullPath = path.join(contentDir, filePath);
         await atomicWriteYaml(fullPath, yamlStr);
         createdFiles.push(filePath);
+      } else if (item.action === 'update') {
+        const filePath = resolveFilePath(item);
+        const fullPath = path.join(contentDir, filePath);
+        try {
+          await fs.access(fullPath);
+          if (item.fields && Object.keys(item.fields).length > 0) {
+            const content = await fs.readFile(fullPath, 'utf-8');
+            const data = yaml.load(content) as Record<string, any>;
+            const updatedData = { ...data, ...item.fields };
+            const updatedYaml = yaml.dump(updatedData, { lineWidth: -1, noRefs: true });
+            await atomicWriteYaml(fullPath, updatedYaml);
+          }
+        } catch {
+          throw new Error(`Cannot update non-existent file: ${filePath}`);
+        }
       } else {
         throw new Error(`Unsupported plan action: ${item.action}`);
       }
@@ -96,7 +111,7 @@ function topologicalSort(items: ContentPlanItem[]): ContentPlanItem[] {
     for (const depId of item.dependsOn) {
       const dep = itemMap.get(depId);
       if (!dep) {
-        throw new Error(`Unknown dependency ${depId} referenced by ${item.name}`);
+        continue;
       }
       visit(dep);
     }
@@ -116,8 +131,17 @@ async function atomicWriteYaml(fullPath: string, content: string): Promise<void>
   const dir = path.dirname(fullPath);
   await fs.mkdir(dir, { recursive: true });
   const tmpPath = fullPath + '.tmp';
-  await fs.writeFile(tmpPath, content, 'utf-8');
-  await fs.rename(tmpPath, fullPath);
+  try {
+    await fs.writeFile(tmpPath, content, 'utf-8');
+    await fs.rename(tmpPath, fullPath);
+  } catch (error) {
+    try {
+      await fs.unlink(tmpPath);
+    } catch {
+      // Ignore unlink error if file didn't exist
+    }
+    throw error;
+  }
 }
 
 async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir: string): Promise<void> {
@@ -126,10 +150,12 @@ async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir
 
   const targetPath = path.join(contentDir, resolveFilePath(fromItem));
   const content = await fs.readFile(targetPath, 'utf-8');
-  const data = yaml.load(content) as Record<string, any>;
+  const data = (yaml.load(content) || {}) as Record<string, any>;
 
   if (link.action === 'add') {
-    if (!data[link.field]) data[link.field] = [];
+    if (!Array.isArray(data[link.field])) {
+      data[link.field] = [];
+    }
     if (!data[link.field].includes(link.toItem)) {
       data[link.field].push(link.toItem);
     }

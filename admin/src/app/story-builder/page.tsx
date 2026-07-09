@@ -50,6 +50,7 @@ const styles = {
   miniInput: {
     padding: '0.4rem', backgroundColor: '#1a1a2e', color: '#00ff00',
     border: '1px solid #333', borderRadius: '3px', fontFamily: 'monospace', fontSize: '0.85rem',
+    width: '100%', boxSizing: 'border-box' as const,
   },
   card: {
     border: '1px solid #333', padding: '1rem', borderRadius: '5px', marginBottom: '0.75rem',
@@ -65,7 +66,7 @@ const styles = {
 
 const stepLabels = ['Describe', 'Review Plan', 'Execute', 'Assets'];
 
-const CONTENT_TYPES = ['character', 'dialogue', 'scene', 'overlay', 'mission', 'story', 'location', 'vault_item', 'gig', 'map', 'story_beat', 'shop_item'];
+const CONTENT_TYPES = ['character', 'dialogue', 'scene', 'overlay', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault'];
 
 function PlanItemCard({ item, index, onFieldChange, onRemove }: {
   item: ContentPlanItem; index: number;
@@ -300,7 +301,7 @@ export default function StoryBuilderPage() {
           </div>
         ) : (
           <div style={styles.errorBox}>
-            <p style={{ fontWeight: 'bold' }}>Execution failed: {executionResult.error}</p>
+            <p style={{ fontWeight: 'bold' }}>Execution failed: {executionResult.error || 'Validation failed'}</p>
           </div>
         )}
 
