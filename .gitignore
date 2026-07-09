@@ -39,7 +39,6 @@ yarn-error.log*
 .kilo/
 .kiro/
 .mimocode/
-docs/superpowers/
 
 # OS
 .DS_Store
