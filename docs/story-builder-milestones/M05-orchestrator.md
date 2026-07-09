@@ -17,13 +17,13 @@ This follows **Option A (Synchronous Execution)** from the design document — t
 
 ## Goals
 
-- [ ] Create `server/src/services/StoryBuilderOrchestrator.ts`
-- [ ] Implement `executePlan(plan)` returning `ExecutionResult`
-- [ ] Topologically sort items by `dependsOn`
-- [ ] Write YAML atomically (`.tmp` + `rename`)
-- [ ] Apply links between content items
-- [ ] Run validation and migration
-- [ ] Verify lint and build pass
+- [x] Create `server/src/services/StoryBuilderOrchestrator.ts`
+- [x] Implement `executePlan(plan)` returning `ExecutionResult`
+- [x] Topologically sort items by `dependsOn`
+- [x] Write YAML atomically (`.tmp` + `rename`)
+- [x] Apply links between content items
+- [x] Run validation and migration
+- [x] Verify lint and build pass
 
 ## Files to Create/Modify
 
@@ -210,13 +210,13 @@ async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir
 
 Before proceeding to Milestone 6, verify:
 
-- [ ] `server/src/services/StoryBuilderOrchestrator.ts` exists
-- [ ] `executePlan()` sorts items, writes YAML, applies links, validates, migrates
-- [ ] Atomic write helper works (`.tmp` + `rename`)
-- [ ] Topological sort handles cycles gracefully (throws clear error)
-- [ ] Link application merges arrays without duplicates
-- [ ] `npm run lint --workspace=server` passes
-- [ ] `npm run build --workspace=server` passes
+- [x] `server/src/services/StoryBuilderOrchestrator.ts` exists
+- [x] `executePlan()` sorts items, writes YAML, applies links, validates, migrates
+- [x] Atomic write helper works (`.tmp` + `rename`)
+- [x] Topological sort handles cycles gracefully (throws clear error)
+- [x] Link application merges arrays without duplicates
+- [x] `npm run lint --workspace=server` passes
+- [x] `npm run build --workspace=server` passes
 
 ## Next Milestone
 

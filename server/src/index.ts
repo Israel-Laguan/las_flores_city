@@ -30,6 +30,7 @@ import { adminCoverageRouter } from './routes/admin-coverage.js';
 import { adminLoreRouter } from './routes/admin-lore.js';
 import { adminStoryBeatsRouter } from './routes/admin-story-beats.js';
 import { adminListViewsRouter } from './routes/admin-list-views.js';
+import { adminStoryBuilderRouter } from './routes/admin-story-builder.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminAnalyticsRouter } from './routes/admin-analytics.js';
 import { testConnections, closeConnections } from './database/connection.js';
@@ -137,6 +138,7 @@ app.use('/admin/coverage', adminCoverageRouter);
 app.use('/admin/lore', adminLoreRouter);
 app.use('/admin/story-beats', adminStoryBeatsRouter);
 app.use('/admin/stats', adminStatsRouter);
+app.use('/admin/story-builder', adminStoryBuilderRouter);
 app.use('/admin/analytics', adminAnalyticsRouter);
 app.use('/admin', adminListViewsRouter);
 
