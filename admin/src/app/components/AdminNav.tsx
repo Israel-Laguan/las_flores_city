@@ -23,6 +23,7 @@ function NavLinksRow() {
       <Link href="/maps" style={navLinkStyle}>🗺️ Maps</Link>
       <Link href="/lore" style={navLinkStyle}>📚 Lore</Link>
       <span style={{ ...navSectionStyle, marginLeft: '0.75rem' }}>Tools:</span>
+      <Link href="/story-builder" style={navLinkStyle}>🏗️ Story Builder</Link>
       <Link href="/editor" style={navLinkStyle}>📝 Editor</Link>
       <Link href="/content-linker" style={navLinkStyle}>🔗 Linker</Link>
       <span style={{ ...navSectionStyle, marginLeft: '0.75rem' }}>System:</span>
