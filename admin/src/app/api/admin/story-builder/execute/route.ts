@@ -8,9 +8,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { plan } = body;
 
-    if (!plan) {
+    if (!Array.isArray(plan) || plan.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'plan is required' },
+        { success: false, error: 'plan must be a non-empty array' },
         { status: 400 }
       );
     }

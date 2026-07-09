@@ -11,7 +11,7 @@ export class ContentPlanService {
 
   async parseDescription(description: string, userId: string): Promise<ContentPlan> {
     // 1. Gather existing content context
-    const context = await this.gatherContext(userId);
+    const context = await this.gatherContext();
 
     // 2. Call LLM provider
     const plan = await this.provider.parseDescription(description, context);
@@ -25,7 +25,7 @@ export class ContentPlanService {
     return validated;
   }
 
-  private async gatherContext(_userId: string): Promise<ExistingContentContext> {
+  private async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues] = await Promise.all([
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM characters ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM scenes ORDER BY name ASC'),

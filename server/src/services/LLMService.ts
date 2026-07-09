@@ -18,9 +18,9 @@ const CONTENT_TYPES = [
 ];
 
 export function buildSystemPrompt(context: ExistingContentContext): string {
-  const existingChars = context.characters.map((c) => c.name).join(', ') || '(none)';
-  const existingScenes = context.scenes.map((s) => s.name).join(', ') || '(none)';
-  const existingDialogues = context.dialogues.map((d) => d.name).join(', ') || '(none)';
+  const existingChars = context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)';
+  const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
+  const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
 
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
@@ -86,7 +86,7 @@ export class GeminiProvider implements LLMProvider {
 
   constructor() {
     this.apiKey = process.env.GEMINI_API_KEY || '';
-    this.model = process.env.GEMINI_MODEL || 'gemini-3-pro-preview';
+    this.model = process.env.GEMINI_MODEL || 'gemini-3.1-pro-preview';
     if (!this.apiKey) {
       throw new Error('GEMINI_API_KEY is required for GeminiProvider');
     }
@@ -96,16 +96,20 @@ export class GeminiProvider implements LLMProvider {
     const systemPrompt = buildSystemPrompt(context);
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': this.apiKey,
+        },
         body: JSON.stringify({
           contents: [
             { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser description: ${description}` }] },
           ],
           generationConfig: { responseMimeType: 'application/json' },
         }),
+        signal: AbortSignal.timeout(30_000),
       }
     );
 
@@ -155,6 +159,7 @@ export class GroqProvider implements LLMProvider {
         temperature: 0.7,
         response_format: { type: 'json_object' },
       }),
+      signal: AbortSignal.timeout(30_000),
     });
 
     if (!response.ok) {

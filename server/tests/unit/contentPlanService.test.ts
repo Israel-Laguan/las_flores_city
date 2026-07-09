@@ -27,11 +27,10 @@ const mockProvider: LLMProvider = {
 
 // Mock queryOLTP to avoid database connection
 jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn().mockResolvedValue({
-    rows: [
-      { id: 'existing-1', name: 'Existing Character' },
-    ],
-  }),
+  queryOLTP: jest.fn()
+    .mockResolvedValueOnce({ rows: [{ id: 'char-1', name: 'Existing Character' }] })
+    .mockResolvedValueOnce({ rows: [{ id: 'scene-1', name: 'Existing Scene', district: 'downtown' }] })
+    .mockResolvedValueOnce({ rows: [{ id: 'dial-1', name: 'Existing Dialogue' }] }),
 }));
 
 describe('ContentPlanService', () => {

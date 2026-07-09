@@ -58,7 +58,18 @@ adminStoryBuilderRouter.post('/execute', async (req, res) => {
       return;
     }
 
-    const plan = ContentPlanSchema.parse(rawPlan);
+    let plan;
+    try {
+      plan = ContentPlanSchema.parse(rawPlan);
+    } catch {
+      res.status(400).json({
+        success: false,
+        error: 'Invalid plan: schema validation failed',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
     const result = await executePlan(plan);
 
     res.json({
@@ -68,10 +79,9 @@ adminStoryBuilderRouter.post('/execute', async (req, res) => {
     });
   } catch (error: any) {
     console.error('[story-builder] POST /execute error:', error);
-    const isValidationError = error.name === 'ZodError';
-    res.status(isValidationError ? 400 : 500).json({
+    res.status(500).json({
       success: false,
-      error: isValidationError ? error.errors || error.message : (error.message || 'Failed to execute plan'),
+      error: 'Failed to execute plan',
       timestamp: new Date().toISOString(),
     });
   }

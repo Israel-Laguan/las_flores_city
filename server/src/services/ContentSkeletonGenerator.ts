@@ -141,6 +141,10 @@ export function resolveFilePath(item: ContentPlanItem): string {
     return 'story_beats.yaml';
   }
 
+  if (!/^[a-z0-9_]+$/.test(item.slug)) {
+    throw new Error(`Invalid slug: ${item.slug}`);
+  }
+
   const dirMap: Record<ContentType, string> = {
     character: 'characters',
     dialogue: 'dialogues',
@@ -151,7 +155,6 @@ export function resolveFilePath(item: ContentPlanItem): string {
     shop_item: 'shop',
     location: 'locations',
     map_tile: 'maps',
-    story_beat: '',
     gig: 'gigs',
     vault: 'vault',
   };

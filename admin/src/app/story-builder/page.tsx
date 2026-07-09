@@ -68,9 +68,26 @@ const stepLabels = ['Describe', 'Review Plan', 'Execute', 'Assets'];
 
 const CONTENT_TYPES = ['character', 'dialogue', 'scene', 'overlay', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault'];
 
+async function postJSON<T>(url: string, payload: unknown): Promise<{ ok: boolean; data?: T; error?: string }> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`HTTP error ${res.status}: ${text || res.statusText}`);
+  }
+  const contentType = res.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error('Expected JSON response from server');
+  }
+  return res.json();
+}
+
 function PlanItemCard({ item, index, onFieldChange, onRemove }: {
   item: ContentPlanItem; index: number;
-  onFieldChange: (i: number, field: keyof ContentPlanItem, value: any) => void;
+  onFieldChange: (i: number, field: keyof ContentPlanItem, value: string) => void;
   onRemove: (i: number) => void;
 }) {
   return (
@@ -126,21 +143,11 @@ export default function StoryBuilderPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/story-builder/plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description }),
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`HTTP error ${res.status}: ${text || res.statusText}`);
-      }
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Expected JSON response from server');
-      }
-      const data = await res.json();
-      if (data.success) {
+      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+        '/api/admin/story-builder/plan',
+        { description }
+      );
+      if (data.success && data.data) {
         setPlan(data.data.plan);
         setStep(2);
       } else {
@@ -158,21 +165,11 @@ export default function StoryBuilderPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/story-builder/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`HTTP error ${res.status}: ${text || res.statusText}`);
-      }
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Expected JSON response from server');
-      }
-      const data = await res.json();
-      if (data.success) {
+      const data = await postJSON<{ success: boolean; data?: any; error?: string }>(
+        '/api/admin/story-builder/execute',
+        { plan }
+      );
+      if (data.success && data.data) {
         setExecutionResult(data.data);
         setStep(4);
       } else {
@@ -185,7 +182,7 @@ export default function StoryBuilderPage() {
     }
   }
 
-  function updateItemField(index: number, field: keyof ContentPlanItem, value: any) {
+  function updateItemField(index: number, field: keyof ContentPlanItem, value: string) {
     if (!plan) return;
     const items = [...plan.items];
     items[index] = { ...items[index], [field]: value };
@@ -305,7 +302,7 @@ export default function StoryBuilderPage() {
           </div>
         )}
 
-        {executionResult.createdFiles.length > 0 && (
+        {(executionResult.createdFiles?.length ?? 0) > 0 && (
           <div style={styles.subsection}>
             <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Created Files</h3>
             {executionResult.createdFiles.map((f: string) => (
@@ -314,7 +311,7 @@ export default function StoryBuilderPage() {
           </div>
         )}
 
-        {executionResult.validationErrors.length > 0 && (
+        {(executionResult.validationErrors?.length ?? 0) > 0 && (
           <div style={styles.subsection}>
             <h3 style={{ color: '#ff4444', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Validation Errors</h3>
             {executionResult.validationErrors.map((e: string, i: number) => (
@@ -323,7 +320,7 @@ export default function StoryBuilderPage() {
           </div>
         )}
 
-        {executionResult.assetTasks.length > 0 && (
+        {(executionResult.assetTasks?.length ?? 0) > 0 && (
           <div style={styles.subsection}>
             <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Asset Needs</h3>
             {executionResult.assetTasks.map((task: any, i: number) => (
@@ -405,8 +402,13 @@ export default function StoryBuilderPage() {
         )}
         {step === 2 && (
           <button
-            style={{ ...styles.button, ...styles.primaryButton }}
+            style={{
+              ...styles.button,
+              ...styles.primaryButton,
+              ...((!plan || plan.items.length === 0) ? styles.disabledButton : {}),
+            }}
             onClick={() => setStep(3)}
+            disabled={!plan || plan.items.length === 0}
           >
             Approve &amp; Execute &rarr;
           </button>

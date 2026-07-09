@@ -148,9 +148,18 @@ async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir
   const fromItem = items.find(i => i.id === link.fromItem);
   if (!fromItem) return;
 
+  const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+  if (DANGEROUS_KEYS.has(link.field)) {
+    throw new Error(`Invalid link field: ${link.field}`);
+  }
+
   const targetPath = path.join(contentDir, resolveFilePath(fromItem));
   const content = await fs.readFile(targetPath, 'utf-8');
-  const data = (yaml.load(content) || {}) as Record<string, any>;
+  const parsed = yaml.load(content);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`Expected a YAML object in ${targetPath}`);
+  }
+  const data = parsed as Record<string, any>;
 
   if (link.action === 'add') {
     if (!Array.isArray(data[link.field])) {
