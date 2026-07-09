@@ -147,7 +147,7 @@ function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: 
           onBlur={handleFieldsBlur}
           placeholder='{"description": "..."}'
         />
-        {fieldsError && <p style={{ color: '#ff6666', fontSize: '0.75rem', marginTop: '0.25rem' }}>Invalid JSON: {fieldsError}</p>}
+        {fieldsError && <p style={{ color: '#ff6666', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldsError}</p>}
       </div>
       {item.assetNeeds.length > 0 && (
         <div style={{ marginTop: '0.5rem' }}>
