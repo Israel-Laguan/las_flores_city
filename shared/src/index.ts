@@ -605,3 +605,17 @@ export type {
   AssetGroupSummary,
   AssetListAllResponse,
 } from './schemas/assets.js';
+
+// ==================== Story Builder ====================
+export {
+  AssetNeedSchema,
+  ContentPlanItemSchema,
+  ContentLinkSchema,
+  ContentPlanSchema,
+} from './schemas/story-builder.js';
+export type {
+  AssetNeed,
+  ContentPlanItem,
+  ContentLink,
+  ContentPlan,
+} from './schemas/story-builder.js';
