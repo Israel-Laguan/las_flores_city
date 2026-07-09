@@ -87,7 +87,7 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
 
 function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: {
   item: ContentPlanItem; index: number;
-  onFieldChange: (i: number, field: keyof ContentPlanItem, value: string) => void;
+  onFieldChange: (i: number, field: 'name' | 'slug' | 'type' | 'action', value: string) => void;
   onFieldsChange: (i: number, fieldsJson: string) => void;
   onRemove: (i: number) => void;
 }) {
@@ -96,7 +96,7 @@ function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: 
 
   function handleFieldsBlur() {
     try {
-      const parsed = JSON.parse(fieldsEditor);
+      JSON.parse(fieldsEditor);
       onFieldsChange(index, fieldsEditor);
       setFieldsError(null);
     } catch (e: any) {
@@ -213,7 +213,7 @@ export default function StoryBuilderPage() {
     }
   }
 
-  function updateItemField(index: number, field: keyof ContentPlanItem, value: string) {
+  function updateItemField(index: number, field: 'name' | 'slug' | 'type' | 'action', value: string) {
     if (!plan) return;
     const items = [...plan.items];
     items[index] = { ...items[index], [field]: value };

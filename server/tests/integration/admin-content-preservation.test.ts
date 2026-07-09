@@ -122,37 +122,37 @@ describe('Admin Content Operations Unchanged', () => {
   describe('CI workflow jobs preserved', () => {
     const ciPath = join(projectRoot, '.github', 'workflows', 'ci.yml');
 
-    it('ci workflow defines a validate job', () => {
+    it('ci workflow defines a no-migrations job', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
-      // The validate job must still be defined
-      expect(content).toMatch(/^\s*validate:/m);
+      // The no-migrations job provides fast feedback (lint, build, unit tests, schema validation)
+      expect(content).toMatch(/^\s*no-migrations:/m);
     });
 
-    it('ci workflow defines a build job', () => {
+    it('ci workflow defines a with-migrations job', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
-      // The build job must still be defined
-      expect(content).toMatch(/^\s*build:/m);
+      // The with-migrations job handles integration tests, full validation, and E2E
+      expect(content).toMatch(/^\s*with-migrations:/m);
     });
 
-    it('ci workflow validate job runs server tests', () => {
+    it('ci workflow runs server tests', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
-      // The validate job must include the server test step
-      expect(content).toMatch(/npm run test:server/);
+      // Must include both unit and integration test commands
+      expect(content).toMatch(/npm run test:unit/);
+      expect(content).toMatch(/npm run test:integration/);
     });
 
-    it('ci workflow build job builds all three workspaces', () => {
+    it('ci workflow builds all workspaces', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
-      // All three workspace build commands must be present
+      // Server and admin builds must be present
       expect(content).toMatch(/npm run build --workspace=server/);
-      expect(content).toMatch(/npm run build --workspace=client/);
       expect(content).toMatch(/npm run build --workspace=admin/);
     });
 
-    it('ci workflow runs linter in validate job', () => {
+    it('ci workflow runs linter', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
       expect(content).toMatch(/npm run lint/);

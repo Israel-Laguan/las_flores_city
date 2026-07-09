@@ -106,6 +106,9 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
     errors.push(...validationResult.errors.map(e => ({ ...e, file: filePath })));
     warnings.push(...validationResult.warnings);
 
+    const xssErrors = checkForXSS(data);
+    errors.push(...xssErrors.map(e => ({ ...e, file: filePath })));
+
     // Skip DB/Redis cross-reference checks in schema-only mode
     if (!schemaOnly) {
       const hasSchemaErrors = validationResult.errors.some(e => e.severity === 'error');
@@ -387,33 +390,15 @@ export async function validateContentString(
 
 export async function validateContent(contentDir: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   console.log(`🔍 Validating content in: ${contentDir}`);
-  
+
   const schemaResult = await validateAllContent(contentDir, schemaOnly);
-  
-  const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
-  const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
-  const allFiles = [...yamlFiles, ...ymlFiles];
-  
-  const allErrors = [...schemaResult.errors];
-  const allWarnings = [...schemaResult.warnings];
-  
-  for (const file of allFiles) {
-    try {
-      const content = await fs.readFile(file, 'utf-8');
-      const data = yaml.load(content);
-      const xssErrors = checkForXSS(data);
-      allErrors.push(...xssErrors.map(e => ({ ...e, file })));
-    } catch (error) {
-      // Skip files that failed schema validation
-    }
-  }
 
   const storyFlow = await validateStoryFlow();
-  allWarnings.push(...storyFlow.issues);
+  const allWarnings = [...schemaResult.warnings, ...storyFlow.issues];
 
   return {
-    valid: allErrors.filter(e => e.severity === 'error').length === 0,
-    errors: allErrors,
+    valid: schemaResult.valid,
+    errors: schemaResult.errors,
     warnings: allWarnings,
   };
 }
