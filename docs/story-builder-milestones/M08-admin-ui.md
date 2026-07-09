@@ -31,27 +31,9 @@ This follows **Option A (Single-Page Wizard)** from the design document — the 
 'use client';
 import { useState } from 'react';
 import AdminNav from '../components/AdminNav';
+import type { ContentPlan, ContentPlanItem } from '@shared/index';
 
 type Step = 1 | 2 | 3 | 4;
-
-interface ContentPlan {
-  id: string;
-  description: string;
-  items: ContentPlanItem[];
-  links: any[];
-  status: string;
-}
-
-interface ContentPlanItem {
-  id: string;
-  type: string;
-  action: string;
-  name: string;
-  slug: string;
-  fields: Record<string, any>;
-  assetNeeds: any[];
-  dependsOn: string[];
-}
 
 export default function StoryBuilderPage() {
   const [step, setStep] = useState<Step>(1);
@@ -71,6 +53,14 @@ export default function StoryBuilderPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ description }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP error ${res.status}: ${text || res.statusText}`);
+      }
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Expected JSON response from server');
+      }
       const data = await res.json();
       if (data.success) {
         setPlan(data.data.plan);
@@ -96,6 +86,14 @@ export default function StoryBuilderPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP error ${res.status}: ${text || res.statusText}`);
+      }
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Expected JSON response from server');
+      }
       const data = await res.json();
       if (data.success) {
         setExecutionResult(data.data);

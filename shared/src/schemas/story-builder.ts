@@ -15,7 +15,7 @@ export const ContentPlanItemSchema = z.object({
   type: contentType,             // 'character' | 'dialogue' | 'scene' | etc.
   action: z.enum(['create', 'update']),
   name: z.string().min(1).max(100),
-  slug: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, { message: 'Slug must contain only lowercase alphanumeric characters and underscores' }),
   fields: z.record(z.string(), z.any()),
   assetNeeds: z.array(AssetNeedSchema).default([]),
   dependsOn: z.array(z.string().uuid()).default([]),  // Optional for MVP

@@ -109,7 +109,7 @@ Before proceeding to Milestone 2, verify:
 - [ ] `shared/src/index.ts` exports all schemas and types
 - [ ] `npm run build --workspace=shared` passes (if build script exists)
 - [ ] `ContentPlan` type is importable: `import { ContentPlan } from '@shared/index'`
-- [ ] Schema validation works: `ContentPlanSchema.parse({ id: '...', description: 'test', items: [] })` succeeds
+- [ ] Schema validation works: `ContentPlanSchema.parse({ id: '550e8400-e29b-41d4-a716-446655440000', description: 'test', items: [] })` succeeds
 
 ## Next Milestone
 

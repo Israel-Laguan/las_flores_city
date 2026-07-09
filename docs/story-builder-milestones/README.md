@@ -32,7 +32,7 @@ Each milestone is a self-contained unit of work with:
 
 ## Architecture Summary
 
-```
+```text
 User input: "Add a bartender named Diego at the Plaza"
                     ↓
 ContentPlanService.parseDescription()  [M3]
@@ -44,7 +44,7 @@ ContentPlan {
     { type: 'dialogue', action: 'create', name: 'Diego bartender intro', ... }
   ],
   links: [
-    { from: 'dialogue', to: 'character', field: 'available_dialogues' }
+    { fromItem: '<dialogue-uuid>', toItem: '<character-uuid>', field: 'available_dialogues', action: 'add' }
   ]
 }
                     ↓

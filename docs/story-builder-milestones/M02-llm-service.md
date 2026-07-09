@@ -32,7 +32,7 @@ This follows **Option C (Pluggable LLM Provider)** from the design document.
 
 ```typescript
 // server/src/services/LLMService.ts
-import type { ContentPlan } from '@shared/index';
+import { ContentPlanSchema, type ContentPlan } from '@shared/index';
 
 export interface ExistingContentContext {
   characters: Array<{ id: string; name: string }>;
@@ -78,6 +78,9 @@ export class GeminiProvider implements LLMProvider {
         }),
       }
     );
+    if (!response.ok) {
+      throw new Error(`Gemini request failed: ${response.status} ${response.statusText}`);
+    }
     // Parse response, validate against ContentPlanSchema
     const data = await response.json();
     const planJson = JSON.parse(data.candidates[0].content.parts[0].text);

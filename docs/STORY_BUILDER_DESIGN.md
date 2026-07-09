@@ -95,7 +95,12 @@ ContentPlan {
     { type: 'dialogue', action: 'create', name: 'Diego bartender intro', fields: {...} }
   ],
   links: [
-    { from: 'dialogue', to: 'character', field: 'available_dialogues' }
+    {
+      fromItem: '<dialogue-item-uuid>',
+      toItem: '<character-item-uuid>',
+      field: 'available_dialogues',
+      action: 'add',
+    }
   ]
 }
                     ↓
@@ -459,25 +464,27 @@ This is enough to start building:
 - Rendering dynamic forms based on `type`
 - Export/import
 
-### What you can safely defer
+### What the MVP hides (but the schema keeps)
 
-- **`slug`**: Nice for URLs/permalinks, but you can generate it on the fly from `name` (or add it later in a migration). Not needed for core functionality.
+The shared Zod schema (`shared/src/schemas/story-builder.ts`) includes `slug`, `assetNeeds`, and `dependsOn` on every plan item, but the **MVP admin UI** hides them to keep the interface simple. These fields are always present in storage — they just get sensible defaults (`slug` derived from name, `assetNeeds: []`, `dependsOn: []`).
 
-- **`assetNeeds`**: Very domain-specific. Only pull this in once you actually have asset management or a pipeline that consumes it. You can model it inside `fields` initially (e.g. `fields.assetNeeds: [...]`) if you need a placeholder.
-
-- **`dependsOn`**: This is relational and adds complexity (graph traversal, topological sort, circular dependency checks, UI for linking). Extremely valuable, but **not day-one**. Start with a flat list. Add dependencies in phase 2 once you feel the pain of manual ordering.
+This means the schema is stable from day one; only the UI presentation evolves:
+- **MVP UI**: Only shows `type`, `name`, `action`, `fields`. Other fields default.
+- **Phase 2 UI**: Expose `slug` (auto-generated) and `status` in the editor.
+- **Phase 3 UI**: Add `dependsOn` visualization and editing (dependency graph).
+- **Phase 4 UI**: Show `assetNeeds` per item with asset status tracking.
 
 ### Recommended evolution path
 
-1. **MVP** (`type + name + fields` + `id` + timestamps)
-2. **Phase 2** → Add `slug` (auto-generated), `status`, `order` / `priority`
-3. **Phase 3** → `dependsOn` (array of IDs), basic validation
-4. **Phase 4** → `assetNeeds`, owners, estimates, etc.
+1. **MVP** — Schema has all fields; UI shows `type + name + action + fields` only
+2. **Phase 2** → Expose `slug` (auto-generated) and `status` in the editor
+3. **Phase 3** → Expose `dependsOn` with dependency graph visualization
+4. **Phase 4** → Expose `assetNeeds` with asset generation status tracking
 
 ### Practical tip
 Make `fields` properly versioned or typed per `type` (either via JSON schema, a simple registry, or TypeScript discriminated unions). This keeps the core minimal while preventing chaos as the system grows.
 
-**Bottom line**: `type + name + fields` is a solid, battle-tested minimal viable shape (very similar to how Notion blocks, Linear issues, or many headless CMS entries start). Add the relational/asset stuff once you have real usage showing you need it.
+**Bottom line**: The full schema (`type + name + fields + slug + assetNeeds + dependsOn`) is the contract from day one. The MVP simply hides the extra fields in the UI, keeping things simple while the storage model is already complete.
 ```
 
 5. **How do we represent "update existing content" safely?** Should the plan include a diff of proposed changes, or just the final state? How do we show the user what will change?

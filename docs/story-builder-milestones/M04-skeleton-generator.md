@@ -39,14 +39,14 @@ type TemplateFn = (item: ContentPlanItem) => string;
 
 const TEMPLATES: Record<ContentType, TemplateFn> = {
   character: (item) => yaml.dump({
-    id: item.fields.id || crypto.randomUUID(),
+    id: item.id,
     name: item.name,
     description: item.fields.description || 'TODO: Add description',
     metadata: { type: 'human', role: 'npc', ...item.fields.metadata },
   }, { lineWidth: -1, noRefs: true }),
 
   dialogue: (item) => yaml.dump({
-    id: item.fields.id || crypto.randomUUID(),
+    id: item.id,
     name: item.name,
     description: item.fields.description || 'TODO: Add description',
     start_node_id: 'start',
@@ -73,14 +73,14 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
   }, { lineWidth: -1, noRefs: true }),
 
   scene: (item) => yaml.dump({
-    id: item.fields.id || crypto.randomUUID(),
+    id: item.id,
     name: item.name,
     description: item.fields.description || 'TODO: Add description',
     district: item.fields.district || 'TODO: Add district',
   }, { lineWidth: -1, noRefs: true }),
 
   overlay: (item) => yaml.dump({
-    id: item.fields.id || crypto.randomUUID(),
+    id: item.id,
     name: item.name,
     description: item.fields.description || 'TODO: Add description',
     target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
@@ -88,7 +88,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
   }, { lineWidth: -1, noRefs: true }),
 
   mission: (item) => yaml.dump({
-    id: item.fields.id || crypto.randomUUID(),
+    id: item.id,
     title: item.name,
     description: item.fields.description || 'TODO: Add description',
     status: 'ACTIVE',
@@ -106,6 +106,10 @@ export function generateYaml(item: ContentPlanItem): string {
 }
 
 export function resolveFilePath(item: ContentPlanItem): string {
+  if (item.type === 'story_beat') {
+    return 'story_beats.yaml';
+  }
+
   const dirMap: Record<ContentType, string> = {
     character: 'characters',
     dialogue: 'dialogues',
@@ -116,7 +120,6 @@ export function resolveFilePath(item: ContentPlanItem): string {
     shop_item: 'shop',
     location: 'locations',
     map_tile: 'maps',
-    story_beat: '',  // story_beats.yaml is a single file
     gig: 'gigs',
     vault: 'vault',
   };

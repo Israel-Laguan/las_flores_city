@@ -69,8 +69,9 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
         const fullPath = path.join(contentDir, filePath);
         await atomicWriteYaml(fullPath, yaml);
         createdFiles.push(filePath);
+      } else {
+        throw new Error(`Unsupported plan action: ${item.action}`);
       }
-      // TODO: Handle 'update' action in Phase 2
     }
 
     // 3. Apply links
@@ -122,16 +123,26 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
 ```typescript
 function topologicalSort(items: ContentPlanItem[]): ContentPlanItem[] {
   const itemMap = new Map(items.map(i => [i.id, i]));
+  const visiting = new Set<string>();
   const visited = new Set<string>();
   const result: ContentPlanItem[] = [];
 
   function visit(item: ContentPlanItem) {
+    if (visiting.has(item.id)) {
+      throw new Error(`Circular dependency detected involving item: ${item.name}`);
+    }
     if (visited.has(item.id)) return;
-    visited.add(item.id);
+
+    visiting.add(item.id);
     for (const depId of item.dependsOn) {
       const dep = itemMap.get(depId);
-      if (dep) visit(dep);
+      if (!dep) {
+        throw new Error(`Unknown dependency ${depId} referenced by ${item.name}`);
+      }
+      visit(dep);
     }
+    visiting.delete(item.id);
+    visited.add(item.id);
     result.push(item);
   }
 
@@ -172,12 +183,12 @@ async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir
   // Apply the link (e.g., add dialogue UUID to scene's available_dialogues)
   if (link.action === 'add') {
     if (!data[link.field]) data[link.field] = [];
-    const itemId = toItem.fields.id;
+    const itemId = toItem.id;
     if (!data[link.field].includes(itemId)) {
       data[link.field].push(itemId);
     }
   } else if (link.action === 'set') {
-    data[link.field] = toItem.fields.id;
+    data[link.field] = toItem.id;
   }
 
   // Write back
