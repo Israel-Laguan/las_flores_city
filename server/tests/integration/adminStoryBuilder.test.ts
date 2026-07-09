@@ -1,9 +1,10 @@
 import { describe, test, expect, jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
 
-// ── Module mocks (hoisted by Jest) ──────────────────────────
+const MOCK_PLAN_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+const MOCK_ITEM_ID = '11111111-2222-3333-4444-555555555555';
+const MOCK_USER_ID = '00000000-0000-0000-0000-000000000001';
 
 jest.mock('../../src/database/connection.js', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [] })),
@@ -17,21 +18,21 @@ jest.mock('../../src/database/redis.js', () => ({
 }));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
-  authAndAdminMiddleware: (_req: any, _res: any, next: any) => {
-    _req.userId = '00000000-0000-0000-0000-000000000001';
+  authAndAdminMiddleware: (_req, _res, next) => {
+    _req.userId = MOCK_USER_ID;
     next();
   },
 }));
 
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
-    parseDescription: jest.fn(async (description: string) => ({
-      id: uuidv4(),
+    parseDescription: jest.fn(async (description) => ({
+      id: MOCK_PLAN_ID,
       description,
       status: 'draft',
       items: [
         {
-          id: uuidv4(),
+          id: MOCK_ITEM_ID,
           type: 'character',
           action: 'create',
           name: 'Diego',
@@ -47,7 +48,7 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
 }));
 
 jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
-  executePlan: jest.fn(async (_plan: any) => ({
+  executePlan: jest.fn(async (_plan) => ({
     success: true,
     createdFiles: ['characters/char_diego.yaml'],
     validationErrors: [],
@@ -56,13 +57,9 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
   })),
 }));
 
-// ── Imports (after mocks) ────────────────────────────────────
-
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
-
-// ── App fixture ──────────────────────────────────────────────
 
 function makeApp() {
   const app = express();
@@ -70,8 +67,6 @@ function makeApp() {
   app.use('/admin/story-builder', adminStoryBuilderRouter);
   return app;
 }
-
-// ── Tests ────────────────────────────────────────────────────
 
 describe('POST /admin/story-builder/plan', () => {
   const app = makeApp();
@@ -121,18 +116,16 @@ describe('POST /admin/story-builder/execute', () => {
   });
 
   test('executes a plan and returns result', async () => {
-    const planId = uuidv4();
-    const itemId = uuidv4();
     const res = await request(app)
       .post('/admin/story-builder/execute')
       .send({
         plan: {
-          id: planId,
+          id: MOCK_PLAN_ID,
           description: 'Test plan',
           status: 'approved',
           items: [
             {
-              id: itemId,
+              id: MOCK_ITEM_ID,
               type: 'character',
               action: 'create',
               name: 'Diego',
