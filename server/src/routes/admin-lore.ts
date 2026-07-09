@@ -374,6 +374,79 @@ adminLoreRouter.get('/file', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// POST /admin/lore/file
+//
+// Saves (creates or overwrites) a lore markdown file.
+// Body: { path: string, content: string }
+//
+// Satisfies: lore file creation/editing from the admin UI
+// ---------------------------------------------------------------------------
+
+adminLoreRouter.post('/file', async (req, res) => {
+  try {
+    const { path: relPath, content } = req.body;
+
+    if (typeof relPath !== 'string' || relPath.trim() === '') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing required field: path',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    if (typeof content !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'Missing required field: content',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const validation = validateLorePath(relPath);
+    if (!validation.valid) {
+      res.status(400).json({
+        success: false,
+        error: validation.reason,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const loreDir = getLoreDir();
+    const absolutePath = path.join(loreDir, relPath);
+
+    if (!absolutePath.startsWith(loreDir + path.sep) && absolutePath !== loreDir) {
+      res.status(400).json({
+        success: false,
+        error: 'Path traversal sequences (..) are not allowed',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const dir = path.dirname(absolutePath);
+    await fs.promises.mkdir(dir, { recursive: true });
+    await fs.promises.writeFile(absolutePath, content, 'utf-8');
+
+    res.json({
+      success: true,
+      data: { path: relPath, saved: true },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[admin-lore] POST /file error:', error);
+    res.status(500).json({
+      success: false,
+      error: message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // GET /admin/lore/search?q=<keyword>
 //
 // Searches all lore markdown files for a case-insensitive substring match.

@@ -17,6 +17,8 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       faction: item.fields.metadata?.faction || 'TODO: Add faction',
       personality: item.fields.metadata?.personality || 'TODO: Add personality',
     },
+    lore_path: `docs/lore/figures/${item.slug}/${item.slug}.md`,
+    narrative_path: `content/characters/char_${item.slug}.md`,
   }, YAML_OPTIONS),
 
   dialogue: (item) => yaml.dump({
@@ -44,6 +46,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
         is_end: true,
       },
     },
+    lore_path: `docs/lore/figures/${item.slug}/${item.slug}.md`,
   }, YAML_OPTIONS),
 
   scene: (item) => yaml.dump({
@@ -55,6 +58,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
     district_subzone: item.fields.district_subzone || item.fields.district || 'TODO: Add district subzone',
     mood: item.fields.mood || 'TODO: Add mood',
     available_dialogues: [],
+    lore_path: `docs/lore/scenes/${item.slug}.md`,
   }, YAML_OPTIONS),
 
   overlay: (item) => yaml.dump({
@@ -63,6 +67,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
     description: item.fields.description || 'TODO: Add description',
     target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
     modifications: [],
+    lore_path: `docs/lore/overlays/${item.slug}.md`,
   }, YAML_OPTIONS),
 
   mission: (item) => yaml.dump({
@@ -70,6 +75,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
     title: item.name,
     description: item.fields.description || 'TODO: Add description',
     status: 'ACTIVE',
+    lore_path: `docs/lore/missions/${item.slug}.md`,
   }, YAML_OPTIONS),
 
   story: (item) => yaml.dump({
@@ -98,6 +104,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
     daytime: item.fields.daytime || 'TODO: Add daytime description',
     nightlife: item.fields.nightlife || 'TODO: Add nightlife description',
     important_places: item.fields.important_places || [],
+    lore_path: `docs/lore/locations/${item.slug}.md`,
   }, YAML_OPTIONS),
 
   map_tile: (item) => yaml.dump({

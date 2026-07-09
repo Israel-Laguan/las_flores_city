@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import type { ContentPlanItem } from '@las-flores/shared';
 import { getFieldsForType, type FieldDefinition } from './FieldDefinitions';
+import LoreViewer from './LoreViewer';
 
 const styles = {
   card: {
@@ -99,6 +101,11 @@ const styles = {
     backgroundColor: '#00ff00',
     color: '#000',
   },
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    color: '#00ff00',
+    border: '1px solid #00ff00',
+  },
   removeButton: {
     padding: '0.3rem 0.6rem',
     borderRadius: '3px',
@@ -159,6 +166,8 @@ function getNestedValue(obj: Record<string, any>, path: string): string {
 export default function ContentCard({ item, index, onFieldChange, onRemove }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
+  const [showLore, setShowLore] = useState(false);
+  const lorePath = item.fields.lore_path || item.fields.narrative_path || null;
 
   function handleFieldChange(field: FieldDefinition, value: string) {
     onFieldChange(index, field.key, value);
@@ -175,9 +184,19 @@ export default function ContentCard({ item, index, onFieldChange, onRemove }: Co
             {item.type} &middot; {item.action}
           </span>
         </div>
-        <button style={styles.removeButton} onClick={() => onRemove(index)}>
-          Remove
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {lorePath && (
+            <button
+              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
+              onClick={() => setShowLore(true)}
+            >
+              View Lore
+            </button>
+          )}
+          <button style={styles.removeButton} onClick={() => onRemove(index)}>
+            Remove
+          </button>
+        </div>
       </div>
 
       <div>
@@ -236,6 +255,10 @@ export default function ContentCard({ item, index, onFieldChange, onRemove }: Co
             </div>
           ))}
         </div>
+      )}
+
+      {showLore && lorePath && (
+        <LoreViewer lorePath={lorePath} onClose={() => setShowLore(false)} />
       )}
     </div>
   );

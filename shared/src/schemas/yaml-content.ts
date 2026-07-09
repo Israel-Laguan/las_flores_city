@@ -37,6 +37,8 @@ export const YAMLCharacterSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: z.string().max(255).optional(),
+  narrative_path: z.string().max(255).optional(),
 });
 
 export type YAMLCharacter = z.infer<typeof YAMLCharacterSchema>;
@@ -50,6 +52,7 @@ export const YAMLDialogueSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: z.string().max(255).optional(),
 });
 
 export type YAMLDialogue = z.infer<typeof YAMLDialogueSchema>;
@@ -71,6 +74,7 @@ export const YAMLOverlaySchema = z.object({
   priority: z.number().int().default(0),
   is_nsfw: z.boolean().default(false),
   lore_ref: z.string().max(255).optional(),
+  lore_path: z.string().max(255).optional(),
 });
 
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
@@ -84,6 +88,7 @@ export const YAMLMissionSchema = z.object({
   written_by: z.string().max(100).optional(),
   aftermath_payload: AftermathSchema.optional().default({}),
   lore_ref: z.string().max(255).optional(),
+  lore_path: z.string().max(255).optional(),
 });
 
 export type YAMLMission = z.infer<typeof YAMLMissionSchema>;
@@ -109,6 +114,7 @@ export const YAMLSceneSchema = z.object({
   available_dialogues: z.array(z.string().uuid()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: z.string().max(255).optional(),
 });
 
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
@@ -143,6 +149,7 @@ export const YAMLLocationSchema = z.object({
     })).optional(),
   }).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: z.string().max(255).optional(),
 });
 
 export type YAMLLocation = z.infer<typeof YAMLLocationSchema>;

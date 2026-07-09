@@ -24,3 +24,30 @@ export async function GET(req: Request) {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { path, content } = body;
+
+    if (!path || content === undefined) {
+      return NextResponse.json(
+        { success: false, error: 'path and content are required' },
+        { status: 400 }
+      );
+    }
+
+    const data = await adminFetch('/admin/lore/file', {
+      method: 'POST',
+      body: JSON.stringify({ path, content }),
+    });
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Admin lore file POST error:', error);
+    const status = (error as { status?: number })?.status ?? 500;
+    return NextResponse.json(
+      { success: false, error: (error as Error).message || 'Failed to save lore file' },
+      { status }
+    );
+  }
+}
