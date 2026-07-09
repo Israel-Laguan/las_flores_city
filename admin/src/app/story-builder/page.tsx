@@ -4,6 +4,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import AdminNav from '../components/AdminNav';
+import ContentCard from './components/ContentCard';
+import PlanSummary from './components/PlanSummary';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 
 type Step = 1 | 2 | 3 | 4;
@@ -66,8 +68,6 @@ const styles = {
 
 const stepLabels = ['Describe', 'Review Plan', 'Execute', 'Assets'];
 
-const CONTENT_TYPES = ['character', 'dialogue', 'scene', 'overlay', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault'];
-
 async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
@@ -83,86 +83,6 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
     throw new Error('Expected JSON response from server');
   }
   return res.json();
-}
-
-function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: {
-  item: ContentPlanItem; index: number;
-  onFieldChange: (i: number, field: 'name' | 'slug' | 'type' | 'action', value: string) => void;
-  onFieldsChange: (i: number, fields: Record<string, unknown>) => void;
-  onRemove: (i: number) => void;
-}) {
-  const [fieldsEditor, setFieldsEditor] = useState(() => JSON.stringify(item.fields, null, 2));
-  const [fieldsError, setFieldsError] = useState<string | null>(null);
-
-  function handleFieldsBlur() {
-    try {
-      const parsed = JSON.parse(fieldsEditor);
-      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-        setFieldsError('Fields must be a JSON object');
-        return;
-      }
-      onFieldsChange(index, parsed);
-      setFieldsError(null);
-    } catch (e: any) {
-      setFieldsError(e.message);
-    }
-  }
-
-  return (
-    <div style={styles.card}>
-      <div style={styles.cardHeader}>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span style={styles.cardType}>{item.type}</span>
-          <span style={styles.cardAction}>{item.action}</span>
-        </div>
-        <button
-          style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
-          onClick={() => onRemove(index)}
-        >
-          Remove
-        </button>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '0.75rem' }}>
-        <div>
-          <label style={styles.label}>Name</label>
-          <input style={styles.miniInput} value={item.name} onChange={e => onFieldChange(index, 'name', e.target.value)} placeholder="Name" />
-        </div>
-        <div>
-          <label style={styles.label}>Slug</label>
-          <input style={styles.miniInput} value={item.slug} onChange={e => onFieldChange(index, 'slug', e.target.value)} placeholder="slug_name" />
-        </div>
-      </div>
-      <div style={{ marginTop: '0.5rem' }}>
-        <label style={styles.label}>Type</label>
-        <select style={{ ...styles.miniInput, width: '100%' }} value={item.type} onChange={e => onFieldChange(index, 'type', e.target.value)}>
-          {CONTENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
-      </div>
-      <div style={{ marginTop: '0.5rem' }}>
-        <label style={styles.label}>Fields (JSON)</label>
-        <textarea
-          style={{ ...styles.textarea, minHeight: '80px', fontSize: '0.8rem' }}
-          value={fieldsEditor}
-          onChange={e => setFieldsEditor(e.target.value)}
-          onBlur={handleFieldsBlur}
-          placeholder='{"description": "..."}'
-        />
-        {fieldsError && <p style={{ color: '#ff6666', fontSize: '0.75rem', marginTop: '0.25rem' }}>{fieldsError}</p>}
-      </div>
-      {item.assetNeeds.length > 0 && (
-        <div style={{ marginTop: '0.5rem' }}>
-          <label style={styles.label}>Asset Needs</label>
-          <div>{item.assetNeeds.map((an, j) => <span key={j} style={styles.assetTag}>{an.promptType}: {an.targetField} [{an.status}]</span>)}</div>
-        </div>
-      )}
-      {item.dependsOn.length > 0 && (
-        <div style={{ marginTop: '0.5rem' }}>
-          <label style={styles.label}>Depends On</label>
-          <div style={{ fontSize: '0.8rem', color: '#aaa' }}>{item.dependsOn.join(', ')}</div>
-        </div>
-      )}
-    </div>
-  );
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -217,17 +137,35 @@ export default function StoryBuilderPage() {
     }
   }
 
-  function updateItemField(index: number, field: 'name' | 'slug' | 'type' | 'action', value: string) {
+  function updateItemField(index: number, fieldPath: string, value: string) {
     if (!plan) return;
     const items = [...plan.items];
-    items[index] = { ...items[index], [field]: value };
-    setPlan({ ...plan, items });
-  }
+    const item = { ...items[index] };
+    const fields = { ...item.fields };
 
-  function updateItemFields(index: number, fields: Record<string, unknown>) {
-    if (!plan) return;
-    const items = [...plan.items];
-    items[index] = { ...items[index], fields };
+    const parts = fieldPath.split('.');
+    if (parts.length === 1) {
+      fields[fieldPath] = value;
+    } else {
+      let current: any = fields;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+        if (!(part in current) || typeof current[part] !== 'object') {
+          current[part] = {};
+        }
+        current = { ...current[part] };
+      }
+      current[parts[parts.length - 1]] = value;
+
+      let rebuilt: any = fields;
+      for (let i = parts.length - 2; i >= 0; i--) {
+        rebuilt = { ...rebuilt, [parts[i]]: { ...(typeof rebuilt[parts[i]] === 'object' ? rebuilt[parts[i]] : {}), [parts[i + 1]]: current } };
+        current = rebuilt;
+      }
+      Object.assign(fields, rebuilt);
+    }
+
+    items[index] = { ...item, fields };
     setPlan({ ...plan, items });
   }
 
@@ -286,13 +224,23 @@ export default function StoryBuilderPage() {
     if (!plan) return null;
     return (
       <div style={styles.section}>
-        <h2 style={styles.sectionHeading}>Step 2: Review Plan ({plan.items.length} items)</h2>
+        <h2 style={styles.sectionHeading}>Step 2: Review Plan</h2>
         <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1rem' }}>
-          Review and edit the generated plan items before execution.
+          Review and edit the proposed content. All text fields are editable.
         </p>
+
+        <PlanSummary plan={plan} />
+
         {plan.items.map((item, i) => (
-          <PlanItemCard key={item.id} item={item} index={i} onFieldChange={updateItemField} onFieldsChange={updateItemFields} onRemove={removeItem} />
+          <ContentCard
+            key={item.id}
+            item={item}
+            index={i}
+            onFieldChange={updateItemField}
+            onRemove={removeItem}
+          />
         ))}
+
         <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addItem}>
           + Add Item
         </button>
@@ -337,10 +285,23 @@ export default function StoryBuilderPage() {
         {executionResult.success ? (
           <div style={styles.successBox}>
             <p style={{ fontWeight: 'bold' }}>Plan executed successfully!</p>
+            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              Created {executionResult.createdFiles?.length ?? 0} files.
+            </p>
           </div>
         ) : (
           <div style={styles.errorBox}>
-            <p style={{ fontWeight: 'bold' }}>Execution failed: {executionResult.error || 'Validation failed'}</p>
+            <p style={{ fontWeight: 'bold' }}>Execution failed</p>
+            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              {executionResult.error || 'Validation failed'}
+            </p>
+            {executionResult.validationErrors && executionResult.validationErrors.length > 0 && (
+              <ul style={{ fontSize: '0.85rem', marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
+                {executionResult.validationErrors.map((e: string, i: number) => (
+                  <li key={i} style={{ color: '#ff6666' }}>{e}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
