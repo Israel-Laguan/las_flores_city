@@ -123,7 +123,12 @@ export class LiteLLMProvider implements LLMProvider {
       throw new Error('LiteLLM response did not contain any message content.');
     }
     const cleanedContent = content.replace(/^\u0060\u0060\u0060json\s*|\u0060\u0060\u0060$/g, "").trim();
-    const planJson = JSON.parse(cleanedContent);
+    let planJson;
+    try {
+      planJson = JSON.parse(cleanedContent);
+    } catch (e) {
+      throw new Error(`LiteLLM returned invalid JSON: ${(e as Error).message}. Content preview: ${cleanedContent.substring(0, 200)}`);
+    }
     return ContentPlanSchema.parse(planJson);
   }
 }

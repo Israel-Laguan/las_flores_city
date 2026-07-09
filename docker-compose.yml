@@ -86,7 +86,7 @@ services:
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
     environment:
-      LITELLM_MASTER_KEY: local-key
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-local-key}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health')"]
       interval: 10s
@@ -134,8 +134,8 @@ services:
 
       # LiteLLM Proxy Configuration
       LITELLM_BASE_URL: http://litellm:4000
-      LITELLM_API_KEY: ${LITELLM_API_KEY:-}
-      LLM_MODEL: ${LLM_MODEL:-gemini-pro}
+      LITELLM_API_KEY: ${LITELLM_API_KEY:-local-key}
+      LLM_MODEL: ${LLM_MODEL:-poolside/laguna-m.1}
 
     depends_on:
       postgres-oltp:

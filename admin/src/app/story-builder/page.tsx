@@ -88,7 +88,7 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
 function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: {
   item: ContentPlanItem; index: number;
   onFieldChange: (i: number, field: 'name' | 'slug' | 'type' | 'action', value: string) => void;
-  onFieldsChange: (i: number, fieldsJson: string) => void;
+  onFieldsChange: (i: number, fields: Record<string, unknown>) => void;
   onRemove: (i: number) => void;
 }) {
   const [fieldsEditor, setFieldsEditor] = useState(() => JSON.stringify(item.fields, null, 2));
@@ -96,8 +96,12 @@ function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: 
 
   function handleFieldsBlur() {
     try {
-      JSON.parse(fieldsEditor);
-      onFieldsChange(index, fieldsEditor);
+      const parsed = JSON.parse(fieldsEditor);
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        setFieldsError('Fields must be a JSON object');
+        return;
+      }
+      onFieldsChange(index, parsed);
       setFieldsError(null);
     } catch (e: any) {
       setFieldsError(e.message);
@@ -220,16 +224,11 @@ export default function StoryBuilderPage() {
     setPlan({ ...plan, items });
   }
 
-  function updateItemFields(index: number, fieldsJson: string) {
+  function updateItemFields(index: number, fields: Record<string, unknown>) {
     if (!plan) return;
-    try {
-      const parsed = JSON.parse(fieldsJson);
-      const items = [...plan.items];
-      items[index] = { ...items[index], fields: parsed };
-      setPlan({ ...plan, items });
-    } catch {
-      // Invalid JSON — don't update, error shown in component
-    }
+    const items = [...plan.items];
+    items[index] = { ...items[index], fields };
+    setPlan({ ...plan, items });
   }
 
   function removeItem(index: number) {
