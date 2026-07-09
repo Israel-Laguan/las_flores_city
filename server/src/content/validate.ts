@@ -19,6 +19,7 @@ import {
 import { queryOLTP } from '../database/connection.js';
 import { getCache } from '../database/redis.js';
 import { validateStoryFlow } from './storyFlow.js';
+import { validateLorePaths } from './lorePathValidation.js';
 
 export interface ValidationResult {
   valid: boolean;
@@ -131,29 +132,6 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
   } catch (error: any) {
     errors.push({ file: filePath, message: `File read error: ${error.message}`, severity: 'error' });
     return { valid: false, errors, warnings };
-  }
-}
-
-async function validateLorePaths(filePath: string, data: any, warnings: string[]) {
-  const projectRoot = process.env.PROJECT_ROOT || path.resolve(process.cwd(), '..');
-  const contentDir = path.dirname(filePath);
-
-  if (data?.lore_path) {
-    const fullPath = path.resolve(projectRoot, data.lore_path);
-    try {
-      await fs.access(fullPath);
-    } catch {
-      warnings.push(`Lore file not found: ${data.lore_path}`);
-    }
-  }
-
-  if (data?.narrative_path) {
-    const fullPath = path.join(contentDir, data.narrative_path);
-    try {
-      await fs.access(fullPath);
-    } catch {
-      warnings.push(`Narrative file not found: ${data.narrative_path}`);
-    }
   }
 }
 

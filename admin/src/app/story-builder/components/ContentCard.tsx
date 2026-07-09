@@ -150,6 +150,26 @@ interface ContentCardProps {
   onRemove: (index: number) => void;
 }
 
+function AssetNeedsSection({ assetNeeds }: { assetNeeds: ContentPlanItem['assetNeeds'] }) {
+  return (
+    <div style={styles.imageSection}>
+      <div style={styles.imageLabel}>Assets Needed</div>
+      {assetNeeds.map((need, i) => (
+        <div key={i} style={{ marginBottom: '0.75rem' }}>
+          <div style={{ marginBottom: '0.25rem' }}>
+            <span style={styles.assetTag}>{need.promptType}: {need.targetField}</span>
+            <span style={{ color: '#888', fontSize: '0.75rem' }}>[{need.status}]</span>
+          </div>
+          <div style={styles.imagePlaceholder}>No image yet</div>
+          <button style={{ ...styles.button, ...styles.primaryButton }} onClick={() => window.open('/assets', '_blank')}>
+            Generate Image
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function getNestedValue(obj: Record<string, any>, path: string): string {
   const parts = path.split('.');
   let current: any = obj;
@@ -228,34 +248,7 @@ export default function ContentCard({ item, index, onFieldChange, onRemove }: Co
         })}
       </div>
 
-      {item.assetNeeds.length > 0 && (
-        <div style={styles.imageSection}>
-          <div style={styles.imageLabel}>Assets Needed</div>
-          {item.assetNeeds.map((need, i) => (
-            <div key={i} style={{ marginBottom: '0.75rem' }}>
-              <div style={{ marginBottom: '0.25rem' }}>
-                <span style={styles.assetTag}>
-                  {need.promptType}: {need.targetField}
-                </span>
-                <span style={{ color: '#888', fontSize: '0.75rem' }}>
-                  [{need.status}]
-                </span>
-              </div>
-              <div style={styles.imagePlaceholder}>
-                No image yet
-              </div>
-              <button
-                style={{ ...styles.button, ...styles.primaryButton }}
-                onClick={() => {
-                  window.open('/assets', '_blank');
-                }}
-              >
-                Generate Image
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      {item.assetNeeds.length > 0 && <AssetNeedsSection assetNeeds={item.assetNeeds} />}
 
       {showLore && lorePath && (
         <LoreViewer lorePath={lorePath} onClose={() => setShowLore(false)} />

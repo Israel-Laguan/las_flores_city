@@ -102,6 +102,23 @@ interface LoreViewerProps {
   onClose: () => void;
 }
 
+function LoreEditor({ content, onChange, onSave, onCancel }: {
+  content: string; onChange: (v: string) => void; onSave: () => void; onCancel: () => void;
+}) {
+  return (
+    <>
+      <textarea
+        style={{ flex: 1, width: '100%', backgroundColor: '#0d0d1a', color: '#00ff00', border: '1px solid #333', padding: '1rem', fontFamily: 'monospace', fontSize: '0.9rem', resize: 'none', marginBottom: '1rem', boxSizing: 'border-box' as const }}
+        value={content} onChange={(e) => onChange(e.target.value)} autoFocus
+      />
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+        <button style={{ ...styles.button, ...styles.primaryButton }} onClick={onSave}>Save</button>
+        <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={onCancel}>Cancel</button>
+      </div>
+    </>
+  );
+}
+
 export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -111,20 +128,12 @@ export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
 
   useEffect(() => {
     if (!lorePath) return;
-
-    setLoading(true);
-    setError(null);
-    setEditing(false);
-
+    setLoading(true); setError(null); setEditing(false);
     fetch(`/api/admin/lore/file?path=${encodeURIComponent(lorePath)}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) {
-          setContent(data.data.content);
-          setExists(data.data.exists ?? true);
-        } else {
-          setError(data.error || 'Failed to load lore');
-        }
+        if (data.success) { setContent(data.data.content); setExists(data.data.exists ?? true); }
+        else { setError(data.error || 'Failed to load lore'); }
       })
       .catch(() => setError('Failed to load lore'))
       .finally(() => setLoading(false));
@@ -132,21 +141,9 @@ export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
 
   function handleSave() {
     if (!lorePath) return;
-
-    fetch('/api/admin/lore/file', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: lorePath, content }),
-    })
+    fetch('/api/admin/lore/file', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: lorePath, content }) })
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setEditing(false);
-          setExists(true);
-        } else {
-          setError(data.error || 'Failed to save');
-        }
-      })
+      .then((data) => { if (data.success) { setEditing(false); setExists(true); } else { setError(data.error || 'Failed to save'); } })
       .catch(() => setError('Failed to save'));
   }
 
@@ -162,56 +159,22 @@ export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
           </div>
           <button style={styles.closeButton} onClick={onClose}>Close</button>
         </div>
-
         {error && <div style={styles.errorBox}>{error}</div>}
-
         {!exists && !loading && !error && (
-          <div style={{ marginBottom: '1rem', color: '#888', fontSize: '0.85rem' }}>
-            This lore file doesn&apos;t exist yet.
-          </div>
+          <div style={{ marginBottom: '1rem', color: '#888', fontSize: '0.85rem' }}>This lore file doesn&apos;t exist yet.</div>
         )}
-
         {editing ? (
-          <textarea
-            style={{
-              flex: 1,
-              width: '100%',
-              backgroundColor: '#0d0d1a',
-              color: '#00ff00',
-              border: '1px solid #333',
-              padding: '1rem',
-              fontFamily: 'monospace',
-              fontSize: '0.9rem',
-              resize: 'none',
-              marginBottom: '1rem',
-              boxSizing: 'border-box' as const,
-            }}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            autoFocus
-          />
+          <LoreEditor content={content} onChange={setContent} onSave={handleSave} onCancel={() => setEditing(false)} />
         ) : (
-          <div style={styles.content}>
-            {loading ? 'Loading...' : content || 'No content'}
-          </div>
+          <>
+            <div style={styles.content}>{loading ? 'Loading...' : content || 'No content'}</div>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+              <button style={{ ...styles.button, ...styles.primaryButton }} onClick={() => setEditing(true)}>
+                {exists ? 'Edit Lore' : 'Create Lore'}
+              </button>
+            </div>
+          </>
         )}
-
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-          {editing ? (
-            <>
-              <button style={{ ...styles.button, ...styles.primaryButton }} onClick={handleSave}>
-                Save
-              </button>
-              <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={() => setEditing(false)}>
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button style={{ ...styles.button, ...styles.primaryButton }} onClick={() => setEditing(true)}>
-              {exists ? 'Edit Lore' : 'Create Lore'}
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );
