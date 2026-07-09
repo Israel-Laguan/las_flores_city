@@ -9,10 +9,10 @@ The server routes expose the Story Builder's plan generation and execution endpo
 
 ## Goals
 
-- [ ] Create `server/src/routes/admin-story-builder.ts` with `POST /plan` and `POST /execute`
-- [ ] Mount router in `server/src/index.ts` at `/admin/story-builder`
-- [ ] Write integration tests
-- [ ] Rebuild server container and verify health
+- [x] Create `server/src/routes/admin-story-builder.ts` with `POST /plan` and `POST /execute`
+- [x] Mount router in `server/src/index.ts` at `/admin/story-builder`
+- [x] Write integration tests
+- [x] Rebuild server container and verify health
 
 ## Files to Create/Modify
 
@@ -164,12 +164,12 @@ describe('POST /admin/story-builder/execute', () => {
 
 Before proceeding to Milestone 7, verify:
 
-- [ ] `server/src/routes/admin-story-builder.ts` exists with `/plan` and `/execute`
-- [ ] Router mounted in `server/src/index.ts` at `/admin/story-builder`
-- [ ] Integration tests pass (with `LLM_PROVIDER=mock`)
-- [ ] `npm run lint --workspace=server` passes
-- [ ] `npm run build --workspace=server` passes
-- [ ] Server health check passes after rebuild: `docker exec las-flores-server wget -qO- http://localhost:3000/health`
+- [x] `server/src/routes/admin-story-builder.ts` exists with `/plan` and `/execute`
+- [x] Router mounted in `server/src/index.ts` at `/admin/story-builder`
+- [x] Integration tests pass (with `LLM_PROVIDER=mock`)
+- [x] `npm run lint --workspace=server` passes
+- [x] `npm run build --workspace=server` passes
+- [x] Server health check passes after rebuild: `docker exec las-flores-server wget -qO- http://localhost:3000/health`
 
 ## Next Milestone
 
