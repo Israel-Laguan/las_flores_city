@@ -14,7 +14,50 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  # Chain 1: No services needed — fast feedback on lint, build, unit tests, schema validation
+  no-migrations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared types
+        run: npm run build --workspace=shared
+
+      - name: Lint all workspaces
+        run: npm run lint
+
+      - name: Build server
+        run: npm run build --workspace=server
+
+      - name: Build client (types only)
+        run: npx tsc --noEmit
+        working-directory: client
+
+      - name: Build admin
+        run: npm run build --workspace=admin
+
+      - name: Unit tests (no DB/Redis needed)
+        run: timeout 180 npm run test:unit --workspace=server
+
+      - name: Schema-only content validation (no DB cross-references)
+        run: npm run validate:schema --workspace=server
+
+  # Chain 2: Needs services — integration/smoke tests, full content validation, E2E
+  with-migrations:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -93,17 +136,14 @@ jobs:
       - name: Build shared types
         run: npm run build --workspace=shared
 
-      - name: Validate YAML content
-        run: npm run validate:content
-
       - name: Build server
         run: npm run build --workspace=server
 
       - name: Apply database migrations and seed content
         run: npm run schema:migrate --workspace=server
 
-      - name: Run server tests
-        run: timeout 500 npm run test:server
+      - name: Integration tests
+        run: timeout 300 npm run test:integration --workspace=server
         env:
           MINIO_ENDPOINT: localhost
           MINIO_PORT: 9000
@@ -113,6 +153,12 @@ jobs:
           CDN_BASE_URL: https://cdn.lasflores2077.com
           CDN_KEY_PAIR_ID: APKADEV00000000000000
           CDN_PRIVATE_KEY_PATH: /nonexistent/key-for-test.pem
+
+      - name: Smoke tests (DB/Redis heartbeat)
+        run: timeout 60 npm run test:smoke --workspace=server
+
+      - name: Full content validation (with DB cross-references)
+        run: npm run validate --workspace=server
 
       - name: Start API server (background)
         run: npm run start --workspace=server > /tmp/server.log 2>&1 &
@@ -141,10 +187,6 @@ jobs:
           echo "::error::API server failed to start within 60 seconds"
           cat /tmp/server.log 2>/dev/null || true
           exit 1
-
-      - name: Build client (types only, skip Vite build — dev server proxies)
-        run: npx tsc --noEmit
-        working-directory: client
 
       - name: Start Vite dev server (background)
         run: npm run dev > /tmp/client.log 2>&1 &
@@ -184,35 +226,3 @@ jobs:
           name: playwright-report
           path: client/playwright-report/
           retention-days: 7
-
-      - name: Run linter
-        run: npm run lint
-
-  build:
-    runs-on: ubuntu-latest
-    needs: validate
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build shared types
-        run: npm run build --workspace=shared
-
-      - name: Build server
-        run: npm run build --workspace=server
-
-      - name: Build client
-        run: npm run build --workspace=client
-
-      - name: Build admin
-        run: npm run build --workspace=admin

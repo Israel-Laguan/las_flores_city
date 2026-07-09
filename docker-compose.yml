@@ -76,6 +76,24 @@ services:
       timeout: 5s
       retries: 5
 
+  # LiteLLM Proxy - Unified LLM API Gateway
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: las-flores-litellm
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-local-key}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No depends_on - LiteLLM doesn't need other services to start
+
   # Server - Node.js/Express API
   server:
     build:
@@ -114,12 +132,19 @@ services:
       PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID:-}
       GOLD_CREDITS_PER_USD: ${GOLD_CREDITS_PER_USD:-100}
 
+      # LiteLLM Proxy Configuration
+      LITELLM_BASE_URL: http://litellm:4000
+      LITELLM_API_KEY: ${LITELLM_API_KEY:-local-key}
+      LLM_MODEL: ${LLM_MODEL:-poolside/laguna-m.1}
+
     depends_on:
       postgres-oltp:
         condition: service_healthy
       postgres-olap:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      litellm:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]

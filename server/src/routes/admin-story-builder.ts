@@ -25,7 +25,7 @@ adminStoryBuilderRouter.post('/plan', async (req: AuthRequest, res) => {
       return;
     }
 
-    const plan = await contentPlanService.parseDescription(description.trim(), req.userId!);
+    const plan = await contentPlanService.parseDescription(description.trim());
 
     res.json({
       success: true,
