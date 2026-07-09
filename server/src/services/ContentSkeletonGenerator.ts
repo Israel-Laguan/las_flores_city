@@ -152,6 +152,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
     overlay: 'overlays',
     mission: 'missions',
     story: 'stories',
+    story_beat: 'story_beats',
     shop_item: 'shop',
     location: 'locations',
     map_tile: 'maps',

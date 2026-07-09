@@ -38,15 +38,21 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
         const fullPath = path.join(contentDir, filePath);
         try {
           await fs.access(fullPath);
-          if (item.fields && Object.keys(item.fields).length > 0) {
-            const content = await fs.readFile(fullPath, 'utf-8');
-            const data = yaml.load(content) as Record<string, any>;
-            const updatedData = { ...data, ...item.fields };
-            const updatedYaml = yaml.dump(updatedData, { lineWidth: -1, noRefs: true });
-            await atomicWriteYaml(fullPath, updatedYaml);
+        } catch (error: any) {
+          if (error?.code === 'ENOENT') {
+            throw new Error(`Cannot update non-existent file: ${filePath}`);
           }
-        } catch {
-          throw new Error(`Cannot update non-existent file: ${filePath}`);
+          throw error;
+        }
+        if (item.fields && Object.keys(item.fields).length > 0) {
+          const content = await fs.readFile(fullPath, 'utf-8');
+          const parsed = yaml.load(content);
+          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            throw new Error(`Expected a YAML object in ${filePath}`);
+          }
+          const updatedData = { ...(parsed as Record<string, any>), ...item.fields };
+          const updatedYaml = yaml.dump(updatedData, { lineWidth: -1, noRefs: true });
+          await atomicWriteYaml(fullPath, updatedYaml);
         }
       } else {
         throw new Error(`Unsupported plan action: ${item.action}`);
@@ -59,6 +65,10 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
 
     const validationResult = await validateContent(contentDir);
     if (!validationResult.valid) {
+      // Roll back created files so invalid content doesn't persist on disk
+      for (const filePath of createdFiles) {
+        try { await fs.unlink(path.join(contentDir, filePath)); } catch { /* ignore */ }
+      }
       return {
         success: false,
         createdFiles,
@@ -130,7 +140,7 @@ function topologicalSort(items: ContentPlanItem[]): ContentPlanItem[] {
 async function atomicWriteYaml(fullPath: string, content: string): Promise<void> {
   const dir = path.dirname(fullPath);
   await fs.mkdir(dir, { recursive: true });
-  const tmpPath = fullPath + '.tmp';
+  const tmpPath = `${fullPath}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
   try {
     await fs.writeFile(tmpPath, content, 'utf-8');
     await fs.rename(tmpPath, fullPath);
@@ -146,7 +156,9 @@ async function atomicWriteYaml(fullPath: string, content: string): Promise<void>
 
 async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir: string): Promise<void> {
   const fromItem = items.find(i => i.id === link.fromItem);
-  if (!fromItem) return;
+  if (!fromItem) {
+    throw new Error(`Link references unknown source item: ${link.fromItem}`);
+  }
 
   const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
   if (DANGEROUS_KEYS.has(link.field)) {
@@ -162,8 +174,10 @@ async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir
   const data = parsed as Record<string, any>;
 
   if (link.action === 'add') {
-    if (!Array.isArray(data[link.field])) {
+    if (data[link.field] === undefined) {
       data[link.field] = [];
+    } else if (!Array.isArray(data[link.field])) {
+      throw new Error(`Expected array field "${link.field}" in ${targetPath}`);
     }
     if (!data[link.field].includes(link.toItem)) {
       data[link.field].push(link.toItem);

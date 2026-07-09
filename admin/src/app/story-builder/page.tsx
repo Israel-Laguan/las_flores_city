@@ -68,7 +68,7 @@ const stepLabels = ['Describe', 'Review Plan', 'Execute', 'Assets'];
 
 const CONTENT_TYPES = ['character', 'dialogue', 'scene', 'overlay', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault'];
 
-async function postJSON<T>(url: string, payload: unknown): Promise<{ ok: boolean; data?: T; error?: string }> {
+async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

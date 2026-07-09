@@ -1,5 +1,12 @@
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { ContentPlanService } from '../../src/services/ContentPlanService.js';
 import type { LLMProvider, ExistingContentContext } from '../../src/services/LLMService.js';
+import { queryOLTP } from '../../src/database/connection.js';
+
+// Mock queryOLTP to avoid database connection
+jest.mock('../../src/database/connection.js');
+
+const mockQueryOLTP = jest.mocked(queryOLTP);
 
 // Mock LLM provider
 const mockProvider: LLMProvider = {
@@ -25,16 +32,13 @@ const mockProvider: LLMProvider = {
   },
 };
 
-// Mock queryOLTP to avoid database connection
-jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn()
-    .mockResolvedValueOnce({ rows: [{ id: 'char-1', name: 'Existing Character' }] })
-    .mockResolvedValueOnce({ rows: [{ id: 'scene-1', name: 'Existing Scene', district: 'downtown' }] })
-    .mockResolvedValueOnce({ rows: [{ id: 'dial-1', name: 'Existing Dialogue' }] }),
-}));
+beforeEach(() => {
+  mockQueryOLTP.mockReset();
+});
 
 describe('ContentPlanService', () => {
   it('should parse a description and return a valid ContentPlan', async () => {
+    mockQueryOLTP.mockResolvedValue({ rows: [] } as any);
     const service = new ContentPlanService(mockProvider);
     const plan = await service.parseDescription('Add a bartender named Diego', 'user-123');
     expect(plan.items).toHaveLength(1);
@@ -43,6 +47,11 @@ describe('ContentPlanService', () => {
   });
 
   it('should pass existing context to LLM provider', async () => {
+    mockQueryOLTP
+      .mockResolvedValueOnce({ rows: [{ id: 'char-1', name: 'Existing Character' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'scene-1', name: 'Existing Scene', district: 'downtown' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'dial-1', name: 'Existing Dialogue' }] } as any);
+
     const parseSpy = jest.fn().mockResolvedValue({
       id: '12345678-1234-1234-1234-123456789012',
       description: 'test',
