@@ -78,77 +78,27 @@ Return a single JSON object matching this schema:
 5. Output ONLY the JSON object, no markdown fences or explanation.`;
 }
 
-// ── Gemini Provider ─────────────────────────────────────────────
+// ── LiteLLM Provider ─────────────────────────────────────────────
 
-export class GeminiProvider implements LLMProvider {
+export class LiteLLMProvider implements LLMProvider {
+  private baseUrl: string;
   private apiKey: string;
   private model: string;
 
   constructor() {
-    this.apiKey = process.env.GEMINI_API_KEY || '';
-    this.model = process.env.GEMINI_MODEL || 'gemini-3.1-pro-preview';
-    if (!this.apiKey) {
-      throw new Error('GEMINI_API_KEY is required for GeminiProvider');
-    }
+    this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
+    this.apiKey = process.env.LITELLM_API_KEY || '';
+    this.model = process.env.LLM_MODEL || 'poolside/laguna-m.1';
   }
 
   async parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan> {
     const systemPrompt = buildSystemPrompt(context);
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': this.apiKey,
-        },
-        body: JSON.stringify({
-          contents: [
-            { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser description: ${description}` }] },
-          ],
-          generationConfig: { responseMimeType: 'application/json' },
-        }),
-        signal: AbortSignal.timeout(30_000),
-      }
-    );
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Gemini request failed: ${response.status} ${response.statusText} — ${text}`);
-    }
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      throw new Error('Gemini response did not contain any text candidates.');
-    }
-    const planJson = JSON.parse(text);
-    return ContentPlanSchema.parse(planJson);
-  }
-}
-
-// ── Groq Provider ───────────────────────────────────────────────
-
-export class GroqProvider implements LLMProvider {
-  private apiKey: string;
-  private model = 'llama-3.3-70b-versatile';
-
-  constructor() {
-    this.apiKey = process.env.GROQ_API_KEY || '';
-    if (!this.apiKey) {
-      throw new Error('GROQ_API_KEY is required for GroqProvider');
-    }
-  }
-
-  async parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan> {
-    const systemPrompt = buildSystemPrompt(context);
-
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        ...(this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {}),
       },
       body: JSON.stringify({
         model: this.model,
@@ -159,18 +109,18 @@ export class GroqProvider implements LLMProvider {
         temperature: 0.7,
         response_format: { type: 'json_object' },
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(60_000),
     });
 
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`Groq request failed: ${response.status} ${response.statusText} — ${text}`);
+      throw new Error(`LiteLLM request failed: ${response.status} ${response.statusText} — ${text}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
     if (!content) {
-      throw new Error('Groq response did not contain any message content.');
+      throw new Error('LiteLLM response did not contain any message content.');
     }
     const planJson = JSON.parse(content);
     return ContentPlanSchema.parse(planJson);
@@ -263,13 +213,14 @@ export class MockProvider implements LLMProvider {
 export function createLLMProvider(): LLMProvider {
   const provider = process.env.LLM_PROVIDER || 'mock';
   switch (provider) {
-    case 'gemini':
-      return new GeminiProvider();
-    case 'groq':
-      return new GroqProvider();
     case 'mock':
       return new MockProvider();
+    case 'litellm':
+    case 'gemini':
+    case 'groq':
+      // All real providers now route through LiteLLM proxy
+      return new LiteLLMProvider();
     default:
-      throw new Error(`Unknown LLM provider: ${provider}. Valid options: mock, gemini, groq`);
+      throw new Error(`Unknown LLM provider: ${provider}. Valid options: mock, litellm, gemini, groq`);
   }
 }

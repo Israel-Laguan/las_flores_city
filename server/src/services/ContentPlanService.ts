@@ -9,7 +9,7 @@ export class ContentPlanService {
     this.provider = provider || createLLMProvider();
   }
 
-  async parseDescription(description: string, userId: string): Promise<ContentPlan> {
+  async parseDescription(description: string): Promise<ContentPlan> {
     // 1. Gather existing content context
     const context = await this.gatherContext();
 

@@ -85,11 +85,25 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   return res.json();
 }
 
-function PlanItemCard({ item, index, onFieldChange, onRemove }: {
+function PlanItemCard({ item, index, onFieldChange, onFieldsChange, onRemove }: {
   item: ContentPlanItem; index: number;
   onFieldChange: (i: number, field: keyof ContentPlanItem, value: string) => void;
+  onFieldsChange: (i: number, fieldsJson: string) => void;
   onRemove: (i: number) => void;
 }) {
+  const [fieldsEditor, setFieldsEditor] = useState(() => JSON.stringify(item.fields, null, 2));
+  const [fieldsError, setFieldsError] = useState<string | null>(null);
+
+  function handleFieldsBlur() {
+    try {
+      const parsed = JSON.parse(fieldsEditor);
+      onFieldsChange(index, fieldsEditor);
+      setFieldsError(null);
+    } catch (e: any) {
+      setFieldsError(e.message);
+    }
+  }
+
   return (
     <div style={styles.card}>
       <div style={styles.cardHeader}>
@@ -120,10 +134,27 @@ function PlanItemCard({ item, index, onFieldChange, onRemove }: {
           {CONTENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
       </div>
+      <div style={{ marginTop: '0.5rem' }}>
+        <label style={styles.label}>Fields (JSON)</label>
+        <textarea
+          style={{ ...styles.textarea, minHeight: '80px', fontSize: '0.8rem' }}
+          value={fieldsEditor}
+          onChange={e => setFieldsEditor(e.target.value)}
+          onBlur={handleFieldsBlur}
+          placeholder='{"description": "..."}'
+        />
+        {fieldsError && <p style={{ color: '#ff6666', fontSize: '0.75rem', marginTop: '0.25rem' }}>Invalid JSON: {fieldsError}</p>}
+      </div>
       {item.assetNeeds.length > 0 && (
         <div style={{ marginTop: '0.5rem' }}>
           <label style={styles.label}>Asset Needs</label>
-          <div>{item.assetNeeds.map((an, j) => <span key={j} style={styles.assetTag}>{an.promptType}: {an.targetField}</span>)}</div>
+          <div>{item.assetNeeds.map((an, j) => <span key={j} style={styles.assetTag}>{an.promptType}: {an.targetField} [{an.status}]</span>)}</div>
+        </div>
+      )}
+      {item.dependsOn.length > 0 && (
+        <div style={{ marginTop: '0.5rem' }}>
+          <label style={styles.label}>Depends On</label>
+          <div style={{ fontSize: '0.8rem', color: '#aaa' }}>{item.dependsOn.join(', ')}</div>
         </div>
       )}
     </div>
@@ -189,6 +220,18 @@ export default function StoryBuilderPage() {
     setPlan({ ...plan, items });
   }
 
+  function updateItemFields(index: number, fieldsJson: string) {
+    if (!plan) return;
+    try {
+      const parsed = JSON.parse(fieldsJson);
+      const items = [...plan.items];
+      items[index] = { ...items[index], fields: parsed };
+      setPlan({ ...plan, items });
+    } catch {
+      // Invalid JSON — don't update, error shown in component
+    }
+  }
+
   function removeItem(index: number) {
     if (!plan) return;
     setPlan({ ...plan, items: plan.items.filter((_, i) => i !== index) });
@@ -249,7 +292,7 @@ export default function StoryBuilderPage() {
           Review and edit the generated plan items before execution.
         </p>
         {plan.items.map((item, i) => (
-          <PlanItemCard key={item.id} item={item} index={i} onFieldChange={updateItemField} onRemove={removeItem} />
+          <PlanItemCard key={item.id} item={item} index={i} onFieldChange={updateItemField} onFieldsChange={updateItemFields} onRemove={removeItem} />
         ))}
         <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addItem}>
           + Add Item

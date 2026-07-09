@@ -81,7 +81,7 @@ async function validateSceneBeatSlugs(filePath: string, data: any, errors: Valid
   }
 }
 
-export async function validateYAMLFile(filePath: string): Promise<ValidationResult> {
+export async function validateYAMLFile(filePath: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
 
@@ -106,12 +106,15 @@ export async function validateYAMLFile(filePath: string): Promise<ValidationResu
     errors.push(...validationResult.errors.map(e => ({ ...e, file: filePath })));
     warnings.push(...validationResult.warnings);
 
-    const hasSchemaErrors = validationResult.errors.some(e => e.severity === 'error');
-    if (!hasSchemaErrors) {
-      if (contentType === 'dialogue') {
-        await validateDialogueBeatSlugs(filePath, data, errors);
-      } else if (contentType === 'scene') {
-        await validateSceneBeatSlugs(filePath, data, errors);
+    // Skip DB/Redis cross-reference checks in schema-only mode
+    if (!schemaOnly) {
+      const hasSchemaErrors = validationResult.errors.some(e => e.severity === 'error');
+      if (!hasSchemaErrors) {
+        if (contentType === 'dialogue') {
+          await validateDialogueBeatSlugs(filePath, data, errors);
+        } else if (contentType === 'scene') {
+          await validateSceneBeatSlugs(filePath, data, errors);
+        }
       }
     }
 
@@ -272,7 +275,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   return null;
 }
 
-export async function validateAllContent(contentDir: string): Promise<ValidationResult> {
+export async function validateAllContent(contentDir: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   const allErrors: ValidationError[] = [];
   const allWarnings: string[] = [];
 
@@ -281,7 +284,7 @@ export async function validateAllContent(contentDir: string): Promise<Validation
   const allFiles = [...yamlFiles, ...ymlFiles];
 
   for (const file of allFiles) {
-    const result = await validateYAMLFile(file);
+    const result = await validateYAMLFile(file, schemaOnly);
     allErrors.push(...result.errors);
     allWarnings.push(...result.warnings);
   }
@@ -382,10 +385,10 @@ export async function validateContentString(
   };
 }
 
-export async function validateContent(contentDir: string): Promise<ValidationResult> {
+export async function validateContent(contentDir: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   console.log(`🔍 Validating content in: ${contentDir}`);
   
-  const schemaResult = await validateAllContent(contentDir);
+  const schemaResult = await validateAllContent(contentDir, schemaOnly);
   
   const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
   const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
@@ -424,8 +427,9 @@ const isCli = process.argv[1]
 
 if (isCli) {
   const contentDir = process.argv[2] || '../content';
+  const schemaOnly = process.argv.includes('--schema-only');
 
-  validateContent(contentDir)
+  validateContent(contentDir, schemaOnly)
     .then(result => {
       if (result.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
