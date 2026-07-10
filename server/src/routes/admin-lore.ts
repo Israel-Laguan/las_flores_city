@@ -117,6 +117,31 @@ export function validateLorePath(
   return { valid: true };
 }
 
+/**
+ * Resolves a relative lore path to an absolute path after validation.
+ * Combines string-level validation (validateLorePath) with a resolved-path
+ * prefix guard to catch encoded traversal sequences.
+ *
+ * Returns the validated absolute path or a failure reason.
+ */
+export function resolveLoreAbsolutePath(
+  relPath: string,
+): { ok: true; absolutePath: string } | { ok: false; reason: string } {
+  const validation = validateLorePath(relPath);
+  if (!validation.valid) {
+    return { ok: false, reason: validation.reason };
+  }
+
+  const loreDir = getLoreDir();
+  const absolutePath = path.join(loreDir, relPath);
+
+  if (!absolutePath.startsWith(loreDir + path.sep) && absolutePath !== loreDir) {
+    return { ok: false, reason: 'Path traversal sequences (..) are not allowed' };
+  }
+
+  return { ok: true, absolutePath };
+}
+
 // ---------------------------------------------------------------------------
 // LoreFileEntry type
 // ---------------------------------------------------------------------------
@@ -308,29 +333,17 @@ adminLoreRouter.get('/file', async (req, res) => {
       return;
     }
 
-    // Layer 1: string-level validation (blocks .., non-.md, .prompt.md, unknown subdirs)
-    const validation = validateLorePath(relPath);
-    if (!validation.valid) {
+    // Validate and resolve path
+    const resolved = resolveLoreAbsolutePath(relPath);
+    if (!resolved.ok) {
       res.status(400).json({
         success: false,
-        error: validation.reason,
+        error: resolved.reason,
         timestamp: new Date().toISOString(),
       });
       return;
     }
-
-    const loreDir = getLoreDir();
-    const absolutePath = path.join(loreDir, relPath);
-
-    // Layer 2: resolved-path prefix guard (catches encoded traversal sequences)
-    if (!absolutePath.startsWith(loreDir + path.sep) && absolutePath !== loreDir) {
-      res.status(400).json({
-        success: false,
-        error: 'Path traversal sequences (..) are not allowed',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
+    const { absolutePath } = resolved;
 
     // Stat the file — return success with exists: false if ENOENT
     let stat: fs.Stats;
@@ -408,27 +421,17 @@ adminLoreRouter.post('/file', async (req, res) => {
       return;
     }
 
-    const validation = validateLorePath(relPath);
-    if (!validation.valid) {
+    // Validate and resolve path
+    const resolved = resolveLoreAbsolutePath(relPath);
+    if (!resolved.ok) {
       res.status(400).json({
         success: false,
-        error: validation.reason,
+        error: resolved.reason,
         timestamp: new Date().toISOString(),
       });
       return;
     }
-
-    const loreDir = getLoreDir();
-    const absolutePath = path.join(loreDir, relPath);
-
-    if (!absolutePath.startsWith(loreDir + path.sep) && absolutePath !== loreDir) {
-      res.status(400).json({
-        success: false,
-        error: 'Path traversal sequences (..) are not allowed',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
+    const { absolutePath } = resolved;
 
     const dir = path.dirname(absolutePath);
     await fs.promises.mkdir(dir, { recursive: true });
