@@ -4,7 +4,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
-import { executePlan } from '../services/StoryBuilderOrchestrator.js';
+import { executePlan, previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
 
 export const adminStoryBuilderRouter = express.Router();
 
@@ -271,5 +271,101 @@ adminStoryBuilderRouter.post('/plans/:id/refine', async (req, res) => {
     console.error('[story-builder] POST /plans/:id/refine error:', error);
     const status = error.message.includes('not found') ? 404 : 500;
     res.status(status).json({ success: false, error: error.message || 'Failed to refine plan', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/plans/:id/preview — Dry-run preview
+adminStoryBuilderRouter.post('/plans/:id/preview', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await queryOLTP<{ plan_json: any }>(
+      'SELECT plan_json FROM content_plans WHERE id = $1',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    let plan;
+    try {
+      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+    } catch {
+      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const preview = await previewPlan(plan);
+
+    res.json({
+      success: true,
+      data: preview,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/preview error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to preview plan', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/plans/:id/stage — Write YAML + validate (no DB migration)
+adminStoryBuilderRouter.post('/plans/:id/stage', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await queryOLTP<{ plan_json: any; status: string }>(
+      'SELECT plan_json, status FROM content_plans WHERE id = $1',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    let plan;
+    try {
+      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+    } catch {
+      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const stagingResult = await stagePlan(plan);
+
+    const newStatus = stagingResult.success ? 'staged' : 'failed';
+    await queryOLTP(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+      [newStatus, id]
+    );
+
+    res.json({
+      success: stagingResult.success,
+      data: stagingResult,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/stage error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to stage plan', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/plans/:id/migrate — Run DB migration for staged plan
+adminStoryBuilderRouter.post('/plans/:id/migrate', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const migrationResult = await migrateStagedPlan(id);
+
+    res.json({
+      success: migrationResult.success,
+      data: migrationResult,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/migrate error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to migrate plan', timestamp: new Date().toISOString() });
   }
 });

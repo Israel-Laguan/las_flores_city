@@ -9,7 +9,7 @@ import ContentCard from './components/ContentCard';
 import PlanSummary from './components/PlanSummary';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 const styles = {
   main: { padding: '2rem', fontFamily: 'monospace', backgroundColor: '#1a1a2e', minHeight: '100vh', color: '#fff' },
@@ -67,7 +67,7 @@ const styles = {
   fileItem: { padding: '0.4rem 0', borderBottom: '1px solid #222', fontSize: '0.85rem', color: '#aaa' },
 };
 
-const stepLabels = ['Describe', 'Review Plan', 'Execute', 'Assets'];
+const stepLabels = ['Describe', 'Review & Refine', 'Stage', 'Migrate', 'Assets'];
 
 async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   const res = await fetch(url, {
@@ -94,10 +94,12 @@ export default function StoryBuilderPage() {
   const [plan, setPlan] = useState<ContentPlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [executionResult, setExecutionResult] = useState<any>(null);
   const [planId, setPlanId] = useState<string | null>(null);
   const [refineFeedback, setRefineFeedback] = useState('');
   const [showRefine, setShowRefine] = useState(false);
+  const [stagingResult, setStagingResult] = useState<any>(null);
+  const [migrationResult, setMigrationResult] = useState<any>(null);
+  const [previewData, setPreviewData] = useState<any>(null);
 
   useEffect(() => {
     const id = searchParams.get('planId');
@@ -158,28 +160,6 @@ export default function StoryBuilderPage() {
     }
   }
 
-  async function handleExecutePlan() {
-    if (!plan) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await postJSON<{ success: boolean; data?: any; error?: string }>(
-        '/api/admin/story-builder/execute',
-        { plan }
-      );
-      if (data.success && data.data) {
-        setExecutionResult(data.data);
-        setStep(4);
-      } else {
-        setError(data.error || 'Failed to execute plan');
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleRefine() {
     if (!planId || !refineFeedback.trim()) return;
     setLoading(true);
@@ -195,6 +175,73 @@ export default function StoryBuilderPage() {
         setShowRefine(false);
       } else {
         setError(data.error || 'Failed to refine plan');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handlePreview() {
+    if (!planId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await postJSON<{ success: boolean; data?: any; error?: string }>(
+        `/api/admin/story-builder/plans/${planId}/preview`,
+        {}
+      );
+      if (data.success && data.data) {
+        setPreviewData(data.data);
+      } else {
+        setError(data.error || 'Failed to preview plan');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleStage() {
+    if (!planId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await postJSON<{ success: boolean; data?: any; error?: string }>(
+        `/api/admin/story-builder/plans/${planId}/stage`,
+        {}
+      );
+      if (data.success) {
+        setStagingResult(data.data);
+        setStep(4);
+      } else {
+        setStagingResult(data.data);
+        setError(data.data?.error || 'Staging failed');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleMigrate() {
+    if (!planId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await postJSON<{ success: boolean; data?: any; error?: string }>(
+        `/api/admin/story-builder/plans/${planId}/migrate`,
+        {}
+      );
+      if (data.success) {
+        setMigrationResult(data.data);
+        setStep(5);
+      } else {
+        setMigrationResult(data.data);
+        setError(data.data?.error || 'Migration failed');
       }
     } catch (err: any) {
       setError(err.message);
@@ -449,53 +496,69 @@ export default function StoryBuilderPage() {
   function renderStep3() {
     return (
       <div style={styles.section}>
-        <h2 style={styles.sectionHeading}>Step 3: Execute Plan</h2>
+        <h2 style={styles.sectionHeading}>Step 3: Stage Content</h2>
         <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1rem' }}>
-          Execute the plan to create content files, run validation, and apply migrations.
+          Preview the files that will be created, then stage them. Staging writes YAML files and validates them — but does NOT migrate to the database yet.
         </p>
-        <div style={styles.subsection}>
-          <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Plan Summary</h3>
-          <p style={{ fontSize: '0.85rem', color: '#aaa' }}>
-            {plan?.items.length ?? 0} items to create/update
-          </p>
-        </div>
+
         <button
-          style={{
-            ...styles.button,
-            ...styles.primaryButton,
-            ...(loading ? styles.disabledButton : {}),
-          }}
-          onClick={handleExecutePlan}
+          style={{ ...styles.button, ...styles.secondaryButton, marginBottom: '1rem' }}
+          onClick={handlePreview}
           disabled={loading}
         >
-          {loading ? 'Executing...' : 'Execute Plan'}
+          {loading ? 'Loading...' : 'Preview Files'}
         </button>
-      </div>
-    );
-  }
 
-  function renderStep4() {
-    if (!executionResult) return null;
-    return (
-      <div style={styles.section}>
-        <h2 style={styles.sectionHeading}>Step 4: Results & Assets</h2>
-
-        {executionResult.success ? (
-          <div style={styles.successBox}>
-            <p style={{ fontWeight: 'bold' }}>Plan executed successfully!</p>
-            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-              Created {executionResult.createdFiles?.length ?? 0} files.
-            </p>
+        {previewData && (
+          <div style={styles.subsection}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+              Files Preview ({previewData.items.length} items)
+            </h3>
+            {previewData.items.map((item: any, i: number) => (
+              <div key={i} style={{ ...styles.card, marginBottom: '0.75rem' }}>
+                <div style={styles.cardHeader}>
+                  <span style={styles.cardType}>{item.type}</span>
+                  <span style={styles.cardAction}>
+                    {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
+                  </span>
+                </div>
+                <details>
+                  <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>YAML Preview</summary>
+                  <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+                    {item.yamlPreview}
+                  </pre>
+                </details>
+                {item.existingYaml && (
+                  <details>
+                    <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
+                    <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+                      {item.existingYaml}
+                    </pre>
+                  </details>
+                )}
+              </div>
+            ))}
           </div>
-        ) : (
-          <div style={styles.errorBox}>
-            <p style={{ fontWeight: 'bold' }}>Execution failed</p>
-            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-              {executionResult.error || 'Validation failed'}
+        )}
+
+        {stagingResult && (
+          <div style={stagingResult.success ? styles.successBox : styles.errorBox}>
+            <p style={{ fontWeight: 'bold' }}>
+              {stagingResult.success ? 'Staged successfully!' : 'Staging failed'}
             </p>
-            {executionResult.validationErrors && executionResult.validationErrors.length > 0 && (
+            {stagingResult.createdFiles?.length > 0 && (
+              <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                Created: {stagingResult.createdFiles.join(', ')}
+              </p>
+            )}
+            {stagingResult.updatedFiles?.length > 0 && (
+              <p style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                Updated: {stagingResult.updatedFiles.join(', ')}
+              </p>
+            )}
+            {stagingResult.validationErrors?.length > 0 && (
               <ul style={{ fontSize: '0.85rem', marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
-                {executionResult.validationErrors.map((e: string, i: number) => (
+                {stagingResult.validationErrors.map((e: string, i: number) => (
                   <li key={i} style={{ color: '#ff6666' }}>{e}</li>
                 ))}
               </ul>
@@ -503,56 +566,109 @@ export default function StoryBuilderPage() {
           </div>
         )}
 
-        {(executionResult.createdFiles?.length ?? 0) > 0 && (
+        <button
+          style={{
+            ...styles.button,
+            ...styles.primaryButton,
+            ...(loading ? styles.disabledButton : {}),
+          }}
+          onClick={handleStage}
+          disabled={loading}
+        >
+          {loading ? 'Staging...' : 'Stage Content'}
+        </button>
+      </div>
+    );
+  }
+
+  function renderStep4() {
+    return (
+      <div style={styles.section}>
+        <h2 style={styles.sectionHeading}>Step 4: Migrate to Database</h2>
+        <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          Content files are staged and validated. Click migrate to upsert them into the database.
+        </p>
+
+        {stagingResult && (
           <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Created Files</h3>
-            {executionResult.createdFiles.map((f: string) => (
-              <div key={f} style={styles.fileItem}>{f}</div>
-            ))}
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Staged Files</h3>
+            <p style={{ fontSize: '0.85rem', color: '#aaa' }}>
+              {stagingResult.createdFiles?.length ?? 0} new, {stagingResult.updatedFiles?.length ?? 0} updated
+            </p>
           </div>
         )}
 
-        {(executionResult.validationErrors?.length ?? 0) > 0 && (
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#ff4444', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Validation Errors</h3>
-            {executionResult.validationErrors.map((e: string, i: number) => (
-              <div key={i} style={{ ...styles.fileItem, color: '#ff6666' }}>{e}</div>
-            ))}
+        {migrationResult && (
+          <div style={migrationResult.success ? styles.successBox : styles.errorBox}>
+            <p style={{ fontWeight: 'bold' }}>
+              {migrationResult.success ? 'Migration complete!' : 'Migration failed'}
+            </p>
+            {migrationResult.error && (
+              <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', color: '#ff6666' }}>{migrationResult.error}</p>
+            )}
+            {migrationResult.migrationResult && (
+              <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>
+                {JSON.stringify(migrationResult.migrationResult, null, 2)}
+              </pre>
+            )}
           </div>
         )}
 
-        {(executionResult.assetTasks?.length ?? 0) > 0 && (
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Asset Needs</h3>
-            {executionResult.assetTasks.map((task: any, i: number) => (
-              <div key={i} style={{ marginBottom: '0.75rem' }}>
-                <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '0.25rem' }}>
-                  {task.item.name} ({task.item.type})
-                </p>
-                <div>
-                  {task.needs.map((an: any, j: number) => (
-                    <span key={j} style={{
-                      ...styles.assetStatus,
-                      backgroundColor: an.status === 'pending' ? '#ff000022' : '#00ff0022',
-                      color: an.status === 'pending' ? '#ff6666' : '#00ff00',
-                    }}>
-                      {an.promptType}: {an.targetField} [{an.status}]
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-            <Link href="/assets" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none', marginTop: '0.5rem', display: 'inline-block' }}>
-              Go to Assets
-            </Link>
+        <button
+          style={{
+            ...styles.button,
+            ...styles.primaryButton,
+            ...(loading ? styles.disabledButton : {}),
+          }}
+          onClick={handleMigrate}
+          disabled={loading}
+        >
+          {loading ? 'Migrating...' : 'Migrate to Database'}
+        </button>
+      </div>
+    );
+  }
+
+  function renderStep5() {
+    if (!migrationResult) return null;
+    return (
+      <div style={styles.section}>
+        <h2 style={styles.sectionHeading}>Step 5: Results & Assets</h2>
+
+        {migrationResult.success ? (
+          <div style={styles.successBox}>
+            <p style={{ fontWeight: 'bold' }}>Migration complete!</p>
+            {migrationResult.migrationResult && (
+              <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                Processed {migrationResult.migrationResult.filesProcessed ?? 0} files.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div style={styles.errorBox}>
+            <p style={{ fontWeight: 'bold' }}>Migration failed</p>
+            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              {migrationResult.error || 'Unknown error'}
+            </p>
           </div>
         )}
 
-        <div style={styles.subsection}>
-          <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Migration Result</h3>
-          <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap' }}>
-            {JSON.stringify(executionResult.migrationResult, null, 2)}
-          </pre>
+        {migrationResult.migrationResult && (
+          <div style={styles.subsection}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Migration Details</h3>
+            <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(migrationResult.migrationResult, null, 2)}
+            </pre>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <Link href="/assets" style={{ ...styles.button, ...styles.primaryButton, textDecoration: 'none' }}>
+            View Assets
+          </Link>
+          <Link href="/story-builder" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>
+            New Plan
+          </Link>
         </div>
       </div>
     );
@@ -564,6 +680,7 @@ export default function StoryBuilderPage() {
       case 2: return renderStep2();
       case 3: return renderStep3();
       case 4: return renderStep4();
+      case 5: return renderStep5();
       default: return null;
     }
   };
@@ -593,7 +710,7 @@ export default function StoryBuilderPage() {
       {renderStep()}
 
       <div style={styles.navBar}>
-        {step > 1 && step < 4 && (
+        {step > 1 && step < 5 && (
           <button
             style={{ ...styles.button, ...styles.secondaryButton }}
             onClick={() => setStep((step - 1) as Step)}
@@ -611,23 +728,13 @@ export default function StoryBuilderPage() {
             onClick={() => setStep(3)}
             disabled={!plan || plan.items.length === 0}
           >
-            Approve &amp; Execute &rarr;
+            Approve &amp; Stage &rarr;
           </button>
         )}
         {planId && (
           <Link href="/story-builder/plans" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>
             Save &amp; Close
           </Link>
-        )}
-        {step === 4 && (
-          <>
-            <Link href="/assets" style={{ ...styles.button, ...styles.primaryButton, textDecoration: 'none' }}>
-              View Assets
-            </Link>
-            <Link href="/story-builder" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>
-              New Plan
-            </Link>
-          </>
         )}
       </div>
     </main>
