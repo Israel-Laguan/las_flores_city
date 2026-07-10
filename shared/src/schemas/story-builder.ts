@@ -15,6 +15,7 @@ export const ContentPlanItemSchema = z.object({
   type: contentType,             // 'character' | 'dialogue' | 'scene' | etc.
   action: z.enum(['create', 'update']),
   name: z.string().min(1).max(100),
+  description: z.string().optional(),
   slug: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, { message: 'Slug must contain only lowercase alphanumeric characters and underscores' }),
   fields: z.record(z.string(), z.any()),
   assetNeeds: z.array(AssetNeedSchema).default([]),
@@ -33,7 +34,7 @@ export const ContentPlanSchema = z.object({
   description: z.string(),
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),
-  status: z.enum(['draft', 'approved', 'executing', 'complete', 'failed']).default('draft'),
+  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'failed']).default('draft'),
 });
 
 // Inferred types

@@ -26,16 +26,24 @@ export class ContentPlanService {
   }
 
   private async gatherContext(): Promise<ExistingContentContext> {
-    const [characters, scenes, dialogues] = await Promise.all([
+    const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM characters ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM scenes ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_trees ORDER BY name ASC'),
+      queryOLTP<{ id: string; title: string }>('SELECT id, title FROM mysteries ORDER BY title ASC'),
+      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM stories ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM overlays ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM locations ORDER BY name ASC'),
     ]);
 
     return {
       characters: characters.rows,
       scenes: scenes.rows,
       dialogues: dialogues.rows,
+      missions: missions.rows,
+      stories: stories.rows,
+      overlays: overlays.rows,
+      locations: locations.rows,
     };
   }
 }

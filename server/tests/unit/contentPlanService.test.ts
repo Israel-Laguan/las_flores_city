@@ -50,7 +50,11 @@ describe('ContentPlanService', () => {
     mockQueryOLTP
       .mockResolvedValueOnce({ rows: [{ id: 'char-1', name: 'Existing Character' }] } as any)
       .mockResolvedValueOnce({ rows: [{ id: 'scene-1', name: 'Existing Scene', district: 'downtown' }] } as any)
-      .mockResolvedValueOnce({ rows: [{ id: 'dial-1', name: 'Existing Dialogue' }] } as any);
+      .mockResolvedValueOnce({ rows: [{ id: 'dial-1', name: 'Existing Dialogue' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'mis-1', title: 'Existing Mission' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'sto-1', name: 'Existing Story' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'ovl-1', name: 'Existing Overlay' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'loc-1', name: 'Existing Location', district: 'downtown' }] } as any);
 
     const parseSpy = jest.fn().mockResolvedValue({
       id: '12345678-1234-1234-1234-123456789012',

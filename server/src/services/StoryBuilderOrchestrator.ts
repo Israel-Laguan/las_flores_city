@@ -9,7 +9,9 @@ import { migrateContent } from '../content/migrate.js';
 export interface ExecutionResult {
   success: boolean;
   createdFiles: string[];
+  updatedFiles: string[];
   validationErrors: string[];
+  warnings: string[];
   migrationResult: any;
   assetTasks: Array<{ item: ContentPlanItem; needs: AssetNeed[] }>;
   error?: string;
@@ -21,83 +23,62 @@ function resolveContentDir(): string {
 
 export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
   const createdFiles: string[] = [];
+  const updatedFiles: string[] = [];
+  const fileSnapshots = new Map<string, string>(); // fullPath -> original content (null for created)
   const contentDir = resolveContentDir();
 
   try {
-    const sortedItems = topologicalSort(plan.items);
+    const { sorted: sortedItems, missingDeps } = topologicalSort(plan.items);
 
-    for (const item of sortedItems) {
-      if (item.action === 'create') {
-        const yamlStr = generateYaml(item);
-        const filePath = resolveFilePath(item);
-        const fullPath = path.join(contentDir, filePath);
-        await atomicWriteYaml(fullPath, yamlStr);
-        createdFiles.push(filePath);
-      } else if (item.action === 'update') {
-        const filePath = resolveFilePath(item);
-        const fullPath = path.join(contentDir, filePath);
-        try {
-          await fs.access(fullPath);
-        } catch (error: any) {
-          if (error?.code === 'ENOENT') {
-            throw new Error(`Cannot update non-existent file: ${filePath}`);
-          }
-          throw error;
-        }
-        if (item.fields && Object.keys(item.fields).length > 0) {
-          const content = await fs.readFile(fullPath, 'utf-8');
-          const parsed = yaml.load(content);
-          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-            throw new Error(`Expected a YAML object in ${filePath}`);
-          }
-          const updatedData = { ...(parsed as Record<string, any>), ...item.fields };
-          const updatedYaml = yaml.dump(updatedData, { lineWidth: -1, noRefs: true });
-          await atomicWriteYaml(fullPath, updatedYaml);
-        }
-      } else {
-        throw new Error(`Unsupported plan action: ${item.action}`);
-      }
-    }
+    await writePlanItems(sortedItems, contentDir, createdFiles, updatedFiles, fileSnapshots);
 
     for (const link of plan.links) {
-      await applyLink(link, plan.items, contentDir);
+      await applyLink(link, plan.items, contentDir, fileSnapshots);
     }
 
     const validationResult = await validateContent(contentDir);
+    const depErrors = missingDeps.map(d =>
+      `Item "${d.itemName}" (${d.itemId}) references missing dependency: ${d.missingDepId}`
+    );
+
     if (!validationResult.valid) {
-      // Roll back created files so invalid content doesn't persist on disk
-      for (const filePath of createdFiles) {
-        try { await fs.unlink(path.join(contentDir, filePath)); } catch { /* ignore */ }
-      }
+      await rollbackFiles(fileSnapshots);
       return {
         success: false,
         createdFiles,
-        validationErrors: validationResult.errors
-          .filter(e => e.severity === 'error')
-          .map(e => `${e.file ?? ''}: ${e.message}`),
+        updatedFiles,
+        validationErrors: buildValidationErrors(validationResult.errors, depErrors),
+        warnings: depErrors,
         migrationResult: null,
         assetTasks: [],
       };
     }
 
-    const migrationResult = await migrateContent(contentDir);
+    // Include missing dep warnings in success path (non-blocking)
+    if (depErrors.length > 0) {
+      console.warn('[story-builder] Missing dependencies:', depErrors);
+    }
 
-    const assetTasks = plan.items
-      .filter(item => item.assetNeeds.length > 0)
-      .map(item => ({ item, needs: item.assetNeeds }));
+    const migrationResult = await migrateContent(contentDir);
+    const assetTasks = collectAssetTasks(plan.items);
 
     return {
       success: true,
       createdFiles,
+      updatedFiles,
       validationErrors: [],
+      warnings: depErrors,
       migrationResult,
       assetTasks,
     };
   } catch (error: any) {
+    await rollbackFiles(fileSnapshots);
     return {
       success: false,
       createdFiles,
+      updatedFiles,
       validationErrors: [],
+      warnings: [],
       migrationResult: null,
       assetTasks: [],
       error: error.message,
@@ -105,11 +86,110 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
   }
 }
 
-function topologicalSort(items: ContentPlanItem[]): ContentPlanItem[] {
+async function writePlanItems(
+  items: ContentPlanItem[],
+  contentDir: string,
+  createdFiles: string[],
+  updatedFiles: string[],
+  fileSnapshots: Map<string, string>,
+): Promise<void> {
+  for (const item of items) {
+    const filePath = resolveFilePath(item);
+    const fullPath = path.join(contentDir, filePath);
+
+    if (item.action === 'create') {
+      const yamlStr = generateYaml(item);
+      await atomicWriteYaml(fullPath, yamlStr);
+      createdFiles.push(filePath);
+      fileSnapshots.set(fullPath, ''); // empty string = newly created, delete on rollback
+    } else if (item.action === 'update') {
+      await updateExistingFile(item, fullPath, filePath, updatedFiles, fileSnapshots);
+    } else {
+      throw new Error(`Unsupported plan action: ${item.action}`);
+    }
+  }
+}
+
+async function updateExistingFile(
+  item: ContentPlanItem,
+  fullPath: string,
+  filePath: string,
+  updatedFiles: string[],
+  fileSnapshots: Map<string, string>,
+): Promise<void> {
+  try {
+    await fs.access(fullPath);
+  } catch (error: any) {
+    if (error?.code === 'ENOENT') {
+      throw new Error(`Cannot update non-existent file: ${filePath}`);
+    }
+    throw error;
+  }
+  if (!item.fields || Object.keys(item.fields).length === 0) return;
+
+  const originalContent = await fs.readFile(fullPath, 'utf-8');
+  fileSnapshots.set(fullPath, originalContent);
+  const parsed = yaml.load(originalContent);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`Expected a YAML object in ${filePath}`);
+  }
+  const updatedData = { ...(parsed as Record<string, any>), ...item.fields };
+  const updatedYaml = yaml.dump(updatedData, { lineWidth: -1, noRefs: true });
+  await atomicWriteYaml(fullPath, updatedYaml);
+  updatedFiles.push(filePath);
+}
+
+async function rollbackFiles(snapshots: Map<string, string>): Promise<void> {
+  for (const [fullPath, originalContent] of snapshots) {
+    try {
+      if (originalContent === '') {
+        // Newly created file — delete it
+        await fs.unlink(fullPath);
+      } else {
+        // Updated file — restore original content
+        await atomicWriteYaml(fullPath, originalContent);
+      }
+    } catch {
+      // Best-effort rollback; ignore errors
+    }
+  }
+}
+
+interface ValidationError {
+  file?: string;
+  message: string;
+  severity: string;
+}
+
+function buildValidationErrors(
+  errors: ValidationError[],
+  depErrors: string[],
+): string[] {
+  return [
+    ...errors
+      .filter(e => e.severity === 'error')
+      .map(e => `${e.file ?? ''}: ${e.message}`),
+    ...depErrors,
+  ];
+}
+
+function collectAssetTasks(items: ContentPlanItem[]): Array<{ item: ContentPlanItem; needs: AssetNeed[] }> {
+  return items
+    .filter(item => item.assetNeeds.length > 0)
+    .map(item => ({ item, needs: item.assetNeeds }));
+}
+
+interface TopoSortResult {
+  sorted: ContentPlanItem[];
+  missingDeps: Array<{ itemId: string; itemName: string; missingDepId: string }>;
+}
+
+function topologicalSort(items: ContentPlanItem[]): TopoSortResult {
   const itemMap = new Map(items.map(i => [i.id, i]));
   const visiting = new Set<string>();
   const visited = new Set<string>();
   const result: ContentPlanItem[] = [];
+  const missingDeps: TopoSortResult['missingDeps'] = [];
 
   function visit(item: ContentPlanItem) {
     if (visiting.has(item.id)) {
@@ -121,6 +201,7 @@ function topologicalSort(items: ContentPlanItem[]): ContentPlanItem[] {
     for (const depId of item.dependsOn) {
       const dep = itemMap.get(depId);
       if (!dep) {
+        missingDeps.push({ itemId: item.id, itemName: item.name, missingDepId: depId });
         continue;
       }
       visit(dep);
@@ -134,7 +215,7 @@ function topologicalSort(items: ContentPlanItem[]): ContentPlanItem[] {
     visit(item);
   }
 
-  return result;
+  return { sorted: result, missingDeps };
 }
 
 async function atomicWriteYaml(fullPath: string, content: string): Promise<void> {
@@ -154,7 +235,12 @@ async function atomicWriteYaml(fullPath: string, content: string): Promise<void>
   }
 }
 
-async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir: string): Promise<void> {
+async function applyLink(
+  link: ContentLink,
+  items: ContentPlanItem[],
+  contentDir: string,
+  fileSnapshots?: Map<string, string>,
+): Promise<void> {
   const fromItem = items.find(i => i.id === link.fromItem);
   if (!fromItem) {
     throw new Error(`Link references unknown source item: ${link.fromItem}`);
@@ -184,6 +270,11 @@ async function applyLink(link: ContentLink, items: ContentPlanItem[], contentDir
     }
   } else if (link.action === 'set') {
     data[link.field] = link.toItem;
+  }
+
+  // Snapshot original content for rollback (only if not already snapshotted)
+  if (fileSnapshots && !fileSnapshots.has(targetPath)) {
+    fileSnapshots.set(targetPath, content);
   }
 
   const updatedYaml = yaml.dump(data, { lineWidth: -1, noRefs: true });

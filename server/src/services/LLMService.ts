@@ -4,6 +4,10 @@ export interface ExistingContentContext {
   characters: Array<{ id: string; name: string }>;
   scenes: Array<{ id: string; name: string; district: string }>;
   dialogues: Array<{ id: string; name: string }>;
+  missions: Array<{ id: string; title: string }>;
+  stories: Array<{ id: string; name: string }>;
+  overlays: Array<{ id: string; name: string }>;
+  locations: Array<{ id: string; name: string; district: string }>;
 }
 
 export interface LLMProvider {
@@ -21,6 +25,10 @@ export function buildSystemPrompt(context: ExistingContentContext): string {
   const existingChars = context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)';
   const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
   const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
+  const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
+  const existingStories = context.stories.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
+  const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
+  const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
 
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
@@ -31,14 +39,14 @@ Given a user's natural-language description, produce a ContentPlan — a list of
 ${CONTENT_TYPES.join(', ')}
 
 ## Required fields per content type
-- character: name, description, title (optional), avatar_url (optional)
-- scene: name, description, district
-- dialogue: name, description, start_node_id, nodes
-- overlay: name, description, target_tree_id, modifications
-- mission: title, description
+- character: name, description, title (optional), metadata.type, metadata.role, metadata.faction, metadata.personality, lore_path, narrative_path
+- scene: name, description, district, mood, lore_path
+- dialogue: name, description, lore_path
+- overlay: name, description, target_tree_id, modifications, lore_path
+- mission: title, description, lore_path
 - story: name, description, beats
 - shop_item: name, description, price, currency
-- location: name, description, district
+- location: name, description, district, tags, history, daytime, nightlife, lore_path
 - map_tile: district_id, x, y, terrain_type
 - story_beat: id, description
 - gig: name, description, reward
@@ -48,6 +56,10 @@ ${CONTENT_TYPES.join(', ')}
 - Characters: ${existingChars}
 - Scenes: ${existingScenes}
 - Dialogues: ${existingDialogues}
+- Missions: ${existingMissions}
+- Stories: ${existingStories}
+- Overlays: ${existingOverlays}
+- Locations: ${existingLocations}
 
 ## Output format
 Return a single JSON object matching this schema:
@@ -60,6 +72,7 @@ Return a single JSON object matching this schema:
       "type": "<content type>",
       "action": "create" | "update",
       "name": "<item name>",
+      "description": "<brief description of the content item>",
       "slug": "<lowercase_snake_case slug>",
       "fields": { ... },
       "assetNeeds": [],
@@ -122,7 +135,8 @@ export class LiteLLMProvider implements LLMProvider {
     if (!content) {
       throw new Error('LiteLLM response did not contain any message content.');
     }
-    const cleanedContent = content.replace(/^\u0060\u0060\u0060json\s*|\u0060\u0060\u0060$/g, "").trim();
+    const fenceMatch = content.match(/```(?:json|JSON)\s*\n?([\s\S]*?)```/);
+    const cleanedContent = fenceMatch ? fenceMatch[1].trim() : content.trim();
     let planJson;
     try {
       planJson = JSON.parse(cleanedContent);
@@ -153,6 +167,7 @@ export class MockProvider implements LLMProvider {
         type: 'character',
         action: 'create',
         name: 'Diego',
+        description: 'A weathered bartender with a cybernetic left arm and a talent for listening.',
         slug: 'diego',
         fields: {
           name: 'Diego',
@@ -170,6 +185,7 @@ export class MockProvider implements LLMProvider {
         type: 'scene',
         action: 'update',
         name: 'Central Plaza',
+        description: 'The bustling heart of Las Flores, where neon signs flicker above street vendors.',
         slug: 'central_plaza',
         fields: {
           name: 'Central Plaza',
@@ -187,6 +203,7 @@ export class MockProvider implements LLMProvider {
       type: 'dialogue',
       action: 'create',
       name: 'Street Encounter',
+      description: 'A chance conversation on the streets of Las Flores.',
       slug: 'street_encounter',
       fields: {
         name: 'Street Encounter',

@@ -36,7 +36,7 @@ adminStoryBuilderRouter.post('/plan', async (req: AuthRequest, res) => {
     console.error('[story-builder] POST /plan error:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to generate plan',
+      error: 'Failed to generate plan',
       timestamp: new Date().toISOString(),
     });
   }
