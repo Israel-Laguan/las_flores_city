@@ -1,25 +1,28 @@
-id: "58829bad-2255-4ae0-af20-ba2c607de59f"
-name: "Claire Moreau"
-title: "Spiritual Yogini and Hostess by the Port"
+id: 58829bad-2255-4ae0-af20-ba2c607de59f
+name: Claire Moreau
+title: Spiritual Yogini and Hostess by the Port
 description: |
   Claire Moreau is a captivating 45-year-old French woman with a deep love for the ocean and spirituality. Raised in an artistic coastal household, she transformed profound loss—the death of her French captain husband in a storm—into a life of freedom and connection, supported by life insurance he left behind. Openly bisexual, she draws university students and young professionals into her orbit, valuing meaningful bonds while exploring flirtatious and adventurous relationships. Deeply spiritual, she practices daily meditation and hosts dawn yoga sessions, often followed by lavish bohemian gatherings at her seaside home near the port. Charismatic and empathetic, Claire creates a welcoming space for people to explore their free spirits.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "charismatic_warm_hearted_spiritual"
+  type: human
+  role: npc
+  faction: independent
+  personality: charismatic_warm_hearted_spiritual
   age: 45
-  gender: "Female"
-  nationality: "French"
-  ethnicity: "Caucasian"
-  sexual_orientation: "Bisexual"
-  occupation: "Spiritual Guide, Yoga Instructor, Social Hostess"
-  background: "grew up in artistic household in French coastal town, married French captain who died at sea, inherited life insurance, now lives freely pursuing passions"
-  education: "self-taught in spiritual practices, experienced in yoga and meditation"
-  residence: "seaside home near the port with water views"
-  organization: "none (independent)"
-  allies: "university students, young professionals, artists, spiritual seekers, local community"
-  mannerisms: "practices daily meditation, hosts dawn yoga sessions, throws lavish bohemian parties, engages in flirtatious banter, creates welcoming safe spaces"
-  motivations: "live life to the fullest, help others find wellness and connection, honor her husband's memory through joy, create beauty and harmony"
-  quote: "The ocean taught me that even in the stormiest moments, there is always a calm waiting beneath the surface."
-  methods: "yoga instruction, meditation guidance, social hosting, artistic expression, empathetic listening"
+  gender: Female
+  nationality: French
+  ethnicity: Caucasian
+  sexual_orientation: Bisexual
+  occupation: Spiritual Guide, Yoga Instructor, Social Hostess
+  background: grew up in artistic household in French coastal town, married French captain who died at sea, inherited life insurance, now lives freely pursuing passions
+  education: self-taught in spiritual practices, experienced in yoga and meditation
+  residence: seaside home near the port with water views
+  organization: none (independent)
+  allies: university students, young professionals, artists, spiritual seekers, local community
+  mannerisms: practices daily meditation, hosts dawn yoga sessions, throws lavish bohemian parties, engages in flirtatious banter, creates welcoming safe spaces
+  motivations: live life to the fullest, help others find wellness and connection, honor her husband's memory through joy, create beauty and harmony
+  quote: The ocean taught me that even in the stormiest moments, there is always a calm waiting beneath the surface.
+  methods: yoga instruction, meditation guidance, social hosting, artistic expression, empathetic listening
+lore_path: docs/lore/figures/claire_moreau/claire_moreau.md
+asset_paths:
+  portrait: characters/claire_moreau/portrait.png

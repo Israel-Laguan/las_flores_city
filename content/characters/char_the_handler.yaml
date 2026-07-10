@@ -1,11 +1,13 @@
-id: "550e8400-e29b-41d4-a716-446655440004"
-name: "Ingrid"
-title: "The Handler"
-description: "A mysterious corporate liaison from N&M LTD. She speaks in clipped, efficient sentences and always seems to know more than she lets on. Her eyes flick between you and a tablet she never puts down."
+id: 550e8400-e29b-41d4-a716-446655440004
+name: Ingrid
+title: The Handler
+description: A mysterious corporate liaison from N&M LTD. She speaks in clipped, efficient sentences and always seems to know more than she lets on. Her eyes flick between you and a tablet she never puts down.
 metadata:
-  type: "human"
-  role: "quest_giver"
-  personality: "professional"
-  faction: "N&M LTD"
-  first_appearance: "dialogue_welcome_handler"
+  type: human
+  role: quest_giver
+  personality: professional
+  faction: N&M LTD
+  first_appearance: dialogue_welcome_handler
   is_reachable_via_sms: true
+asset_paths:
+  portrait: characters/the_handler/portrait.png

@@ -1,6 +1,6 @@
-id: "2988451a-6a2c-38d5-57d2-29140cb7a59e"
+id: 2988451a-6a2c-38d5-57d2-29140cb7a59e
 type: location
-name: "Northeast"
+name: Northeast
 color: null
 aliases:
   - Zona Rica
@@ -11,29 +11,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  In the embrace of the Northeast District lies a captivating tableau of luxury, cultural
-  heterogeneity, and technological advancement. This enclave, defined by its sumptuous
-  residences and strong Chinese influence, unfurls a narrative of prosperity, mingled with
-  the challenges of multicultural coexistence. The district is a diverse and multifaceted
-  area that combines various neighborhoods with distinct characteristics.
-
-daytime: >
-  High-end residential areas with luxury amenities dominate the Northeast District during
-  the day. Ultra-wealthy individuals seeking privacy and exclusivity populate these gleaming
-  neighborhoods. The district's landscape is adorned with lavish homes that stand as
-  testaments to architectural innovation and elegance. These abodes are often equipped with
-  cutting-edge technology, including house robots and the latest gadgets, reflecting the
-  affluence of their inhabitants.
-
-nightlife: >
-  As night descends, the Northeast District's ultra-modern facilities come alive. The area
-  boasts sophisticated transit systems and futuristic entertainment venues that position it
-  at the vanguard of innovation. While many residents enjoy the privacy of their homes,
-  the district's modern amenities and vibrant city life make it a haven that many are
-  reluctant to leave.
-
+history: |
+  In the embrace of the Northeast District lies a captivating tableau of luxury, cultural heterogeneity, and technological advancement. This enclave, defined by its sumptuous residences and strong Chinese influence, unfurls a narrative of prosperity, mingled with the challenges of multicultural coexistence. The district is a diverse and multifaceted area that combines various neighborhoods with distinct characteristics.
+daytime: |
+  High-end residential areas with luxury amenities dominate the Northeast District during the day. Ultra-wealthy individuals seeking privacy and exclusivity populate these gleaming neighborhoods. The district's landscape is adorned with lavish homes that stand as testaments to architectural innovation and elegance. These abodes are often equipped with cutting-edge technology, including house robots and the latest gadgets, reflecting the affluence of their inhabitants.
+nightlife: |
+  As night descends, the Northeast District's ultra-modern facilities come alive. The area boasts sophisticated transit systems and futuristic entertainment venues that position it at the vanguard of innovation. While many residents enjoy the privacy of their homes, the district's modern amenities and vibrant city life make it a haven that many are reluctant to leave.
 important_places:
   - name: Luxury Residential Estates
     description: Lavish homes equipped with cutting-edge technology and house robots, serving the ultra-wealthy population.
@@ -43,12 +26,7 @@ important_places:
     description: Sophisticated transit infrastructure connecting the district to the rest of Las Flores.
   - name: Futuristic Entertainment Venues
     description: State-of-the-art entertainment facilities representing the district's focus on innovation and quality of life.
-
-conclusion: >
-  The Northeast District of Las Flores encapsulates the city's spirit of progress, luxury,
-  and cultural diversity. Its trajectory, marked by challenges and triumphs, reflects the
-  complexity of forging a cohesive community from a global mosaic. Most residents come via
-  limited contracts, their futures hinged on extensions or returns to their homelands. The
-  LW Group's recruitment strategy has drawn individuals from India, South Korea, Japan, and
-  Saudi Arabia, alongside a significant Chinese populace. Despite occasional discord and
-  challenges of cultural integration, the district's appeal endures.
+conclusion: |
+  The Northeast District of Las Flores encapsulates the city's spirit of progress, luxury, and cultural diversity. Its trajectory, marked by challenges and triumphs, reflects the complexity of forging a cohesive community from a global mosaic. Most residents come via limited contracts, their futures hinged on extensions or returns to their homelands. The LW Group's recruitment strategy has drawn individuals from India, South Korea, Japan, and Saudi Arabia, alongside a significant Chinese populace. Despite occasional discord and challenges of cultural integration, the district's appeal endures.
+asset_paths:
+  image: locations/location_northeast/image.jpg

@@ -1,9 +1,12 @@
-id: "eab09597-c984-4900-88f7-1e3162bd658f"
-name: "Elena Torres"
-title: "Sustainability Lead, LW Group"
-description: "A local Las Flores environmental scientist turned corporate strategist. She leads the LW Group's sustainability and community engagement efforts, ensuring alignment with local expectations."
+id: eab09597-c984-4900-88f7-1e3162bd658f
+name: Elena Torres
+title: Sustainability Lead, LW Group
+description: A local Las Flores environmental scientist turned corporate strategist. She leads the LW Group's sustainability and community engagement efforts, ensuring alignment with local expectations.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "pragmatic_environmentalist"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: pragmatic_environmentalist
+lore_path: docs/lore/figures/elena_torres/elena_torres.md
+asset_paths:
+  portrait: characters/elena_torres/portrait.png

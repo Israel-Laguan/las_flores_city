@@ -1,9 +1,11 @@
-id: "fe4d009f-2ae8-42ed-aef1-1349b8562f10"
-name: "Manuel Ortega"
-title: "63-year-old former smuggler who has now"
-description: "Manuel Ortega, commonly known as \"El Viejo\" (The Old Man), is a 63-year-old former smuggler who has now transitioned into a pivotal link for a powerful cartel operating in Old Las Flores and the city center. Originally from San Pedro de los Pescadores, Manuel grew up in a fishing family but was lured into the world of smuggling as a young man seeking excitement and fortune."
+id: fe4d009f-2ae8-42ed-aef1-1349b8562f10
+name: Manuel Ortega
+title: 63-year-old former smuggler who has now
+description: Manuel Ortega, commonly known as "El Viejo" (The Old Man), is a 63-year-old former smuggler who has now transitioned into a pivotal link for a powerful cartel operating in Old Las Flores and the city center. Originally from San Pedro de los Pescadores, Manuel grew up in a fishing family but was lured into the world of smuggling as a young man seeking excitement and fortune.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "intelligent_professional"
+  type: human
+  role: npc
+  faction: independent
+  personality: intelligent_professional
+asset_paths:
+  portrait: characters/manuel_ortega/portrait.png

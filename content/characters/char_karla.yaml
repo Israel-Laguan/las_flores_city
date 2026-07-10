@@ -1,18 +1,21 @@
-id: "c1000012-e29b-41d4-a716-446655440012"
-name: "Karla"
-title: "Activist, Farmer"
-description: "A young activist and farmer, approximately 24 years old, murdered in February 2053. She was a local farmer who planted Carinata — a drought-resistant crop used for biofuel — and discovered that lithium contamination from Minera Estrella had poisoned her plantation. She obtained studies proving lithium was affecting the Carinata, and was preparing to demand accountability from the mining company when she was targeted. On the day of her death, she was found bleeding in an alley by a young Evelyn Ruthenberg. Before dying, she gave Evelyn a key, a small green pouch containing Carinata seeds that had surprisingly resisted the contamination, and a note. She asked Evelyn to deliver these to her partner Nubia and tell her to take the money and flee the city. Her evidence became the foundation of the case against Minera Estrella."
+id: c1000012-e29b-41d4-a716-446655440012
+name: Karla
+title: Activist, Farmer
+description: A young activist and farmer, approximately 24 years old, murdered in February 2053. She was a local farmer who planted Carinata — a drought-resistant crop used for biofuel — and discovered that lithium contamination from Minera Estrella had poisoned her plantation. She obtained studies proving lithium was affecting the Carinata, and was preparing to demand accountability from the mining company when she was targeted. On the day of her death, she was found bleeding in an alley by a young Evelyn Ruthenberg. Before dying, she gave Evelyn a key, a small green pouch containing Carinata seeds that had surprisingly resisted the contamination, and a note. She asked Evelyn to deliver these to her partner Nubia and tell her to take the money and flee the city. Her evidence became the foundation of the case against Minera Estrella.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "brave_casualty"
+  type: human
+  role: npc
+  faction: independent
+  personality: brave_casualty
   age: 24
-  gender: "Female"
-  occupation: "Farmer, Activist"
-  physical_description: "Young woman with dark hair styled in neat braids, wearing a vibrant yellow dress. Frail build at time of death."
-  background: "Local farmer who planted Carinata for biofuel production. Discovered lithium contamination affecting her crops and began collecting evidence against Minera Estrella."
-  mannerisms: "Strong, defiant even in her final moments. Thanked Evelyn for being with her so she wouldn't die alone."
-  motivations: "Expose Minera Estrella's contamination. Protect Nubia."
-  quote: "I'm relieved you came."
-  status: "Deceased (February 2053)"
+  gender: Female
+  occupation: Farmer, Activist
+  physical_description: Young woman with dark hair styled in neat braids, wearing a vibrant yellow dress. Frail build at time of death.
+  background: Local farmer who planted Carinata for biofuel production. Discovered lithium contamination affecting her crops and began collecting evidence against Minera Estrella.
+  mannerisms: Strong, defiant even in her final moments. Thanked Evelyn for being with her so she wouldn't die alone.
+  motivations: Expose Minera Estrella's contamination. Protect Nubia.
+  quote: I'm relieved you came.
+  status: Deceased (February 2053)
+lore_path: docs/lore/figures/karla/karla.md
+asset_paths:
+  portrait: characters/karla/portrait.png

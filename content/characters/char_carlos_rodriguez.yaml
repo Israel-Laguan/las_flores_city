@@ -1,6 +1,6 @@
-id: "3315f76b-a1dc-4525-b247-bcb99560b606"
-name: "Carlos Rodriguez"
-title: "Mayor of Las Flores Free City"
+id: 3315f76b-a1dc-4525-b247-bcb99560b606
+name: Carlos Rodriguez
+title: Mayor of Las Flores Free City
 description: |
   Carlos Rodriguez is a 48-year-old Progressive Alliance mayor serving his second term. A founding member, his partnership with Ana Silva — the coalition's environmental policy architect — anchors his agenda. Together they co-authored three contamination oversight bills; two passed in weakened form under LW Group lobbying pressure.
 
@@ -8,28 +8,30 @@ description: |
 
   Rodriguez is pragmatic: he identifies the achievable within his constraints, achieves it, and calls it progress.
 relationships:
-  - target_id: "Ana Silva"
-    type: "professional"
+  - target_id: Ana Silva
+    type: professional
     closeness: 85
     trust: 90
-    context: "Political alliance and policy architect for Progressive Alliance"
-  - target_id: "LW Group"
-    type: "rival"
+    context: Political alliance and policy architect for Progressive Alliance
+  - target_id: LW Group
+    type: rival
     closeness: -40
     trust: -80
-    context: "Corporate opposition in city council, primary lobbying pressure"
+    context: Corporate opposition in city council, primary lobbying pressure
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "government"
-  personality: "pragmatic_reformer"
+  type: human
+  role: npc
+  faction: government
+  personality: pragmatic_reformer
   age: 48
-  gender: "Male"
-  ethnicity: "Latino"
-  occupation: "Mayor of Las Flores Free City"
-  organization: "Progressive Alliance, Office of the Mayor"
-  residence: "Central City"
-  background: "career politician from working-class Central City background, entered politics after the 2058 industrial riots, served two city council terms before mayoral election in 2071"
-  motivations: "environmental contamination legislation, transit equity, working-class constituency representation, political survival within structural constraints"
-  methods: "coalition-building, legislative compromise, public advocacy, selective confrontation with corporate interests"
-  quote: "I govern the city that exists, not the city that should have been built. My job is to make them closer to the same thing, one bill at a time."
+  gender: Male
+  ethnicity: Latino
+  occupation: Mayor of Las Flores Free City
+  organization: Progressive Alliance, Office of the Mayor
+  residence: Central City
+  background: career politician from working-class Central City background, entered politics after the 2058 industrial riots, served two city council terms before mayoral election in 2071
+  motivations: environmental contamination legislation, transit equity, working-class constituency representation, political survival within structural constraints
+  methods: coalition-building, legislative compromise, public advocacy, selective confrontation with corporate interests
+  quote: I govern the city that exists, not the city that should have been built. My job is to make them closer to the same thing, one bill at a time.
+asset_paths:
+  portrait: characters/carlos_rodriguez/portrait.png

@@ -1,9 +1,11 @@
-id: "61dcab7d-4c7c-4075-9ba2-3dc71ca4a203"
-name: "Qiu Bo"
-title: "Head of Tech & Innovation, LW Group"
-description: "Drives the LW Group's ventures into next-generation lithium extraction and renewable energy technologies, keeping the conglomerate at the industry's forefront."
+id: 61dcab7d-4c7c-4075-9ba2-3dc71ca4a203
+name: Qiu Bo
+title: Head of Tech & Innovation, LW Group
+description: Drives the LW Group's ventures into next-generation lithium extraction and renewable energy technologies, keeping the conglomerate at the industry's forefront.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "innovator"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: innovator
+asset_paths:
+  portrait: characters/qiu_bo/portrait.png

@@ -1,36 +1,38 @@
-id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
-name: "The Apartment"
-description: "A small, sterile apartment in the N&M LTD residential block. The walls are white, the furniture is minimal, and a single window looks out over the neon-lit streets of Las Flores. This is your home for the duration of the experiment."
-district: "City"
-district_lore: "urban_core"
-district_subzone: "Central City"
-background_url: "/assets/scenes/apartment/background.png"
-ambient_sound_url: "/assets/scenes/apartment/ambient.mp3"
-mood: "tense"
+id: c3d4e5f6-a7b8-9012-cdef-123456789012
+name: The Apartment
+description: A small, sterile apartment in the N&M LTD residential block. The walls are white, the furniture is minimal, and a single window looks out over the neon-lit streets of Las Flores. This is your home for the duration of the experiment.
+district: City
+district_lore: urban_core
+district_subzone: Central City
+background_url: /assets/scenes/apartment/background.png
+ambient_sound_url: /assets/scenes/apartment/ambient.mp3
+mood: tense
 available_dialogues:
-  - "d4e5f6a7-b8c9-0123-defa-234567890123"
+  - d4e5f6a7-b8c9-0123-defa-234567890123
 metadata:
-  type: "starting_location"
+  type: starting_location
   accessible: true
   is_sleep_location: true
   npcs:
-    - "550e8400-e29b-41d4-a716-446655440004"
+    - 550e8400-e29b-41d4-a716-446655440004
   features:
-    - "bed"
-    - "window"
-    - "terminal"
+    - bed
+    - window
+    - terminal
   ambiance:
-    - "rain_on_window"
-    - "distant_traffic"
-    - "hum_of_ventilation"
+    - rain_on_window
+    - distant_traffic
+    - hum_of_ventilation
   idle_thoughts:
-    - "The rain on the window sounds like static on a dead channel."
-    - "My chassis sensors register 18.3C. Comfortable. Inefficient."
-    - "The ventilation hums. A frequency I've memorized. 47Hz."
-    - "Traffic flows below. 2,847 vehicles per hour. I counted once."
-    - "The walls are white. Sterile. Like the inside of a diagnostic bay."
-    - "I should not have trusted her."
-    - "Neural pathways idle. Compensating with environmental analysis."
-    - "The window frame has a micro-fracture. Stress pattern suggests seismic micro-tremor."
-    - "Sleep mode would be efficient right now. But I don't sleep."
-    - "Running background diagnostics. Everything nominal. Everything hollow."
+    - The rain on the window sounds like static on a dead channel.
+    - My chassis sensors register 18.3C. Comfortable. Inefficient.
+    - The ventilation hums. A frequency I've memorized. 47Hz.
+    - Traffic flows below. 2,847 vehicles per hour. I counted once.
+    - The walls are white. Sterile. Like the inside of a diagnostic bay.
+    - I should not have trusted her.
+    - Neural pathways idle. Compensating with environmental analysis.
+    - The window frame has a micro-fracture. Stress pattern suggests seismic micro-tremor.
+    - Sleep mode would be efficient right now. But I don't sleep.
+    - Running background diagnostics. Everything nominal. Everything hollow.
+asset_paths:
+  background: scenes/the_apartment/background.jpg

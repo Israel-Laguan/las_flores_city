@@ -1,9 +1,12 @@
-id: "c3000006-e29b-41d4-a716-446655440006"
-name: "Ricardo Vega"
-title: "Former Politician, Store Owner"
-description: "A charismatic orator who rose through multiple political parties before being exposed as an opportunist. Now runs a small store in the Industrial District, a cautionary tale of political disloyalty."
+id: c3000006-e29b-41d4-a716-446655440006
+name: Ricardo Vega
+title: Former Politician, Store Owner
+description: A charismatic orator who rose through multiple political parties before being exposed as an opportunist. Now runs a small store in the Industrial District, a cautionary tale of political disloyalty.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "opportunistic_idealist"
+  type: human
+  role: npc
+  faction: independent
+  personality: opportunistic_idealist
+lore_path: docs/lore/figures/ricardo_vega/ricardo_vega.md
+asset_paths:
+  portrait: characters/ricardo_vega/portrait.png

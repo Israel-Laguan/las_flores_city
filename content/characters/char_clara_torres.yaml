@@ -1,9 +1,11 @@
-id: "c6d7e8f9-a0b1-4a2b-3c4d-5e6f7a8b9c0d"
-name: "Clara Torres"
-title: "Technology & Innovation Editor, La Prensa"
-description: "Leads reporting on technology, science, and their societal impacts. Instrumental in engaging younger audiences through cutting-edge digital storytelling techniques."
+id: c6d7e8f9-a0b1-4a2b-3c4d-5e6f7a8b9c0d
+name: Clara Torres
+title: Technology & Innovation Editor, La Prensa
+description: Leads reporting on technology, science, and their societal impacts. Instrumental in engaging younger audiences through cutting-edge digital storytelling techniques.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "tech_savvy_journalist"
+  type: human
+  role: npc
+  faction: media
+  personality: tech_savvy_journalist
+asset_paths:
+  portrait: characters/clara_torres/portrait.png

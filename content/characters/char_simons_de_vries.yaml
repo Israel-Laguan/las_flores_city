@@ -1,12 +1,14 @@
----
-id: "a1b2c3d4-e5f6-7890-abcd-ef1234567892"
-name: "Simon De Vries"
-title: "Engineering Student, Universidad Nacional"
-description: "A 21-year-old engineering student in Las Flores, Simon is the son of a Dutch sailor and a local woman. He grew up in a modest household, supporting his mother while receiving annual visits from his father at sea. A dedicated student with a passion for maritime technology, he aims to work at the port and support his family. His engineering studies and love for ships reflect his blended heritage and ambition."
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567892
+name: Simon De Vries
+title: Engineering Student, Universidad Nacional
+description: A 21-year-old engineering student in Las Flores, Simon is the son of a Dutch sailor and a local woman. He grew up in a modest household, supporting his mother while receiving annual visits from his father at sea. A dedicated student with a passion for maritime technology, he aims to work at the port and support his family. His engineering studies and love for ships reflect his blended heritage and ambition.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "determined_student"
-  organization: "Universidad Nacional"
-  district_affiliation: "Las Flores"
+  type: human
+  role: npc
+  faction: independent
+  personality: determined_student
+  organization: Universidad Nacional
+  district_affiliation: Las Flores
+lore_path: docs/lore/figures/simons_de_vries/simons_de_vries.md
+asset_paths:
+  portrait: characters/simons_de_vries/portrait.png

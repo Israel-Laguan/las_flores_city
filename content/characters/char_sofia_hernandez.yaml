@@ -1,9 +1,12 @@
-id: "f7c5d3e1-2a4b-8c9d-5e6f-7a0b1c2d3e4a"
-name: "Sofia Hernánez"
-title: "Conservationist, Hiker, Photographer"
-description: "Sofia Hernánez is a 27-year-old conservationist from Las Flores' Andean region. She developed a passion for nature through childhood camping trips and now promotes environmental protection through outdoor activities. With an athletic build and practical style, Sofia combines her love for hiking, camping, and photography in her daily life. Her blog shares trail guides and sustainable camping tips, while she organizes community stargazing events. Sofia balances her conservation work with personal challenges of bureaucratic hurdles in park preservation and societal pressure to pursue conventional careers. She aims to become a regional conservation leader by creating eco-tourism opportunities and inspiring others to protect natural spaces."
+id: f7c5d3e1-2a4b-8c9d-5e6f-7a0b1c2d3e4a
+name: Sofia Hernánez
+title: Conservationist, Hiker, Photographer
+description: Sofia Hernánez is a 27-year-old conservationist from Las Flores' Andean region. She developed a passion for nature through childhood camping trips and now promotes environmental protection through outdoor activities. With an athletic build and practical style, Sofia combines her love for hiking, camping, and photography in her daily life. Her blog shares trail guides and sustainable camping tips, while she organizes community stargazing events. Sofia balances her conservation work with personal challenges of bureaucratic hurdles in park preservation and societal pressure to pursue conventional careers. She aims to become a regional conservation leader by creating eco-tourism opportunities and inspiring others to protect natural spaces.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "conservation"
-  personality: "energetic_passionate_down_to_earth"
+  type: human
+  role: npc
+  faction: conservation
+  personality: energetic_passionate_down_to_earth
+lore_path: docs/lore/figures/sofia_hernandez/sofia_hernandez.md
+asset_paths:
+  portrait: characters/sofia_hernandez/portrait.png

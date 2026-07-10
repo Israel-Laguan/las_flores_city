@@ -1,12 +1,14 @@
-id: "8d410b88-6694-45d4-81c6-12751e938498"
-name: "Xiao Chen"
-title: "CEO of LW Group"
-description: "Appointed in 2065, she is the first woman to lead the LW Group conglomerate. Known for her forward-thinking approach, diplomatic persuasion, and emphasis on sustainable tech and social responsibility."
+id: 8d410b88-6694-45d4-81c6-12751e938498
+name: Xiao Chen
+title: CEO of LW Group
+description: Appointed in 2065, she is the first woman to lead the LW Group conglomerate. Known for her forward-thinking approach, diplomatic persuasion, and emphasis on sustainable tech and social responsibility.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "visionary_diplomat"
-  organization: "LW Group"
-  lore_doc: "companies/lw_group/overview.md"
-  district_affiliation: "Northeast"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: visionary_diplomat
+  organization: LW Group
+  lore_doc: companies/lw_group/overview.md
+  district_affiliation: Northeast
+asset_paths:
+  portrait: characters/xiao_chen/portrait.png

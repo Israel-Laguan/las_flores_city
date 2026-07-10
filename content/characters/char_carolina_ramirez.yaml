@@ -1,9 +1,12 @@
-id: "c3000017-e29b-41d4-a716-446655440017"
-name: "Carolina Ramirez"
-title: "District Official"
-description: "The young Pacific District official who first noticed discrepancies in Manuel Rodriguez's travel expenses. Her investigation exposed his corruption, and she withstood his retaliatory smear campaign with unwavering integrity."
+id: c3000017-e29b-41d4-a716-446655440017
+name: Carolina Ramirez
+title: District Official
+description: The young Pacific District official who first noticed discrepancies in Manuel Rodriguez's travel expenses. Her investigation exposed his corruption, and she withstood his retaliatory smear campaign with unwavering integrity.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "civil_society"
-  personality: "principled_integrity"
+  type: human
+  role: npc
+  faction: civil_society
+  personality: principled_integrity
+lore_path: docs/lore/figures/carolina_ramirez/carolina_ramirez.md
+asset_paths:
+  portrait: characters/carolina_ramirez/portrait.png

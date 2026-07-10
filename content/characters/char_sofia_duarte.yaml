@@ -1,21 +1,24 @@
-id: "c1000002-e29b-41d4-a716-446655440002"
-name: "Sofia Duarte"
-title: "Councilwoman, Business Coalition Leader"
-description: "Charismatic councilwoman from a wealthy Las Flores family with deep ties to Minera Estrella."
+id: c1000002-e29b-41d4-a716-446655440002
+name: Sofia Duarte
+title: Councilwoman, Business Coalition Leader
+description: Charismatic councilwoman from a wealthy Las Flores family with deep ties to Minera Estrella.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "business_coalition"
-  personality: "manipulative_politician"
+  type: human
+  role: npc
+  faction: business_coalition
+  personality: manipulative_politician
   age: 45
-  gender: "Female"
-  occupation: "Councilwoman, Las Flores Free City Council"
-  physical_description: "Impeccably dressed, commanding presence, polished to perfection."
-  background: "Born into a powerful family that profited from the lithium boom. Entered politics with mining industry backing."
-  mannerisms: "Smooth-talking, calculated, uses humor to deflect difficult questions."
-  motivations: "Protect her family's wealth and political influence."
-  fears: "Whistleblowers exposing her corruption."
-  goals: "Maintain power through the Business Coalition."
-  challenges: "Growing public distrust and investigative journalism."
-  quote: "Progress has a cost. Someone has to be willing to pay it."
-  status: "Active (as of 2077)"
+  gender: Female
+  occupation: Councilwoman, Las Flores Free City Council
+  physical_description: Impeccably dressed, commanding presence, polished to perfection.
+  background: Born into a powerful family that profited from the lithium boom. Entered politics with mining industry backing.
+  mannerisms: Smooth-talking, calculated, uses humor to deflect difficult questions.
+  motivations: Protect her family's wealth and political influence.
+  fears: Whistleblowers exposing her corruption.
+  goals: Maintain power through the Business Coalition.
+  challenges: Growing public distrust and investigative journalism.
+  quote: Progress has a cost. Someone has to be willing to pay it.
+  status: Active (as of 2077)
+lore_path: docs/lore/figures/sofia_duarte/sofia_duarte.md
+asset_paths:
+  portrait: characters/sofia_duarte/portrait.png

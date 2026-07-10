@@ -1,9 +1,11 @@
-id: "e8f9a0b1-c2d3-4a4b-5c6d-7e8f9a0b1c2d"
-name: "Pedro Escobar"
-title: "City Editor, La Prensa (Las Flores)"
-description: "City Editor for La Prensa's Las Flores bureau. Coordinates coverage of local news, from politics to cultural events, ensuring the newspaper reflects the city's diverse fabric."
+id: e8f9a0b1-c2d3-4a4b-5c6d-7e8f9a0b1c2d
+name: Pedro Escobar
+title: City Editor, La Prensa (Las Flores)
+description: City Editor for La Prensa's Las Flores bureau. Coordinates coverage of local news, from politics to cultural events, ensuring the newspaper reflects the city's diverse fabric.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "city_editor"
+  type: human
+  role: npc
+  faction: media
+  personality: city_editor
+asset_paths:
+  portrait: characters/pedro_escobar/portrait.png

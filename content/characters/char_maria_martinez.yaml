@@ -1,9 +1,11 @@
-id: "b9c0d1e2-f3a4-4b5c-6d7e-8f9a0b1c2d3e"
-name: "Maria Martinez"
-title: "Founder, Fundación Esperanza"
-description: "Beloved educator who founded Fundación Esperanza to promote education, community development, and capacity-building in Old Las Flores. The foundation empowers marginalized communities through lifelong learning."
+id: b9c0d1e2-f3a4-4b5c-6d7e-8f9a0b1c2d3e
+name: Maria Martinez
+title: Founder, Fundación Esperanza
+description: Beloved educator who founded Fundación Esperanza to promote education, community development, and capacity-building in Old Las Flores. The foundation empowers marginalized communities through lifelong learning.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "civil_society"
-  personality: "community_educator"
+  type: human
+  role: npc
+  faction: civil_society
+  personality: community_educator
+asset_paths:
+  portrait: characters/maria_martinez/portrait.png

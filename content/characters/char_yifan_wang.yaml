@@ -1,9 +1,12 @@
-id: "c1000016-e29b-41d4-a716-446655440016"
-name: "Yifan Wang"
-title: "President, UDV Chinese Students Association"
-description: "Born in Beijing in 2055, Yifan came to Las Flores at age 20 to study International Relations at Universidad del Valle. Ambitious and outspoken, he leads the UDV Chinese Students Association and advocates for Chinese cultural identity on campus. He aspires to a career in Chinese foreign service."
+id: c1000016-e29b-41d4-a716-446655440016
+name: Yifan Wang
+title: President, UDV Chinese Students Association
+description: Born in Beijing in 2055, Yifan came to Las Flores at age 20 to study International Relations at Universidad del Valle. Ambitious and outspoken, he leads the UDV Chinese Students Association and advocates for Chinese cultural identity on campus. He aspires to a career in Chinese foreign service.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "dragon_phoenix"
-  personality: "ambitious_nationalist"
+  type: human
+  role: npc
+  faction: dragon_phoenix
+  personality: ambitious_nationalist
+lore_path: docs/lore/figures/yifan_wang/yifan_wang.md
+asset_paths:
+  portrait: characters/yifan_wang/portrait.png

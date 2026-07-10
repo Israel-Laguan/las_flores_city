@@ -1,29 +1,31 @@
-id: "bd65f55f-3ae3-4f8d-b90c-87e9b854e890"
-name: "Acuario Las Flores — Interior"
-description: "The main gallery floor of the Acuario Las Flores, where holographic coral displays stretch across the dimly lit hall. The hum of filtration systems and the glow of bioluminescent tank installations create an atmosphere of engineered tranquility, distant from the contaminated delta outside."
-district: "Port"
-district_lore: "port_area"
-district_subzone: "Port Area"
-background_url: "https://cdn.lasflores2077.com/locations/bg_acuario_interior.png"
-mood: "contemplative"
+id: bd65f55f-3ae3-4f8d-b90c-87e9b854e890
+name: Acuario Las Flores — Interior
+description: The main gallery floor of the Acuario Las Flores, where holographic coral displays stretch across the dimly lit hall. The hum of filtration systems and the glow of bioluminescent tank installations create an atmosphere of engineered tranquility, distant from the contaminated delta outside.
+district: Port
+district_lore: port_area
+district_subzone: Port Area
+background_url: https://cdn.lasflores2077.com/locations/bg_acuario_interior.png
+mood: contemplative
 available_dialogues: []
 metadata:
-  type: "entertainment"
+  type: entertainment
   accessible: true
   features:
-    - "holographic_coral_display"
-    - "filtration_exhibit"
-    - "touch_pools"
-    - "research_wing_access"
+    - holographic_coral_display
+    - filtration_exhibit
+    - touch_pools
+    - research_wing_access
   ambiance:
-    - "filtered_water_hum"
-    - "soft_reverb"
-    - "holographic_narration"
+    - filtered_water_hum
+    - soft_reverb
+    - holographic_narration
   idle_thoughts:
-    - "The water in the touch pool is 19.4°C. Maintained through a closed-loop filtration system independent of the Río de las Flores. The river outside reads 24.7°C and a heavy-metal index the display boards will not show."
-    - "The holographic coral reproduces the reef formations that no longer exist two kilometres from this building. The resolution is accurate. The implication — that this is a substitute rather than a celebration — is not mentioned on any panel."
-    - "An LW Group sponsor plaque is mounted at 1.2-metre intervals along the main corridor. Forty-seven plaques visible from my current position. The entity that installed the contamination is the primary sponsor of the exhibit documenting the contamination's aftermath."
+    - The water in the touch pool is 19.4°C. Maintained through a closed-loop filtration system independent of the Río de las Flores. The river outside reads 24.7°C and a heavy-metal index the display boards will not show.
+    - The holographic coral reproduces the reef formations that no longer exist two kilometres from this building. The resolution is accurate. The implication — that this is a substitute rather than a celebration — is not mentioned on any panel.
+    - An LW Group sponsor plaque is mounted at 1.2-metre intervals along the main corridor. Forty-seven plaques visible from my current position. The entity that installed the contamination is the primary sponsor of the exhibit documenting the contamination's aftermath.
     - "Biometric scan at entry: logged. The terms-of-service addendum routes this data to LW Group's security division. The family with the child in the blue jacket did not read the addendum. Most do not."
-    - "The captive organisms in the bioluminescent gallery have been engineered for the ambient light conditions of this tank. They have no reference point for what their species looked like before the engineering. Neither, now, does anyone who relies on this exhibit for information."
-    - "Atmospheric scrubbers maintain a salt-air simulation at 68% humidity. The actual air from the delta, admitted for two seconds, would override the simulation entirely. The scrubbers run continuously."
-    - "A child asks her parent why the coral is so bright. The parent says it is healthy. The holographic narration does not correct this. The narration was reviewed by LW Group's communications department before installation."
+    - The captive organisms in the bioluminescent gallery have been engineered for the ambient light conditions of this tank. They have no reference point for what their species looked like before the engineering. Neither, now, does anyone who relies on this exhibit for information.
+    - Atmospheric scrubbers maintain a salt-air simulation at 68% humidity. The actual air from the delta, admitted for two seconds, would override the simulation entirely. The scrubbers run continuously.
+    - A child asks her parent why the coral is so bright. The parent says it is healthy. The holographic narration does not correct this. The narration was reviewed by LW Group's communications department before installation.
+asset_paths:
+  background: scenes/scene_acuario/background.jpg

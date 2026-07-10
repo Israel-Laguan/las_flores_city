@@ -1,9 +1,11 @@
-id: "a843f0f8-a506-495f-a971-c7e03918276f"
-name: "Daniel Carter"
-title: "Pioneer, Humanity First"
-description: "The founding Pioneer of the Humanity First movement in Las Flores. Arriving from Canada in 2035, he laid the groundwork for the community councils and the movement's core values."
+id: a843f0f8-a506-495f-a971-c7e03918276f
+name: Daniel Carter
+title: Pioneer, Humanity First
+description: The founding Pioneer of the Humanity First movement in Las Flores. Arriving from Canada in 2035, he laid the groundwork for the community councils and the movement's core values.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "humanity_first"
-  personality: "visionary_founder"
+  type: human
+  role: npc
+  faction: humanity_first
+  personality: visionary_founder
+asset_paths:
+  portrait: characters/daniel_carter/portrait.png

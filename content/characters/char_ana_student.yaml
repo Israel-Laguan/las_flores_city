@@ -1,9 +1,11 @@
-id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
-name: "Ana"
-title: "University Student"
-description: "A friend from Alex's part-time job who is drawn into the investigation after a high-speed chase. She later goes undercover with investigator Ken to monitor the remaining building owners."
+id: 6a8b13c0-7e61-419b-98f5-b772e0c238fa
+name: Ana
+title: University Student
+description: A friend from Alex's part-time job who is drawn into the investigation after a high-speed chase. She later goes undercover with investigator Ken to monitor the remaining building owners.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "reluctant_brave"
+  type: human
+  role: npc
+  faction: independent
+  personality: reluctant_brave
+asset_paths:
+  portrait: characters/ana_student/portrait.png

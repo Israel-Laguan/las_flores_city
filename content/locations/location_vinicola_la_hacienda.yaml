@@ -1,6 +1,6 @@
-id: "86972114-ec3e-372f-b947-f030b9b24cc8"
+id: 86972114-ec3e-372f-b947-f030b9b24cc8
 type: location
-name: "Vinícola La Hacienda"
+name: Vinícola La Hacienda
 color: null
 aliases:
   - Vinícola
@@ -11,33 +11,22 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-overview: >
+overview: |
   A picturesque vineyard and winery located in the Andean Mountains, providing an excellent escape for wine enthusiasts and nature lovers alike.
-
-access: >
+access: |
   To reach Vinícola La Hacienda from Las Flores, the journey typically involves the following steps:
-
   Driving: Visitors can take a scenic drive of approximately 40 to 60 minutes, depending on traffic and road conditions. The route is primarily along well-maintained roads that wind through the mountains, offering beautiful views of the surrounding landscapes.
-
   Public Transport or Tours: Many local tours offer transportation to the vineyard, providing a convenient option for those who prefer not to drive. These tours often include wine tastings and guided visits, making the travel experience more enjoyable.
-
   Hiking (Optional): For adventure seekers, there may be hiking trails leading toward the vineyard, allowing visitors to enjoy the natural beauty of the area as they make their way to their destination.
-
-experiences: >
+experiences: |
   At Vinícola La Hacienda, visitors can enjoy a variety of experiences, including:
-
   Wine Tours and Tastings: The vineyard offers guided tours where visitors can learn about the winemaking process, from grape cultivation to fermentation. Tasting sessions allow guests to sample a selection of wines produced on-site, often accompanied by cheese or local delicacies.
-
   Beautiful Scenery: Surrounded by rolling hills and expansive vineyards, the setting offers stunning views that are perfect for photography and leisurely walks. Many visitors enjoy relaxing in the outdoor spaces while soaking in the picturesque landscape.
-
   Cultural Experiences: The vineyard may host events that celebrate local culture, such as traditional music performances or artisanal markets, allowing visitors to immerse themselves in the region's heritage.
-
   Dining: Vinícola La Hacienda often features a restaurant or café where guests can enjoy meals crafted from fresh, local ingredients. Dining al fresco is particularly popular, enhancing the experience with views of the vineyards.
-
   Local Products and Souvenirs: Visitors have the opportunity to purchase wines, olive oils, and other local products to take home, serving as souvenirs of their experience at the vineyard.
-
   Educational Workshops: Occasionally, the vineyard offers workshops on wine tasting and food pairing, providing a deeper understanding and appreciation of the culinary aspects of wine culture.
-
-conclusion: >
+conclusion: |
   Vinícola La Hacienda is more than just a winery; it is a destination that combines exquisite wines, breathtaking views, and cultural experiences. Whether you are a wine connoisseur or simply looking for a beautiful location to unwind, the vineyard provides something special for everyone visiting the Andean Mountains.
+asset_paths:
+  image: locations/location_vinicola_la_hacienda/image.jpg

@@ -1,9 +1,12 @@
-id: "c3000004-e29b-41d4-a716-446655440004"
-name: "Sofia (Miner)"
-title: "Former Miner, Street Survivor"
-description: "Born deaf, Sofia worked sorting minerals until a rockslide crushed her leg. Now homeless in Old Las Flores, she survives on scraps while her daughter Ariana studies to become a doctor."
+id: c3000004-e29b-41d4-a716-446655440004
+name: Sofia (Miner)
+title: Former Miner, Street Survivor
+description: Born deaf, Sofia worked sorting minerals until a rockslide crushed her leg. Now homeless in Old Las Flores, she survives on scraps while her daughter Ariana studies to become a doctor.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "unbroken_survivor"
+  type: human
+  role: npc
+  faction: independent
+  personality: unbroken_survivor
+lore_path: docs/lore/figures/sofia_miner/sofia_miner.md
+asset_paths:
+  portrait: characters/sofia_miner/portrait.png

@@ -1,9 +1,11 @@
-id: "c2000013-e29b-41d4-a716-446655440013"
-name: "Diego Reyes"
-title: "Community Activist"
-description: "A passionate community manager from a local activist group who approached Evelyn and Alex to help gain visibility for their cause. He proposed a more extreme and flashy approach with a new logo and slogan, which Evelyn and Alex were hesitant to fully embrace. After the movement separated from his group, Diego was falsely arrested by Chief Inspector Adeyemi for the Residencial Las Estrellas murders — a framing that collapsed when the 2077 broadcast exposed the true nature of the case. He was released within seventy-two hours of the broadcast and gave a single brief press statement before declining further interviews."
+id: c2000013-e29b-41d4-a716-446655440013
+name: Diego Reyes
+title: Community Activist
+description: A passionate community manager from a local activist group who approached Evelyn and Alex to help gain visibility for their cause. He proposed a more extreme and flashy approach with a new logo and slogan, which Evelyn and Alex were hesitant to fully embrace. After the movement separated from his group, Diego was falsely arrested by Chief Inspector Adeyemi for the Residencial Las Estrellas murders — a framing that collapsed when the 2077 broadcast exposed the true nature of the case. He was released within seventy-two hours of the broadcast and gave a single brief press statement before declining further interviews.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "passionate_activist"
+  type: human
+  role: npc
+  faction: independent
+  personality: passionate_activist
+asset_paths:
+  portrait: characters/diego_reyes/portrait.png

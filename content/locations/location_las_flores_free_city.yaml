@@ -1,6 +1,6 @@
-id: "c2bc27eb-14b8-3efb-65eb-f3484e8cf4e7"
+id: c2bc27eb-14b8-3efb-65eb-f3484e8cf4e7
 type: location
-name: "Las Flores Free City"
+name: Las Flores Free City
 color: null
 aliases:
   - Free City
@@ -10,39 +10,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  Las Flores Free City stands as a sprawling metropolis of approximately 270,000 residents,
-  spread across roughly 150 square kilometers between the Pacific coastline and the Andean
-  Mountains. The city stretches about 20 kilometers from the ocean eastward to the mountain
-  foothills, and approximately 10 kilometers north to south. Its geography tells a story of
-  contrasts: the Pacific Ocean defines its western boundary, while the Andean Mountains rise
-  to the east. To the south, rivers cut through desert landscapes, and to the north, swamps
-  transition into more Amazonian terrain. Urban development, the international airport, and
-  diverse neighborhoods occupy the central corridor between mountains and sea. The southern
-  reaches preserve Old Las Flores and rural valley communities with deep indigenous roots,
-  establishing areas of cultural and historical significance near the river.
-
-daytime: >
-  During daylight hours, Las Flores Free City reveals its layered socioeconomic geography.
-  The northern and northeastern sectors showcase the city's wealth, with upscale
-  neighborhoods, modern amenities, and commercial districts. Moving southward from these
-  affluent zones, industrial complexes and working-class neighborhoods dominate the
-  landscape. Old Las Flores in the south maintains its historical character, anchoring the
-  city's origins and serving as a cultural touchstone alongside the indigenous communities
-  scattered through the southern river valleys. The central corridor between the mountains
-  and coastline hums with commercial activity, facilitating connections between the city's
-  many distinct districts.
-
-nightlife: >
-  After dark, Las Flores Free City's nightlife mirrors its daytime inequalities. The wealthier
-  northern and northeastern neighborhoods offer exclusive entertainment venues, fine dining,
-  and upscale social spaces. Further south, closer to Old Las Flores and industrial zones, the
-  nightlife becomes more grounded and accessible, reflecting the character of working-class
-  and historic districts. The swamps to the north and desert to the south frame the city's
-  edges, creating natural boundaries that contain the urban sprawl and preserving pockets of
-  wilderness even within the metropolis.
-
+history: |
+  Las Flores Free City stands as a sprawling metropolis of approximately 270,000 residents, spread across roughly 150 square kilometers between the Pacific coastline and the Andean Mountains. The city stretches about 20 kilometers from the ocean eastward to the mountain foothills, and approximately 10 kilometers north to south. Its geography tells a story of contrasts: the Pacific Ocean defines its western boundary, while the Andean Mountains rise to the east. To the south, rivers cut through desert landscapes, and to the north, swamps transition into more Amazonian terrain. Urban development, the international airport, and diverse neighborhoods occupy the central corridor between mountains and sea. The southern reaches preserve Old Las Flores and rural valley communities with deep indigenous roots, establishing areas of cultural and historical significance near the river.
+daytime: |
+  During daylight hours, Las Flores Free City reveals its layered socioeconomic geography. The northern and northeastern sectors showcase the city's wealth, with upscale neighborhoods, modern amenities, and commercial districts. Moving southward from these affluent zones, industrial complexes and working-class neighborhoods dominate the landscape. Old Las Flores in the south maintains its historical character, anchoring the city's origins and serving as a cultural touchstone alongside the indigenous communities scattered through the southern river valleys. The central corridor between the mountains and coastline hums with commercial activity, facilitating connections between the city's many distinct districts.
+nightlife: |
+  After dark, Las Flores Free City's nightlife mirrors its daytime inequalities. The wealthier northern and northeastern neighborhoods offer exclusive entertainment venues, fine dining, and upscale social spaces. Further south, closer to Old Las Flores and industrial zones, the nightlife becomes more grounded and accessible, reflecting the character of working-class and historic districts. The swamps to the north and desert to the south frame the city's edges, creating natural boundaries that contain the urban sprawl and preserving pockets of wilderness even within the metropolis.
 important_places:
   - name: Pacific Coastal District
     description: The western urban edge where the city meets the ocean, featuring ports, beaches, and coastal businesses.
@@ -52,10 +25,7 @@ important_places:
     description: The historic southern heart of the city, preserving colonial architecture and cultural traditions near the river valley.
   - name: Northern Elite Enclaves
     description: Upscale neighborhoods in the north and northeast, home to modern infrastructure, luxury residences, and exclusive amenities.
-
-conclusion: >
-  Las Flores Free City is a microcosm of geographic and social diversity, spanning from ocean
-  to mountains and from desert to swamps. Its 270,000 inhabitants occupy a landscape where
-  wealth and poverty, history and modernity, nature and urbanization exist in constant
-  dialogue. The city's identity is shaped by these contrasts, making it a complex, dynamic
-  urban environment where the topography itself tells the story of its people.
+conclusion: |
+  Las Flores Free City is a microcosm of geographic and social diversity, spanning from ocean to mountains and from desert to swamps. Its 270,000 inhabitants occupy a landscape where wealth and poverty, history and modernity, nature and urbanization exist in constant dialogue. The city's identity is shaped by these contrasts, making it a complex, dynamic urban environment where the topography itself tells the story of its people.
+asset_paths:
+  image: locations/location_las_flores_free_city/image.jpg

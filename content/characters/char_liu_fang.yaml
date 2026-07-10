@@ -1,9 +1,12 @@
-id: "c1000004-e29b-41d4-a716-446655440004"
-name: "Liu Fang"
-title: "Former LW Group Employee / Whistleblower"
-description: "A brave whistleblower who collected irrefutable evidence of the cover-up. Disappeared in 2055 before she could testify. Her evidence survives on a memory card."
+id: c1000004-e29b-41d4-a716-446655440004
+name: Liu Fang
+title: Former LW Group Employee / Whistleblower
+description: A brave whistleblower who collected irrefutable evidence of the cover-up. Disappeared in 2055 before she could testify. Her evidence survives on a memory card.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "courageous_investigator"
+  type: human
+  role: npc
+  faction: independent
+  personality: courageous_investigator
+lore_path: docs/lore/figures/liu_fang/liu_fang.md
+asset_paths:
+  portrait: characters/liu_fang/portrait.png

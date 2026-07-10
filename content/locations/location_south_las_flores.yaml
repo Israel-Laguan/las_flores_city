@@ -1,6 +1,6 @@
-id: "131ffbe9-d00f-3a6f-af66-268584ef039b"
+id: 131ffbe9-d00f-3a6f-af66-268584ef039b
 type: location
-name: "South Las Flores"
+name: South Las Flores
 color: null
 aliases:
   - The South
@@ -16,46 +16,21 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
 population: 45000
-elevation: "10-30 m above sea level"
-key_river: "Río de las Flores"
-
-history: >
-  The South District of Las Flores is a vivid mosaic of cultural heritage, agricultural
-  roots, and evolving aspirations. Encompassing the historical nucleus of Las Flores,
-  this area preserves the city's humble beginnings and embodies the soul of the community.
-  At its heart lies Old Las Flores (Vieja Las Flores), the original mining settlement with
-  its historic adobe houses and narrow colonial streets, offering a picturesque window into
-  the past. The district landscape transitions from the river-fed agricultural valley in the
-  south to the more urbanized northern edge bordering the Industrial Zone.
-
-daytime: >
-  The South District is predominantly rural, characterized by agricultural communities
-  and small hills that contour the fertile valleys. The Río de las Flores meanders from
-  the eastern mountains through the district's expanse, nurturing the land and supporting
-  the agricultural endeavors that sustain the local populace. Traditional farming communities
-  rely heavily on crop yields, which influence the economic status of many residents. The
-  district features narrow colonial streets in historic areas transitioning to wider roads
-  toward the northern boundary, with the landscape shaped by small hills and rich valleys.
-
-nightlife: >
-  Life in the South District follows the rhythms of the land. Evenings are often spent in
-  community gatherings among the agricultural settlements. Food stalls and local
-  establishments remain open serving the community, while the streets continue to bustle
-  at a more relaxed pace than during the day. While the district lacks the entertainment
-  venues of more affluent areas, younger generations increasingly seek opportunities in
-  the city, creating a dynamic cultural tension between tradition and aspiration.
-
-economy: >
+elevation: 10-30 m above sea level
+key_river: Río de las Flores
+history: |
+  The South District of Las Flores is a vivid mosaic of cultural heritage, agricultural roots, and evolving aspirations. Encompassing the historical nucleus of Las Flores, this area preserves the city's humble beginnings and embodies the soul of the community. At its heart lies Old Las Flores (Vieja Las Flores), the original mining settlement with its historic adobe houses and narrow colonial streets, offering a picturesque window into the past. The district landscape transitions from the river-fed agricultural valley in the south to the more urbanized northern edge bordering the Industrial Zone.
+daytime: |
+  The South District is predominantly rural, characterized by agricultural communities and small hills that contour the fertile valleys. The Río de las Flores meanders from the eastern mountains through the district's expanse, nurturing the land and supporting the agricultural endeavors that sustain the local populace. Traditional farming communities rely heavily on crop yields, which influence the economic status of many residents. The district features narrow colonial streets in historic areas transitioning to wider roads toward the northern boundary, with the landscape shaped by small hills and rich valleys.
+nightlife: |
+  Life in the South District follows the rhythms of the land. Evenings are often spent in community gatherings among the agricultural settlements. Food stalls and local establishments remain open serving the community, while the streets continue to bustle at a more relaxed pace than during the day. While the district lacks the entertainment venues of more affluent areas, younger generations increasingly seek opportunities in the city, creating a dynamic cultural tension between tradition and aspiration.
+economy: |
   The South District economy is primarily based on small-scale agriculture and traditional crafts. The fertile lands along the Río de las Flores support farming communities growing crops and raising livestock. Local markets provide essential goods and services, while tourism to Old Las Flores' historic center offers additional income. Artisanal crafts represent an important cultural and economic activity, with many residents producing handmade goods passed down through generations. The economic status of many residents is heavily influenced by crop yields and seasonal variations.
-
-population_dynamics: >
+population_dynamics: |
   The district is home to approximately 45,000 residents, including around 30,000 in the Old Las Flores historic center and 15,000 in surrounding rural agricultural communities. Indigenous communities along the riverbank maintain strong cultural bonds with the region's heritage. A notable trend is the cyclical movement of younger generations: many leave to seek opportunities in the city but often return to invest in land or resume agricultural practices, underscoring the enduring connection to the land.
-
-transportation: >
+transportation: |
   Public transportation remains the primary means of travel in the South District. Bus routes connect Old Las Flores to South Terminal in the City District, providing crucial links to the broader urban area. One train line serves the district, and boat travel via the Río de las Flores offers both practical transport and scenic journeys. Local roads range from narrow colonial streets in historic areas to wider roads toward the northern boundary, transitioning toward the Industrial Zone.
-
 important_places:
   - name: Old Las Flores (Vieja Las Flores)
     description: The original mining settlement and historical center of the city, featuring historic adobe houses, narrow colonial streets, vibrant markets, and a bustling commercial hub. Located in the southern part near the river, characterized by strong Latin American influence and mixed-use buildings with ground-floor commerce and residential above.
@@ -67,19 +42,9 @@ important_places:
     description: Communities along the riverbank that uphold customs and traditions passed down through generations, living in harmony with the natural environment and maintaining strong cultural bonds with the region's heritage.
   - name: Agricultural Valley
     description: Fertile lands along the Río de las Flores supporting traditional farming communities, small-scale agriculture, and artisanal crafts, forming the economic backbone of the district.
-
-relationships: >
+relationships: |
   The South District maintains important connections with neighboring areas. Old Las Flores connects northward to the Industrial Zone, where streets widen and architecture shifts from historic to industrial. Bus routes provide crucial transit links to South Terminal in the City District. The Río de las Flores originates in the Los Andes District's eastern mountains and continues southward through the South District toward San Pedro de los Pescadores in the Far South. These connections create a corridor of historical, agricultural, and economic continuity.
-
-conclusion: >
-  The South District of Las Flores encapsulates a journey through time, from the historical
-  echoes of Old Las Flores to the vibrant tapestry of its contemporary communities. Public
-  transportation—buses, one train line, and boat travel via the river—remains the primary
-  means of travel, connecting the district to South Terminal in the City District and beyond.
-  Despite challenges of rural life, infrastructure limitations, higher insecurity, and the
-  allure of urban opportunities, the district remains a custodian of Las Flores' heritage,
-  poised on the brink of transformation yet deeply anchored in tradition. Many younger
-  residents who left for urban opportunities eventually return to invest in land or resume
-  agricultural practices, underscoring the enduring pull of the land. The district provides
-  essential economic access, cultural continuity, and social cohesion that newer districts
-  cannot replicate.
+conclusion: |
+  The South District of Las Flores encapsulates a journey through time, from the historical echoes of Old Las Flores to the vibrant tapestry of its contemporary communities. Public transportation—buses, one train line, and boat travel via the river—remains the primary means of travel, connecting the district to South Terminal in the City District and beyond. Despite challenges of rural life, infrastructure limitations, higher insecurity, and the allure of urban opportunities, the district remains a custodian of Las Flores' heritage, poised on the brink of transformation yet deeply anchored in tradition. Many younger residents who left for urban opportunities eventually return to invest in land or resume agricultural practices, underscoring the enduring pull of the land. The district provides essential economic access, cultural continuity, and social cohesion that newer districts cannot replicate.
+asset_paths:
+  image: locations/location_south_las_flores/image.jpg

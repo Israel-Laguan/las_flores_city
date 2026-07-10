@@ -1,9 +1,12 @@
-id: "8a7b6c5d-4e3f-4a1b-9c8d-7e6f5a4b3c2d"
-name: "Sofia Diaz"
-title: "Singer-Songwriter, TV Personality, Social Activist (M\u00fasicos en Acci\u00f3n)"
-description: "Raised in a working-class neighborhood of Old Las Flores, Sofia discovered her passion for music at an early age. After gaining popularity as a local musician, she used her platform to raise awareness about social issues affecting her community. Her activism eventually led to the creation of M\u00fasicos en Acci\u00f3n, a collective of artists dedicated to supporting various causes through their art."
+id: 8a7b6c5d-4e3f-4a1b-9c8d-7e6f5a4b3c2d
+name: Sofia Diaz
+title: Singer-Songwriter, TV Personality, Social Activist (Músicos en Acción)
+description: Raised in a working-class neighborhood of Old Las Flores, Sofia discovered her passion for music at an early age. After gaining popularity as a local musician, she used her platform to raise awareness about social issues affecting her community. Her activism eventually led to the creation of Músicos en Acción, a collective of artists dedicated to supporting various causes through their art.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "musicos_en_accion"
-  personality: "creative_empathetic_courageous"
+  type: human
+  role: npc
+  faction: musicos_en_accion
+  personality: creative_empathetic_courageous
+lore_path: docs/lore/figures/sofia_diaz/sofia_diaz.md
+asset_paths:
+  portrait: characters/sofia_diaz/portrait.png

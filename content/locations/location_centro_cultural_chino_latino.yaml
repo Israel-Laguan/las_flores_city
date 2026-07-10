@@ -1,6 +1,6 @@
-id: "4b0dfbea-86f0-42a7-9fc7-ed589c64db24"
+id: 4b0dfbea-86f0-42a7-9fc7-ed589c64db24
 type: location
-name: "Centro Cultural Chino-Latino"
+name: Centro Cultural Chino-Latino
 color: null
 aliases:
   - Chinese-Latino Cultural Center
@@ -13,100 +13,26 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Centro Cultural Chino-Latino was inaugurated in 2060 — two years after the
-  industrial riots that had convulsed the city's working-class districts and left the
-  three communities most entangled in the violence struggling to share territory without
-  a shared institutional space. The riots of 2058 had crystallised a tension that had
-  been building for decades: the Chinese enclave in North Las Flores, protected by LW
-  Group corporate infrastructure and increasingly perceived as economically extractive
-  by its neighbours; the Latino working class of the Industrial Zone and Old Las Flores,
-  bearing the environmental costs of lithium expansion while watching wages stagnate;
-  and the Afro-Dutch minority concentrated in pockets of the Central City and Port Area,
-  squeezed between the enclave's expansion and the gentrification pressure radiating from
-  the northern boulevards. LW Group's social-affairs division proposed the Cultural Centre
-  as a peace gesture — a shared civic building that would house programming from all three
-  communities under one roof, funded through a five-year corporate grant that was renewed
-  in 2065 and 2070. Critics from all three communities accepted the building while
-  rejecting the framing: a corporation that had materially benefited from the conditions
-  producing the riots offering a cultural venue as settlement was not, in their reading,
-  a peace gesture but a deflection. The grant terms included a booking-veto clause for
-  programming "inconsistent with community harmony objectives" — a phrase whose application
-  has been the subject of recurring disputes between the centre's joint management board
-  and the LW Group social-affairs liaison assigned to oversee compliance.
-
-daytime: >
-  Morning and afternoon programming at the Centro Cultural Chino-Latino rotates by
-  community group on a monthly schedule negotiated — sometimes contentiously — by the
-  joint management board, which includes two representatives from the Chinese enclave
-  association, two from the Latino community council, and one from the Afro-Dutch
-  cultural foundation, alongside the LW Group liaison whose attendance is non-voting
-  but whose booking-veto authority is contractual. The daytime schedule in any given
-  week might move from a Cantonese opera workshop to a traditional Andean textile
-  demonstration to a West African percussion class, the sequencing determined by a
-  calendar system that functions remarkably smoothly in months when no community group
-  has a grievance with another and breaks down noticeably when booking disputes resurface.
-  The common spaces — a shared café, a multilingual reading room, a holographic display
-  corridor showing rotating community histories — are designed for intermingling. In
-  practice, the café tables are often sorted by language affinity by midmorning, and the
-  holographic histories, which cycle through curated narratives from each community, are
-  experienced individually rather than collectively. Surveillance cameras in the common
-  spaces are higher-density than in the dedicated programming rooms; the centre's security
-  contractor, an LW Group subsidiary, monitors the feeds.
-
-nightlife: >
-  Evening programming at the Centro Cultural Chino-Latino is where the booking disputes
-  tend to surface most visibly. The main hall — capacity four hundred — is in peak demand
-  for evening cultural events, and the allocation schedule has never stabilised into a
-  format all three communities find equitable. Chinese enclave associations book primarily
-  for Lunar New Year events and business-networking receptions; the Latino council for
-  political assemblies, musical performances, and community dinners; the Afro-Dutch
-  foundation for spoken-word evenings, dance showcases, and the occasional activist
-  fundraiser that the LW Group liaison has twice attempted to veto under the
-  "community harmony" clause, once unsuccessfully, once with partial success after a
-  contentious board session. The holographic décor in the main hall adapts to each
-  booking, projecting the relevant community's aesthetic onto the walls and ceiling —
-  a feature marketed as cultural sensitivity and experienced, by the staff who operate
-  the projection system, as an indicator of how thoroughly the space refuses to develop
-  a character of its own. By midnight the main hall is cleared and locked. The café
-  remains open until 23:00, the last occupants invariably a mixed group of the venue's
-  younger staff and regulars who have discovered that the space is most genuinely shared
-  after the programming ends.
-
+history: |
+  The Centro Cultural Chino-Latino was inaugurated in 2060 — two years after the industrial riots that had convulsed the city's working-class districts and left the three communities most entangled in the violence struggling to share territory without a shared institutional space. The riots of 2058 had crystallised a tension that had been building for decades: the Chinese enclave in North Las Flores, protected by LW Group corporate infrastructure and increasingly perceived as economically extractive by its neighbours; the Latino working class of the Industrial Zone and Old Las Flores, bearing the environmental costs of lithium expansion while watching wages stagnate; and the Afro-Dutch minority concentrated in pockets of the Central City and Port Area, squeezed between the enclave's expansion and the gentrification pressure radiating from the northern boulevards. LW Group's social-affairs division proposed the Cultural Centre as a peace gesture — a shared civic building that would house programming from all three communities under one roof, funded through a five-year corporate grant that was renewed in 2065 and 2070. Critics from all three communities accepted the building while rejecting the framing: a corporation that had materially benefited from the conditions producing the riots offering a cultural venue as settlement was not, in their reading, a peace gesture but a deflection. The grant terms included a booking-veto clause for programming "inconsistent with community harmony objectives" — a phrase whose application has been the subject of recurring disputes between the centre's joint management board and the LW Group social-affairs liaison assigned to oversee compliance.
+daytime: |
+  Morning and afternoon programming at the Centro Cultural Chino-Latino rotates by community group on a monthly schedule negotiated — sometimes contentiously — by the joint management board, which includes two representatives from the Chinese enclave association, two from the Latino community council, and one from the Afro-Dutch cultural foundation, alongside the LW Group liaison whose attendance is non-voting but whose booking-veto authority is contractual. The daytime schedule in any given week might move from a Cantonese opera workshop to a traditional Andean textile demonstration to a West African percussion class, the sequencing determined by a calendar system that functions remarkably smoothly in months when no community group has a grievance with another and breaks down noticeably when booking disputes resurface. The common spaces — a shared café, a multilingual reading room, a holographic display corridor showing rotating community histories — are designed for intermingling. In practice, the café tables are often sorted by language affinity by midmorning, and the holographic histories, which cycle through curated narratives from each community, are experienced individually rather than collectively. Surveillance cameras in the common spaces are higher-density than in the dedicated programming rooms; the centre's security contractor, an LW Group subsidiary, monitors the feeds.
+nightlife: |
+  Evening programming at the Centro Cultural Chino-Latino is where the booking disputes tend to surface most visibly. The main hall — capacity four hundred — is in peak demand for evening cultural events, and the allocation schedule has never stabilised into a format all three communities find equitable. Chinese enclave associations book primarily for Lunar New Year events and business-networking receptions; the Latino council for political assemblies, musical performances, and community dinners; the Afro-Dutch foundation for spoken-word evenings, dance showcases, and the occasional activist fundraiser that the LW Group liaison has twice attempted to veto under the "community harmony" clause, once unsuccessfully, once with partial success after a contentious board session. The holographic décor in the main hall adapts to each booking, projecting the relevant community's aesthetic onto the walls and ceiling — a feature marketed as cultural sensitivity and experienced, by the staff who operate the projection system, as an indicator of how thoroughly the space refuses to develop a character of its own. By midnight the main hall is cleared and locked. The café remains open until 23:00, the last occupants invariably a mixed group of the venue's younger staff and regulars who have discovered that the space is most genuinely shared after the programming ends.
 important_places:
   - name: Main Hall
-    description: >
-      Four-hundred-capacity event space with adaptive holographic décor configurable per
-      community booking. The most contested resource on the joint management board's
-      calendar. LW Group liaison holds contractual booking-veto authority for events
-      deemed inconsistent with "community harmony objectives."
+    description: |
+      Four-hundred-capacity event space with adaptive holographic décor configurable per community booking. The most contested resource on the joint management board's calendar. LW Group liaison holds contractual booking-veto authority for events deemed inconsistent with "community harmony objectives."
   - name: Shared Community Café
-    description: >
-      A central café in the common area intended as the building's primary integration
-      space. In practice, tables self-organise by language affinity by midmorning; the
-      café functions as genuinely shared space most reliably after programming hours.
+    description: |
+      A central café in the common area intended as the building's primary integration space. In practice, tables self-organise by language affinity by midmorning; the café functions as genuinely shared space most reliably after programming hours.
   - name: Multilingual Reading Room
-    description: >
-      A library space with materials in Spanish, Cantonese, Mandarin, and Dutch,
-      supplemented by holographic text interfaces. Managed by a volunteer rotation
-      system drawn from all three community groups; the most consistently low-conflict
-      space in the building.
+    description: |
+      A library space with materials in Spanish, Cantonese, Mandarin, and Dutch, supplemented by holographic text interfaces. Managed by a volunteer rotation system drawn from all three community groups; the most consistently low-conflict space in the building.
   - name: Holographic Community History Corridor
-    description: >
-      A connecting corridor displaying rotating holographic narratives from the Chinese,
-      Latino, and Afro-Dutch communities. Each narrative was produced by the relevant
-      community group within parameters reviewed by the LW Group cultural liaison. The
-      corridor is experienced as a sequence rather than a synthesis.
-
-conclusion: >
-  The Centro Cultural Chino-Latino is the city's most honest institutional embodiment of
-  its three-community tension: a space that exists because the tension required a physical
-  response and that reproduces the tension within its own operations every month. Its
-  programming calendar is a living record of what equitable resource-sharing looks like
-  when the parties to the agreement do not share a common account of what created the
-  inequality the agreement is meant to address. The LW Group grant that funds it ensures
-  its survival while ensuring that certain interpretations of that history remain off the
-  booking calendar. The building itself, a striking piece of Central City civic architecture,
-  is most fully what its founders intended during the hour after programming ends and before
-  the café closes, when the three communities sit in the same space without an agenda.
+    description: |
+      A connecting corridor displaying rotating holographic narratives from the Chinese, Latino, and Afro-Dutch communities. Each narrative was produced by the relevant community group within parameters reviewed by the LW Group cultural liaison. The corridor is experienced as a sequence rather than a synthesis.
+conclusion: |
+  The Centro Cultural Chino-Latino is the city's most honest institutional embodiment of its three-community tension: a space that exists because the tension required a physical response and that reproduces the tension within its own operations every month. Its programming calendar is a living record of what equitable resource-sharing looks like when the parties to the agreement do not share a common account of what created the inequality the agreement is meant to address. The LW Group grant that funds it ensures its survival while ensuring that certain interpretations of that history remain off the booking calendar. The building itself, a striking piece of Central City civic architecture, is most fully what its founders intended during the hour after programming ends and before the café closes, when the three communities sit in the same space without an agenda.
+asset_paths:
+  image: locations/location_centro_cultural_chino_latino/image.jpg

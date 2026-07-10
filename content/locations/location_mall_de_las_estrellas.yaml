@@ -1,6 +1,6 @@
-id: "10e85e3d-13ab-4e2e-b242-df433ea8b2bc"
+id: 10e85e3d-13ab-4e2e-b242-df433ea8b2bc
 type: location
-name: "Mall de las Estrellas"
+name: Mall de las Estrellas
 color: null
 aliases:
   - Stars Mall
@@ -14,95 +14,26 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Mall de las Estrellas was developed as the retail anchor of the Chinese enclave's
-  northern expansion — a project conceived by LW Group's real estate division in 2052
-  and completed in 2058, in the same year as the industrial riots that it was partly
-  designed to contain. The enclave's origin lay in the bilateral investment treaty of
-  2045, which had brought Chinese sovereign capital and a wave of technical and managerial
-  personnel to Las Flores under terms that effectively created a corporate-administered
-  residential and commercial zone in North Las Flores. LW Group's economic dominance
-  over the zone was structural from the outset: the company provided infrastructure,
-  security services, and retail concession management, ensuring that the enclave's
-  commercial life remained inside a system it controlled. The Mall de las Estrellas was
-  the zone's crown jewel — a six-floor luxury retail complex housing Chinese flagship
-  brands unavailable elsewhere in the city, alongside curated international labels that
-  the Mall's tenant committee, chaired by an LW Group subsidiary, vetted for brand
-  compatibility. The tourist-facing counterpart, Mall del Valle in Central City, positions
-  itself as cosmopolitan and accessible; Las Estrellas makes no such gesture. Its
-  target demographic is the enclave's professional and executive class, and its design —
-  anti-contamination air filtration systems with visible intake units at every entrance,
-  biometric access logging, corporate surveillance feeds displayed on lobby screens
-  as an ambient transparency performance — makes clear that this is not a space
-  designed for the city at large.
-
-daytime: >
-  Entry to the Mall de las Estrellas is unrestricted during operational hours, but the
-  space communicates exclusion through environmental design rather than explicit access
-  control. The air filtration systems maintain a measured 21°C interior regardless of
-  outdoor conditions, the filtered air carrying a faint ionised quality that regular
-  visitors describe as "clean" and that atmospheric-quality monitors confirm removes
-  particulate matter to a standard unavailable in the surrounding North Las Flores
-  streetscape. Luxury Chinese-brand flagship stores occupy the upper three floors —
-  electronics, apparel, precision instruments — their retail interfaces combining
-  physical merchandise with holographic product environments that make browsing feel
-  closer to simulation than commerce. Lower floors house a curated international retail
-  mix and a food court whose vendors are drawn exclusively from enclave-certified
-  operators. Corporate surveillance feeds from the Mall's camera network play on a
-  rotating display in the main atrium lobby, framed as a security-transparency
-  initiative. LW Group subsidiary branding appears on the filtration system intake
-  panels, the ATM network terminals, and the maintenance crew's uniforms.
-
-nightlife: >
-  The Mall de las Estrellas runs reduced hours after 21:00, its upper retail floors
-  closing in sequence while the ground-floor restaurant and entertainment concessions
-  — a cinema complex and two reservation-only dining establishments — continue until
-  midnight on weekdays and 01:00 on weekends. The evening crowd skews toward the
-  enclave's executive and diplomatic tier, a demographic whose spending patterns the
-  Mall's analytics platform tracks at granular resolution through the biometric
-  loyalty system that 73% of regular shoppers have enrolled in. Holographic
-  storefront displays cycle to their evening configurations — warmer palette, slower
-  animation, product categories weighted toward the gifting and hospitality segments.
-  The corporate surveillance feed in the atrium lobby continues its rotation,
-  its content shifting to lower-density evening footage. Private security personnel
-  in LW Group-subsidiary uniforms increase in visibility after 22:00, positioned
-  at the atrium perimeter and the upper-floor lift lobbies. The exterior of the
-  building, visible from the Paseo de las Estrellas boulevard, is lit by a controlled
-  holographic facade installation that the city's architectural lighting board approved
-  in 2071 over the objections of two council members who noted that the display was
-  also a data-collection surface.
-
+history: |
+  The Mall de las Estrellas was developed as the retail anchor of the Chinese enclave's northern expansion — a project conceived by LW Group's real estate division in 2052 and completed in 2058, in the same year as the industrial riots that it was partly designed to contain. The enclave's origin lay in the bilateral investment treaty of 2045, which had brought Chinese sovereign capital and a wave of technical and managerial personnel to Las Flores under terms that effectively created a corporate-administered residential and commercial zone in North Las Flores. LW Group's economic dominance over the zone was structural from the outset: the company provided infrastructure, security services, and retail concession management, ensuring that the enclave's commercial life remained inside a system it controlled. The Mall de las Estrellas was the zone's crown jewel — a six-floor luxury retail complex housing Chinese flagship brands unavailable elsewhere in the city, alongside curated international labels that the Mall's tenant committee, chaired by an LW Group subsidiary, vetted for brand compatibility. The tourist-facing counterpart, Mall del Valle in Central City, positions itself as cosmopolitan and accessible; Las Estrellas makes no such gesture. Its target demographic is the enclave's professional and executive class, and its design — anti-contamination air filtration systems with visible intake units at every entrance, biometric access logging, corporate surveillance feeds displayed on lobby screens as an ambient transparency performance — makes clear that this is not a space designed for the city at large.
+daytime: |
+  Entry to the Mall de las Estrellas is unrestricted during operational hours, but the space communicates exclusion through environmental design rather than explicit access control. The air filtration systems maintain a measured 21°C interior regardless of outdoor conditions, the filtered air carrying a faint ionised quality that regular visitors describe as "clean" and that atmospheric-quality monitors confirm removes particulate matter to a standard unavailable in the surrounding North Las Flores streetscape. Luxury Chinese-brand flagship stores occupy the upper three floors — electronics, apparel, precision instruments — their retail interfaces combining physical merchandise with holographic product environments that make browsing feel closer to simulation than commerce. Lower floors house a curated international retail mix and a food court whose vendors are drawn exclusively from enclave-certified operators. Corporate surveillance feeds from the Mall's camera network play on a rotating display in the main atrium lobby, framed as a security-transparency initiative. LW Group subsidiary branding appears on the filtration system intake panels, the ATM network terminals, and the maintenance crew's uniforms.
+nightlife: |
+  The Mall de las Estrellas runs reduced hours after 21:00, its upper retail floors closing in sequence while the ground-floor restaurant and entertainment concessions — a cinema complex and two reservation-only dining establishments — continue until midnight on weekdays and 01:00 on weekends. The evening crowd skews toward the enclave's executive and diplomatic tier, a demographic whose spending patterns the Mall's analytics platform tracks at granular resolution through the biometric loyalty system that 73% of regular shoppers have enrolled in. Holographic storefront displays cycle to their evening configurations — warmer palette, slower animation, product categories weighted toward the gifting and hospitality segments. The corporate surveillance feed in the atrium lobby continues its rotation, its content shifting to lower-density evening footage. Private security personnel in LW Group-subsidiary uniforms increase in visibility after 22:00, positioned at the atrium perimeter and the upper-floor lift lobbies. The exterior of the building, visible from the Paseo de las Estrellas boulevard, is lit by a controlled holographic facade installation that the city's architectural lighting board approved in 2071 over the objections of two council members who noted that the display was also a data-collection surface.
 important_places:
   - name: Chinese Brand Flagship Zone
-    description: >
-      The upper three floors of the mall, housing flagship stores for Chinese luxury
-      electronics, apparel, and precision-instrument brands unavailable elsewhere in
-      Las Flores. Holographic product environments are embedded in every retail space;
-      product interaction data is collected under the tenant's loyalty programme terms.
+    description: |
+      The upper three floors of the mall, housing flagship stores for Chinese luxury electronics, apparel, and precision-instrument brands unavailable elsewhere in Las Flores. Holographic product environments are embedded in every retail space; product interaction data is collected under the tenant's loyalty programme terms.
   - name: Anti-Contamination Filtration Atrium
-    description: >
-      The mall's primary entry hall, where the air filtration intake units are
-      prominently visible as architectural features. Interior air quality is maintained
-      at particulate-removal standards exceeding city requirements. LW Group subsidiary
-      branding appears on filtration panels throughout.
+    description: |
+      The mall's primary entry hall, where the air filtration intake units are prominently visible as architectural features. Interior air quality is maintained at particulate-removal standards exceeding city requirements. LW Group subsidiary branding appears on filtration panels throughout.
   - name: Corporate Surveillance Feed Display
-    description: >
-      A rotating screen installation in the atrium lobby displaying live and archived
-      footage from the mall's internal camera network, marketed as a security-transparency
-      initiative. Content is curated by the mall's security operator before display.
+    description: |
+      A rotating screen installation in the atrium lobby displaying live and archived footage from the mall's internal camera network, marketed as a security-transparency initiative. Content is curated by the mall's security operator before display.
   - name: Enclave-Certified Food Court
-    description: >
-      A vendor-controlled food court on the second floor, restricted to enclave-certified
-      operators. The certification process is administered by the LW Group mall management
-      subsidiary; certification criteria are not publicly disclosed.
-
-conclusion: >
-  The Mall de las Estrellas is the physical expression of the Chinese enclave's internal
-  economy and LW Group's role as its invisible but pervasive operator. It is technically
-  open to any resident of Las Flores; it is designed in every particular to serve one
-  demographic and to make every other demographic feel the gap between the enclave's
-  standard and the city's. Visitors from the Industrial Zone or Old Las Flores who
-  enter on a tourist's impulse tend not to return. The air is cleaner, the prices are
-  higher, and the surveillance cameras, displayed rather than concealed, constitute an
-  aesthetic statement about whose security the institution is organised to guarantee.
+    description: |
+      A vendor-controlled food court on the second floor, restricted to enclave-certified operators. The certification process is administered by the LW Group mall management subsidiary; certification criteria are not publicly disclosed.
+conclusion: |
+  The Mall de las Estrellas is the physical expression of the Chinese enclave's internal economy and LW Group's role as its invisible but pervasive operator. It is technically open to any resident of Las Flores; it is designed in every particular to serve one demographic and to make every other demographic feel the gap between the enclave's standard and the city's. Visitors from the Industrial Zone or Old Las Flores who enter on a tourist's impulse tend not to return. The air is cleaner, the prices are higher, and the surveillance cameras, displayed rather than concealed, constitute an aesthetic statement about whose security the institution is organised to guarantee.
+asset_paths:
+  image: locations/location_mall_de_las_estrellas/image.jpg

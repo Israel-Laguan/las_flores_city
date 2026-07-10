@@ -1,9 +1,12 @@
-id: "c1000006-e29b-41d4-a716-446655440006"
-name: "Dr. Wei Zhang"
-title: "Reclusive Chemist & Phytoremediation Expert"
+id: c1000006-e29b-41d4-a716-446655440006
+name: Dr. Wei Zhang
+title: Reclusive Chemist & Phytoremediation Expert
 description: "Brilliant reclusive chemist specializing in environmental chemistry and phytoremediation. Driven by a formative trauma—the ruination of his ancestral village or silencing of a mentor—he has dedicated his life to sustainable purification methods. After collaborating with Evelyn Ruthenberg and Yara Rossi on the phytoremediation restoration plan, Yara's assassination prompted a strategic recalculation: he publicly aligned with the city council and Minera Estrella as a shield, while covertly continuing to collaborate with Evelyn. His public compliance became a performance—the 'ghost in the machine'—channeling data and subtly modifying techniques to plant seeds of genuine restoration within the compromised project. Quiet, introspective, and methodical, he transformed from a withdrawn researcher into a reluctant strategist, proving that even under duress, environmental healing can proceed through clandestine pathways."
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "reclusive_strategist"
+  type: human
+  role: npc
+  faction: independent
+  personality: reclusive_strategist
+lore_path: docs/lore/figures/wei_zhang/wei_zhang.md
+asset_paths:
+  portrait: characters/wei_zhang/portrait.png

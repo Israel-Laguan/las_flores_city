@@ -1,9 +1,11 @@
-id: "b3c4d5e6-f7a8-4b9c-0d1e-2f3a4b5c6d7e"
-name: "Ana Silva"
-title: "Councilwoman, Las Flores"
-description: "Progressive voice and champion of the poor in the Las Flores City Council. Vocal critic of Mayor Hernandez and Business Coalition tactics; advocates for transparency and community interests."
+id: b3c4d5e6-f7a8-4b9c-0d1e-2f3a4b5c6d7e
+name: Ana Silva
+title: Councilwoman, Las Flores
+description: Progressive voice and champion of the poor in the Las Flores City Council. Vocal critic of Mayor Hernandez and Business Coalition tactics; advocates for transparency and community interests.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "government"
-  personality: "progressive_advocate"
+  type: human
+  role: npc
+  faction: government
+  personality: progressive_advocate
+asset_paths:
+  portrait: characters/ana_silva/portrait.png

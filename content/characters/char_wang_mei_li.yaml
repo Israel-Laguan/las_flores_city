@@ -1,9 +1,12 @@
-id: "50a37ec0-60af-41c1-b8e7-42f9fe604b6b"
-name: "Wang Mei Li"
-title: "Founder, Dragon Phoenix Trading"
-description: "Born in 2028 to wealthy Shanghai immigrants, Mei Li grew up with strong entrepreneurial values. After divorcing Alexander van der Meer in 2060, she founded Dragon Phoenix Trading. She is a resilient businesswoman dedicated to her children, her team, and building her legacy in the region."
+id: 50a37ec0-60af-41c1-b8e7-42f9fe604b6b
+name: Wang Mei Li
+title: Founder, Dragon Phoenix Trading
+description: Born in 2028 to wealthy Shanghai immigrants, Mei Li grew up with strong entrepreneurial values. After divorcing Alexander van der Meer in 2060, she founded Dragon Phoenix Trading. She is a resilient businesswoman dedicated to her children, her team, and building her legacy in the region.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "dragon_phoenix"
-  personality: "cultural_bridge_builder"
+  type: human
+  role: npc
+  faction: dragon_phoenix
+  personality: cultural_bridge_builder
+lore_path: docs/lore/figures/wang_mei_li/wang_mei_li.md
+asset_paths:
+  portrait: characters/wang_mei_li/portrait.png

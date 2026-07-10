@@ -1,9 +1,11 @@
-id: "34bf8d6f-cd21-4aeb-b42c-beb367ffaafe"
-name: "Meilin Chen"
-title: "Las Flores Resident"
-description: "Meilin Chen, originally from Asian/Chinese (Mid 20s)."
+id: 34bf8d6f-cd21-4aeb-b42c-beb367ffaafe
+name: Meilin Chen
+title: Las Flores Resident
+description: Meilin Chen, originally from Asian/Chinese (Mid 20s).
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "shrewd_businessperson"
+  type: human
+  role: npc
+  faction: independent
+  personality: shrewd_businessperson
+asset_paths:
+  portrait: characters/meilin_chen/portrait.png

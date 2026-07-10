@@ -1,9 +1,12 @@
-id: "c3000003-e29b-41d4-a716-446655440003"
-name: "Kusi"
-title: "Restaurant Regular, Xue's Partner"
-description: "An indigenous man who became a fixture at Xue's restaurant. Their unconventional bond evolved over decades into a genuine partnership sealed by marriage in 2059."
+id: c3000003-e29b-41d4-a716-446655440003
+name: Kusi
+title: Restaurant Regular, Xue's Partner
+description: An indigenous man who became a fixture at Xue's restaurant. Their unconventional bond evolved over decades into a genuine partnership sealed by marriage in 2059.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "indigenous"
-  personality: "loyal_companion"
+  type: human
+  role: npc
+  faction: indigenous
+  personality: loyal_companion
+lore_path: docs/lore/figures/kusi/kusi.md
+asset_paths:
+  portrait: characters/kusi/portrait.png

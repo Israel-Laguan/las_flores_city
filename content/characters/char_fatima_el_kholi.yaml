@@ -1,26 +1,29 @@
-id: "0d57a32f-05ad-4765-8bfb-36e922d04fa1"
-name: "Fatima El-Kholi"
-title: "Mid-level Executive Manager, LW Group"
+id: 0d57a32f-05ad-4765-8bfb-36e922d04fa1
+name: Fatima El-Kholi
+title: Mid-level Executive Manager, LW Group
 description: |
   Fatima El-Kholi is a Middle Eastern/Arab (Egyptian) woman in her late 30s, born and raised in Cairo. She earned an MBA in Finance from the American University in Cairo and moved to Las Flores five years ago for professional opportunity. As a mid-level executive manager at LW Group, she oversees logistics operations for the Chinese conglomerate.
-  
+
   Confident, assertive, and fiercely independent, Fatima has cultivated a polished, cosmopolitan persona since arriving in Las Flores. Education and professional achievement are central to her identity, yet she now lives a more liberated personal life as a bisexual woman actively seeking relationships with university students and young adults through dating apps.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "confident_assertive_appreciative_of_luxury"
-  age: "Late 30s"
-  gender: "Female"
-  ethnicity: "Middle Eastern/Arab (Egyptian)"
-  occupation: "Mid-level executive manager, LW Group"
-  physical_description: "polished and cosmopolitan; sophisticated style favoring luxury fashion and tailored attire that reflects her executive status and taste for elegance"
-  background: "born and raised in Cairo, Egypt; completed MBA at the American University in Cairo; relocated to Las Flores five years ago for career opportunities"
-  education: "MBA with a focus in Finance, American University in Cairo"
-  organization: "LW Group"
-  mannerisms: "assertive and controlling in social and professional settings; maintains an air of sophistication; frequents upscale venues and social scenes where she can be seen and admired"
-  motivations: "achieve professional recognition and financial success congruent with her expertise; live authentically and freely after years of constrained personal freedom; enjoy luxury and social status"
-  fears: "financial stagnation despite executive rank; loneliness and cultural isolation; losing attractiveness or influence as she ages"
-  goals: "secure compensation commensurate with her expertise and Western peers; build meaningful yet freedom-focused connections; sustain a luxurious lifestyle without guilt"
-  challenges: "pay disparity with Western counterparts at LW Group; emotional distance from family and conservative roots; balancing executive responsibilities with patterns of compensatory spending"
-  quote: "I built an empire of control. Now I spend it on moments I can't control."
+  type: human
+  role: npc
+  faction: lw_group
+  personality: confident_assertive_appreciative_of_luxury
+  age: Late 30s
+  gender: Female
+  ethnicity: Middle Eastern/Arab (Egyptian)
+  occupation: Mid-level executive manager, LW Group
+  physical_description: polished and cosmopolitan; sophisticated style favoring luxury fashion and tailored attire that reflects her executive status and taste for elegance
+  background: born and raised in Cairo, Egypt; completed MBA at the American University in Cairo; relocated to Las Flores five years ago for career opportunities
+  education: MBA with a focus in Finance, American University in Cairo
+  organization: LW Group
+  mannerisms: assertive and controlling in social and professional settings; maintains an air of sophistication; frequents upscale venues and social scenes where she can be seen and admired
+  motivations: achieve professional recognition and financial success congruent with her expertise; live authentically and freely after years of constrained personal freedom; enjoy luxury and social status
+  fears: financial stagnation despite executive rank; loneliness and cultural isolation; losing attractiveness or influence as she ages
+  goals: secure compensation commensurate with her expertise and Western peers; build meaningful yet freedom-focused connections; sustain a luxurious lifestyle without guilt
+  challenges: pay disparity with Western counterparts at LW Group; emotional distance from family and conservative roots; balancing executive responsibilities with patterns of compensatory spending
+  quote: I built an empire of control. Now I spend it on moments I can't control.
+lore_path: docs/lore/figures/fatima_el_kholi/fatima_el_kholi.md
+asset_paths:
+  portrait: characters/fatima_el_kholi/portrait.png

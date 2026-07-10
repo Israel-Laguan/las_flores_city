@@ -1,6 +1,6 @@
-id: "570f9c35-8340-3872-f0bf-c0e41e8f1816"
+id: 570f9c35-8340-3872-f0bf-c0e41e8f1816
 type: location
-name: "El Barrio de los Chinos"
+name: El Barrio de los Chinos
 color: null
 aliases:
   - Chinatown
@@ -9,35 +9,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  Originally established during the first wave of Chinese investment, El Barrio de los Chinos
-  was home to numerous Chinese company offices. Over time, the dynamics shifted; while some
-  companies flourished and relocated to more prestigious addresses like the World Trade Center
-  and the Zona Franca near the port, others faced bankruptcy. This transition paved the way for
-  a new chapter, marked by the influx of small businesses and cultural establishments aimed at
-  preserving Chinese heritage and catering to the local community's nostalgia. Despite the
-  migration of wealthier Chinese individuals to the north, northeast, or port areas, El Barrio
-  de los Chinos retained its vibrant cultural identity, attracting a mix of Chinese, mixed-race
-  individuals, and Latin American entrepreneurs lured by the promise of affordable rent.
-
-daytime: >
-  During the day, the area buzzes with activity. The narrow, densely packed streets host a
-  variety of enterprises, ranging from traditional Chinese restaurants and craft stores to
-  calligraphy academies and martial arts schools. Amidst these, the occasional ultra-modern
-  tech store stands out, a nod to the area's adaptability and resilience. Daylight reveals the
-  architectural patchwork of old, less maintained buildings alongside these newer
-  establishments, some of which have remained closed for over a decade, adding to the
-  neighborhood's rich tapestry of history and culture.
-
-nightlife: >
-  As night falls, El Barrio de los Chinos transforms. While it may not match the glitz of
-  Zona Rosa, it offers a more subdued yet equally captivating experience. The streets are less
-  crowded, giving way to a tranquil exploration of its narrow alleys. Some restaurants and
-  cultural clubs stay open, offering a taste of authentic Chinese cuisine and culture late into
-  the night. The occasional neon light from a tech store or a bustling eatery casts a soft glow
-  over the streets, enveloping the area in an aura of mystery and nostalgia.
-
+history: |
+  Originally established during the first wave of Chinese investment, El Barrio de los Chinos was home to numerous Chinese company offices. Over time, the dynamics shifted; while some companies flourished and relocated to more prestigious addresses like the World Trade Center and the Zona Franca near the port, others faced bankruptcy. This transition paved the way for a new chapter, marked by the influx of small businesses and cultural establishments aimed at preserving Chinese heritage and catering to the local community's nostalgia. Despite the migration of wealthier Chinese individuals to the north, northeast, or port areas, El Barrio de los Chinos retained its vibrant cultural identity, attracting a mix of Chinese, mixed-race individuals, and Latin American entrepreneurs lured by the promise of affordable rent.
+daytime: |
+  During the day, the area buzzes with activity. The narrow, densely packed streets host a variety of enterprises, ranging from traditional Chinese restaurants and craft stores to calligraphy academies and martial arts schools. Amidst these, the occasional ultra-modern tech store stands out, a nod to the area's adaptability and resilience. Daylight reveals the architectural patchwork of old, less maintained buildings alongside these newer establishments, some of which have remained closed for over a decade, adding to the neighborhood's rich tapestry of history and culture.
+nightlife: |
+  As night falls, El Barrio de los Chinos transforms. While it may not match the glitz of Zona Rosa, it offers a more subdued yet equally captivating experience. The streets are less crowded, giving way to a tranquil exploration of its narrow alleys. Some restaurants and cultural clubs stay open, offering a taste of authentic Chinese cuisine and culture late into the night. The occasional neon light from a tech store or a bustling eatery casts a soft glow over the streets, enveloping the area in an aura of mystery and nostalgia.
 important_places:
   - name: Golden Dragon Restaurant
     description: One of the oldest and most revered Chinese restaurants in the district, known for its authentic cuisine and traditional decor.
@@ -47,11 +24,7 @@ important_places:
     description: A respected institution teaching various martial arts disciplines, bridging the gap between the past and present.
   - name: Tech Innovations Store
     description: A modern outpost amidst the historical surroundings, showcasing the latest in technological advancements.
-
-conclusion: >
-  El Barrio de los Chinos stands as a vibrant microcosm of cultural integration and historical
-  evolution. Its accessibility, coupled with its unique blend of daytime activities and
-  nighttime tranquility, makes it a compelling destination for those seeking to experience the
-  multifaceted charm of Las Flores. From its narrow, densely packed streets to its mix of
-  historical and modern establishments, the area retains a unique identity that invites
-  exploration and appreciation.
+conclusion: |
+  El Barrio de los Chinos stands as a vibrant microcosm of cultural integration and historical evolution. Its accessibility, coupled with its unique blend of daytime activities and nighttime tranquility, makes it a compelling destination for those seeking to experience the multifaceted charm of Las Flores. From its narrow, densely packed streets to its mix of historical and modern establishments, the area retains a unique identity that invites exploration and appreciation.
+asset_paths:
+  image: locations/location_el_barrio_de_los_chinos/image.jpg

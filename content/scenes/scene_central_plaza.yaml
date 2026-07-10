@@ -1,13 +1,15 @@
-id: "a1b2c3d4-e5f6-7890-abcd-ef1234567001"
-name: "Central Plaza"
-description: "The bustling heart of Las Flores, where old colonial architecture meets neon-lit modernity. Street vendors and holographic billboards share the same sidewalks."
-district: "Central"
-district_lore: "central"
-district_subzone: "Central"
-mood: "vibrant"
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567001
+name: Central Plaza
+description: The bustling heart of Las Flores, where old colonial architecture meets neon-lit modernity. Street vendors and holographic billboards share the same sidewalks.
+district: Central
+district_lore: central
+district_subzone: Central
+mood: vibrant
 available_dialogues: []
 metadata:
   idle_thoughts:
-    - "Pedestrians flow through the plaza in rhythmic patterns. The crowd density is moderate."
-    - "Holographic advertisements flicker above the fountain. Consumer optimism is high."
-    - "The plaza's power grid shows minor fluctuations. Likely due to the afternoon heat."
+    - Pedestrians flow through the plaza in rhythmic patterns. The crowd density is moderate.
+    - Holographic advertisements flicker above the fountain. Consumer optimism is high.
+    - The plaza's power grid shows minor fluctuations. Likely due to the afternoon heat.
+asset_paths:
+  background: scenes/scene_central_plaza/background.jpg

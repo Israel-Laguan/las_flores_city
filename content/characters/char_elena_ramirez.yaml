@@ -1,9 +1,11 @@
-id: "a082e8df-127e-4f64-b963-f7b9a32be1b6"
-name: "Elena Ramirez"
-title: "Former Chair, Humanity First"
-description: "A former local teacher passionate about education reform who became the first locally elected Chair of the Humanity First council, guiding it through its crucial growth era."
+id: a082e8df-127e-4f64-b963-f7b9a32be1b6
+name: Elena Ramirez
+title: Former Chair, Humanity First
+description: A former local teacher passionate about education reform who became the first locally elected Chair of the Humanity First council, guiding it through its crucial growth era.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "humanity_first"
-  personality: "steady_leader"
+  type: human
+  role: npc
+  faction: humanity_first
+  personality: steady_leader
+asset_paths:
+  portrait: characters/elena_ramirez/portrait.png

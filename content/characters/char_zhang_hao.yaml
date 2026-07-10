@@ -1,11 +1,14 @@
-id: "8870121a-bcdf-4d19-b1ee-91e5ca3fda2b"
-name: "Zhang Hao"
-title: "Customs Officer, Port of Las Flores"
-description: "A 45-year-old customs officer at the busy port, Zhang Hao is a robust, self-serving man who leverages his position for bribes, favors, and control. Shrewdly manipulative and outwardly charming, he hides a deep insecurity behind a confident, imposing exterior. His cultural favoritism, harassment of female employees, and compulsive gambling define a man who uses corruption to maintain the power he fears losing."
+id: 8870121a-bcdf-4d19-b1ee-91e5ca3fda2b
+name: Zhang Hao
+title: Customs Officer, Port of Las Flores
+description: A 45-year-old customs officer at the busy port, Zhang Hao is a robust, self-serving man who leverages his position for bribes, favors, and control. Shrewdly manipulative and outwardly charming, he hides a deep insecurity behind a confident, imposing exterior. His cultural favoritism, harassment of female employees, and compulsive gambling define a man who uses corruption to maintain the power he fears losing.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "corrupt_authority"
-  personality: "corrupt_manipulative_insecure"
-  organization: "Port of Las Flores Customs"
+  type: human
+  role: npc
+  faction: corrupt_authority
+  personality: corrupt_manipulative_insecure
+  organization: Port of Las Flores Customs
   age: 45
+lore_path: docs/lore/figures/zhang_hao/zhang_hao.md
+asset_paths:
+  portrait: characters/zhang_hao/portrait.png

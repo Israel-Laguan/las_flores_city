@@ -1,9 +1,11 @@
-id: "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b"
-name: "Jan van der Meer Jr."
-title: "Van der Meer Family Member"
-description: "Cousin and husband of Peter van der Meer. One of his staunchest allies during his coming out in 2065; his support drove a wedge with other family members."
+id: e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b
+name: Jan van der Meer Jr.
+title: Van der Meer Family Member
+description: Cousin and husband of Peter van der Meer. One of his staunchest allies during his coming out in 2065; his support drove a wedge with other family members.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "van_der_meer"
-  personality: "loyal_family_member"
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: loyal_family_member
+asset_paths:
+  portrait: characters/jan_van_der_meer_jr/portrait.png

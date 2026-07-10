@@ -1,6 +1,6 @@
-id: "c9e762cc-fa1c-4089-b8f1-83a4c7f08821"
+id: c9e762cc-fa1c-4089-b8f1-83a4c7f08821
 type: location
-name: "Bolsa de Valores Las Flores"
+name: Bolsa de Valores Las Flores
 color: null
 aliases:
   - Las Flores Stock Exchange
@@ -13,93 +13,26 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Bolsa de Valores Las Flores was established in 2038, two years after the city's
-  formal constitutional founding, as the institutional anchor of Las Flores's ambition to
-  become a regional financial hub. Its founding coincided precisely with LW Group's
-  landmark initial public offering — the largest equity event in the city's history —
-  which flooded the exchange with volume on its first operational day and established the
-  company's lithium-extraction futures contracts as the most actively traded instruments
-  on the trading floor for the two decades that followed. The exchange's architecture
-  reflects that origin: the atrium's centrepiece is a towering real-time price display
-  commissioned at founding and dominated, in any given session, by the lithium futures
-  board that occupies its uppermost tier. LW Group's IPO transformed Las Flores from a
-  regional administrative centre into a destination for capital from across South America
-  and, increasingly, from Chinese sovereign wealth vehicles following the bilateral
-  investment treaty of 2045. The trading floor became the physical location of what had
-  previously been an abstraction: the negotiation over who owned the right to extract,
-  price, and profit from the Andean lithium belt. Every subsequent environmental
-  contamination event, every labour dispute, every political negotiation over extraction
-  licences has had a corresponding price movement in this building. The 2052 Great Lithium
-  Leak caused the third-largest single-day volatility event in the exchange's history.
-
-daytime: >
-  The trading floor operates from 08:30 to 17:00 on weekdays, a space of engineered
-  intensity that has shed most of the human noise of its twentieth-century predecessors.
-  Algorithmic trading terminals occupy the floor's central grid, their screens updating
-  in sub-millisecond cycles, their cooling fans maintaining a constant low-register hum
-  audible beneath the ambient ventilation. Human traders and analysts still occupy the
-  floor — LW Group's commodities desk alone employs forty-three floor personnel — but
-  their function is increasingly supervisory, monitoring the automated systems for
-  anomalies that require human judgment or regulatory visibility. Surveillance drones on
-  fixed patrol circuits traverse the atrium at twelve-minute intervals, their cameras
-  logging personnel movements and visitor activity in the public observation gallery above
-  the trading floor. The gallery allows credentialed visitors to watch sessions from
-  behind reinforced glass; the lithium futures board is always visible from there, its
-  numbers updating with a rhythm that looks, from above, like a vital-signs monitor.
-  Biometric access gates at every floor entrance log entry and exit times against
-  personnel and visitor registries maintained by the exchange's security operator —
-  another LW Group subsidiary.
-
-nightlife: >
-  After the 17:00 close the trading floor empties with a speed that suggests its
-  daytime occupants are aware they are in a workspace rather than a destination.
-  The analyst floors above the trading level continue operating into the evening:
-  quantitative teams running post-session models, compliance teams processing
-  the day's regulatory filings, and the commodities desk's overnight monitoring
-  staff who track lithium futures on Asian exchanges while Las Flores sleeps.
-  The ghost-light of screens persists through the atrium glass long past midnight,
-  a blue-white glow visible from the street below as a reliable indicator that
-  the exchange's overnight operation is active. On significant earnings or
-  regulatory announcement evenings, the analyst floors run to 02:00 or later.
-  The surveillance drones continue their patrol circuits through the empty
-  atrium, their navigation lights the only movement in a space designed for
-  constant human activity and temporarily returned to its mechanical state.
-  The lithium futures board continues updating in real time regardless of
-  the hour, its numbers changing against an empty gallery.
-
+history: |
+  The Bolsa de Valores Las Flores was established in 2038, two years after the city's formal constitutional founding, as the institutional anchor of Las Flores's ambition to become a regional financial hub. Its founding coincided precisely with LW Group's landmark initial public offering — the largest equity event in the city's history — which flooded the exchange with volume on its first operational day and established the company's lithium-extraction futures contracts as the most actively traded instruments on the trading floor for the two decades that followed. The exchange's architecture reflects that origin: the atrium's centrepiece is a towering real-time price display commissioned at founding and dominated, in any given session, by the lithium futures board that occupies its uppermost tier. LW Group's IPO transformed Las Flores from a regional administrative centre into a destination for capital from across South America and, increasingly, from Chinese sovereign wealth vehicles following the bilateral investment treaty of 2045. The trading floor became the physical location of what had previously been an abstraction: the negotiation over who owned the right to extract, price, and profit from the Andean lithium belt. Every subsequent environmental contamination event, every labour dispute, every political negotiation over extraction licences has had a corresponding price movement in this building. The 2052 Great Lithium Leak caused the third-largest single-day volatility event in the exchange's history.
+daytime: |
+  The trading floor operates from 08:30 to 17:00 on weekdays, a space of engineered intensity that has shed most of the human noise of its twentieth-century predecessors. Algorithmic trading terminals occupy the floor's central grid, their screens updating in sub-millisecond cycles, their cooling fans maintaining a constant low-register hum audible beneath the ambient ventilation. Human traders and analysts still occupy the floor — LW Group's commodities desk alone employs forty-three floor personnel — but their function is increasingly supervisory, monitoring the automated systems for anomalies that require human judgment or regulatory visibility. Surveillance drones on fixed patrol circuits traverse the atrium at twelve-minute intervals, their cameras logging personnel movements and visitor activity in the public observation gallery above the trading floor. The gallery allows credentialed visitors to watch sessions from behind reinforced glass; the lithium futures board is always visible from there, its numbers updating with a rhythm that looks, from above, like a vital-signs monitor. Biometric access gates at every floor entrance log entry and exit times against personnel and visitor registries maintained by the exchange's security operator — another LW Group subsidiary.
+nightlife: |
+  After the 17:00 close the trading floor empties with a speed that suggests its daytime occupants are aware they are in a workspace rather than a destination. The analyst floors above the trading level continue operating into the evening: quantitative teams running post-session models, compliance teams processing the day's regulatory filings, and the commodities desk's overnight monitoring staff who track lithium futures on Asian exchanges while Las Flores sleeps. The ghost-light of screens persists through the atrium glass long past midnight, a blue-white glow visible from the street below as a reliable indicator that the exchange's overnight operation is active. On significant earnings or regulatory announcement evenings, the analyst floors run to 02:00 or later. The surveillance drones continue their patrol circuits through the empty atrium, their navigation lights the only movement in a space designed for constant human activity and temporarily returned to its mechanical state. The lithium futures board continues updating in real time regardless of the hour, its numbers changing against an empty gallery.
 important_places:
   - name: Trading Floor
-    description: >
-      The exchange's central operational space, dominated by algorithmic trading
-      terminals and cooled by a continuous ventilation system. LW Group's
-      commodities desk occupies the largest single floor section. Human personnel
-      are predominantly supervisory; automated systems execute the majority of trades.
+    description: |
+      The exchange's central operational space, dominated by algorithmic trading terminals and cooled by a continuous ventilation system. LW Group's commodities desk occupies the largest single floor section. Human personnel are predominantly supervisory; automated systems execute the majority of trades.
   - name: Lithium Futures Board
-    description: >
-      The uppermost tier of the atrium's real-time price display, showing continuous
-      lithium contract prices, open interest, and volatility indices. The most-watched
-      single display in the exchange and the most politically legible: every significant
-      event in the city's extraction economy reads here first.
+    description: |
+      The uppermost tier of the atrium's real-time price display, showing continuous lithium contract prices, open interest, and volatility indices. The most-watched single display in the exchange and the most politically legible: every significant event in the city's extraction economy reads here first.
   - name: Public Observation Gallery
-    description: >
-      A credentialed-access gallery above the trading floor, separated from the
-      operational area by reinforced glass. Tours operate on scheduled visits only;
-      the lithium futures board is always visible from the observation deck.
+    description: |
+      A credentialed-access gallery above the trading floor, separated from the operational area by reinforced glass. Tours operate on scheduled visits only; the lithium futures board is always visible from the observation deck.
   - name: Analyst Floors
-    description: >
-      Upper-level offices housing quantitative, compliance, and commodities monitoring
-      teams. Operational until late evening on most trading days; runs continuously
-      during Asian-market hours for overnight lithium futures monitoring.
-
-conclusion: >
-  The Bolsa de Valores Las Flores is the city's most explicit statement of what it
-  values and how it prices it. The algorithmic systems that now conduct the majority
-  of its business have abstracted the connection between the numbers updating on the
-  lithium futures board and the physical consequences of extraction in the Andean range,
-  in the contaminated river basin, in the labour camps of the Industrial Zone. Those
-  consequences do not disappear from the price signal — they are encoded in it. The
-  exchange's surveillance infrastructure, its access controls, its overnight glow
-  constitute a system that does not distinguish between asset classes or externalities.
-  It prices everything it is permitted to price and ignores everything it is not.
+    description: |
+      Upper-level offices housing quantitative, compliance, and commodities monitoring teams. Operational until late evening on most trading days; runs continuously during Asian-market hours for overnight lithium futures monitoring.
+conclusion: |
+  The Bolsa de Valores Las Flores is the city's most explicit statement of what it values and how it prices it. The algorithmic systems that now conduct the majority of its business have abstracted the connection between the numbers updating on the lithium futures board and the physical consequences of extraction in the Andean range, in the contaminated river basin, in the labour camps of the Industrial Zone. Those consequences do not disappear from the price signal — they are encoded in it. The exchange's surveillance infrastructure, its access controls, its overnight glow constitute a system that does not distinguish between asset classes or externalities. It prices everything it is permitted to price and ignores everything it is not.
+asset_paths:
+  image: locations/location_bolsa_de_valores_las_flores/image.jpg

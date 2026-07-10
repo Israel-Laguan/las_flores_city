@@ -1,6 +1,6 @@
-id: "391c84f0-ab2b-31e5-3bf0-94f1ff2436ec"
+id: 391c84f0-ab2b-31e5-3bf0-94f1ff2436ec
 type: location
-name: "Luz del Río energy plant"
+name: Luz del Río energy plant
 color: null
 aliases:
   - Luz del Río
@@ -11,33 +11,13 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Luz del Río energy plant stands as a towering monument to the city's industrial might,
-  an imposing structure that looms over the landscape and symbolizes both its impressive
-  achievements and its hidden vulnerabilities. Its massive turbines and pipelines hum with
-  the constant flow of power, sustaining the city's growing energy needs while also serving
-  as a stark reminder of the delicate balance between progress and environmental impact.
-
-  Originally built to serve the Andes mine and the Andes Dam facilities from Minera Estrella,
-  their biggest client. After the 2045 trial against Minera Estrella, the company went bankrupt
-  and the assets and this energy plant passed to be property of Minera Estrella.
-
-daytime: >
-  During the day, the Luz del Río energy plant operates at full capacity, its industrial
-  complex buzzing with activity. Workers and automated systems manage the flow of energy
-  from the facility, which remains critical to powering the city's districts, industrial
-  zones, and mining operations in the Andes. The plant's presence is felt across the region,
-  providing electricity to homes, businesses, and infrastructure while maintaining tight
-  security around its perimeter.
-
-nightlife: >
-  After dark, the energy plant continues its relentless operation, its turbines and exhaust
-  stacks illuminated against the night sky. The facility remains heavily secured, with limited
-  access and round-the-clock monitoring. While the surrounding areas may quiet down, the plant
-  itself never sleeps, representing the city's uninterrupted dependence on industrial power
-  generation.
-
+history: |
+  The Luz del Río energy plant stands as a towering monument to the city's industrial might, an imposing structure that looms over the landscape and symbolizes both its impressive achievements and its hidden vulnerabilities. Its massive turbines and pipelines hum with the constant flow of power, sustaining the city's growing energy needs while also serving as a stark reminder of the delicate balance between progress and environmental impact.
+  Originally built to serve the Andes mine and the Andes Dam facilities from Minera Estrella, their biggest client. After the 2045 trial against Minera Estrella, the company went bankrupt and the assets and this energy plant passed to be property of Minera Estrella.
+daytime: |
+  During the day, the Luz del Río energy plant operates at full capacity, its industrial complex buzzing with activity. Workers and automated systems manage the flow of energy from the facility, which remains critical to powering the city's districts, industrial zones, and mining operations in the Andes. The plant's presence is felt across the region, providing electricity to homes, businesses, and infrastructure while maintaining tight security around its perimeter.
+nightlife: |
+  After dark, the energy plant continues its relentless operation, its turbines and exhaust stacks illuminated against the night sky. The facility remains heavily secured, with limited access and round-the-clock monitoring. While the surrounding areas may quiet down, the plant itself never sleeps, representing the city's uninterrupted dependence on industrial power generation.
 important_places:
   - name: Main Turbine Hall
     description: The heart of the facility where massive turbines convert energy, accessible only to authorized personnel.
@@ -45,11 +25,7 @@ important_places:
     description: Administrative office managing the plant's ownership and operations following the 2045 bankruptcy transfer.
   - name: Control and Monitoring Center
     description: Secure operations hub overseeing energy distribution and plant safety systems.
-
-conclusion: >
-  Luz del Río energy plant embodies the duality of Las Flores Free City's development:
-  industrial achievement paired with environmental vulnerability. Originally built to serve
-  Minera Estrella's Andes mining and dam operations, its transfer after the 2045 trial
-  highlights how corporate failure can reshape city infrastructure. Today it remains both
-  a pillar of urban power and a reminder of the fragile balance between progress and
-  ecological responsibility.
+conclusion: |
+  Luz del Río energy plant embodies the duality of Las Flores Free City's development: industrial achievement paired with environmental vulnerability. Originally built to serve Minera Estrella's Andes mining and dam operations, its transfer after the 2045 trial highlights how corporate failure can reshape city infrastructure. Today it remains both a pillar of urban power and a reminder of the fragile balance between progress and ecological responsibility.
+asset_paths:
+  image: locations/location_luz_del_rio_energy_plant/image.jpg

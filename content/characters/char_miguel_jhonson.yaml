@@ -1,26 +1,29 @@
-id: "5d01a93e-2f11-47cc-9e67-ab10d48a946f"
-name: "Miguel Jhonson"
-title: "University Student, Logistics Chief of the 2077 Movement"
+id: 5d01a93e-2f11-47cc-9e67-ab10d48a946f
+name: Miguel Jhonson
+title: University Student, Logistics Chief of the 2077 Movement
 description: "Alex's oldest and closest friend in Las Flores. Born and raised in the city's western district, from a large extended family with roots going back generations. Of Anglo-Caribbean descent, the Jhonson family has been in Las Flores for three generations. Miguel is physically imposing — broad shoulders, unhurried movement — but grounding rather than intimidating. He ran the movement's physical logistics: safehouses, supply caches, communication relays, all organized through a network of local residents who trusted him. His deep roots in the western district gave him access to a kind of community loyalty that no external organizer could have manufactured. He was with Alex at the end at the mine entrance, and has never spoken publicly about those final moments. After the broadcast, he joined the transitional council and spent years in the unglamorous work of institutional rebuilding."
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "loyal_brave"
+  type: human
+  role: npc
+  faction: independent
+  personality: loyal_brave
   age: 24
-  gender: "Male"
-  occupation: "University Student (Urban Management), Part-time Logistics Worker"
-  physical_description: "Broad shoulders, unhurried movement, grounding physical presence. Calm without being distant, protective without being controlling."
-  background: "Born and raised in Las Flores's western district in a large extended family of Anglo-Caribbean heritage. Local in a way Alex never quite became — knows which neighborhoods will trust an organizer and who to call when a safehouse needs relocation at 11 PM."
-  residence: "Western District, Las Flores"
-  mannerisms: "Thinks in terms of what the building requires — supply line, schedule, contingency plan. Does not romanticize the work. Does it."
-  motivations: "Protect his community. Keep the movement's people alive. Honor what Carlos and Alex gave."
-  fears: "Failing the people counting on him. Another phone call he can't answer."
-  goals: "See the transitional work through. Build a city that doesn't need movements."
-  challenges: "Grief for Carlos and Alex. The weight of being the one who survives."
-  quote: "This neighborhood will be better built next time."
-  status: "Active (2077 and beyond)"
+  gender: Male
+  occupation: University Student (Urban Management), Part-time Logistics Worker
+  physical_description: Broad shoulders, unhurried movement, grounding physical presence. Calm without being distant, protective without being controlling.
+  background: Born and raised in Las Flores's western district in a large extended family of Anglo-Caribbean heritage. Local in a way Alex never quite became — knows which neighborhoods will trust an organizer and who to call when a safehouse needs relocation at 11 PM.
+  residence: Western District, Las Flores
+  mannerisms: Thinks in terms of what the building requires — supply line, schedule, contingency plan. Does not romanticize the work. Does it.
+  motivations: Protect his community. Keep the movement's people alive. Honor what Carlos and Alex gave.
+  fears: Failing the people counting on him. Another phone call he can't answer.
+  goals: See the transitional work through. Build a city that doesn't need movements.
+  challenges: Grief for Carlos and Alex. The weight of being the one who survives.
+  quote: This neighborhood will be better built next time.
+  status: Active (2077 and beyond)
 portrait_urls:
-  - url: "http://minio:9000/las-flores/portraits/miguel_jhonson/neutral.png"
-    label: "Standard portrait"
-    expression: "neutral"
+  - url: http://minio:9000/las-flores/portraits/miguel_jhonson/neutral.png
+    label: Standard portrait
+    expression: neutral
+lore_path: docs/lore/figures/miguel_jhonson/miguel_jhonson.md
+asset_paths:
+  portrait: characters/miguel_jhonson/portrait.png

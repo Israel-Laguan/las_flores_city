@@ -1,6 +1,6 @@
-id: "5fc778f5-511c-32cb-18fa-90da2da9cfde"
+id: 5fc778f5-511c-32cb-18fa-90da2da9cfde
 type: location
-name: "Mercado Central"
+name: Mercado Central
 color: null
 aliases: []
 tags:
@@ -8,54 +8,24 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  Mercado Central stands as a cornerstone of Las Flores's economic and cultural life.
-  This dual-sided marketplace is designed to meet the city's constant need for fresh
-  produce and goods while appealing to tourists seeking authentic local experiences.
-  The market serves as a lifeline, providing sustenance and a platform for economic
-  exchange while serving as a cultural landmark that attracts visitors from around
-  the globe.
-
-daytime: >
-  During the day, Mercado Central transforms into a vibrant spectacle of commerce
-  and culture. The modern facade with glass, steel, and eco-friendly materials reflects
-  the city's commitment to sustainability. Wide pedestrian-friendly paths and open-air
-  sections allow sunlight to filter through, illuminating the bustling activity below.
-  Behind the facade, a network of lanes accommodates transport trucks, ensuring a
-  seamless supply chain from fresh produce deliveries at dawn to waste removal at
-  day's end.
-
-nightlife: >
-  After dark, Mercado Central undergoes a subtle transformation. While many fresh
-  produce vendors close, food stalls and restaurants remain open, offering late-night
-  dining. On special occasions and festival nights, the market extends its hours and
-  hosts cultural events, live music performances, and night markets. The surrounding
-  streets come alive with street food vendors and informal commerce.
-
+history: |
+  Mercado Central stands as a cornerstone of Las Flores's economic and cultural life. This dual-sided marketplace is designed to meet the city's constant need for fresh produce and goods while appealing to tourists seeking authentic local experiences. The market serves as a lifeline, providing sustenance and a platform for economic exchange while serving as a cultural landmark that attracts visitors from around the globe.
+daytime: |
+  During the day, Mercado Central transforms into a vibrant spectacle of commerce and culture. The modern facade with glass, steel, and eco-friendly materials reflects the city's commitment to sustainability. Wide pedestrian-friendly paths and open-air sections allow sunlight to filter through, illuminating the bustling activity below. Behind the facade, a network of lanes accommodates transport trucks, ensuring a seamless supply chain from fresh produce deliveries at dawn to waste removal at day's end.
+nightlife: |
+  After dark, Mercado Central undergoes a subtle transformation. While many fresh produce vendors close, food stalls and restaurants remain open, offering late-night dining. On special occasions and festival nights, the market extends its hours and hosts cultural events, live music performances, and night markets. The surrounding streets come alive with street food vendors and informal commerce.
 important_places:
   - name: Modern Facade Entrance
-    description: The striking front entrance with glass, steel, and eco-friendly materials,
-      housing tourist-oriented stalls with handcrafted jewelry, clothing, gourmet foods,
-      and local delicacies.
+    description: The striking front entrance with glass, steel, and eco-friendly materials, housing tourist-oriented stalls with handcrafted jewelry, clothing, gourmet foods, and local delicacies.
   - name: Student and Middle-Class Section
-    description: A favored area offering affordable goods, second-hand bookstores,
-      local artisan crafts, and budget-friendly food stalls serving as a community hub.
+    description: A favored area offering affordable goods, second-hand bookstores, local artisan crafts, and budget-friendly food stalls serving as a community hub.
   - name: Logistics and Transport Lanes
-    description: Meticulously organized back lanes for transport trucks, with loading
-      docks and storage areas ensuring efficient supply chain operations.
+    description: Meticulously organized back lanes for transport trucks, with loading docks and storage areas ensuring efficient supply chain operations.
   - name: Fresh Produce Central
-    description: The core wholesale area where vendors receive and distribute fresh
-      produce, operating primarily during early morning hours.
+    description: The core wholesale area where vendors receive and distribute fresh produce, operating primarily during early morning hours.
   - name: Cultural Performance Space
-    description: A designated area used for live performances, cultural events, and
-      community gatherings.
-
-conclusion: >
-  Mercado Central stands as a symbol of Las Flores's dynamic spirit and its ability
-  to seamlessly integrate tradition with modernity. The market's innovative design
-  caters to both the functional needs of transport and logistics and the aesthetic
-  and experiential desires of a diverse clientele. From busy truckers to tourists
-  exploring the modern facade and students gathering in affordable sections, Mercado
-  Central encapsulates the essence of Las Flores—a city where commerce, culture, and
-  community converge in a harmonious blend of old and new.
+    description: A designated area used for live performances, cultural events, and community gatherings.
+conclusion: |
+  Mercado Central stands as a symbol of Las Flores's dynamic spirit and its ability to seamlessly integrate tradition with modernity. The market's innovative design caters to both the functional needs of transport and logistics and the aesthetic and experiential desires of a diverse clientele. From busy truckers to tourists exploring the modern facade and students gathering in affordable sections, Mercado Central encapsulates the essence of Las Flores—a city where commerce, culture, and community converge in a harmonious blend of old and new.
+asset_paths:
+  image: locations/location_mercado_central/image.jpg

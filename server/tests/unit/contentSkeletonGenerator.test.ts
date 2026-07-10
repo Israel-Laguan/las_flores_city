@@ -167,6 +167,56 @@ describe('ContentSkeletonGenerator', () => {
       const result = generateYaml(item);
       expect(result).toContain('TODO:');
     });
+
+    it('should generate asset_paths for character', () => {
+      const item = createItem({
+        type: 'character',
+        name: 'Diego',
+        slug: 'diego',
+        fields: {},
+      });
+      const result = generateYaml(item);
+      expect(result).toContain('asset_paths:');
+      expect(result).toContain('portrait: characters/diego/portrait.png');
+      expect(result).toContain('biometric: characters/diego/biometric.png');
+    });
+
+    it('should generate asset_paths for scene', () => {
+      const item = createItem({
+        type: 'scene',
+        name: 'Central Plaza',
+        slug: 'central_plaza',
+        fields: {},
+      });
+      const result = generateYaml(item);
+      expect(result).toContain('asset_paths:');
+      expect(result).toContain('background: scenes/central_plaza/background.jpg');
+    });
+
+    it('should generate asset_paths for location', () => {
+      const item = createItem({
+        type: 'location',
+        name: 'Plaza',
+        slug: 'plaza',
+        fields: {},
+      });
+      const result = generateYaml(item);
+      expect(result).toContain('asset_paths:');
+      expect(result).toContain('image: locations/plaza/image.jpg');
+      expect(result).toContain('background: locations/plaza/background.jpg');
+    });
+
+    it('should generate asset_paths for overlay', () => {
+      const item = createItem({
+        type: 'overlay',
+        name: 'Diego overlay',
+        slug: 'diego_overlay',
+        fields: {},
+      });
+      const result = generateYaml(item);
+      expect(result).toContain('asset_paths:');
+      expect(result).toContain('background: overlays/diego_overlay/background.jpg');
+    });
   });
 
   describe('resolveFilePath', () => {

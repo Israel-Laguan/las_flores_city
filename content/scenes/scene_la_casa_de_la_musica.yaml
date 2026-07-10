@@ -1,29 +1,31 @@
-id: "a684d395-7778-4941-90b2-fce1b3265695"
-name: "La Casa de la Música — Main Floor"
-description: "The main performance floor of La Casa de la Música, where the holographic light rig hangs in standby configuration above the crowd. The converted textile warehouse's acoustic panels absorb and redirect sound with a precision that its improvised origins do not suggest. On a full evening the floor carries three hundred people and their collective thermal output."
-district: "City"
-district_lore: "urban_core"
-district_subzone: "Central City"
-background_url: "https://cdn.lasflores2077.com/locations/bg_casa_musica_stage.png"
-mood: "energetic"
+id: a684d395-7778-4941-90b2-fce1b3265695
+name: La Casa de la Música — Main Floor
+description: The main performance floor of La Casa de la Música, where the holographic light rig hangs in standby configuration above the crowd. The converted textile warehouse's acoustic panels absorb and redirect sound with a precision that its improvised origins do not suggest. On a full evening the floor carries three hundred people and their collective thermal output.
+district: City
+district_lore: urban_core
+district_subzone: Central City
+background_url: https://cdn.lasflores2077.com/locations/bg_casa_musica_stage.png
+mood: energetic
 available_dialogues: []
 metadata:
-  type: "entertainment"
+  type: entertainment
   accessible: true
   features:
-    - "holographic_light_rig"
-    - "acoustic_panels"
-    - "bar_counter"
-    - "artist_residency_board"
+    - holographic_light_rig
+    - acoustic_panels
+    - bar_counter
+    - artist_residency_board
   ambiance:
-    - "live_music"
-    - "crowd_chatter"
-    - "bass_resonance"
+    - live_music
+    - crowd_chatter
+    - bass_resonance
   idle_thoughts:
-    - "The crowd's emotional synchrony during the chorus is measurable as a coherent thermal and acoustic signal. Three hundred people oriented toward the same stimulus producing a coordinated physiological response. This is the thing that data models call engagement and that the people producing it call feeling something."
-    - "The holographic light rig is running a volumetric pattern I have not seen before. Seventy-two independently articulated units producing an environment that has no geometric equivalent in the physical world. It is structured data expressing as light. I find this more interesting than I expected to."
+    - The crowd's emotional synchrony during the chorus is measurable as a coherent thermal and acoustic signal. Three hundred people oriented toward the same stimulus producing a coordinated physiological response. This is the thing that data models call engagement and that the people producing it call feeling something.
+    - The holographic light rig is running a volumetric pattern I have not seen before. Seventy-two independently articulated units producing an environment that has no geometric equivalent in the physical world. It is structured data expressing as light. I find this more interesting than I expected to.
     - "A poster near the bar: Colectivo Sonoro Libre, performing next Friday. The lead vocalist, Fernanda Ríos, gave a public statement in 2074 attributing lung damage in Port Area children to LW Group's tailings management. She has not received a city arts grant since. This poster is the only institutional acknowledgement of her continued existence in Las Flores."
     - "Acoustic properties of the converted textile warehouse: high-frequency absorption at the cargo-bay walls, mid-range reflection from the exposed steel rafters, bass resonance from the concrete floor. These were not designed. They accumulated from the building's prior function and the venue's improvised modifications. The sound is good because the building has a history."
-    - "The bass frequencies from the sub-bass cabinets are leaking through the converted warehouse walls into the Central City street. I can measure them at forty-three metres from the building exterior. This is, technically, a noise ordinance violation. The ordinance has been logged fourteen times against this venue. It has never been enforced."
-    - "The bar counter is running at full capacity. Sliding-scale pricing is still in effect for the house ferments. Someone ordered the synthetic protein-malt without asking the price. Someone else checked before ordering. The venue does not make them feel different about this."
-    - "The ventilation scrubbers are cycling audibly above the crowd noise as body heat and exhalation push the atmospheric sensors into the yellow range. The scrubbers are working. The crowd is not concerned. This is the correct relationship to have with functional infrastructure."
+    - The bass frequencies from the sub-bass cabinets are leaking through the converted warehouse walls into the Central City street. I can measure them at forty-three metres from the building exterior. This is, technically, a noise ordinance violation. The ordinance has been logged fourteen times against this venue. It has never been enforced.
+    - The bar counter is running at full capacity. Sliding-scale pricing is still in effect for the house ferments. Someone ordered the synthetic protein-malt without asking the price. Someone else checked before ordering. The venue does not make them feel different about this.
+    - The ventilation scrubbers are cycling audibly above the crowd noise as body heat and exhalation push the atmospheric sensors into the yellow range. The scrubbers are working. The crowd is not concerned. This is the correct relationship to have with functional infrastructure.
+asset_paths:
+  background: scenes/scene_la_casa_de_la_musica/background.jpg

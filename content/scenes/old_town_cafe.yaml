@@ -1,38 +1,40 @@
-id: "e5f6a7b8-c9d0-1234-efab-345678901234"
-name: "Old Town Cafe"
-description: "A cozy cafe tucked away in the old quarter. The smell of fresh coffee mingles with the sound of jazz playing from an old vinyl record player. Local regulars nod hello as you enter."
-district: "South"
-district_lore: "old_las_flores"
-district_subzone: "Old Las Flores"
-background_url: "/assets/scenes/old_town_cafe/background.png"
-ambient_sound_url: "/assets/scenes/old_town_cafe/ambient.mp3"
-mood: "cozy"
+id: e5f6a7b8-c9d0-1234-efab-345678901234
+name: Old Town Cafe
+description: A cozy cafe tucked away in the old quarter. The smell of fresh coffee mingles with the sound of jazz playing from an old vinyl record player. Local regulars nod hello as you enter.
+district: South
+district_lore: old_las_flores
+district_subzone: Old Las Flores
+background_url: /assets/scenes/old_town_cafe/background.png
+ambient_sound_url: /assets/scenes/old_town_cafe/ambient.mp3
+mood: cozy
 available_dialogues:
-  - "f6a7b8c9-d0e1-2345-fabc-456789012345"
-  - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  - f6a7b8c9-d0e1-2345-fabc-456789012345
+  - a1b2c3d4-e5f6-7890-abcd-ef1234567890
 metadata:
   required_story_beat: act1_awakening
-  type: "social_hub"
+  type: social_hub
   accessible: true
   npcs:
-    - "b2c3d4e5-f6a7-8901-bcde-f12345678901"
-    - "c1000013-e29b-41d4-a716-446655440013"
+    - b2c3d4e5-f6a7-8901-bcde-f12345678901
+    - c1000013-e29b-41d4-a716-446655440013
   features:
-    - "counter"
-    - "tables"
-    - "vinyl_player"
+    - counter
+    - tables
+    - vinyl_player
   ambiance:
-    - "jazz_music"
-    - "coffee_machine"
-    - "quiet_chatter"
+    - jazz_music
+    - coffee_machine
+    - quiet_chatter
   idle_thoughts:
-    - "The vinyl crackles. Imperfect. Analog. I appreciate the imperfection."
-    - "Coffee beans ground at 14g/shot. The barista's technique is consistent."
-    - "Jazz standard in F major. Miles Davis, 1959. Timeless data."
-    - "The regulars nod at me. They don't know what I am. I nod back."
+    - The vinyl crackles. Imperfect. Analog. I appreciate the imperfection.
+    - Coffee beans ground at 14g/shot. The barista's technique is consistent.
+    - Jazz standard in F major. Miles Davis, 1959. Timeless data.
+    - The regulars nod at me. They don't know what I am. I nod back.
     - "Ambient temperature: 22.1C. Humidity: 45%. Optimal for human comfort."
-    - "Someone's laughing in the corner. Genuine. I can tell the difference."
-    - "The coffee machine's boiler pressure fluctuates. 2.1 bar. Acceptable."
-    - "Old Town has fewer surveillance nodes. I feel... quieter here."
-    - "The barista remembers my order. I don't drink coffee. She doesn't ask."
-    - "Jazz improvisation. The musician creates without algorithms. Fascinating."
+    - Someone's laughing in the corner. Genuine. I can tell the difference.
+    - The coffee machine's boiler pressure fluctuates. 2.1 bar. Acceptable.
+    - Old Town has fewer surveillance nodes. I feel... quieter here.
+    - The barista remembers my order. I don't drink coffee. She doesn't ask.
+    - Jazz improvisation. The musician creates without algorithms. Fascinating.
+asset_paths:
+  background: scenes/old_town_cafe/background.jpg
