@@ -180,14 +180,14 @@ function getNestedValue(obj: Record<string, any>, path: string): string {
       return '';
     }
   }
-  return typeof current === 'string' ? current : '';
+  return current !== undefined && current !== null ? String(current) : '';
 }
 
 export default function ContentCard({ item, index, onFieldChange, onRemove }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
-  const lorePath = item.fields.lore_path || item.fields.narrative_path || null;
+  const lorePath = item.fields.lore_path || null;
 
   function handleFieldChange(field: FieldDefinition, value: string) {
     onFieldChange(index, field.key, value);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const styles = {
   overlay: {
@@ -102,8 +102,8 @@ interface LoreViewerProps {
   onClose: () => void;
 }
 
-function LoreEditor({ content, onChange, onSave, onCancel }: {
-  content: string; onChange: (v: string) => void; onSave: () => void; onCancel: () => void;
+function LoreEditor({ content, onChange, onSave, onCancel, saving }: {
+  content: string; onChange: (v: string) => void; onSave: () => void; onCancel: () => void; saving: boolean;
 }) {
   return (
     <>
@@ -112,7 +112,9 @@ function LoreEditor({ content, onChange, onSave, onCancel }: {
         value={content} onChange={(e) => onChange(e.target.value)} autoFocus
       />
       <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-        <button style={{ ...styles.button, ...styles.primaryButton }} onClick={onSave}>Save</button>
+        <button style={{ ...styles.button, ...styles.primaryButton }} onClick={onSave} disabled={saving}>
+          {saving ? 'Saving...' : 'Save'}
+        </button>
         <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={onCancel}>Cancel</button>
       </div>
     </>
@@ -122,9 +124,19 @@ function LoreEditor({ content, onChange, onSave, onCancel }: {
 export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [exists, setExists] = useState(false);
   const [editing, setEditing] = useState(false);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     if (!lorePath) return;
@@ -141,10 +153,12 @@ export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
 
   function handleSave() {
     if (!lorePath) return;
+    setSaving(true);
     fetch('/api/admin/lore/file', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: lorePath, content }) })
       .then((res) => res.json())
       .then((data) => { if (data.success) { setEditing(false); setExists(true); } else { setError(data.error || 'Failed to save'); } })
-      .catch(() => setError('Failed to save'));
+      .catch(() => setError('Failed to save'))
+      .finally(() => setSaving(false));
   }
 
   if (!lorePath) return null;
@@ -164,7 +178,7 @@ export default function LoreViewer({ lorePath, onClose }: LoreViewerProps) {
           <div style={{ marginBottom: '1rem', color: '#888', fontSize: '0.85rem' }}>This lore file doesn&apos;t exist yet.</div>
         )}
         {editing ? (
-          <LoreEditor content={content} onChange={setContent} onSave={handleSave} onCancel={() => setEditing(false)} />
+          <LoreEditor content={content} onChange={setContent} onSave={handleSave} onCancel={() => setEditing(false)} saving={saving} />
         ) : (
           <>
             <div style={styles.content}>{loading ? 'Loading...' : content || 'No content'}</div>

@@ -332,16 +332,20 @@ adminLoreRouter.get('/file', async (req, res) => {
       return;
     }
 
-    // Stat the file — return 404 if it does not exist
+    // Stat the file — return success with exists: false if ENOENT
     let stat: fs.Stats;
     try {
       stat = await fs.promises.stat(absolutePath);
     } catch (err: unknown) {
       const nodeErr = err as NodeJS.ErrnoException;
       if (nodeErr.code === 'ENOENT') {
-        res.status(404).json({
-          success: false,
-          error: `File not found: ${relPath}`,
+        res.json({
+          success: true,
+          data: {
+            path: relPath,
+            content: '',
+            exists: false,
+          },
           timestamp: new Date().toISOString(),
         });
         return;

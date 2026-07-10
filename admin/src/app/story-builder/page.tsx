@@ -144,26 +144,12 @@ export default function StoryBuilderPage() {
     const fields = { ...item.fields };
 
     const parts = fieldPath.split('.');
-    if (parts.length === 1) {
-      fields[fieldPath] = value;
-    } else {
-      let current: any = fields;
-      for (let i = 0; i < parts.length - 1; i++) {
-        const part = parts[i];
-        if (!(part in current) || typeof current[part] !== 'object') {
-          current[part] = {};
-        }
-        current = { ...current[part] };
-      }
-      current[parts[parts.length - 1]] = value;
-
-      let rebuilt: any = fields;
-      for (let i = parts.length - 2; i >= 0; i--) {
-        rebuilt = { ...rebuilt, [parts[i]]: { ...(typeof rebuilt[parts[i]] === 'object' ? rebuilt[parts[i]] : {}), [parts[i + 1]]: current } };
-        current = rebuilt;
-      }
-      Object.assign(fields, rebuilt);
+    let current: any = fields;
+    for (let i = 0; i < parts.length - 1; i++) {
+      current[parts[i]] = { ...(current[parts[i]] || {}) };
+      current = current[parts[i]];
     }
+    current[parts[parts.length - 1]] = value;
 
     items[index] = { ...item, fields };
     setPlan({ ...plan, items });

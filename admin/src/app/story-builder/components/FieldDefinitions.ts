@@ -14,31 +14,31 @@ export const FIELD_DEFINITIONS: Record<string, FieldDefinition[]> = {
     { label: 'Personality', key: 'metadata.personality', placeholder: 'e.g. reluctant_hero' },
     { label: 'Faction', key: 'metadata.faction', placeholder: 'e.g. independent' },
     { label: 'Role', key: 'metadata.role', placeholder: 'e.g. npc' },
-    { label: 'Lore Path', key: 'lore_path', placeholder: 'docs/lore/figures/name/name.md' },
-    { label: 'Narrative Path', key: 'narrative_path', placeholder: 'content/characters/char_name.md' },
+    { label: 'Lore Path', key: 'lore_path', placeholder: 'figures/name/name.md' },
+    { label: 'Narrative Path', key: 'narrative_path', placeholder: 'characters/char_name.md' },
   ],
   scene: [
     { label: 'Name', key: 'name', placeholder: 'Scene name' },
     { label: 'District', key: 'district', placeholder: 'e.g. downtown' },
     { label: 'Mood', key: 'mood', placeholder: 'e.g. bustling, tense, mysterious' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 1000 },
-    { label: 'Lore Path', key: 'lore_path', placeholder: 'docs/lore/scenes/name.md' },
+    { label: 'Lore Path', key: 'lore_path', placeholder: 'landmarks/name.md' },
   ],
   dialogue: [
     { label: 'Name', key: 'name', placeholder: 'Dialogue name' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 500 },
-    { label: 'Lore Path', key: 'lore_path', placeholder: 'docs/lore/figures/name/name.md' },
+    { label: 'Lore Path', key: 'lore_path', placeholder: 'figures/name/name.md' },
   ],
   mission: [
     { label: 'Title', key: 'title', placeholder: 'Mission title' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 1000 },
-    { label: 'Lore Path', key: 'lore_path', placeholder: 'docs/lore/missions/name.md' },
+    { label: 'Lore Path', key: 'lore_path', placeholder: 'stories/name.md' },
   ],
   location: [
     { label: 'Name', key: 'name', placeholder: 'Location name' },
     { label: 'District', key: 'district', placeholder: 'e.g. central' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 1000 },
-    { label: 'Lore Path', key: 'lore_path', placeholder: 'docs/lore/locations/name.md' },
+    { label: 'Lore Path', key: 'lore_path', placeholder: 'landmarks/name.md' },
   ],
   story: [
     { label: 'Name', key: 'name', placeholder: 'Story name' },
@@ -63,7 +63,7 @@ export const FIELD_DEFINITIONS: Record<string, FieldDefinition[]> = {
   overlay: [
     { label: 'Name', key: 'name', placeholder: 'Overlay name' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 500 },
-    { label: 'Lore Path', key: 'lore_path', placeholder: 'docs/lore/overlays/name.md' },
+    { label: 'Lore Path', key: 'lore_path', placeholder: 'stories/name.md' },
   ],
   story_beat: [
     { label: 'Description', key: 'description', multiline: true, maxLength: 500 },
