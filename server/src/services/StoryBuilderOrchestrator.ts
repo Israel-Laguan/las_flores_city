@@ -149,8 +149,9 @@ async function rollbackFiles(snapshots: Map<string, string | null>): Promise<voi
         // Updated file — restore original content
         await atomicWriteYaml(fullPath, originalContent);
       }
-    } catch {
-      // Best-effort rollback; ignore errors
+    } catch (error) {
+      // Best-effort rollback; log but don't throw
+      console.error(`[story-builder] Rollback failed for ${fullPath}:`, error);
     }
   }
 }

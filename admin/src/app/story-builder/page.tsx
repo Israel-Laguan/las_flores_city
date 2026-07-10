@@ -188,7 +188,17 @@ export default function StoryBuilderPage() {
 
   function removeItem(index: number) {
     if (!plan) return;
-    setPlan({ ...plan, items: plan.items.filter((_, i) => i !== index) });
+    const removedId = plan.items[index].id;
+    const items = plan.items
+      .filter((_, i) => i !== index)
+      .map(item => ({
+        ...item,
+        dependsOn: item.dependsOn.filter(id => id !== removedId),
+      }));
+    const links = plan.links.filter(
+      link => link.fromItem !== removedId && link.toItem !== removedId
+    );
+    setPlan({ ...plan, items, links });
   }
 
   function removeAssetPath(index: number, key: string) {
