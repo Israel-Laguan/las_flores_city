@@ -223,7 +223,9 @@ export default function ContentCard({ item, index, onFieldChange, onRemove, onAs
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
+  const [showNarrative, setShowNarrative] = useState(false);
   const lorePath = item.fields.lore_path || null;
+  const narrativePath = item.fields.narrative_path || null;
   const assetPaths = item.fields.asset_paths as Record<string, string> | undefined;
 
   function handleFieldChange(field: FieldDefinition, value: string) {
@@ -247,7 +249,15 @@ export default function ContentCard({ item, index, onFieldChange, onRemove, onAs
               style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
               onClick={() => setShowLore(true)}
             >
-              View Lore
+              Lore
+            </button>
+          )}
+          {narrativePath && (
+            <button
+              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
+              onClick={() => setShowNarrative(true)}
+            >
+              Narrative
             </button>
           )}
           <button style={styles.removeButton} onClick={() => onRemove(index)}>
@@ -295,6 +305,9 @@ export default function ContentCard({ item, index, onFieldChange, onRemove, onAs
 
       {showLore && lorePath && (
         <LoreViewer lorePath={lorePath} onClose={() => setShowLore(false)} />
+      )}
+      {showNarrative && narrativePath && (
+        <LoreViewer lorePath={narrativePath} onClose={() => setShowNarrative(false)} readOnly />
       )}
     </div>
   );
