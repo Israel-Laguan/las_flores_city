@@ -1,8 +1,9 @@
 /* eslint-disable max-lines */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import AdminNav from '../components/AdminNav';
 import ContentCard from './components/ContentCard';
 import PlanSummary from './components/PlanSummary';
@@ -87,12 +88,41 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
 
 // eslint-disable-next-line max-lines-per-function
 export default function StoryBuilderPage() {
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>(1);
   const [description, setDescription] = useState('');
   const [plan, setPlan] = useState<ContentPlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [executionResult, setExecutionResult] = useState<any>(null);
+  const [planId, setPlanId] = useState<string | null>(null);
+  const [refineFeedback, setRefineFeedback] = useState('');
+  const [showRefine, setShowRefine] = useState(false);
+
+  useEffect(() => {
+    const id = searchParams.get('planId');
+    if (id) {
+      setPlanId(id);
+      loadPlanFromDb(id);
+    }
+  }, [searchParams]);
+
+  async function loadPlanFromDb(id: string) {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/story-builder/plans/${id}`);
+      const data = await res.json();
+      if (data.success) {
+        setPlan(data.data.plan_json);
+        setDescription(data.data.description);
+        setStep(2);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleGeneratePlan() {
     setLoading(true);
@@ -105,6 +135,19 @@ export default function StoryBuilderPage() {
       if (data.success && data.data) {
         setPlan(data.data.plan);
         setStep(2);
+        // Auto-save to DB
+        try {
+          const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
+            '/api/admin/story-builder/plans',
+            { description, plan: data.data.plan }
+          );
+          if (saveRes.success && saveRes.data) {
+            setPlanId(saveRes.data.planId);
+          }
+        } catch (e) {
+          // Non-fatal: plan still works in session
+          console.error('Auto-save failed:', e);
+        }
       } else {
         setError(data.error || 'Failed to generate plan');
       }
@@ -129,6 +172,29 @@ export default function StoryBuilderPage() {
         setStep(4);
       } else {
         setError(data.error || 'Failed to execute plan');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleRefine() {
+    if (!planId || !refineFeedback.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+        `/api/admin/story-builder/plans/${planId}/refine`,
+        { feedback: refineFeedback }
+      );
+      if (data.success && data.data) {
+        setPlan(data.data.plan);
+        setRefineFeedback('');
+        setShowRefine(false);
+      } else {
+        setError(data.error || 'Failed to refine plan');
       }
     } catch (err: any) {
       setError(err.message);
@@ -287,6 +353,34 @@ export default function StoryBuilderPage() {
         <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addItem}>
           + Add Item
         </button>
+
+        {showRefine ? (
+          <div style={{ ...styles.subsection, marginTop: '1rem' }}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Refine with AI</h3>
+            <textarea
+              style={styles.textarea}
+              value={refineFeedback}
+              onChange={e => setRefineFeedback(e.target.value)}
+              placeholder="e.g. Make Diego more cynical. Add a scene for the bar interior."
+            />
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <button
+                style={{ ...styles.button, ...styles.primaryButton, ...(loading || !refineFeedback.trim() ? styles.disabledButton : {}) }}
+                onClick={handleRefine}
+                disabled={loading || !refineFeedback.trim()}
+              >
+                {loading ? 'Refining...' : 'Send Feedback'}
+              </button>
+              <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={() => setShowRefine(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={() => setShowRefine(true)}>
+            Refine with AI Feedback
+          </button>
+        )}
 
         {plan.items.length >= 2 && (
           <div style={{ ...styles.subsection, marginTop: '1.5rem' }}>
@@ -520,23 +614,19 @@ export default function StoryBuilderPage() {
             Approve &amp; Execute &rarr;
           </button>
         )}
+        {planId && (
+          <Link href="/story-builder/plans" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>
+            Save &amp; Close
+          </Link>
+        )}
         {step === 4 && (
           <>
             <Link href="/assets" style={{ ...styles.button, ...styles.primaryButton, textDecoration: 'none' }}>
               View Assets
             </Link>
-            <button
-              style={{ ...styles.button, ...styles.secondaryButton }}
-              onClick={() => {
-                setStep(1);
-                setDescription('');
-                setPlan(null);
-                setExecutionResult(null);
-                setError(null);
-              }}
-            >
-              Create Another
-            </button>
+            <Link href="/story-builder" style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none' }}>
+              New Plan
+            </Link>
           </>
         )}
       </div>
