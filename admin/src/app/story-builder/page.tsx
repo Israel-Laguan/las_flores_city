@@ -155,9 +155,50 @@ export default function StoryBuilderPage() {
     setPlan({ ...plan, items });
   }
 
+  function updateItemDependsOn(index: number, dependsOn: string[]) {
+    if (!plan) return;
+    const items = [...plan.items];
+    items[index] = { ...items[index], dependsOn };
+    setPlan({ ...plan, items });
+  }
+
+  function addLink() {
+    if (!plan || plan.items.length < 2) return;
+    const newLink = {
+      fromItem: plan.items[0].id,
+      toItem: plan.items[1].id,
+      field: '',
+      action: 'add' as const,
+    };
+    setPlan({ ...plan, links: [...plan.links, newLink] });
+  }
+
+  function updateLink(index: number, field: string, value: string) {
+    if (!plan) return;
+    const links = [...plan.links];
+    if (!links[index]) return;
+    links[index] = { ...links[index], [field]: value };
+    setPlan({ ...plan, links });
+  }
+
+  function removeLink(index: number) {
+    if (!plan) return;
+    setPlan({ ...plan, links: plan.links.filter((_, i) => i !== index) });
+  }
+
   function removeItem(index: number) {
     if (!plan) return;
-    setPlan({ ...plan, items: plan.items.filter((_, i) => i !== index) });
+    const removedId = plan.items[index].id;
+    const items = plan.items
+      .filter((_, i) => i !== index)
+      .map(item => ({
+        ...item,
+        dependsOn: item.dependsOn.filter(id => id !== removedId),
+      }));
+    const links = plan.links.filter(
+      link => link.fromItem !== removedId && link.toItem !== removedId
+    );
+    setPlan({ ...plan, items, links });
   }
 
   function removeAssetPath(index: number, key: string) {
@@ -179,6 +220,7 @@ export default function StoryBuilderPage() {
       type: 'character' as const,
       action: 'create' as const,
       name: '',
+      description: '',
       slug: '',
       fields: {},
       assetNeeds: [],
@@ -234,15 +276,78 @@ export default function StoryBuilderPage() {
             key={item.id}
             item={item}
             index={i}
+            allItems={plan.items}
             onFieldChange={updateItemField}
             onRemove={removeItem}
             onAssetPathRemove={removeAssetPath}
+            onDependsOnChange={updateItemDependsOn}
           />
         ))}
 
         <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addItem}>
           + Add Item
         </button>
+
+        {plan.items.length >= 2 && (
+          <div style={{ ...styles.subsection, marginTop: '1.5rem' }}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Content Links</h3>
+            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+              Link content items together (e.g., scene → dialogue, mission → story).
+            </p>
+            {plan.links.map((link, i) => (
+              <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <select
+                  style={{ ...styles.select, flex: 1 }}
+                  value={link.fromItem}
+                  onChange={e => updateLink(i, 'fromItem', e.target.value)}
+                >
+                  {!plan.items.some(item => item.id === link.fromItem) && (
+                    <option value={link.fromItem}>Unknown/Deleted Item ({link.fromItem})</option>
+                  )}
+                  {plan.items.map(item => (
+                    <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
+                  ))}
+                </select>
+                <span style={{ color: '#888', fontSize: '0.85rem' }}>→</span>
+                <select
+                  style={{ ...styles.select, flex: 1 }}
+                  value={link.toItem}
+                  onChange={e => updateLink(i, 'toItem', e.target.value)}
+                >
+                  {!plan.items.some(item => item.id === link.toItem) && (
+                    <option value={link.toItem}>Unknown/Deleted Item ({link.toItem})</option>
+                  )}
+                  {plan.items.map(item => (
+                    <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
+                  ))}
+                </select>
+                <input
+                  style={{ ...styles.miniInput, width: '140px' }}
+                  value={link.field}
+                  onChange={e => updateLink(i, 'field', e.target.value)}
+                  placeholder="field name"
+                />
+                <select
+                  style={styles.select}
+                  value={link.action}
+                  onChange={e => updateLink(i, 'action', e.target.value)}
+                >
+                  <option value="add">add</option>
+                  <option value="set">set</option>
+                </select>
+                <button
+                  style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+                  onClick={() => removeLink(i)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+            <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addLink}>
+              + Add Link
+            </button>
+          </div>
+        )}
       </div>
     );
   }

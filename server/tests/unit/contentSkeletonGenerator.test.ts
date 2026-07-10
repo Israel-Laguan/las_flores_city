@@ -267,7 +267,7 @@ describe('ContentSkeletonGenerator', () => {
 
     it('should resolve story_beat file path', () => {
       const item = createItem({ type: 'story_beat', slug: 'city_arrival' });
-      expect(resolveFilePath(item)).toBe('story_beats.yaml');
+      expect(resolveFilePath(item)).toBe('story_beats/city_arrival.yaml');
     });
 
     it('should resolve gig file path', () => {

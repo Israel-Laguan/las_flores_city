@@ -180,10 +180,6 @@ export function generateYaml(item: ContentPlanItem): string {
 }
 
 export function resolveFilePath(item: ContentPlanItem): string {
-  if (item.type === 'story_beat') {
-    return 'story_beats.yaml';
-  }
-
   if (!/^[a-z0-9_]+$/.test(item.slug)) {
     throw new Error(`Invalid slug: ${item.slug}`);
   }

@@ -146,9 +146,11 @@ const TYPE_ICONS: Record<string, string> = {
 interface ContentCardProps {
   item: ContentPlanItem;
   index: number;
+  allItems: ContentPlanItem[];
   onFieldChange: (index: number, field: string, value: string) => void;
   onRemove: (index: number) => void;
   onAssetPathRemove?: (index: number, key: string) => void;
+  onDependsOnChange?: (index: number, dependsOn: string[]) => void;
 }
 
 function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: { assetNeeds: ContentPlanItem['assetNeeds']; assetPaths?: Record<string, string>; onRemoveAssetPath?: (key: string) => void }) {
@@ -219,7 +221,7 @@ function getNestedValue(obj: Record<string, any>, path: string): string {
   return current !== undefined && current !== null ? String(current) : '';
 }
 
-export default function ContentCard({ item, index, onFieldChange, onRemove, onAssetPathRemove }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -294,6 +296,40 @@ export default function ContentCard({ item, index, onFieldChange, onRemove, onAs
           );
         })}
       </div>
+
+      {allItems.length > 1 && (
+        <div style={styles.fieldGroup}>
+          <label style={styles.label}>Dependencies (items that must be created first)</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+            {allItems
+              .filter(other => other.id !== item.id)
+              .map(other => {
+                const isSelected = item.dependsOn?.includes(other.id) ?? false;
+                return (
+                  <button
+                    key={other.id}
+                    style={{
+                      ...styles.button,
+                      ...(isSelected ? styles.primaryButton : styles.secondaryButton),
+                      fontSize: '0.75rem',
+                      padding: '0.25rem 0.5rem',
+                      marginRight: 0,
+                    }}
+                    onClick={() => {
+                      if (!onDependsOnChange) return;
+                      const newDeps = isSelected
+                        ? (item.dependsOn || []).filter(id => id !== other.id)
+                        : [...(item.dependsOn || []), other.id];
+                      onDependsOnChange(index, newDeps);
+                    }}
+                  >
+                    {other.name || other.slug}
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
       {item.assetNeeds.length > 0 && (
         <AssetNeedsSection

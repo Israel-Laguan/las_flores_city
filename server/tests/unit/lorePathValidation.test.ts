@@ -58,8 +58,8 @@ describe('Lore Path Validation', () => {
       
       expect(warnings).toEqual([]);
       
-      // Clean up
-      await fs.rm(testLoreDir, { recursive: true, force: true });
+      // Clean up only the stub we created — never the whole figures directory
+      await fs.rm(path.join(testLoreDir, 'diego.md'), { force: true });
     });
 
     test('should add warning when lore_path file does not exist', async () => {
@@ -85,8 +85,8 @@ describe('Lore Path Validation', () => {
       
       expect(warnings).toEqual([]);
       
-      // Clean up
-      await fs.rm(narrativeDir, { recursive: true, force: true });
+      // Clean up only the stub we created — never the whole characters directory
+      await fs.rm(path.join(narrativeDir, 'char_diego.md'), { force: true });
     });
 
     test('should add warning when narrative_path file does not exist', async () => {
