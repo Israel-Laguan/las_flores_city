@@ -74,8 +74,11 @@ describe('Lore Path Validation', () => {
 
   describe('narrative_path validation', () => {
     test('should not add warning when narrative_path file exists', async () => {
-      // Create a test narrative file
-      await fs.writeFile(path.join(testContentDir, 'characters/char_diego.md'), '# Diego Narrative');
+      // Create a test narrative file relative to PROJECT_ROOT (where narrative_path resolves)
+      const projectRoot = originalEnv.PROJECT_ROOT || path.resolve(process.cwd(), '..');
+      const narrativeDir = path.join(projectRoot, 'characters');
+      await fs.mkdir(narrativeDir, { recursive: true });
+      await fs.writeFile(path.join(narrativeDir, 'char_diego.md'), '# Diego Narrative');
       
       const warnings: string[] = [];
       await validateLorePaths('test.yaml', { narrative_path: 'characters/char_diego.md' }, warnings);
@@ -83,7 +86,7 @@ describe('Lore Path Validation', () => {
       expect(warnings).toEqual([]);
       
       // Clean up
-      await fs.rm(path.join(testContentDir, 'characters'), { recursive: true, force: true });
+      await fs.rm(narrativeDir, { recursive: true, force: true });
     });
 
     test('should add warning when narrative_path file does not exist', async () => {

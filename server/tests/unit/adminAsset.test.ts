@@ -32,7 +32,8 @@ jest.doMock('../../src/middleware/adminAuth.js', () => ({
 
 // Mock auth types
 jest.doMock('../../src/middleware/auth.js', () => ({
-  type AuthRequest: any,
+  authMiddleware: mockAuthMiddleware,
+  optionalAuth: mockAuthMiddleware,
 }));
 
 let app: express.Express;
@@ -155,11 +156,13 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
     // For now, we test the fallback to MinIO
 
     test('should return 404 when asset not found in local or MinIO', async () => {
-      // Mock global.fetch to return 404 from MinIO
+      // Mock global.fetch to return 404 from MinIO but pass through test server requests
       const originalFetch = global.fetch;
-      (global as any).fetch = jest.fn().mockResolvedValue({
-        ok: false,
-        status: 404,
+      (global as any).fetch = jest.fn().mockImplementation((url: string, init?: any) => {
+        if (typeof url === 'string' && url.startsWith(`http://localhost:${port}`)) {
+          return originalFetch(url, init);
+        }
+        return { ok: false, status: 404 };
       });
       
       try {
@@ -175,14 +178,19 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
     });
 
     test('should attempt MinIO fallback when local file not found', async () => {
-      // Mock global.fetch to return a valid image
+      // Mock global.fetch to return a valid image from MinIO but pass through test server requests
       const testImageBuffer = Buffer.from('test-image-data');
       const originalFetch = global.fetch;
-      (global as any).fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        arrayBuffer: async () => testImageBuffer.buffer,
-        headers: new Headers({ 'Content-Type': 'image/png' }),
+      (global as any).fetch = jest.fn().mockImplementation((url: string, init?: any) => {
+        if (typeof url === 'string' && url.startsWith(`http://localhost:${port}`)) {
+          return originalFetch(url, init);
+        }
+        return {
+          ok: true,
+          status: 200,
+          arrayBuffer: async () => testImageBuffer.buffer,
+          headers: new Headers({ 'Content-Type': 'image/png' }),
+        };
       });
       
       try {
@@ -190,8 +198,10 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
         
         // Should have tried MinIO
         expect(global.fetch).toHaveBeenCalled();
-        const fetchCall = (global.fetch as jest.Mock).mock.calls[0];
-        expect(fetchCall[0]).toContain('mocked-signed-url');
+        const fetchCalls = (global.fetch as jest.Mock).mock.calls;
+        const minioCall = fetchCalls.find((call: any[]) => typeof call[0] === 'string' && call[0].includes('mocked-signed-url'));
+        expect(minioCall).toBeDefined();
+        expect(minioCall![0]).toContain('mocked-signed-url');
         
         if (res.ok) {
           expect(res.status).toBe(200);
@@ -244,11 +254,16 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
     test('should set Cache-Control header on successful response', async () => {
       const testImageBuffer = Buffer.from('test-image-data');
       const originalFetch = global.fetch;
-      (global as any).fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        arrayBuffer: async () => testImageBuffer.buffer,
-        headers: new Headers({ 'Content-Type': 'image/png' }),
+      (global as any).fetch = jest.fn().mockImplementation((url: string, init?: any) => {
+        if (typeof url === 'string' && url.startsWith(`http://localhost:${port}`)) {
+          return originalFetch(url, init);
+        }
+        return {
+          ok: true,
+          status: 200,
+          arrayBuffer: async () => testImageBuffer.buffer,
+          headers: new Headers({ 'Content-Type': 'image/png' }),
+        };
       });
       
       try {
