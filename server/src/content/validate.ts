@@ -19,6 +19,7 @@ import {
 import { queryOLTP } from '../database/connection.js';
 import { getCache } from '../database/redis.js';
 import { validateStoryFlow } from './storyFlow.js';
+import { validateLorePaths } from './lorePathValidation.js';
 
 export interface ValidationResult {
   valid: boolean;
@@ -108,6 +109,8 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
 
     const xssErrors = checkForXSS(data);
     errors.push(...xssErrors.map(e => ({ ...e, file: filePath })));
+
+    await validateLorePaths(filePath, data, warnings);
 
     // Skip DB/Redis cross-reference checks in schema-only mode
     if (!schemaOnly) {

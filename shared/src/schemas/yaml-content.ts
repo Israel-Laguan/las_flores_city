@@ -3,6 +3,11 @@ import { DialogueNodeSchema } from './dialogue.js';
 import { RelationshipSchema } from './character.js';
 import { AftermathSchema } from './aftermath.js';
 
+const safePath = z.string().max(255).refine(
+  (p) => !p.startsWith('/') && !p.includes('..'),
+  'Path must be a relative path without parent directory traversal',
+).optional();
+
 export const YAMLCharacterSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100),
@@ -37,6 +42,8 @@ export const YAMLCharacterSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: safePath,
+  narrative_path: safePath,
 });
 
 export type YAMLCharacter = z.infer<typeof YAMLCharacterSchema>;
@@ -50,6 +57,7 @@ export const YAMLDialogueSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: safePath,
 });
 
 export type YAMLDialogue = z.infer<typeof YAMLDialogueSchema>;
@@ -71,6 +79,7 @@ export const YAMLOverlaySchema = z.object({
   priority: z.number().int().default(0),
   is_nsfw: z.boolean().default(false),
   lore_ref: z.string().max(255).optional(),
+  lore_path: safePath,
 });
 
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
@@ -84,6 +93,7 @@ export const YAMLMissionSchema = z.object({
   written_by: z.string().max(100).optional(),
   aftermath_payload: AftermathSchema.optional().default({}),
   lore_ref: z.string().max(255).optional(),
+  lore_path: safePath,
 });
 
 export type YAMLMission = z.infer<typeof YAMLMissionSchema>;
@@ -109,6 +119,7 @@ export const YAMLSceneSchema = z.object({
   available_dialogues: z.array(z.string().uuid()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: safePath,
 });
 
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
@@ -143,6 +154,7 @@ export const YAMLLocationSchema = z.object({
     })).optional(),
   }).optional(),
   lore_ref: z.string().max(255).optional(),
+  lore_path: safePath,
 });
 
 export type YAMLLocation = z.infer<typeof YAMLLocationSchema>;

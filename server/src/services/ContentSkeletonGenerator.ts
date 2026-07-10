@@ -3,74 +3,99 @@ import type { ContentPlanItem, ContentType } from '@las-flores/shared';
 
 type TemplateFn = (item: ContentPlanItem) => string;
 
+function sanitizeSlug(slug: string): string {
+  return slug.replace(/[^a-z0-9_-]/gi, '').toLowerCase() || 'untitled';
+}
+
 const YAML_OPTIONS = { lineWidth: -1, noRefs: true };
 
 const TEMPLATES: Record<ContentType, TemplateFn> = {
-  character: (item) => yaml.dump({
-    id: item.id,
-    name: item.name,
-    title: item.fields.title || 'TODO: Add title',
-    description: item.fields.description || 'TODO: Add description',
-    metadata: {
-      type: item.fields.metadata?.type || 'human',
-      role: item.fields.metadata?.role || 'npc',
-      faction: item.fields.metadata?.faction || 'TODO: Add faction',
-      personality: item.fields.metadata?.personality || 'TODO: Add personality',
-    },
-  }, YAML_OPTIONS),
-
-  dialogue: (item) => yaml.dump({
-    id: item.id,
-    name: item.name,
-    description: item.fields.description || 'TODO: Add description',
-    start_node_id: 'start',
-    nodes: {
-      start: {
-        id: 'start',
-        type: 'narrator',
-        text: item.fields.text || 'TODO: Add dialogue text',
-        choices: [
-          {
-            id: 'continue',
-            text: 'Continue',
-            next_node_id: 'end',
-          },
-        ],
+  character: (item) => {
+    const slug = sanitizeSlug(item.slug);
+    return yaml.dump({
+      id: item.id,
+      name: item.name,
+      title: item.fields.title || 'TODO: Add title',
+      description: item.fields.description || 'TODO: Add description',
+      metadata: {
+        type: item.fields.metadata?.type || 'human',
+        role: item.fields.metadata?.role || 'npc',
+        faction: item.fields.metadata?.faction || 'TODO: Add faction',
+        personality: item.fields.metadata?.personality || 'TODO: Add personality',
       },
-      end: {
-        id: 'end',
-        type: 'narrator',
-        text: 'TODO: Add ending text',
-        is_end: true,
+      lore_path: `figures/${slug}/${slug}.md`,
+      narrative_path: `characters/char_${slug}.md`,
+    }, YAML_OPTIONS);
+  },
+
+  dialogue: (item) => {
+    const slug = sanitizeSlug(item.slug);
+    return yaml.dump({
+      id: item.id,
+      name: item.name,
+      description: item.fields.description || 'TODO: Add description',
+      start_node_id: 'start',
+      nodes: {
+        start: {
+          id: 'start',
+          type: 'narrator',
+          text: item.fields.text || 'TODO: Add dialogue text',
+          choices: [
+            {
+              id: 'continue',
+              text: 'Continue',
+              next_node_id: 'end',
+            },
+          ],
+        },
+        end: {
+          id: 'end',
+          type: 'narrator',
+          text: 'TODO: Add ending text',
+          is_end: true,
+        },
       },
-    },
-  }, YAML_OPTIONS),
+      lore_path: `figures/${slug}/${slug}.md`,
+    }, YAML_OPTIONS);
+  },
 
-  scene: (item) => yaml.dump({
-    id: item.id,
-    name: item.name,
-    description: item.fields.description || 'TODO: Add description',
-    district: item.fields.district || 'TODO: Add district',
-    district_lore: item.fields.district_lore || item.fields.district || 'TODO: Add district lore',
-    district_subzone: item.fields.district_subzone || item.fields.district || 'TODO: Add district subzone',
-    mood: item.fields.mood || 'TODO: Add mood',
-    available_dialogues: [],
-  }, YAML_OPTIONS),
+  scene: (item) => {
+    const slug = sanitizeSlug(item.slug);
+    return yaml.dump({
+      id: item.id,
+      name: item.name,
+      description: item.fields.description || 'TODO: Add description',
+      district: item.fields.district || 'TODO: Add district',
+      district_lore: item.fields.district_lore || item.fields.district || 'TODO: Add district lore',
+      district_subzone: item.fields.district_subzone || item.fields.district || 'TODO: Add district subzone',
+      mood: item.fields.mood || 'TODO: Add mood',
+      available_dialogues: [],
+      lore_path: `landmarks/${slug}.md`,
+    }, YAML_OPTIONS);
+  },
 
-  overlay: (item) => yaml.dump({
-    id: item.id,
-    name: item.name,
-    description: item.fields.description || 'TODO: Add description',
-    target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
-    modifications: [],
-  }, YAML_OPTIONS),
+  overlay: (item) => {
+    const slug = sanitizeSlug(item.slug);
+    return yaml.dump({
+      id: item.id,
+      name: item.name,
+      description: item.fields.description || 'TODO: Add description',
+      target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
+      modifications: [],
+      lore_path: `stories/${slug}.md`,
+    }, YAML_OPTIONS);
+  },
 
-  mission: (item) => yaml.dump({
-    id: item.id,
-    title: item.name,
-    description: item.fields.description || 'TODO: Add description',
-    status: 'ACTIVE',
-  }, YAML_OPTIONS),
+  mission: (item) => {
+    const slug = sanitizeSlug(item.slug);
+    return yaml.dump({
+      id: item.id,
+      title: item.name,
+      description: item.fields.description || 'TODO: Add description',
+      status: 'ACTIVE',
+      lore_path: `stories/${slug}.md`,
+    }, YAML_OPTIONS);
+  },
 
   story: (item) => yaml.dump({
     id: item.id,
@@ -87,18 +112,22 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
     currency: item.fields.currency || 'credits',
   }, YAML_OPTIONS),
 
-  location: (item) => yaml.dump({
-    id: item.id,
-    type: 'location',
-    name: item.name,
-    description: item.fields.description || 'TODO: Add description',
-    district: item.fields.district || 'TODO: Add district',
-    tags: item.fields.tags || [],
-    history: item.fields.history || 'TODO: Add history',
-    daytime: item.fields.daytime || 'TODO: Add daytime description',
-    nightlife: item.fields.nightlife || 'TODO: Add nightlife description',
-    important_places: item.fields.important_places || [],
-  }, YAML_OPTIONS),
+  location: (item) => {
+    const slug = sanitizeSlug(item.slug);
+    return yaml.dump({
+      id: item.id,
+      type: 'location',
+      name: item.name,
+      description: item.fields.description || 'TODO: Add description',
+      district: item.fields.district || 'TODO: Add district',
+      tags: item.fields.tags || [],
+      history: item.fields.history || 'TODO: Add history',
+      daytime: item.fields.daytime || 'TODO: Add daytime description',
+      nightlife: item.fields.nightlife || 'TODO: Add nightlife description',
+      important_places: item.fields.important_places || [],
+      lore_path: `landmarks/${slug}.md`,
+    }, YAML_OPTIONS);
+  },
 
   map_tile: (item) => yaml.dump({
     id: item.id,
