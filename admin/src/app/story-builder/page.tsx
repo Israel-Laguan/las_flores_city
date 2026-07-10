@@ -100,6 +100,7 @@ export default function StoryBuilderPage() {
   const [stagingResult, setStagingResult] = useState<any>(null);
   const [migrationResult, setMigrationResult] = useState<any>(null);
   const [previewData, setPreviewData] = useState<any>(null);
+  const [templates, setTemplates] = useState<Array<{ id: string; label: string; description: string; icon: string }>>([]);
 
   useEffect(() => {
     const id = searchParams.get('planId');
@@ -108,6 +109,32 @@ export default function StoryBuilderPage() {
       loadPlanFromDb(id);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    fetch('/api/admin/story-builder/templates')
+      .then(res => res.json())
+      .then(data => { if (data.success) setTemplates(data.data.templates); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Ctrl+Enter — generate plan (in Step 1)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && step === 1 && description.trim() && !loading) {
+        e.preventDefault();
+        handleGeneratePlan();
+      }
+
+      // Ctrl+S — save plan (in Step 2)
+      if ((e.ctrlKey || e.metaKey) && e.key === 's' && planId && step === 2) {
+        e.preventDefault();
+        // Save is already auto-saved, just show a brief confirmation
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, description, planId, loading]);
 
   async function loadPlanFromDb(id: string) {
     setLoading(true);
@@ -351,6 +378,43 @@ export default function StoryBuilderPage() {
         <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1rem' }}>
           Describe the content you want to create in natural language. The AI will generate a structured plan for your review.
         </p>
+
+        {templates.length > 0 && (
+          <div style={{ ...styles.subsection, marginBottom: '1rem' }}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Quick Start Templates</h3>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {templates.map(t => (
+                <button
+                  key={t.id}
+                  style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.85rem' }}
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan } }>(
+                        `/api/admin/story-builder/templates/${t.id}`,
+                        { description: description || t.label }
+                      );
+                      if (data.success && data.data) {
+                        setPlan(data.data.plan);
+                        setStep(2);
+                      }
+                    } catch (err: any) {
+                      setError(err.message);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                >
+                  {t.icon} {t.label}
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.5rem' }}>
+              Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
+            </p>
+          </div>
+        )}
+
         <div style={styles.field}>
           <label style={styles.label}>Description *</label>
           <textarea
@@ -371,6 +435,9 @@ export default function StoryBuilderPage() {
         >
           {loading ? 'Generating Plan...' : 'Generate Plan'}
         </button>
+        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.5rem' }}>
+          Press Ctrl+Enter to generate
+        </p>
       </div>
     );
   }
@@ -564,6 +631,49 @@ export default function StoryBuilderPage() {
                   <li key={i} style={{ color: '#ff6666' }}>{e}</li>
                 ))}
               </ul>
+            )}
+            {stagingResult.loreFiles?.length > 0 && (
+              <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                Lore files created: {stagingResult.loreFiles.join(', ')}
+              </p>
+            )}
+            {stagingResult.promptFiles?.length > 0 && (
+              <div style={{ marginTop: '0.25rem' }}>
+                <p style={{ fontSize: '0.85rem' }}>
+                  Prompt files created: {stagingResult.promptFiles.join(', ')}
+                </p>
+                <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
+                  These can be used in the <a href="/assets" style={{ color: '#00ff00' }}>Asset Pipeline</a>.
+                </p>
+              </div>
+            )}
+            {stagingResult.itemResults && (
+              <div style={{ marginTop: '0.75rem' }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Item Status</p>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                  <tbody>
+                    {stagingResult.itemResults.map((r: any, i: number) => (
+                      <tr key={i} style={{ borderBottom: '1px solid #222' }}>
+                        <td style={{ padding: '0.4rem', color: '#aaa' }}>{r.name}</td>
+                        <td style={{ padding: '0.4rem' }}>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '0.15rem 0.5rem',
+                            borderRadius: '3px',
+                            fontSize: '0.75rem',
+                            fontWeight: 'bold' as const,
+                            backgroundColor: r.status === 'success' ? '#00ff0022' : '#ff000022',
+                            color: r.status === 'success' ? '#00ff00' : '#ff4444',
+                          }}>
+                            {r.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.4rem', color: '#888', fontSize: '0.8rem' }}>{r.error || r.filePath || ''}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}

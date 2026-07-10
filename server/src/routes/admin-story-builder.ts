@@ -5,6 +5,7 @@ import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { executePlan, previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
+import { PLAN_TEMPLATES, getTemplateById } from '../services/PlanTemplates.js';
 
 export const adminStoryBuilderRouter = express.Router();
 
@@ -372,5 +373,56 @@ adminStoryBuilderRouter.post('/plans/:id/migrate', async (req, res) => {
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/migrate error:', error);
     res.status(500).json({ success: false, error: error.message || 'Failed to migrate plan', timestamp: new Date().toISOString() });
+  }
+});
+
+// GET /admin/story-builder/templates — List available plan templates
+adminStoryBuilderRouter.get('/templates', async (_req, res) => {
+  try {
+    const templates = PLAN_TEMPLATES.map(t => ({
+      id: t.id,
+      label: t.label,
+      description: t.description,
+      icon: t.icon,
+    }));
+
+    res.json({
+      success: true,
+      data: { templates },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] GET /templates error:', error);
+    res.status(500).json({ success: false, error: 'Failed to list templates', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/templates/:id — Build a plan from a template
+adminStoryBuilderRouter.post('/templates/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description } = req.body;
+
+    if (!description || typeof description !== 'string') {
+      res.status(400).json({ success: false, error: 'description is required', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const template = getTemplateById(id);
+    if (!template) {
+      res.status(404).json({ success: false, error: 'Template not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const plan = template.buildPlan(description);
+
+    res.json({
+      success: true,
+      data: { plan },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /templates/:id error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to build template', timestamp: new Date().toISOString() });
   }
 });
