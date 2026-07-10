@@ -75,7 +75,7 @@ function resolveContentDir(): string {
  * Generate placeholder lore/narrative markdown files for plan items.
  * Only creates files that don't already exist.
  */
-async function generateLoreStubs(items: ContentPlanItem[], contentDir: string): Promise<string[]> {
+async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, fileSnapshots?: Map<string, string | null>): Promise<string[]> {
   const createdFiles: string[] = [];
   const loreRoot = path.resolve(contentDir, '..', 'docs', 'lore');
 
@@ -105,6 +105,9 @@ async function generateLoreStubs(items: ContentPlanItem[], contentDir: string): 
       try {
         await fs.writeFile(tmpPath, stub, 'utf-8');
         await fs.rename(tmpPath, fullPath);
+        if (fileSnapshots) {
+          fileSnapshots.set(fullPath, null);
+        }
       } catch (error) {
         try { await fs.unlink(tmpPath); } catch { /* ignore */ }
         throw error;
@@ -320,8 +323,8 @@ export async function stagePlan(plan: ContentPlan): Promise<StagingResult> {
       updatedFiles,
       validationErrors: [],
       warnings: validationResult.warnings,
-      loreFiles: await generateLoreStubs(sortedItems, contentDir),
-      promptFiles: await generatePromptFiles(sortedItems, contentDir),
+      loreFiles: await generateLoreStubs(sortedItems, contentDir, fileSnapshots),
+      promptFiles: await generatePromptFiles(sortedItems, contentDir, fileSnapshots),
       itemResults,
     };
   } catch (error: any) {

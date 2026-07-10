@@ -54,11 +54,23 @@ adminStoryBuilderMetaRouter.get('/plans/:id/versions', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Get the root plan
+    // Get the full plan lineage (ancestors + descendants) via recursive CTE
     const rootResult = await queryOLTP<{ id: string; description: string; status: string; created_at: string; parent_plan_id: string | null }>(
-      `SELECT id, description, status, created_at, parent_plan_id 
-       FROM content_plans 
-       WHERE id = $1 OR parent_plan_id = $1
+      `WITH RECURSIVE plan_tree AS (
+         SELECT id, description, status, created_at, parent_plan_id
+         FROM content_plans
+         WHERE id = $1
+         UNION
+         SELECT p.id, p.description, p.status, p.created_at, p.parent_plan_id
+         FROM content_plans p
+         INNER JOIN plan_tree t ON p.id = t.parent_plan_id
+         UNION
+         SELECT p.id, p.description, p.status, p.created_at, p.parent_plan_id
+         FROM content_plans p
+         INNER JOIN plan_tree t ON p.parent_plan_id = t.id
+       )
+       SELECT DISTINCT id, description, status, created_at, parent_plan_id
+       FROM plan_tree
        ORDER BY created_at ASC`,
       [id]
     );

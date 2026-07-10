@@ -23,7 +23,7 @@ const DIMENSIONS_BY_TYPE: Record<string, string> = {
  * - **Dimensions:** WxH for resolution
  * - ## Prompt — <VariantName> for variant extraction
  */
-export async function generatePromptFiles(items: ContentPlanItem[], contentDir: string): Promise<string[]> {
+export async function generatePromptFiles(items: ContentPlanItem[], contentDir: string, fileSnapshots?: Map<string, string | null>): Promise<string[]> {
   const createdFiles: string[] = [];
   const promptsRoot = path.resolve(contentDir, '..', 'docs', 'lore', 'assets', 'prompts');
 
@@ -47,6 +47,9 @@ export async function generatePromptFiles(items: ContentPlanItem[], contentDir: 
     try {
       await fs.writeFile(tmpPath, content, 'utf-8');
       await fs.rename(tmpPath, filePath);
+      if (fileSnapshots) {
+        fileSnapshots.set(filePath, null);
+      }
     } catch (error) {
       try { await fs.unlink(tmpPath); } catch { /* ignore */ }
       throw error;

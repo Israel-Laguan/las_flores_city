@@ -397,6 +397,8 @@ export default function StoryBuilderPage() {
                       if (data.success && data.data) {
                         setPlan(data.data.plan);
                         setStep(2);
+                      } else {
+                        setError(data.error || "Failed to build template plan");
                       }
                     } catch (err: any) {
                       setError(err.message);
