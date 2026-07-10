@@ -160,6 +160,18 @@ export default function StoryBuilderPage() {
     setPlan({ ...plan, items: plan.items.filter((_, i) => i !== index) });
   }
 
+  function removeAssetPath(index: number, key: string) {
+    if (!plan) return;
+    const items = [...plan.items];
+    const item = { ...items[index] };
+    const fields = { ...item.fields };
+    const assetPaths = { ...(fields.asset_paths || {}) };
+    delete assetPaths[key];
+    fields.asset_paths = assetPaths;
+    items[index] = { ...item, fields };
+    setPlan({ ...plan, items });
+  }
+
   function addItem() {
     if (!plan) return;
     const newItem: ContentPlanItem = {
@@ -224,6 +236,7 @@ export default function StoryBuilderPage() {
             index={i}
             onFieldChange={updateItemField}
             onRemove={removeItem}
+            onAssetPathRemove={removeAssetPath}
           />
         ))}
 
