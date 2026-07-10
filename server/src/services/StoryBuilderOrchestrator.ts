@@ -138,8 +138,12 @@ export async function previewPlan(plan: ContentPlan): Promise<PreviewResult> {
       await fs.access(fullPath);
       existingYaml = await fs.readFile(fullPath, 'utf-8');
       isNew = false;
-    } catch {
-      // File doesn't exist — new file
+    } catch (err: any) {
+      if (err.code === 'ENOENT') {
+        // File doesn't exist — new file
+      } else {
+        throw new Error(`Cannot read existing file ${filePath}: ${err.message}`);
+      }
     }
 
     previewItems.push({

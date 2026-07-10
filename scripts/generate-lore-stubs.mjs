@@ -14,8 +14,10 @@ import path from 'node:path';
 import { glob } from 'glob';
 import yaml from 'js-yaml';
 
-const CONTENT_DIR = path.resolve(process.cwd(), 'content');
-const LORE_DIR = path.resolve(process.cwd(), 'docs', 'lore');
+// Project root. Defaults to the current working directory, but can be
+// overridden (e.g. by tests) so the script never touches the live repo.
+const ROOT = process.env.CONTENT_MIGRATION_ROOT || process.cwd();
+const CONTENT_DIR = path.resolve(ROOT, 'content');
 const DRY_RUN = process.argv.includes('--dry-run');
 
 let stubsCreated = 0;
@@ -32,7 +34,7 @@ async function fileExists(fullPath) {
 async function createStubIfMissing(fullPath, stubContent) {
   if (await fileExists(fullPath)) return false;
   if (DRY_RUN) {
-    console.log(`  WOULD CREATE ${path.relative(process.cwd(), fullPath)}`);
+    console.log(`  WOULD CREATE ${path.relative(ROOT, fullPath)}`);
     stubsCreated++;
     return true;
   }
@@ -44,7 +46,7 @@ async function createStubIfMissing(fullPath, stubContent) {
 }
 
 async function processFile(filePath) {
-  const relativePath = path.relative(process.cwd(), filePath);
+  const relativePath = path.relative(ROOT, filePath);
   const content = await fs.readFile(filePath, 'utf-8');
   let data;
   try {
@@ -59,7 +61,7 @@ async function processFile(filePath) {
 
   // Check lore_path
   if (data.lore_path && typeof data.lore_path === 'string') {
-    const fullPath = path.resolve(process.cwd(), data.lore_path);
+    const fullPath = path.resolve(ROOT, data.lore_path);
     const stub = `# ${name}\n\n> TODO: Add lore for ${name}\n`;
     if (await createStubIfMissing(fullPath, stub)) {
       console.log(`  Created lore stub: ${data.lore_path}`);
@@ -68,7 +70,7 @@ async function processFile(filePath) {
 
   // Check narrative_path
   if (data.narrative_path && typeof data.narrative_path === 'string') {
-    const fullPath = path.resolve(process.cwd(), data.narrative_path);
+    const fullPath = path.resolve(ROOT, data.narrative_path);
     const stub = `# ${name}\n\n> TODO: Add narrative for ${name}\n`;
     if (await createStubIfMissing(fullPath, stub)) {
       console.log(`  Created narrative stub: ${data.narrative_path}`);

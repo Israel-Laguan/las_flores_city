@@ -118,6 +118,8 @@ export default function StoryBuilderPage() {
         setPlan(data.data.plan_json);
         setDescription(data.data.description);
         setStep(2);
+      } else {
+        setError(data.error || 'Failed to load plan');
       }
     } catch (err: any) {
       setError(err.message);

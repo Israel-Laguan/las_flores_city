@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get('limit') || '50';
-    const offset = searchParams.get('offset') || '0';
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '50', 10) || 50));
+    const offset = Math.max(0, parseInt(searchParams.get('offset') || '0', 10) || 0);
 
     const data = await adminFetch(`/admin/story-builder/plans?limit=${limit}&offset=${offset}`);
     return NextResponse.json(data);

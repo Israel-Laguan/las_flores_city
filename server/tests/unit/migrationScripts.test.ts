@@ -5,31 +5,41 @@
  * and generate-lore-stubs.mjs
  * Feature: story-builder-milestone-5
  *
- * Note: These scripts use process.cwd() to find the content directory.
- * Tests run from the project root to ensure dependencies are available.
+ * SAFETY: These scripts previously ran against the *live* repository
+ * (process.cwd() = project root), which meant a bug or an interrupted run
+ * could mutate or delete real content and lore assets. They now honor the
+ * CONTENT_MIGRATION_ROOT env var, so every test operates inside a throwaway
+ * temp directory created under the OS temp dir. Nothing in this file touches
+ * the real content/ or docs/ trees.
  */
-import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
 
-const PROJECT_ROOT = path.resolve(process.cwd(), '..');
-const SCRIPTS_DIR = path.resolve(PROJECT_ROOT, 'scripts');
-const CONTENT_DIR = path.resolve(PROJECT_ROOT, 'content');
+// Real repo root — used ONLY to locate the scripts and node_modules.
+// It is never used as the content/docs root the scripts operate on.
+const REPO_ROOT = path.resolve(process.cwd(), '..');
+const SCRIPTS_DIR = path.resolve(REPO_ROOT, 'scripts');
 
-// Temporary test content directory within the real content directory
-const TEST_CONTENT_SUBDIR = '_test_migration_content';
-const TEST_CONTENT_DIR = path.join(CONTENT_DIR, TEST_CONTENT_SUBDIR);
+// Isolated sandbox root created per-test-file. All script I/O is confined here
+// via the CONTENT_MIGRATION_ROOT env var.
+let SANDBOX_ROOT: string;
+let CONTENT_DIR: string;
 
-// Helper to run a script from project root
+// Helper to run a script against the sandbox root.
 async function runScript(scriptName: string, args: string[] = []): Promise<{ stdout: string; stderr: string; exitCode: number }> {
   const scriptPath = path.join(SCRIPTS_DIR, scriptName);
   try {
     const { stdout, stderr } = await execFileAsync('node', [scriptPath, ...args], {
-      cwd: PROJECT_ROOT,
+      // cwd stays at the repo so Node resolves node_modules (glob, js-yaml),
+      // but the script reads/writes only inside CONTENT_MIGRATION_ROOT.
+      cwd: REPO_ROOT,
+      env: { ...process.env, CONTENT_MIGRATION_ROOT: SANDBOX_ROOT },
       timeout: 30000,
     });
     return { stdout, stderr, exitCode: 0 };
@@ -42,11 +52,10 @@ async function runScript(scriptName: string, args: string[] = []): Promise<{ std
   }
 }
 
-// Helper to create a YAML file in test directory
+// Helper to create a YAML file inside the sandbox content dir.
 async function createYamlFile(relativePath: string, content: object): Promise<void> {
-  const fullPath = path.join(TEST_CONTENT_DIR, relativePath);
+  const fullPath = path.join(CONTENT_DIR, relativePath);
   await fs.mkdir(path.dirname(fullPath), { recursive: true });
-  // Simple YAML serialization
   let yaml = '';
   for (const [key, value] of Object.entries(content)) {
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
@@ -66,13 +75,6 @@ async function createYamlFile(relativePath: string, content: object): Promise<vo
   await fs.writeFile(fullPath, yaml, 'utf-8');
 }
 
-// Helper to read YAML file
-async function readYamlFile(relativePath: string): Promise<string> {
-  const fullPath = path.join(TEST_CONTENT_DIR, relativePath);
-  return fs.readFile(fullPath, 'utf-8');
-}
-
-// Helper to check if file exists
 async function fileExists(fullPath: string): Promise<boolean> {
   try {
     await fs.access(fullPath);
@@ -83,55 +85,24 @@ async function fileExists(fullPath: string): Promise<boolean> {
 }
 
 beforeAll(async () => {
-  // Clean up any previous test run
-  await fs.rm(TEST_CONTENT_DIR, { recursive: true, force: true });
-  await fs.mkdir(TEST_CONTENT_DIR, { recursive: true });
+  SANDBOX_ROOT = await fs.mkdtemp(path.join(os.tmpdir(), 'lf-migration-scripts-'));
+  CONTENT_DIR = path.join(SANDBOX_ROOT, 'content');
+  await fs.mkdir(CONTENT_DIR, { recursive: true });
+  await fs.mkdir(path.join(SANDBOX_ROOT, 'scripts'), { recursive: true });
+  await fs.mkdir(path.join(SANDBOX_ROOT, 'docs', 'lore'), { recursive: true });
 });
 
 afterAll(async () => {
-  // Clean up test directory
-  await fs.rm(TEST_CONTENT_DIR, { recursive: true, force: true });
-  // Clean up migration log created by scripts
-  await fs.rm(path.join(SCRIPTS_DIR, 'migration-log.json'), { force: true });
-  // Clean up any stubs created in docs/lore/figures by integration tests
-  const loreFiguresDir = path.join(PROJECT_ROOT, 'docs', 'lore', 'figures');
-  try {
-    const entries = await fs.readdir(loreFiguresDir);
-    for (const entry of entries) {
-      // Remove directories that look like test artifacts (contain timestamps or test patterns)
-      if (/^(test|existing|narrative|stub|rollback|workflow|idempotent|multi_)/.test(entry)) {
-        await fs.rm(path.join(loreFiguresDir, entry), { recursive: true, force: true });
-      }
-    }
-  } catch {
-    // Ignore errors if directory doesn't exist
+  // The sandbox lives entirely under the OS temp dir — safe to remove wholesale.
+  if (SANDBOX_ROOT) {
+    await fs.rm(SANDBOX_ROOT, { recursive: true, force: true });
   }
-  // Clean up any narrative/rollback stubs created in content/characters
-  const charactersDir = path.join(CONTENT_DIR, 'characters');
-  try {
-    const entries = await fs.readdir(charactersDir);
-    for (const entry of entries) {
-      // Remove files that look like test artifacts (narrative_*.md, rollback_*.md)
-      if (/^(narrative_|rollback_)/.test(entry) && entry.endsWith('.md')) {
-        await fs.rm(path.join(charactersDir, entry), { force: true });
-      }
-    }
-  } catch {
-    // Ignore errors if directory doesn't exist
-  }
-  // Clean up any scene stubs created by integration tests
-  const scenesDir = path.join(CONTENT_DIR, 'scenes');
-  try {
-    const entries = await fs.readdir(scenesDir);
-    for (const entry of entries) {
-      // Remove files that look like test artifacts (scene_rollback_*.md)
-      if (/^scene_rollback_/.test(entry) && entry.endsWith('.md')) {
-        await fs.rm(path.join(scenesDir, entry), { force: true });
-      }
-    }
-  } catch {
-    // Ignore errors if directory doesn't exist
-  }
+});
+
+// Start each test from a clean content dir so counts/assertions are deterministic.
+beforeEach(async () => {
+  await fs.rm(CONTENT_DIR, { recursive: true, force: true });
+  await fs.mkdir(CONTENT_DIR, { recursive: true });
 });
 
 describe('migrate-content-paths.mjs', () => {
@@ -181,9 +152,9 @@ describe('migrate-content-paths.mjs', () => {
   });
 
   test('should skip files with YAML parse errors', async () => {
-    await fs.mkdir(path.join(TEST_CONTENT_DIR, 'characters'), { recursive: true });
+    await fs.mkdir(path.join(CONTENT_DIR, 'characters'), { recursive: true });
     await fs.writeFile(
-      path.join(TEST_CONTENT_DIR, 'characters/char_invalid.yaml'),
+      path.join(CONTENT_DIR, 'characters/char_invalid.yaml'),
       'name: "Test\n  invalid: yaml: content',
       'utf-8'
     );
@@ -196,8 +167,8 @@ describe('migrate-content-paths.mjs', () => {
   });
 
   test('should skip non-object YAML files', async () => {
-    await fs.mkdir(path.join(TEST_CONTENT_DIR, 'characters'), { recursive: true });
-    await fs.writeFile(path.join(TEST_CONTENT_DIR, 'characters/char_string.yaml'), '"just a string"', 'utf-8');
+    await fs.mkdir(path.join(CONTENT_DIR, 'characters'), { recursive: true });
+    await fs.writeFile(path.join(CONTENT_DIR, 'characters/char_string.yaml'), '"just a string"', 'utf-8');
 
     const result = await runScript('migrate-content-paths.mjs', ['--dry-run']);
 
@@ -257,8 +228,8 @@ describe('migrate-content-paths.mjs', () => {
 
     await runScript('migrate-content-paths.mjs', ['--dry-run']);
 
-    // Check that migration log was created in project root
-    const logPath = path.join(SCRIPTS_DIR, 'migration-log.json');
+    // Log is written to <root>/scripts/migration-log.json — inside the sandbox.
+    const logPath = path.join(SANDBOX_ROOT, 'scripts', 'migration-log.json');
     const logExists = await fileExists(logPath);
     expect(logExists).toBe(true);
 
@@ -332,9 +303,9 @@ describe('rollback-content-paths.mjs', () => {
   });
 
   test('should handle YAML parse errors gracefully', async () => {
-    await fs.mkdir(path.join(TEST_CONTENT_DIR, 'characters'), { recursive: true });
+    await fs.mkdir(path.join(CONTENT_DIR, 'characters'), { recursive: true });
     await fs.writeFile(
-      path.join(TEST_CONTENT_DIR, 'characters/char_invalid_rollback.yaml'),
+      path.join(CONTENT_DIR, 'characters/char_invalid_rollback.yaml'),
       'invalid: yaml: content:',
       'utf-8'
     );
@@ -366,7 +337,6 @@ describe('rollback-content-paths.mjs', () => {
 
 describe('generate-lore-stubs.mjs', () => {
   test('should create lore stub when file missing', async () => {
-    // Use a unique path that definitely doesn't exist
     const uniqueId = `test_${Date.now()}`;
     await createYamlFile('characters/char_stub_test.yaml', {
       name: 'Stub Test',
@@ -380,7 +350,6 @@ describe('generate-lore-stubs.mjs', () => {
   });
 
   test('should create narrative stub when file missing', async () => {
-    // Use a unique path that definitely doesn't exist
     const uniqueId = `narrative_${Date.now()}`;
     await createYamlFile('characters/char_narrative_stub.yaml', {
       name: 'Narrative Stub',
@@ -394,15 +363,16 @@ describe('generate-lore-stubs.mjs', () => {
   });
 
   test('should not create stub when file already exists', async () => {
-    // Create the lore file first with unique name
+    // Create the lore file first inside the sandbox with a unique name.
     const uniqueId = `existing_${Date.now()}`;
-    const loreDir = path.join(PROJECT_ROOT, 'docs/lore/figures', uniqueId);
+    const loreRel = `docs/lore/figures/${uniqueId}/${uniqueId}.md`;
+    const loreDir = path.join(SANDBOX_ROOT, 'docs/lore/figures', uniqueId);
     await fs.mkdir(loreDir, { recursive: true });
     await fs.writeFile(path.join(loreDir, `${uniqueId}.md`), '# Existing');
 
     await createYamlFile('characters/char_existing_stub.yaml', {
       name: 'Existing Stub',
-      lore_path: `docs/lore/figures/${uniqueId}/${uniqueId}.md`,
+      lore_path: loreRel,
     });
 
     const result = await runScript('generate-lore-stubs.mjs', ['--dry-run']);
@@ -412,9 +382,6 @@ describe('generate-lore-stubs.mjs', () => {
     const lines = result.stdout.split('\n');
     const createLines = lines.filter(l => l.includes('WOULD CREATE') && l.includes(uniqueId));
     expect(createLines.length).toBe(0);
-
-    // Cleanup
-    await fs.rm(loreDir, { recursive: true, force: true });
   });
 
   test('should handle files without lore_path or narrative_path', async () => {
@@ -433,9 +400,9 @@ describe('generate-lore-stubs.mjs', () => {
   });
 
   test('should handle YAML parse errors gracefully', async () => {
-    await fs.mkdir(path.join(TEST_CONTENT_DIR, 'characters'), { recursive: true });
+    await fs.mkdir(path.join(CONTENT_DIR, 'characters'), { recursive: true });
     await fs.writeFile(
-      path.join(TEST_CONTENT_DIR, 'characters/char_invalid_stub.yaml'),
+      path.join(CONTENT_DIR, 'characters/char_invalid_stub.yaml'),
       'invalid: yaml: content:',
       'utf-8'
     );
@@ -459,7 +426,7 @@ describe('migration workflow integration', () => {
     expect(dryResult.exitCode).toBe(0);
     expect(dryResult.stdout).toContain('WOULD UPDATE');
 
-    // Step 3: Run actual migration
+    // Step 3: Run actual migration (writes only inside the sandbox)
     const migrateResult = await runScript('migrate-content-paths.mjs');
     expect(migrateResult.exitCode).toBe(0);
 

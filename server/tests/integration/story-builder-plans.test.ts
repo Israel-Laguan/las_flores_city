@@ -1,4 +1,4 @@
-import { describe, test, expect, jest } from '@jest/globals';
+import { describe, test, expect, jest, afterAll } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 
@@ -67,6 +67,10 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
     assetTasks: [],
   })),
 }));
+
+afterAll(() => {
+  jest.clearAllMocks();
+});
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { queryOLTP } from '../../src/database/connection.js';

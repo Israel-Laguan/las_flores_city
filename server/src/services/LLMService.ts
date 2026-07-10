@@ -98,6 +98,10 @@ export function buildRefinementPrompt(existingPlan: ContentPlan, feedback: strin
   const existingChars = context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)';
   const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
   const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
+  const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
+  const existingStories = context.stories.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
+  const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
+  const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
 
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
@@ -111,17 +115,17 @@ ${JSON.stringify(existingPlan, null, 2)}
 ${feedback}
 
 ## Available content types
-character, dialogue, scene, overlay, mission, story, shop_item, location, map_tile, story_beat, gig, vault
+${CONTENT_TYPES.join(', ')}
 
 ## Required fields per content type
-- character: name, description, title (optional), avatar_url (optional)
-- scene: name, description, district
-- dialogue: name, description, start_node_id, nodes
-- overlay: name, description, target_tree_id, modifications
-- mission: title, description
+- character: name, description, title (optional), metadata.type, metadata.role, metadata.faction, metadata.personality, lore_path, narrative_path
+- scene: name, description, district, mood, lore_path
+- dialogue: name, description, lore_path
+- overlay: name, description, target_tree_id, modifications, lore_path
+- mission: title, description, lore_path
 - story: name, description, beats
 - shop_item: name, description, price, currency
-- location: name, description, district
+- location: name, description, district, tags, history, daytime, nightlife, lore_path
 - map_tile: district_id, x, y, terrain_type
 - story_beat: id, description
 - gig: name, description, reward
@@ -131,6 +135,10 @@ character, dialogue, scene, overlay, mission, story, shop_item, location, map_ti
 - Characters: ${existingChars}
 - Scenes: ${existingScenes}
 - Dialogues: ${existingDialogues}
+- Missions: ${existingMissions}
+- Stories: ${existingStories}
+- Overlays: ${existingOverlays}
+- Locations: ${existingLocations}
 
 ## Output format
 Return a single JSON object matching the ContentPlan schema. Keep the same plan id. Keep items that the user didn't ask to change. Output ONLY the JSON object, no markdown fences or explanation.`;
@@ -149,9 +157,7 @@ export class LiteLLMProvider implements LLMProvider {
     this.model = process.env.LLM_MODEL || 'poolside/laguna-m.1';
   }
 
-  async parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan> {
-    const systemPrompt = buildSystemPrompt(context);
-
+  private async callLLM(systemPrompt: string, userMessage: string): Promise<Record<string, unknown>> {
     const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
       method: 'POST',
       headers: {
@@ -162,7 +168,7 @@ export class LiteLLMProvider implements LLMProvider {
         model: this.model,
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: description },
+          { role: 'user', content: userMessage },
         ],
         temperature: 0.7,
         response_format: { type: 'json_object' },
@@ -182,55 +188,22 @@ export class LiteLLMProvider implements LLMProvider {
     }
     const fenceMatch = content.match(/```(?:json|JSON)\s*\n?([\s\S]*?)```/);
     const cleanedContent = fenceMatch ? fenceMatch[1].trim() : content.trim();
-    let planJson;
     try {
-      planJson = JSON.parse(cleanedContent);
+      return JSON.parse(cleanedContent);
     } catch (e) {
       throw new Error(`LiteLLM returned invalid JSON: ${(e as Error).message}. Content preview: ${cleanedContent.substring(0, 200)}`);
     }
+  }
+
+  async parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan> {
+    const systemPrompt = buildSystemPrompt(context);
+    const planJson = await this.callLLM(systemPrompt, description);
     return ContentPlanSchema.parse(planJson);
   }
 
   async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<ContentPlan> {
     const systemPrompt = buildRefinementPrompt(existingPlan, feedback, context);
-
-    const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {}),
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: feedback },
-        ],
-        temperature: 0.7,
-        response_format: { type: 'json_object' },
-      }),
-      signal: AbortSignal.timeout(60_000),
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`LiteLLM refine request failed: ${response.status} ${response.statusText} — ${text}`);
-    }
-
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) {
-      throw new Error('LiteLLM response did not contain any message content.');
-    }
-    const fenceMatch = content.match(/```(?:json|JSON)\s*\n?([\s\S]*?)```/);
-    const cleanedContent = fenceMatch ? fenceMatch[1].trim() : content.trim();
-    let planJson;
-    try {
-      planJson = JSON.parse(cleanedContent);
-    } catch (e) {
-      throw new Error(`LiteLLM returned invalid JSON: ${(e as Error).message}. Content preview: ${cleanedContent.substring(0, 200)}`);
-    }
-    // Preserve the original plan id
+    const planJson = await this.callLLM(systemPrompt, feedback);
     planJson.id = existingPlan.id;
     return ContentPlanSchema.parse(planJson);
   }

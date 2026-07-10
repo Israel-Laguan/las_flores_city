@@ -93,24 +93,29 @@ adminStoryBuilderRouter.post('/plans', async (req: AuthRequest, res) => {
   try {
     const { description, plan } = req.body;
 
-    if (!description || typeof description !== 'string') {
-      res.status(400).json({ success: false, error: 'description is required', timestamp: new Date().toISOString() });
+    if (!description || typeof description !== 'string' || description.trim().length === 0) {
+      res.status(400).json({ success: false, error: 'description is required and must be a non-empty string', timestamp: new Date().toISOString() });
       return;
     }
 
     let validatedPlan: ContentPlan;
     if (plan) {
-      validatedPlan = ContentPlanSchema.parse(plan);
+      try {
+        validatedPlan = ContentPlanSchema.parse(plan);
+      } catch {
+        res.status(400).json({ success: false, error: 'Invalid plan: schema validation failed', timestamp: new Date().toISOString() });
+        return;
+      }
     } else {
-      // Generate a new plan from description
       validatedPlan = await contentPlanService.parseDescription(description.trim());
     }
+    validatedPlan.status = 'proposed';
 
     const result = await queryOLTP(
       `INSERT INTO content_plans (description, plan_json, status, created_by)
        VALUES ($1, $2, 'proposed', $3)
        RETURNING id`,
-      [validatedPlan.description, validatedPlan, req.user?.id || null]
+      [validatedPlan.description, validatedPlan, req.userId || null]
     );
 
     const planId = result.rows[0].id;
@@ -128,8 +133,8 @@ adminStoryBuilderRouter.post('/plans', async (req: AuthRequest, res) => {
 // GET /admin/story-builder/plans — List all plans
 adminStoryBuilderRouter.get('/plans', async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
-    const offset = Math.max(parseInt(req.query.offset as string) || 0, 0);
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit as string, 10) || 50, 100));
+    const offset = Math.max(0, parseInt(req.query.offset as string, 10) || 0);
 
     const result = await queryOLTP(
       `SELECT id, description, status, created_at, updated_at,

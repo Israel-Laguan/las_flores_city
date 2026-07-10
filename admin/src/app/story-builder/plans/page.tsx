@@ -32,8 +32,12 @@ export default function PlansListPage() {
       setLoading(true);
       try {
         const res = await fetch('/api/admin/story-builder/plans');
+        if (!res.ok) {
+          setError(`Failed to load plans (HTTP ${res.status})`);
+          return;
+        }
         const data = await res.json();
-        if (data.success) {
+        if (data.success && data.data?.plans) {
           setPlans(data.data.plans);
         } else {
           setError(data.error || 'Failed to load plans');
@@ -97,7 +101,7 @@ export default function PlansListPage() {
                     </td>
                     <td style={{ padding: '0.75rem', color: '#aaa' }}>{plan.item_count}</td>
                     <td style={{ padding: '0.75rem', color: '#888', fontSize: '0.8rem' }}>
-                      {new Date(plan.updated_at).toLocaleDateString()}
+                      {plan.updated_at ? new Date(plan.updated_at).toLocaleDateString() : '\u2014'}
                     </td>
                     <td style={{ padding: '0.75rem' }}>
                       <Link href={`/story-builder?planId=${plan.id}`} style={{ ...styles.button, ...styles.secondaryButton, textDecoration: 'none', fontSize: '0.8rem' }}>

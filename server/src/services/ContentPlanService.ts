@@ -35,7 +35,12 @@ export class ContentPlanService {
       throw new Error(`Plan not found: ${planId}`);
     }
 
-    const existingPlan = ContentPlanSchema.parse(result.rows[0].plan_json);
+    let existingPlan;
+    try {
+      existingPlan = ContentPlanSchema.parse(result.rows[0].plan_json);
+    } catch {
+      throw new Error('Stored plan failed schema validation');
+    }
 
     // 2. Gather context
     const context = await this.gatherContext();
@@ -56,7 +61,7 @@ export class ContentPlanService {
     await queryOLTP(
       `UPDATE content_plans
        SET plan_json = $1, description = $2, status = 'proposed',
-           feedback_log = feedback_log || $3::jsonb, updated_at = NOW()
+           feedback_log = COALESCE(feedback_log, '[]'::jsonb) || $3::jsonb, updated_at = NOW()
        WHERE id = $4`,
       [validated, validated.description, JSON.stringify([feedbackEntry]), planId]
     );
