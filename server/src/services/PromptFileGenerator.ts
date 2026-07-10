@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import type { ContentPlanItem } from '@las-flores/shared';
+import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
 
 const UNIVERSAL_NEGATIVES =
   '--no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural';
@@ -43,16 +44,9 @@ export async function generatePromptFiles(items: ContentPlanItem[], contentDir: 
     await fs.mkdir(typeDir, { recursive: true });
 
     const content = buildPromptFile(item);
-    const tmpPath = `${filePath}.${process.pid}.tmp`;
-    try {
-      await fs.writeFile(tmpPath, content, 'utf-8');
-      await fs.rename(tmpPath, filePath);
-      if (fileSnapshots) {
-        fileSnapshots.set(filePath, null);
-      }
-    } catch (error) {
-      try { await fs.unlink(tmpPath); } catch { /* ignore */ }
-      throw error;
+    await atomicWriteYaml(filePath, content);
+    if (fileSnapshots) {
+      fileSnapshots.set(filePath, null);
     }
 
     createdFiles.push(path.relative(promptsRoot, filePath));

@@ -397,6 +397,18 @@ export default function StoryBuilderPage() {
                       if (data.success && data.data) {
                         setPlan(data.data.plan);
                         setStep(2);
+                        // Auto-save to DB (same as handleGeneratePlan)
+                        try {
+                          const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
+                            '/api/admin/story-builder/plans',
+                            { description: description || t.label, plan: data.data.plan }
+                          );
+                          if (saveRes.success && saveRes.data) {
+                            setPlanId(saveRes.data.planId);
+                          }
+                        } catch (e) {
+                          console.error('Auto-save failed:', e);
+                        }
                       } else {
                         setError(data.error || "Failed to build template plan");
                       }

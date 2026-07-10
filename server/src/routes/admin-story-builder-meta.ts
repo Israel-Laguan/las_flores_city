@@ -35,7 +35,7 @@ adminStoryBuilderMetaRouter.post('/execute', async (req, res) => {
     const result = await executePlan(plan);
 
     res.json({
-      success: true,
+      success: result.success,
       data: result,
       timestamp: new Date().toISOString(),
     });
@@ -162,6 +162,6 @@ adminStoryBuilderMetaRouter.post('/templates/:id', async (req, res) => {
     });
   } catch (error: any) {
     console.error('[story-builder] POST /templates/:id error:', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to build template', timestamp: new Date().toISOString() });
+    res.status(500).json({ success: false, error: 'Failed to build template', timestamp: new Date().toISOString() });
   }
 });

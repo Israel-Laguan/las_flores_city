@@ -12,6 +12,7 @@ import {
   collectAssetTasks,
   topologicalSort,
   applyLink,
+  atomicWriteYaml,
 } from './StoryBuilderFileWriter.js';
 
 export interface ExecutionResult {
@@ -89,7 +90,11 @@ async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, f
       const relPath = item.fields[field];
       if (!relPath || typeof relPath !== 'string') continue;
 
-      const fullPath = path.join(loreRoot, relPath);
+      const fullPath = path.resolve(loreRoot, relPath);
+      if (!fullPath.startsWith(loreRoot + path.sep) && fullPath !== loreRoot) {
+        console.warn(`[story-builder] Skipping unsafe path: ${relPath}`);
+        continue;
+      }
 
       try {
         await fs.access(fullPath);
@@ -98,19 +103,10 @@ async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, f
         // File doesn't exist, create it
       }
 
-      await fs.mkdir(path.dirname(fullPath), { recursive: true });
-
       const stub = buildLoreStub(item, label);
-      const tmpPath = `${fullPath}.${process.pid}.tmp`;
-      try {
-        await fs.writeFile(tmpPath, stub, 'utf-8');
-        await fs.rename(tmpPath, fullPath);
-        if (fileSnapshots) {
-          fileSnapshots.set(fullPath, null);
-        }
-      } catch (error) {
-        try { await fs.unlink(tmpPath); } catch { /* ignore */ }
-        throw error;
+      await atomicWriteYaml(fullPath, stub);
+      if (fileSnapshots) {
+        fileSnapshots.set(fullPath, null);
       }
 
       createdFiles.push(relPath);
