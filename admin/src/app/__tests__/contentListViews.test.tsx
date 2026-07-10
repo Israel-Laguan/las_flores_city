@@ -28,6 +28,7 @@ import CharactersPage from '../characters/page';
 import DialogueDetailPage from '../dialogues/[id]/page';
 import SceneDetailPage from '../scenes/[id]/page';
 import CharacterDetailPage from '../characters/[id]/page';
+import AdminNav from '../components/AdminNav';
 
 // ── Global fetch mock ─────────────────────────────────────────────────────────
 beforeEach(() => {
@@ -228,9 +229,20 @@ describe('CharacterDetailPage', () => {
   });
 });
 
-// Nav test — skipped: testing Next.js root layouts in jsdom is complex
+// Nav test — renders AdminNav (the root layout's nav) directly to avoid
+// exercising the full Next.js root layout in jsdom.
 describe('Nav layout', () => {
-  it.todo('layout renders links to /dialogues, /scenes, /characters');
+  it('layout renders links to /dialogues, /scenes, /characters', () => {
+    render(<AdminNav user={{ username: 'tester', role: 'admin' }} />);
+
+    const dialogues = screen.getByRole('link', { name: /Dialogues/i });
+    const scenes = screen.getByRole('link', { name: /Scenes/i });
+    const characters = screen.getByRole('link', { name: /Characters/i });
+
+    expect(dialogues).toHaveAttribute('href', '/dialogues');
+    expect(scenes).toHaveAttribute('href', '/scenes');
+    expect(characters).toHaveAttribute('href', '/characters');
+  });
 });
 
 // ── Detail page field display — P6 ────────────────────────────────────────────

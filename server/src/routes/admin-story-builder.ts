@@ -4,8 +4,8 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
-import { executePlan, previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
-import { PLAN_TEMPLATES, getTemplateById } from '../services/PlanTemplates.js';
+import { previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
+import { adminStoryBuilderMetaRouter } from './admin-story-builder-meta.js';
 
 export const adminStoryBuilderRouter = express.Router();
 
@@ -39,51 +39,6 @@ adminStoryBuilderRouter.post('/plan', async (req: AuthRequest, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to generate plan',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
-
-// POST /admin/story-builder/execute
-// Body: { plan: ContentPlan }
-// Returns: { success: true, data: ExecutionResult }
-adminStoryBuilderRouter.post('/execute', async (req, res) => {
-  try {
-    const { plan: rawPlan } = req.body;
-
-    if (!rawPlan) {
-      res.status(400).json({
-        success: false,
-        error: 'plan is required',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(rawPlan);
-    } catch {
-      res.status(400).json({
-        success: false,
-        error: 'Invalid plan: schema validation failed',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    const result = await executePlan(plan);
-
-    res.json({
-      success: true,
-      data: result,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] POST /execute error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to execute plan',
       timestamp: new Date().toISOString(),
     });
   }
@@ -376,53 +331,59 @@ adminStoryBuilderRouter.post('/plans/:id/migrate', async (req, res) => {
   }
 });
 
-// GET /admin/story-builder/templates — List available plan templates
-adminStoryBuilderRouter.get('/templates', async (_req, res) => {
-  try {
-    const templates = PLAN_TEMPLATES.map(t => ({
-      id: t.id,
-      label: t.label,
-      description: t.description,
-      icon: t.icon,
-    }));
-
-    res.json({
-      success: true,
-      data: { templates },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] GET /templates error:', error);
-    res.status(500).json({ success: false, error: 'Failed to list templates', timestamp: new Date().toISOString() });
-  }
-});
-
-// POST /admin/story-builder/templates/:id — Build a plan from a template
-adminStoryBuilderRouter.post('/templates/:id', async (req, res) => {
+// POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
+adminStoryBuilderRouter.post('/plans/:id/retry', async (req, res) => {
   try {
     const { id } = req.params;
-    const { description } = req.body;
 
-    if (!description || typeof description !== 'string') {
-      res.status(400).json({ success: false, error: 'description is required', timestamp: new Date().toISOString() });
+    // Load plan from DB
+    const result = await queryOLTP<{ plan_json: any; status: string }>(
+      'SELECT plan_json, status FROM content_plans WHERE id = $1',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
       return;
     }
 
-    const template = getTemplateById(id);
-    if (!template) {
-      res.status(404).json({ success: false, error: 'Template not found', timestamp: new Date().toISOString() });
+    if (result.rows[0].status !== 'failed') {
+      res.status(400).json({ 
+        success: false, 
+        error: `Can only retry failed plans. Current status: ${result.rows[0].status}`,
+        timestamp: new Date().toISOString() 
+      });
       return;
     }
 
-    const plan = template.buildPlan(description);
+    let plan;
+    try {
+      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+    } catch {
+      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    // Re-run staging (failed files were rolled back, so this is safe)
+    const stagingResult = await stagePlan(plan);
+
+    // Update plan status based on staging result
+    const newStatus = stagingResult.success ? 'staged' : 'failed';
+    await queryOLTP(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+      [newStatus, id]
+    );
 
     res.json({
-      success: true,
-      data: { plan },
+      success: stagingResult.success,
+      data: stagingResult,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('[story-builder] POST /templates/:id error:', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to build template', timestamp: new Date().toISOString() });
+    console.error('[story-builder] POST /plans/:id/retry error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to retry plan', timestamp: new Date().toISOString() });
   }
 });
+
+// Mount secondary handlers (execute, version history, templates)
+adminStoryBuilderRouter.use(adminStoryBuilderMetaRouter);

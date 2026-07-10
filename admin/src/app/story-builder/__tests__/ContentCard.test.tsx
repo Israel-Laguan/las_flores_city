@@ -2,7 +2,7 @@
  * Tests for ContentCard.tsx
  * Milestone 1: Story Builder UX Refinement
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ContentCard from '../components/ContentCard';
