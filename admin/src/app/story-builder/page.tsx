@@ -176,6 +176,7 @@ export default function StoryBuilderPage() {
   function updateLink(index: number, field: string, value: string) {
     if (!plan) return;
     const links = [...plan.links];
+    if (!links[index]) return;
     links[index] = { ...links[index], [field]: value };
     setPlan({ ...plan, links });
   }
@@ -290,6 +291,9 @@ export default function StoryBuilderPage() {
                   value={link.fromItem}
                   onChange={e => updateLink(i, 'fromItem', e.target.value)}
                 >
+                  {!plan.items.some(item => item.id === link.fromItem) && (
+                    <option value={link.fromItem}>Unknown/Deleted Item ({link.fromItem})</option>
+                  )}
                   {plan.items.map(item => (
                     <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
                   ))}
@@ -300,6 +304,9 @@ export default function StoryBuilderPage() {
                   value={link.toItem}
                   onChange={e => updateLink(i, 'toItem', e.target.value)}
                 >
+                  {!plan.items.some(item => item.id === link.toItem) && (
+                    <option value={link.toItem}>Unknown/Deleted Item ({link.toItem})</option>
+                  )}
                   {plan.items.map(item => (
                     <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
                   ))}

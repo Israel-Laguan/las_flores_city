@@ -24,7 +24,7 @@ function resolveContentDir(): string {
 export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
   const createdFiles: string[] = [];
   const updatedFiles: string[] = [];
-  const fileSnapshots = new Map<string, string>(); // fullPath -> original content (null for created)
+  const fileSnapshots = new Map<string, string | null>(); // fullPath -> original content (null for created)
   const contentDir = resolveContentDir();
 
   try {
@@ -91,7 +91,7 @@ async function writePlanItems(
   contentDir: string,
   createdFiles: string[],
   updatedFiles: string[],
-  fileSnapshots: Map<string, string>,
+  fileSnapshots: Map<string, string | null>,
 ): Promise<void> {
   for (const item of items) {
     const filePath = resolveFilePath(item);
@@ -101,7 +101,7 @@ async function writePlanItems(
       const yamlStr = generateYaml(item);
       await atomicWriteYaml(fullPath, yamlStr);
       createdFiles.push(filePath);
-      fileSnapshots.set(fullPath, ''); // empty string = newly created, delete on rollback
+      fileSnapshots.set(fullPath, null); // null = newly created, delete on rollback
     } else if (item.action === 'update') {
       await updateExistingFile(item, fullPath, filePath, updatedFiles, fileSnapshots);
     } else {
@@ -115,7 +115,7 @@ async function updateExistingFile(
   fullPath: string,
   filePath: string,
   updatedFiles: string[],
-  fileSnapshots: Map<string, string>,
+  fileSnapshots: Map<string, string | null>,
 ): Promise<void> {
   try {
     await fs.access(fullPath);
@@ -139,10 +139,10 @@ async function updateExistingFile(
   updatedFiles.push(filePath);
 }
 
-async function rollbackFiles(snapshots: Map<string, string>): Promise<void> {
+async function rollbackFiles(snapshots: Map<string, string | null>): Promise<void> {
   for (const [fullPath, originalContent] of snapshots) {
     try {
-      if (originalContent === '') {
+      if (originalContent === null) {
         // Newly created file — delete it
         await fs.unlink(fullPath);
       } else {
@@ -239,7 +239,7 @@ async function applyLink(
   link: ContentLink,
   items: ContentPlanItem[],
   contentDir: string,
-  fileSnapshots?: Map<string, string>,
+  fileSnapshots?: Map<string, string | null>,
 ): Promise<void> {
   const fromItem = items.find(i => i.id === link.fromItem);
   if (!fromItem) {

@@ -304,7 +304,7 @@ export default function ContentCard({ item, index, allItems, onFieldChange, onRe
             {allItems
               .filter(other => other.id !== item.id)
               .map(other => {
-                const isSelected = item.dependsOn.includes(other.id);
+                const isSelected = item.dependsOn?.includes(other.id) ?? false;
                 return (
                   <button
                     key={other.id}
@@ -318,8 +318,8 @@ export default function ContentCard({ item, index, allItems, onFieldChange, onRe
                     onClick={() => {
                       if (!onDependsOnChange) return;
                       const newDeps = isSelected
-                        ? item.dependsOn.filter(id => id !== other.id)
-                        : [...item.dependsOn, other.id];
+                        ? (item.dependsOn || []).filter(id => id !== other.id)
+                        : [...(item.dependsOn || []), other.id];
                       onDependsOnChange(index, newDeps);
                     }}
                   >
