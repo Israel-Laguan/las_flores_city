@@ -15,8 +15,10 @@ import path from 'node:path';
 import { glob } from 'glob';
 import yaml from 'js-yaml';
 
-const CONTENT_DIR = path.resolve(process.cwd(), 'content');
-const LORE_DIR = path.resolve(process.cwd(), 'docs', 'lore');
+// Project root. Defaults to the current working directory, but can be
+// overridden (e.g. by tests) so the script never touches the live repo.
+const ROOT = process.env.CONTENT_MIGRATION_ROOT || process.cwd();
+const CONTENT_DIR = path.resolve(ROOT, 'content');
 const DRY_RUN = process.argv.includes('--dry-run');
 
 const migrationLog = {
@@ -106,7 +108,7 @@ async function fileExists(fullPath) {
 }
 
 async function migrateFile(filePath) {
-  const relativePath = path.relative(process.cwd(), filePath);
+  const relativePath = path.relative(ROOT, filePath);
   const content = await fs.readFile(filePath, 'utf-8');
   let data;
   try {
@@ -137,7 +139,7 @@ async function migrateFile(filePath) {
   // Add lore_path if missing and target file exists
   if (!data.lore_path && shouldHaveLorePath(type)) {
     const lorePath = deriveLorePath(type, slug);
-    const fullLorePath = path.resolve(process.cwd(), lorePath);
+    const fullLorePath = path.resolve(ROOT, lorePath);
     if (await fileExists(fullLorePath)) {
       data.lore_path = lorePath;
       updated = true;
@@ -148,7 +150,7 @@ async function migrateFile(filePath) {
   // Add narrative_path if missing and target file exists
   if (!data.narrative_path && shouldHaveNarrativePath(type)) {
     const narrativePath = deriveNarrativePath(type, slug);
-    const fullNarrativePath = path.resolve(process.cwd(), narrativePath);
+    const fullNarrativePath = path.resolve(ROOT, narrativePath);
     if (await fileExists(fullNarrativePath)) {
       data.narrative_path = narrativePath;
       updated = true;
@@ -186,7 +188,7 @@ async function main() {
   }
 
   // Write migration log
-  const logPath = path.resolve(process.cwd(), 'scripts', 'migration-log.json');
+  const logPath = path.resolve(ROOT, 'scripts', 'migration-log.json');
   await fs.mkdir(path.dirname(logPath), { recursive: true });
   await fs.writeFile(logPath, JSON.stringify(migrationLog, null, 2), 'utf-8');
 

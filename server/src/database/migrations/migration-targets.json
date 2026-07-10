@@ -38,7 +38,8 @@
     "043_user_roles.sql",
     "044_story_beats.sql",
     "045_migration_log_text_id.sql",
-    "046_stories.sql"
+    "046_stories.sql",
+    "047_content_plans.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

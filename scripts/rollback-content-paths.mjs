@@ -14,7 +14,10 @@ import path from 'node:path';
 import { glob } from 'glob';
 import yaml from 'js-yaml';
 
-const CONTENT_DIR = path.resolve(process.cwd(), 'content');
+// Project root. Defaults to the current working directory, but can be
+// overridden (e.g. by tests) so the script never touches the live repo.
+const ROOT = process.env.CONTENT_MIGRATION_ROOT || process.cwd();
+const CONTENT_DIR = path.resolve(ROOT, 'content');
 const FIELDS_TO_REMOVE = ['lore_path', 'narrative_path', 'asset_paths'];
 const DRY_RUN = process.argv.includes('--dry-run');
 
@@ -22,7 +25,7 @@ let filesProcessed = 0;
 let filesUpdated = 0;
 
 async function rollbackFile(filePath) {
-  const relativePath = path.relative(process.cwd(), filePath);
+  const relativePath = path.relative(ROOT, filePath);
   const content = await fs.readFile(filePath, 'utf-8');
   let data;
   try {

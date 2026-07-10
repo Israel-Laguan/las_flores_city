@@ -612,10 +612,12 @@ export {
   ContentPlanItemSchema,
   ContentLinkSchema,
   ContentPlanSchema,
+  FeedbackLogEntrySchema,
 } from './schemas/story-builder.js';
 export type {
   AssetNeed,
   ContentPlanItem,
   ContentLink,
   ContentPlan,
+  FeedbackLogEntry,
 } from './schemas/story-builder.js';

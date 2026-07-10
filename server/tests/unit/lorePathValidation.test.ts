@@ -6,34 +6,48 @@
  */
 import { describe, test, expect, beforeAll, afterAll, jest } from '@jest/globals';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
-// Set up test environment
-const testContentDir = path.resolve(process.cwd(), 'temp_test_content');
-const testAssetsDir = path.join(testContentDir, 'assets');
+// SAFETY: validateLorePaths resolves lore_path/narrative_path against
+// process.env.PROJECT_ROOT and asset_paths against process.env.CONTENT_DIR.
+// Both are pointed at throwaway temp directories under the OS temp dir so the
+// test never creates or removes files inside the real repo (docs/, characters/).
+let testProjectRoot: string;
+let testContentDir: string;
+let testAssetsDir: string;
 
-// Mock the environment variables
-const originalEnv = process.env;
+// Preserve/restore only the two env vars we touch.
+const originalContentDir = process.env.CONTENT_DIR;
+const originalProjectRoot = process.env.PROJECT_ROOT;
 
 beforeAll(async () => {
-  // Create test directories
+  const sandbox = await fs.mkdtemp(path.join(os.tmpdir(), 'lf-lore-path-'));
+  testProjectRoot = path.join(sandbox, 'project');
+  testContentDir = path.join(sandbox, 'content');
+  testAssetsDir = path.join(testContentDir, 'assets');
+
+  await fs.mkdir(testProjectRoot, { recursive: true });
   await fs.mkdir(testAssetsDir, { recursive: true });
-  
+
   // Create a test asset file
   await fs.writeFile(path.join(testAssetsDir, 'test_portrait.png'), Buffer.from('test'));
-  
-  // Set environment variables
+
+  // Point the validator at the sandbox.
   process.env.CONTENT_DIR = testContentDir;
-  process.env.PROJECT_ROOT = path.resolve(process.cwd(), '..');
+  process.env.PROJECT_ROOT = testProjectRoot;
 });
 
 afterAll(async () => {
   // Restore environment
-  process.env = originalEnv;
-  
-  // Clean up test directory
+  if (originalContentDir === undefined) delete process.env.CONTENT_DIR;
+  else process.env.CONTENT_DIR = originalContentDir;
+  if (originalProjectRoot === undefined) delete process.env.PROJECT_ROOT;
+  else process.env.PROJECT_ROOT = originalProjectRoot;
+
+  // Clean up the whole sandbox (parent of both temp dirs).
   try {
-    await fs.rm(testContentDir, { recursive: true, force: true });
+    await fs.rm(path.dirname(testContentDir), { recursive: true, force: true });
   } catch (e: any) {}
 });
 
@@ -48,17 +62,17 @@ describe('Lore Path Validation', () => {
 
   describe('lore_path validation', () => {
     test('should not add warning when lore_path file exists', async () => {
-      // Create a test lore file
-      const testLoreDir = path.join(originalEnv.PROJECT_ROOT || process.cwd(), 'docs/lore/figures');
+      // Create a test lore file inside the sandbox project root
+      const testLoreDir = path.join(testProjectRoot, 'docs/lore/figures');
       await fs.mkdir(testLoreDir, { recursive: true });
       await fs.writeFile(path.join(testLoreDir, 'diego.md'), '# Diego');
-      
+
       const warnings: string[] = [];
       await validateLorePaths('test.yaml', { lore_path: 'docs/lore/figures/diego.md' }, warnings);
-      
+
       expect(warnings).toEqual([]);
-      
-      // Clean up only the stub we created — never the whole figures directory
+
+      // Clean up only the stub we created
       await fs.rm(path.join(testLoreDir, 'diego.md'), { force: true });
     });
 
@@ -74,18 +88,17 @@ describe('Lore Path Validation', () => {
 
   describe('narrative_path validation', () => {
     test('should not add warning when narrative_path file exists', async () => {
-      // Create a test narrative file relative to PROJECT_ROOT (where narrative_path resolves)
-      const projectRoot = originalEnv.PROJECT_ROOT || path.resolve(process.cwd(), '..');
-      const narrativeDir = path.join(projectRoot, 'characters');
+      // Create a test narrative file relative to the sandbox project root
+      const narrativeDir = path.join(testProjectRoot, 'characters');
       await fs.mkdir(narrativeDir, { recursive: true });
       await fs.writeFile(path.join(narrativeDir, 'char_diego.md'), '# Diego Narrative');
-      
+
       const warnings: string[] = [];
       await validateLorePaths('test.yaml', { narrative_path: 'characters/char_diego.md' }, warnings);
-      
+
       expect(warnings).toEqual([]);
-      
-      // Clean up only the stub we created — never the whole characters directory
+
+      // Clean up only the stub we created
       await fs.rm(path.join(narrativeDir, 'char_diego.md'), { force: true });
     });
 

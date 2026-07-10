@@ -5,6 +5,7 @@ import type { ContentPlan, ContentPlanItem, ContentLink, AssetNeed } from '@las-
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
+import { queryOLTP } from '../database/connection.js';
 
 export interface ExecutionResult {
   success: boolean;
@@ -14,6 +15,39 @@ export interface ExecutionResult {
   warnings: string[];
   migrationResult: any;
   assetTasks: Array<{ item: ContentPlanItem; needs: AssetNeed[] }>;
+  error?: string;
+}
+
+export interface PreviewResult {
+  items: Array<{
+    name: string;
+    type: string;
+    action: string;
+    filePath: string;
+    yamlPreview: string;
+    existingYaml?: string;
+    isNew: boolean;
+  }>;
+  links: Array<{
+    fromItem: string;
+    toItem: string;
+    field: string;
+    action: string;
+  }>;
+}
+
+export interface StagingResult {
+  success: boolean;
+  createdFiles: string[];
+  updatedFiles: string[];
+  validationErrors: string[];
+  warnings: string[];
+  error?: string;
+}
+
+export interface MigrationResult {
+  success: boolean;
+  migrationResult: any;
   error?: string;
 }
 
@@ -81,6 +115,145 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
       warnings: [],
       migrationResult: null,
       assetTasks: [],
+      error: error.message,
+    };
+  }
+}
+
+export async function previewPlan(plan: ContentPlan): Promise<PreviewResult> {
+  const contentDir = resolveContentDir();
+  const { sorted: items } = topologicalSort(plan.items);
+
+  const previewItems: PreviewResult['items'] = [];
+
+  for (const item of items) {
+    const yamlStr = generateYaml(item);
+    const filePath = resolveFilePath(item);
+    const fullPath = path.join(contentDir, filePath);
+
+    let existingYaml: string | undefined;
+    let isNew = true;
+
+    try {
+      await fs.access(fullPath);
+      existingYaml = await fs.readFile(fullPath, 'utf-8');
+      isNew = false;
+    } catch (err: any) {
+      if (err.code === 'ENOENT') {
+        // File doesn't exist — new file
+      } else {
+        throw new Error(`Cannot read existing file ${filePath}: ${err.message}`);
+      }
+    }
+
+    previewItems.push({
+      name: item.name,
+      type: item.type,
+      action: item.action,
+      filePath,
+      yamlPreview: yamlStr,
+      existingYaml,
+      isNew,
+    });
+  }
+
+  return {
+    items: previewItems,
+    links: plan.links,
+  };
+}
+
+export async function stagePlan(plan: ContentPlan): Promise<StagingResult> {
+  const createdFiles: string[] = [];
+  const updatedFiles: string[] = [];
+  const fileSnapshots = new Map<string, string | null>();
+  const contentDir = resolveContentDir();
+
+  try {
+    const { sorted: sortedItems } = topologicalSort(plan.items);
+
+    await writePlanItems(sortedItems, contentDir, createdFiles, updatedFiles, fileSnapshots);
+
+    for (const link of plan.links) {
+      await applyLink(link, plan.items, contentDir, fileSnapshots);
+    }
+
+    const validationResult = await validateContent(contentDir);
+
+    if (!validationResult.valid) {
+      await rollbackFiles(fileSnapshots);
+      return {
+        success: false,
+        createdFiles,
+        updatedFiles,
+        validationErrors: validationResult.errors
+          .filter(e => e.severity === 'error')
+          .map(e => `${e.file ?? ''}: ${e.message}`),
+        warnings: validationResult.warnings,
+      };
+    }
+
+    return {
+      success: true,
+      createdFiles,
+      updatedFiles,
+      validationErrors: [],
+      warnings: validationResult.warnings,
+    };
+  } catch (error: any) {
+    await rollbackFiles(fileSnapshots);
+    return {
+      success: false,
+      createdFiles,
+      updatedFiles,
+      validationErrors: [],
+      warnings: [],
+      error: error.message,
+    };
+  }
+}
+
+export async function migrateStagedPlan(planId: string): Promise<MigrationResult> {
+  try {
+    const result = await queryOLTP<{ plan_json: any; status: string }>(
+      'SELECT plan_json, status FROM content_plans WHERE id = $1',
+      [planId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error(`Plan not found: ${planId}`);
+    }
+
+    if (result.rows[0].status !== 'staged' && result.rows[0].status !== 'approved') {
+      throw new Error(`Plan must be staged before migration. Current status: ${result.rows[0].status}`);
+    }
+
+    const contentDir = resolveContentDir();
+
+    const migrationResult = await migrateContent(contentDir);
+
+    const newStatus = migrationResult.success ? 'migrated' : 'failed';
+    await queryOLTP(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+      [newStatus, planId]
+    );
+
+    return {
+      success: migrationResult.success,
+      migrationResult,
+      error: migrationResult.success ? undefined : migrationResult.errors.join('; '),
+    };
+  } catch (error: any) {
+    try {
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['failed', planId]
+      );
+    } catch { /* ignore */ }
+
+    return {
+      success: false,
+      migrationResult: null,
       error: error.message,
     };
   }

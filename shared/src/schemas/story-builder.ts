@@ -37,6 +37,14 @@ export const ContentPlanSchema = z.object({
   status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'failed']).default('draft'),
 });
 
+export const FeedbackLogEntrySchema = z.object({
+  feedback: z.string(),
+  timestamp: z.string(),
+  planSnapshot: ContentPlanSchema,
+});
+
+export type FeedbackLogEntry = z.infer<typeof FeedbackLogEntrySchema>;
+
 // Inferred types
 export type AssetNeed = z.infer<typeof AssetNeedSchema>;
 export type ContentPlanItem = z.infer<typeof ContentPlanItemSchema>;
