@@ -1,8 +1,14 @@
 # Story Builder Design Document
 
-> **Status**: Discussion / Planning
+> **Status**: Implemented (all planned milestones complete)
 > **Created**: 2026-07-08
+> **Last Updated**: 2026-07-10
 > **Related**: `docs/ADMIN_PANEL.md`, `docs/MVW_ARCHITECTURE.md`
+>
+> This began as a design/planning document. The feature has since shipped. Sections
+> 1–3 capture the design rationale and the options that were considered (kept for
+> historical context); Section 4 records what was actually built and the key files
+> that make up the implementation.
 
 ## 1. Context
 
@@ -962,61 +968,63 @@ Story builder as a modal overlay on the existing admin dashboard.
 
 ---
 
-## 4. Implementation Roadmap
+## 4. Implementation Status
 
-### Phase 1: MVP (Session-Only, LLM-Backed)
+The Story Builder shipped across five milestones, all complete. The wizard flow is:
 
-**Goal**: User can describe a character, get a plan, execute it, and see the created content.
+```
+Idea → AI Proposal → Iterate → Approve → Stage → Migrate
+```
 
-**Scope**:
-- ContentPlan data model (Zod schema)
-- LLMService (OpenAI provider, pluggable)
-- ContentPlanService (description → plan)
-- ContentSkeletonGenerator (template-based)
-- StoryBuilderOrchestrator (synchronous)
-- Story Builder UI (single-page wizard)
-- Server routes: `POST /admin/story-builder/plan`, `POST /admin/story-builder/execute`
-- Admin proxy routes
+### 4.1 What was built (by milestone)
 
-**Out of scope**:
-- Plan persistence (session-only)
-- Background jobs
-- Asset auto-generation (just create prompt files)
-- Dependency graph (flat plan items)
+| Milestone | Delivered |
+|-----------|-----------|
+| **M1: MVP Foundation** | 4-step wizard, ContentPlan Zod schema, LLM-backed plan generation (Mock + LiteLLM providers), template-based YAML skeletons for all 12 content types, synchronous orchestrator (create → validate → migrate), server + admin proxy routes, asset pipeline integration, content-linker, in-card lore viewer/editor. |
+| **M2: Plan Persistence + Iteration** | `content_plans` table, 6-state status enum (draft → proposed → approved → staged → migrated → failed), `refinePlan()` with feedback log + versioning, CRUD + refine endpoints, plan list page, auto-save + load-from-URL wizard, integration tests. |
+| **M3: Staging + Migration Gate** | Split execute into `previewPlan()` (dry-run), `stagePlan()` (write YAML + validate), and `migrateStagedPlan()` (DB upsert). 5-step wizard (Describe → Review → Stage → Migrate → Assets), before/after preview UI, integration tests. |
+| **M4: Asset Needs + Lore Generation** | `AssetNeedsService` (static rules per content type) injected during parse/refine, `generateLoreStubs()` (writes `.md` at lore/narrative paths), `PromptFileGenerator` (writes `.prompt.md` for the asset pipeline), staging result surfaces lore + prompt files, unit tests. |
+| **M5: Polish + UX** | Execute-proxy validation fix, plan templates (mystery, shopkeeper, location), partial-failure recovery with per-item status + "Retry Failed" endpoint/UI, plan versioning (`parent_plan_id`) with version-history UI, keyboard shortcuts (Ctrl+Enter, Ctrl+S), template/versioning tests. |
 
-### Phase 2: Enhanced UX
+### 4.2 Architecture decisions that held
 
-**Goal**: Better plan editing, asset integration, error handling.
+1. **LLM as plan generator, not executor** — the LLM produces a structured plan; the orchestrator owns file I/O and validation.
+2. **Template-based YAML + LLM fill** — deterministic skeletons guarantee valid YAML while the LLM supplies creative content.
+3. **Stage/migrate split** — users can write and validate YAML (stage) before committing to the DB (migrate), enabling safe experimentation.
+4. **Atomic execution with rollback** — failed validation after writes triggers cleanup; partial failures are tracked per-item and retryable.
+5. **DB-persisted plans with versioning** — plans survive reloads; refinements create new versions linked via `parent_plan_id`.
 
-**Scope**:
-- Dependency graph in plan items
-- Dry-run mode
-- Plan validation before execution
-- Asset needs calculator (static rules)
-- Link to `/assets` page for each asset need
-- Error recovery (retry failed items)
+### 4.3 Key files reference
 
-### Phase 3: Persistence & Scale
+| File | Purpose |
+|------|---------|
+| `shared/src/schemas/story-builder.ts` | ContentPlan, ContentPlanItem, AssetNeed, ContentLink, status enum, FeedbackLogEntry schemas |
+| `server/src/services/LLMService.ts` | LLM provider interface, Mock + LiteLLM implementations (incl. `refinePlan()`) |
+| `server/src/services/ContentPlanService.ts` | Description → plan parsing, context gathering, refinement, asset-needs injection |
+| `server/src/services/StoryBuilderOrchestrator.ts` | Plan execution: preview, stage, migrate, YAML creation, lore stub generation, validation |
+| `server/src/services/ContentSkeletonGenerator.ts` | Template-based YAML generation per content type |
+| `server/src/services/AssetNeedsService.ts` | Static asset-needs rules per content type |
+| `server/src/services/PromptFileGenerator.ts` | Prompt file generation for the asset pipeline |
+| `server/src/services/PlanTemplates.ts` | Pre-configured plan templates (mystery, shopkeeper, location) |
+| `server/src/routes/admin-story-builder.ts` | Express routes: plan, execute, CRUD, refine, preview, stage, migrate, retry, versions, templates |
+| `server/src/content/validate.ts` | Content validation (schema + XSS + story flow) |
+| `server/src/content/migrate.ts` | Content migration (YAML → DB upsert) |
+| `server/src/database/migrations/047_content_plans.sql` | `content_plans` table |
+| `server/src/database/migrations/048_content_plans_versioning.sql` | `parent_plan_id` versioning column |
+| `admin/src/app/story-builder/page.tsx` | 5-step wizard UI |
+| `admin/src/app/story-builder/plans/page.tsx` | Plan list page (with version history) |
+| `admin/src/app/story-builder/components/` | ContentCard, FieldDefinitions, PlanSummary, LoreViewer |
+| `admin/src/app/api/admin/story-builder/` | Next.js proxy routes (plan, execute, plans CRUD/refine/preview/stage/migrate/retry/versions, templates) |
+| `server/src/routes/assets.ts` | Asset API routes (catalog, generate, approve, publish) |
 
-**Goal**: Resumable plans, background execution, audit trail.
+### 4.4 Possible future enhancements
 
-**Scope**:
-- `content_plans` and `content_plan_items` tables
-- Plan list page (`/story-builder/history`)
-- Background job execution with polling
-- Plan status tracking
-- Rollback support
+Not planned, but noted during design as natural extensions:
 
-### Phase 4: Advanced Features
-
-**Goal**: Smarter plans, better content.
-
-**Scope**:
-- Tiered asset needs (major/standard/minor character)
-- LLM-generated content fill (not just skeleton)
-- Clone existing content as template
-- Collaborative editing
-- Plan templates ("Add a shopkeeper" template)
+- Tiered asset needs (major/standard/minor character).
+- LLM-generated content fill beyond skeletons.
+- Clone existing content as a template; collaborative editing.
+- Background job execution with polling for large plans.
 
 ---
 
@@ -1041,11 +1049,14 @@ Story builder as a modal overlay on the existing admin dashboard.
 
 ### 5.3 Environment Variables
 
-New env vars needed:
-- `LLM_PROVIDER` — `openai` | `anthropic` | `local` (default: `openai`)
-- `OPENAI_API_KEY` — OpenAI API key
-- `ANTHROPIC_API_KEY` — Anthropic API key (if using Anthropic)
-- `LLM_MODEL` — Model name (default: `gpt-4`)
+Env vars used by the shipped implementation (`server/src/services/LLMService.ts`):
+- `LLM_PROVIDER` — `mock` | `litellm` (default: `mock`)
+- `LITELLM_BASE_URL` — LiteLLM gateway URL (default: `http://litellm:4000`)
+- `LITELLM_API_KEY` — LiteLLM API key
+- `LLM_MODEL` — Model name (default: `poolside/laguna-m.1`)
+
+> Note: earlier drafts proposed direct `OPENAI_API_KEY` / `ANTHROPIC_API_KEY`
+> integration. That was dropped — all LLM access goes through the LiteLLM gateway.
 
 ### 5.4 Testing Strategy
 
