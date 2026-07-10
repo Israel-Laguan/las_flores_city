@@ -1,6 +1,6 @@
-id: "23402bca-688a-3ce4-763d-2b399ff8cc65"
+id: 23402bca-688a-3ce4-763d-2b399ff8cc65
 type: location
-name: "Minera Estrella Andes Mine"
+name: Minera Estrella Andes Mine
 color: null
 aliases:
   - Andean Mine
@@ -10,16 +10,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
+history: |
   Situated in the foothills of the Andean Mountains, Minera Estrella Andes Mine is located approximately 5 kilometers northeast of the river. This mine benefits from proximity to the mountain's mineral-rich deposits and has easy access to the river for transporting materials. As the oldest and largest lithium mine in the region, it carries a legacy that spans around half a century. The mine thrives with constant movement of trucks and operation of heavy machinery, reflecting its pivotal role in the economy and the relentless pursuit of natural resources.
-
-daytime: >
+daytime: |
   During daylight hours, the Minera Estrella Andes Mine is a hive of industrial activity. The constant hum of heavy machinery fills the air as trucks shuttle raw lithium ore from the extraction zones to the processing areas. Workers in safety gear operate drilling equipment, loaders, and haul trucks, while Chinese engineers and supervisors monitor operations from control points. The mine's supporting community comes alive with residents shopping at the local market, children attending community schools, and patients receiving care at the hospital. The special mall offers a touch of modernity and leisure for workers finishing their shifts. Despite the automation introduced in recent years, human activity remains constant, maintaining the rhythm of extraction that has defined this site for decades.
-
-nightlife: >
+nightlife: |
   After dark, the mine transforms into a landscape of industrial illumination. Powerful floodlights cast long shadows across the open pits and equipment yards, creating a stark contrast between the darkened mountain backdrop and the brightly lit work areas. Security patrols make regular rounds, ensuring the safety of both the facility and the surrounding worker housing clusters. The 24/7 operations continue with skeleton crews, the glow from control rooms visible from a distance. In the residential areas, the sounds of the mine blend with the quieter noises of community life - the occasional laughter from a late gathering, the hum of air conditioning units, and the distant bark of a dog. The atmosphere is one of industrious calm, where the pursuit of lithium continues around the clock.
-
 important_places:
   - name: Open-Pit Extraction Zone
     description: Primary mining area where lithium ore is extracted from surface deposits using heavy machinery and explosives.
@@ -37,6 +33,7 @@ important_places:
     description: Network of heavy-duty truck routes connecting the mine to the container facility 10km away for processing.
   - name: Processing Connection Point
     description: Transfer station where raw lithium ore is loaded onto trucks for transport to the container facility.
-
-conclusion: >
+conclusion: |
   Minera Estrella Andes Mine is more than a site of extraction; it is a symbol of the complexities and contradictions of modern industrial pursuits. It encapsulates the delicate balance between economic development and environmental stewardship, between tradition and innovation. The mine stands as a critical nexus where the past meets the future, and where the local intersects with the global through its strong ties to the LW Group and the Chinese resource industry. As it continues to evolve with modernization and automation, the mine remains a pivotal component of Las Flores' economy, while also serving as a reminder of the environmental and social costs of industrial progress.
+asset_paths:
+  image: locations/location_minera_estrella_andes_mine/image.jpg

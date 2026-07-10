@@ -1,6 +1,6 @@
-id: "8dcae402-e93e-430b-8bbb-675b7a308497"
+id: 8dcae402-e93e-430b-8bbb-675b7a308497
 type: location
-name: "Museo de Arte Moderno"
+name: Museo de Arte Moderno
 color: null
 aliases:
   - Modern Art Museum
@@ -14,82 +14,26 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Museo de Arte Moderno was established in 2043 through a mixed-funding arrangement
-  that became a template for cultural politics in Las Flores: roughly forty percent of its
-  founding endowment came from the LW Group Cultural Foundation, with the remainder drawn
-  from a municipal arts levy and a consortium of smaller private donors. The arrangement
-  was described at the time as a partnership between civic ambition and corporate resources.
-  It has since been characterised, by critics within the local arts community, as the moment
-  LW Group acquired a controlling aesthetic voice in the city's most visible contemporary
-  art institution without technically owning it. The quiet controversy around which artists
-  receive commissions is not difficult to trace: a 2068 investigative piece by the independent
-  platform Voz Libre cross-referenced the museum's commission records with the LW Group
-  Cultural Foundation's donor acknowledgement list and found that artists who had publicly
-  criticised lithium extraction practices, river contamination, or labour conditions in
-  the Industrial Zone received no museum commissions in the four years following their
-  public statements. Museum administration has denied the correlation constitutes a policy.
-  The Foundation's pre-approval clause in the curation contract is not publicly disclosed;
-  its existence was confirmed only through a leaked board document in 2071.
-
-daytime: >
-  The museum's permanent collection spans six decades of Latin American and trans-Pacific
-  contemporary art, displayed across three floors of a purpose-built Central City building
-  whose glass-and-reclaimed-steel facade has become one of the district's visual landmarks.
-  Holographic catalogue terminals at each gallery entrance allow visitors to access artist
-  biographies, acquisition records, and curatorial notes — the latter drafted with a
-  consistency of institutional voice that suggests editorial coordination beyond individual
-  curators. Rotating temporary exhibitions occupy the first-floor annex; their themes skew
-  reliably toward technology, ecology-as-aesthetic, and corporate-sponsored innovation.
-  A 2076 exhibition titled "Mineral Futures: Art at the Edge of Extraction" received
-  significant press coverage and was funded entirely by the LW Group Cultural Foundation;
-  its artist list included no one from the Industrial Zone or the affected indigenous
-  communities. Atmospheric scrubbers maintain gallery climate at museum-standard 20°C
-  and 45% humidity; the system was installed by an LW Group subsidiary and carries
-  the Foundation's brand mark on its maintenance panels.
-
-nightlife: >
-  Evening openings at the Museo de Arte Moderno have become one of Central City's most
-  reliable social fixtures for the professional and managerial class. The ground-floor
-  atrium converts to a reception space from 19:00 on Thursdays and Fridays, with a bar
-  service operating beneath a rotating holographic light installation commissioned from
-  an LW Group Cultural Foundation grant recipient. The atmosphere is curated with the
-  same precision as the galleries themselves: lighting levels, ambient sound design, and
-  catering selections are coordinated by the museum's events team through a vendor
-  relationship with LW Group's hospitality subsidiary. Artists whose work appears in
-  the collection are occasionally invited to speak at these events; those whose work has
-  been rejected or quietly deprioritised in the commission process are not on the guest
-  list. The surveillance camera density in the evening atrium is higher than in the
-  public daytime galleries, a fact visible but unremarked upon.
-
+history: |
+  The Museo de Arte Moderno was established in 2043 through a mixed-funding arrangement that became a template for cultural politics in Las Flores: roughly forty percent of its founding endowment came from the LW Group Cultural Foundation, with the remainder drawn from a municipal arts levy and a consortium of smaller private donors. The arrangement was described at the time as a partnership between civic ambition and corporate resources. It has since been characterised, by critics within the local arts community, as the moment LW Group acquired a controlling aesthetic voice in the city's most visible contemporary art institution without technically owning it. The quiet controversy around which artists receive commissions is not difficult to trace: a 2068 investigative piece by the independent platform Voz Libre cross-referenced the museum's commission records with the LW Group Cultural Foundation's donor acknowledgement list and found that artists who had publicly criticised lithium extraction practices, river contamination, or labour conditions in the Industrial Zone received no museum commissions in the four years following their public statements. Museum administration has denied the correlation constitutes a policy. The Foundation's pre-approval clause in the curation contract is not publicly disclosed; its existence was confirmed only through a leaked board document in 2071.
+daytime: |
+  The museum's permanent collection spans six decades of Latin American and trans-Pacific contemporary art, displayed across three floors of a purpose-built Central City building whose glass-and-reclaimed-steel facade has become one of the district's visual landmarks. Holographic catalogue terminals at each gallery entrance allow visitors to access artist biographies, acquisition records, and curatorial notes — the latter drafted with a consistency of institutional voice that suggests editorial coordination beyond individual curators. Rotating temporary exhibitions occupy the first-floor annex; their themes skew reliably toward technology, ecology-as-aesthetic, and corporate-sponsored innovation. A 2076 exhibition titled "Mineral Futures: Art at the Edge of Extraction" received significant press coverage and was funded entirely by the LW Group Cultural Foundation; its artist list included no one from the Industrial Zone or the affected indigenous communities. Atmospheric scrubbers maintain gallery climate at museum-standard 20°C and 45% humidity; the system was installed by an LW Group subsidiary and carries the Foundation's brand mark on its maintenance panels.
+nightlife: |
+  Evening openings at the Museo de Arte Moderno have become one of Central City's most reliable social fixtures for the professional and managerial class. The ground-floor atrium converts to a reception space from 19:00 on Thursdays and Fridays, with a bar service operating beneath a rotating holographic light installation commissioned from an LW Group Cultural Foundation grant recipient. The atmosphere is curated with the same precision as the galleries themselves: lighting levels, ambient sound design, and catering selections are coordinated by the museum's events team through a vendor relationship with LW Group's hospitality subsidiary. Artists whose work appears in the collection are occasionally invited to speak at these events; those whose work has been rejected or quietly deprioritised in the commission process are not on the guest list. The surveillance camera density in the evening atrium is higher than in the public daytime galleries, a fact visible but unremarked upon.
 important_places:
   - name: Permanent Collection Galleries
-    description: >
-      Three floors of curated Latin American and trans-Pacific contemporary art spanning
-      2017 to 2077. Acquisition decisions have been subject to pre-approval review by the
-      LW Group Cultural Foundation since the museum's founding endowment agreement in 2043.
+    description: |
+      Three floors of curated Latin American and trans-Pacific contemporary art spanning 2017 to 2077. Acquisition decisions have been subject to pre-approval review by the LW Group Cultural Foundation since the museum's founding endowment agreement in 2043.
   - name: First-Floor Temporary Exhibition Annex
-    description: >
-      Rotating exhibition space used for themed temporary shows. Funding sources for
-      individual exhibitions are disclosed in the programme notes; the Foundation's curation
-      pre-approval clause is not among the disclosed items.
+    description: |
+      Rotating exhibition space used for themed temporary shows. Funding sources for individual exhibitions are disclosed in the programme notes; the Foundation's curation pre-approval clause is not among the disclosed items.
   - name: Holographic Catalogue Terminals
-    description: >
-      Interactive kiosks providing artist information and acquisition records. Curatorial
-      notes are written in institutional voice; no terminal lists works declined or artists
-      deprioritised following public political statements.
+    description: |
+      Interactive kiosks providing artist information and acquisition records. Curatorial notes are written in institutional voice; no terminal lists works declined or artists deprioritised following public political statements.
   - name: Evening Atrium
-    description: >
-      Ground-floor reception space converted for evening social events on Thursdays and
-      Fridays. Operates through an LW Group hospitality subsidiary vendor relationship.
-      Surveillance camera density here exceeds the public gallery average.
-
-conclusion: >
-  The Museo de Arte Moderno functions as a prestige cultural institution and as an object
-  lesson in how corporate patronage shapes not just what is funded but what is imaginable
-  as fundable. Its collection is genuinely significant; the artists it houses are, in many
-  cases, doing important work. The institution's limitation is not the art on its walls
-  but the systematic filtering that determines whose art reaches those walls — a filtering
-  process invisible to the visitor who encounters only the polished result, and legible only
-  to those who know where to look for the artists who are not there.
+    description: |
+      Ground-floor reception space converted for evening social events on Thursdays and Fridays. Operates through an LW Group hospitality subsidiary vendor relationship. Surveillance camera density here exceeds the public gallery average.
+conclusion: |
+  The Museo de Arte Moderno functions as a prestige cultural institution and as an object lesson in how corporate patronage shapes not just what is funded but what is imaginable as fundable. Its collection is genuinely significant; the artists it houses are, in many cases, doing important work. The institution's limitation is not the art on its walls but the systematic filtering that determines whose art reaches those walls — a filtering process invisible to the visitor who encounters only the polished result, and legible only to those who know where to look for the artists who are not there.
+asset_paths:
+  image: locations/location_museo_de_arte_moderno/image.jpg

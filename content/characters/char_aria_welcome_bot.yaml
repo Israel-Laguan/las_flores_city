@@ -1,9 +1,11 @@
-id: "550e8400-e29b-41d4-a716-446655440001"
-name: "ARIA"
-title: "Welcome Interface"
-description: "The official AI welcome interface for new arrivals in Las Flores. ARIA is designed to be helpful, friendly, and slightly too eager to please."
+id: 550e8400-e29b-41d4-a716-446655440001
+name: ARIA
+title: Welcome Interface
+description: The official AI welcome interface for new arrivals in Las Flores. ARIA is designed to be helpful, friendly, and slightly too eager to please.
 metadata:
-  type: "ai"
-  role: "guide"
-  personality: "helpful"
-  first_appearance: "dialogue_welcome"
+  type: ai
+  role: guide
+  personality: helpful
+  first_appearance: dialogue_welcome
+asset_paths:
+  portrait: characters/aria_welcome_bot/portrait.png

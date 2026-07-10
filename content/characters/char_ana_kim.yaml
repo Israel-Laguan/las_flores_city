@@ -1,13 +1,19 @@
-id: "e6f7a8b9-c0d1-4e2f-a3b4-c5d6e7f8a9b0"
-name: "Ana Kim"
-title: "University Library Worker, Former Investigator"
-description: "Ana Kim was a colleague of Alex Garcia at the university library. She was drawn into the Residencial Las Estrellas investigation by accident — she came to return Alex's forgotten notebook and ended up helping follow a car. She was sharp, warm, and consistently more competent than her role required.\n\nAfter the City Hall archive break-in left her injured (swollen eye, bruised ribs, damaged wrist), Ana made the difficult choice to leave the investigation. She was not a coward — she recognized honestly what she could sustain without destroying herself. She sent money to the movement twice through untraceable channels, never asking for acknowledgment."
+id: e6f7a8b9-c0d1-4e2f-a3b4-c5d6e7f8a9b0
+name: Ana Kim
+title: University Library Worker, Former Investigator
+description: |-
+  Ana Kim was a colleague of Alex Garcia at the university library. She was drawn into the Residencial Las Estrellas investigation by accident — she came to return Alex's forgotten notebook and ended up helping follow a car. She was sharp, warm, and consistently more competent than her role required.
+
+  After the City Hall archive break-in left her injured (swollen eye, bruised ribs, damaged wrist), Ana made the difficult choice to leave the investigation. She was not a coward — she recognized honestly what she could sustain without destroying herself. She sent money to the movement twice through untraceable channels, never asking for acknowledgment.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  status: "Alive (left Las Flores, 2077)"
+  type: human
+  role: npc
+  faction: independent
+  status: Alive (left Las Flores, 2077)
 portrait_urls:
-  - url: "http://minio:9000/las-flores/portraits/ana_kim/neutral.png"
-    label: "Standard portrait"
-    expression: "neutral"
+  - url: http://minio:9000/las-flores/portraits/ana_kim/neutral.png
+    label: Standard portrait
+    expression: neutral
+lore_path: docs/lore/figures/ana_kim/ana_kim.md
+asset_paths:
+  portrait: characters/ana_kim/portrait.png

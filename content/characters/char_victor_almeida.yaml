@@ -1,9 +1,11 @@
-id: "f3a4b5c6-d7e8-4f9a-0b1c-2d3e4f5a6b7c"
-name: "Victor Almeida"
-title: "Editor-in-Chief, La Prensa"
-description: "Veteran journalist with over three decades of experience. Known for uncompromising editorial stance and dedication to truth. Led La Prensa's resurgence in investigative journalism."
+id: f3a4b5c6-d7e8-4f9a-0b1c-2d3e4f5a6b7c
+name: Victor Almeida
+title: Editor-in-Chief, La Prensa
+description: Veteran journalist with over three decades of experience. Known for uncompromising editorial stance and dedication to truth. Led La Prensa's resurgence in investigative journalism.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "veteran_editor"
+  type: human
+  role: npc
+  faction: media
+  personality: veteran_editor
+asset_paths:
+  portrait: characters/victor_almeida/portrait.png

@@ -1,9 +1,11 @@
-id: "c4d5e6f7-a8b9-4c0d-1e2f-3a4b5c6d7e8f"
-name: "María Gutiérrez"
-title: "Investigative Journalist"
+id: c4d5e6f7-a8b9-4c0d-1e2f-3a4b5c6d7e8f
+name: María Gutiérrez
+title: Investigative Journalist
 description: "Wrote 'Mayor Hernandez's Legacy: A City Choking on its Own Greed,' an investigative piece for El Informador exposing environmental degradation and corporate influence under Mayor Hernandez."
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "muckraking_journalist"
+  type: human
+  role: npc
+  faction: media
+  personality: muckraking_journalist
+asset_paths:
+  portrait: characters/maria_gutierrez/portrait.png

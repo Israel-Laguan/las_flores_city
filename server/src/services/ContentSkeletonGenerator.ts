@@ -25,6 +25,10 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       },
       lore_path: `figures/${slug}/${slug}.md`,
       narrative_path: `characters/char_${slug}.md`,
+      asset_paths: {
+        portrait: `characters/${slug}/portrait.png`,
+        biometric: `characters/${slug}/biometric.png`,
+      },
     }, YAML_OPTIONS);
   },
 
@@ -71,6 +75,9 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       mood: item.fields.mood || 'TODO: Add mood',
       available_dialogues: [],
       lore_path: `landmarks/${slug}.md`,
+      asset_paths: {
+        background: `scenes/${slug}/background.jpg`,
+      },
     }, YAML_OPTIONS);
   },
 
@@ -83,6 +90,9 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
       modifications: [],
       lore_path: `stories/${slug}.md`,
+      asset_paths: {
+        background: `overlays/${slug}/background.jpg`,
+      },
     }, YAML_OPTIONS);
   },
 
@@ -126,6 +136,10 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       nightlife: item.fields.nightlife || 'TODO: Add nightlife description',
       important_places: item.fields.important_places || [],
       lore_path: `landmarks/${slug}.md`,
+      asset_paths: {
+        image: `locations/${slug}/image.jpg`,
+        background: `locations/${slug}/background.jpg`,
+      },
     }, YAML_OPTIONS);
   },
 

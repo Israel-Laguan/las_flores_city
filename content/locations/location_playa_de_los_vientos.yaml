@@ -1,6 +1,6 @@
-id: "1edf934e-a303-3811-056c-d16fe7aa73b8"
+id: 1edf934e-a303-3811-056c-d16fe7aa73b8
 type: location
-name: "Playa de los Vientos"
+name: Playa de los Vientos
 color: null
 aliases: []
 tags:
@@ -12,16 +12,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
+history: |
   Playa de los Vientos, a vibrant coastal enclave nestled along Las Flores' western shore, has evolved into a mecca for surf enthusiasts and sun-loving adventurers alike. What began as an affordable alternative to the more upscale Bahía de las Olas has since transformed into a thriving hub of surf culture, attracting young travelers from far and wide. The community surrounding Playa de los Vientos is deeply intertwined with its surf-centric lifestyle. Local residents have seized upon this growing interest to create a lively ecosystem of surf schools, rental shops, and beachside cafés that cater to the influx of visitors. This symbiotic relationship has fostered an atmosphere of camaraderie among surfers and beachgoers, with regular events and competitions providing opportunities for both locals and tourists to connect and showcase their skills.
-
-daytime: >
+daytime: |
   During daylight hours, Playa de los Vientos is a vibrant hub of activity. The consistent winds and reliable waves create perfect conditions for kitesurfing and windsurfing, drawing enthusiasts to the water throughout the day. Surf schools conduct lessons on the shore, rental shops buzz with customers selecting gear, and beachside cafés serve fresh food to refuel hungry athletes. The beach is alive with the energy of riders launching kites, catching waves, and cheering each other on. The community gathers at the beach pavilion, sharing stories of epic sessions and planning the next adventure. Nearby, the small coastal town of El Palmar provides a complementary experience with its traditional Latin American coastal life and sustainable practices.
-
-nightlife: >
+nightlife: |
   After sunset, Playa de los Vientos transforms into a more subdued but still lively scene. Surf bars and beachside cafés extend their hours, offering cold drinks and warm meals to those unwinding after a day on the water. The community often gathers around fire pits on the sand, sharing stories and laughter under the stars. Social events like film nights and potluck dinners bring locals and visitors together, while the sound of waves provides a constant, soothing soundtrack. The atmosphere is relaxed and welcoming, with the camaraderie of the surf community extending into the evening hours. While the beach itself is less active, the spirit of Playa de los Vientos continues in the social spaces where surfers connect.
-
 important_places:
   - name: Main Beach
     description: Central area with most amenities, crowds, and the heart of the surf action at Playa de los Vientos.
@@ -39,6 +35,7 @@ important_places:
     description: Central gathering point with information, services, equipment rentals, and community bulletin boards.
   - name: El Palmar
     description: Nearby small coastal town focused on tourism and sustainable practices such as fish farming and small-scale agriculture.
-
-conclusion: >
+conclusion: |
   Playa de los Vientos stands as a testament to the power of passion and community in creating a destination that resonates with visitors from around the world. What began as a simple beach with good wind has transformed into a vibrant center of surf culture, where the stoke of riding waves is matched only by the warmth of the community that has built up around this shared passion. The beach's evolution from affordable alternative to renowned surf spot demonstrates how authentic experiences can attract dedicated followers while maintaining the spirit that made the place special in the first place. Despite the gentrification and development that have come with popularity, Playa de los Vientos has managed to preserve its core identity as a welcoming, community-focused destination where surfers of all levels can come together to share their love of the ocean.
+asset_paths:
+  image: locations/location_playa_de_los_vientos/image.jpg

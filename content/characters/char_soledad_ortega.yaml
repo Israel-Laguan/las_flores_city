@@ -1,9 +1,11 @@
-id: "a4b5c6d7-e8f9-4a0b-1c2d-3e4f5a6b7c8d"
-name: "Soledad Ortega"
-title: "Managing Editor, La Prensa"
-description: "Driving force behind La Prensa's multimedia integration. Her digital media background was crucial in navigating the newspaper's transition to a multi-platform news organization."
+id: a4b5c6d7-e8f9-4a0b-1c2d-3e4f5a6b7c8d
+name: Soledad Ortega
+title: Managing Editor, La Prensa
+description: Driving force behind La Prensa's multimedia integration. Her digital media background was crucial in navigating the newspaper's transition to a multi-platform news organization.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "digital_editor"
+  type: human
+  role: npc
+  faction: media
+  personality: digital_editor
+asset_paths:
+  portrait: characters/soledad_ortega/portrait.png

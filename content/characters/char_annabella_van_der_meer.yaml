@@ -1,9 +1,12 @@
-id: "c3000012-e29b-41d4-a716-446655440012"
-name: "Annabella van der Meer"
-title: "Geologist, Global Lithium Corp"
-description: "The Dutch geologist who discovered the massive lithium vein near Las Flores in 2029 by testing poisoned mine water. Her discovery launched Dutch involvement in the region and shaped the Van der Meer family philosophy of community respect."
+id: c3000012-e29b-41d4-a716-446655440012
+name: Annabella van der Meer
+title: Geologist, Global Lithium Corp
+description: The Dutch geologist who discovered the massive lithium vein near Las Flores in 2029 by testing poisoned mine water. Her discovery launched Dutch involvement in the region and shaped the Van der Meer family philosophy of community respect.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "dutch_interest"
-  personality: "principled_scientist"
+  type: human
+  role: npc
+  faction: dutch_interest
+  personality: principled_scientist
+lore_path: docs/lore/figures/annabella_van_der_meer/annabella_van_der_meer.md
+asset_paths:
+  portrait: characters/annabella_van_der_meer/portrait.png

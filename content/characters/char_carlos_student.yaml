@@ -1,9 +1,11 @@
-id: "9e44f81c-8b22-482d-8b7a-c711d58217bb"
-name: "Carlos"
-title: "Electrical Engineering Student"
-description: "An electrical engineering student who discovers the AC sabotage at Residencial Las Estrellas. Tragically killed by a mysterious motorcyclist during a car chase."
+id: 9e44f81c-8b22-482d-8b7a-c711d58217bb
+name: Carlos
+title: Electrical Engineering Student
+description: An electrical engineering student who discovers the AC sabotage at Residencial Las Estrellas. Tragically killed by a mysterious motorcyclist during a car chase.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "analytical_curious"
+  type: human
+  role: npc
+  faction: independent
+  personality: analytical_curious
+asset_paths:
+  portrait: characters/carlos_student/portrait.png

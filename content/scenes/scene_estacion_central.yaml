@@ -1,31 +1,33 @@
-id: "bec8f361-0268-4cb6-988a-2b6c3b4faa13"
-name: "Estación Central — Metro Platform"
-description: "The main interchange platform of Estación Central, the hub where Líneas 1, 2, and 3 converge beneath the city's commercial district. Surveillance arrays line the platform ceiling at a density exceeding city average. Automated turnstiles track every entry and exit; the emergency broadcast screen at the platform end has not displayed an emergency message in eleven months."
-district: "City"
-district_lore: "urban_core"
-district_subzone: "Central City"
-background_url: "https://cdn.lasflores2077.com/locations/bg_estacion_central_metro.png"
-mood: "transient"
+id: bec8f361-0268-4cb6-988a-2b6c3b4faa13
+name: Estación Central — Metro Platform
+description: The main interchange platform of Estación Central, the hub where Líneas 1, 2, and 3 converge beneath the city's commercial district. Surveillance arrays line the platform ceiling at a density exceeding city average. Automated turnstiles track every entry and exit; the emergency broadcast screen at the platform end has not displayed an emergency message in eleven months.
+district: City
+district_lore: urban_core
+district_subzone: Central City
+background_url: https://cdn.lasflores2077.com/locations/bg_estacion_central_metro.png
+mood: transient
 available_dialogues: []
 metadata:
-  type: "transport_hub"
+  type: transport_hub
   accessible: true
   features:
-    - "ticket_kiosks"
-    - "security_scan"
-    - "holographic_route_map"
-    - "automated_turnstiles"
-    - "platform_surveillance_array"
-    - "emergency_broadcast_screen"
+    - ticket_kiosks
+    - security_scan
+    - holographic_route_map
+    - automated_turnstiles
+    - platform_surveillance_array
+    - emergency_broadcast_screen
   ambiance:
-    - "train_arrival_chime"
-    - "platform_wind"
-    - "crowd_footsteps"
+    - train_arrival_chime
+    - platform_wind
+    - crowd_footsteps
   idle_thoughts:
-    - "The platform surveillance array at Estación Central has 47 camera units covering this single platform. The city transport authority's system-wide average is 29 per platform. The density differential has not been publicly explained. The data-sharing agreement routes feeds from this station to both the transport authority and the police authority's pattern-analysis division."
-    - "The automated turnstile refusal rate at the southern entry gates is currently running at 11.3% of transactions — passengers whose fare cards are insufficiently loaded. This is the highest refusal rate of the three interchange stations in this corridor. The poverty index correlation to turnstile refusal rates appears in the transport authority's internal analytics. It does not appear in the annual report."
-    - "The holographic route map above the central platform shows all three lines with their scheduled frequencies. The Green Line's dock section shows a 9-minute headway displayed in amber rather than green. This is a system flag for below-target frequency. It has been amber since 2072. The platform design specification uses amber to indicate temporary conditions."
-    - "A train has arrived. The platform wind that precedes it is 34 km/h at the platform edge, dropping to 12 km/h at 2 metres from the yellow safety line. There are 78 people standing within 0.5 metres of the yellow line. None of them are thinking about the wind speed."
-    - "The chronically delayed lines on the route map are the Red Line's southern section and the Green Line's dock loop. These are the sections serving the working-class and Port Area populations respectively. The routes serving North Las Flores and the commercial district run within 90 seconds of schedule. The map displays all routes in the same formatting. The delay patterns are legible only to people who take the same train every day."
-    - "The emergency broadcast screen at the platform's northern end last displayed an emergency message 11 months ago — a fire in a commercial building two blocks north. Since then it has displayed a rotating sequence of public health messages. The messages rotate every 4 minutes. I have now seen each message 3 times."
-    - "The crowd footstep acoustic signature on this platform is statistically measurable as a commuter population — purpose-directed, consistent pace, minimal lateral deviation. Tourists move differently. Station staff move differently again. I can identify all three categories by gait pattern without using facial recognition. The surveillance array above me is using facial recognition."
+    - The platform surveillance array at Estación Central has 47 camera units covering this single platform. The city transport authority's system-wide average is 29 per platform. The density differential has not been publicly explained. The data-sharing agreement routes feeds from this station to both the transport authority and the police authority's pattern-analysis division.
+    - The automated turnstile refusal rate at the southern entry gates is currently running at 11.3% of transactions — passengers whose fare cards are insufficiently loaded. This is the highest refusal rate of the three interchange stations in this corridor. The poverty index correlation to turnstile refusal rates appears in the transport authority's internal analytics. It does not appear in the annual report.
+    - The holographic route map above the central platform shows all three lines with their scheduled frequencies. The Green Line's dock section shows a 9-minute headway displayed in amber rather than green. This is a system flag for below-target frequency. It has been amber since 2072. The platform design specification uses amber to indicate temporary conditions.
+    - A train has arrived. The platform wind that precedes it is 34 km/h at the platform edge, dropping to 12 km/h at 2 metres from the yellow safety line. There are 78 people standing within 0.5 metres of the yellow line. None of them are thinking about the wind speed.
+    - The chronically delayed lines on the route map are the Red Line's southern section and the Green Line's dock loop. These are the sections serving the working-class and Port Area populations respectively. The routes serving North Las Flores and the commercial district run within 90 seconds of schedule. The map displays all routes in the same formatting. The delay patterns are legible only to people who take the same train every day.
+    - The emergency broadcast screen at the platform's northern end last displayed an emergency message 11 months ago — a fire in a commercial building two blocks north. Since then it has displayed a rotating sequence of public health messages. The messages rotate every 4 minutes. I have now seen each message 3 times.
+    - The crowd footstep acoustic signature on this platform is statistically measurable as a commuter population — purpose-directed, consistent pace, minimal lateral deviation. Tourists move differently. Station staff move differently again. I can identify all three categories by gait pattern without using facial recognition. The surveillance array above me is using facial recognition.
+asset_paths:
+  background: scenes/scene_estacion_central/background.jpg

@@ -1,6 +1,6 @@
-id: "8c4e6c03-38c8-416c-bd5b-dc85ad47477c"
-name: "Tomás Coronado"
-title: "Engineering Student, University International of Las Flores"
+id: 8c4e6c03-38c8-416c-bd5b-dc85ad47477c
+name: Tomás Coronado
+title: Engineering Student, University International of Las Flores
 description: |
   Tomás Coronado is a 22-year-old engineering student at the University International of Las Flores. Lean at 5'8", he has tousled jet-black hair, warm brown eyes behind glasses, a light olive complexion, and faint freckles. Usually in casual attire, backpack in tow.
 
@@ -10,7 +10,10 @@ description: |
 
   His goal: finish his degree, land a good job, and lift his family out of humble beginnings.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "ambitious_professional"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: ambitious_professional
+lore_path: docs/lore/figures/tomas_coronado/tomas_coronado.md
+asset_paths:
+  portrait: characters/tomas_coronado/portrait.png

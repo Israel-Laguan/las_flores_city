@@ -1,10 +1,12 @@
-id: "6aa475b4-ac67-47e1-9b8e-46cf2a967f2b"
-name: "Isabella Vasquez"
-title: "Owner, The Las Flores Chronicle"
-description: "A former model turned media mogul who inherited the publication from her wealthy father. Her connections within high society are invaluable for securing exclusive content."
+id: 6aa475b4-ac67-47e1-9b8e-46cf2a967f2b
+name: Isabella Vasquez
+title: Owner, The Las Flores Chronicle
+description: A former model turned media mogul who inherited the publication from her wealthy father. Her connections within high society are invaluable for securing exclusive content.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "society_mogul"
-  lore_doc: "organizations/las_flores_chronicle.md"
+  type: human
+  role: npc
+  faction: media
+  personality: society_mogul
+  lore_doc: organizations/las_flores_chronicle.md
+asset_paths:
+  portrait: characters/isabella_vasquez/portrait.png

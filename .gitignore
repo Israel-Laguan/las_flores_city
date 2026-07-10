@@ -81,3 +81,19 @@ test-results/
 tmp/
 temp/
 *.tmp
+
+# Test artifacts
+content/_test_migration_content/
+content/characters/narrative_*.md
+content/characters/rollback_*.md
+content/scenes/scene_rollback_*.md
+custom/
+test.md
+scripts/migration-log.json
+docs/lore/figures/test*/
+docs/lore/figures/existing_*/
+docs/lore/figures/narrative_*/
+docs/lore/figures/rollback_*/
+docs/lore/figures/workflow_*/
+docs/lore/figures/idempotent_*/
+docs/lore/figures/multi_*/

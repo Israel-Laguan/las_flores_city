@@ -1,9 +1,11 @@
-id: "b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e"
-name: "Sebastian van der Meer"
-title: "CEO, Van der Meer Industries"
-description: "Ambitious CEO of Van der Meer Industries. Together with his cousin Liam, he has driven exponential growth through strategic decisions and identifying profitable investment opportunities."
+id: b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e
+name: Sebastian van der Meer
+title: CEO, Van der Meer Industries
+description: Ambitious CEO of Van der Meer Industries. Together with his cousin Liam, he has driven exponential growth through strategic decisions and identifying profitable investment opportunities.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "van_der_meer"
-  personality: "ambitious_executive"
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: ambitious_executive
+asset_paths:
+  portrait: characters/sebastian_van_der_meer/portrait.png

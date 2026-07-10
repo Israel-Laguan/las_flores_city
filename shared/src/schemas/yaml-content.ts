@@ -44,6 +44,14 @@ export const YAMLCharacterSchema = z.object({
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
   narrative_path: safePath,
+  asset_paths: z.object({
+    portrait: safePath,
+    biometric: safePath,
+    expression_strip: safePath,
+    face_base: safePath,
+    hair_front: safePath,
+    hair_back: safePath,
+  }).optional(),
 });
 
 export type YAMLCharacter = z.infer<typeof YAMLCharacterSchema>;
@@ -58,6 +66,9 @@ export const YAMLDialogueSchema = z.object({
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
+  asset_paths: z.object({
+    portrait: safePath,
+  }).optional(),
 });
 
 export type YAMLDialogue = z.infer<typeof YAMLDialogueSchema>;
@@ -80,6 +91,9 @@ export const YAMLOverlaySchema = z.object({
   is_nsfw: z.boolean().default(false),
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
+  asset_paths: z.object({
+    background: safePath,
+  }).optional(),
 });
 
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
@@ -120,6 +134,10 @@ export const YAMLSceneSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
+  asset_paths: z.object({
+    background: safePath,
+    ambient_sound: safePath,
+  }).optional(),
 });
 
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
@@ -155,6 +173,10 @@ export const YAMLLocationSchema = z.object({
   }).optional(),
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
+  asset_paths: z.object({
+    image: safePath,
+    background: safePath,
+  }).optional(),
 });
 
 export type YAMLLocation = z.infer<typeof YAMLLocationSchema>;

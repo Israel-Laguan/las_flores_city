@@ -1,13 +1,15 @@
-id: "a1b2c3d4-e5f6-7890-abcd-ef1234567004"
-name: "Los Andes Heights"
-description: "The elevated neighborhoods overlooking Las Flores, where wealthier residents enjoy cleaner air and sweeping views of the valley below."
-district: "Los Andes"
-district_lore: "los_andes"
-district_subzone: "Los Andes"
-mood: "exclusive"
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567004
+name: Los Andes Heights
+description: The elevated neighborhoods overlooking Las Flores, where wealthier residents enjoy cleaner air and sweeping views of the valley below.
+district: Los Andes
+district_lore: los_andes
+district_subzone: Los Andes
+mood: exclusive
 available_dialogues: []
 metadata:
   idle_thoughts:
-    - "The elevation provides a clear view of the entire city. Perspective is literal and metaphorical."
-    - "Air quality sensors indicate optimal levels. The wealthy breathe differently."
-    - "Security drones patrol the perimeter. Access control is discreet but thorough."
+    - The elevation provides a clear view of the entire city. Perspective is literal and metaphorical.
+    - Air quality sensors indicate optimal levels. The wealthy breathe differently.
+    - Security drones patrol the perimeter. Access control is discreet but thorough.
+asset_paths:
+  background: scenes/scene_los_andes/background.jpg

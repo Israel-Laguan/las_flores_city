@@ -1,9 +1,11 @@
-id: "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a"
-name: "Peter van der Meer Jr."
-title: "LGBTQ+ Advocate & Van der Meer Heir"
-description: "Son of Peter van der Meer and Rafaela. Co-founded Amor Verdadero, an organization championing queer causes. A vocal advocate for LGBTQ+ rights in Las Flores."
+id: d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a
+name: Peter van der Meer Jr.
+title: LGBTQ+ Advocate & Van der Meer Heir
+description: Son of Peter van der Meer and Rafaela. Co-founded Amor Verdadero, an organization championing queer causes. A vocal advocate for LGBTQ+ rights in Las Flores.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "van_der_meer"
-  personality: "activist_heir"
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: activist_heir
+asset_paths:
+  portrait: characters/peter_van_der_meer_jr/portrait.png

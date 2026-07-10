@@ -1,28 +1,30 @@
-id: "66856547-525f-4d5d-8b3c-6a264134d868"
-name: "Camila Santander"
-title: "Tourism Company Owner, Outdoor Adventure Guide"
+id: 66856547-525f-4d5d-8b3c-6a264134d868
+name: Camila Santander
+title: Tourism Company Owner, Outdoor Adventure Guide
 description: |
   Camila Santander is a 32-year-old tourism entrepreneur and outdoor adventure guide based in Las Flores. Her athletic build, sun-kissed skin, and long dark hair reflect her Hispanic heritage and active lifestyle. She runs a tourism company offering one-day and multi-day trips to the mountains, Agricultural Valley, river, and beach.
-  
+
   Having witnessed the Great Lithium Leakage's impact on her community, Camila values resilience and adaptability. She personally accompanies tour groups and meticulously plans itineraries to ensure safe, memorable experiences. Behind her friendly exterior is a shrewd businesswoman determined to rebuild tourism through exceptional service and customer loyalty.
-  
+
   Camila is building a small rural lodge to offer immersive countryside experiences. Despite her success, she struggles with work-life balance—her workaholic tendencies make romance challenging, though she longs for a meaningful relationship.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "resilient_enthusiastic_workaholic"
+  type: human
+  role: npc
+  faction: independent
+  personality: resilient_enthusiastic_workaholic
   age: 32
-  gender: "Female"
-  ethnicity: "Hispanic"
-  occupation: "Tourism Company Owner, Outdoor Adventure Guide"
-  physical_description: "striking woman with athletic build, 5'6\" tall, sun-kissed skin, long dark hair, warm brown eyes, toned physique from active lifestyle, typically wears comfortable practical clothing suitable for outdoor activities"
-  background: "experienced setbacks and witnessed the Great Lithium Leakage's impact on her community, which shaped her understanding of resilience and adaptability"
-  residence: "Las Flores city"
-  business: "tourism company offering one-day and multi-day trips to mountains, Agricultural Valley, river, and beach"
-  mannerisms: "infectious smile, outgoing personality, outgoing and enthusiastic when sharing stories about her homeland, personally accompanies tour groups, meticulous planner"
-  motivations: "provide exceptional service and safe memorable experiences for clients, rebuild tourism industry after Great Lithium Leakage, achieve business success through customer loyalty, build rural lodge for immersive countryside experiences"
-  fears: "failure, which fuels workaholic tendencies and prioritization of clients over personal well-being"
-  goals: "expand tourism business, complete rural lodge construction, find work-life balance and meaningful romantic relationship"
-  challenges: "work-life balance, difficulty connecting with potential partners due to workaholic tendencies, rebuilding tourism after environmental crisis"
-  quote: "I want every visitor to leave with cherished memories and a desire to return to our beautiful region."
+  gender: Female
+  ethnicity: Hispanic
+  occupation: Tourism Company Owner, Outdoor Adventure Guide
+  physical_description: striking woman with athletic build, 5'6" tall, sun-kissed skin, long dark hair, warm brown eyes, toned physique from active lifestyle, typically wears comfortable practical clothing suitable for outdoor activities
+  background: experienced setbacks and witnessed the Great Lithium Leakage's impact on her community, which shaped her understanding of resilience and adaptability
+  residence: Las Flores city
+  business: tourism company offering one-day and multi-day trips to mountains, Agricultural Valley, river, and beach
+  mannerisms: infectious smile, outgoing personality, outgoing and enthusiastic when sharing stories about her homeland, personally accompanies tour groups, meticulous planner
+  motivations: provide exceptional service and safe memorable experiences for clients, rebuild tourism industry after Great Lithium Leakage, achieve business success through customer loyalty, build rural lodge for immersive countryside experiences
+  fears: failure, which fuels workaholic tendencies and prioritization of clients over personal well-being
+  goals: expand tourism business, complete rural lodge construction, find work-life balance and meaningful romantic relationship
+  challenges: work-life balance, difficulty connecting with potential partners due to workaholic tendencies, rebuilding tourism after environmental crisis
+  quote: I want every visitor to leave with cherished memories and a desire to return to our beautiful region.
+asset_paths:
+  portrait: characters/camila_santander/portrait.png

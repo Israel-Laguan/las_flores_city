@@ -1,9 +1,11 @@
-id: "f3c8a901-4b15-4c07-b258-a89c4dbbc811"
-name: "Isabella"
-title: "University Student"
-description: "A sharp, analytical classmate whose grandfather lives in the city. She provides critical intelligence and data analysis, discovering the pattern of deaths linked to the Luz del Río scandal."
+id: f3c8a901-4b15-4c07-b258-a89c4dbbc811
+name: Isabella
+title: University Student
+description: A sharp, analytical classmate whose grandfather lives in the city. She provides critical intelligence and data analysis, discovering the pattern of deaths linked to the Luz del Río scandal.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "sharp_analytical"
+  type: human
+  role: npc
+  faction: independent
+  personality: sharp_analytical
+asset_paths:
+  portrait: characters/isabella_student/portrait.png

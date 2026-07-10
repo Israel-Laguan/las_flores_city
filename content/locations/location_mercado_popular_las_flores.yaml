@@ -1,6 +1,6 @@
-id: "197c46a4-ca75-478f-9393-184977496e24"
+id: 197c46a4-ca75-478f-9393-184977496e24
 type: location
-name: "Mercado Popular Las Flores"
+name: Mercado Popular Las Flores
 color: null
 aliases:
   - Popular Market
@@ -14,96 +14,26 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Mercado Popular Las Flores predates the free city's formal constitution by more
-  than a decade — a sprawling open-air and semi-covered market that grew organically
-  from the Industrial Zone's labour camp supply networks in the 2020s and consolidated
-  into its current footprint by the early 2030s. Where the Mercado Central positions
-  itself as the tourist-facing face of Las Flores's market culture — curated stalls,
-  guided food tours, QR-code provenance labelling — the Mercado Popular makes no such
-  claim. It is an authentic working-class market in the straightforward sense: the
-  place where Industrial Zone shift workers, port labourers, and the zone's informal
-  settlement residents buy food, tools, and household goods at prices the tourist
-  markets do not attempt to match. Its informal economy dynamics are structural rather
-  than incidental. Vendor protection schemes administered through networks affiliated
-  with La Familia gang have operated in the market's eastern section since at least
-  2041, a fact that city authorities have documented and declined to address with
-  anything resembling consistency. The contamination era added a health dimension that
-  the market has never fully escaped: after the 2052 Great Lithium Leak, heavy-metal
-  readings in the zone's groundwater supply prompted the city's environmental
-  monitoring authority to issue health warnings on water vendor stalls in the market,
-  requiring vendors to display water-source provenance cards. By 2077 many stalls
-  have stopped displaying the cards. The authority has issued no enforcement actions
-  in three years.
-
-daytime: >
-  The Mercado Popular operates from before dawn to late afternoon on weekdays,
-  extending to early evening on Saturdays. The pre-dawn hours are the market's
-  operational core: wholesale produce, protein deliveries, and the Industrial Zone's
-  night-shift workers stopping on their way home from factory floors. By 07:00 the
-  retail phase is running — hundreds of stalls across a seven-block footprint selling
-  fresh produce, household goods, salvage electronics, second-hand textiles, hot
-  food, and — in the eastern section — vendor categories that shift by day and decline
-  to advertise themselves. The gang-adjacent protection scheme in the eastern section
-  is visible to regulars as a recurring cast of faces at the section's perimeter,
-  collecting what vendors describe as "security contributions" in amounts that vary
-  by stall size and product category. Water vendor stalls throughout the market carry
-  water-source provenance cards with varying levels of legibility; independent testing
-  by the Universidad Nacional's environmental science department in 2075 found three
-  stalls selling groundwater from sources with heavy-metal readings above the city's
-  advisory threshold. The city's monitoring authority was notified; no enforcement
-  followed. Holographic price boards have been installed at the market's main
-  entrance gates since 2071, funded by a municipal modernisation initiative; roughly
-  a third of vendors within the market have never updated their prices to match them.
-
-nightlife: >
-  After the retail day ends, the Mercado Popular does not so much close as change
-  register. The legitimate vendor stalls pack down and the eastern section's informal
-  economy operations expand into the space. By 21:00 the market's footprint is
-  occupied by a smaller, lower-profile set of activities: food stalls operating
-  without the daytime crowd pressure, informal gambling tables in covered alcoves,
-  and the protection network's evening administrative work. The market's lighting —
-  a mix of municipal streetlamps and vendor-supplied strings — leaves significant
-  sections in near-darkness after nightfall, a condition that suits some activities
-  and that the city's infrastructure authority has classified as a lower-priority
-  maintenance issue for seven consecutive budget cycles. Labour condition discussions
-  among the market's vendor community tend to happen in these evening hours, in the
-  stalls and alcoves where the day's transactions are tallied and the protection
-  contribution receipts are reconciled against income that was already thin.
-
+history: |
+  The Mercado Popular Las Flores predates the free city's formal constitution by more than a decade — a sprawling open-air and semi-covered market that grew organically from the Industrial Zone's labour camp supply networks in the 2020s and consolidated into its current footprint by the early 2030s. Where the Mercado Central positions itself as the tourist-facing face of Las Flores's market culture — curated stalls, guided food tours, QR-code provenance labelling — the Mercado Popular makes no such claim. It is an authentic working-class market in the straightforward sense: the place where Industrial Zone shift workers, port labourers, and the zone's informal settlement residents buy food, tools, and household goods at prices the tourist markets do not attempt to match. Its informal economy dynamics are structural rather than incidental. Vendor protection schemes administered through networks affiliated with La Familia gang have operated in the market's eastern section since at least 2041, a fact that city authorities have documented and declined to address with anything resembling consistency. The contamination era added a health dimension that the market has never fully escaped: after the 2052 Great Lithium Leak, heavy-metal readings in the zone's groundwater supply prompted the city's environmental monitoring authority to issue health warnings on water vendor stalls in the market, requiring vendors to display water-source provenance cards. By 2077 many stalls have stopped displaying the cards. The authority has issued no enforcement actions in three years.
+daytime: |
+  The Mercado Popular operates from before dawn to late afternoon on weekdays, extending to early evening on Saturdays. The pre-dawn hours are the market's operational core: wholesale produce, protein deliveries, and the Industrial Zone's night-shift workers stopping on their way home from factory floors. By 07:00 the retail phase is running — hundreds of stalls across a seven-block footprint selling fresh produce, household goods, salvage electronics, second-hand textiles, hot food, and — in the eastern section — vendor categories that shift by day and decline to advertise themselves. The gang-adjacent protection scheme in the eastern section is visible to regulars as a recurring cast of faces at the section's perimeter, collecting what vendors describe as "security contributions" in amounts that vary by stall size and product category. Water vendor stalls throughout the market carry water-source provenance cards with varying levels of legibility; independent testing by the Universidad Nacional's environmental science department in 2075 found three stalls selling groundwater from sources with heavy-metal readings above the city's advisory threshold. The city's monitoring authority was notified; no enforcement followed. Holographic price boards have been installed at the market's main entrance gates since 2071, funded by a municipal modernisation initiative; roughly a third of vendors within the market have never updated their prices to match them.
+nightlife: |
+  After the retail day ends, the Mercado Popular does not so much close as change register. The legitimate vendor stalls pack down and the eastern section's informal economy operations expand into the space. By 21:00 the market's footprint is occupied by a smaller, lower-profile set of activities: food stalls operating without the daytime crowd pressure, informal gambling tables in covered alcoves, and the protection network's evening administrative work. The market's lighting — a mix of municipal streetlamps and vendor-supplied strings — leaves significant sections in near-darkness after nightfall, a condition that suits some activities and that the city's infrastructure authority has classified as a lower-priority maintenance issue for seven consecutive budget cycles. Labour condition discussions among the market's vendor community tend to happen in these evening hours, in the stalls and alcoves where the day's transactions are tallied and the protection contribution receipts are reconciled against income that was already thin.
 important_places:
   - name: Eastern Protection Section
-    description: >
-      The market's eastern quarter, where La Familia-affiliated vendor protection
-      schemes operate openly. Regular collection of "security contributions" from
-      vendors; city enforcement absent. The section hosts vendor categories that
-      shift by day and do not advertise publicly.
+    description: |
+      The market's eastern quarter, where La Familia-affiliated vendor protection schemes operate openly. Regular collection of "security contributions" from vendors; city enforcement absent. The section hosts vendor categories that shift by day and do not advertise publicly.
   - name: Water Vendor Row
-    description: >
-      A row of water vendors along the market's central spine, required to display
-      water-source provenance cards under a 2052 post-Leak health advisory. Compliance
-      is inconsistent; a 2075 university study found contamination readings above
-      advisory threshold at three stalls. No enforcement action followed.
+    description: |
+      A row of water vendors along the market's central spine, required to display water-source provenance cards under a 2052 post-Leak health advisory. Compliance is inconsistent; a 2075 university study found contamination readings above advisory threshold at three stalls. No enforcement action followed.
   - name: Wholesale Dawn Zone
-    description: >
-      The market's pre-dawn operational core, where produce and protein wholesale
-      transactions take place before the retail day opens. The city's informal food
-      supply chain for the Industrial Zone and port district moves through here
-      in the pre-sunrise hours.
+    description: |
+      The market's pre-dawn operational core, where produce and protein wholesale transactions take place before the retail day opens. The city's informal food supply chain for the Industrial Zone and port district moves through here in the pre-sunrise hours.
   - name: Holographic Price Gates
-    description: >
-      Municipal-funded price board installations at the market's three main entrance
-      gates, installed in 2071. Intended to standardise price visibility; approximately
-      one-third of interior vendors have not synced their prices to the system.
-
-conclusion: >
-  The Mercado Popular Las Flores is the city's most honest commercial space in the
-  sense that it prices its goods at what Industrial Zone residents can actually afford
-  and makes no attempt to disguise the informal systems that make its operation possible.
-  Its health risks are real and largely unmitigated. Its protection economy is documented
-  and largely untouched. Its water stalls are a public health issue that three years
-  of non-enforcement have effectively normalised. For the zone's working population it
-  is not an anomaly but the baseline — the market that functions because the formal
-  economy has decided its operating conditions are acceptable, which in Las Flores 2077
-  means the city has decided its residents are.
+    description: |
+      Municipal-funded price board installations at the market's three main entrance gates, installed in 2071. Intended to standardise price visibility; approximately one-third of interior vendors have not synced their prices to the system.
+conclusion: |
+  The Mercado Popular Las Flores is the city's most honest commercial space in the sense that it prices its goods at what Industrial Zone residents can actually afford and makes no attempt to disguise the informal systems that make its operation possible. Its health risks are real and largely unmitigated. Its protection economy is documented and largely untouched. Its water stalls are a public health issue that three years of non-enforcement have effectively normalised. For the zone's working population it is not an anomaly but the baseline — the market that functions because the formal economy has decided its operating conditions are acceptable, which in Las Flores 2077 means the city has decided its residents are.
+asset_paths:
+  image: locations/location_mercado_popular_las_flores/image.jpg

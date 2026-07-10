@@ -1,30 +1,32 @@
-id: "88c25091-3e3b-4b28-a53c-8ce103a98d0d"
-name: "Liu Mei"
-title: "Vice-Mayor of Las Flores Free City"
+id: 88c25091-3e3b-4b28-a53c-8ce103a98d0d
+name: Liu Mei
+title: Vice-Mayor of Las Flores Free City
 description: "Liu Mei is a 44-year-old lawyer-turned-politician serving as Vice-Mayor under Mayor Carlos Rodriguez — a Progressive Alliance appointee selected in 2071 whose expertise in bilateral investment law governs the Chinese enclave's relationship with the city. Within the enclave she is seen as too assimilated, prioritising her Alliance platform over enclave interests. Among the Latino working class and Afro-Dutch minority some view her as an LW Group proxy, a perception rooted in her pre-political legal career. Her actual record contradicts this: she co-authored the 2074 surveillance disclosure proposal and consistently advocates for inequality reduction, arguing that redirecting investment from the enclave to the Industrial Zone is politically necessary. She knows that in Las Flores, being complex is not the same as being effective."
 relationships:
-  - target_id: "Carlos Rodriguez"
-    type: "professional"
+  - target_id: Carlos Rodriguez
+    type: professional
     closeness: 70
     trust: 85
-    context: "Mayor and political ally in the Progressive Alliance"
-  - target_id: "LW Group"
-    type: "rival"
+    context: Mayor and political ally in the Progressive Alliance
+  - target_id: LW Group
+    type: rival
     closeness: -20
     trust: -10
-    context: "Seen as a proxy by some, but actively opposes their surveillance policies"
+    context: Seen as a proxy by some, but actively opposes their surveillance policies
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "government"
-  personality: "diplomatic_bridge"
+  type: human
+  role: npc
+  faction: government
+  personality: diplomatic_bridge
   age: 44
-  gender: "Female"
-  ethnicity: "Chinese"
-  occupation: "Vice-Mayor of Las Flores Free City"
-  organization: "Progressive Alliance, Office of the Vice-Mayor"
-  residence: "North Las Flores"
-  background: "legal career in bilateral investment law before entering politics, elected to city council in 2067, appointed Vice-Mayor in 2071"
-  motivations: "bridging Chinese enclave and broader city governance, surveillance transparency, inequality reduction, Progressive Alliance platform"
-  methods: "legal expertise, coalition navigation, bilateral policy work, public advocacy, legislative compromise"
-  quote: "I am the wrong person for both sides of every room I walk into, which means I am probably the right person for the room itself."
+  gender: Female
+  ethnicity: Chinese
+  occupation: Vice-Mayor of Las Flores Free City
+  organization: Progressive Alliance, Office of the Vice-Mayor
+  residence: North Las Flores
+  background: legal career in bilateral investment law before entering politics, elected to city council in 2067, appointed Vice-Mayor in 2071
+  motivations: bridging Chinese enclave and broader city governance, surveillance transparency, inequality reduction, Progressive Alliance platform
+  methods: legal expertise, coalition navigation, bilateral policy work, public advocacy, legislative compromise
+  quote: I am the wrong person for both sides of every room I walk into, which means I am probably the right person for the room itself.
+asset_paths:
+  portrait: characters/liu_mei/portrait.png

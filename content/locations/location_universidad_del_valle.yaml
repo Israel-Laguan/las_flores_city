@@ -1,6 +1,6 @@
-id: "73b5c820-e9ab-3f98-d2ee-e9599732e149"
+id: 73b5c820-e9ab-3f98-d2ee-e9599732e149
 type: location
-name: "Universidad del Valle"
+name: Universidad del Valle
 color: null
 aliases:
   - University of the Valley
@@ -9,31 +9,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  Nestled in the lush, tranquil Northeast district, Universidad del Valle emerges as a
-  prestigious symbol of educational prowess, attracting students from the region and beyond.
-  With its modern campus set against a backdrop of green, this private institution has carved
-  a unique niche, focusing on humanities and social sciences, complementing its counterpart,
-  the technically and scientifically inclined Universidad Internacional. Owned by Chinese
-  investors, Universidad del Valle and Universidad Internacional are twin pillars of
-  educational excellence, each with its distinct academic focus.
-
-daytime: >
-  During the day, the campus is alive with academic activity. Students attend lectures in
-  modern classrooms and auditoriums, conduct research in the state-of-the-art library, and
-  participate in sports and recreational activities in the well-equipped gyms. The diverse
-  student body—predominantly Chinese and international students—creates a melting pot of
-  cultures, enriching the academic and social fabric of the university through cross-cultural
-  exchanges and global perspectives.
-
-nightlife: >
-  Evenings on campus are calm and study-oriented, with the library remaining open for late
-  night research and group projects. Some students find the distance from the city's vibrant
-  nightlife daunting, prompting many to venture into town during weekends to seek a more
-  urban experience. This ebb and flow of student life highlights the balance between academic
-  rigor and social engagement.
-
+history: |
+  Nestled in the lush, tranquil Northeast district, Universidad del Valle emerges as a prestigious symbol of educational prowess, attracting students from the region and beyond. With its modern campus set against a backdrop of green, this private institution has carved a unique niche, focusing on humanities and social sciences, complementing its counterpart, the technically and scientifically inclined Universidad Internacional. Owned by Chinese investors, Universidad del Valle and Universidad Internacional are twin pillars of educational excellence, each with its distinct academic focus.
+daytime: |
+  During the day, the campus is alive with academic activity. Students attend lectures in modern classrooms and auditoriums, conduct research in the state-of-the-art library, and participate in sports and recreational activities in the well-equipped gyms. The diverse student body—predominantly Chinese and international students—creates a melting pot of cultures, enriching the academic and social fabric of the university through cross-cultural exchanges and global perspectives.
+nightlife: |
+  Evenings on campus are calm and study-oriented, with the library remaining open for late night research and group projects. Some students find the distance from the city's vibrant nightlife daunting, prompting many to venture into town during weekends to seek a more urban experience. This ebb and flow of student life highlights the balance between academic rigor and social engagement.
 important_places:
   - name: Modern Library
     description: State-of-the-art facility embodying the institution's commitment to learning and technology, making knowledge accessible at students' fingertips.
@@ -45,11 +26,7 @@ important_places:
     description: Comfortable on-campus housing accommodating the diverse student body, fostering community and cross-cultural exchange.
   - name: Campus Grounds
     description: Lush, tranquil green spaces set against the Northeast district backdrop, providing a serene environment conducive to study and reflection.
-
-conclusion: >
-  Universidad del Valle, with its modern amenities, diverse student body, and focus on
-  humanities and social sciences, offers a unique educational landscape. Despite the
-  occasional longing for the city's buzz and the spirited rivalries with Universidad
-  Nacional—where occasional sparks fly on social media platforms—the university remains
-  a cherished hub for academic and personal growth, shaping future leaders in a nurturing
-  and technologically advanced environment.
+conclusion: |
+  Universidad del Valle, with its modern amenities, diverse student body, and focus on humanities and social sciences, offers a unique educational landscape. Despite the occasional longing for the city's buzz and the spirited rivalries with Universidad Nacional—where occasional sparks fly on social media platforms—the university remains a cherished hub for academic and personal growth, shaping future leaders in a nurturing and technologically advanced environment.
+asset_paths:
+  image: locations/location_universidad_del_valle/image.jpg

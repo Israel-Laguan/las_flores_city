@@ -1,13 +1,15 @@
-id: "a1b2c3d4-e5f6-7890-abcd-ef1234567002"
-name: "Far South Outskirts"
-description: "The rural edges of Las Flores, where the city gives way to agricultural land and scattered homesteads. Quiet and isolated."
-district: "Far South"
-district_lore: "far_south"
-district_subzone: "Far South"
-mood: "serene"
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567002
+name: Far South Outskirts
+description: The rural edges of Las Flores, where the city gives way to agricultural land and scattered homesteads. Quiet and isolated.
+district: Far South
+district_lore: far_south
+district_subzone: Far South
+mood: serene
 available_dialogues: []
 metadata:
   idle_thoughts:
-    - "Wind moves through the crops. The air quality is significantly better than the city center."
-    - "Solar panels on distant rooftops catch the afternoon light. Energy independence is increasing."
-    - "The road ahead is unpaved. Vehicle traffic is minimal."
+    - Wind moves through the crops. The air quality is significantly better than the city center.
+    - Solar panels on distant rooftops catch the afternoon light. Energy independence is increasing.
+    - The road ahead is unpaved. Vehicle traffic is minimal.
+asset_paths:
+  background: scenes/scene_far_south/background.jpg

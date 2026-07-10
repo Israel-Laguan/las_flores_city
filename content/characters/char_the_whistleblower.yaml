@@ -1,9 +1,11 @@
-id: "b2d8e411-9a70-4f51-a9f8-b13c7c229980"
-name: "The Whistleblower"
-title: "Office Worker"
-description: "An office worker who managed to secure an unredacted list of corrupt officials involved in the Luz del Río scandal. She was murdered in an alleyway but successfully passed the evidence to a student."
+id: b2d8e411-9a70-4f51-a9f8-b13c7c229980
+name: The Whistleblower
+title: Office Worker
+description: An office worker who managed to secure an unredacted list of corrupt officials involved in the Luz del Río scandal. She was murdered in an alleyway but successfully passed the evidence to a student.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "desperate_brave"
+  type: human
+  role: npc
+  faction: independent
+  personality: desperate_brave
+asset_paths:
+  portrait: characters/the_whistleblower/portrait.png

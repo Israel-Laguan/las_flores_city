@@ -1,13 +1,15 @@
-id: "a1b2c3d4-e5f6-7890-abcd-ef1234567007"
-name: "Pacific Coast"
-description: "Where the city meets the ocean. Fishing boats, seafood markets, and the constant rhythm of waves define this district."
-district: "Pacific"
-district_lore: "pacific"
-district_subzone: "Pacific"
-mood: "maritime"
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567007
+name: Pacific Coast
+description: Where the city meets the ocean. Fishing boats, seafood markets, and the constant rhythm of waves define this district.
+district: Pacific
+district_lore: pacific
+district_subzone: Pacific
+mood: maritime
 available_dialogues: []
 metadata:
   idle_thoughts:
-    - "Salt air mixes with fish and diesel. The harbor is active despite the hour."
-    - "The tide is coming in. Fishermen are securing their vessels for the evening."
-    - "Ocean sensors detect normal salinity and temperature. The ecosystem is stable."
+    - Salt air mixes with fish and diesel. The harbor is active despite the hour.
+    - The tide is coming in. Fishermen are securing their vessels for the evening.
+    - Ocean sensors detect normal salinity and temperature. The ecosystem is stable.
+asset_paths:
+  background: scenes/scene_pacific/background.jpg

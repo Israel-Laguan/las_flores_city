@@ -1,130 +1,125 @@
-id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-name: "Aisha Al-Sayed Mystery"
-description: "Uncover the challenges and aspirations of Aisha Al-Sayed, an electrical engineer at Minera Estrella."
-target_tree_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-start_node_id: "start"
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+name: Aisha Al-Sayed Mystery
+description: Uncover the challenges and aspirations of Aisha Al-Sayed, an electrical engineer at Minera Estrella.
+target_tree_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+start_node_id: start
 nodes:
   start:
-    id: "start"
-    type: "narrator"
-    text: "Aisha Al-Sayed is an electrical engineer at Minera Estrella who has been facing challenges in her career due to perceived favoritism towards Chinese employees. She has been documenting these patterns and is determined to advance within the company while ensuring fairness for all employees."
-    thought: "Aisha's story is one of determination and resilience. She's facing significant obstacles but remains committed to her goals."
+    id: start
+    type: narrator
+    text: Aisha Al-Sayed is an electrical engineer at Minera Estrella who has been facing challenges in her career due to perceived favoritism towards Chinese employees. She has been documenting these patterns and is determined to advance within the company while ensuring fairness for all employees.
+    thought: Aisha's story is one of determination and resilience. She's facing significant obstacles but remains committed to her goals.
     choices:
-      - id: "learn_more"
-        text: "Learn more about Aisha's background"
-        next_node_id: "aisha_background"
+      - id: learn_more
+        text: Learn more about Aisha's background
+        next_node_id: aisha_background
         time_block_cost:
           amount: 1
-          description: "Learning about Aisha's background"
-      - id: "explore_challenges"
-        text: "Explore the challenges Aisha is facing"
-        next_node_id: "aisha_challenges"
+          description: Learning about Aisha's background
+      - id: explore_challenges
+        text: Explore the challenges Aisha is facing
+        next_node_id: aisha_challenges
         time_block_cost:
           amount: 1
-          description: "Exploring Aisha's challenges"
-
+          description: Exploring Aisha's challenges
   aisha_background:
-    id: "aisha_background"
-    type: "narrator"
-    text: "Aisha was born and raised in Cairo, Egypt, where she earned her degree in Electrical Engineering from the American University in Cairo. She moved to Las Flores a decade ago to work for Minera Estrella and has since risen through the ranks to become a middle manager."
-    thought: "Aisha's background is impressive. She's worked hard to get where she is."
+    id: aisha_background
+    type: narrator
+    text: Aisha was born and raised in Cairo, Egypt, where she earned her degree in Electrical Engineering from the American University in Cairo. She moved to Las Flores a decade ago to work for Minera Estrella and has since risen through the ranks to become a middle manager.
+    thought: Aisha's background is impressive. She's worked hard to get where she is.
     choices:
-      - id: "explore_challenges"
-        text: "Explore the challenges Aisha is facing"
-        next_node_id: "aisha_challenges"
+      - id: explore_challenges
+        text: Explore the challenges Aisha is facing
+        next_node_id: aisha_challenges
         time_block_cost:
           amount: 1
-          description: "Exploring Aisha's challenges"
-      - id: "learn_about_goals"
-        text: "Learn about Aisha's goals"
-        next_node_id: "aisha_goals"
+          description: Exploring Aisha's challenges
+      - id: learn_about_goals
+        text: Learn about Aisha's goals
+        next_node_id: aisha_goals
         time_block_cost:
           amount: 1
-          description: "Learning about Aisha's goals"
-
+          description: Learning about Aisha's goals
   aisha_challenges:
-    id: "aisha_challenges"
-    type: "narrator"
-    text: "Aisha has noticed a pattern of favoritism towards Chinese employees at Minera Estrella. Promotions and key projects often go to these employees, even when their qualifications are not superior to those of other employees. Aisha has been documenting these patterns but is careful not to cause trouble."
-    thought: "Aisha's situation is frustrating. She's facing systemic bias but is determined to overcome it."
+    id: aisha_challenges
+    type: narrator
+    text: Aisha has noticed a pattern of favoritism towards Chinese employees at Minera Estrella. Promotions and key projects often go to these employees, even when their qualifications are not superior to those of other employees. Aisha has been documenting these patterns but is careful not to cause trouble.
+    thought: Aisha's situation is frustrating. She's facing systemic bias but is determined to overcome it.
     choices:
-      - id: "learn_about_goals"
-        text: "Learn about Aisha's goals"
-        next_node_id: "aisha_goals"
+      - id: learn_about_goals
+        text: Learn about Aisha's goals
+        next_node_id: aisha_goals
         time_block_cost:
           amount: 1
-          description: "Learning about Aisha's goals"
-      - id: "explore_documentation"
-        text: "Explore Aisha's documentation"
-        next_node_id: "aisha_documentation"
+          description: Learning about Aisha's goals
+      - id: explore_documentation
+        text: Explore Aisha's documentation
+        next_node_id: aisha_documentation
         time_block_cost:
           amount: 1
-          description: "Exploring Aisha's documentation"
-
+          description: Exploring Aisha's documentation
   aisha_goals:
-    id: "aisha_goals"
-    type: "narrator"
-    text: "Aisha's primary goal is to advance within Minera Estrella and take on more responsibility. She wants to make a real impact and ensure that the workplace is fair for all employees. She's also interested in professional development and networking opportunities."
-    thought: "Aisha's goals are ambitious but also focused on fairness and equity. She's a rare combination of ambition and integrity."
+    id: aisha_goals
+    type: narrator
+    text: Aisha's primary goal is to advance within Minera Estrella and take on more responsibility. She wants to make a real impact and ensure that the workplace is fair for all employees. She's also interested in professional development and networking opportunities.
+    thought: Aisha's goals are ambitious but also focused on fairness and equity. She's a rare combination of ambition and integrity.
     choices:
-      - id: "explore_documentation"
-        text: "Explore Aisha's documentation"
-        next_node_id: "aisha_documentation"
+      - id: explore_documentation
+        text: Explore Aisha's documentation
+        next_node_id: aisha_documentation
         time_block_cost:
           amount: 1
-          description: "Exploring Aisha's documentation"
-      - id: "learn_about_personal_life"
-        text: "Learn about Aisha's personal life"
-        next_node_id: "aisha_personal_life"
+          description: Exploring Aisha's documentation
+      - id: learn_about_personal_life
+        text: Learn about Aisha's personal life
+        next_node_id: aisha_personal_life
         time_block_cost:
           amount: 1
-          description: "Learning about Aisha's personal life"
-
+          description: Learning about Aisha's personal life
   aisha_documentation:
-    id: "aisha_documentation"
-    type: "narrator"
-    text: "Aisha has been keeping records of the favoritism she's observed at Minera Estrella. She believes in having documentation just in case, but she's not looking to cause trouble. Her records include details about promotions, project assignments, and other key decisions."
-    thought: "Aisha's documentation could be crucial if she ever decides to take action. It's clear that she's prepared and strategic."
+    id: aisha_documentation
+    type: narrator
+    text: Aisha has been keeping records of the favoritism she's observed at Minera Estrella. She believes in having documentation just in case, but she's not looking to cause trouble. Her records include details about promotions, project assignments, and other key decisions.
+    thought: Aisha's documentation could be crucial if she ever decides to take action. It's clear that she's prepared and strategic.
     choices:
-      - id: "learn_about_personal_life"
-        text: "Learn about Aisha's personal life"
-        next_node_id: "aisha_personal_life"
+      - id: learn_about_personal_life
+        text: Learn about Aisha's personal life
+        next_node_id: aisha_personal_life
         time_block_cost:
           amount: 1
-          description: "Learning about Aisha's personal life"
-      - id: "end_overlay"
-        text: "End the overlay"
-        next_node_id: "farewell"
+          description: Learning about Aisha's personal life
+      - id: end_overlay
+        text: End the overlay
+        next_node_id: farewell
         time_block_cost:
           amount: 1
-          description: "Ending the overlay"
-
+          description: Ending the overlay
   aisha_personal_life:
-    id: "aisha_personal_life"
-    type: "narrator"
-    text: "Outside of work, Aisha enjoys spending time with her husband, who is also a senior engineer. They live in a modern high-rise apartment near the financial district. Aisha is also active in professional development and networking events."
-    thought: "Aisha's personal life is stable and supportive. She has a good balance between her career and personal interests."
+    id: aisha_personal_life
+    type: narrator
+    text: Outside of work, Aisha enjoys spending time with her husband, who is also a senior engineer. They live in a modern high-rise apartment near the financial district. Aisha is also active in professional development and networking events.
+    thought: Aisha's personal life is stable and supportive. She has a good balance between her career and personal interests.
     choices:
-      - id: "end_overlay"
-        text: "End the overlay"
-        next_node_id: "farewell"
+      - id: end_overlay
+        text: End the overlay
+        next_node_id: farewell
         time_block_cost:
           amount: 1
-          description: "Ending the overlay"
-
+          description: Ending the overlay
   farewell:
-    id: "farewell"
-    type: "narrator"
-    text: "Aisha Al-Sayed's story is one of determination, resilience, and integrity. She's facing significant challenges but remains committed to her goals and the principles of fairness and equity."
-    thought: "Aisha's journey is inspiring. She's a strong and principled individual who is making a difference in her own way."
+    id: farewell
+    type: narrator
+    text: Aisha Al-Sayed's story is one of determination, resilience, and integrity. She's facing significant challenges but remains committed to her goals and the principles of fairness and equity.
+    thought: Aisha's journey is inspiring. She's a strong and principled individual who is making a difference in her own way.
     is_end: true
-
 metadata:
   version: "1.0"
-  author: "Las Flores Team"
+  author: Las Flores Team
   created_at: "2024-01-01"
   tags:
-    - "aisha_al_sayed"
-    - "minera_estrella"
-    - "career_challenges"
-    - "relationship_building"
+    - aisha_al_sayed
+    - minera_estrella
+    - career_challenges
+    - relationship_building
+asset_paths:
+  background: overlays/overlay_aisha_al_sayed/background.jpg

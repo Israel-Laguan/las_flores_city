@@ -1,18 +1,21 @@
-id: "b57cfc18-7435-44fa-8ee5-f0490e7bceeb"
-name: "Alonzo Morales"
-title: "Airport Bodega Handyman"
+id: b57cfc18-7435-44fa-8ee5-f0490e7bceeb
+name: Alonzo Morales
+title: Airport Bodega Handyman
 description: |
   Alonzo Morales is a 30-year-old Afro-Latino handyman at a neighborhood bodega near the airport. Raised in a vibrant working-class community, he learned that a repaired shutter, stocked shelf, or hot meal can hold a block together as much as any official program. He maintains the shop, helps customers, handles odd repairs, and turns the bodega into a loud, welcoming crossroads for airport workers, neighbors, and travelers.
 
   Sturdy from years of labor, Alonzo wears work boots, jeans, plain t-shirts, and a battered bodega-logo overshirt. He has short, tightly coiled black hair, warm brown skin, and a booming voice that cuts through traffic noise. Off the clock he loves salsa, reggaeton, cooking for friends, and community events. His dream is to own a bodega that doubles as a neighborhood social and cultural hub.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "sociable_connector"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: sociable_connector
   age: 30
-  appearance: "sturdy build, short tightly coiled black hair, warm brown skin, work boots, jeans, bodega-logo shirts"
-  background: "Afro-Latino neighborhood upbringing, airport-adjacent bodega work, community service through practical labor"
-  occupation: "handyman and customer helper at a local bodega near the airport"
-  interests: "community events, salsa, reggaeton, cooking traditional recipes for friends"
-  goals: "own a welcoming bodega that doubles as a neighborhood social and cultural hub"
+  appearance: sturdy build, short tightly coiled black hair, warm brown skin, work boots, jeans, bodega-logo shirts
+  background: Afro-Latino neighborhood upbringing, airport-adjacent bodega work, community service through practical labor
+  occupation: handyman and customer helper at a local bodega near the airport
+  interests: community events, salsa, reggaeton, cooking traditional recipes for friends
+  goals: own a welcoming bodega that doubles as a neighborhood social and cultural hub
+lore_path: docs/lore/figures/alonzo_morales/alonzo_morales.md
+asset_paths:
+  portrait: characters/alonzo_morales/portrait.png

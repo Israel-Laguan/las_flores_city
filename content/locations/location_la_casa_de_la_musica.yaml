@@ -1,6 +1,6 @@
-id: "acab50b6-db29-4af3-a525-3d99c8930daa"
+id: acab50b6-db29-4af3-a525-3d99c8930daa
 type: location
-name: "La Casa de la Música"
+name: La Casa de la Música
 color: null
 aliases:
   - Casa de la Música
@@ -14,113 +14,29 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  La Casa de la Música was founded in 2044 by a coalition of Afro-Dutch and Latino
-  musicians who had grown tired of watching the city's cultural calendar fall under
-  the quiet gravitational pull of LW Group's commercial arts foundation. The group had
-  watched the Teatro Nacional increasingly fill its programme with safe, sponsor-friendly
-  productions, and had seen independent venues lose their leases one by one to redevelopment
-  projects bearing the LW Group real estate division's fingerprints. The building they
-  occupied — a decommissioned textile warehouse in the Central City district, its loading
-  bays converted to stage entrances — was acquired through a co-operative ownership model
-  that has, so far, insulated it from acquisition. The early years were lean: acoustic
-  panels were improvised from recycled cargo padding, the PA system was assembled from
-  salvaged parts, and the bar operated on a sliding-scale pricing model that the city's
-  liquor-licensing authority found philosophically objectionable and legally borderline.
-  What the venue lacked in infrastructure it compensated for with programming density.
-  It became the primary incubator for the Afro-Dutch cumbia electronica fusion sound that
-  briefly attracted international streaming algorithms in 2051 before the cultural-data
-  brokers moved on. Local music historians mark the 2058 industrial riots as the moment
-  La Casa de la Música calcified into something more than a venue: in the weeks following
-  the riots it served as an informal community gathering space, a rumour-exchange and
-  mutual-aid coordination point, and briefly as an overflow medical station. That history
-  saturates its walls. By 2077 it operates as the Central City's most consequential
-  independent live music venue — commercially modest, politically inconvenient to certain
-  interests, and structurally impossible to buy out.
-
-daytime: >
-  During daylight hours La Casa de la Música runs on a low-power register. The main
-  performance floor is given over to afternoon open-mic sessions that begin at 14:00
-  and run until the dinner-hour changeover at 18:30, with a queue forming at the side
-  door by noon on weekends. The format is deliberately permissive: an acoustic guitar
-  player follows a spoken-word set follows a brass quartet, the connecting tissue being
-  the venue's tolerant sound-engineering team and a drink-minimum policy enforced with
-  selective rigour. The bar stocks a rotation of independent craft ferments from the
-  southern valley cooperatives alongside the standard synthesised protein-malt offerings
-  that have replaced conventional beer across most of the city's mid-tier venues since
-  the barley blight of 2069. The artist residency board near the main entrance lists
-  current and upcoming residents — a rotating cast of names whose connection to the
-  venue's founding Afro-Dutch and Latino coalition ranges from direct lineage to
-  enthusiastic appropriation. Holographic notice projectors above the bar cycle through
-  upcoming events, upcoming protests, and the occasional redacted community announcement
-  whose blanked-out sections local regulars have learned to parse as shorthand for
-  LW Group-related political developments. The afternoon crowd skews young and mixed,
-  the kind of demographic breakdown that LW Group's cultural analytics division would
-  describe as "high engagement, low monetisation potential."
-
-nightlife: >
-  By 20:00 the transformation is complete. The acoustic-ceiling baffles retract,
-  the holographic light rig drops from its daytime standby configuration into active
-  mode, and the sound system's sub-bass cabinets warm up with a subsonic hum that
-  patrons near the back wall feel before they hear. La Casa de la Música's evening
-  concerts routinely sell to capacity — typically three hundred bodies on the main
-  floor — for a programming slate that ranges from Afro-Dutch percussive electronica
-  to political cabaret to the genre-collapse experimental sets that the venue has
-  always treated as a curatorial obligation rather than an audience risk. The
-  holographic light rig is the venue's single significant capital investment from
-  the 2070s: a ceiling-mounted array of seventy-two independently articulated
-  projection units capable of wrapping performers in volumetric light environments
-  that turn the stage into something between a concert and an immersive art
-  installation. The rig was partially funded by a municipal arts grant that LW
-  Group's city council proxies attempted to redirect toward the Teatro Nacional's
-  renovation; the attempt failed by two votes. Set breaks fill the bar three-deep,
-  the ventilation scrubbers cycling audibly above the crowd noise as body heat and
-  exhalation push the atmospheric sensors into their yellow range. By midnight the
-  final sets are unwinding, the light rig cooling through blue-to-amber cycles, and
-  the city outside is quiet enough that the bass frequencies of the last songs leak
-  through the converted warehouse walls into the Central City streets.
-
+history: |
+  La Casa de la Música was founded in 2044 by a coalition of Afro-Dutch and Latino musicians who had grown tired of watching the city's cultural calendar fall under the quiet gravitational pull of LW Group's commercial arts foundation. The group had watched the Teatro Nacional increasingly fill its programme with safe, sponsor-friendly productions, and had seen independent venues lose their leases one by one to redevelopment projects bearing the LW Group real estate division's fingerprints. The building they occupied — a decommissioned textile warehouse in the Central City district, its loading bays converted to stage entrances — was acquired through a co-operative ownership model that has, so far, insulated it from acquisition. The early years were lean: acoustic panels were improvised from recycled cargo padding, the PA system was assembled from salvaged parts, and the bar operated on a sliding-scale pricing model that the city's liquor-licensing authority found philosophically objectionable and legally borderline. What the venue lacked in infrastructure it compensated for with programming density. It became the primary incubator for the Afro-Dutch cumbia electronica fusion sound that briefly attracted international streaming algorithms in 2051 before the cultural-data brokers moved on. Local music historians mark the 2058 industrial riots as the moment La Casa de la Música calcified into something more than a venue: in the weeks following the riots it served as an informal community gathering space, a rumour-exchange and mutual-aid coordination point, and briefly as an overflow medical station. That history saturates its walls. By 2077 it operates as the Central City's most consequential independent live music venue — commercially modest, politically inconvenient to certain interests, and structurally impossible to buy out.
+daytime: |
+  During daylight hours La Casa de la Música runs on a low-power register. The main performance floor is given over to afternoon open-mic sessions that begin at 14:00 and run until the dinner-hour changeover at 18:30, with a queue forming at the side door by noon on weekends. The format is deliberately permissive: an acoustic guitar player follows a spoken-word set follows a brass quartet, the connecting tissue being the venue's tolerant sound-engineering team and a drink-minimum policy enforced with selective rigour. The bar stocks a rotation of independent craft ferments from the southern valley cooperatives alongside the standard synthesised protein-malt offerings that have replaced conventional beer across most of the city's mid-tier venues since the barley blight of 2069. The artist residency board near the main entrance lists current and upcoming residents — a rotating cast of names whose connection to the venue's founding Afro-Dutch and Latino coalition ranges from direct lineage to enthusiastic appropriation. Holographic notice projectors above the bar cycle through upcoming events, upcoming protests, and the occasional redacted community announcement whose blanked-out sections local regulars have learned to parse as shorthand for LW Group-related political developments. The afternoon crowd skews young and mixed, the kind of demographic breakdown that LW Group's cultural analytics division would describe as "high engagement, low monetisation potential."
+nightlife: |
+  By 20:00 the transformation is complete. The acoustic-ceiling baffles retract, the holographic light rig drops from its daytime standby configuration into active mode, and the sound system's sub-bass cabinets warm up with a subsonic hum that patrons near the back wall feel before they hear. La Casa de la Música's evening concerts routinely sell to capacity — typically three hundred bodies on the main floor — for a programming slate that ranges from Afro-Dutch percussive electronica to political cabaret to the genre-collapse experimental sets that the venue has always treated as a curatorial obligation rather than an audience risk. The holographic light rig is the venue's single significant capital investment from the 2070s: a ceiling-mounted array of seventy-two independently articulated projection units capable of wrapping performers in volumetric light environments that turn the stage into something between a concert and an immersive art installation. The rig was partially funded by a municipal arts grant that LW Group's city council proxies attempted to redirect toward the Teatro Nacional's renovation; the attempt failed by two votes. Set breaks fill the bar three-deep, the ventilation scrubbers cycling audibly above the crowd noise as body heat and exhalation push the atmospheric sensors into their yellow range. By midnight the final sets are unwinding, the light rig cooling through blue-to-amber cycles, and the city outside is quiet enough that the bass frequencies of the last songs leak through the converted warehouse walls into the Central City streets.
 important_places:
   - name: Main Performance Floor
-    description: >
-      The converted textile warehouse's central space, capacity three hundred standing.
-      Acoustic panels line the walls; the holographic light rig occupies the ceiling.
-      The floor has hosted most of the significant moments in Las Flores independent
-      music history since 2044, including the 2058 community gatherings during the
-      industrial riots.
+    description: |
+      The converted textile warehouse's central space, capacity three hundred standing. Acoustic panels line the walls; the holographic light rig occupies the ceiling. The floor has hosted most of the significant moments in Las Flores independent music history since 2044, including the 2058 community gatherings during the industrial riots.
   - name: Holographic Light Rig
-    description: >
-      A seventy-two-unit ceiling array of independently articulated projection modules,
-      installed in 2072 using municipal arts grant funding that LW Group lobbied to
-      redirect. Capable of volumetric light environments; operated by the venue's
-      in-house technical crew, who are locally celebrated for their set designs.
+    description: |
+      A seventy-two-unit ceiling array of independently articulated projection modules, installed in 2072 using municipal arts grant funding that LW Group lobbied to redirect. Capable of volumetric light environments; operated by the venue's in-house technical crew, who are locally celebrated for their set designs.
   - name: Afternoon Open-Mic Stage
-    description: >
-      A smaller acoustic configuration of the main floor, set up daily from 14:00 for
-      the open-mic sessions. Administered by a rotating volunteer coordination team;
-      the sign-up sheet opens at 12:30 and typically fills within the first half hour.
+    description: |
+      A smaller acoustic configuration of the main floor, set up daily from 14:00 for the open-mic sessions. Administered by a rotating volunteer coordination team; the sign-up sheet opens at 12:30 and typically fills within the first half hour.
   - name: Artist Residency Board
-    description: >
-      A physical noticeboard near the main entrance listing current residency holders
-      and scheduled residents. The venue operates a six-week residency programme that
-      has been running since 2047; alumni include several artists now represented by
-      LW Group's cultural management subsidiary, a fact the board does not advertise.
+    description: |
+      A physical noticeboard near the main entrance listing current residency holders and scheduled residents. The venue operates a six-week residency programme that has been running since 2047; alumni include several artists now represented by LW Group's cultural management subsidiary, a fact the board does not advertise.
   - name: Co-operative Records Archive
-    description: >
-      A climate-controlled back-room archive of physical recordings, set lists, and
-      documentation from the venue's entire thirty-three year history. Not open to
-      general visitors; accessible by appointment to researchers and residency alumni.
-      The 2058 community coordination documents are stored here, partially redacted.
-
-conclusion: >
-  La Casa de la Música endures in 2077 as the rare Central City institution whose
-  independence is structural rather than rhetorical. Its co-operative ownership model
-  and its accumulated cultural capital — the kind that accumulates in the memory of
-  a city rather than in asset valuations — have kept it outside the orbit of LW Group's
-  consolidation of the arts sector. Whether that independence persists into the next
-  decade depends partly on the co-operative's ability to maintain its membership base
-  and partly on whether the city council's arts grant programme survives its current
-  round of budget negotiations. In the meantime, on any given evening when the
-  holographic rig is running and the floor is full, the question of ownership feels
-  academic.
+    description: |
+      A climate-controlled back-room archive of physical recordings, set lists, and documentation from the venue's entire thirty-three year history. Not open to general visitors; accessible by appointment to researchers and residency alumni. The 2058 community coordination documents are stored here, partially redacted.
+conclusion: |
+  La Casa de la Música endures in 2077 as the rare Central City institution whose independence is structural rather than rhetorical. Its co-operative ownership model and its accumulated cultural capital — the kind that accumulates in the memory of a city rather than in asset valuations — have kept it outside the orbit of LW Group's consolidation of the arts sector. Whether that independence persists into the next decade depends partly on the co-operative's ability to maintain its membership base and partly on whether the city council's arts grant programme survives its current round of budget negotiations. In the meantime, on any given evening when the holographic rig is running and the floor is full, the question of ownership feels academic.
+asset_paths:
+  image: locations/location_la_casa_de_la_musica/image.jpg

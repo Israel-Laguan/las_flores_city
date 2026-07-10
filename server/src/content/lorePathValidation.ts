@@ -21,4 +21,20 @@ export async function validateLorePaths(filePath: string, data: any, warnings: s
       warnings.push(`Narrative file not found: ${data.narrative_path}`);
     }
   }
+
+  const assetPaths = data?.asset_paths;
+  if (assetPaths && typeof assetPaths === 'object') {
+    const contentDir = process.env.CONTENT_DIR || path.resolve(process.cwd(), '../content');
+    const assetRoot = path.join(contentDir, 'assets');
+
+    for (const [assetType, assetPath] of Object.entries(assetPaths)) {
+      if (typeof assetPath !== 'string') continue;
+      const fullPath = path.join(assetRoot, assetPath);
+      try {
+        await fs.access(fullPath);
+      } catch {
+        warnings.push(`Asset file not found: ${assetPath} (${assetType})`);
+      }
+    }
+  }
 }

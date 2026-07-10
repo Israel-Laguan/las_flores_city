@@ -1,9 +1,12 @@
-id: "64ed5f05-16b8-4195-aa04-43c5776bc3d8"
-name: "María Fernanda Rodriguez"
-title: "Prominent News Anchor, Investigative Journalist"
-description: "One of the most influential voices in Las Flores, María Fernanda is a fearless investigative journalist and news anchor dedicated to uncovering corruption. Known for her tenacity and unwavering commitment to the truth, she uses her platform to amplify marginalized voices and hold the city's power structures accountable."
+id: 64ed5f05-16b8-4195-aa04-43c5776bc3d8
+name: María Fernanda Rodriguez
+title: Prominent News Anchor, Investigative Journalist
+description: One of the most influential voices in Las Flores, María Fernanda is a fearless investigative journalist and news anchor dedicated to uncovering corruption. Known for her tenacity and unwavering commitment to the truth, she uses her platform to amplify marginalized voices and hold the city's power structures accountable.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "media"
-  personality: "investigative_reporter"
+  type: human
+  role: npc
+  faction: media
+  personality: investigative_reporter
+lore_path: docs/lore/figures/maria_fernanda_rodriguez/maria_fernanda_rodriguez.md
+asset_paths:
+  portrait: characters/maria_fernanda_rodriguez/portrait.png

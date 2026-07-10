@@ -23,22 +23,26 @@ export const FIELD_DEFINITIONS: Record<string, FieldDefinition[]> = {
     { label: 'Mood', key: 'mood', placeholder: 'e.g. bustling, tense, mysterious' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 1000 },
     { label: 'Lore Path', key: 'lore_path', placeholder: 'landmarks/name.md' },
+    { label: 'Narrative Path', key: 'narrative_path', placeholder: 'scenes/scene_name.md' },
   ],
   dialogue: [
     { label: 'Name', key: 'name', placeholder: 'Dialogue name' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 500 },
     { label: 'Lore Path', key: 'lore_path', placeholder: 'figures/name/name.md' },
+    { label: 'Narrative Path', key: 'narrative_path', placeholder: 'dialogues/dialog_name.md' },
   ],
   mission: [
     { label: 'Title', key: 'title', placeholder: 'Mission title' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 1000 },
     { label: 'Lore Path', key: 'lore_path', placeholder: 'stories/name.md' },
+    { label: 'Narrative Path', key: 'narrative_path', placeholder: 'missions/mission_name.md' },
   ],
   location: [
     { label: 'Name', key: 'name', placeholder: 'Location name' },
     { label: 'District', key: 'district', placeholder: 'e.g. central' },
     { label: 'Description', key: 'description', multiline: true, maxLength: 1000 },
     { label: 'Lore Path', key: 'lore_path', placeholder: 'landmarks/name.md' },
+    { label: 'Narrative Path', key: 'narrative_path', placeholder: 'locations/location_name.md' },
   ],
   story: [
     { label: 'Name', key: 'name', placeholder: 'Story name' },

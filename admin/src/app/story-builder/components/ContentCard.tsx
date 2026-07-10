@@ -148,24 +148,60 @@ interface ContentCardProps {
   index: number;
   onFieldChange: (index: number, field: string, value: string) => void;
   onRemove: (index: number) => void;
+  onAssetPathRemove?: (index: number, key: string) => void;
 }
 
-function AssetNeedsSection({ assetNeeds }: { assetNeeds: ContentPlanItem['assetNeeds'] }) {
+function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: { assetNeeds: ContentPlanItem['assetNeeds']; assetPaths?: Record<string, string>; onRemoveAssetPath?: (key: string) => void }) {
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+
+  function getAssetImageUrl(assetPath: string): string {
+    if (!assetPath) return '';
+    return `/api/admin/asset?path=${encodeURIComponent(assetPath)}`;
+  }
+
   return (
     <div style={styles.imageSection}>
       <div style={styles.imageLabel}>Assets Needed</div>
-      {assetNeeds.map((need, i) => (
-        <div key={i} style={{ marginBottom: '0.75rem' }}>
-          <div style={{ marginBottom: '0.25rem' }}>
-            <span style={styles.assetTag}>{need.promptType}: {need.targetField}</span>
-            <span style={{ color: '#888', fontSize: '0.75rem' }}>[{need.status}]</span>
+      {assetNeeds.map((need, i) => {
+        const assetPath = assetPaths?.[need.promptType] || assetPaths?.[need.targetField];
+        const imageUrl = assetPath ? getAssetImageUrl(assetPath) : null;
+
+        return (
+          <div key={i} style={{ marginBottom: '0.75rem' }}>
+            <div style={{ marginBottom: '0.25rem' }}>
+              <span style={styles.assetTag}>{need.promptType}: {need.targetField}</span>
+              <span style={{ color: '#888', fontSize: '0.75rem' }}>[{need.status}]</span>
+            </div>
+
+            {imageUrl && !imageErrors[i] ? (
+              <img
+                src={imageUrl}
+                alt={need.promptType}
+                style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '5px', marginBottom: '0.5rem', backgroundColor: '#1a1a2e' }}
+                onError={() => setImageErrors(prev => ({ ...prev, [i]: true }))}
+              />
+            ) : (
+              <div style={styles.imagePlaceholder}>
+                {assetPath ? 'Failed to load image' : 'No image path specified'}
+              </div>
+            )}
+
+            <div style={{ marginTop: '0.5rem' }}>
+              <button style={{ ...styles.button, ...styles.primaryButton }} onClick={() => window.open('/assets', '_blank')}>
+                {assetPath ? 'Replace Image' : 'Generate Image'}
+              </button>
+              {assetPath && onRemoveAssetPath && (
+                <button
+                  style={{ ...styles.button, ...styles.secondaryButton }}
+                  onClick={() => onRemoveAssetPath(need.promptType || need.targetField)}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
           </div>
-          <div style={styles.imagePlaceholder}>No image yet</div>
-          <button style={{ ...styles.button, ...styles.primaryButton }} onClick={() => window.open('/assets', '_blank')}>
-            Generate Image
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -183,11 +219,14 @@ function getNestedValue(obj: Record<string, any>, path: string): string {
   return current !== undefined && current !== null ? String(current) : '';
 }
 
-export default function ContentCard({ item, index, onFieldChange, onRemove }: ContentCardProps) {
+export default function ContentCard({ item, index, onFieldChange, onRemove, onAssetPathRemove }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
+  const [showNarrative, setShowNarrative] = useState(false);
   const lorePath = item.fields.lore_path || null;
+  const narrativePath = item.fields.narrative_path || null;
+  const assetPaths = item.fields.asset_paths as Record<string, string> | undefined;
 
   function handleFieldChange(field: FieldDefinition, value: string) {
     onFieldChange(index, field.key, value);
@@ -210,7 +249,15 @@ export default function ContentCard({ item, index, onFieldChange, onRemove }: Co
               style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
               onClick={() => setShowLore(true)}
             >
-              View Lore
+              Lore
+            </button>
+          )}
+          {narrativePath && (
+            <button
+              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
+              onClick={() => setShowNarrative(true)}
+            >
+              Narrative
             </button>
           )}
           <button style={styles.removeButton} onClick={() => onRemove(index)}>
@@ -248,10 +295,19 @@ export default function ContentCard({ item, index, onFieldChange, onRemove }: Co
         })}
       </div>
 
-      {item.assetNeeds.length > 0 && <AssetNeedsSection assetNeeds={item.assetNeeds} />}
+      {item.assetNeeds.length > 0 && (
+        <AssetNeedsSection
+          assetNeeds={item.assetNeeds}
+          assetPaths={assetPaths}
+          onRemoveAssetPath={onAssetPathRemove ? (key) => onAssetPathRemove(index, key) : undefined}
+        />
+      )}
 
       {showLore && lorePath && (
         <LoreViewer lorePath={lorePath} onClose={() => setShowLore(false)} />
+      )}
+      {showNarrative && narrativePath && (
+        <LoreViewer lorePath={narrativePath} onClose={() => setShowNarrative(false)} readOnly />
       )}
     </div>
   );

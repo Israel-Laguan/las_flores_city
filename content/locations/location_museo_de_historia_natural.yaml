@@ -1,6 +1,6 @@
-id: "de5234c8-aedd-4282-91ae-fcd22151da26"
+id: de5234c8-aedd-4282-91ae-fcd22151da26
 type: location
-name: "Museo de Historia Natural"
+name: Museo de Historia Natural
 color: null
 aliases:
   - Natural History Museum
@@ -13,85 +13,26 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  The Museo de Historia Natural opened in 2039 as a cornerstone of Las Flores Free City's
-  commitment to scientific literacy and cultural memory. Its founding collection was assembled
-  from donated specimens, colonial-era catalogues, and a contested transfer of pre-Columbian
-  artefacts from the national registry — a transfer that indigenous rights advocates have
-  challenged through the courts for three decades without resolution. The museum's geological
-  wing is the subject of persistent controversy: several display panels present the Andean
-  mineral strata in a geological narrative that conspicuously omits the suppressed geological
-  reports commissioned by LW Group in 2048 and 2055, both of which documented fault-line
-  stress patterns directly beneath the company's northern mine complex. The reports were
-  classified under a commercial-confidentiality order before the museum's geological consultants
-  could incorporate them. A 2061 exhibit titled "People of the River Valleys" presented
-  pre-colonial indigenous populations as the ancestors of an unbroken living tradition — a
-  framing that indigenous community councils publicly rejected, noting that the communities
-  in question had been displaced to make room for the mining concessions that now fund half
-  the museum's operating budget through LW Group's cultural patronage programme. A small
-  placard in the exhibit's corner, added after a formal protest in 2063, acknowledges the
-  displacement in two sentences.
-
-daytime: >
-  Visitors enter through a vaulted atrium dominated by a reconstructed megafauna skeleton —
-  a Megatherium specimen excavated from the southern desert in 2044 — suspended above a
-  holographic rainforest floor that cycles through ecological eras at fifteen-minute intervals.
-  Holographic docent projectors stationed at exhibit entrances deliver narration in Spanish,
-  English, and Mandarin, their scripts reviewed and approved by a curatorial committee that
-  includes two LW Group cultural-foundation representatives. The geological wing occupies the
-  museum's eastern wing: interactive terminals allow visitors to drill into mineral cross-sections,
-  manipulate seismic data visualisations, and trace extraction routes overlaid on topographic
-  maps — all sourced from publicly disclosed LW Group datasets, filtered through a data-sharing
-  agreement that grants the company pre-publication review rights over exhibit content. School
-  groups arrive on timed schedules throughout the morning, their visits coordinated through
-  the city education authority's curriculum-alignment programme. Biometric attendance counters
-  at each gallery entrance feed aggregated visitor data to the museum's analytics platform;
-  the data-sharing addendum — accessible on page forty-seven of the visitor terms, linked via
-  a QR code on the ticket — routes anonymised profiles to a municipal research consortium
-  whose membership includes the LW Group data-intelligence subsidiary.
-
-nightlife: >
-  After 18:00 the museum transitions to its members-and-events register. The public galleries
-  close in sequence, holographic docents powering down to standby blue. The atrium remains
-  accessible for private bookings: corporate dinners beneath the Megatherium skeleton have
-  become a Las Flores networking fixture, the reconstructed giant providing an incongruous
-  backdrop for mineral-futures discussions and port-logistics deal-making. The geological wing
-  occasionally hosts late-opening research evenings for university students, access gated
-  behind a faculty-code system that the museum issues in coordination with the Universidad
-  Nacional. On these evenings the suppressed geological reports are not on the terminals
-  either; what is accessible is the same curated dataset available during regular hours,
-  supplemented by a dedicated reading station containing LW Group's published environmental
-  compliance summaries, bound in matching institutional branding.
-
+history: |
+  The Museo de Historia Natural opened in 2039 as a cornerstone of Las Flores Free City's commitment to scientific literacy and cultural memory. Its founding collection was assembled from donated specimens, colonial-era catalogues, and a contested transfer of pre-Columbian artefacts from the national registry — a transfer that indigenous rights advocates have challenged through the courts for three decades without resolution. The museum's geological wing is the subject of persistent controversy: several display panels present the Andean mineral strata in a geological narrative that conspicuously omits the suppressed geological reports commissioned by LW Group in 2048 and 2055, both of which documented fault-line stress patterns directly beneath the company's northern mine complex. The reports were classified under a commercial-confidentiality order before the museum's geological consultants could incorporate them. A 2061 exhibit titled "People of the River Valleys" presented pre-colonial indigenous populations as the ancestors of an unbroken living tradition — a framing that indigenous community councils publicly rejected, noting that the communities in question had been displaced to make room for the mining concessions that now fund half the museum's operating budget through LW Group's cultural patronage programme. A small placard in the exhibit's corner, added after a formal protest in 2063, acknowledges the displacement in two sentences.
+daytime: |
+  Visitors enter through a vaulted atrium dominated by a reconstructed megafauna skeleton — a Megatherium specimen excavated from the southern desert in 2044 — suspended above a holographic rainforest floor that cycles through ecological eras at fifteen-minute intervals. Holographic docent projectors stationed at exhibit entrances deliver narration in Spanish, English, and Mandarin, their scripts reviewed and approved by a curatorial committee that includes two LW Group cultural-foundation representatives. The geological wing occupies the museum's eastern wing: interactive terminals allow visitors to drill into mineral cross-sections, manipulate seismic data visualisations, and trace extraction routes overlaid on topographic maps — all sourced from publicly disclosed LW Group datasets, filtered through a data-sharing agreement that grants the company pre-publication review rights over exhibit content. School groups arrive on timed schedules throughout the morning, their visits coordinated through the city education authority's curriculum-alignment programme. Biometric attendance counters at each gallery entrance feed aggregated visitor data to the museum's analytics platform; the data-sharing addendum — accessible on page forty-seven of the visitor terms, linked via a QR code on the ticket — routes anonymised profiles to a municipal research consortium whose membership includes the LW Group data-intelligence subsidiary.
+nightlife: |
+  After 18:00 the museum transitions to its members-and-events register. The public galleries close in sequence, holographic docents powering down to standby blue. The atrium remains accessible for private bookings: corporate dinners beneath the Megatherium skeleton have become a Las Flores networking fixture, the reconstructed giant providing an incongruous backdrop for mineral-futures discussions and port-logistics deal-making. The geological wing occasionally hosts late-opening research evenings for university students, access gated behind a faculty-code system that the museum issues in coordination with the Universidad Nacional. On these evenings the suppressed geological reports are not on the terminals either; what is accessible is the same curated dataset available during regular hours, supplemented by a dedicated reading station containing LW Group's published environmental compliance summaries, bound in matching institutional branding.
 important_places:
   - name: Atrium & Megatherium Display
-    description: >
-      The museum's central vaulted hall, dominated by a reconstructed Megatherium skeleton
-      suspended above a holographic paleoecological floor installation. The focal point of
-      every school-group visit and the preferred backdrop for corporate evening events.
+    description: |
+      The museum's central vaulted hall, dominated by a reconstructed Megatherium skeleton suspended above a holographic paleoecological floor installation. The focal point of every school-group visit and the preferred backdrop for corporate evening events.
   - name: Geological Wing
-    description: >
-      Eastern gallery dedicated to Andean mineral geology, featuring interactive extraction
-      route maps and seismic visualisations. Sourced exclusively from LW Group-approved
-      public datasets; the 2048 and 2055 suppressed fault-line reports are not among them.
+    description: |
+      Eastern gallery dedicated to Andean mineral geology, featuring interactive extraction route maps and seismic visualisations. Sourced exclusively from LW Group-approved public datasets; the 2048 and 2055 suppressed fault-line reports are not among them.
   - name: People of the River Valleys Exhibit
-    description: >
-      A permanent anthropological exhibit presenting pre-colonial indigenous cultures of
-      the Las Flores river system. Contested by indigenous community councils since 2061;
-      a two-sentence displacement acknowledgement was added to a corner placard in 2063.
+    description: |
+      A permanent anthropological exhibit presenting pre-colonial indigenous cultures of the Las Flores river system. Contested by indigenous community councils since 2061; a two-sentence displacement acknowledgement was added to a corner placard in 2063.
   - name: LW Group Cultural Patronage Hall
-    description: >
-      A dedicated gallery wing funded entirely through the LW Group cultural-foundation grant
-      programme. Donor recognition panels line the entrance corridor; curatorial independence
-      in this wing is subject to the patron's pre-publication review clause.
-
-conclusion: >
-  The Museo de Historia Natural occupies the uncomfortable position of being Las Flores'
-  most authoritative scientific institution and simultaneously one of its most structurally
-  compromised. Its exhibits are technically accurate within the boundaries set by funding
-  agreements and confidentiality orders; what they exclude is as informative as what they
-  display. For visitors who arrive with no prior knowledge of the geological reports or the
-  indigenous displacement record, the museum delivers a coherent, well-produced account of
-  the city's natural history. For those who do carry that knowledge, the curation reads as
-  a precise map of the things the institution has been paid not to say.
+    description: |
+      A dedicated gallery wing funded entirely through the LW Group cultural-foundation grant programme. Donor recognition panels line the entrance corridor; curatorial independence in this wing is subject to the patron's pre-publication review clause.
+conclusion: |
+  The Museo de Historia Natural occupies the uncomfortable position of being Las Flores' most authoritative scientific institution and simultaneously one of its most structurally compromised. Its exhibits are technically accurate within the boundaries set by funding agreements and confidentiality orders; what they exclude is as informative as what they display. For visitors who arrive with no prior knowledge of the geological reports or the indigenous displacement record, the museum delivers a coherent, well-produced account of the city's natural history. For those who do carry that knowledge, the curation reads as a precise map of the things the institution has been paid not to say.
+asset_paths:
+  image: locations/location_museo_de_historia_natural/image.jpg

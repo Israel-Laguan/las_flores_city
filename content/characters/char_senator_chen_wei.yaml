@@ -1,9 +1,12 @@
-id: "e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5a6b"
-name: "Senator Chen Wei"
-title: "Chinese Senator & Businessman"
-description: "Prominent Chinese politician and businessman behind the lithium boom in Las Flores. Ties to Sinolimex Corporation and Hanwa Resources. Central figure in the growing corruption scandal."
+id: e2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5a6b
+name: Senator Chen Wei
+title: Chinese Senator & Businessman
+description: Prominent Chinese politician and businessman behind the lithium boom in Las Flores. Ties to Sinolimex Corporation and Hanwa Resources. Central figure in the growing corruption scandal.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "controversial_politician"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: controversial_politician
+lore_path: docs/lore/figures/senator_chen_wei/senator_chen_wei.md
+asset_paths:
+  portrait: characters/senator_chen_wei/portrait.png

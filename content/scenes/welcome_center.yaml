@@ -1,36 +1,38 @@
-id: "550e8400-e29b-41d4-a716-446655440002"
-name: "Welcome Center"
-description: "The official welcome center for new arrivals in Las Flores. A sleek, modern facility designed to process and orient newcomers to the city."
-district: "City"
-district_lore: "urban_core"
-district_subzone: "Central City"
-background_url: "/assets/scenes/welcome_center/background.png"
+id: 550e8400-e29b-41d4-a716-446655440002
+name: Welcome Center
+description: The official welcome center for new arrivals in Las Flores. A sleek, modern facility designed to process and orient newcomers to the city.
+district: City
+district_lore: urban_core
+district_subzone: Central City
+background_url: /assets/scenes/welcome_center/background.png
 ambient_sound_url: null
-mood: "neutral"
+mood: neutral
 available_dialogues:
-  - "550e8400-e29b-41d4-a716-446655440003"
+  - 550e8400-e29b-41d4-a716-446655440003
 metadata:
-  type: "starting_location"
+  type: starting_location
   accessible: true
   npcs:
-    - "550e8400-e29b-41d4-a716-446655440004"
-    - "550e8400-e29b-41d4-a716-446655440001"
+    - 550e8400-e29b-41d4-a716-446655440004
+    - 550e8400-e29b-41d4-a716-446655440001
   features:
-    - "holographic_map"
-    - "monorail_station"
-    - "information_desk"
+    - holographic_map
+    - monorail_station
+    - information_desk
   ambiance:
-    - "rain_on_glass"
-    - "holographic_displays"
-    - "soft_electronic_music"
+    - rain_on_glass
+    - holographic_displays
+    - soft_electronic_music
   idle_thoughts:
-    - "The holographic map cycles through district data. I've memorized every route."
-    - "New arrivals process through here. Their biometrics spike with anxiety."
-    - "The welcome bot's speech pattern is 92% scripted. 8% genuine concern."
-    - "Information desk logs show 340 queries today. Most are about the curfew."
-    - "Rain on the glass creates prismatic patterns. I find them... acceptable."
-    - "The monorail schedule is printed on the wall. I can predict every delay."
+    - The holographic map cycles through district data. I've memorized every route.
+    - New arrivals process through here. Their biometrics spike with anxiety.
+    - The welcome bot's speech pattern is 92% scripted. 8% genuine concern.
+    - Information desk logs show 340 queries today. Most are about the curfew.
+    - Rain on the glass creates prismatic patterns. I find them... acceptable.
+    - The monorail schedule is printed on the wall. I can predict every delay.
     - "Someone left a data pad on the counter. Contents: grocery list. Mundane."
     - "Soft electronic music. Tempo: 112 BPM. Key: A minor. Appropriate."
-    - "I wonder if the other units feel this way about the rain."
-    - "Processing environmental data. Nothing anomalous. That itself is anomalous."
+    - I wonder if the other units feel this way about the rain.
+    - Processing environmental data. Nothing anomalous. That itself is anomalous.
+asset_paths:
+  background: scenes/welcome_center/background.jpg

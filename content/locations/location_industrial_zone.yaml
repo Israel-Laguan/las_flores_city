@@ -1,6 +1,6 @@
-id: "ff1d693e-f4c4-3b4f-d545-36aee19cad7b"
+id: ff1d693e-f4c4-3b4f-d545-36aee19cad7b
 type: location
-name: "Neighborhoods near factories"
+name: Neighborhoods near factories
 color: null
 aliases:
   - Neighborhoods
@@ -9,38 +9,12 @@ tags:
 alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
-
-history: >
-  When the Chinese mines first opened, workers seeking proximity to the mines and the city
-  started occupying land in this area. Despite some workers settling in the valley, where
-  services and roads were superior, the Industrial Zone district saw a significant population
-  increase due to its strategic location. As time passed, the influx of immigrants and the
-  expansion of both Chinese and Dutch mining operations catalyzed the transformation of the
-  landscape from rural to industrial. With the constitution of a new modern city to the north,
-  a massive wave of immigrants further propelled the growth in this zone. Various factories
-  sprouted up, leading to a diversification of the area's economy and a surge in housing
-  demand. Companies responded by erecting apartment buildings catering to a range of budgets,
-  which resulted in an eclectic mix of architectural styles from different periods. Primarily
-  working-class residents living near factories and industrial complexes, this area may have
-  elevations ranging from 20 to 50 meters, as it transitions from the urban center towards
-  the northern swamps. Blue-collar workers employed in manufacturing, mining, and related
-  industries reside here. Estimated Population: 40,000. The district, a sprawling labyrinth
-  of concrete and steel, lies sandwiched between the central city area in the north and Old
-  Las Flores in the south, with the Pacific coast on the west and the valley on the east.
-
-daytime: >
-  As one navigates the district, the streets are a hive of activity with carpentries, metal
-  works, car repairs, furniture stores, and virtually every type of industry imaginable.
-  Delivery trucks, motorbikes, bicycles, and cars contribute to the bustling atmosphere.
-  Restaurants and stores add to the commercial vibrancy. The zone thrives on its industrial
-  diversity and the constant demand for housing.
-
-nightlife: >
-  The zone's edgier side becomes apparent after dark, with abandoned buildings and green
-  areas occupied by street inhabitants or under the control of local gangs, making certain
-  spots perilous. Despite these challenges, the area retains a raw, working-class character
-  that reflects the resilience of its residents.
-
+history: |
+  When the Chinese mines first opened, workers seeking proximity to the mines and the city started occupying land in this area. Despite some workers settling in the valley, where services and roads were superior, the Industrial Zone district saw a significant population increase due to its strategic location. As time passed, the influx of immigrants and the expansion of both Chinese and Dutch mining operations catalyzed the transformation of the landscape from rural to industrial. With the constitution of a new modern city to the north, a massive wave of immigrants further propelled the growth in this zone. Various factories sprouted up, leading to a diversification of the area's economy and a surge in housing demand. Companies responded by erecting apartment buildings catering to a range of budgets, which resulted in an eclectic mix of architectural styles from different periods. Primarily working-class residents living near factories and industrial complexes, this area may have elevations ranging from 20 to 50 meters, as it transitions from the urban center towards the northern swamps. Blue-collar workers employed in manufacturing, mining, and related industries reside here. Estimated Population: 40,000. The district, a sprawling labyrinth of concrete and steel, lies sandwiched between the central city area in the north and Old Las Flores in the south, with the Pacific coast on the west and the valley on the east.
+daytime: |
+  As one navigates the district, the streets are a hive of activity with carpentries, metal works, car repairs, furniture stores, and virtually every type of industry imaginable. Delivery trucks, motorbikes, bicycles, and cars contribute to the bustling atmosphere. Restaurants and stores add to the commercial vibrancy. The zone thrives on its industrial diversity and the constant demand for housing.
+nightlife: |
+  The zone's edgier side becomes apparent after dark, with abandoned buildings and green areas occupied by street inhabitants or under the control of local gangs, making certain spots perilous. Despite these challenges, the area retains a raw, working-class character that reflects the resilience of its residents.
 important_places:
   - name: Old Settlers' Nook
     description: Some of the original houses of the early settlers can still be found scattered throughout the district, many abandoned yet standing as remnants of a bygone era.
@@ -48,10 +22,7 @@ important_places:
     description: This area features modern buildings constructed between 2000 and 2050, showcasing various architectural styles and catering to different income levels.
   - name: Factory-Adjacent Residences
     description: Located near the factories, these residential areas are predominantly inhabited by the working class. Over time, as the wealthy moved north, these neighborhoods have become central to the blue-collar community of Las Flores.
-
-conclusion: >
-  The Industrial Zone District remains a testament to Las Flores' evolution, embodying the
-  city's spirit of resilience and adaptability. Despite grappling with socio-economic
-  disparities, environmental concerns, and safety issues, this sprawling district continues
-  to thrive as the industrial heart of the city, a far cry from its humble beginnings as
-  housing and fincas around Old Las Flores.
+conclusion: |
+  The Industrial Zone District remains a testament to Las Flores' evolution, embodying the city's spirit of resilience and adaptability. Despite grappling with socio-economic disparities, environmental concerns, and safety issues, this sprawling district continues to thrive as the industrial heart of the city, a far cry from its humble beginnings as housing and fincas around Old Las Flores.
+asset_paths:
+  image: locations/location_industrial_zone/image.jpg

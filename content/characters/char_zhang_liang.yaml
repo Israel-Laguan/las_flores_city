@@ -1,9 +1,11 @@
-id: "8292fd66-e69a-4444-ae6c-4ca506381d6a"
-name: "Zhang Liang"
-title: "CFO of LW Group"
-description: "A long-serving CFO providing financial prudence and strategic investment insights. Crucial for navigating the economic complexities between China and Las Flores."
+id: 8292fd66-e69a-4444-ae6c-4ca506381d6a
+name: Zhang Liang
+title: CFO of LW Group
+description: A long-serving CFO providing financial prudence and strategic investment insights. Crucial for navigating the economic complexities between China and Las Flores.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "lw_group"
-  personality: "prudent_strategist"
+  type: human
+  role: npc
+  faction: lw_group
+  personality: prudent_strategist
+asset_paths:
+  portrait: characters/zhang_liang/portrait.png

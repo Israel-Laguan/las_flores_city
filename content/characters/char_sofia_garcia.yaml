@@ -1,9 +1,11 @@
-id: "c2000005-e29b-41d4-a716-446655440005"
-name: "Sofia Garcia"
-title: "Young Wife, Community Caregiver"
-description: "The youngest Garcia child, married at 18. She visits her father and siblings frequently, providing emotional and financial support as the family recovers from the lithium contamination."
+id: c2000005-e29b-41d4-a716-446655440005
+name: Sofia Garcia
+title: Young Wife, Community Caregiver
+description: The youngest Garcia child, married at 18. She visits her father and siblings frequently, providing emotional and financial support as the family recovers from the lithium contamination.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "independent"
-  personality: "nurturing_supporter"
+  type: human
+  role: npc
+  faction: independent
+  personality: nurturing_supporter
+asset_paths:
+  portrait: characters/sofia_garcia/portrait.png

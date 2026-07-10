@@ -1,9 +1,11 @@
-id: "6fd8ccc7-840a-40a2-9c7c-8b23a297c1b1"
-name: "Sofia Alvarez"
-title: "Chair, Humanity First"
-description: "Once the energetic leader of the Humanity First Youth Council, she has risen to become the current Chair of the movement, representing a new generation of leadership in Las Flores."
+id: 6fd8ccc7-840a-40a2-9c7c-8b23a297c1b1
+name: Sofia Alvarez
+title: Chair, Humanity First
+description: Once the energetic leader of the Humanity First Youth Council, she has risen to become the current Chair of the movement, representing a new generation of leadership in Las Flores.
 metadata:
-  type: "human"
-  role: "npc"
-  faction: "humanity_first"
-  personality: "inspiring_youth_leader"
+  type: human
+  role: npc
+  faction: humanity_first
+  personality: inspiring_youth_leader
+asset_paths:
+  portrait: characters/sofia_alvarez/portrait.png
