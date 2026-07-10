@@ -7,8 +7,6 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
 import express from 'express';
 import type { Server } from 'node:http';
-import path from 'node:path';
-import fs from 'node:fs/promises';
 import { jest as jestGlobals } from '@jest/globals';
 
 // Mock StorageService
@@ -40,17 +38,7 @@ let app: express.Express;
 let server: Server;
 let port: number;
 
-// Create a temporary directory for test assets
-const tempAssetsDir = path.resolve(process.cwd(), 'temp_test_assets');
-
 beforeAll(async () => {
-  // Create temp assets directory
-  await fs.mkdir(tempAssetsDir, { recursive: true });
-  
-  // Create a test asset file
-  const testAssetPath = path.join(tempAssetsDir, 'test_asset.png');
-  await fs.writeFile(testAssetPath, Buffer.from('test-image-data'));
-  
   // Import the router after mocks are set up
   const { adminAssetRouter } = await import('../../src/routes/admin-asset.js');
   
@@ -75,11 +63,6 @@ afterAll(async () => {
     await new Promise<void>((resolve, reject) =>
       server.close((e) => (e ? reject(e) : resolve()))
     );
-  } catch (e: any) {}
-  
-  // Clean up temp directory
-  try {
-    await fs.rm(tempAssetsDir, { recursive: true, force: true });
   } catch (e: any) {}
   
   jest.restoreAllMocks();
