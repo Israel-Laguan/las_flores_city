@@ -390,7 +390,7 @@ export default function StoryBuilderPage() {
                   onClick={async () => {
                     setLoading(true);
                     try {
-                      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan } }>(
+                      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
                         `/api/admin/story-builder/templates/${t.id}`,
                         { description: description || t.label }
                       );
