@@ -135,7 +135,68 @@ function LoreEditor({ content, onChange, onSave, onCancel, saving }: {
   );
 }
 
-export default function LoreViewer({ lorePath, onClose, readOnly = false }: LoreViewerProps) {
+function LoreModal({ lorePath, readOnly, dirty, content, loading, error, exists, editing, saving, onClose, onSave, onStartEdit, onCancelEdit, onChange }: {
+  lorePath: string;
+  readOnly: boolean;
+  dirty: boolean;
+  content: string;
+  loading: boolean;
+  error: string | null;
+  exists: boolean;
+  editing: boolean;
+  saving: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  onStartEdit: () => void;
+  onCancelEdit: () => void;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div style={styles.overlay} onClick={onClose}>
+      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div style={styles.header}>
+          <div>
+            <h3 style={styles.title}>
+              {readOnly ? 'Narrative' : 'Lore'}
+              {dirty && <span style={styles.dirtyIndicator} title="Unsaved changes" />}
+            </h3>
+            <div style={styles.path}>{lorePath}</div>
+          </div>
+          <button style={styles.closeButton} onClick={onClose}>Close</button>
+        </div>
+        {error && <div style={styles.errorBox}>{error}</div>}
+        {!exists && !loading && !error && (
+          <div style={{ marginBottom: '1rem', color: '#888', fontSize: '0.85rem' }}>This file doesn&apos;t exist yet.</div>
+        )}
+        {editing ? (
+          <>
+            <LoreEditor
+              content={content}
+              onChange={onChange}
+              onSave={onSave}
+              onCancel={onCancelEdit}
+              saving={saving}
+            />
+            <div style={styles.hint}>Press Ctrl+S to save</div>
+          </>
+        ) : (
+          <>
+            <div style={styles.content}>{loading ? 'Loading...' : content || 'No content'}</div>
+            {!readOnly && (
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                <button style={{ ...styles.button, ...styles.primaryButton }} onClick={onStartEdit}>
+                  {exists ? 'Edit' : 'Create'}
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function useLoreViewer(lorePath: string | null, onClose: () => void) {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -204,43 +265,53 @@ export default function LoreViewer({ lorePath, onClose, readOnly = false }: Lore
     onClose();
   }
 
+  return {
+    content,
+    loading,
+    saving,
+    error,
+    exists,
+    editing,
+    setEditing,
+    dirty,
+    setDirty,
+    handleClose,
+    handleSave,
+    handleChange: (v: string) => {
+      setContent(v);
+      setDirty(true);
+    },
+  };
+}
+
+export default function LoreViewer({ lorePath, onClose, readOnly = false }: LoreViewerProps) {
+  const {
+    content, loading, saving, error, exists, editing, setEditing,
+    dirty, setDirty, handleClose, handleSave, handleChange,
+  } = useLoreViewer(lorePath, onClose);
+
   if (!lorePath) return null;
 
   return (
-    <div style={styles.overlay} onClick={handleClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.header}>
-          <div>
-            <h3 style={styles.title}>
-              {readOnly ? 'Narrative' : 'Lore'}
-              {dirty && <span style={styles.dirtyIndicator} title="Unsaved changes" />}
-            </h3>
-            <div style={styles.path}>{lorePath}</div>
-          </div>
-          <button style={styles.closeButton} onClick={handleClose}>Close</button>
-        </div>
-        {error && <div style={styles.errorBox}>{error}</div>}
-        {!exists && !loading && !error && (
-          <div style={{ marginBottom: '1rem', color: '#888', fontSize: '0.85rem' }}>This file doesn&apos;t exist yet.</div>
-        )}
-        {editing ? (
-          <>
-            <LoreEditor content={content} onChange={(v) => { setContent(v); setDirty(true); }} onSave={handleSave} onCancel={() => { if (dirty && !confirm('Discard unsaved changes?')) return; setEditing(false); setDirty(false); }} saving={saving} />
-            <div style={styles.hint}>Press Ctrl+S to save</div>
-          </>
-        ) : (
-          <>
-            <div style={styles.content}>{loading ? 'Loading...' : content || 'No content'}</div>
-            {!readOnly && (
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                <button style={{ ...styles.button, ...styles.primaryButton }} onClick={() => setEditing(true)}>
-                  {exists ? 'Edit' : 'Create'}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+    <LoreModal
+      lorePath={lorePath}
+      readOnly={readOnly}
+      dirty={dirty}
+      content={content}
+      loading={loading}
+      error={error}
+      exists={exists}
+      editing={editing}
+      saving={saving}
+      onClose={handleClose}
+      onSave={handleSave}
+      onStartEdit={() => setEditing(true)}
+      onCancelEdit={() => {
+        if (dirty && !confirm('Discard unsaved changes?')) return;
+        setEditing(false);
+        setDirty(false);
+      }}
+      onChange={handleChange}
+    />
   );
 }

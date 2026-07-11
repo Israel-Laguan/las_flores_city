@@ -1,6 +1,7 @@
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { createLLMProvider, type LLMProvider, type ExistingContentContext } from './LLMService.js';
+import { injectAssetNeeds } from './AssetNeedsService.js';
 
 export class ContentPlanService {
   private provider: LLMProvider;
@@ -22,13 +23,16 @@ export class ContentPlanService {
     // 4. Ensure description matches input
     validated.description = description;
 
+    // 5. Inject asset needs based on content type
+    injectAssetNeeds(validated.items);
+
     return validated;
   }
 
   async refinePlan(planId: string, feedback: string): Promise<ContentPlan> {
     // 1. Load existing plan from DB
-    const result = await queryOLTP<{ plan_json: any; description: string }>(
-      'SELECT plan_json, description FROM content_plans WHERE id = $1',
+    const result = await queryOLTP<{ id: string; plan_json: any; description: string }>(
+      'SELECT id, plan_json, description FROM content_plans WHERE id = $1',
       [planId]
     );
     if (result.rows.length === 0) {
@@ -51,21 +55,25 @@ export class ContentPlanService {
     // 4. Validate
     const validated = ContentPlanSchema.parse(refinedPlan);
 
-    // 5. Save to DB with feedback log entry
+    // 5. Re-inject asset needs for any new items
+    injectAssetNeeds(validated.items);
+
+    // 6. Create a NEW plan row (versioning) instead of updating in place
     const feedbackEntry = {
       feedback,
       timestamp: new Date().toISOString(),
       planSnapshot: existingPlan,
     };
 
-    await queryOLTP(
-      `UPDATE content_plans
-       SET plan_json = $1, description = $2, status = 'proposed',
-           feedback_log = COALESCE(feedback_log, '[]'::jsonb) || $3::jsonb, updated_at = NOW()
-       WHERE id = $4`,
-      [validated, validated.description, JSON.stringify([feedbackEntry]), planId]
+    const newPlanResult = await queryOLTP<{ id: string }>(
+      `INSERT INTO content_plans (description, plan_json, status, feedback_log, parent_plan_id)
+       VALUES ($1, $2, 'proposed', $3::jsonb, $4)
+       RETURNING id`,
+      [validated.description, validated, JSON.stringify([feedbackEntry]), planId]
     );
 
+    // Return the new plan with its new ID
+    validated.id = newPlanResult.rows[0].id;
     return validated;
   }
 

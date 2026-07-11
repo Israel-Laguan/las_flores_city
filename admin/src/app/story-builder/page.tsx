@@ -100,6 +100,7 @@ export default function StoryBuilderPage() {
   const [stagingResult, setStagingResult] = useState<any>(null);
   const [migrationResult, setMigrationResult] = useState<any>(null);
   const [previewData, setPreviewData] = useState<any>(null);
+  const [templates, setTemplates] = useState<Array<{ id: string; label: string; description: string; icon: string }>>([]);
 
   useEffect(() => {
     const id = searchParams.get('planId');
@@ -108,6 +109,32 @@ export default function StoryBuilderPage() {
       loadPlanFromDb(id);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    fetch('/api/admin/story-builder/templates')
+      .then(res => res.json())
+      .then(data => { if (data.success) setTemplates(data.data.templates); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Ctrl+Enter — generate plan (in Step 1)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && step === 1 && description.trim() && !loading) {
+        e.preventDefault();
+        handleGeneratePlan();
+      }
+
+      // Ctrl+S — save plan (in Step 2)
+      if ((e.ctrlKey || e.metaKey) && e.key === 's' && planId && step === 2) {
+        e.preventDefault();
+        // Save is already auto-saved, just show a brief confirmation
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, description, planId, loading]);
 
   async function loadPlanFromDb(id: string) {
     setLoading(true);
@@ -351,6 +378,57 @@ export default function StoryBuilderPage() {
         <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1rem' }}>
           Describe the content you want to create in natural language. The AI will generate a structured plan for your review.
         </p>
+
+        {templates.length > 0 && (
+          <div style={{ ...styles.subsection, marginBottom: '1rem' }}>
+            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Quick Start Templates</h3>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {templates.map(t => (
+                <button
+                  key={t.id}
+                  style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.85rem' }}
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+                        `/api/admin/story-builder/templates/${t.id}`,
+                        { description: description || t.label }
+                      );
+                      if (data.success && data.data) {
+                        setPlan(data.data.plan);
+                        setStep(2);
+                        // Auto-save to DB (same as handleGeneratePlan)
+                        try {
+                          const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
+                            '/api/admin/story-builder/plans',
+                            { description: description || t.label, plan: data.data.plan }
+                          );
+                          if (saveRes.success && saveRes.data) {
+                            setPlanId(saveRes.data.planId);
+                          }
+                        } catch (e) {
+                          console.error('Auto-save failed:', e);
+                        }
+                      } else {
+                        setError(data.error || "Failed to build template plan");
+                      }
+                    } catch (err: any) {
+                      setError(err.message);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                >
+                  {t.icon} {t.label}
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.5rem' }}>
+              Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
+            </p>
+          </div>
+        )}
+
         <div style={styles.field}>
           <label style={styles.label}>Description *</label>
           <textarea
@@ -370,6 +448,106 @@ export default function StoryBuilderPage() {
           disabled={loading || !description.trim()}
         >
           {loading ? 'Generating Plan...' : 'Generate Plan'}
+        </button>
+        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.5rem' }}>
+          Press Ctrl+Enter to generate
+        </p>
+      </div>
+    );
+  }
+
+  function renderRefineSection() {
+    if (!showRefine) {
+      return (
+        <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={() => setShowRefine(true)}>
+          Refine with AI Feedback
+        </button>
+      );
+    }
+    return (
+      <div style={{ ...styles.subsection, marginTop: '1rem' }}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Refine with AI</h3>
+        <textarea
+          style={styles.textarea}
+          value={refineFeedback}
+          onChange={e => setRefineFeedback(e.target.value)}
+          placeholder="e.g. Make Diego more cynical. Add a scene for the bar interior."
+        />
+        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+          <button
+            style={{ ...styles.button, ...styles.primaryButton, ...(loading || !refineFeedback.trim() ? styles.disabledButton : {}) }}
+            onClick={handleRefine}
+            disabled={loading || !refineFeedback.trim()}
+          >
+            {loading ? 'Refining...' : 'Send Feedback'}
+          </button>
+          <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={() => setShowRefine(false)}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderLinksSection() {
+    if (!plan || plan.items.length < 2) return null;
+    return (
+      <div style={{ ...styles.subsection, marginTop: '1.5rem' }}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Content Links</h3>
+        <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+          Link content items together (e.g., scene → dialogue, mission → story).
+        </p>
+        {plan.links.map((link, i) => (
+          <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <select
+              style={{ ...styles.select, flex: 1 }}
+              value={link.fromItem}
+              onChange={e => updateLink(i, 'fromItem', e.target.value)}
+            >
+              {!plan.items.some(item => item.id === link.fromItem) && (
+                <option value={link.fromItem}>Unknown/Deleted Item ({link.fromItem})</option>
+              )}
+              {plan.items.map(item => (
+                <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
+              ))}
+            </select>
+            <span style={{ color: '#888', fontSize: '0.85rem' }}>→</span>
+            <select
+              style={{ ...styles.select, flex: 1 }}
+              value={link.toItem}
+              onChange={e => updateLink(i, 'toItem', e.target.value)}
+            >
+              {!plan.items.some(item => item.id === link.toItem) && (
+                <option value={link.toItem}>Unknown/Deleted Item ({link.toItem})</option>
+              )}
+              {plan.items.map(item => (
+                <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
+              ))}
+            </select>
+            <input
+              style={{ ...styles.miniInput, width: '140px' }}
+              value={link.field}
+              onChange={e => updateLink(i, 'field', e.target.value)}
+              placeholder="field name"
+            />
+            <select
+              style={styles.select}
+              value={link.action}
+              onChange={e => updateLink(i, 'action', e.target.value)}
+            >
+              <option value="add">add</option>
+              <option value="set">set</option>
+            </select>
+            <button
+              style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+              onClick={() => removeLink(i)}
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addLink}>
+          + Add Link
         </button>
       </div>
     );
@@ -403,93 +581,149 @@ export default function StoryBuilderPage() {
           + Add Item
         </button>
 
-        {showRefine ? (
-          <div style={{ ...styles.subsection, marginTop: '1rem' }}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Refine with AI</h3>
-            <textarea
-              style={styles.textarea}
-              value={refineFeedback}
-              onChange={e => setRefineFeedback(e.target.value)}
-              placeholder="e.g. Make Diego more cynical. Add a scene for the bar interior."
-            />
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-              <button
-                style={{ ...styles.button, ...styles.primaryButton, ...(loading || !refineFeedback.trim() ? styles.disabledButton : {}) }}
-                onClick={handleRefine}
-                disabled={loading || !refineFeedback.trim()}
-              >
-                {loading ? 'Refining...' : 'Send Feedback'}
-              </button>
-              <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={() => setShowRefine(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={() => setShowRefine(true)}>
-            Refine with AI Feedback
-          </button>
-        )}
+        {renderRefineSection()}
 
-        {plan.items.length >= 2 && (
-          <div style={{ ...styles.subsection, marginTop: '1.5rem' }}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Content Links</h3>
-            <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
-              Link content items together (e.g., scene → dialogue, mission → story).
-            </p>
-            {plan.links.map((link, i) => (
-              <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <select
-                  style={{ ...styles.select, flex: 1 }}
-                  value={link.fromItem}
-                  onChange={e => updateLink(i, 'fromItem', e.target.value)}
-                >
-                  {!plan.items.some(item => item.id === link.fromItem) && (
-                    <option value={link.fromItem}>Unknown/Deleted Item ({link.fromItem})</option>
-                  )}
-                  {plan.items.map(item => (
-                    <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
-                  ))}
-                </select>
-                <span style={{ color: '#888', fontSize: '0.85rem' }}>→</span>
-                <select
-                  style={{ ...styles.select, flex: 1 }}
-                  value={link.toItem}
-                  onChange={e => updateLink(i, 'toItem', e.target.value)}
-                >
-                  {!plan.items.some(item => item.id === link.toItem) && (
-                    <option value={link.toItem}>Unknown/Deleted Item ({link.toItem})</option>
-                  )}
-                  {plan.items.map(item => (
-                    <option key={item.id} value={item.id}>{item.name || item.slug} ({item.type})</option>
-                  ))}
-                </select>
-                <input
-                  style={{ ...styles.miniInput, width: '140px' }}
-                  value={link.field}
-                  onChange={e => updateLink(i, 'field', e.target.value)}
-                  placeholder="field name"
-                />
-                <select
-                  style={styles.select}
-                  value={link.action}
-                  onChange={e => updateLink(i, 'action', e.target.value)}
-                >
-                  <option value="add">add</option>
-                  <option value="set">set</option>
-                </select>
-                <button
-                  style={{ ...styles.button, ...styles.dangerButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
-                  onClick={() => removeLink(i)}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-            <button style={{ ...styles.button, ...styles.secondaryButton, marginTop: '0.5rem' }} onClick={addLink}>
-              + Add Link
-            </button>
+        {renderLinksSection()}
+      </div>
+    );
+  }
+
+  function renderPreviewFiles() {
+    if (!previewData) return null;
+    return (
+      <div style={styles.subsection}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+          Files Preview ({previewData.items.length} items)
+        </h3>
+        {previewData.items.map((item: any, i: number) => (
+          <div key={i} style={{ ...styles.card, marginBottom: '0.75rem' }}>
+            <div style={styles.cardHeader}>
+              <span style={styles.cardType}>{item.type}</span>
+              <span style={styles.cardAction}>
+                {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
+              </span>
+            </div>
+            <details>
+              <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>YAML Preview</summary>
+              <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+                {item.yamlPreview}
+              </pre>
+            </details>
+            {item.existingYaml && (
+              <details>
+                <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
+                <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+                  {item.existingYaml}
+                </pre>
+              </details>
+            )}
           </div>
+        ))}
+      </div>
+    );
+  }
+
+  function renderStagingSummary() {
+    if (!stagingResult) return null;
+    return (
+      <>
+        {stagingResult.createdFiles?.length > 0 && (
+          <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+            Created: {stagingResult.createdFiles.join(', ')}
+          </p>
+        )}
+        {stagingResult.updatedFiles?.length > 0 && (
+          <p style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
+            Updated: {stagingResult.updatedFiles.join(', ')}
+          </p>
+        )}
+        {stagingResult.validationErrors?.length > 0 && (
+          <ul style={{ fontSize: '0.85rem', marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
+            {stagingResult.validationErrors.map((e: string, i: number) => (
+              <li key={i} style={{ color: '#ff6666' }}>{e}</li>
+            ))}
+          </ul>
+        )}
+        {stagingResult.loreFiles?.length > 0 && (
+          <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+            Lore files created: {stagingResult.loreFiles.join(', ')}
+          </p>
+        )}
+        {stagingResult.promptFiles?.length > 0 && (
+          <div style={{ marginTop: '0.25rem' }}>
+            <p style={{ fontSize: '0.85rem' }}>
+              Prompt files created: {stagingResult.promptFiles.join(', ')}
+            </p>
+            <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
+              These can be used in the <a href="/assets" style={{ color: '#00ff00' }}>Asset Pipeline</a>.
+            </p>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  function renderStagingItemResults() {
+    if (!stagingResult?.itemResults) return null;
+    return (
+      <div style={{ marginTop: '0.75rem' }}>
+        <p style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Item Status</p>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <tbody>
+            {stagingResult.itemResults.map((r: any, i: number) => (
+              <tr key={i} style={{ borderBottom: '1px solid #222' }}>
+                <td style={{ padding: '0.4rem', color: '#aaa' }}>{r.name}</td>
+                <td style={{ padding: '0.4rem' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '0.15rem 0.5rem',
+                    borderRadius: '3px',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold' as const,
+                    backgroundColor: r.status === 'success' ? '#00ff0022' : '#ff000022',
+                    color: r.status === 'success' ? '#00ff00' : '#ff4444',
+                  }}>
+                    {r.status}
+                  </span>
+                </td>
+                <td style={{ padding: '0.4rem', color: '#888', fontSize: '0.8rem' }}>{r.error || r.filePath || ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!stagingResult.success && planId && (
+          <button
+            style={{
+              ...styles.button,
+              ...styles.secondaryButton,
+              marginTop: '0.75rem',
+            }}
+            onClick={async () => {
+              setLoading(true);
+              setError(null);
+              try {
+                const data = await postJSON<{ success: boolean; data?: any; error?: string }>(
+                  `/api/admin/story-builder/plans/${planId}/retry`,
+                  {}
+                );
+                if (data.success) {
+                  setStagingResult(data.data);
+                  if (data.data?.success) {
+                    setStep(4); // Move to Migrate step on success
+                  }
+                } else {
+                  setError(data.error || 'Retry failed');
+                }
+              } catch (err: any) {
+                setError(err.message);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+          >
+            {loading ? 'Retrying...' : '🔄 Retry Failed Items'}
+          </button>
         )}
       </div>
     );
@@ -511,60 +745,15 @@ export default function StoryBuilderPage() {
           {loading ? 'Loading...' : 'Preview Files'}
         </button>
 
-        {previewData && (
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-              Files Preview ({previewData.items.length} items)
-            </h3>
-            {previewData.items.map((item: any, i: number) => (
-              <div key={i} style={{ ...styles.card, marginBottom: '0.75rem' }}>
-                <div style={styles.cardHeader}>
-                  <span style={styles.cardType}>{item.type}</span>
-                  <span style={styles.cardAction}>
-                    {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
-                  </span>
-                </div>
-                <details>
-                  <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>YAML Preview</summary>
-                  <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-                    {item.yamlPreview}
-                  </pre>
-                </details>
-                {item.existingYaml && (
-                  <details>
-                    <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
-                    <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-                      {item.existingYaml}
-                    </pre>
-                  </details>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        {renderPreviewFiles()}
 
         {stagingResult && (
           <div style={stagingResult.success ? styles.successBox : styles.errorBox}>
             <p style={{ fontWeight: 'bold' }}>
               {stagingResult.success ? 'Staged successfully!' : 'Staging failed'}
             </p>
-            {stagingResult.createdFiles?.length > 0 && (
-              <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                Created: {stagingResult.createdFiles.join(', ')}
-              </p>
-            )}
-            {stagingResult.updatedFiles?.length > 0 && (
-              <p style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
-                Updated: {stagingResult.updatedFiles.join(', ')}
-              </p>
-            )}
-            {stagingResult.validationErrors?.length > 0 && (
-              <ul style={{ fontSize: '0.85rem', marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
-                {stagingResult.validationErrors.map((e: string, i: number) => (
-                  <li key={i} style={{ color: '#ff6666' }}>{e}</li>
-                ))}
-              </ul>
-            )}
+            {renderStagingSummary()}
+            {renderStagingItemResults()}
           </div>
         )}
 

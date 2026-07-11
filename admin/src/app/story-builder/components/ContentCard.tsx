@@ -146,7 +146,7 @@ const TYPE_ICONS: Record<string, string> = {
 interface ContentCardProps {
   item: ContentPlanItem;
   index: number;
-  allItems: ContentPlanItem[];
+  allItems?: ContentPlanItem[];
   onFieldChange: (index: number, field: string, value: string) => void;
   onRemove: (index: number) => void;
   onAssetPathRemove?: (index: number, key: string) => void;
@@ -208,6 +208,132 @@ function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: { asse
   );
 }
 
+function CardHeader({ icon, name, type, action, lorePath, narrativePath, onShowLore, onShowNarrative, onRemove, index }: {
+  icon: string;
+  name: string;
+  type: string;
+  action: string;
+  lorePath: string | null;
+  narrativePath: string | null;
+  onShowLore: () => void;
+  onShowNarrative: () => void;
+  onRemove: (index: number) => void;
+  index: number;
+}) {
+  return (
+    <div style={styles.cardHeader}>
+      <div>
+        <h3 style={styles.cardTitle}>
+          {icon} {name || 'Untitled'}
+        </h3>
+        <span style={styles.cardMeta}>
+          {type} &middot; {action}
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        {lorePath && (
+          <button
+            style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
+            onClick={onShowLore}
+          >
+            Lore
+          </button>
+        )}
+        {narrativePath && (
+          <button
+            style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
+            onClick={onShowNarrative}
+          >
+            Narrative
+          </button>
+        )}
+        <button style={styles.removeButton} onClick={() => onRemove(index)}>
+          Remove
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FieldsSection({ fields, item, onFieldChange }: {
+  fields: FieldDefinition[];
+  item: ContentPlanItem;
+  onFieldChange: (field: FieldDefinition, value: string) => void;
+}) {
+  return (
+    <div>
+      {fields.map((field) => {
+        const value = getNestedValue(item.fields, field.key);
+        return (
+          <div key={field.key} style={styles.fieldGroup}>
+            <label style={styles.label}>{field.label}</label>
+            {field.multiline ? (
+              <textarea
+                style={styles.textarea}
+                value={value}
+                onChange={(e) => onFieldChange(field, e.target.value)}
+                placeholder={field.placeholder}
+                maxLength={field.maxLength}
+              />
+            ) : (
+              <input
+                type="text"
+                style={styles.input}
+                value={value}
+                onChange={(e) => onFieldChange(field, e.target.value)}
+                placeholder={field.placeholder}
+                maxLength={field.maxLength}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
+  allItems: ContentPlanItem[];
+  item: ContentPlanItem;
+  onDependsOnChange?: (index: number, dependsOn: string[]) => void;
+  index: number;
+}) {
+  if (allItems.length <= 1) return null;
+  return (
+    <div style={styles.fieldGroup}>
+      <label style={styles.label}>Dependencies (items that must be created first)</label>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+        {allItems
+          .filter(other => other.id !== item.id)
+          .map(other => {
+            const isSelected = item.dependsOn?.includes(other.id) ?? false;
+            return (
+              <button
+                key={other.id}
+                style={{
+                  ...styles.button,
+                  ...(isSelected ? styles.primaryButton : styles.secondaryButton),
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.5rem',
+                  marginRight: 0,
+                }}
+                onClick={() => {
+                  if (!onDependsOnChange) return;
+                  const newDeps = isSelected
+                    ? (item.dependsOn || []).filter(id => id !== other.id)
+                    : [...(item.dependsOn || []), other.id];
+                  onDependsOnChange(index, newDeps);
+                }}
+              >
+                {other.name || other.slug}
+              </button>
+            );
+          })}
+      </div>
+    </div>
+  );
+}
+
 function getNestedValue(obj: Record<string, any>, path: string): string {
   const parts = path.split('.');
   let current: any = obj;
@@ -221,7 +347,7 @@ function getNestedValue(obj: Record<string, any>, path: string): string {
   return current !== undefined && current !== null ? String(current) : '';
 }
 
-export default function ContentCard({ item, index, allItems, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems = [], onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -236,100 +362,22 @@ export default function ContentCard({ item, index, allItems, onFieldChange, onRe
 
   return (
     <div style={styles.card}>
-      <div style={styles.cardHeader}>
-        <div>
-          <h3 style={styles.cardTitle}>
-            {icon} {item.name || 'Untitled'}
-          </h3>
-          <span style={styles.cardMeta}>
-            {item.type} &middot; {item.action}
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          {lorePath && (
-            <button
-              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
-              onClick={() => setShowLore(true)}
-            >
-              Lore
-            </button>
-          )}
-          {narrativePath && (
-            <button
-              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.75rem', padding: '0.3rem 0.6rem', marginRight: 0 }}
-              onClick={() => setShowNarrative(true)}
-            >
-              Narrative
-            </button>
-          )}
-          <button style={styles.removeButton} onClick={() => onRemove(index)}>
-            Remove
-          </button>
-        </div>
-      </div>
+      <CardHeader
+        icon={icon}
+        name={item.name}
+        type={item.type}
+        action={item.action}
+        lorePath={lorePath}
+        narrativePath={narrativePath}
+        onShowLore={() => setShowLore(true)}
+        onShowNarrative={() => setShowNarrative(true)}
+        onRemove={onRemove}
+        index={index}
+      />
 
-      <div>
-        {fields.map((field) => {
-          const value = getNestedValue(item.fields, field.key);
-          return (
-            <div key={field.key} style={styles.fieldGroup}>
-              <label style={styles.label}>{field.label}</label>
-              {field.multiline ? (
-                <textarea
-                  style={styles.textarea}
-                  value={value}
-                  onChange={(e) => handleFieldChange(field, e.target.value)}
-                  placeholder={field.placeholder}
-                  maxLength={field.maxLength}
-                />
-              ) : (
-                <input
-                  type="text"
-                  style={styles.input}
-                  value={value}
-                  onChange={(e) => handleFieldChange(field, e.target.value)}
-                  placeholder={field.placeholder}
-                  maxLength={field.maxLength}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <FieldsSection fields={fields} item={item} onFieldChange={handleFieldChange} />
 
-      {allItems.length > 1 && (
-        <div style={styles.fieldGroup}>
-          <label style={styles.label}>Dependencies (items that must be created first)</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-            {allItems
-              .filter(other => other.id !== item.id)
-              .map(other => {
-                const isSelected = item.dependsOn?.includes(other.id) ?? false;
-                return (
-                  <button
-                    key={other.id}
-                    style={{
-                      ...styles.button,
-                      ...(isSelected ? styles.primaryButton : styles.secondaryButton),
-                      fontSize: '0.75rem',
-                      padding: '0.25rem 0.5rem',
-                      marginRight: 0,
-                    }}
-                    onClick={() => {
-                      if (!onDependsOnChange) return;
-                      const newDeps = isSelected
-                        ? (item.dependsOn || []).filter(id => id !== other.id)
-                        : [...(item.dependsOn || []), other.id];
-                      onDependsOnChange(index, newDeps);
-                    }}
-                  >
-                    {other.name || other.slug}
-                  </button>
-                );
-              })}
-          </div>
-        </div>
-      )}
+      <DependenciesSection allItems={allItems} item={item} onDependsOnChange={onDependsOnChange} index={index} />
 
       {item.assetNeeds.length > 0 && (
         <AssetNeedsSection
