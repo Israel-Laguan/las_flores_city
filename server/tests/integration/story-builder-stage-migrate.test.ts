@@ -242,7 +242,7 @@ describe('POST /admin/story-builder/plans/:id/migrate', () => {
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/migrate`);
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.data.error).toContain('staged');
   });

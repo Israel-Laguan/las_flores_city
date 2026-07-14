@@ -73,6 +73,7 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       links: [],
     })),
     gatherContext: jest.fn(async () => ({})),
+    generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     provider: {
       generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     },
