@@ -1,4 +1,4 @@
-import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 
 export interface ExistingContentContext {
   characters: Array<{ id: string; name: string }>;
@@ -11,9 +11,10 @@ export interface ExistingContentContext {
 }
 
 export interface LLMProvider {
-  parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan>;
-  refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<ContentPlan>;
-}
+   parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan>;
+   refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<ContentPlan>;
+   generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string>;
+ }
 
 // ── System Prompt Builder ───────────────────────────────────────
 
@@ -144,6 +145,77 @@ ${CONTENT_TYPES.join(', ')}
 Return a single JSON object matching the ContentPlan schema. Keep the same plan id. Keep items that the user didn't ask to change. Output ONLY the JSON object, no markdown fences or explanation.`;
 }
 
+// ── Lore Generation Prompt ─────────────────────────────────────────────
+
+export function buildLorePrompt(item: ContentPlanItem, context: ExistingContentContext): string {
+  const existingChars = context.characters.map((c) => c.name).join(', ') || '(none)';
+  const existingScenes = context.scenes.map((s) => `${s.name} (${s.district})`).join(', ') || '(none)';
+
+  let structureGuide = '';
+  switch (item.type) {
+    case 'character':
+      structureGuide = `Write character lore in the style of cyberpunk Las Flores 2077. Include:
+- H1 title with character name
+- Title fields (full and short)
+- Age, Origin, Occupation
+- Multi-paragraph description covering: physical appearance, personality, challenges, vision/goals
+- A "Key Relationships" table with Name/Nature/Notes columns
+- A "Known Habit" section describing recurring behaviors`;
+      break;
+    case 'scene':
+    case 'location':
+      structureGuide = `Write location/scene lore in the style of cyberpunk Las Flores 2077. Include:
+- H1 title with location/scene name
+- Tags block (e.g., "> Tags: downtown, neon, rain")
+- District metadata
+- "## Overview" with narrative paragraphs describing atmosphere and notable features
+- "## Related Lore" section with relative markdown links to related characters or stories`;
+      break;
+    case 'mission':
+    case 'story':
+      structureGuide = `Write mission/story lore in the style of cyberpunk Las Flores 2077. Include:
+- H1 title
+- Tags block
+- Location/period metadata
+- "## Overview" with narrative paragraphs
+- Section headers for story beats
+- "## Related Lore" with relative markdown links`;
+      break;
+    case 'dialogue':
+    case 'overlay':
+    case 'vault':
+    case 'gig':
+    case 'shop_item':
+      structureGuide = `Write lore for this item in the style of cyberpunk Las Flores 2077. Include:
+- H1 title with item name
+- Description and narrative context explaining the item's role in the world`;
+      break;
+    default:
+      structureGuide = `Write narrative lore for this content item in the style of cyberpunk Las Flores 2077. Include:
+- H1 title with item name
+- Description and narrative context`;
+  }
+
+  return `You are a lore writer for Las Flores 2077, a narrative cyberpunk roleplaying game set in a rain-soaked city of neon and corporate intrigue.
+
+## Task
+ Write rich, immersive markdown narrative content for the following item.
+
+## Item Details
+ - Type: ${item.type}
+ - Name: ${item.name}
+ - Description: ${item.fields.description || 'No description provided'}
+
+${structureGuide}
+
+## Existing Content (for reference)
+ - Characters: ${existingChars}
+ - Scenes/Locations: ${existingScenes}
+
+## Output Format
+ Return ONLY the markdown content. Do NOT wrap it in code fences or JSON. Do NOT include any explanatory text outside the markdown.`;
+}
+
 // ── LiteLLM Provider ─────────────────────────────────────────────
 
 export class LiteLLMProvider implements LLMProvider {
@@ -195,6 +267,41 @@ export class LiteLLMProvider implements LLMProvider {
     }
   }
 
+  private async callLLMText(systemPrompt: string, userMessage: string): Promise<string> {
+    const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {}),
+      },
+      body: JSON.stringify({
+        model: this.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+        temperature: 0.7,
+        // No response_format - we want plain text markdown
+      }),
+      signal: AbortSignal.timeout(60_000),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`LiteLLM lore request failed: ${response.status} ${response.statusText} — ${text}`);
+    }
+
+    const data = await response.json();
+    let content = data.choices?.[0]?.message?.content || '';
+
+    // Strip markdown code fences if LLM wrapped the output
+    if (content.startsWith('```markdown') || content.startsWith('```')) {
+      content = content.replace(/^```\\w*\\n/, '').replace(/```$/, '');
+    }
+
+    return content.trim();
+  }
+
   async parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan> {
     const systemPrompt = buildSystemPrompt(context);
     const planJson = await this.callLLM(systemPrompt, description);
@@ -206,6 +313,11 @@ export class LiteLLMProvider implements LLMProvider {
     const planJson = await this.callLLM(systemPrompt, feedback);
     planJson.id = existingPlan.id;
     return ContentPlanSchema.parse(planJson);
+  }
+
+  async generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string> {
+    const prompt = buildLorePrompt(item, context);
+    return this.callLLMText(prompt, item.fields.description || item.name);
   }
 }
 
@@ -299,6 +411,86 @@ export class MockProvider implements LLMProvider {
       description: `${existingPlan.description} [Refined based on: ${feedback}]`,
       status: 'proposed',
     });
+  }
+
+  async generateLore(item: ContentPlanItem, _context: ExistingContentContext): Promise<string> {
+    // Mock: generate placeholder lore based on item type
+    const name = item.name || 'Untitled';
+    const description = item.fields.description || '';
+
+    switch (item.type) {
+      case 'character':
+        return `# ${name}
+
+**Title (full):** ${item.fields.title || name}
+**Title (short):** ${name}, ${item.fields.title || 'Person of Interest'}
+
+**Description (full):**
+**Age:** ${item.fields.age || 'Unknown'}
+**Origin:** ${item.fields.origin || 'Las Flores urban sprawl'}
+**Occupation:** ${item.fields.occupation || item.fields.title || 'Unspecified'}
+
+${description || `${name} moves through the neon-soaked streets of Las Flores with purpose.`} Physically, they carry the marks of city life — cybernetic mods, weathered clothing, and eyes that have seen too much. Their personality is shaped by the struggles of urban survival, yet they retain a spark of something more.
+
+Challenges: The daily grind of corporate oppression, the cost of staying augmented, and the question of what it means to remain human in 2077. Their larger vision is survival, perhaps even thriving, in a city that seems designed to grind people down.
+
+---
+
+**Key Relationships**
+
+| Name | Nature | Notes |
+|------|--------|-------|
+| Unknown | Connection | To be determined by the GM |
+
+**Known Habit**
+
+${name} has a habit of scanning the crowd for familiar faces, a remnant of old-world community ties that persist despite the digital age.
+`;
+      case 'scene':
+      case 'location':
+        return `# ${name}
+
+> Tags: ${item.fields.tags || 'urban'}
+
+**District:** ${item.fields.district || 'Unknown'}
+
+## Overview
+
+${description || `${name} is a notable location in the cityscape of Las Flores.`} The area pulses with ${item.fields.mood || 'electric energy'}, its streets lined with vendors and corporate storefronts. Rain slicks the pavement, reflecting the kaleidoscope of neon above.
+
+## Related Lore
+
+- [[figures/unknown_person/unknown_person]]
+`;
+      case 'mission':
+      case 'story':
+        return `# ${name}
+
+> Tags: ${item.fields.tags || 'main'}
+
+**Location:** ${item.fields.location || 'Las Flores'}
+**Period:** ${item.fields.period || '2077'}
+
+## Overview
+
+${description || `A ${item.type} unfolds in the shadows of Las Flores.`}
+
+### Beats
+
+- The story begins with an encounter.
+- Complications arise from corporate interference.
+- The climax reveals hidden truths.
+
+## Related Lore
+
+- [[figures/unknown_person/unknown_person]]
+`;
+      default:
+        return `# ${name}
+
+${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
+`;
+    }
   }
 }
 
