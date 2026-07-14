@@ -84,95 +84,46 @@ const jsonStyles = {
 // Format JSON with syntax highlighting
 function syntaxHighlightJSON(json: unknown): JSX.Element {
   const stringified = JSON.stringify(json, null, 2);
-  
+  const tokenRegex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|[{}[\]:,]|\s+|[^"\s{}[\]:,]+)/g;
+
   return (
     <pre style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'monospace' }}>
       {stringified.split('\n').map((line, i) => {
-        // Split line into tokens
-        const tokens: Array<{ text: string; style: React.CSSProperties }> = [];
-        let pos = 0;
-        
-        while (pos < line.length) {
-          const char = line[pos];
-          
-          // Skip whitespace (preserve it but don't highlight)
-          if (char === ' ' || char === '\t') {
-            tokens.push({ text: char, style: {} });
-            pos++;
-            continue;
+        const tokens: JSX.Element[] = [];
+        let match;
+        tokenRegex.lastIndex = 0;
+
+        while ((match = tokenRegex.exec(line)) !== null) {
+          const token = match[0];
+          let style: React.CSSProperties = {};
+
+          if (token.startsWith('"')) {
+            const isKey = line.substring(match.index + token.length).trim().startsWith(':');
+            style = isKey ? jsonStyles.key : jsonStyles.string;
+          } else if (token === 'true' || token === 'false') {
+            style = jsonStyles.boolean;
+          } else if (token === 'null') {
+            style = jsonStyles.null;
+          } else if (/^[0-9-]/.test(token)) {
+            style = jsonStyles.number;
+          } else if ('{}[]'.includes(token)) {
+            style = jsonStyles.bracket;
+          } else if (token === ':') {
+            style = jsonStyles.colon;
+          } else if (token === ',') {
+            style = jsonStyles.comma;
           }
-          
-          // Match keys (quoted strings before colons)
-          if (char === '"') {
-            const endQuote = line.indexOf('"', pos + 1);
-            if (endQuote !== -1) {
-              const text = line.substring(pos, endQuote + 1);
-              // Check if this is a key (followed by colon, possibly with spaces)
-              const afterQuote = line.substring(endQuote + 1);
-              const isKey = afterQuote.trim().startsWith(':');
-              const style = isKey ? jsonStyles.key : jsonStyles.string;
-              tokens.push({ text, style });
-              pos = endQuote + 1;
-              continue;
-            }
-          }
-          
-          // Match brackets
-          if (char === '{' || char === '}' || char === '[' || char === ']') {
-            tokens.push({ text: char, style: jsonStyles.bracket });
-            pos++;
-            continue;
-          }
-          
-          if (char === ':') {
-            tokens.push({ text: char, style: jsonStyles.colon });
-            pos++;
-            continue;
-          }
-          
-          if (char === ',') {
-            tokens.push({ text: char, style: jsonStyles.comma });
-            pos++;
-            continue;
-          }
-          
-          // Match numbers
-          if (/[0-9-]/.test(char)) {
-            const numMatch = line.substring(pos).match(/^[0-9eE+.-]+/);
-            if (numMatch) {
-              tokens.push({ text: numMatch[0], style: jsonStyles.number });
-              pos += numMatch[0].length;
-              continue;
-            }
-          }
-          
-          // Match booleans and null
-          if (/[a-z]/.test(char)) {
-            const wordMatch = line.substring(pos).match(/^[a-zA-Z_]+/);
-            if (wordMatch) {
-              const word = wordMatch[0];
-              let style = {};
-              if (word === 'true' || word === 'false') {
-                style = jsonStyles.boolean;
-              } else if (word === 'null') {
-                style = jsonStyles.null;
-              }
-              tokens.push({ text: word, style });
-              pos += word.length;
-              continue;
-            }
-          }
-          
-          // Default: any other character
-          tokens.push({ text: char, style: {} });
-          pos++;
+
+          tokens.push(
+            <span key={match.index} style={style}>
+              {token}
+            </span>
+          );
         }
-        
+
         return (
           <div key={i} style={{ display: 'block' }}>
-            {tokens.map((token, j) => (
-              <span key={j} style={token.style}>{token.text}</span>
-            ))}
+            {tokens}
           </div>
         );
       })}
@@ -773,15 +724,15 @@ export default function StoryBuilderPage() {
       // Simple parsing to extract top-level fields
       const lines = yamlString.split('\n');
       for (const line of lines) {
+        // Skip nested fields by checking indentation of the original line
+        if (line.startsWith(' ') || line.startsWith('\t')) {
+          continue;
+        }
         const trimmed = line.trim();
         if (trimmed && !trimmed.startsWith('#') && trimmed.includes(':')) {
           const [key, ...valueParts] = trimmed.split(':');
           const value = valueParts.join(':').trim();
-          const cleanKey = key.trim();
-          // Skip nested fields for simplicity
-          if (!cleanKey.startsWith(' ') && !cleanKey.startsWith('\t')) {
-            fields[cleanKey] = value || '(empty)';
-          }
+          fields[key.trim()] = value || '(empty)';
         }
       }
     } catch (e) {
@@ -793,38 +744,45 @@ export default function StoryBuilderPage() {
   function getImageFromYaml(yamlString: string): string | null {
     try {
       const lines = yamlString.split('\n');
-      for (const line of lines) {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const trimmed = line.trim();
-        if (trimmed && !trimmed.startsWith('#')) {
-          // Look for image_path or image fields
-          if (trimmed.match(/^(image_path|image|portrait|thumbnail)\s*:/i)) {
-            const match = trimmed.match(/:\s*(.+)/);
-            if (match) {
-              const path = match[1].trim().replace(/['"]/g, '');
-              if (path && !path.startsWith('data:')) {
-                return path;
-              }
+        if (!trimmed || trimmed.startsWith('#')) continue;
+
+        // Look for image_path or image fields at the top level
+        if (trimmed.match(/^(image_path|image|portrait|thumbnail)\s*:/i)) {
+          const match = trimmed.match(/:\s*(.+)/);
+          if (match) {
+            const path = match[1].trim().replace(/['"]/g, '');
+            if (path && !path.startsWith('data:')) {
+              return path;
             }
           }
-          // Look for asset_paths
-          if (trimmed.match(/^asset_paths\s*:/i)) {
-            // Parse the asset_paths section
-            let j = lines.indexOf(line) + 1;
-            while (j < lines.length) {
-              const nextLine = lines[j].trim();
-              if (nextLine && !nextLine.startsWith('#') && nextLine.startsWith(' ')) {
-                const assetMatch = nextLine.match(/^\s*(\w+)\s*:\s*(.+)/);
-                if (assetMatch) {
-                  const key = assetMatch[1];
-                  const value = assetMatch[2].trim().replace(/['"]/g, '');
-                  if (key.match(/image|portrait|avatar/i) && value) {
-                    return value;
-                  }
+        }
+
+        // Look for asset_paths
+        if (trimmed.match(/^asset_paths\s*:/i)) {
+          let j = i + 1;
+          while (j < lines.length) {
+            const rawLine = lines[j];
+            const trimmedNext = rawLine.trim();
+            if (!trimmedNext || trimmedNext.startsWith('#')) {
+              j++;
+              continue;
+            }
+            // Ensure it is indented (nested under asset_paths)
+            if (rawLine.startsWith(' ') || rawLine.startsWith('\t')) {
+              const assetMatch = trimmedNext.match(/^\s*(\w+)\s*:\s*(.+)/);
+              if (assetMatch) {
+                const key = assetMatch[1];
+                const value = assetMatch[2].trim().replace(/['"]/g, '');
+                if (key.match(/image|portrait|avatar/i) && value) {
+                  return value;
                 }
-              } else {
-                break;
               }
               j++;
+            } else {
+              break;
             }
           }
         }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminStyles as styles } from '@/lib/adminStyles';
+import SafeImage from '../../components/SafeImage';
 
 interface Location {
   id: string;
@@ -60,13 +61,10 @@ function BackgroundImageCard({ record }: { record: Location }) {
   return (
     <div style={cardStyle}>
       <div style={labelStyle}>Background Image</div>
-      <img
+      <SafeImage
         src={src}
         alt={`${record.name} background`}
         style={{ width: '100%', objectFit: 'cover' as const, borderRadius: '8px' }}
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = 'none';
-        }}
       />
     </div>
   );

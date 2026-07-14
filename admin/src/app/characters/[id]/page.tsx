@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminStyles as styles } from '@/lib/adminStyles';
+import SafeImage from '../../components/SafeImage';
 
 interface Character {
   id: string;
@@ -77,24 +78,18 @@ function PortraitSection({ record }: { record: Character }) {
       <div style={labelStyle}>Portrait</div>
       <div style={portraitContainerStyle}>
         {portraits.map((url, i) => (
-          <img
+          <SafeImage
             key={i}
             src={url}
             alt={`${record.name} portrait ${i + 1}`}
             style={portraitStyle}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
           />
         ))}
         {!portraits.length && record.avatar_url && (
-          <img
+          <SafeImage
             src={record.avatar_url}
             alt={`${record.name} avatar`}
             style={portraitStyle}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
           />
         )}
       </div>
