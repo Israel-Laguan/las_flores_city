@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { getAdminUser } from '@/lib/api';
+import AdminNav from '@/components/AdminNav';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,11 +20,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        {adminUser && (
-          <nav>
-            <span>{adminUser.email}</span>
-          </nav>
-        )}
+        <AdminNav user={adminUser} />
         {children}
       </body>
     </html>

@@ -1,0 +1,31 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.json {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  color: #aaa;
+  font-size: 0.85rem;
+}

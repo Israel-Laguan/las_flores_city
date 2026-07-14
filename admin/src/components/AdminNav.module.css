@@ -1,0 +1,60 @@
+.topBar {
+  background: var(--panel-bg);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.roleBadge {
+  background: var(--accent);
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.logoutLink {
+  background: var(--danger);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.navLinks {
+  background: var(--panel-bg);
+  padding: 0.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+
+.sectionLabel {
+  color: #555;
+  font-size: 0.8rem;
+  font-weight: bold;
+  align-self: center;
+}
+
+.navLink {
+  font-size: 0.9rem;
+}
+
+.sectionLabel + .sectionLabel {
+  margin-left: 0.75rem;
+}
