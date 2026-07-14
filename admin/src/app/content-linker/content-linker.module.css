@@ -1,0 +1,180 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.tabBar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.tabActive {
+  border-color: var(--accent);
+  background: rgba(0, 255, 0, 0.1);
+  color: var(--accent);
+}
+
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.select {
+  padding: 0.5rem;
+  background: var(--panel-bg);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  min-width: 300px;
+}
+
+.listContainer {
+  margin-bottom: 1.5rem;
+}
+
+.listLabel {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #222;
+  font-size: 0.9rem;
+}
+
+.itemName {
+  flex: 1;
+}
+
+.button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.removeButton {
+  background: var(--danger);
+  color: #fff;
+}
+
+.smallButton {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.addContainer {
+  margin-top: 0.5rem;
+}
+
+.pendingOps {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+}
+
+.pendingCount {
+  color: #ffaa00;
+  margin-bottom: 0.5rem;
+}
+
+.pendingOp {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.opAction {
+  color: var(--muted);
+}
+
+.opField {
+  color: var(--accent);
+}
+
+.opArrow {
+  color: var(--muted);
+}
+
+.opValue {
+  color: #fff;
+}
+
+.saveButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  background: var(--accent);
+  color: #000;
+  margin-top: 1rem;
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.successBox {
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--accent);
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.emptyState {
+  color: #555;
+  text-align: center;
+  padding: 2rem;
+}

@@ -7,6 +7,11 @@ import { validateContent, checkContentQuality } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
 import { computeContentDiff } from './utils/contentDiff.js';
+import { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
+import { adminContentTreeRouter } from './admin-content.tree.js';
+
+export { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
+export type { ContentTreeEntry } from './admin-content.helpers.js';
 
 /**
  * Admin Content Pipeline Router
@@ -22,56 +27,8 @@ export const adminContentRouter = express.Router();
 // All routes need admin auth
 adminContentRouter.use(authAndAdminMiddleware);
 
-// ---------------------------------------------------------------------------
-// Shared helpers
-// ---------------------------------------------------------------------------
-
-export function resolveContentDir(): string {
-  const isSubdir = process.cwd().endsWith('server');
-  return isSubdir
-    ? path.resolve(process.cwd(), '..', 'content')
-    : path.resolve(process.cwd(), 'content');
-}
-
-/**
- * Validates a relative content path before any filesystem operations.
- *
- * Returns `{ valid: true }` only when ALL of the following hold:
- *   1. `relPath` is a non-empty string (falsy inputs are rejected)
- *   2. `relPath` does not contain ".." (traversal guard)
- *   3. `relPath` ends with ".yaml" (content files must be YAML)
- *   4. The resolved absolute path starts with `resolveContentDir()`
- *      (second traversal guard for encoded or edge-case sequences)
- *
- * Satisfies: Requirements 6.2, 6.3, 6.4, 7.3, 7.4, 7.5
- */
-export function validateContentPath(
-  relPath: unknown,
-): { valid: true } | { valid: false; reason: string } {
-  // Rule 1: reject falsy / non-string inputs
-  if (!relPath || typeof relPath !== 'string' || relPath.trim() === '') {
-    return { valid: false, reason: 'Path must be a non-empty string' };
-  }
-
-  // Rule 2: reject traversal sequences
-  if (relPath.includes('..')) {
-    return { valid: false, reason: 'Path traversal sequences (..) are not allowed' };
-  }
-
-  // Rule 3: must end with .yaml
-  if (!relPath.endsWith('.yaml')) {
-    return { valid: false, reason: 'Path must end with .yaml' };
-  }
-
-  // Rule 4: resolved absolute path must stay inside ContentDir
-  const contentDir = resolveContentDir();
-  const absolutePath = path.resolve(contentDir, relPath);
-  if (!absolutePath.startsWith(contentDir + path.sep) && absolutePath !== contentDir) {
-    return { valid: false, reason: 'Resolved path falls outside the content directory' };
-  }
-
-  return { valid: true };
-}
+// Mount tree routes (GET /file and GET /tree)
+adminContentRouter.use(adminContentTreeRouter);
 
 /**
  * POST /admin/content/validate
@@ -354,154 +311,6 @@ adminContentRouter.put('/file', async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to write file',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// ContentTreeEntry type
-// ---------------------------------------------------------------------------
-
-export interface ContentTreeEntry {
-  path: string;       // Relative to content/, e.g. "characters/char_ana_kim.yaml"
-  name: string;       // Stem (filename without .yaml), e.g. "char_ana_kim"
-  type: string;       // Singular inferred type, e.g. "character"
-  size: number;       // Bytes
-  modifiedAt: string; // ISO 8601
-}
-
-// ---------------------------------------------------------------------------
-// GET /admin/content/file?path=<rel>
-//
-// Returns the raw YAML content of a single content file.
-// Validates the path via validateContentPath; rejects traversal and
-// non-.yaml files.
-// ---------------------------------------------------------------------------
-
-adminContentRouter.get('/file', async (req, res) => {
-  const relPath = req.query.path;
-
-  const pathCheck = validateContentPath(relPath);
-  if (!pathCheck.valid) {
-    res.status(400).json({
-      success: false,
-      error: pathCheck.reason,
-      timestamp: new Date().toISOString(),
-    });
-    return;
-  }
-
-  const safeRelPath = relPath as string;
-  const contentDir = resolveContentDir();
-  const absolutePath = path.resolve(contentDir, safeRelPath);
-
-  try {
-    const stat = await fs.promises.stat(absolutePath);
-    const content = await fs.promises.readFile(absolutePath, 'utf-8');
-
-    res.json({
-      success: true,
-      data: {
-        path: safeRelPath,
-        content,
-        size: stat.size,
-        modifiedAt: stat.mtime.toISOString(),
-      },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (err: any) {
-    if (err.code === 'ENOENT') {
-      res.status(404).json({
-        success: false,
-        error: `File not found: ${safeRelPath}`,
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-    console.error('[admin-content] GET /file error:', err);
-    res.status(500).json({
-      success: false,
-      error: err.message || 'Failed to read file',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// GET /admin/content/tree
-//
-// Returns a flat array of ContentTreeEntry for every .yaml file under
-// the content directory. Infers `type` from the first directory segment
-// (e.g. "characters/" → "character").
-// ---------------------------------------------------------------------------
-
-adminContentRouter.get('/tree', async (_req, res) => {
-  try {
-    const contentDir = resolveContentDir();
-
-    // Verify the directory exists before walking it
-    try {
-      await fs.promises.access(contentDir);
-    } catch {
-      res.json({
-        success: true,
-        data: { tree: [] },
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    const dirents = await fs.promises.readdir(contentDir, {
-      withFileTypes: true,
-      recursive: true,
-    });
-
-    // Collect files to stat, then stat them in parallel
-    const filesToStat = dirents
-      .filter(dirent => {
-        if (!dirent.isFile()) return false;
-        return dirent.name.endsWith('.yaml');
-      })
-      .map(dirent => {
-        const absolutePath = path.join(dirent.parentPath, dirent.name);
-        const relativePath = path
-          .relative(contentDir, absolutePath)
-          .split(path.sep)
-          .join('/');
-        return { absolutePath, relativePath, filename: dirent.name };
-      });
-
-    const tree = await Promise.all(
-      filesToStat.map(async ({ absolutePath, relativePath, filename }) => {
-        const stat = await fs.promises.stat(absolutePath);
-        const firstSegment = relativePath.split('/')[0] ?? 'unknown';
-        const type = firstSegment.endsWith('ies')
-          ? `${firstSegment.slice(0, -3)}y`
-          : firstSegment.endsWith('s')
-            ? firstSegment.slice(0, -1)
-            : firstSegment;
-
-        return {
-          path: relativePath,
-          name: filename.slice(0, -'.yaml'.length),
-          type,
-          size: stat.size,
-          modifiedAt: stat.mtime.toISOString(),
-        };
-      })
-    );
-
-    res.json({
-      success: true,
-      data: { tree },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[admin-content] GET /tree error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to list content tree',
       timestamp: new Date().toISOString(),
     });
   }

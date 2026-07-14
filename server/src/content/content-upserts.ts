@@ -1,5 +1,5 @@
 import { queryOLTP } from '../database/connection.js';
-import { sanitizeText } from './validate.js';
+import { sanitizeText } from './validate-xss.js';
 
 export async function upsertCharacter(data: any): Promise<string> {
   const result = await queryOLTP(

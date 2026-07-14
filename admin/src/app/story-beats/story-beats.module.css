@@ -1,0 +1,17 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.errorPre {
+  margin: 0;
+  white-space: pre-wrap;
+}

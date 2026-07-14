@@ -1,3 +1,30 @@
-export default function StoryBeats() {
-  return <h1>Story Beats</h1>;
+'use client';
+
+import { useState } from 'react';
+import styles from './story-beats.module.css';
+import BeatForm from './components/BeatForm';
+import BeatTable from './components/BeatTable';
+import { useBeatHandlers } from './hooks/useBeatHandlers';
+
+export default function StoryBeatsPage() {
+  const h = useBeatHandlers();
+  const [formSlug, setFormSlug] = useState('');
+  const [formLabel, setFormLabel] = useState('');
+  const [formOrder, setFormOrder] = useState('');
+  const [formDescription, setFormDescription] = useState('');
+
+  const resetForm = () => { setFormSlug(''); setFormLabel(''); setFormOrder(''); setFormDescription(''); };
+  const handleAddSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    h.handleAddSubmit({ slug: formSlug, label: formLabel, order: formOrder, description: formDescription }, resetForm);
+  };
+
+  return (
+    <main className={styles.main}>
+      <h1>Beat Registry</h1>
+      <BeatForm formSlug={formSlug} formLabel={formLabel} formOrder={formOrder} formDescription={formDescription} submitting={h.submitting} onSlugChange={setFormSlug} onLabelChange={setFormLabel} onOrderChange={setFormOrder} onDescriptionChange={setFormDescription} onSubmit={handleAddSubmit} />
+      {h.error && <div className={styles.errorBox}><pre className={styles.errorPre}>{h.error}</pre></div>}
+      <BeatTable beats={h.beats} loading={h.loading} editingSlug={h.editingSlug} editState={h.editState} submitting={h.submitting} onEditStart={h.handleEditStart} onEditSave={h.handleEditSave} onEditCancel={() => h.setEditingSlug(null)} onEditStateChange={h.setEditState} onDelete={h.handleDelete} />
+    </main>
+  );
 }

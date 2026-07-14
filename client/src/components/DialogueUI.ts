@@ -7,6 +7,9 @@ import { disableChoiceButtons, enableChoiceButtons, attachChoiceButtonListeners 
 import * as api from '../utils/api';
 import { getLocalKey } from '../utils/crypto';
 
+export type { DialogueNode } from '../types/dialogue';
+import type { DialogueNode } from '../types/dialogue';
+
 enum DialogueUIState {
   HIDDEN = 'HIDDEN',
   SLIDING_IN = 'SLIDING_IN',
@@ -14,29 +17,6 @@ enum DialogueUIState {
   AWAITING_CHOICE = 'AWAITING_CHOICE',
   SUBMITTING = 'SUBMITTING',
   SLIDING_OUT = 'SLIDING_OUT',
-}
-
-export interface DialogueNode {
-  id: string;
-  type: string;
-  text: string;
-  thought?: string;
-  speaker_id?: string;
-  speaker?: {
-    id: string;
-    name: string;
-    title: string;
-    avatar_url: string | null;
-  };
-  choices?: Array<{
-    id: string;
-    text: string;
-    next_node_id: string;
-    time_block_cost?: { amount: number; description: string };
-    relationship_change?: { stat: string; amount: number };
-  }>;
-  effects?: any;
-  is_end?: boolean;
 }
 
 interface DialogueState {
@@ -75,11 +55,7 @@ export class DialogueUI {
         const pending = this.pendingRequests.get(id);
         if (!pending) return;
         this.pendingRequests.delete(id);
-        if (status === 'success') {
-          pending.resolve(choices);
-        } else {
-          pending.reject(new Error(error || 'AI rewrite failed'));
-        }
+        status === 'success' ? pending.resolve(choices) : pending.reject(new Error(error || 'AI rewrite failed'));
       };
       this.aiWorker.onerror = (err) => {
         console.warn('[AI Worker] Error:', err);
@@ -99,9 +75,9 @@ export class DialogueUI {
       if (data.characterId && data.sceneId) await this.startDialogueWithCharacter(data.characterId, data.sceneId);
       else if (data.dialogueId) await this.startDialogue(data.dialogueId);
     });
-    eventBus.on('dialogue:choose', async (choiceIndex: number) => await this.makeChoice(choiceIndex));
+    eventBus.on('dialogue:choose', async (choiceIndex: number) => this.makeChoice(choiceIndex));
     eventBus.on('dialogue:end', () => this.slideOut());
-    eventBus.on('dialogue:resume', async () => await this.resumeDialogue());
+    eventBus.on('dialogue:resume', () => this.resumeDialogue());
     this.container.addEventListener('click', () => {
       if (this.state === DialogueUIState.TYPING && this.typewriter) this.typewriter.skip();
     });
@@ -113,18 +89,13 @@ export class DialogueUI {
         const currentNode = result.data.chunk
           ? result.data.chunk.nodes[result.data.current_node_id]
           : result.data.current_node;
-
         this.currentDialogue = {
           chunk: result.data.chunk,
           tree: result.data.tree,
           currentNode,
           availableChoices: result.data.available_choices
         };
-
-        if (this.currentDialogue.chunk) {
-          this.prefetchFreeLeaves(this.currentDialogue.chunk);
-        }
-
+        if (this.currentDialogue.chunk) this.prefetchFreeLeaves(this.currentDialogue.chunk);
         this.slideIn();
       }
     } catch (error) { console.error(errorMsg, error); }
@@ -175,10 +146,8 @@ export class DialogueUI {
   }
 
   private prefetchFreeLeaves(chunk: any): void {
-    const leaves = chunk?.leaves ?? {};
-    for (const leaf of Object.values(leaves) as any[]) {
-      const isFree = (leaf.tb_cost ?? 0) === 0 && (!leaf.conditions || leaf.conditions.length === 0);
-      if (isFree && leaf.target_chunk) {
+    for (const leaf of Object.values(chunk?.leaves ?? {}) as any[]) {
+      if ((leaf.tb_cost ?? 0) === 0 && (!leaf.conditions || leaf.conditions.length === 0) && leaf.target_chunk) {
         // @ts-ignore
         import('../utils/ChunkCache').then(m => m.chunkCache.prefetch(leaf.target_chunk));
       }
@@ -186,11 +155,7 @@ export class DialogueUI {
   }
 
   private renderChunk(chunk: any, currentNodeId: string, availableChoices: any[]) {
-    this.currentDialogue = {
-      chunk,
-      currentNode: chunk.nodes[currentNodeId],
-      availableChoices,
-    };
+    this.currentDialogue = { chunk, currentNode: chunk.nodes[currentNodeId], availableChoices };
     this.prefetchFreeLeaves(chunk);
     this.renderDialogue();
   }
@@ -209,23 +174,19 @@ export class DialogueUI {
 
       if (currentChunk) {
         const leaf = currentChunk.leaves[choice.id];
-        if (leaf && leaf.target_chunk) {
+        if (leaf?.target_chunk) {
           // @ts-ignore
           const m = await import('../utils/ChunkCache');
           if (m.chunkCache.has(leaf.target_chunk)) {
             const cached = m.chunkCache.get(leaf.target_chunk)!;
             const nextNodeId = cached.chunk_key;
             const nextNode = cached.nodes[nextNodeId];
-            const isEnd = !nextNode || nextNode.is_end === true || (!nextNode.choices || nextNode.choices.length === 0);
+            const isEnd = !nextNode || nextNode.is_end === true || !nextNode.choices?.length;
 
             this.handleDialogueResult({ time_blocks_remaining: undefined });
 
             if (isEnd) {
-              this.currentDialogue.currentNode = nextNode;
-              this.currentDialogue.availableChoices = [];
-              this.renderDialogue();
-              this.container.style.pointerEvents = 'none';
-              setTimeout(() => this.slideOut(), 3000);
+              this.handleDialogueEnd(nextNode);
               api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
               return;
             }
@@ -242,11 +203,7 @@ export class DialogueUI {
           this.handleDialogueResult(result.data);
 
           if (result.data.is_end) {
-            this.currentDialogue.currentNode = result.data.next_chunk.nodes[result.data.current_node_id];
-            this.currentDialogue.availableChoices = [];
-            this.renderDialogue();
-            this.container.style.pointerEvents = 'none';
-            setTimeout(() => this.slideOut(), 3000);
+            this.handleDialogueEnd(result.data.next_chunk.nodes[result.data.current_node_id]);
             return;
           }
 
@@ -256,20 +213,13 @@ export class DialogueUI {
           enableChoiceButtons(this.choicesContainer);
         }
       } else {
-        const result = await api.makeDialogueChoice(
-          this.currentDialogue.tree.id,
-          choiceIndex as any
-        );
+        const result = await api.makeDialogueChoice(this.currentDialogue.tree.id, choiceIndex as any);
 
         if (result.success && result.data) {
           this.handleDialogueResult(result.data);
 
           if (result.data.is_end) {
-            this.currentDialogue.currentNode = result.data.next_node;
-            this.currentDialogue.availableChoices = [];
-            this.renderDialogue();
-            this.container.style.pointerEvents = 'none';
-            setTimeout(() => this.slideOut(), 3000);
+            this.handleDialogueEnd(result.data.next_node);
             return;
           }
 
@@ -296,39 +246,12 @@ export class DialogueUI {
       phoneStore.updateState({ hasNewVaultItem: true });
     }
     this.handleMysterySolveStatus(result.mystery_solve_status);
-
-    if (result.alignment_change) {
-      phoneStore.updateState({ alignment: result.alignment_change });
-
-      if (result.alignment_change === 'fugitive') {
-        eventBus.emit('audio:play_sfx', { key: 'sfx_system_crash' });
-        const phoneContainer = document.querySelector('.phone-os-container');
-        if (phoneContainer) {
-          phoneContainer.classList.add('trigger-glitch');
-          setTimeout(() => {
-            phoneContainer.classList.remove('trigger-glitch');
-            phoneContainer.classList.add('theme-fugitive');
-          }, 800);
-        }
-        eventBus.emit('monologue:push', {
-          text: '[SYSTEM INTEGRITY BREACH] Faction protocols overridden. Network identity scrambled. You are a ghost now.',
-          type: 'warning',
-        });
-      } else {
-        eventBus.emit('monologue:push', {
-          text: '[ALIGNMENT LOCKED] Faction allegiance registered: LOYALIST. Network protocols updated.',
-          type: 'warning',
-        });
-      }
-    }
+    if (result.alignment_change) this.handleAlignmentChange(result.alignment_change);
   }
 
-  private handleMysterySolveStatus(mysterySolveStatus: any) {
-    if (!mysterySolveStatus) return;
-    const ms = mysterySolveStatus;
-    if (ms.isBreakthrough) {
-      eventBus.emit('breakthrough:winner', { mysteryId: ms.mysteryId });
-    }
+  private handleMysterySolveStatus(ms: any) {
+    if (!ms) return;
+    if (ms.isBreakthrough) eventBus.emit('breakthrough:winner', { mysteryId: ms.mysteryId });
     const messages: Record<string, string> = {
       solver: '[SYSTEM] Case data submitted. Investigation window now open for other players.',
       late: '[SYSTEM] Case closed. Data submission rejected: Deadline exceeded.',
@@ -337,6 +260,35 @@ export class DialogueUI {
       eventBus.emit('monologue:push', {
         text: ms.isBreakthrough ? '[BREAKTHROUGH] Case closed. You are the first detective on the scene.' : messages[ms.kind],
         type: 'warning'
+      });
+    }
+  }
+
+  private handleDialogueEnd(nextNode: DialogueNode) {
+    this.currentDialogue!.currentNode = nextNode;
+    this.currentDialogue!.availableChoices = [];
+    this.renderDialogue();
+    this.container.style.pointerEvents = 'none';
+    setTimeout(() => this.slideOut(), 3000);
+  }
+
+  private handleAlignmentChange(alignment: string) {
+    phoneStore.updateState({ alignment: alignment as any });
+    if (alignment === 'fugitive') {
+      eventBus.emit('audio:play_sfx', { key: 'sfx_system_crash' });
+      const el = document.querySelector('.phone-os-container');
+      if (el) {
+        el.classList.add('trigger-glitch');
+        setTimeout(() => { el.classList.remove('trigger-glitch'); el.classList.add('theme-fugitive'); }, 800);
+      }
+      eventBus.emit('monologue:push', {
+        text: '[SYSTEM INTEGRITY BREACH] Faction protocols overridden. Network identity scrambled. You are a ghost now.',
+        type: 'warning',
+      });
+    } else {
+      eventBus.emit('monologue:push', {
+        text: '[ALIGNMENT LOCKED] Faction allegiance registered: LOYALIST. Network protocols updated.',
+        type: 'warning',
       });
     }
   }
@@ -363,16 +315,12 @@ export class DialogueUI {
   private async applyAiRewrites(choices: DialogueNode['choices']) {
     if (!choices?.length || !this.choicesContainer || !this.currentDialogue) return;
     try {
-      const rewrittenChoices = await this.dispatchToAiWorker(
-        choices, 'You are a conversational AI helping a player in a dialogue. Rewrite choices to match their relationship.'
-      );
+      const rewrittenChoices = await this.dispatchToAiWorker(choices, 'You are a conversational AI helping a player in a dialogue. Rewrite choices to match their relationship.');
       this.currentDialogue.availableChoices = rewrittenChoices;
       const { timeBlocks } = phoneStore.getState();
       this.choicesContainer.innerHTML = buildChoiceButtons(rewrittenChoices, timeBlocks);
       attachChoiceButtonListeners(this.choicesContainer, (idx) => this.makeChoice(idx));
-      if (this.state === DialogueUIState.AWAITING_CHOICE) {
-        this.choicesContainer.style.opacity = '1';
-      }
+      if (this.state === DialogueUIState.AWAITING_CHOICE) this.choicesContainer.style.opacity = '1';
     } catch (err) {
       console.warn('[AI] Rewrite failed, keeping original choices:', err);
     }
@@ -392,12 +340,7 @@ export class DialogueUI {
         }
       },
       (charIndex) => {
-        if (charIndex % 2 === 0) {
-          eventBus.emit('audio:play_sfx', {
-            key: 'sfx_mech_click',
-            url: 'https://cdn.lasflores2077.com/audio/sfx_mech_click.mp3',
-          });
-        }
+        if (charIndex % 2 === 0) eventBus.emit('audio:play_sfx', { key: 'sfx_mech_click', url: 'https://cdn.lasflores2077.com/audio/sfx_mech_click.mp3' });
       }
     );
     this.typewriter.start(text);

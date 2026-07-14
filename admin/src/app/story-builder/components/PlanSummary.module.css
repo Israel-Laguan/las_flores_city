@@ -1,0 +1,65 @@
+.summary {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+  background: var(--panel-bg);
+}
+
+.heading {
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+}
+
+.description {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.breakdown {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.breakdownTitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(0, 255, 0, 0.13);
+  color: var(--accent);
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.25rem;
+}

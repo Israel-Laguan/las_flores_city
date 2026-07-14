@@ -19,11 +19,11 @@ function NavLinksRow() {
       <Link href="/shop" className={styles.navLink}>Shop</Link>
       <Link href="/maps" className={styles.navLink}>Maps</Link>
       <Link href="/lore" className={styles.navLink}>Lore</Link>
-      <span className={`${styles.sectionLabel} ${styles.sectionLabel}`}>Tools:</span>
+      <span className={styles.sectionLabel}>Tools:</span>
       <Link href="/story-builder" className={styles.navLink}>Story Builder</Link>
       <Link href="/editor" className={styles.navLink}>Editor</Link>
       <Link href="/content-linker" className={styles.navLink}>Linker</Link>
-      <span className={`${styles.sectionLabel} ${styles.sectionLabel}`}>System:</span>
+      <span className={styles.sectionLabel}>System:</span>
       <Link href="/migration" className={styles.navLink}>Migration</Link>
       <Link href="/validation" className={styles.navLink}>Validation</Link>
       <Link href="/quality" className={styles.navLink}>Quality</Link>

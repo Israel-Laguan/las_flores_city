@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/cn';
+import { adminFetch } from '@/lib/client-api';
 import styles from './home.module.css';
 
 type Section = { title: string; items: Array<{ href: string; label: string }> };
@@ -103,8 +105,8 @@ function RecentActivity({ activity, loading }: { activity: StatsData['recentActi
         </div>
       ) : (
         <div className={styles.muted}>
-          <p style={{ marginBottom: '0.5rem' }}>No recent activity</p>
-          <p style={{ fontSize: '0.9rem' }}>Start migrating content to see activity here.</p>
+          <p className={styles.activityNote}>No recent activity</p>
+          <p className={styles.activityHint}>Start migrating content to see activity here.</p>
         </div>
       )}
     </Panel>
@@ -118,10 +120,11 @@ export default function Home() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch('/api/admin/stats');
-        const data = await res.json();
+        const data = await adminFetch<{ success: boolean; data?: StatsData }>(
+          '/admin/stats',
+        );
         if (data.success) {
-          setStats(data.data);
+          setStats(data.data ?? null);
         }
       } catch {
         // Stats failed to load
@@ -157,7 +160,7 @@ export default function Home() {
           <a
             key={a.href}
             href={a.href}
-            className={`${styles.action} ${a.variant === 'primary' ? styles.primaryAction : styles.secondaryAction}`}
+            className={cn(styles.action, a.variant === 'primary' ? styles.primaryAction : styles.secondaryAction)}
           >
             {a.label}
           </a>

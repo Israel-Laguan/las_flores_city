@@ -125,6 +125,20 @@ The home page shows:
 - Recent activity from `migration_log`
 - Quick action buttons for migration, validation, analytics
 
+## Core Shell Page Data Flows
+
+Each core page fetches data via `api.ts` direct fetch to the Express server.
+
+| Page | Route | Fetch Method | Express Endpoint | Response Shape |
+|------|-------|-------------|-----------------|----------------|
+| Login | `/login` | Client `POST` → Next API route → Express | `POST /auth/admin-login` | `{ success, data: { user } }` + Set-Cookie header |
+| Home | `/` | Client `GET` → Next API route → Express | `GET /admin/stats` | `{ success, data: { counts: { characters, dialogues, scenes, overlays, mysteries }, recentActivity: [...] } }` |
+| Layout | All pages | Server-side `getAdminUser()` | `GET /auth/admin-me` | `{ success, data: { user } }` |
+| ContentListPage | `/{type}` | Client `GET {endpoint}?page={p}&pageSize=50` | `GET /admin/{type}` | `{ success, data: { items: T[], total: number } }` |
+| ContentDetailPage | `/{type}/{id}` | Client `GET /api/admin/{type}/{id}` | `GET /admin/{type}/{id}` | `{ success, data: T }` |
+
+**Auth flow:** Login posts FormData to `/api/auth/admin-login`, which forwards to Express and relays the `Set-Cookie` header. The middleware checks for `jwt_session` cookie on all routes except `/login`.
+
 ## Network Architecture
 
 File operations route through the server, not the dashboard directly:

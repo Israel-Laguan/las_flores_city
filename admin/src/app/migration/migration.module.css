@@ -1,0 +1,241 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.buttonBar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.primaryButton {
+  background: var(--accent);
+  color: #000;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--accent);
+}
+
+.td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.successBadge {
+  background: var(--accent);
+  color: #000;
+}
+
+.errorBadge {
+  background: var(--danger);
+  color: #fff;
+}
+
+.warningBadge {
+  background: #ffaa00;
+  color: #000;
+}
+
+.infoBadge {
+  background: #0066ff;
+  color: #fff;
+}
+
+.purpleBadge {
+  background: #9900ff;
+  color: #fff;
+}
+
+.orangeBadge {
+  background: #ff6600;
+  color: #000;
+}
+
+.pinkBadge {
+  background: #ff00ff;
+  color: #fff;
+}
+
+.cyanBadge {
+  background: #00ccff;
+  color: #000;
+}
+
+.tealBadge {
+  background: #00ffaa;
+  color: #000;
+}
+
+.greenBadge {
+  background: #88cc88;
+  color: #000;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summaryCard {
+  text-align: center;
+  padding: 1rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+}
+
+.summaryValue {
+  font-size: 2rem;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.summaryLabel {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.successColor {
+  color: var(--accent);
+}
+
+.warningColor {
+  color: #ffaa00;
+}
+
+.errorColor {
+  color: var(--danger);
+}
+
+.successBox {
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--accent);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.resultMessage {
+  margin-bottom: 0.5rem;
+}
+
+.fileGroup {
+  margin-top: 1.5rem;
+}
+
+.fileGroupTitle {
+  margin-bottom: 0.5rem;
+}
+
+.typeSection {
+  margin-bottom: 1.5rem;
+}
+
+.typeHeader {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fileCount {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
+.statusSummary {
+  margin-bottom: 1rem;
+  color: var(--muted);
+}
+
+.statusSummary strong {
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.code {
+  color: #aaa;
+}
+
+.errorTitle {
+  margin-bottom: 0.5rem;
+}
+
+.errorList {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.errorItem {
+  margin-bottom: 0.25rem;
+}
+
+.errorPre {
+  margin: 0;
+  white-space: pre-wrap;
+}

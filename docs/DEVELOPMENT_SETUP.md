@@ -10,7 +10,7 @@ The development stack consists of:
 - **Redis** (port 6379) - Session and cache store
 - **MinIO** (ports 9000-9001) - Object storage for assets
 - **Server** (port 3000) - Backend API
-- **Admin UI** (port 3001) - Next.js admin interface
+- **Admin UI** (port 3002) - Next.js admin interface
 
 ## Prerequisites
 
@@ -48,14 +48,14 @@ The script will:
 2. Create the podman network and volumes
 3. Start backing services (PostgreSQL, Redis, MinIO)
 4. Build and start the server
-5. Build and start the admin UI
+ 5. Build and start the admin panel
 6. Apply database migrations
 7. Output service URLs
 
 Access the services:
 - **Server API:** http://localhost:3000
 - **Health Check:** http://localhost:3000/health
-- **Admin UI:** http://localhost:3001
+- **Admin UI:** http://localhost:3002
 
 ## Manual Setup (For Debugging)
 
@@ -162,27 +162,24 @@ podman run -d \
 
 **Important:** The `PROMPT_ROOT` environment variable must point to `/app/docs/lore/assets/ui-concepts` because the server's working directory is `/app/server`, and without this explicit setting, it would look for `/app/server/docs/lore/assets/ui-concepts` (which doesn't exist).
 
-### 5. Build and Start Dashboard UI
+### 5. Build and Start Admin UI
 
 ```bash
-# Build the dashboard image
-podman build -t las-flores-dashboard -f dashboard/Dockerfile .
+# Build the admin image
+podman build -t las-flores-admin -f admin/Dockerfile .
 
-# Run the dashboard container
+# Run the admin container
+SERVER_IP=$(podman inspect las-flores-server 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
 podman run -d \
-  --name las-flores-dashboard \
+  --name las-flores-admin \
   --network las-flores-net \
-  --add-host="las-flores-postgres-oltp:$OLTP_IP" \
-  --add-host="las-flores-postgres-olap:$OLAP_IP" \
-  --add-host="las-flores-redis:$REDIS_IP" \
-  --add-host="las-flores-minio:$MINIO_IP" \
-  -p 3001:3000 \
-  -v ./dashboard:/app/dashboard \
+  --add-host="las-flores-server:$SERVER_IP" \
+  -p 3002:3000 \
+  -v ./admin:/app/admin \
   -v ./shared:/app/shared \
-  -v ./client:/app/client \
-  -v ./server:/app/server \
   -e NODE_ENV=development \
-  las-flores-dashboard
+  -e NEXT_PUBLIC_SERVER_URL=http://las-flores-server:3000 \
+  las-flores-admin
 ```
 
 ### 6. Apply Database Migrations
@@ -199,7 +196,7 @@ Note: The migration script uses `podman` (not `docker`). If you see `docker: com
 |---------|-----|------|
 | Server API | http://localhost:3000 | 3000 |
 | Server Health | http://localhost:3000/health | 3000 |
-| Dashboard UI | http://localhost:3001 | 3001 |
+| Admin UI | http://localhost:3002 | 3002 |
 | PostgreSQL OLTP | localhost:5434 | 5434 |
 | PostgreSQL OLAP | localhost:5433 | 5433 |
 | Redis | localhost:6379 | 6379 |
@@ -253,7 +250,7 @@ podman ps --format "{{.Names}}: {{.Status}} ({{.Ports}})"
 ### View container logs
 ```bash
 podman logs las-flores-server
-podman logs las-flores-dashboard
+podman logs las-flores-admin
 ```
 
 ### Test database connections
@@ -292,7 +289,7 @@ podman rm las-flores-server
 ### Clean everything and start fresh
 ```bash
 # Remove all containers
-podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server las-flores-dashboard
+podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server
 
 # Remove volumes (if needed)
 podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data

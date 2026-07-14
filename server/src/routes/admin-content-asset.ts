@@ -1,6 +1,6 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { validateContentPath } from './admin-content.js';
+import { validateContentPath } from './admin-content.helpers.js';
 import { assignAsset } from '../services/ContentAssetService.js';
 
 export const adminContentAssetRouter = express.Router();

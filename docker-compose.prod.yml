@@ -91,28 +91,6 @@ services:
       - patreon_client_secret
       - paypal_secret
 
-  # Dashboard Panel - Next.js (living reference, renamed from admin)
-  dashboard:
-    restart: unless-stopped
-    # Production: Remove source code volume mounts - use built image
-    volumes: !reset []
-    environment:
-      # Production: Use internal server URL
-      API_URL: http://server:3000
-      # Database password via _FILE - will be resolved by startup script
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
-      # Use start.sh as entrypoint to resolve secrets
-      NODE_ENV: production
-    secrets:
-      - postgres_password
-    depends_on:
-      server:
-        condition: service_healthy
-      postgres-oltp:
-        condition: service_healthy
-    command: sh /app/dashboard/start.sh npm run start --workspace=dashboard
-
 # Docker Secrets - Use external secrets in production (e.g., Swarm mode, Kubernetes)
 # Example secrets file structure (create per-environment):
 # secrets:

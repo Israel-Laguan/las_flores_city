@@ -1,0 +1,64 @@
+.container {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewerScroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.centerContent {
+  padding: 2rem;
+  text-align: center;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.fileHeader {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filePath {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.tagsContainer {
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #0066ff;
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.markdownContent {
+  padding: 1.5rem;
+}

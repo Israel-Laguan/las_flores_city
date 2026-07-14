@@ -52,7 +52,6 @@ export {
   getCurrentLocation,
   getDialogueCursor,
   getBalancesForLedger,
-  getBalances,
 } from './PlayerStateRepository.read.js';
 
 // ── Write Methods ───────────────────────────────────────────────
@@ -60,6 +59,7 @@ export {
 export {
   modifyBalance,
   chargeCurrency,
+  getBalances,
   spendTimeBlocksWithLocation,
   spendTimeBlocks,
   setDialogueCursor,
@@ -87,7 +87,7 @@ export class PlayerStateRepository {
   static getCurrentLocation = readMethods.getCurrentLocation;
   static getDialogueCursor = readMethods.getDialogueCursor;
   static getBalancesForLedger = readMethods.getBalancesForLedger;
-  static getBalances = readMethods.getBalances;
+  static getBalances = writeMethods.getBalances;
   static modifyBalance = writeMethods.modifyBalance;
   static chargeCurrency = writeMethods.chargeCurrency;
   static spendTimeBlocksWithLocation = writeMethods.spendTimeBlocksWithLocation;

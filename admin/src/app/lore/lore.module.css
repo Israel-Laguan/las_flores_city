@@ -1,0 +1,23 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  gap: 1rem;
+  min-height: calc(100vh - 10rem);
+}
+
+.treePanel {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin: 0.5rem;
+}

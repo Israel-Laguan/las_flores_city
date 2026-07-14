@@ -99,3 +99,11 @@
   font-size: 0.75rem;
   color: #666;
 }
+
+.activityNote {
+  margin-bottom: 0.5rem;
+}
+
+.activityHint {
+  font-size: 0.9rem;
+}

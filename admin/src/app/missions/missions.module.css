@@ -1,0 +1,18 @@
+.createBar {
+  padding: 2rem 2rem 0;
+}
+
+.createButton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  background: var(--accent);
+  color: #000;
+  text-decoration: none;
+}
+
+.createButton:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}

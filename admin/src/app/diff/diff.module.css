@@ -1,0 +1,154 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.description {
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.primaryButton {
+  background: var(--accent);
+  color: #000;
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--accent);
+}
+
+.td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.unchangedBadge {
+  background: #555;
+  color: #999;
+}
+
+.newBadge {
+  background: var(--accent);
+  color: #000;
+}
+
+.modifiedBadge {
+  background: #ffaa00;
+  color: #000;
+}
+
+.deletedBadge {
+  background: var(--danger);
+  color: #fff;
+}
+
+.errorBadge {
+  background: #ff0000;
+  color: #fff;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summaryCard {
+  text-align: center;
+  padding: 1rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+}
+
+.summaryValue {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.summaryLabel {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.successColor {
+  color: var(--accent);
+}
+
+.warningColor {
+  color: #ffaa00;
+}
+
+.mutedColor {
+  color: #888;
+}
+
+.successBox {
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--accent);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.linkBar {
+  margin-top: 1rem;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}

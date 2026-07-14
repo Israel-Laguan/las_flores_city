@@ -1,0 +1,145 @@
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.description {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.primaryButton {
+  background: var(--accent);
+  color: #000;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.subsection {
+  padding: 1rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.subsectionTitle {
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.successBox {
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--accent);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.boldText {
+  font-weight: bold;
+}
+
+.fileList {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.errorList {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.errorItem {
+  color: #ff6666;
+}
+
+.itemStatusTitle {
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.itemTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.tableRow {
+  border-bottom: 1px solid #222;
+}
+
+.tableCell {
+  padding: 0.4rem;
+}
+
+.tableCellName {
+  padding: 0.4rem;
+  color: #aaa;
+}
+
+.tableCellInfo {
+  padding: 0.4rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.statusSuccess {
+  background: rgba(0, 255, 0, 0.13);
+  color: var(--accent);
+}
+
+.statusError {
+  background: rgba(255, 0, 0, 0.13);
+  color: var(--danger);
+}
+
+.retryButton {
+  margin-top: 0.75rem;
+}

@@ -5,14 +5,12 @@
   "workspaces": [
     "client",
     "server",
-    "dashboard",
     "admin",
     "shared"
   ],
   "scripts": {
     "dev:client": "npm run dev --workspace=client",
     "dev:server": "npm run dev --workspace=server",
-    "dev:dashboard": "npm run dev --workspace=dashboard",
     "migrate": "npm run migrate --workspace=server",
     "assets:backup": "node scripts/backup-lore-assets.mjs",
     "assets:restore": "node scripts/restore-lore-assets.mjs",

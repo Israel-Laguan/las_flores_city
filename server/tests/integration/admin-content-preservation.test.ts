@@ -43,16 +43,13 @@ describe('Admin Content Operations Unchanged', () => {
       expect(content).toMatch(/error:\s*error\.message/);
     });
 
-    it('admin validate proxy route preserves downstream response on success', () => {
+    it('admin validate proxy route removed (admin uses direct adminFetch to Express) — G1 resolved', () => {
       const routePath = join(
         projectRoot,
         'admin', 'src', 'app', 'api', 'admin', 'content', 'validate', 'route.ts'
       );
-      const content = readFileSync(routePath, 'utf-8');
-
-      // The route must forward the full downstream JSON unchanged when the
-      // upstream call succeeds (NextResponse.json(data) or equivalent)
-      expect(content).toMatch(/NextResponse\.json\(data\)/);
+      // Proxy routes were intentionally removed per G1 — admin calls Express directly via adminFetch
+      expect(() => readFileSync(routePath, 'utf-8')).toThrow();
     });
   });
 
@@ -67,16 +64,13 @@ describe('Admin Content Operations Unchanged', () => {
       expect(content).toContain("adminContentRouter.post('/migrate'");
     });
 
-    it('admin migrate proxy route preserves downstream response on success', () => {
+    it('admin migrate proxy route removed (admin uses direct adminFetch to Express) — G1 resolved', () => {
       const routePath = join(
         projectRoot,
         'admin', 'src', 'app', 'api', 'admin', 'content', 'migrate', 'route.ts'
       );
-      const content = readFileSync(routePath, 'utf-8');
-
-      // The route must forward the full downstream JSON unchanged when the
-      // upstream call succeeds
-      expect(content).toMatch(/NextResponse\.json\(data\)/);
+      // Proxy routes were intentionally removed per G1 — admin calls Express directly via adminFetch
+      expect(() => readFileSync(routePath, 'utf-8')).toThrow();
     });
   });
 
@@ -107,15 +101,13 @@ describe('Admin Content Operations Unchanged', () => {
       expect(content).toMatch(/timestamp:\s*new Date\(\)\.toISOString\(\)/);
     });
 
-    it('admin status proxy route preserves downstream response on success', () => {
+    it('admin status proxy route removed (admin uses direct adminFetch to Express) — G1 resolved', () => {
       const routePath = join(
         projectRoot,
         'admin', 'src', 'app', 'api', 'admin', 'content', 'status', 'route.ts'
       );
-      const content = readFileSync(routePath, 'utf-8');
-
-      // The route must forward the full downstream JSON unchanged on success
-      expect(content).toMatch(/NextResponse\.json\(data\)/);
+      // Proxy routes were intentionally removed per G1 — admin calls Express directly via adminFetch
+      expect(() => readFileSync(routePath, 'utf-8')).toThrow();
     });
   });
 
@@ -147,9 +139,9 @@ describe('Admin Content Operations Unchanged', () => {
     it('ci workflow builds all workspaces', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
-      // Server and dashboard builds must be present
+      // Server and admin builds must be present (dashboard retired)
       expect(content).toMatch(/npm run build --workspace=server/);
-      expect(content).toMatch(/npm run build --workspace=dashboard/);
+      expect(content).toMatch(/npm run build --workspace=admin/);
     });
 
     it('ci workflow runs linter', () => {

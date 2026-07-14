@@ -1,0 +1,193 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.coverageStats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.successText {
+  color: var(--accent);
+}
+
+.errorText {
+  color: var(--danger);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.progressBar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.coverageMeta {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.beatButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: 5px;
+  padding: 1rem;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  color: #fff;
+}
+
+.beatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.beatTitle {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.beatBadges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.successBadge {
+  background: var(--accent);
+  color: #000;
+}
+
+.dangerBadge {
+  background: var(--danger);
+  color: #fff;
+}
+
+.infoBadge {
+  background: #0066ff;
+  color: #fff;
+}
+
+.beatDescription {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.beatMeta {
+  color: #666;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.beatExpanded {
+  padding: 0.75rem 1rem;
+  background: var(--panel-bg);
+  border-left: 3px solid;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+  borderBottomLeftRadius: 5px;
+  borderBottomRightRadius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.expandedSection {
+  margin-bottom: 0.5rem;
+}
+
+.expandedLabel {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.expandedList {
+  margin: 0.25rem 0 0 1.5rem;
+  padding: 0;
+}
+
+.expandedItem {
+  color: #aaa;
+  margin-bottom: 0.25rem;
+}
+
+.nodeId {
+  color: #666;
+}
+
+.arrow {
+  text-align: center;
+  color: var(--accent);
+  font-size: 1.2rem;
+  padding: 0.25rem 0;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+}

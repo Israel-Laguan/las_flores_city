@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  flex: 1;
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 0;
+}
+
+.cardTitle {
+  color: var(--accent);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.cardStats {
+  display: flex;
+  gap: 1rem;
+}
+
+.readyCount {
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.missingCount {
+  color: var(--danger);
+  font-size: 0.85rem;
+}

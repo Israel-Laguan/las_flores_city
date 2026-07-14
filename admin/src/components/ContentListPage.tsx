@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/cn';
+import { adminFetch } from '@/lib/client-api';
 import styles from './ContentListPage.module.css';
 
 interface Column<T> {
@@ -45,7 +47,7 @@ function ListTable<T extends Record<string, unknown>>({
           <tr
             key={rowId}
             onClick={() => onNavigate(rowId)}
-            style={{ cursor: 'pointer' }}
+            className={styles.clickableRow}
             tabIndex={0}
             role="button"
             onKeyDown={(e) => {
@@ -64,7 +66,7 @@ function ListTable<T extends Record<string, unknown>>({
         );})}
         {!loading && items.length === 0 && (
           <tr>
-            <td colSpan={columns.length} className={`${styles.td} ${styles.muted}`} style={{ textAlign: 'center' }}>
+            <td colSpan={columns.length} className={cn(styles.td, styles.muted, styles.textCenter)}>
               No items found.
             </td>
           </tr>
@@ -91,7 +93,7 @@ function Pagination({
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
-        className={`${styles.button} ${page === 1 ? styles.disabledButton : ''}`}
+        className={cn(styles.button, page === 1 && styles.disabledButton)}
       >
         &larr; Prev
       </button>
@@ -99,7 +101,7 @@ function Pagination({
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className={`${styles.button} ${page >= totalPages ? styles.disabledButton : ''}`}
+        className={cn(styles.button, page >= totalPages && styles.disabledButton)}
       >
         Next &rarr;
       </button>
@@ -128,8 +130,10 @@ export default function ContentListPage<T extends Record<string, unknown>>({
     const controller = new AbortController();
     abortRef.current = controller;
     try {
-      const res = await fetch(`${endpoint}?page=${p}&pageSize=${pageSize}`, { signal: controller.signal });
-      const data = await res.json();
+      const data = await adminFetch<{ success: boolean; data?: { items: T[]; total: number }; error?: string }>(
+        `${endpoint}?page=${p}&pageSize=${pageSize}`,
+        { signal: controller.signal },
+      );
       if (data.success) {
         setItems(data.data?.items ?? []);
         setTotal(data.data?.total ?? 0);

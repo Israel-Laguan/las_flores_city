@@ -1,0 +1,5 @@
+import ContentDetailPage from '@/components/ContentDetailPage';
+
+export default function MissionDetailPage() {
+  return <ContentDetailPage title="Mission" backHref="/missions" backLabel="Missions" />;
+}

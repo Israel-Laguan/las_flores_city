@@ -178,32 +178,6 @@ services:
     working_dir: /app/client
     command: npx playwright test --config playwright.docker.config.ts
 
-  # Dashboard Panel - Next.js (living reference, renamed from admin)
-  dashboard:
-    build:
-      context: .
-      dockerfile: dashboard/Dockerfile
-    container_name: las-flores-dashboard
-    restart: unless-stopped
-    ports:
-      - "3001:3000"
-    environment:
-      API_URL: http://server:3000
-      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
-    depends_on:
-      server:
-        condition: service_healthy
-      postgres-oltp:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    volumes:
-      - ./dashboard/src:/app/dashboard/src
-      - ./shared:/app/shared
-
   # Admin Panel - Next.js 16 (new, direct-fetch to Express)
   admin:
     build:

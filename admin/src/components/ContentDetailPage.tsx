@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { adminFetch } from '@/lib/client-api';
 import styles from './content-detail.module.css';
 
 interface Props {
@@ -23,19 +24,20 @@ export default function ContentDetailPage({ title, backHref, backLabel }: Props)
   useEffect(() => {
     async function fetchRecord() {
       try {
-        const res = await fetch(`/api/admin/${backHref.slice(1)}/${id}`);
-        if (res.status === 404) {
+        const data = await adminFetch<{ success: boolean; data?: unknown; error?: string }>(
+          `/admin/${backHref.slice(1)}/${id}`,
+        );
+        if (data.success) {
+          setRecord(data.data);
+        } else {
+          setError(data.error || `Failed to fetch ${title.toLowerCase()}`);
+        }
+      } catch (err: any) {
+        if (err?.status === 404) {
           setNotFound(true);
         } else {
-          const data = await res.json();
-          if (data.success) {
-            setRecord(data.data);
-          } else {
-            setError(data.error || `Failed to fetch ${title.toLowerCase()}`);
-          }
+          setError(`Failed to fetch ${title.toLowerCase()}`);
         }
-      } catch {
-        setError(`Failed to fetch ${title.toLowerCase()}`);
       } finally {
         setLoading(false);
       }

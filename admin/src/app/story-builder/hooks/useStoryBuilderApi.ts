@@ -1,0 +1,79 @@
+'use client';
+
+import type { ContentPlan } from '@las-flores/shared';
+import { adminFetch } from '@/lib/client-api';
+
+async function postJSON<T>(url: string, payload: unknown): Promise<T> {
+  return adminFetch<T>(url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function loadPlanFromDb(id: string) {
+  return adminFetch<{ success: boolean; data?: { plan_json: ContentPlan; description: string }; error?: string }>(
+    `/admin/story-builder/plans/${id}`,
+  );
+}
+
+export async function generatePlan(description: string) {
+  return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+    '/admin/story-builder/plan',
+    { description },
+  );
+}
+
+export async function savePlan(description: string, plan: ContentPlan) {
+  return postJSON<{ success: boolean; data?: { planId: string } }>(
+    '/admin/story-builder/plans',
+    { description, plan },
+  );
+}
+
+export async function refinePlan(planId: string, feedback: string) {
+  return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+    `/admin/story-builder/plans/${planId}/refine`,
+    { feedback },
+  );
+}
+
+export async function previewPlan(planId: string) {
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/preview`,
+    {},
+  );
+}
+
+export async function stagePlan(planId: string) {
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/stage`,
+    {},
+  );
+}
+
+export async function migratePlan(planId: string) {
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/migrate`,
+    {},
+  );
+}
+
+export async function retryPlan(planId: string) {
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/retry`,
+    {},
+  );
+}
+
+export async function selectTemplate(templateId: string, description: string) {
+  return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+    `/admin/story-builder/templates/${templateId}`,
+    { description },
+  );
+}
+
+export async function fetchTemplates() {
+  return adminFetch<{ success: boolean; data?: { templates: Array<{ id: string; label: string; description: string; icon: string }> } }>(
+    '/admin/story-builder/templates',
+  );
+}
