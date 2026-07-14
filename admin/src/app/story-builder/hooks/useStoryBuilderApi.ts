@@ -96,3 +96,46 @@ export async function regenerateLore(planId: string, itemId: string) {
     },
   );
 }
+
+export async function listPlans(limit?: number, offset?: number) {
+  const params = new URLSearchParams();
+  if (limit) params.set('limit', String(limit));
+  if (offset) params.set('offset', String(offset));
+  return adminFetch<{
+    success: boolean;
+    data?: {
+      plans: Array<{
+        id: string;
+        description: string;
+        status: string;
+        created_at: string;
+        updated_at: string;
+        item_count: number;
+      }>;
+      total: number;
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans?${params.toString()}`);
+}
+
+export async function deletePlan(planId: string) {
+  return adminFetch<{ success: boolean; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    { method: 'DELETE' },
+  );
+}
+
+export async function getPlanVersions(planId: string) {
+  return adminFetch<{
+    success: boolean;
+    data?: {
+      id: string;
+      description: string;
+      status: string;
+      created_at: string;
+      parent_plan_id: string | null;
+      children: any[];
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans/${planId}/versions`);
+}

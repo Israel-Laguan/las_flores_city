@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import type { ContentPlan } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext } from './LLMService.js';
+import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 
 export interface LoreGenerationResult {
   createdFiles: string[];

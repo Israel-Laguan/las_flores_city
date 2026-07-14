@@ -1,6 +1,6 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { ContentPlanService } from '../../src/services/ContentPlanService.js';
-import type { LLMProvider, ExistingContentContext } from '../../src/services/LLMService.js';
+import type { LLMProvider, ExistingContentContext } from '../../src/services/types/LLMTypes.js';
 import { queryOLTP } from '../../src/database/connection.js';
 
 // Mock queryOLTP to avoid database connection

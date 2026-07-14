@@ -1,6 +1,7 @@
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
-import { createLLMProvider, type LLMProvider, type ExistingContentContext } from './LLMService.js';
+import { createLLMProvider } from './LLMService.js';
+import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
 
@@ -64,7 +65,20 @@ export class ContentPlanService {
     // 5. Re-inject asset needs for any new items
     injectAssetNeeds(validated.items);
 
-    // 6. Create a NEW plan row (versioning) instead of updating in place
+    // 6. Generate lore for NEW items only (skip existing to preserve user edits)
+    const existingItemIds = new Set(existingPlan.items.map(i => i.id));
+    const newItems = validated.items.filter(i => !existingItemIds.has(i.id));
+    if (newItems.length > 0) {
+      const partialPlan: ContentPlan = {
+        ...validated,
+        items: newItems,
+      };
+      generateForPlan(partialPlan, this.provider, context).catch(err => {
+        console.warn(`[ContentPlanService] Lore generation for new items in refine failed: ${err.message}`);
+      });
+    }
+
+    // 7. Create a NEW plan row (versioning) instead of updating in place
     const feedbackEntry = {
       feedback,
       timestamp: new Date().toISOString(),

@@ -6,6 +6,34 @@ const MOCK_PLAN_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
 const MOCK_ITEM_ID = '11111111-2222-3333-4444-555555555555';
 const MOCK_USER_ID = '00000000-0000-0000-0000-000000000001';
 
+const MOCK_PLAN = {
+  id: MOCK_PLAN_ID,
+  description: 'Test plan for lore regeneration',
+  status: 'approved',
+  items: [
+    {
+      id: MOCK_ITEM_ID,
+      type: 'character',
+      action: 'create',
+      name: 'Diego',
+      slug: 'diego',
+      fields: {
+        title: 'Bartender',
+        description: 'A friendly bartender',
+        lore_path: 'docs/lore/figures/diego/diego.md',
+      },
+      assetNeeds: [],
+      dependsOn: [],
+    },
+  ],
+  links: [],
+};
+
+jest.mock('node:fs/promises', () => ({
+  mkdir: jest.fn(async () => undefined),
+  writeFile: jest.fn(async () => undefined),
+}));
+
 jest.mock('../../src/database/connection.js', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [] })),
 }));
@@ -44,6 +72,10 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       ],
       links: [],
     })),
+    gatherContext: jest.fn(async () => ({})),
+    provider: {
+      generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
+    },
   },
 }));
 
@@ -60,6 +92,9 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
+import { queryOLTP } from '../../src/database/connection.js';
+
+const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 
 function makeApp() {
   const app = express();
@@ -163,7 +198,7 @@ describe('POST /admin/story-builder/plans/:id/items/:itemId/lore', () => {
   test('returns 404 for non-existent item', async () => {
     const planWithoutItem = {
       ...MOCK_PLAN,
-      items: [{ id: 'different-id', type: 'character', action: 'create', name: 'Other', slug: 'other', fields: {}, assetNeeds: [], dependsOn: [] }],
+      items: [{ id: '22222222-3333-4444-5555-666666666666', type: 'character', action: 'create', name: 'Other', slug: 'other', fields: { title: 'Other', description: 'Another character', lore_path: 'docs/lore/figures/other/other.md' }, assetNeeds: [], dependsOn: [] }],
     };
     mockQueryOLTP.mockResolvedValueOnce({
       rows: [{ plan_json: planWithoutItem, status: 'approved' }],
