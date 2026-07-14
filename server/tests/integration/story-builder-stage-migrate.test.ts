@@ -159,6 +159,20 @@ describe('POST /admin/story-builder/plans/:id/stage', () => {
     expect(res.body.success).toBe(false);
   });
 
+  test('rejects staging a draft plan', async () => {
+    mockQueryOLTP.mockResolvedValueOnce({
+      rows: [{ plan_json: MOCK_PLAN, status: 'draft' }],
+      rowCount: 1, command: 'SELECT', oid: 0, fields: [],
+    });
+
+    const res = await request(app)
+      .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/stage`);
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/proposed or approved/);
+  });
+
   test('stages a valid plan and updates status', async () => {
     mockQueryOLTP
       .mockResolvedValueOnce({
