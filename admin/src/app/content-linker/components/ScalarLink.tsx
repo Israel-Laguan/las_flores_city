@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { SectionConfig, LinkOp } from '../types';
 import styles from '../content-linker.module.css';
 

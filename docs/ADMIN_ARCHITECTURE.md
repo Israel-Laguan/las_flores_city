@@ -48,7 +48,7 @@ Required env:
 
 ## Top-level layout
 
-```
+```text
 admin/
 ├── Dockerfile
 ├── start.sh
@@ -84,7 +84,7 @@ admin/
     ├── lib/                  # cross-cutting helpers
     │   ├── api.ts            # server-side adminFetch
     │   ├── client-api.ts     # client-side adminFetch + serverAssetUrl
-    │   └── cn.ts             # local classname helper (mirrors @las-flores/ui)
+    │   └── (cn removed — now imported from @las-flores/ui)
     ├── middleware.ts         # auth guard
     └── test/
         └── setup.ts          # @testing-library/jest-dom
@@ -135,7 +135,7 @@ Three pieces:
 
 3. **`src/app/api/auth/logout/route.ts`** — clears the local `jwt_session`, forwards `Cookie` to Express `POST /auth/logout`, mirrors any `Set-Cookie` back to the browser, and redirects to `/login`.
 
-```
+```text
 ┌──────────┐     POST FormData       ┌─────────────────────────────┐
 │ /login   │ ───────────────────────▶│ app/api/auth/admin-login    │
 │ (client) │                         │ (Next route handler)         │
@@ -285,7 +285,7 @@ For pages that have a stateful, multi-step interaction. The story-builder is the
 
 The 5-step wizard: **Describe → Review → Stage → Migrate → Results**. This is the only Type C page and the most complex one in the app.
 
-```
+```text
 app/story-builder/
 ├── page.tsx                          # thin wrapper: <Suspense> + reads ?planId
 ├── StoryBuilder.tsx                  # orchestrator: switch on step, render active step
@@ -332,7 +332,7 @@ app/story-builder/
 
 A smaller Type C-lite read-only page that demonstrates the URL-as-state pattern:
 
-```
+```text
 app/lore/
 ├── page.tsx                # uses ?path=... in the URL
 ├── lore.module.css
@@ -381,7 +381,7 @@ The Vitest config (`admin/vitest.config.ts`) resolves `@` and `@las-flores/share
 
 ## Docker / runtime
 
-```
+```text
 admin/
 ├── Dockerfile
 └── start.sh
@@ -420,7 +420,7 @@ When contributing to `admin/`, follow these rules. They are the result of the M0
 3. **No inline `style={{...}}` for layout**: use page-level `.module.css` for positioning and shared classes for look. The `Suspense` fallback in `story-builder/page.tsx` is the only acceptable exception (and it's a one-liner placeholder).
 4. **Compose shared classes via `cn()`**:
    ```tsx
-   import { cn } from '@/lib/cn';   // identical to @las-flores/ui
+   import { cn } from '@las-flores/ui';
    <button className={cn(styles.submit, 'btn', 'btn--primary')}>Save</button>
    ```
 5. **Server components use `lib/api.ts`**, **client components use `lib/client-api.ts`**. Never import `cookies()` from a client module.
@@ -478,7 +478,6 @@ npm run lint --workspace=admin
 npm run test --workspace=admin          # 7 files, 76 tests at handoff
 
 # Build
-npm run build --workspace=ui            # builds the shared package first
 npm run build --workspace=admin         # Next build; surfaces route / TS errors
 ```
 
@@ -501,7 +500,7 @@ All three must exit `0` before merging.
 | `admin/src/components/ui/PageHeader.tsx` | `<header><h1>{title}</h1>{description?}</header>` |
 | `admin/src/lib/api.ts` | Server-side `adminFetch` + `getAdminUser()` (reads `cookies()`) |
 | `admin/src/lib/client-api.ts` | Client-side `adminFetch` + `serverAssetUrl()` (uses `credentials: 'include'`) |
-| `admin/src/lib/cn.ts` | Local classname helper (mirrors `@las-flores/ui/lib/cn`) |
+| `admin/src/lib/cn.ts` | **Removed** — now imported from `@las-flores/ui` |
 | `admin/src/test/setup.ts` | `@testing-library/jest-dom` side-effect import |
 | `admin/src/app/<area>/page.tsx` | One folder per top-level route (28 areas) |
 | `admin/src/app/<area>/[id]/page.tsx` | Detail page (where applicable) |

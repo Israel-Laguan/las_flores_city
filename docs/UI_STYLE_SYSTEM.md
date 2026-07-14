@@ -28,7 +28,7 @@ It is **not** a React component library — it is CSS-first with a tiny `cn()` h
 
 The `ui/src/` layout:
 
-```
+```text
 ui/src/
 ├── index.ts          # re-exports { cn, ClassValue }
 ├── lib/

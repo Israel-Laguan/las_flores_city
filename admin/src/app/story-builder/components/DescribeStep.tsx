@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import styles from './DescribeStep.module.css';
 
 interface DescribeStepProps {

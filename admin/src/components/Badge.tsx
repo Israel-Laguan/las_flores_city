@@ -1,4 +1,4 @@
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import styles from './Badge.module.css';
 
 interface BadgeProps {

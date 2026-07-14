@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import JsonViewer from './JsonViewer';
 import styles from './MigrateStep.module.css';
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import styles from './ContentListPage.module.css';
 
@@ -66,7 +66,7 @@ function ListTable<T extends Record<string, unknown>>({
         );})}
         {!loading && items.length === 0 && (
           <tr>
-            <td colSpan={columns.length} className={cn('table__td', 'muted', styles.textCenter)}>
+            <td colSpan={columns.length} className={cn('table__td', 'muted', 'text-center')}>
               No items found.
             </td>
           </tr>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { ContentPlanItem } from '@las-flores/shared';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { serverAssetUrl } from '@/lib/client-api';
 import { getFieldsForType, type FieldDefinition } from './FieldDefinitions';
 import LoreViewer from './LoreViewer';

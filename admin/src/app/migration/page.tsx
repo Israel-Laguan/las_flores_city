@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import styles from './migration.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import MigrationResultView from './components/MigrationResultView';
 import MigrationStatusView from './components/MigrationStatusView';

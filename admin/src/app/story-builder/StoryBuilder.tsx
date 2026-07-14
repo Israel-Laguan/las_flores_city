@@ -1,7 +1,7 @@
 'use client';
 
 import { useStoryBuilder } from './hooks/useStoryBuilder';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import StepIndicator from './components/StepIndicator';
 import DescribeStep from './components/DescribeStep';
 import ReviewStep from './components/ReviewStep';
@@ -97,9 +97,9 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
         )}
         {step === 2 && (
           <button
-            className={cn('btn', 'btn--primary', (!plan || plan.items.length === 0) && 'btn--disabled')}
+            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length) && 'btn--disabled')}
             onClick={goToStage}
-            disabled={!plan || plan.items.length === 0}
+            disabled={!plan || !plan.items?.length}
           >
             Approve &amp; Stage &rarr;
           </button>

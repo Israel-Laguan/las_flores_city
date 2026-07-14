@@ -37,6 +37,8 @@ body.theme-white-high-contrast {
   --scene-bg: #ffffff;
   --scene-title: #000000;
   --scene-muted: #333333;
+  --disabled-bg: #cccccc;
+  --disabled-text: #666666;
 }
 
 /* Fallback when no body theme class is present (also matches default) */

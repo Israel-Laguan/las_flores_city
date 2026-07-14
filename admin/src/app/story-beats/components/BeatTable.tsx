@@ -1,7 +1,7 @@
 'use client';
 
 import styles from './BeatTable.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 
 interface StoryBeat { slug: string; label: string; order: number; description: string }
 interface EditState { label: string; order: string; description: string }

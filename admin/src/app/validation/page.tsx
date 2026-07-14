@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './validation.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import ValidationSummary from './components/ValidationSummary';
 import ErrorsByFile from './components/ErrorsByFile';

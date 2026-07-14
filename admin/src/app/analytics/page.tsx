@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './analytics.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 
 interface AnalyticsData {

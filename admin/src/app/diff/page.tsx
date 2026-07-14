@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './diff.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 
 interface DiffFile {

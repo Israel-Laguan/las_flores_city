@@ -13,6 +13,8 @@
   --danger: #ff4444;
   --warning: #ffaa00;
   --info: #0066ff;
+  --disabled-bg: #555;
+  --disabled-text: #999;
   --font-mono: monospace;
 
   /* Spacing scale */

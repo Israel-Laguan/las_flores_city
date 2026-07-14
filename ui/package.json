@@ -11,11 +11,10 @@
     "./lib/cn": "./src/lib/cn.ts"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && node ./scripts/copy-styles.mjs",
-    "lint": "eslint --ext .ts src/",
-    "clean": "rm -rf dist"
+    "lint": "eslint --ext .ts src/"
   },
   "devDependencies": {
+    "eslint": "^8.57.1",
     "typescript": "^5.7.0"
   }
 }

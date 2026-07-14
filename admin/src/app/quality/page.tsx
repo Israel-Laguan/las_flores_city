@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './quality.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import QualitySummaryCards from './components/QualitySummaryCards';
 import IssueList from './components/IssueList';

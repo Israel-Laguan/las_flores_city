@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import PreviewItem from './PreviewItem';
 import styles from './StageStep.module.css';
 

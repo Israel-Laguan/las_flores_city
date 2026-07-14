@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './content-linker.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import ScalarLink from './components/ScalarLink';
 import ArrayLink from './components/ArrayLink';
 import { ListItem, LinkOp, SectionConfig } from './types';
