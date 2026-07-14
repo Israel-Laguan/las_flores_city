@@ -97,23 +97,23 @@ podman run -d --name las-flores-server \
   las-flores-server
 ```
 
-### 6. Build and start admin
+### 6. Build and start dashboard
 
 ```bash
-podman build -f admin/Dockerfile -t las-flores-admin .
-podman run -d --name las-flores-admin \
+podman build -f dashboard/Dockerfile -t las-flores-dashboard .
+podman run -d --name las-flores-dashboard \
   --network las-flores-net \
   --add-host="las-flores-postgres-oltp:$OLTP_IP" \
   --add-host="las-flores-postgres-olap:$OLAP_IP" \
   --add-host="las-flores-redis:$REDIS_IP" \
   --add-host="las-flores-minio:$MINIO_IP" \
   -p 3001:3000 \
-  -v ./admin:/app/admin \
+  -v ./dashboard:/app/dashboard \
   -v ./shared:/app/shared \
   -v ./client:/app/client \
   -v ./server:/app/server \
   -e NODE_ENV=development \
-  las-flores-admin
+  las-flores-dashboard
 ```
 
 ### 7. Apply migrations
@@ -144,7 +144,7 @@ podman logs las-flores-postgres-oltp
 ## Stop
 
 ```bash
-podman rm -f las-flores-server las-flores-admin
+podman rm -f las-flores-server las-flores-dashboard
 podman rm -f las-flores-postgres-oltp
 podman rm -f las-flores-postgres-olap
 podman rm -f las-flores-redis

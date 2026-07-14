@@ -10,7 +10,7 @@ STARTUP_WAIT_MS=5000  # 5 seconds between attempts
 # -------------------------------------------------
 # 1. Cleanup existing containers
 # -------------------------------------------------
-podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server las-flores-admin 2>/dev/null || true
+podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server las-flores-dashboard 2>/dev/null || true
 
 # -------------------------------------------------
 # 2. Create network and persistent volumes
@@ -155,17 +155,17 @@ while true; do
 done
 
 # -------------------------------------------------
-# 5. Start the admin UI (Next.js dev server)
+# 5. Start the dashboard UI (Next.js dev server)
 # -------------------------------------------------
-# Build admin image
-podman build -t las-flores-admin -f admin/Dockerfile .
+# Build dashboard image
+podman build -t las-flores-dashboard -f dashboard/Dockerfile .
 
-# Run admin container
-# Get server IP for admin to connect to server if needed
+# Run dashboard container
+# Get server IP for dashboard to connect to server if needed
 SERVER_IP=$(get_container_ip las-flores-server)
 
 podman run -d \
-  --name las-flores-admin \
+  --name las-flores-dashboard \
   --network las-flores-net \
   --add-host="las-flores-postgres-oltp:$OLTP_IP" \
   --add-host="las-flores-postgres-olap:$OLAP_IP" \
@@ -173,12 +173,12 @@ podman run -d \
   --add-host="las-flores-minio:$MINIO_IP" \
   --add-host="las-flores-server:$SERVER_IP" \
   -p 3001:3000 \
-  -v ./admin:/app/admin \
+  -v ./dashboard:/app/dashboard \
   -v ./shared:/app/shared \
   -v ./client:/app/client \
   -v ./server:/app/server \
   -e NODE_ENV=development \
-  las-flores-admin
+  las-flores-dashboard
 
 # -------------------------------------------------
 # 6. Apply DB migrations
@@ -190,7 +190,7 @@ podman run -d \
 # -------------------------------------------------
 echo "✅ Full stack is up:"
 echo "   • Server:   http://localhost:3000"
-echo "   • Admin UI: http://localhost:3001 (try it!)"
+echo "   • Dashboard UI: http://localhost:3001 (try it!)"
 echo "   • Health:   Run 'curl http://localhost:3000/health' or check Vite console"
 
 # Keep main process alive to maintain container lifecycle

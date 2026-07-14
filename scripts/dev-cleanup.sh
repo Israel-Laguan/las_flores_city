@@ -205,7 +205,7 @@ scan_build() {
         "$PROJECT_ROOT/.next"
         "$PROJECT_ROOT/server/dist"
         "$PROJECT_ROOT/client/dist"
-        "$PROJECT_ROOT/admin/.next"
+        "$PROJECT_ROOT/dashboard/.next"
     )
 
     for artifact in "${artifacts[@]}"; do
@@ -220,7 +220,7 @@ scan_build() {
         "$PROJECT_ROOT/node_modules"
         "$PROJECT_ROOT/server/node_modules"
         "$PROJECT_ROOT/client/node_modules"
-        "$PROJECT_ROOT/admin/node_modules"
+        "$PROJECT_ROOT/dashboard/node_modules"
     )
 
     for nm in "${node_modules[@]}"; do

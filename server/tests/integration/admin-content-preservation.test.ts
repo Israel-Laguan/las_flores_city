@@ -147,9 +147,9 @@ describe('Admin Content Operations Unchanged', () => {
     it('ci workflow builds all workspaces', () => {
       const content = readFileSync(ciPath, 'utf-8');
 
-      // Server and admin builds must be present
+      // Server and dashboard builds must be present
       expect(content).toMatch(/npm run build --workspace=server/);
-      expect(content).toMatch(/npm run build --workspace=admin/);
+      expect(content).toMatch(/npm run build --workspace=dashboard/);
     });
 
     it('ci workflow runs linter', () => {

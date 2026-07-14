@@ -13,7 +13,7 @@ Before using the admin asset pipeline, ensure the following are running:
 1. **PostgreSQL OLTP** — `docker compose up -d postgres-oltp`
 2. **MinIO** — `docker compose up -d minio`
 3. **Server** — `docker compose up -d server`
-4. **Admin Panel** — `docker compose up -d admin` (or `npm run dev --workspace=admin` locally)
+4. **Dashboard Panel** — `docker compose up -d dashboard` (or `npm run dev --workspace=dashboard` locally)
 5. **NVIDIA_API_KEY** — Set in `.env` (server) and `.env.example` (documentation)
 
 Verify server health:

@@ -162,27 +162,27 @@ podman run -d \
 
 **Important:** The `PROMPT_ROOT` environment variable must point to `/app/docs/lore/assets/ui-concepts` because the server's working directory is `/app/server`, and without this explicit setting, it would look for `/app/server/docs/lore/assets/ui-concepts` (which doesn't exist).
 
-### 5. Build and Start Admin UI
+### 5. Build and Start Dashboard UI
 
 ```bash
-# Build the admin image
-podman build -t las-flores-admin -f admin/Dockerfile .
+# Build the dashboard image
+podman build -t las-flores-dashboard -f dashboard/Dockerfile .
 
-# Run the admin container
+# Run the dashboard container
 podman run -d \
-  --name las-flores-admin \
+  --name las-flores-dashboard \
   --network las-flores-net \
   --add-host="las-flores-postgres-oltp:$OLTP_IP" \
   --add-host="las-flores-postgres-olap:$OLAP_IP" \
   --add-host="las-flores-redis:$REDIS_IP" \
   --add-host="las-flores-minio:$MINIO_IP" \
   -p 3001:3000 \
-  -v ./admin:/app/admin \
+  -v ./dashboard:/app/dashboard \
   -v ./shared:/app/shared \
   -v ./client:/app/client \
   -v ./server:/app/server \
   -e NODE_ENV=development \
-  las-flores-admin
+  las-flores-dashboard
 ```
 
 ### 6. Apply Database Migrations
@@ -199,7 +199,7 @@ Note: The migration script uses `podman` (not `docker`). If you see `docker: com
 |---------|-----|------|
 | Server API | http://localhost:3000 | 3000 |
 | Server Health | http://localhost:3000/health | 3000 |
-| Admin UI | http://localhost:3001 | 3001 |
+| Dashboard UI | http://localhost:3001 | 3001 |
 | PostgreSQL OLTP | localhost:5434 | 5434 |
 | PostgreSQL OLAP | localhost:5433 | 5433 |
 | Redis | localhost:6379 | 6379 |
@@ -253,7 +253,7 @@ podman ps --format "{{.Names}}: {{.Status}} ({{.Ports}})"
 ### View container logs
 ```bash
 podman logs las-flores-server
-podman logs las-flores-admin
+podman logs las-flores-dashboard
 ```
 
 ### Test database connections
@@ -292,7 +292,7 @@ podman rm las-flores-server
 ### Clean everything and start fresh
 ```bash
 # Remove all containers
-podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server las-flores-admin
+podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server las-flores-dashboard
 
 # Remove volumes (if needed)
 podman volume rm -f postgres-oltp-data postgres-olap-data redis-data minio-data

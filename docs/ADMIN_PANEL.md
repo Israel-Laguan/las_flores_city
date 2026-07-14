@@ -1,6 +1,8 @@
 # Admin Panel
 
-The admin panel is a Next.js app (port 3001) that provides content management, asset generation, and quality tools for Las Flores 2077.
+> **Note:** The Next.js app has been renamed to `dashboard` (living reference). A new `admin` workspace will be scaffolded on Next 16 per M1.
+
+The dashboard panel is a Next.js app (port 3001) that provides content management, asset generation, and quality tools for Las Flores 2077.
 
 ## Architecture
 
@@ -19,7 +21,7 @@ Lore markdown defines the world. Content YAML defines game data. The migration p
 Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 ```
 
-The admin container has no filesystem access to `content/` or `docs/`. All file operations proxy through server endpoints.
+The dashboard container has no filesystem access to `content/` or `docs/`. All file operations proxy through server endpoints.
 
 ## Content Pipeline
 
@@ -125,13 +127,13 @@ The home page shows:
 
 ## Network Architecture
 
-File operations route through the server, not the admin directly:
+File operations route through the server, not the dashboard directly:
 
 ```
-Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
+Dashboard UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 ```
 
-- Admin container has NO filesystem access to `content/` or `docs/`
+- Dashboard container has NO filesystem access to `content/` or `docs/`
 - Server has read-write access to `content/` and read-only access to `docs/`
 - All file operations proxy through server endpoints
 
@@ -139,7 +141,7 @@ Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 
 - Admin login: `POST /auth/admin-login` (server) → JWT cookie
 - Admin middleware checks `users.role` on every API call (admin or developer)
-- Admin app runs on port 3001, player client on 5173, server on 3000 (different origins)
+- Dashboard app runs on port 3001, player client on 5173, server on 3000 (different origins)
 
 ## Key Server Routes
 

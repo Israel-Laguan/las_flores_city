@@ -47,8 +47,8 @@ jobs:
         run: npx tsc --noEmit
         working-directory: client
 
-      - name: Build admin
-        run: npm run build --workspace=admin
+      - name: Build dashboard
+        run: npm run build --workspace=dashboard
 
       - name: Unit tests (no DB/Redis needed)
         run: timeout 180 npm run test:unit --workspace=server
