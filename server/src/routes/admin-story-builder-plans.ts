@@ -128,6 +128,7 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
 
     const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'failed'];
     const finalStatus = validStatuses.includes(status) ? status : 'draft';
+    validatedPlan.status = finalStatus;
 
     const result = await queryOLTP(
       `UPDATE content_plans

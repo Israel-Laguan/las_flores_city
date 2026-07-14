@@ -78,7 +78,8 @@ export class LiteLLMProvider implements LLMProvider {
     let content = data.choices?.[0]?.message?.content || '';
 
     if (content.startsWith('```markdown') || content.startsWith('```')) {
-      content = content.replace(/^```\w*\n/, '').replace(/```$/, '');
+      const fenceMatch = content.match(/```(?:markdown)?\s*\n?([\s\S]*?)```/);
+      content = fenceMatch ? fenceMatch[1] : content;
     }
 
     return content.trim();

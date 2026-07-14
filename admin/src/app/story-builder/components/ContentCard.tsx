@@ -28,6 +28,7 @@ interface ContentCardProps {
   index: number;
   allItems?: ContentPlanItem[];
   planId?: string | null;
+  disabled?: boolean;
   onRegenerateLore?: (itemId: string) => void;
   onFieldChange: (index: number, field: string, value: string) => void;
   onRemove: (index: number) => void;
@@ -180,7 +181,7 @@ function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
   );
 }
 
-export default function ContentCard({ item, index, allItems = [], planId, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -217,6 +218,7 @@ export default function ContentCard({ item, index, allItems = [], planId, onRege
                 <button
                   className={cn('btn', 'btn--secondary', 'btn--small')}
                   onClick={() => onRegenerateLore(item.id)}
+                  disabled={disabled}
                   title="Regenerate lore content"
                 >
                   Regenerate

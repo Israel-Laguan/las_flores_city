@@ -97,6 +97,5 @@ export function useStoryBuilder(initialPlanId: string | null) {
     removeAssetPath: (i: number, k: string) => applyMutation(p => mutations.removeAssetPath(p, i, k)),
     addItem: () => applyMutation(mutations.addItem),
     goBack: useCallback(() => { setStep(s => (s > 1 && s < 5 ? (s - 1) as Step : s)); }, []),
-    goToStage: useCallback(() => { if (plan && plan.items.length > 0 && planId) apiCallbacks.handleApprove(planId); }, [plan, planId]),
   };
 }

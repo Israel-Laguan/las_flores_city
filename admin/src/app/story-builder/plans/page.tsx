@@ -33,25 +33,25 @@ export default function StoryBuilderPlans() {
   const [total, setTotal] = useState(0);
   const limit = 20;
 
-  const loadPlans = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await listPlans(limit, offset);
-      if (data.success && data.data) {
-        setPlans(data.data.plans);
-        setTotal(data.data.total);
-      } else {
-        setError(data.error || 'Failed to load plans');
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadPlans = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await listPlans(limit, offset);
+        if (data.success && data.data) {
+          setPlans(data.data.plans);
+          setTotal(data.data.total);
+        } else {
+          setError(data.error || 'Failed to load plans');
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadPlans();
   }, [offset]);
 

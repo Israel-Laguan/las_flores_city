@@ -159,7 +159,10 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req, res) => {
 
     const migrationResult = await migrateStagedPlan(id);
 
-    res.json({
+    const statusCode = migrationResult.success
+      ? 200
+      : migrationResult.error?.includes('not found') ? 404 : 400;
+    res.status(statusCode).json({
       success: migrationResult.success,
       data: migrationResult,
       timestamp: new Date().toISOString(),

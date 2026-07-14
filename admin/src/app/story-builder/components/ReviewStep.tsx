@@ -49,6 +49,7 @@ export default function ReviewStep({
           index={i}
           allItems={plan.items}
           planId={planId}
+          disabled={loading}
           onRegenerateLore={onRegenerateLore}
           onFieldChange={onUpdateItem}
           onRemove={onRemoveItem}

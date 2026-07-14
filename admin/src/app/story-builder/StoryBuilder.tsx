@@ -25,7 +25,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     handleRegenerateLore,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem,
-    goBack, goToStage, planId,
+    goBack, planId,
   } = useStoryBuilder(initialPlanId);
 
   return (
@@ -106,9 +106,9 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
         )}
         {step === 2 && (
           <button
-            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length) && 'btn--disabled')}
+            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length || !planId) && 'btn--disabled')}
             onClick={handleApprove}
-            disabled={!plan || !plan.items?.length}
+            disabled={!plan || !plan.items?.length || !planId}
           >
             Approve Plan &rarr;
           </button>
