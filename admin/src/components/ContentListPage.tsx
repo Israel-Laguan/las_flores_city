@@ -1,0 +1,174 @@
+'use client';
+
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/cn';
+import { adminFetch } from '@/lib/client-api';
+import styles from './ContentListPage.module.css';
+
+interface Column<T> {
+  key: string;
+  label: string;
+  render?: (item: T) => React.ReactNode;
+}
+
+interface ContentListPageProps<T> {
+  title: string;
+  heading: string;
+  endpoint: string;
+  detailPath: string;
+  columns: Column<T>[];
+}
+
+function ListTable<T extends Record<string, unknown>>({
+  items,
+  columns,
+  loading,
+  onNavigate,
+}: {
+  items: T[];
+  columns: Column<T>[];
+  loading: boolean;
+  onNavigate: (id: string) => void;
+}) {
+  return (
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          {columns.map(col => (
+            <th key={col.key} className={styles.th}>{col.label}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((item, idx) => {
+          const rowId = String((item as Record<string, unknown>).id ?? idx);
+          return (
+          <tr
+            key={rowId}
+            onClick={() => onNavigate(rowId)}
+            className={styles.clickableRow}
+            tabIndex={0}
+            role="button"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onNavigate(rowId);
+              }
+            }}
+          >
+            {columns.map(col => (
+              <td key={col.key} className={styles.td}>
+                {col.render ? col.render(item) : String(item[col.key] ?? '\u2014')}
+              </td>
+            ))}
+          </tr>
+        );})}
+        {!loading && items.length === 0 && (
+          <tr>
+            <td colSpan={columns.length} className={cn(styles.td, styles.muted, styles.textCenter)}>
+              No items found.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+}
+
+function Pagination({
+  page,
+  total,
+  pageSize,
+  onPageChange,
+}: {
+  page: number;
+  total: number;
+  pageSize: number;
+  onPageChange: (p: number) => void;
+}) {
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  return (
+    <div className={styles.pagination}>
+      <button
+        onClick={() => onPageChange(page - 1)}
+        disabled={page === 1}
+        className={cn(styles.button, page === 1 && styles.disabledButton)}
+      >
+        &larr; Prev
+      </button>
+      <span className={styles.muted}>Page {page} of {totalPages}</span>
+      <button
+        onClick={() => onPageChange(page + 1)}
+        disabled={page >= totalPages}
+        className={cn(styles.button, page >= totalPages && styles.disabledButton)}
+      >
+        Next &rarr;
+      </button>
+    </div>
+  );
+}
+
+export default function ContentListPage<T extends Record<string, unknown>>({
+  title,
+  heading,
+  endpoint,
+  detailPath,
+  columns,
+}: ContentListPageProps<T>) {
+  const router = useRouter();
+  const [items, setItems] = useState<T[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(50);
+  const [total, setTotal] = useState(0);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const fetchPage = useCallback(async (p: number) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    try {
+      const data = await adminFetch<{ success: boolean; data?: { items: T[]; total: number }; error?: string }>(
+        `${endpoint}?page=${p}&pageSize=${pageSize}`,
+        { signal: controller.signal },
+      );
+      if (data.success) {
+        setItems(data.data?.items ?? []);
+        setTotal(data.data?.total ?? 0);
+        setError(null);
+      } else {
+        setError(data.error || `Failed to fetch ${heading}`);
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      setError(`Failed to fetch ${heading}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [endpoint, heading, pageSize]);
+
+  useEffect(() => {
+    fetchPage(page);
+    return () => { abortRef.current?.abort(); };
+  }, [page, fetchPage]);
+
+  const navigateTo = (id: string) => router.push(`${detailPath}/${id}`);
+
+  return (
+    <main className={styles.main}>
+      <h1>{title}</h1>
+      {error && <div className={styles.errorBox}>{error}</div>}
+      <div className={styles.section}>
+        <h2 className={styles.sectionHeading}>{heading}</h2>
+        {loading && items.length === 0 ? (
+          <p className={styles.muted}>Loading...</p>
+        ) : (
+          <ListTable items={items} columns={columns} loading={loading} onNavigate={navigateTo} />
+        )}
+        <Pagination page={page} total={total} pageSize={pageSize} onPageChange={setPage} />
+      </div>
+    </main>
+  );
+}

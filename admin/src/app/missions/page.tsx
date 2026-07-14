@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
 import Link from 'next/link';
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
+import styles from './missions.module.css';
 
 function StatusBadge({ status }: { status: string }) {
-  const badgeStyle = status === 'ACTIVE' ? { backgroundColor: '#00ff00', color: '#000' }
-    : status === 'RESOLVING' ? { backgroundColor: '#ffaa00', color: '#000' }
-    : { backgroundColor: '#888', color: '#fff' };
-  return <span style={{ ...adminStyles.badge, ...badgeStyle }}>{status}</span>;
+  const variant = status === 'ACTIVE' ? 'success' : status === 'RESOLVING' ? 'warning' : 'muted';
+  return <Badge variant={variant as any}>{status}</Badge>;
 }
 
 const columns = [
@@ -21,23 +20,15 @@ const columns = [
 export default function MissionsPage() {
   return (
     <div>
-      <div style={{ padding: '2rem 2rem 0' }}>
-        <Link
-          href="/missions/new"
-          style={{
-            ...adminStyles.button,
-            ...adminStyles.primaryButton,
-            textDecoration: 'none',
-            display: 'inline-block',
-          }}
-        >
+      <div className={styles.createBar}>
+        <Link href="/missions/new" className={styles.createButton}>
           + Create Mission
         </Link>
       </div>
       <ContentListPage
-        title="🔍 Missions"
+        title="Missions"
         heading="Mission List"
-        endpoint="/api/admin/missions"
+        endpoint="/admin/missions"
         detailPath="/missions"
         columns={columns}
       />

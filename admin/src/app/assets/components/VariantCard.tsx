@@ -1,6 +1,8 @@
-"use client";
+'use client';
 
 import type { AssetVariant } from '@las-flores/shared';
+import { serverAssetUrl } from '@/lib/client-api';
+import styles from '../assets.module.css';
 
 type Props = {
   variant: AssetVariant;
@@ -11,28 +13,29 @@ type Props = {
 
 export default function VariantCard({ variant, loading, onPublish, onDelete }: Props) {
   return (
-    <div style={{ border: '1px solid #444', padding: '1rem', borderRadius: '5px' }}>
+    <div className={styles.card}>
       <img
-        src={`/assets/image/${variant.id}`}
+        src={serverAssetUrl(`/assets/image/${variant.id}`)}
         alt={variant.variant_name}
-        style={{ width: '100%', height: 'auto', marginBottom: '1rem', borderRadius: '3px' }}
+        className={styles.cardImage}
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className={styles.cardMeta}>
         <span style={{ fontWeight: 'bold' }}>{variant.variant_name}</span>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>strength: {variant.i2i_strength?.toFixed(2) || '0.70'}</span>
+        <span className={styles.muted}>strength: {variant.i2i_strength?.toFixed(2) || '0.70'}</span>
       </div>
       <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
         <button
           onClick={() => onPublish(variant.id)}
           disabled={loading}
-          style={{ flex: 1, padding: '0.4rem 0.8rem', background: 'transparent', color: '#00ff00', border: '1px solid #00ff00', cursor: 'pointer', fontSize: '0.8rem' }}
+          className={styles.btnSmallPrimary}
+          style={{ flex: 1 }}
         >
           Publish
         </button>
         <button
           onClick={() => onDelete(variant.id)}
           disabled={loading}
-          style={{ padding: '0.4rem 0.8rem', background: 'transparent', color: '#ff4444', border: '1px solid #ff4444', cursor: 'pointer', fontSize: '0.8rem' }}
+          className={styles.btnSmallDanger}
         >
           Delete
         </button>

@@ -178,7 +178,7 @@ services:
     working_dir: /app/client
     command: npx playwright test --config playwright.docker.config.ts
 
-  # Admin Panel - Next.js
+  # Admin Panel - Next.js 16 (new, direct-fetch to Express)
   admin:
     build:
       context: .
@@ -186,20 +186,14 @@ services:
     container_name: las-flores-admin
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "3002:3000"
     environment:
-      API_URL: http://server:3000
-      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
-    # Fix: Change to service_healthy to wait for server to be ready
-    # Also add redis dependency since server needs it
+      NEXT_PUBLIC_SERVER_URL: http://server:3000
     depends_on:
       server:
         condition: service_healthy
-      postgres-oltp:
-        condition: service_healthy
-    # Add healthcheck for admin service
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
       interval: 30s
       timeout: 5s
       retries: 3

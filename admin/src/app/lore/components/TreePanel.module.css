@@ -1,0 +1,81 @@
+.container {
+  width: 280px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.typeGroup {
+  margin-bottom: 0.5rem;
+}
+
+.typeButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  width: 100%;
+  text-align: left;
+}
+
+.expandIcon {
+  font-size: 0.7rem;
+}
+
+.typeName {
+  text-transform: capitalize;
+}
+
+.typeCount {
+  background: var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  margin-left: auto;
+}
+
+.fileList {
+  padding-left: 1rem;
+}
+
+.fileButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  border-left: 2px solid transparent;
+}
+
+.fileButtonActive {
+  background: rgba(0, 255, 0, 0.1);
+  color: var(--accent);
+  border-left-color: var(--accent);
+}

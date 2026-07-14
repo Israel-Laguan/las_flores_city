@@ -1,6 +1,6 @@
 /**
  * Tests for PlanSummary.tsx
- * Milestone 1: Story Builder UX Refinement
+ * Milestone 4: Story Builder CSS rebuild
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -23,7 +23,6 @@ describe('PlanSummary rendering', () => {
   it('should render plan description', () => {
     const plan = createPlan({ description: 'Add three new characters to the story' });
     render(<PlanSummary plan={plan} />);
-
     expect(screen.getByText('Add three new characters to the story')).toBeInTheDocument();
   });
 
@@ -34,7 +33,6 @@ describe('PlanSummary rendering', () => {
 
   it('should show zero items when plan is empty', () => {
     render(<PlanSummary plan={createPlan({ items: [] })} />);
-    // All stats show 0, verify the section exists
     expect(screen.getByText('Total Items')).toBeInTheDocument();
     expect(screen.getByText('New')).toBeInTheDocument();
     expect(screen.getByText('Updates')).toBeInTheDocument();
@@ -52,39 +50,10 @@ describe('PlanSummary statistics', () => {
       ],
     });
     render(<PlanSummary plan={plan} />);
-
-    // Verify stats section exists with correct labels
     expect(screen.getByText('Total Items')).toBeInTheDocument();
     expect(screen.getByText('New')).toBeInTheDocument();
     expect(screen.getByText('Updates')).toBeInTheDocument();
     expect(screen.getByText('Assets Needed')).toBeInTheDocument();
-  });
-
-  it('should count create actions correctly', () => {
-    const plan = createPlan({
-      items: [
-        { id: '1', type: 'character', action: 'create', name: 'A', slug: 'a', fields: {}, assetNeeds: [], dependsOn: [] },
-        { id: '2', type: 'character', action: 'create', name: 'B', slug: 'b', fields: {}, assetNeeds: [], dependsOn: [] },
-        { id: '3', type: 'scene', action: 'update', name: 'C', slug: 'c', fields: {}, assetNeeds: [], dependsOn: [] },
-      ],
-    });
-    render(<PlanSummary plan={plan} />);
-
-    expect(screen.getByText('New')).toBeInTheDocument();
-    expect(screen.getByText('Updates')).toBeInTheDocument();
-  });
-
-  it('should count update actions correctly', () => {
-    const plan = createPlan({
-      items: [
-        { id: '1', type: 'character', action: 'update', name: 'A', slug: 'a', fields: {}, assetNeeds: [], dependsOn: [] },
-        { id: '2', type: 'scene', action: 'create', name: 'B', slug: 'b', fields: {}, assetNeeds: [], dependsOn: [] },
-      ],
-    });
-    render(<PlanSummary plan={plan} />);
-
-    expect(screen.getByText('New')).toBeInTheDocument();
-    expect(screen.getByText('Updates')).toBeInTheDocument();
   });
 
   it('should count total assets needed correctly', () => {
@@ -106,7 +75,6 @@ describe('PlanSummary statistics', () => {
       ],
     });
     render(<PlanSummary plan={plan} />);
-
     expect(screen.getByText('Assets Needed')).toBeInTheDocument();
     expect(screen.getByText('Total Items')).toBeInTheDocument();
   });
@@ -122,7 +90,6 @@ describe('PlanSummary type breakdown', () => {
       ],
     });
     render(<PlanSummary plan={plan} />);
-
     expect(screen.getByText('character: 2')).toBeInTheDocument();
     expect(screen.getByText('scene: 1')).toBeInTheDocument();
   });
@@ -139,7 +106,6 @@ describe('PlanSummary type breakdown', () => {
       ],
     });
     render(<PlanSummary plan={plan} />);
-
     expect(screen.getByText('dialogue: 1')).toBeInTheDocument();
   });
 });
@@ -158,7 +124,6 @@ describe('PlanSummary edge cases', () => {
     }));
     const plan = createPlan({ items });
     render(<PlanSummary plan={plan} />);
-
     expect(screen.getByText('character: 50')).toBeInTheDocument();
     expect(screen.getByText('Total Items')).toBeInTheDocument();
   });
@@ -173,8 +138,6 @@ describe('PlanSummary edge cases', () => {
       ],
     });
     render(<PlanSummary plan={plan} />);
-
-    // Verify all stat labels are present
     expect(screen.getByText('Total Items')).toBeInTheDocument();
     expect(screen.getByText('New')).toBeInTheDocument();
     expect(screen.getByText('Updates')).toBeInTheDocument();

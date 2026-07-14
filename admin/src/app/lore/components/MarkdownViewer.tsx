@@ -1,7 +1,9 @@
+'use client';
+
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { adminStyles as styles } from '@/lib/adminStyles';
 import { markdownComponents } from './MarkdownComponents';
+import styles from './MarkdownViewer.module.css';
 
 interface MarkdownViewerProps {
   selectedPath: string | null;
@@ -57,24 +59,24 @@ function extractFrontmatter(content: string): { tags: string[]; body: string } {
 function ViewerContent({ selectedPath, content, contentLoading, contentError }: MarkdownViewerProps) {
   if (!selectedPath) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p style={styles.muted}>Select a file from the tree to view its content.</p>
+      <div className={styles.centerContent}>
+        <p className={styles.muted}>Select a file from the tree to view its content.</p>
       </div>
     );
   }
 
   if (contentLoading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <p style={styles.muted}>Loading...</p>
+      <div className={styles.centerContent}>
+        <p className={styles.muted}>Loading...</p>
       </div>
     );
   }
 
   if (contentError) {
     return (
-      <div style={{ padding: '2rem' }}>
-        <div style={styles.errorBox}>{contentError}</div>
+      <div className={styles.centerContent}>
+        <div className={styles.errorBox}>{contentError}</div>
       </div>
     );
   }
@@ -84,42 +86,23 @@ function ViewerContent({ selectedPath, content, contentLoading, contentError }: 
   const { tags, body } = extractFrontmatter(content);
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto' }}>
+    <div className={styles.viewerScroll}>
       {/* File header */}
-      <div style={{
-        padding: '0.75rem 1.5rem',
-        borderBottom: '1px solid #333',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
-        <span style={{ color: '#888', fontFamily: 'monospace', fontSize: '0.8rem' }}>
-          {selectedPath}
-        </span>
+      <div className={styles.fileHeader}>
+        <span className={styles.filePath}>{selectedPath}</span>
       </div>
 
       {/* Tags */}
       {tags.length > 0 && (
-        <div style={{
-          padding: '0.75rem 1.5rem',
-          borderBottom: '1px solid #333',
-          display: 'flex',
-          gap: '0.5rem',
-          flexWrap: 'wrap',
-        }}>
+        <div className={styles.tagsContainer}>
           {tags.map((tag) => (
-            <span key={tag} style={{
-              ...styles.badge,
-              backgroundColor: '#0066ff',
-              color: '#fff',
-              fontSize: '0.75rem',
-            }}>{tag}</span>
+            <span key={tag} className={styles.tag}>{tag}</span>
           ))}
         </div>
       )}
 
       {/* Markdown content */}
-      <div style={{ padding: '1.5rem' }}>
+      <div className={styles.markdownContent}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
           {body}
         </ReactMarkdown>
@@ -130,14 +113,7 @@ function ViewerContent({ selectedPath, content, contentLoading, contentError }: 
 
 export default function MarkdownViewer(props: MarkdownViewerProps) {
   return (
-    <div style={{
-      flex: 1,
-      border: '1px solid #333',
-      borderRadius: '5px',
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div className={styles.container}>
       <ViewerContent {...props} />
     </div>
   );

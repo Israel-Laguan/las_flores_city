@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'name', label: 'Name' },
@@ -10,7 +10,7 @@ const columns = [
   {
     key: 'beatAssociation', label: 'Beat Association',
     render: (item: any) => item.beatAssociation != null
-      ? <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.beatAssociation}</span>
+      ? <Badge variant="info">{item.beatAssociation}</Badge>
       : '—',
   },
   { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
@@ -19,9 +19,9 @@ const columns = [
 export default function DialoguesPage() {
   return (
     <ContentListPage
-      title="💬 Dialogues"
+      title="Dialogues"
       heading="Dialogue Trees"
-      endpoint="/api/admin/dialogues"
+      endpoint="/admin/dialogues"
       detailPath="/dialogues"
       columns={columns}
     />

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { adminStyles as styles } from '@/lib/adminStyles';
+import styles from './story-beats.module.css';
 import BeatForm from './components/BeatForm';
 import BeatTable from './components/BeatTable';
 import { useBeatHandlers } from './hooks/useBeatHandlers';
@@ -20,10 +20,10 @@ export default function StoryBeatsPage() {
   };
 
   return (
-    <main style={styles.main}>
-      <h1 style={styles.heading}>📖 Beat Registry</h1>
+    <main className={styles.main}>
+      <h1>Beat Registry</h1>
       <BeatForm formSlug={formSlug} formLabel={formLabel} formOrder={formOrder} formDescription={formDescription} submitting={h.submitting} onSlugChange={setFormSlug} onLabelChange={setFormLabel} onOrderChange={setFormOrder} onDescriptionChange={setFormDescription} onSubmit={handleAddSubmit} />
-      {h.error && <div style={styles.errorBox}><pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{h.error}</pre></div>}
+      {h.error && <div className={styles.errorBox}><pre className={styles.errorPre}>{h.error}</pre></div>}
       <BeatTable beats={h.beats} loading={h.loading} editingSlug={h.editingSlug} editState={h.editState} submitting={h.submitting} onEditStart={h.handleEditStart} onEditSave={h.handleEditSave} onEditCancel={() => h.setEditingSlug(null)} onEditStateChange={h.setEditState} onDelete={h.handleDelete} />
     </main>
   );

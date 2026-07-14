@@ -1,24 +1,20 @@
-"use client";
-
-import PlaceholderPage from '@/components/PlaceholderPage';
+import { PageHeader } from '@/components/ui';
 
 export default function SettingsPage() {
   return (
-    <PlaceholderPage
-      icon="⚙️"
-      title="Settings"
-      badge="🔮 Future Milestone"
-      badgeColor="#ff6600"
-      heading="Admin Configuration"
-      description="This page will provide configuration interfaces for admin settings, including content pipeline configuration, API keys, and system preferences."
-      features={[
-        'Content pipeline configuration (paths, validation rules)',
-        'API key management for external services (asset generation, etc.)',
-        'System preferences (theme, notifications, defaults)',
-        <>Integration with <code style={{ color: "#aaa" }}>GET/PUT /admin/settings</code> API endpoints</>,
-      ]}
-      footnote="Not yet scheduled for a specific milestone. Will be implemented as admin tooling matures and configuration needs arise."
-      buttonLabel="⚙️ Configure Settings (Coming Soon)"
-    />
+    <div>
+      <PageHeader title="Settings" description="Admin Configuration" />
+      <div style={{ padding: '2rem', color: '#888' }}>
+        <p>This page will provide configuration interfaces for admin settings.</p>
+        <ul style={{ marginTop: '1rem', paddingLeft: '1.5rem' }}>
+          <li>Content pipeline configuration (paths, validation rules)</li>
+          <li>API key management for external services</li>
+          <li>System preferences (theme, notifications, defaults)</li>
+        </ul>
+        <p style={{ marginTop: '1rem', color: '#555' }}>
+          Coming soon — not yet scheduled for a specific milestone.
+        </p>
+      </div>
+    </div>
   );
 }

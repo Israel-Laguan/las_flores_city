@@ -1,0 +1,103 @@
+.card {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 0.75rem;
+  background: var(--panel-bg);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cardType {
+  background: rgba(0, 255, 0, 0.13);
+  color: var(--accent);
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.cardAction {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.fieldValue {
+  margin: 0.25rem 0;
+}
+
+.fieldName {
+  font-weight: bold;
+}
+
+.fieldDesc {
+  font-size: 0.85rem;
+  color: #aaa;
+  max-height: 100px;
+  overflow: auto;
+  margin: 0.25rem 0;
+}
+
+.fieldSlug {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.25rem 0;
+}
+
+.imageContainer {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #0a0a14;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 5px;
+  object-fit: contain;
+  background: var(--page-bg);
+}
+
+.imagePath {
+  font-size: 0.7rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.yamlSummary {
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.yamlContent {
+  font-size: 0.75rem;
+  color: #aaa;
+  white-space: pre-wrap;
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.existingLabel {
+  color: #ff6666;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.existingContent {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: pre-wrap;
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow: auto;
+}

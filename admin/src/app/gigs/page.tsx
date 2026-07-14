@@ -1,22 +1,26 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'title', label: 'Title' },
-  { key: 'timeBlockCost', label: 'TB Cost' },
-  { key: 'creditPayout', label: 'Credit Payout' },
-  { key: 'locationName', label: 'Location', render: (item: any) => item.locationName || '—' },
-  { key: 'reputationTarget', label: 'Reputation', render: (item: any) => item.reputationTarget ? `${item.reputationTarget} +${item.reputationReward}` : '—' },
+  {
+    key: 'gigType', label: 'Type',
+    render: (item: any) => <Badge variant="info">{item.gigType}</Badge>,
+  },
+  { key: 'districtName', label: 'District' },
+  { key: 'rewardAmount', label: 'Reward' },
+  { key: 'isActive', label: 'Active', render: (item: any) => item.isActive ? 'Yes' : 'No' },
   { key: 'createdAt', label: 'Created', render: (item: any) => new Date(item.createdAt).toLocaleDateString() },
 ];
 
 export default function GigsPage() {
   return (
     <ContentListPage
-      title="💼 Gigs"
+      title="Gigs"
       heading="Gig List"
-      endpoint="/api/admin/gigs"
+      endpoint="/admin/gigs"
       detailPath="/gigs"
       columns={columns}
     />

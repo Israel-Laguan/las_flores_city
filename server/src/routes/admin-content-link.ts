@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { validateContentPath, resolveContentDir } from './admin-content.js';
+import { validateContentPath, resolveContentDir } from './admin-content.helpers.js';
 
 export const adminContentLinkRouter = express.Router();
 adminContentLinkRouter.use(authAndAdminMiddleware);

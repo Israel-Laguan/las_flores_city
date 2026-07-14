@@ -20,8 +20,7 @@ export function stripGuardedTargetChunks(
   const result: Record<string, Leaf> = {};
   for (const [key, leaf] of Object.entries(leaves)) {
     if (leaf.type === 'GUARDED') {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { target_chunk: _stripped, ...rest } = leaf as Leaf & { target_chunk: string };
+      const { target_chunk: _, ...rest } = leaf as Leaf & { target_chunk: string };
       result[key] = rest as Leaf;
     } else {
       result[key] = leaf;

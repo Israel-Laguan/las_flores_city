@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { adminFetch } from '@/lib/client-api';
 
 interface StoryBeat { slug: string; label: string; order: number; description: string }
 interface EditState { label: string; order: string; description: string }
@@ -13,9 +14,10 @@ export function useBeatHandlers() {
 
   const fetchBeats = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/story-beats');
-      const data = await res.json();
-      if (data.success) { setBeats(data.data); }
+      const data = await adminFetch<{ success: boolean; data?: StoryBeat[]; error?: string }>(
+        '/admin/story-beats',
+      );
+      if (data.success) { setBeats(data.data ?? []); }
       else { setError(data.error || 'Failed to fetch beats'); }
     } catch { setError('Failed to fetch story beats'); } finally { setLoading(false); }
   }, []);
@@ -25,11 +27,13 @@ export function useBeatHandlers() {
   const handleAddSubmit = async (form: { slug: string; label: string; order: string; description: string }, resetForm: () => void) => {
     setSubmitting(true); setError(null);
     try {
-      const res = await fetch('/api/admin/story-beats', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: form.slug, label: form.label, order: Number(form.order), description: form.description }),
-      });
-      const data = await res.json();
+      const data = await adminFetch<{ success: boolean; error?: string }>(
+        '/admin/story-beats',
+        {
+          method: 'POST',
+          body: JSON.stringify({ slug: form.slug, label: form.label, order: Number(form.order), description: form.description }),
+        },
+      );
       if (data.success) { resetForm(); await fetchBeats(); } else { setError(data.error || 'Failed to create beat'); }
     } catch { setError('Failed to create beat'); } finally { setSubmitting(false); }
   };
@@ -42,11 +46,13 @@ export function useBeatHandlers() {
   const handleEditSave = async (slug: string) => {
     setSubmitting(true); setError(null);
     try {
-      const res = await fetch(`/api/admin/story-beats/${slug}`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ label: editState.label, order: Number(editState.order), description: editState.description }),
-      });
-      const data = await res.json();
+      const data = await adminFetch<{ success: boolean; error?: string }>(
+        `/admin/story-beats/${slug}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ label: editState.label, order: Number(editState.order), description: editState.description }),
+        },
+      );
       if (data.success) { setEditingSlug(null); await fetchBeats(); } else { setError(data.error || 'Failed to update beat'); }
     } catch { setError('Failed to update beat'); } finally { setSubmitting(false); }
   };
@@ -55,8 +61,10 @@ export function useBeatHandlers() {
     if (!window.confirm(`Delete beat "${slug}"? This cannot be undone.`)) return;
     setSubmitting(true); setError(null);
     try {
-      const res = await fetch(`/api/admin/story-beats/${slug}`, { method: 'DELETE' });
-      const data = await res.json();
+      const data = await adminFetch<{ success: boolean; error?: string }>(
+        `/admin/story-beats/${slug}`,
+        { method: 'DELETE' },
+      );
       if (data.success) { await fetchBeats(); } else { setError(data.error || 'Failed to delete beat'); }
     } catch { setError('Failed to delete beat'); } finally { setSubmitting(false); }
   };

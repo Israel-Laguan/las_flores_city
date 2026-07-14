@@ -4,7 +4,7 @@ import path from 'path';
 import { VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema, YAMLStorySchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { setCache, deleteCache } from '../database/redis.js';
-import { sanitizeText } from './validate.js';
+import { sanitizeText } from './validate-xss.js';
 import type { AppliedMigration } from './migrate.js';
 import type { ContentType } from '@las-flores/shared';
 import {

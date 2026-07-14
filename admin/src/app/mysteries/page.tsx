@@ -1,15 +1,28 @@
-import Link from 'next/link';
+'use client';
+
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
+
+const columns = [
+  { key: 'title', label: 'Title' },
+  {
+    key: 'status', label: 'Status',
+    render: (item: any) => {
+      const variant = item.status === 'ACTIVE' ? 'success' : item.status === 'RESOLVING' ? 'warning' : 'muted';
+      return <Badge variant={variant}>{item.status}</Badge>;
+    },
+  },
+  { key: 'createdAt', label: 'Created', render: (item: any) => new Date(item.createdAt).toLocaleDateString() },
+];
 
 export default function MysteriesPage() {
   return (
-    <main style={{ padding: '2rem', fontFamily: 'monospace', backgroundColor: '#1a1a2e', minHeight: '100vh' }}>
-      <h1 style={{ color: '#00ff00' }}>Mysteries</h1>
-      <p style={{ color: '#888' }}>
-        Mysteries have been renamed to <strong style={{ color: '#00ff00' }}>Missions</strong>.
-      </p>
-      <p style={{ color: '#888', marginTop: '1rem' }}>
-        Use the <Link href="/missions" style={{ color: '#00ff00' }}>Missions</Link> page to manage mystery quest lines.
-      </p>
-    </main>
+    <ContentListPage
+      title="Mysteries"
+      heading="Mystery List"
+      endpoint="/admin/mysteries"
+      detailPath="/mysteries"
+      columns={columns}
+    />
   );
 }

@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
+import { adminFetch } from '@/lib/client-api';
 import { API_BASE } from './constants';
 import type { Category, View } from './constants';
 import CatalogView from './components/CatalogView';
 import GeneratorView from './components/GeneratorView';
-import { loadGroups as sharedLoadGroups } from '@/lib/hooks/useAssetsApi';
+import styles from './assets.module.css';
 
 async function loadCatalog(
   setLoading: (v: boolean) => void,
@@ -15,12 +16,13 @@ async function loadCatalog(
 ) {
   setLoading(true);
   try {
-    const res = await fetch(`${API_BASE}/prompt-catalog`);
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; data?: { categories: Category[] } }>(
+      `${API_BASE}/prompt-catalog`,
+    );
     if (data.success) {
-      setCategories(data.data.categories);
+      setCategories(data.data?.categories ?? []);
     }
-  } catch (e) {
+  } catch {
     setError('Failed to load prompt catalog');
   } finally {
     setLoading(false);
@@ -37,13 +39,14 @@ async function handleLoadAssets(
   setLoading(true);
   setError(null);
   try {
-    const res = await fetch(`${API_BASE}/list?prompt_rel=${encodeURIComponent(prompt_rel)}`);
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; data?: { bases: AssetBase[]; variants: AssetVariant[] } }>(
+      `${API_BASE}/list?prompt_rel=${encodeURIComponent(prompt_rel)}`,
+    );
     if (data.success) {
-      setBases(data.data.bases);
-      setVariants(data.data.variants);
+      setBases(data.data?.bases ?? []);
+      setVariants(data.data?.variants ?? []);
     }
-  } catch (e) {
+  } catch {
     setError('Failed to load assets');
   } finally {
     setLoading(false);
@@ -51,7 +54,23 @@ async function handleLoadAssets(
 }
 
 async function loadGroups(setGroups: (v: AssetListAllResponse['groups']) => void, setError?: (v: string | null) => void) {
-  await sharedLoadGroups(setGroups, setError);
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const data = await adminFetch<{ success: boolean; data?: { groups: AssetListAllResponse['groups'] } }>(
+      `${API_BASE}/list-all`,
+      { signal: controller.signal },
+    );
+    clearTimeout(timeoutId);
+    if (data.success) {
+      setGroups(data.data?.groups ?? []);
+    } else {
+      setError?.('Failed to load groups');
+    }
+  } catch (e) {
+    console.error('Failed to load groups', e);
+    setError?.(e instanceof Error && e.name === 'AbortError' ? 'Request timed out' : 'Failed to load groups');
+  }
 }
 
 export default function AssetsPage() {
@@ -71,11 +90,11 @@ export default function AssetsPage() {
   }, []);
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'monospace', backgroundColor: '#1a1a2e', minHeight: '100vh', color: '#fff' }}>
-      <h1 style={{ color: '#00ff00', marginBottom: '2rem' }}>Asset Generation Pipeline</h1>
+    <main className={styles.page}>
+      <h1 className={styles.title}>Asset Generation Pipeline</h1>
 
       {error && (
-        <div style={{ background: '#ff0000', color: '#fff', padding: '1rem', marginBottom: '1rem', borderRadius: '5px' }}>
+        <div className={styles.errorBanner}>
           {error}
         </div>
       )}

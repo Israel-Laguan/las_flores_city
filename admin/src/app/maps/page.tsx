@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'districtName', label: 'District', render: (item: any) => item.districtName || '—' },
@@ -9,7 +9,7 @@ const columns = [
   { key: 'y', label: 'Y' },
   {
     key: 'terrainType', label: 'Terrain',
-    render: (item: any) => <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.terrainType}</span>,
+    render: (item: any) => <Badge variant="info">{item.terrainType}</Badge>,
   },
   { key: 'rotation', label: 'Rotation', render: (item: any) => `${item.rotation}°` },
   { key: 'isFlipped', label: 'Flipped', render: (item: any) => item.isFlipped ? 'Yes' : 'No' },
@@ -19,9 +19,9 @@ const columns = [
 export default function MapsPage() {
   return (
     <ContentListPage
-      title="🗺️ Map Tiles"
+      title="Map Tiles"
       heading="Map Tile List"
-      endpoint="/api/admin/maps"
+      endpoint="/admin/maps"
       detailPath="/maps"
       columns={columns}
     />

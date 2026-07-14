@@ -1,4 +1,6 @@
-"use client";
+'use client';
+
+import styles from '../assets.module.css';
 
 type Props = {
   variantName: string;
@@ -28,28 +30,28 @@ export default function VariantForm({
   loading,
 }: Props) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '600px', marginBottom: '1rem' }}>
+    <div className={styles.formGroup}>
       <input
         value={variantName}
         onChange={e => onVariantNameChange(e.target.value)}
         placeholder="Variant Name (e.g. night)"
-        style={{ padding: '0.5rem', background: '#0d0d1a', color: '#00ff00', border: '1px solid #00ff00' }}
+        className={styles.formInput}
       />
       <textarea
         value={variantPrompt}
         onChange={e => onVariantPromptChange(e.target.value)}
         placeholder="Variant Prompt Text"
         rows={2}
-        style={{ padding: '0.5rem', background: '#0d0d1a', color: '#00ff00', border: '1px solid #00ff00' }}
+        className={styles.formInput}
       />
       <input
         value={variantNegative}
         onChange={e => onVariantNegativeChange(e.target.value)}
         placeholder="Negative Prompt (optional)"
-        style={{ padding: '0.5rem', background: '#0d0d1a', color: '#00ff00', border: '1px solid #00ff00' }}
+        className={styles.formInput}
       />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <label style={{ color: '#00ff00' }}>i2i Strength: {i2iStrength.toFixed(2)}</label>
+      <div className={styles.sliderRow}>
+        <label className={styles.sliderLabel}>i2i Strength: {i2iStrength.toFixed(2)}</label>
         <input
           type="range"
           min="0"
@@ -57,21 +59,21 @@ export default function VariantForm({
           step="0.05"
           value={i2iStrength}
           onChange={e => onI2iStrengthChange(parseFloat(e.target.value))}
-          style={{ flex: 1 }}
+          className={styles.sliderInput}
         />
       </div>
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div className={styles.btnRow}>
         <button
           onClick={onGenerateVariant}
           disabled={loading}
-          style={{ padding: '0.75rem 1.5rem', background: '#00ff00', color: '#000', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}
+          className={styles.btnPrimary}
         >
           Generate Variant
         </button>
         <button
           onClick={onGenerateAllVariants}
           disabled={loading}
-          style={{ padding: '0.75rem 1.5rem', background: '#00aaff', color: '#000', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}
+          className={styles.btnSecondary}
         >
           Generate All Variants
         </button>

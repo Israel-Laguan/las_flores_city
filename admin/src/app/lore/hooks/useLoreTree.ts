@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { adminFetch } from '@/lib/client-api';
 
 interface LoreFileEntry {
   path: string;
@@ -32,8 +33,7 @@ export function useLoreTree() {
   useEffect(() => {
     async function fetchTree() {
       try {
-        const res = await fetch('/api/admin/lore/tree');
-        const data: LoreTreeResponse = await res.json();
+        const data = await adminFetch<LoreTreeResponse>('/admin/lore/tree');
         if (data.success) {
           setTree(data.data.tree);
           const types = new Set(Object.keys(groupByType(data.data.tree)));

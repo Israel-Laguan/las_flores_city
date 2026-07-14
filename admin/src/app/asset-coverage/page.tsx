@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { adminStyles as styles } from '@/lib/adminStyles';
 import { useAssetCoverage } from './hooks/useAssetCoverage';
 import SummaryCards from './components/SummaryCards';
 import AssetTable from './components/AssetTable';
+import styles from './asset-coverage.module.css';
 
 export default function AssetCoveragePage() {
   const { loading, error, charsMissing, charsReady, scenesMissing, scenesReady } = useAssetCoverage();
 
   return (
-    <main style={styles.main}>
-      <h1 style={styles.heading}>Asset Coverage</h1>
+    <main className={styles.main}>
+      <h1>Asset Coverage</h1>
 
-      {loading && <p style={styles.muted}>Loading...</p>}
-      {error && <div style={styles.errorBox}>{error}</div>}
+      {loading && <p className={styles.muted}>Loading...</p>}
+      {error && <div className={styles.errorBox}>{error}</div>}
 
       {!loading && !error && (
         <>

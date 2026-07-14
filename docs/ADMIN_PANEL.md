@@ -1,6 +1,8 @@
 # Admin Panel
 
-The admin panel is a Next.js app (port 3001) that provides content management, asset generation, and quality tools for Las Flores 2077.
+> **Note:** The Next.js app has been renamed to `dashboard` (living reference). A new `admin` workspace will be scaffolded on Next 16 per M1.
+
+The dashboard panel is a Next.js app (port 3001) that provides content management, asset generation, and quality tools for Las Flores 2077.
 
 ## Architecture
 
@@ -19,7 +21,7 @@ Lore markdown defines the world. Content YAML defines game data. The migration p
 Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 ```
 
-The admin container has no filesystem access to `content/` or `docs/`. All file operations proxy through server endpoints.
+The dashboard container has no filesystem access to `content/` or `docs/`. All file operations proxy through server endpoints.
 
 ## Content Pipeline
 
@@ -123,15 +125,29 @@ The home page shows:
 - Recent activity from `migration_log`
 - Quick action buttons for migration, validation, analytics
 
+## Core Shell Page Data Flows
+
+Each core page fetches data via `api.ts` direct fetch to the Express server.
+
+| Page | Route | Fetch Method | Express Endpoint | Response Shape |
+|------|-------|-------------|-----------------|----------------|
+| Login | `/login` | Client `POST` → Next API route → Express | `POST /auth/admin-login` | `{ success, data: { user } }` + Set-Cookie header |
+| Home | `/` | Client `GET` → Next API route → Express | `GET /admin/stats` | `{ success, data: { counts: { characters, dialogues, scenes, overlays, mysteries }, recentActivity: [...] } }` |
+| Layout | All pages | Server-side `getAdminUser()` | `GET /auth/admin-me` | `{ success, data: { user } }` |
+| ContentListPage | `/{type}` | Client `GET {endpoint}?page={p}&pageSize=50` | `GET /admin/{type}` | `{ success, data: { items: T[], total: number } }` |
+| ContentDetailPage | `/{type}/{id}` | Client `GET /api/admin/{type}/{id}` | `GET /admin/{type}/{id}` | `{ success, data: T }` |
+
+**Auth flow:** Login posts FormData to `/api/auth/admin-login`, which forwards to Express and relays the `Set-Cookie` header. The middleware checks for `jwt_session` cookie on all routes except `/login`.
+
 ## Network Architecture
 
-File operations route through the server, not the admin directly:
+File operations route through the server, not the dashboard directly:
 
 ```
-Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
+Dashboard UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 ```
 
-- Admin container has NO filesystem access to `content/` or `docs/`
+- Dashboard container has NO filesystem access to `content/` or `docs/`
 - Server has read-write access to `content/` and read-only access to `docs/`
 - All file operations proxy through server endpoints
 
@@ -139,7 +155,7 @@ Admin UI  →  Next.js API proxy  →  Server Express API  →  Filesystem / DB
 
 - Admin login: `POST /auth/admin-login` (server) → JWT cookie
 - Admin middleware checks `users.role` on every API call (admin or developer)
-- Admin app runs on port 3001, player client on 5173, server on 3000 (different origins)
+- Dashboard app runs on port 3001, player client on 5173, server on 3000 (different origins)
 
 ## Key Server Routes
 

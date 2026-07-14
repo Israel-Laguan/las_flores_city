@@ -1,9 +1,6 @@
 /**
  * UI tests for the Beat Detail page.
- * Extracted from page.test.tsx to reduce function length.
- *
- * Task 8.4 — example-based tests.
- * Requirements: 8.1–8.10, 9.5, 9.6
+ * Ported from dashboard for admin parity.
  */
 
 import React from 'react';
@@ -13,14 +10,19 @@ import '@testing-library/jest-dom';
 
 vi.mock('next/navigation', () => ({ useParams: vi.fn() }));
 
+vi.mock('@/lib/client-api', () => ({
+  adminFetch: vi.fn(),
+}));
+
 import { useParams } from 'next/navigation';
+import { adminFetch } from '@/lib/client-api';
 import BeatDetailPage from '../[slug]/page';
 
 function mockFetchSuccess(data: unknown) {
-  return vi.fn().mockResolvedValue({ json: () => Promise.resolve({ success: true, data }) });
+  return (adminFetch as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, data });
 }
 function mockFetchFailure(error: string) {
-  return vi.fn().mockResolvedValue({ json: () => Promise.resolve({ success: false, error }) });
+  return (adminFetch as ReturnType<typeof vi.fn>).mockResolvedValue({ success: false, error });
 }
 
 describe('BeatDetailPage', () => {
@@ -30,19 +32,19 @@ describe('BeatDetailPage', () => {
   });
 
   it('renders "No dialogues set this beat." when dialogueUsages is empty', async () => {
-    global.fetch = mockFetchSuccess({ dialogueUsages: [], sceneUsages: [{ sceneId: 'scene-1', sceneName: 'The Plaza' }] });
+    mockFetchSuccess({ dialogueUsages: [], sceneUsages: [{ sceneId: 'scene-1', sceneName: 'The Plaza' }] });
     render(<BeatDetailPage />);
     await waitFor(() => { expect(screen.getByText('No dialogues set this beat.')).toBeInTheDocument(); });
   });
 
   it('renders "No scenes require this beat." when sceneUsages is empty', async () => {
-    global.fetch = mockFetchSuccess({ dialogueUsages: [{ dialogueId: 'dlg-1', dialogueName: 'Intro Dialogue', nodeId: 'node_0' }], sceneUsages: [] });
+    mockFetchSuccess({ dialogueUsages: [{ dialogueId: 'dlg-1', dialogueName: 'Intro Dialogue', nodeId: 'node_0' }], sceneUsages: [] });
     render(<BeatDetailPage />);
     await waitFor(() => { expect(screen.getByText('No scenes require this beat.')).toBeInTheDocument(); });
   });
 
   it('renders both empty-state messages when both usages arrays are empty', async () => {
-    global.fetch = mockFetchSuccess({ dialogueUsages: [], sceneUsages: [] });
+    mockFetchSuccess({ dialogueUsages: [], sceneUsages: [] });
     render(<BeatDetailPage />);
     await waitFor(() => {
       expect(screen.getByText('No dialogues set this beat.')).toBeInTheDocument();
@@ -51,7 +53,7 @@ describe('BeatDetailPage', () => {
   });
 
   it('shows error when fetch returns failure envelope', async () => {
-    global.fetch = mockFetchFailure('Beat not found');
+    mockFetchFailure('Beat not found');
     render(<BeatDetailPage />);
     await waitFor(() => { expect(screen.getByText('Beat not found')).toBeInTheDocument(); });
   });

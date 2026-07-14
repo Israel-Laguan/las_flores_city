@@ -117,11 +117,11 @@ podman exec las-flores-server wget -qO- http://localhost:3000/health
 # Expected: {"success":true,"data":{"status":"healthy",...}}
 ```
 
-### 5. Start Admin Panel
+### 5. Start Dashboard Panel
 
 ```bash
 # In a new terminal, from the project root
-npm run dev --workspace=admin
+npm run dev --workspace=dashboard
 # This will start on http://localhost:3001
 ```
 

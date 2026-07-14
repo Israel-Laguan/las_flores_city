@@ -1,39 +1,41 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
-export async function POST(request: Request) {
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+
+export async function POST() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('jwt_session');
 
     cookieStore.delete('jwt_session');
 
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const protocol = headersList.get('x-forwarded-proto') || 'http';
+    const origin = `${protocol}://${host}`;
+
     if (sessionCookie) {
-      const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
-      const serverResponse = await fetch(`${serverUrl}/auth/logout`, {
+      const serverResponse = await fetch(`${SERVER_URL}/auth/logout`, {
         method: 'POST',
-        headers: {
-          'Cookie': `jwt_session=${sessionCookie.value}`,
-        },
+        headers: { 'Cookie': `jwt_session=${sessionCookie.value}` },
       });
 
-      // Forward the server's Set-Cookie (clear cookie) to the browser
       const setCookieHeader = serverResponse.headers.get('set-cookie');
       if (setCookieHeader) {
-        const responseHeaders: Record<string, string> = {
-          'location': new URL('/login', request.url).toString(),
-        };
-        responseHeaders['set-cookie'] = setCookieHeader;
         return new NextResponse(null, {
           status: 303,
-          headers: responseHeaders,
+          headers: {
+            location: new URL('/login', origin).toString(),
+            'set-cookie': setCookieHeader,
+          },
         });
       }
     }
 
-    return NextResponse.redirect(new URL('/login', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/login', origin), { status: 303 });
   } catch (error) {
     console.error('Logout error:', error);
-    return NextResponse.redirect(new URL('/login', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'), { status: 303 });
   }
 }

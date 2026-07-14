@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'title', label: 'Title' },
   {
     key: 'itemType', label: 'Type',
-    render: (item: any) => <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.itemType}</span>,
+    render: (item: any) => <Badge variant="info">{item.itemType}</Badge>,
   },
   { key: 'mysteryTitle', label: 'Mystery', render: (item: any) => item.mysteryTitle || '—' },
   { key: 'updatedAt', label: 'Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
@@ -16,9 +16,9 @@ const columns = [
 export default function VaultPage() {
   return (
     <ContentListPage
-      title="🔐 Vault Items"
+      title="Vault Items"
       heading="Vault Item List"
-      endpoint="/api/admin/vault"
+      endpoint="/admin/vault"
       detailPath="/vault"
       columns={columns}
     />

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'name', label: 'Name' },
@@ -10,7 +10,7 @@ const columns = [
   {
     key: 'requiredStoryBeat', label: 'Required Beat',
     render: (item: any) => item.requiredStoryBeat
-      ? <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.requiredStoryBeat}</span>
+      ? <Badge variant="info">{item.requiredStoryBeat}</Badge>
       : '—',
   },
   { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
@@ -19,9 +19,9 @@ const columns = [
 export default function LocationsPage() {
   return (
     <ContentListPage
-      title="📍 Locations"
+      title="Locations"
       heading="Location List"
-      endpoint="/api/admin/locations"
+      endpoint="/admin/locations"
       detailPath="/locations"
       columns={columns}
     />

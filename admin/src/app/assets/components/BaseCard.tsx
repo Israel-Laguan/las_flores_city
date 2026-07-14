@@ -1,6 +1,8 @@
-"use client";
+'use client';
 
 import type { AssetBase } from '@las-flores/shared';
+import { serverAssetUrl } from '@/lib/client-api';
+import styles from '../assets.module.css';
 
 type Props = {
   base: AssetBase;
@@ -11,37 +13,37 @@ type Props = {
 };
 
 export default function BaseCard({ base, isNew, loading, onDelete, onApprove }: Props) {
-  const borderColor = base.chosen ? '#00ff00' : isNew ? '#00aaff' : '#444';
+  const cardClass = base.chosen
+    ? `${styles.card} ${styles.cardChosen}`
+    : isNew
+      ? `${styles.card} ${styles.cardNew}`
+      : styles.card;
 
   return (
-    <div style={{ border: `2px solid ${borderColor}`, padding: '1rem', borderRadius: '5px', position: 'relative' }}>
-      {isNew && !base.chosen && (
-        <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#00aaff', color: '#000', padding: '0.2rem 0.5rem', borderRadius: '3px', fontSize: '0.8rem', fontWeight: 'bold' }}>NEW</div>
-      )}
-      {base.chosen && (
-        <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#00ff00', color: '#000', padding: '0.2rem 0.5rem', borderRadius: '3px', fontSize: '0.8rem', fontWeight: 'bold' }}>✓ Chosen</div>
-      )}
+    <div className={cardClass}>
+      {isNew && !base.chosen && <div className={styles.badgeNew}>NEW</div>}
+      {base.chosen && <div className={styles.badgeChosen}>&check; Chosen</div>}
       <img
-        src={`/assets/image/${base.id}`}
+        src={serverAssetUrl(`/assets/image/${base.id}`)}
         alt="base proposal"
-        style={{ width: '100%', height: 'auto', marginBottom: '1rem', borderRadius: '3px' }}
+        className={styles.cardImage}
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>#{base.proposal_index + 1} · seed {base.seed}</span>
+      <div className={styles.cardMeta}>
+        <span className={styles.muted}>#{base.proposal_index + 1} &middot; seed {base.seed}</span>
         <button
           onClick={() => onDelete(base.id)}
           disabled={loading}
-          style={{ background: 'transparent', color: '#ff4444', border: 'none', cursor: 'pointer', fontSize: '0.8rem' }}
+          className={styles.btnSmallDanger}
         >
           Delete
         </button>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div className={styles.cardActions}>
         {!base.chosen && (
           <button
             onClick={() => onApprove(base.id)}
             disabled={loading}
-            style={{ background: 'transparent', color: '#00ff00', border: '1px solid #00ff00', cursor: 'pointer', fontSize: '0.8rem', padding: '0.4rem 1rem', width: '100%' }}
+            className={styles.btnSmallFull}
           >
             Approve
           </button>

@@ -1,114 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-
-const styles = {
-  overlay: {
-    position: 'fixed' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: '#1a1a2e',
-    border: '1px solid #00ff00',
-    borderRadius: '5px',
-    padding: '1.5rem',
-    maxWidth: '800px',
-    width: '90%',
-    maxHeight: '80vh',
-    display: 'flex',
-    flexDirection: 'column' as const,
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '1rem',
-    borderBottom: '1px solid #333',
-    paddingBottom: '0.5rem',
-  },
-  title: {
-    color: '#00ff00',
-    fontSize: '1.1rem',
-    fontWeight: 'bold' as const,
-    margin: 0,
-  },
-  closeButton: {
-    background: 'transparent',
-    color: '#00ff00',
-    border: '1px solid #00ff00',
-    borderRadius: '3px',
-    padding: '0.3rem 0.6rem',
-    cursor: 'pointer',
-    fontFamily: 'monospace',
-    fontSize: '0.85rem',
-  },
-  content: {
-    flex: 1,
-    overflowY: 'auto' as const,
-    backgroundColor: '#0d0d1a',
-    padding: '1rem',
-    borderRadius: '5px',
-    border: '1px solid #333',
-    fontFamily: 'monospace',
-    fontSize: '0.9rem',
-    lineHeight: '1.6',
-    color: '#fff',
-    whiteSpace: 'pre-wrap' as const,
-  },
-  path: {
-    color: '#888',
-    fontSize: '0.8rem',
-    marginBottom: '0.5rem',
-    fontFamily: 'monospace',
-  },
-  errorBox: {
-    background: '#ff000033',
-    border: '1px solid #ff4444',
-    padding: '0.75rem',
-    borderRadius: '5px',
-    color: '#ff6666',
-    fontSize: '0.85rem',
-  },
-  button: {
-    padding: '0.4rem 0.8rem',
-    borderRadius: '3px',
-    fontFamily: 'monospace',
-    fontSize: '0.85rem',
-    cursor: 'pointer',
-    border: 'none',
-    marginRight: '0.5rem',
-  },
-  primaryButton: {
-    backgroundColor: '#00ff00',
-    color: '#000',
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    color: '#00ff00',
-    border: '1px solid #00ff00',
-  },
-  dirtyIndicator: {
-    display: 'inline-block',
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    backgroundColor: '#ffaa00',
-    marginLeft: '0.5rem',
-  },
-  hint: {
-    fontSize: '0.75rem',
-    color: '#888',
-    marginTop: '0.25rem',
-  },
-};
+import { cn } from '@/lib/cn';
+import { adminFetch } from '@/lib/client-api';
+import styles from './LoreViewer.module.css';
 
 interface LoreViewerProps {
   lorePath: string | null;
@@ -122,14 +17,16 @@ function LoreEditor({ content, onChange, onSave, onCancel, saving }: {
   return (
     <>
       <textarea
-        style={{ flex: 1, width: '100%', backgroundColor: '#0d0d1a', color: '#00ff00', border: '1px solid #333', padding: '1rem', fontFamily: 'monospace', fontSize: '0.9rem', resize: 'none', marginBottom: '1rem', boxSizing: 'border-box' as const }}
-        value={content} onChange={(e) => onChange(e.target.value)} autoFocus
+        className={styles.editorTextarea}
+        value={content}
+        onChange={(e) => onChange(e.target.value)}
+        autoFocus
       />
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-        <button style={{ ...styles.button, ...styles.primaryButton }} onClick={onSave} disabled={saving}>
+      <div className={styles.editorActions}>
+        <button className={cn(styles.button, styles.primaryButton)} onClick={onSave} disabled={saving}>
           {saving ? 'Saving...' : 'Save'}
         </button>
-        <button style={{ ...styles.button, ...styles.secondaryButton }} onClick={onCancel}>Cancel</button>
+        <button className={cn(styles.button, styles.secondaryButton)} onClick={onCancel}>Cancel</button>
       </div>
     </>
   );
@@ -152,21 +49,21 @@ function LoreModal({ lorePath, readOnly, dirty, content, loading, error, exists,
   onChange: (value: string) => void;
 }) {
   return (
-    <div style={styles.overlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.header}>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <div>
-            <h3 style={styles.title}>
+            <h3 className={styles.title}>
               {readOnly ? 'Narrative' : 'Lore'}
-              {dirty && <span style={styles.dirtyIndicator} title="Unsaved changes" />}
+              {dirty && <span className={styles.dirtyIndicator} title="Unsaved changes" />}
             </h3>
-            <div style={styles.path}>{lorePath}</div>
+            <div className={styles.path}>{lorePath}</div>
           </div>
-          <button style={styles.closeButton} onClick={onClose}>Close</button>
+          <button className={styles.closeButton} onClick={onClose}>Close</button>
         </div>
-        {error && <div style={styles.errorBox}>{error}</div>}
+        {error && <div className={styles.errorBox}>{error}</div>}
         {!exists && !loading && !error && (
-          <div style={{ marginBottom: '1rem', color: '#888', fontSize: '0.85rem' }}>This file doesn&apos;t exist yet.</div>
+          <div className={styles.notFound}>This file doesn&apos;t exist yet.</div>
         )}
         {editing ? (
           <>
@@ -177,14 +74,14 @@ function LoreModal({ lorePath, readOnly, dirty, content, loading, error, exists,
               onCancel={onCancelEdit}
               saving={saving}
             />
-            <div style={styles.hint}>Press Ctrl+S to save</div>
+            <div className={styles.hint}>Press Ctrl+S to save</div>
           </>
         ) : (
           <>
-            <div style={styles.content}>{loading ? 'Loading...' : content || 'No content'}</div>
+            <div className={styles.content}>{loading ? 'Loading...' : content || 'No content'}</div>
             {!readOnly && (
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                <button style={{ ...styles.button, ...styles.primaryButton }} onClick={onStartEdit}>
+              <div className={styles.viewActions}>
+                <button className={cn(styles.button, styles.primaryButton)} onClick={onStartEdit}>
                   {exists ? 'Edit' : 'Create'}
                 </button>
               </div>
@@ -214,7 +111,6 @@ function useLoreViewer(lorePath: string | null, onClose: () => void) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Ctrl+S to save
   useEffect(() => {
     function handleCtrlS(e: KeyboardEvent) {
       if ((e.ctrlKey || e.metaKey) && e.key === 's' && editing && dirty && !saving) {
@@ -226,7 +122,6 @@ function useLoreViewer(lorePath: string | null, onClose: () => void) {
     return () => window.removeEventListener('keydown', handleCtrlS);
   }, [editing, dirty, saving, content, lorePath]);
 
-  // Warn on page navigation if dirty
   useEffect(() => {
     if (!dirty) return;
     const handler = (e: BeforeUnloadEvent) => {
@@ -240,10 +135,11 @@ function useLoreViewer(lorePath: string | null, onClose: () => void) {
   useEffect(() => {
     if (!lorePath) return;
     setLoading(true); setError(null); setEditing(false); setDirty(false);
-    fetch(`/api/admin/lore/file?path=${encodeURIComponent(lorePath)}`)
-      .then((res) => res.json())
+    adminFetch<{ success: boolean; data?: { content: string; exists?: boolean }; error?: string }>(
+      `/admin/lore/file?path=${encodeURIComponent(lorePath)}`,
+    )
       .then((data) => {
-        if (data.success) { setContent(data.data.content); setExists(data.data.exists ?? true); }
+        if (data.success && data.data) { setContent(data.data.content); setExists(data.data.exists ?? true); }
         else { setError(data.error || 'Failed to load lore'); }
       })
       .catch(() => setError('Failed to load lore'))
@@ -253,8 +149,10 @@ function useLoreViewer(lorePath: string | null, onClose: () => void) {
   function handleSave() {
     if (!lorePath) return;
     setSaving(true);
-    fetch('/api/admin/lore/file', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: lorePath, content }) })
-      .then((res) => res.json())
+    adminFetch<{ success: boolean; error?: string }>(
+      '/admin/lore/file',
+      { method: 'POST', body: JSON.stringify({ path: lorePath, content }) },
+    )
       .then((data) => { if (data.success) { setEditing(false); setDirty(false); setExists(true); } else { setError(data.error || 'Failed to save'); } })
       .catch(() => setError('Failed to save'))
       .finally(() => setSaving(false));
@@ -266,21 +164,9 @@ function useLoreViewer(lorePath: string | null, onClose: () => void) {
   }
 
   return {
-    content,
-    loading,
-    saving,
-    error,
-    exists,
-    editing,
-    setEditing,
-    dirty,
-    setDirty,
-    handleClose,
-    handleSave,
-    handleChange: (v: string) => {
-      setContent(v);
-      setDirty(true);
-    },
+    content, loading, saving, error, exists, editing, setEditing,
+    dirty, setDirty, handleClose, handleSave,
+    handleChange: (v: string) => { setContent(v); setDirty(true); },
   };
 }
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { getLoreDir } from './admin-lore.js';
-import { resolveContentDir } from './admin-content.js';
+import { resolveContentDir } from './admin-content.helpers.js';
 import { queryOLTP } from '../database/connection.js';
 import * as matchers from './admin-coverage.matchers.js';
 import { processFileSystem, parseYamlFiles } from './admin-coverage.fs.js';

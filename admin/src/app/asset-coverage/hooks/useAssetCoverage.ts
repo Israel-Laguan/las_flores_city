@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { adminFetch } from '@/lib/client-api';
 
 interface CharacterAsset {
   id: string;
@@ -31,16 +32,14 @@ export function useAssetCoverage() {
   useEffect(() => {
     async function fetchAssets() {
       try {
-        const res = await fetch('/api/admin/coverage/assets');
-        const json: AssetCoverageResponse = await res.json();
+        const json = await adminFetch<AssetCoverageResponse>('/admin/coverage/assets');
         if (json.success) {
           setCharacters(json.data.characters);
           setScenes(json.data.scenes);
         } else {
           setError('Failed to load asset coverage');
         }
-      } catch (err) {
-        console.error('Failed to fetch asset coverage', err);
+      } catch {
         setError('Failed to load asset coverage');
       } finally {
         setLoading(false);

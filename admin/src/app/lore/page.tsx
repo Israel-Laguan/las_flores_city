@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { adminStyles as styles } from '@/lib/adminStyles';
 import { useLoreTree } from './hooks/useLoreTree';
 import { useLoreContent } from './hooks/useLoreContent';
 import SearchBar from './components/SearchBar';
 import TreePanel from './components/TreePanel';
 import MarkdownViewer from './components/MarkdownViewer';
+import styles from './lore.module.css';
 
 export default function LoreBrowserPage() {
   const searchParams = useSearchParams();
@@ -37,21 +37,13 @@ export default function LoreBrowserPage() {
   };
 
   return (
-    <main style={styles.main}>
-      <h1 style={styles.heading}>Lore Browser</h1>
-      <div style={{ display: 'flex', gap: '1rem', minHeight: 'calc(100vh - 10rem)' }}>
+    <main className={styles.main}>
+      <h1>Lore Browser</h1>
+      <div className={styles.container}>
         {/* Left panel — file tree */}
-        <div style={{
-          width: '280px',
-          flexShrink: 0,
-          border: '1px solid #333',
-          borderRadius: '5px',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+        <div className={styles.treePanel}>
           <SearchBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-          {treeError && <div style={{ ...styles.errorBox, margin: '0.5rem' }}>{treeError}</div>}
+          {treeError && <div className={styles.errorBox}>{treeError}</div>}
           <TreePanel
             treeLoading={treeLoading}
             filteredGroups={filteredGroups}

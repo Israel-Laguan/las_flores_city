@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { adminFetch } from '@/lib/client-api';
 
 interface LoreFileResponse {
   success: boolean;
@@ -15,8 +16,9 @@ export function useLoreContent(selectedPath: string | null) {
     if (selectedPath) {
       setContentLoading(true);
       setContentError(null);
-      fetch(`/api/admin/lore/file?path=${encodeURIComponent(selectedPath)}`)
-        .then((res) => res.json())
+      adminFetch<LoreFileResponse>(
+        `/admin/lore/file?path=${encodeURIComponent(selectedPath)}`,
+      )
         .then((data: LoreFileResponse) => {
           if (active) {
             if (data.success) {

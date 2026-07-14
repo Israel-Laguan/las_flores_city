@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -13,15 +15,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Forward the request to the server API
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
-    const response = await fetch(`${serverUrl}/auth/admin-login`, {
+    const response = await fetch(`${SERVER_URL}/auth/admin-login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
-      credentials: 'include', // This is important for cookies
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -32,19 +30,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Forward the Set-Cookie header from the server response
     const setCookieHeader = response.headers.get('set-cookie');
     const responseHeaders: Record<string, string> = {
-      'location': new URL('/', request.url).toString(),
+      location: new URL('/', request.url).toString(),
     };
     if (setCookieHeader) {
       responseHeaders['set-cookie'] = setCookieHeader;
     }
 
-    return new NextResponse(null, {
-      status: 303,
-      headers: responseHeaders,
-    });
+    return new NextResponse(null, { status: 303, headers: responseHeaders });
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(

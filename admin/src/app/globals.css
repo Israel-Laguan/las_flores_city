@@ -1,3 +1,15 @@
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #888;
+  --accent: #00ff00;
+  --panel-bg: #0d0d1a;
+  --page-bg: #1a1a2e;
+  --border: #333;
+  --danger: #ff4444;
+  --font-mono: monospace;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,13 +17,14 @@
 }
 
 body {
-  background-color: #1a1a2e;
-  color: #00ff00;
-  font-family: monospace;
+  font-family: var(--font-mono);
+  background: var(--page-bg);
+  color: var(--accent);
+  min-height: 100vh;
 }
 
 a {
-  color: #00ff00;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -20,27 +33,12 @@ a:hover {
 }
 
 h1, h2, h3 {
-  color: #00ff00;
-  margin-bottom: 1rem;
-}
-
-ul {
-  list-style: none;
-  padding-left: 1rem;
-}
-
-li {
-  margin: 0.5rem 0;
-}
-
-section {
-  border: 1px solid #00ff00;
-  padding: 1rem;
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
 button {
-  font-family: monospace;
+  font-family: var(--font-mono);
   cursor: pointer;
 }
 

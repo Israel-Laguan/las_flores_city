@@ -1,0 +1,60 @@
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--accent);
+}
+
+.td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.successBadge {
+  background: var(--accent);
+  color: #000;
+}
+
+.dangerBadge {
+  background: var(--danger);
+  color: #fff;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.viewLink {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { adminStyles as styles } from '@/lib/adminStyles';
+import styles from './AssetTable.module.css';
+import { cn } from '@/lib/cn';
 
 interface AssetTableRow {
   id: string;
@@ -18,7 +19,7 @@ interface AssetTableProps {
 
 function PreviewCell({ url, style }: { url?: string; style?: React.CSSProperties }) {
   if (!url) {
-    return <span style={styles.muted}>—</span>;
+    return <span className={styles.muted}>—</span>;
   }
   return (
     <img
@@ -31,9 +32,9 @@ function PreviewCell({ url, style }: { url?: string; style?: React.CSSProperties
 }
 
 function StatusBadge({ status }: { status: 'ready' | 'missing' }) {
-  const badgeStyle = status === 'ready' ? styles.successBadge : styles.dangerBadge;
+  const badgeClass = status === 'ready' ? styles.successBadge : styles.dangerBadge;
   const label = status === 'ready' ? 'Ready' : 'Missing';
-  return <span style={{ ...styles.badge, ...badgeStyle }}>{label}</span>;
+  return <span className={cn(styles.badge, badgeClass)}>{label}</span>;
 }
 
 export default function AssetTable({ title, headers, rows }: AssetTableProps) {
@@ -41,26 +42,26 @@ export default function AssetTable({ title, headers, rows }: AssetTableProps) {
   const readyRows = rows.filter((r) => r.status === 'ready');
 
   return (
-    <div style={styles.section}>
-      <h2 style={styles.sectionHeading}>{title}</h2>
-      <table style={styles.table}>
+    <div className={styles.section}>
+      <h2 className={styles.sectionHeading}>{title}</h2>
+      <table className={styles.table}>
         <thead>
           <tr>
             {headers.map((h) => (
-              <th key={h} style={styles.th}>{h}</th>
+              <th key={h} className={styles.th}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {[...missingRows, ...readyRows].map((row) => (
             <tr key={row.id}>
-              <td style={styles.td}>{row.name}</td>
-              <td style={styles.td}><StatusBadge status={row.status} /></td>
-              <td style={styles.td}><PreviewCell url={row.previewUrl} style={row.previewStyle} /></td>
-              <td style={styles.td}>
+              <td className={styles.td}>{row.name}</td>
+              <td className={styles.td}><StatusBadge status={row.status} /></td>
+              <td className={styles.td}><PreviewCell url={row.previewUrl} style={row.previewStyle} /></td>
+              <td className={styles.td}>
                 <Link
                   href={row.linkHref}
-                  style={{ ...styles.button, ...styles.secondaryButton, padding: '0.25rem 0.75rem', fontSize: '0.8rem', textDecoration: 'none' }}
+                  className={styles.viewLink}
                 >
                   View
                 </Link>

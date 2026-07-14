@@ -20,7 +20,7 @@ This document describes the Docker Compose setup, deviations from the original s
 |------|--------|--------|
 | `context: ./server` with `COPY ../shared/` | `context: .` (repo root) | Docker cannot access files outside the build context directory. `../shared` is unreachable when context is `./server`. |
 
-**Impact:** Both `server/Dockerfile` and `admin/Dockerfile` use the repo root as build context. A `.dockerignore` file mitigates unnecessary file transfer. Docker layer caching minimizes rebuild time.
+**Impact:** Both `server/Dockerfile` and `dashboard/Dockerfile` use the repo root as build context. A `.dockerignore` file mitigates unnecessary file transfer. Docker layer caching minimizes rebuild time.
 
 ### 1.3 Content YAML IDs
 
@@ -124,7 +124,7 @@ las-flores-postgres-olap   Up (healthy)                  0.0.0.0:5433->5432/tcp
 las-flores-redis           Up (healthy)                  0.0.0.0:6379->6379/tcp
 las-flores-minio           Up (healthy)                  0.0.0.0:9000-9001->9000-9001/tcp
 las-flores-server          Up                           0.0.0.0:3000->3000/tcp
-las-flores-admin           Up                           0.0.0.0:3001->3000/tcp
+las-flores-dashboard      Up                           0.0.0.0:3001->3000/tcp
 ```
 
 **Endpoints:**
@@ -141,7 +141,7 @@ las-flores-admin           Up                           0.0.0.0:3001->3000/tcp
 |------|--------|
 | `docker-compose.yml` | OLTP port 5434, build contexts changed to root |
 | `server/Dockerfile` | Root context, `npm install`, shared build chain |
-| `admin/Dockerfile` | Root context, `npm install`, shared build chain |
+| `dashboard/Dockerfile` | Root context, `npm install`, shared build chain |
 | `.env` | OLTP port updated to 5434 |
 | `server/tsconfig.json` | Added `paths` for `@las-flores/shared`, adjusted `rootDir` |
 | `server/src/content/validate.ts` | Made `file` optional in `ValidationError` |

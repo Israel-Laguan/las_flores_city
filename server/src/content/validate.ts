@@ -1,25 +1,13 @@
 import yaml from 'js-yaml';
 import fs from 'fs/promises';
-import path from 'path';
 import { glob } from 'glob';
-import {
-  YAMLCharacterSchema,
-  YAMLDialogueSchema,
-  YAMLOverlaySchema,
-  YAMLSceneSchema,
-  YAMLMissionSchema,
-  YAMLLocationSchema,
-  VaultFileSchema,
-  ShopItemFileSchema,
-  GigFileSchema,
-  StoryBeatRegistrySchema,
-  ContentType,
-  YAMLStoryFileSchema,
-} from '@las-flores/shared';
+import { ContentType } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { getCache } from '../database/redis.js';
 import { validateStoryFlow } from './storyFlow.js';
 import { validateLorePaths } from './lorePathValidation.js';
+import { checkForXSS } from './validate-xss.js';
+import { getContentTypeFromPath, validateContentByType } from './validate-types.js';
 
 export interface ValidationResult {
   valid: boolean;
@@ -34,6 +22,9 @@ export interface ValidationError {
   message: string;
   severity: 'error' | 'warning';
 }
+
+export { sanitizeText, checkForXSS } from './validate-xss.js';
+export { getContentTypeFromPath, validateContentByType, detectCycles } from './validate-types.js';
 
 async function loadValidBeatSlugs(): Promise<Set<string> | null> {
   try {
@@ -135,152 +126,6 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
   }
 }
 
-export function validateContentByType(type: ContentType, data: any): ValidationResult {
-  const errors: ValidationError[] = [];
-  const warnings: string[] = [];
-
-  try {
-    switch (type) {
-      case 'character':
-        YAMLCharacterSchema.parse(data);
-        break;
-      case 'dialogue':
-        YAMLDialogueSchema.parse(data);
-        const cycleErrors = detectCycles(data.nodes || {});
-        errors.push(...cycleErrors);
-        break;
-      case 'overlay':
-        YAMLOverlaySchema.parse(data);
-        break;
-      case 'mission':
-        if (data.missions) {
-          for (const mission of data.missions) {
-            YAMLMissionSchema.parse(mission);
-          }
-        } else {
-          YAMLMissionSchema.parse(data);
-        }
-        break;
-      case 'story':
-        YAMLStoryFileSchema.parse(data);
-        break;
-      case 'scene':
-        YAMLSceneSchema.parse(data);
-        break;
-      case 'vault':
-        VaultFileSchema.parse(data);
-        break;
-      case 'shop_item':
-        ShopItemFileSchema.parse(data);
-        break;
-      case 'gig':
-        GigFileSchema.parse(data);
-        break;
-      case 'location':
-        YAMLLocationSchema.parse(data);
-        break;
-      case 'story_beat':
-        StoryBeatRegistrySchema.parse(data);
-        break;
-      case 'map_tile':
-        break;
-    }
-  } catch (e: any) {
-    errors.push({
-      message: `Schema validation failed: ${e.message}`,
-      severity: 'error',
-    });
-  }
-
-  return { valid: errors.length === 0, errors, warnings };
-}
-
-function detectCycles(nodes: Record<string, any>): ValidationError[] {
-  const errors: ValidationError[] = [];
-  const visited = new Set<string>();
-  const recursionStack = new Set<string>();
-
-  function dfs(nodeId: string): boolean {
-    visited.add(nodeId);
-    recursionStack.add(nodeId);
-
-    const node = nodes[nodeId];
-    if (!node) return false;
-
-    if (node.choices) {
-      for (const choice of node.choices) {
-        if (!visited.has(choice.next_node_id)) {
-          if (dfs(choice.next_node_id)) {
-            return true;
-          }
-        } else if (recursionStack.has(choice.next_node_id)) {
-          errors.push({
-            message: `Circular dependency detected: ${nodeId} -> ${choice.next_node_id}`,
-            severity: 'error',
-          });
-          return true;
-        }
-      }
-    }
-
-    recursionStack.delete(nodeId);
-    return false;
-  }
-
-  for (const nodeId of Object.keys(nodes)) {
-    if (!visited.has(nodeId)) {
-      dfs(nodeId);
-    }
-  }
-
-  return errors;
-}
-
-function getContentTypeFromPath(filePath: string): ContentType | null {
-  const normalizedPath = filePath.toLowerCase();
-  
-  if (normalizedPath.includes('/characters/') || normalizedPath.includes('\\characters\\')) {
-    return 'character';
-  }
-  if (normalizedPath.includes('/dialogues/') || normalizedPath.includes('\\dialogues\\')) {
-    return 'dialogue';
-  }
-  if (normalizedPath.includes('/overlays/') || normalizedPath.includes('\\overlays\\')) {
-    return 'overlay';
-  }
-  if (normalizedPath.includes('/scenes/') || normalizedPath.includes('\\scenes\\')) {
-    return 'scene';
-  }
-  if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
-    return 'gig';
-  }
-  if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
-    return 'vault';
-  }
-  if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
-    return 'mission';
-  }
-  if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) {
-    return 'story';
-  }
-  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
-    return 'shop_item';
-  }
-  if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
-    return 'location';
-  }
-
-  if (normalizedPath.endsWith('story_beats.yaml')) {
-    return 'story_beat';
-  }
-
-  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
-    return 'gig';
-  }
-  
-  return null;
-}
-
 export async function validateAllContent(contentDir: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   const allErrors: ValidationError[] = [];
   const allWarnings: string[] = [];
@@ -300,63 +145,6 @@ export async function validateAllContent(contentDir: string, schemaOnly: boolean
     errors: allErrors,
     warnings: allWarnings,
   };
-}
-
-export function sanitizeText(text: string): string {
-  const preservedTags: string[] = [];
-  let sanitized = text.replace(/<(important|\/important)>/g, (match) => {
-    preservedTags.push(match);
-    return `__PRESERVED_TAG_${preservedTags.length - 1}__`;
-  });
-
-  sanitized = sanitized.replace(/<[^>]*>/g, '');
-
-  sanitized = sanitized
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
-
-  sanitized = sanitized.replace(/__PRESERVED_TAG_(\d+)__/g, (_, index) => preservedTags[parseInt(index)]);
-
-  return sanitized;
-}
-
-export function checkForXSS(content: any): ValidationError[] {
-  const errors: ValidationError[] = [];
-  
-  function checkValue(value: any, path: string) {
-    if (typeof value === 'string') {
-      if (/<script/i.test(value)) {
-        errors.push({
-          message: `Potential XSS in ${path}: script tag detected`,
-          severity: 'error',
-        });
-      }
-      
-      if (/on\w+\s*=/i.test(value)) {
-        errors.push({
-          message: `Potential XSS in ${path}: event handler detected`,
-          severity: 'error',
-        });
-      }
-      
-      if (/javascript:/i.test(value)) {
-        errors.push({
-          message: `Potential XSS in ${path}: javascript: protocol detected`,
-          severity: 'error',
-        });
-      }
-    } else if (typeof value === 'object' && value !== null) {
-      for (const [key, val] of Object.entries(value)) {
-        checkValue(val, `${path}.${key}`);
-      }
-    }
-  }
-  
-  checkValue(content, 'content');
-  return errors;
 }
 
 export async function validateContentString(
@@ -408,35 +196,3 @@ export async function validateContent(contentDir: string, schemaOnly: boolean = 
 
 export { checkContentQuality } from './quality.js';
 export type { QualityIssue, QualityReport } from './quality.js';
-
-const isCli = process.argv[1]
-  ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'validate.ts'))
-  : false;
-
-if (isCli) {
-  const contentDir = process.argv[2] || '../content';
-  const schemaOnly = process.argv.includes('--schema-only');
-
-  validateContent(contentDir, schemaOnly)
-    .then(result => {
-      if (result.warnings.length > 0) {
-        console.log('\n⚠️  Warnings:');
-        result.warnings.forEach(w => console.log(`  - ${w}`));
-      }
-      if (result.errors.length > 0) {
-        console.log('\n❌ Errors:');
-        result.errors.forEach(e => console.log(`  - [${e.severity}] ${e.file ?? ''}: ${e.message}`));
-      }
-      if (result.valid) {
-        console.log('\n✅ Content validation passed!');
-        process.exit(0);
-      } else {
-        console.log('\n💥 Content validation failed!');
-        process.exit(1);
-      }
-    })
-    .catch(error => {
-      console.error('Unexpected error:', error);
-      process.exit(1);
-    });
-}

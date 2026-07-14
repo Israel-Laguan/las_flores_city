@@ -26,7 +26,7 @@ beforeEach(async () => {
   jest.resetModules();
   const { queryOLTP } = require('../../src/database/connection.js');
   queryOLTP.mockReset();
-  const mod = await import('../../src/routes/auth.js');
+  const mod = await import('../../src/routes/auth.dev-handlers.js');
   handleDevLogin = mod.handleDevLogin;
 });
 

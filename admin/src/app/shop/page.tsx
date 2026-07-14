@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'name', label: 'Name' },
   {
     key: 'itemType', label: 'Type',
-    render: (item: any) => <span style={{ ...adminStyles.badge, ...adminStyles.infoBadge }}>{item.itemType}</span>,
+    render: (item: any) => <Badge variant="info">{item.itemType}</Badge>,
   },
   { key: 'price', label: 'Price' },
   { key: 'currencyType', label: 'Currency' },
   {
     key: 'isActive', label: 'Active',
     render: (item: any) => item.isActive
-      ? <span style={{ ...adminStyles.badge, ...adminStyles.successBadge }}>Active</span>
-      : <span style={{ ...adminStyles.badge, ...adminStyles.dangerBadge }}>Inactive</span>,
+      ? <Badge variant="success">Active</Badge>
+      : <Badge variant="danger">Inactive</Badge>,
   },
   { key: 'createdAt', label: 'Created', render: (item: any) => new Date(item.createdAt).toLocaleDateString() },
 ];
@@ -23,9 +23,9 @@ const columns = [
 export default function ShopPage() {
   return (
     <ContentListPage
-      title="🛒 Shop Items"
+      title="Shop Items"
       heading="Shop Item List"
-      endpoint="/api/admin/shop"
+      endpoint="/admin/shop"
       detailPath="/shop"
       columns={columns}
     />

@@ -1,4 +1,4 @@
-import { adminStyles as styles } from '@/lib/adminStyles';
+import styles from './SummaryCards.module.css';
 
 interface SummaryCardsProps {
   charsReady: number;
@@ -9,19 +9,19 @@ interface SummaryCardsProps {
 
 export default function SummaryCards({ charsReady, charsMissing, scenesReady, scenesMissing }: SummaryCardsProps) {
   return (
-    <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem' }}>
-      <div style={{ ...styles.section, flex: 1, marginBottom: 0 }}>
-        <div style={{ color: '#00ff00', fontWeight: 'bold', marginBottom: '0.5rem' }}>Characters</div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <span style={{ color: '#00ff00', fontSize: '0.85rem' }}>✓ {charsReady} have portraits</span>
-          <span style={{ color: '#ff4444', fontSize: '0.85rem' }}>✗ {charsMissing} missing</span>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <div className={styles.cardTitle}>Characters</div>
+        <div className={styles.cardStats}>
+          <span className={styles.readyCount}>{charsReady} have portraits</span>
+          <span className={styles.missingCount}>{charsMissing} missing</span>
         </div>
       </div>
-      <div style={{ ...styles.section, flex: 1, marginBottom: 0 }}>
-        <div style={{ color: '#00ff00', fontWeight: 'bold', marginBottom: '0.5rem' }}>Scenes</div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <span style={{ color: '#00ff00', fontSize: '0.85rem' }}>✓ {scenesReady} have backgrounds</span>
-          <span style={{ color: '#ff4444', fontSize: '0.85rem' }}>✗ {scenesMissing} missing</span>
+      <div className={styles.card}>
+        <div className={styles.cardTitle}>Scenes</div>
+        <div className={styles.cardStats}>
+          <span className={styles.readyCount}>{scenesReady} have backgrounds</span>
+          <span className={styles.missingCount}>{scenesMissing} missing</span>
         </div>
       </div>
     </div>

@@ -1,14 +1,16 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import type { Category } from '../constants';
-import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
 import { API_BASE } from '../constants';
+import type { AssetBase, AssetVariant, AssetListAllResponse } from '@las-flores/shared';
+import { adminFetch } from '@/lib/client-api';
 import BasesSection from './BasesSection';
 import VariantCard from './VariantCard';
 import VariantForm from './VariantForm';
 import PublishBaseSection from './PublishBaseSection';
 import GeneratorHeader from './GeneratorHeader';
+import styles from '../assets.module.css';
 
 type Props = {
   selectedEntry: Category['entries'][0];
@@ -33,8 +35,10 @@ async function deleteBase(baseId: string, setLoading: (v: boolean) => void, setE
   if (!confirm('Are you sure? This will also delete all variants.')) return;
   setLoading(true);
   try {
-    const res = await fetch(`${API_BASE}/bases/${baseId}`, { method: 'DELETE' });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; error?: string }>(
+      `${API_BASE}/bases/${baseId}`,
+      { method: 'DELETE' },
+    );
     if (data.success) {
       setBases(prev => prev.filter(b => b.id !== baseId));
       setVariants(prev => prev.filter(v => v.base_id !== baseId));
@@ -42,7 +46,7 @@ async function deleteBase(baseId: string, setLoading: (v: boolean) => void, setE
     } else {
       setError(data.error || 'Failed to delete base');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to delete base');
   } finally {
     setLoading(false);
@@ -52,16 +56,17 @@ async function deleteBase(baseId: string, setLoading: (v: boolean) => void, setE
 async function approveBase(baseId: string, setLoading: (v: boolean) => void, setError: (v: string | null) => void, setBases: (v: AssetBase[] | ((prev: AssetBase[]) => AssetBase[])) => void) {
   setLoading(true);
   try {
-    const res = await fetch(`${API_BASE}/approve-base`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ base_id: baseId }),
-    });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean }>(
+      `${API_BASE}/approve-base`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ base_id: baseId }),
+      },
+    );
     if (data.success) {
       setBases(prev => prev.map(b => ({ ...b, chosen: b.id === baseId })));
     }
-  } catch (e) {
+  } catch {
     setError('Failed to approve base');
   } finally {
     setLoading(false);
@@ -76,29 +81,30 @@ async function generateVariant(baseId: string, variantName: string, variantPromp
   setLoading(true);
   setError(null);
   try {
-    const res = await fetch(`${API_BASE}/generate-variants`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        base_id: baseId,
-        variants: [{
-          variant_name: variantName,
-          prompt: variantPrompt,
-          i2i_strength: i2iStrength,
-          negative_prompt: variantNegative || undefined,
-        }],
-      }),
-    });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; data?: AssetVariant[]; error?: string }>(
+      `${API_BASE}/generate-variants`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          base_id: baseId,
+          variants: [{
+            variant_name: variantName,
+            prompt: variantPrompt,
+            i2i_strength: i2iStrength,
+            negative_prompt: variantNegative || undefined,
+          }],
+        }),
+      },
+    );
     if (data.success) {
-      setVariants(prev => [...prev, ...data.data]);
+      setVariants(prev => [...prev, ...(data.data ?? [])]);
       setVariantName('');
       setVariantPrompt('');
       setVariantNegative('');
     } else {
       setError(data.error || 'Failed to generate variant');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to generate variant');
   } finally {
     setLoading(false);
@@ -124,21 +130,22 @@ async function generateAllVariants(baseId: string, selectedEntry: Category['entr
       negative_prompt: v.negative_prompt || undefined,
     }));
 
-    const res = await fetch(`${API_BASE}/generate-variants`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        base_id: baseId,
-        variants: payloadVariants,
-      }),
-    });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; data?: AssetVariant[]; error?: string }>(
+      `${API_BASE}/generate-variants`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          base_id: baseId,
+          variants: payloadVariants,
+        }),
+      },
+    );
     if (data.success) {
-      setVariants(prev => [...prev, ...data.data]);
+      setVariants(prev => [...prev, ...(data.data ?? [])]);
     } else {
       setError(data.error || 'Failed to generate all variants');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to generate all variants');
   } finally {
     setLoading(false);
@@ -149,15 +156,17 @@ async function deleteVariant(variantId: string, setLoading: (v: boolean) => void
   if (!confirm('Are you sure?')) return;
   setLoading(true);
   try {
-    const res = await fetch(`${API_BASE}/variants/${variantId}`, { method: 'DELETE' });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; error?: string }>(
+      `${API_BASE}/variants/${variantId}`,
+      { method: 'DELETE' },
+    );
     if (data.success) {
       setVariants(prev => prev.filter(v => v.id !== variantId));
       await loadGroups();
     } else {
       setError(data.error || 'Failed to delete variant');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to delete variant');
   } finally {
     setLoading(false);
@@ -175,24 +184,25 @@ async function generateBases({ selectedEntry, setLoading, setError, setBases, se
   setLoading(true);
   setError(null);
   try {
-    const res = await fetch(`${API_BASE}/generate-bases`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt_rel: selectedEntry.prompt_rel, count: 4 }),
-    });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; data?: AssetBase[]; error?: string }>(
+      `${API_BASE}/generate-bases`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ prompt_rel: selectedEntry.prompt_rel, count: 4 }),
+      },
+    );
     if (data.success) {
-      setBases(prev => [...prev, ...data.data]);
+      setBases(prev => [...prev, ...(data.data ?? [])]);
       setNewBaseIds(prev => {
         const newIds = new Set(prev);
-        data.data.forEach((base: AssetBase) => newIds.add(base.id));
+        (data.data ?? []).forEach((base) => newIds.add(base.id));
         return newIds;
       });
       await loadGroups();
     } else {
       setError(data.error || 'Failed to generate bases');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to generate bases');
   } finally {
     setLoading(false);
@@ -209,15 +219,16 @@ async function importLocalDrafts({ selectedEntry, setLoading, setError, loadAsse
   setLoading(true);
   setError(null);
   try {
-    const res = await fetch(`${API_BASE}/import-drafts?prompt_rel=${encodeURIComponent(selectedEntry.prompt_rel)}`);
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; error?: string }>(
+      `${API_BASE}/import-drafts?prompt_rel=${encodeURIComponent(selectedEntry.prompt_rel)}`,
+    );
     if (data.success) {
       await loadAssets(selectedEntry.prompt_rel);
       await loadGroups();
     } else {
       setError(data.error || 'Failed to import local drafts');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to import local drafts');
   } finally {
     setLoading(false);
@@ -230,13 +241,13 @@ async function deleteAllBases(bases: AssetBase[], setLoading: (v: boolean) => vo
   setError(null);
   try {
     for (const base of bases) {
-      await fetch(`${API_BASE}/bases/${base.id}`, { method: 'DELETE' });
+      await adminFetch(`${API_BASE}/bases/${base.id}`, { method: 'DELETE' });
     }
     setBases([]);
     setVariants([]);
     setNewBaseIds(new Set());
     await loadGroups();
-  } catch (e) {
+  } catch {
     setError('Failed to delete all bases');
   } finally {
     setLoading(false);
@@ -247,31 +258,30 @@ async function publishAsset(baseId: string | undefined, variantId: string | unde
   setLoading(true);
   setError(null);
   try {
-    const res = await fetch(`${API_BASE}/publish`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ base_id: baseId, variant_id: variantId }),
-    });
-    const data = await res.json();
+    const data = await adminFetch<{ success: boolean; data?: { url: string }; error?: string }>(
+      `${API_BASE}/publish`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ base_id: baseId, variant_id: variantId }),
+      },
+    );
     if (data.success) {
-      alert(`Published to: ${data.data.url}`);
+      alert(`Published to: ${data.data?.url}`);
       await loadAssets(selectedEntry.prompt_rel);
     } else {
       setError(data.error || 'Failed to publish');
     }
-  } catch (e) {
+  } catch {
     setError('Failed to publish');
   } finally {
     setLoading(false);
   }
 }
 
-// eslint-disable-next-line max-lines-per-function
 export default function GeneratorView({
   selectedEntry,
   bases,
   variants,
-  groups: _groups,
   newBaseIds,
   loading,
   error,
@@ -309,7 +319,7 @@ export default function GeneratorView({
 
       {chosenBase && (
         <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{ color: '#00ff00', marginBottom: '1rem' }}>Step 2: Generate Variants (i2i)</h2>
+          <h2 className={styles.sectionTitle}>Step 2: Generate Variants (i2i)</h2>
           <VariantForm
             variantName={variantName}
             variantPrompt={variantPrompt}
@@ -324,8 +334,8 @@ export default function GeneratorView({
             loading={loading}
           />
 
-          <h3 style={{ color: '#00ff00', marginBottom: '1rem' }}>Generated Variants</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+          <h3 className={styles.sectionTitle}>Generated Variants</h3>
+          <div className={styles.variantGrid}>
             {variants.map(v => (
               <VariantCard
                 key={v.id}
@@ -341,7 +351,7 @@ export default function GeneratorView({
 
       {chosenBase && (
         <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{ color: '#00ff00', marginBottom: '1rem' }}>Step 3: Publish Approved Base</h2>
+          <h2 className={styles.sectionTitle}>Step 3: Publish Approved Base</h2>
           <PublishBaseSection
             chosenBase={chosenBase}
             loading={loading}

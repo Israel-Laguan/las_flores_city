@@ -1,8 +1,8 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
 import { LeaderboardWorker } from '../src/workers/LeaderboardWorker.js';
-import { closeConnections, closeRedis } from '../src/database/connection.js';
-import { closeRedis as closeRedisCache } from '../src/database/redis.js';
+import { closeConnections } from '../src/database/connection.js';
+import { closeRedis } from '../src/database/redis.js';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
@@ -12,7 +12,7 @@ async function main() {
   await LeaderboardWorker.processExpiredMysteries();
   console.log('Done.');
   await closeConnections();
-  await closeRedisCache();
+  await closeRedis();
 }
 
 main().catch((err) => {

@@ -1,6 +1,6 @@
 /**
  * Tests for FieldDefinitions.ts
- * Milestone 1: Story Builder UX Refinement
+ * Milestone 4: Story Builder CSS rebuild
  */
 import { describe, it, expect } from 'vitest';
 import { FIELD_DEFINITIONS, getFieldsForType } from '../components/FieldDefinitions';

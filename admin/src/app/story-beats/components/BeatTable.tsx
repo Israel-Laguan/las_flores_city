@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
-import { adminStyles as styles } from '@/lib/adminStyles';
+import styles from './BeatTable.module.css';
+import { cn } from '@/lib/cn';
 
 interface StoryBeat { slug: string; label: string; order: number; description: string }
 interface EditState { label: string; order: string; description: string }
@@ -18,41 +19,21 @@ interface BeatTableProps {
   onDelete: (slug: string) => void;
 }
 
-const inputStyle: React.CSSProperties = {
-  ...styles.input,
-};
-
-const variantStyles = {
-  primary: styles.primaryButton,
-  danger: styles.dangerButton,
-  secondary: styles.secondaryButton,
-} as const;
-
-function smallButtonStyle(variant: 'primary' | 'danger' | 'secondary', submitting: boolean): React.CSSProperties {
-  return {
-    ...styles.button,
-    padding: '0.25rem 0.75rem',
-    fontSize: '0.85rem',
-    marginRight: '0.25rem',
-    ...(submitting ? styles.disabledButton : variantStyles[variant]),
-  };
-}
-
 export default function BeatTable({ beats, loading, editingSlug, editState, submitting, onEditStart, onEditSave, onEditCancel, onEditStateChange, onDelete }: BeatTableProps) {
   return (
-    <div style={styles.section}>
-      <h2 style={styles.sectionHeading}>Story Beats</h2>
+    <div className={styles.section}>
+      <h2 className={styles.sectionHeading}>Story Beats</h2>
       {loading && beats.length === 0 ? (
-        <p style={styles.muted}>Loading beats...</p>
+        <p className={styles.muted}>Loading beats...</p>
       ) : (
-        <table style={styles.table}>
+        <table className={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Order</th>
-              <th style={styles.th}>Slug</th>
-              <th style={styles.th}>Label</th>
-              <th style={styles.th}>Description</th>
-              <th style={styles.th}>Actions</th>
+              <th className={styles.th}>Order</th>
+              <th className={styles.th}>Slug</th>
+              <th className={styles.th}>Label</th>
+              <th className={styles.th}>Description</th>
+              <th className={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -60,38 +41,38 @@ export default function BeatTable({ beats, loading, editingSlug, editState, subm
               <tr key={beat.slug}>
                 {editingSlug === beat.slug ? (
                   <>
-                    <td style={styles.td}>
-                      <input aria-label="Order" type="number" value={editState.order} onChange={e => onEditStateChange(s => ({ ...s, order: e.target.value }))} min={0} style={{ ...inputStyle, width: '70px' }} />
+                    <td className={styles.td}>
+                      <input aria-label="Order" type="number" value={editState.order} onChange={e => onEditStateChange(s => ({ ...s, order: e.target.value }))} min={0} className={cn(styles.input, styles.orderInput)} />
                     </td>
-                    <td style={styles.td}><code style={{ color: '#aaa' }}>{beat.slug}</code></td>
-                    <td style={styles.td}>
-                      <input aria-label="Label" type="text" value={editState.label} onChange={e => onEditStateChange(s => ({ ...s, label: e.target.value }))} style={inputStyle} />
+                    <td className={styles.td}><code className={styles.code}>{beat.slug}</code></td>
+                    <td className={styles.td}>
+                      <input aria-label="Label" type="text" value={editState.label} onChange={e => onEditStateChange(s => ({ ...s, label: e.target.value }))} className={styles.input} />
                     </td>
-                    <td style={styles.td}>
-                      <input aria-label="Description" type="text" value={editState.description} onChange={e => onEditStateChange(s => ({ ...s, description: e.target.value }))} style={inputStyle} />
+                    <td className={styles.td}>
+                      <input aria-label="Description" type="text" value={editState.description} onChange={e => onEditStateChange(s => ({ ...s, description: e.target.value }))} className={styles.input} />
                     </td>
-                    <td style={styles.td}>
-                      <button onClick={() => onEditSave(beat.slug)} disabled={submitting} style={smallButtonStyle('primary', submitting)}>Save</button>
-                      <button onClick={onEditCancel} disabled={submitting} style={smallButtonStyle('secondary', submitting)}>Cancel</button>
+                    <td className={styles.td}>
+                      <button onClick={() => onEditSave(beat.slug)} disabled={submitting} className={cn(styles.smallButton, styles.primaryButton)}>Save</button>
+                      <button onClick={onEditCancel} disabled={submitting} className={cn(styles.smallButton, styles.secondaryButton)}>Cancel</button>
                     </td>
                   </>
                 ) : (
                   <>
-                    <td style={styles.td}>{beat.order}</td>
-                    <td style={styles.td}><code style={{ color: '#aaa' }}>{beat.slug}</code></td>
-                    <td style={styles.td}>{beat.label}</td>
-                    <td style={styles.td}>{beat.description}</td>
-                    <td style={styles.td}>
-                      <button onClick={() => onEditStart(beat)} disabled={submitting} style={smallButtonStyle('secondary', submitting)}>Edit</button>
-                      <button onClick={() => onDelete(beat.slug)} disabled={submitting} style={smallButtonStyle('danger', submitting)}>Delete</button>
-                      <a href={`/story-beats/${beat.slug}`} style={{ color: '#00ff00', fontFamily: 'monospace', fontSize: '0.85rem' }}>Detail</a>
+                    <td className={styles.td}>{beat.order}</td>
+                    <td className={styles.td}><code className={styles.code}>{beat.slug}</code></td>
+                    <td className={styles.td}>{beat.label}</td>
+                    <td className={styles.td}>{beat.description}</td>
+                    <td className={styles.td}>
+                      <button onClick={() => onEditStart(beat)} disabled={submitting} className={cn(styles.smallButton, styles.secondaryButton)}>Edit</button>
+                      <button onClick={() => onDelete(beat.slug)} disabled={submitting} className={cn(styles.smallButton, styles.dangerButton)}>Delete</button>
+                      <a href={`/story-beats/${beat.slug}`} className={styles.detailLink}>Detail</a>
                     </td>
                   </>
                 )}
               </tr>
             ))}
             {!loading && beats.length === 0 && (
-              <tr><td colSpan={5} style={{ ...styles.td, ...styles.muted, textAlign: 'center' }}>No beats found. Add one above.</td></tr>
+              <tr><td colSpan={5} className={cn(styles.td, styles.muted, styles.textCenter)}>No beats found. Add one above.</td></tr>
             )}
           </tbody>
         </table>

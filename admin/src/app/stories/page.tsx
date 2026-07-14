@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
+import ContentListPage from '@/components/ContentListPage';
 
 const columns = [
   { key: 'title', label: 'Title' },
@@ -14,9 +14,9 @@ const columns = [
 export default function StoriesPage() {
   return (
     <ContentListPage
-      title="📚 Stories"
+      title="Stories"
       heading="Story Browser"
-      endpoint="/api/admin/stories"
+      endpoint="/admin/stories"
       detailPath="/stories"
       columns={columns}
     />

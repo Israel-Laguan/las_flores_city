@@ -10,7 +10,7 @@ STARTUP_WAIT_MS=5000  # 5 seconds between attempts
 # -------------------------------------------------
 # 1. Cleanup existing containers
 # -------------------------------------------------
-podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server las-flores-admin 2>/dev/null || true
+podman rm -f las-flores-postgres-oltp las-flores-postgres-olap las-flores-redis las-flores-minio las-flores-server 2>/dev/null || true
 
 # -------------------------------------------------
 # 2. Create network and persistent volumes
@@ -155,29 +155,23 @@ while true; do
 done
 
 # -------------------------------------------------
-# 5. Start the admin UI (Next.js dev server)
+# 5. Start the admin UI (Next.js 16 dev server)
 # -------------------------------------------------
 # Build admin image
 podman build -t las-flores-admin -f admin/Dockerfile .
 
 # Run admin container
-# Get server IP for admin to connect to server if needed
 SERVER_IP=$(get_container_ip las-flores-server)
 
 podman run -d \
   --name las-flores-admin \
   --network las-flores-net \
-  --add-host="las-flores-postgres-oltp:$OLTP_IP" \
-  --add-host="las-flores-postgres-olap:$OLAP_IP" \
-  --add-host="las-flores-redis:$REDIS_IP" \
-  --add-host="las-flores-minio:$MINIO_IP" \
   --add-host="las-flores-server:$SERVER_IP" \
-  -p 3001:3000 \
+  -p 3002:3000 \
   -v ./admin:/app/admin \
   -v ./shared:/app/shared \
-  -v ./client:/app/client \
-  -v ./server:/app/server \
   -e NODE_ENV=development \
+  -e NEXT_PUBLIC_SERVER_URL=http://las-flores-server:3000 \
   las-flores-admin
 
 # -------------------------------------------------
@@ -190,7 +184,7 @@ podman run -d \
 # -------------------------------------------------
 echo "✅ Full stack is up:"
 echo "   • Server:   http://localhost:3000"
-echo "   • Admin UI: http://localhost:3001 (try it!)"
+echo "   • Admin UI:     http://localhost:3002 (try it!)"
 echo "   • Health:   Run 'curl http://localhost:3000/health' or check Vite console"
 
 # Keep main process alive to maintain container lifecycle

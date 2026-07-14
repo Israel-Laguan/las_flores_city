@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import ContentListPage from '@/app/_components/ContentListPage';
-import { adminStyles } from '@/lib/adminStyles';
+import ContentListPage from '@/components/ContentListPage';
+import Badge from '@/components/Badge';
 
 const columns = [
   { key: 'name', label: 'Name' },
@@ -10,8 +10,8 @@ const columns = [
   {
     key: 'portraitStatus', label: 'Portrait Status',
     render: (item: any) => item.portraitStatus === 'ready'
-      ? <span style={{ ...adminStyles.badge, ...adminStyles.successBadge }}>ready</span>
-      : <span style={{ ...adminStyles.badge, ...adminStyles.warningBadge }}>missing</span>,
+      ? <Badge variant="success">ready</Badge>
+      : <Badge variant="warning">missing</Badge>,
   },
   { key: 'updatedAt', label: 'Last Updated', render: (item: any) => new Date(item.updatedAt).toLocaleDateString() },
 ];
@@ -19,9 +19,9 @@ const columns = [
 export default function CharactersPage() {
   return (
     <ContentListPage
-      title="👤 Characters"
+      title="Characters"
       heading="Character Browser"
-      endpoint="/api/admin/characters"
+      endpoint="/admin/characters"
       detailPath="/characters"
       columns={columns}
     />

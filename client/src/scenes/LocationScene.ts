@@ -5,8 +5,13 @@ import { renderNPCs, NPCData } from './location/npc-renderer';
 import { applyRainEffect, applyTenseEffect, applyNeonEffect } from './location/mood-effects';
 import { createLoadingOverlay } from './location/loading-overlay';
 import { AudioManager } from '../utils/AudioManager';
-import { addScanlines, addVignette, addNeonFlare } from './location/atmosphere-effects';
 import { travelTo } from './location/location-scene-travel';
+import {
+  createAtmosphereEffects,
+  createHUDBlocks,
+  createPhoneButton,
+  bootstrapScene,
+} from './location/location-scene-assets';
 
 interface SceneData {
   id: string;
@@ -60,10 +65,19 @@ export class LocationScene extends Phaser.Scene {
       this.displayAudioUnlockPrompt();
     }
 
-    this.createAtmosphereEffects(width, height);
-    this.createHUDBlocks(width, height);
+    const atmosphere = createAtmosphereEffects(this, width, height);
+    this.scanlines = atmosphere.scanlines;
+    this.vignette = atmosphere.vignette;
+    this.neonFlare = atmosphere.neonFlare;
+
+    const hud = createHUDBlocks(this, width);
+    this.locationNameContainer = hud.locationNameContainer;
+    this.locationValueText = hud.locationValueText;
+    this.moodContainer = hud.moodContainer;
+    this.moodValueText = hud.moodValueText;
+
     this.loadingOverlay = createLoadingOverlay(this);
-    this.createPhoneButton();
+    this.phoneButton = createPhoneButton(this);
 
     this.registerEventHandlers();
     this.setupContextRecovery();
@@ -153,45 +167,6 @@ export class LocationScene extends Phaser.Scene {
     }
   }
 
-  private createAtmosphereEffects(width: number, height: number) {
-    this.scanlines = addScanlines(this, width, height);
-    this.vignette = addVignette(this, width, height);
-    this.neonFlare = addNeonFlare(this, width, height);
-  }
-
-  private createHUDBlocks(width: number, height: number) {
-    const locationResult = buildHudContainer(this, width, height, 'LOCATION', 24);
-    this.locationNameContainer = locationResult.container as any;
-    this.locationValueText = locationResult.valueText as any;
-
-    const moodResult = buildHudContainer(this, width, height, 'MOOD', width - 100);
-    this.moodContainer = moodResult.container as any;
-    this.moodValueText = moodResult.valueText as any;
-  }
-
-  private createPhoneButton() {
-    const { width } = this.cameras.main;
-    this.phoneButton = this.add.container(width - 40, 40);
-    this.phoneButton.setDepth(60);
-
-    const bg = this.add.graphics();
-    bg.fillStyle(0x001a00, 0.9);
-    bg.fillCircle(0, 0, 18);
-    bg.lineStyle(1, 0x00ff00, 0.8);
-    bg.strokeCircle(0, 0, 18);
-    this.phoneButton.add(bg);
-
-    const icon = this.add.text(0, 0, '\u{1F4F1}', {
-      font: '16px sans-serif',
-    }).setOrigin(0.5);
-    this.phoneButton.add(icon);
-
-    const hitArea = this.add.circle(0, 0, 20, 0x000000, 0);
-    hitArea.setInteractive({ useHandCursor: true });
-    hitArea.on('pointerdown', () => eventBus.emit('phone:toggle'));
-    this.phoneButton.add(hitArea);
-  }
-
   private async loadCurrentLocation() {
     try {
       const stateResult = await api.getPlayerState();
@@ -217,7 +192,7 @@ export class LocationScene extends Phaser.Scene {
 
   private async loadScene(payload: ScenePayload) {
     this.currentPayload = payload;
-    await this.bootstrapScene(payload);
+    await bootstrapScene(this, payload, this.urlTextureCache, this.loadingOverlay);
     this.applyScenePayload(payload);
     this.cameras.main.fadeIn(500, 0, 0, 0);
   }
@@ -313,156 +288,4 @@ export class LocationScene extends Phaser.Scene {
     );
   }
 
-  private async bootstrapScene(payload: ScenePayload) {
-    this.loadingOverlay.show();
-    try {
-      const assetPromises: Promise<void>[] = [];
-
-      if (payload.scene.backgroundUrl) {
-        const bgKey = `bg-${payload.scene.id}`;
-        assetPromises.push(this.loadDynamicAsset(bgKey, payload.scene.backgroundUrl, 'image'));
-      }
-
-      for (const npc of payload.npcs) {
-        const npcKey = `npc-${npc.characterId}`;
-        if (npc.atlasUrl) {
-          assetPromises.push(this.loadSpriteAtlas(npcKey, npc.portraitUrl, npc.atlasUrl).then(() => {}));
-        } else {
-          assetPromises.push(this.loadDynamicAsset(npcKey, npc.portraitUrl, 'image'));
-        }
-      }
-
-      await Promise.all(assetPromises);
-    } finally {
-      this.loadingOverlay.hide();
-    }
-  }
-
-  private loadDynamicAsset(key: string, url: string, type: 'image' | 'audio'): Promise<void> {
-    return new Promise((resolve) => {
-      const cachedKey = this.urlTextureCache.get(url);
-      if (cachedKey && this.textures.exists(cachedKey)) return resolve();
-
-      const errorHandler = (file: any) => {
-        if (file.key === key) resolve();
-      };
-
-      if (type === 'image') {
-        this.load.image(key, url);
-        this.load.once(`filecomplete-image-${key}`, () => {
-          this.urlTextureCache.set(url, key);
-          this.load.off('loaderror', errorHandler);
-          resolve();
-        });
-        this.load.once('loaderror', errorHandler);
-      } else {
-        this.load.audio(key, url);
-        this.load.once(`filecomplete-audio-${key}`, () => {
-          this.urlTextureCache.set(url, key);
-          this.load.off('loaderror', errorHandler);
-          resolve();
-        });
-        this.load.once('loaderror', errorHandler);
-      }
-      this.load.start();
-    });
-  }
-
-  private loadSpriteAtlas(key: string, textureUrl: string, atlasUrl: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      if (this.urlTextureCache.has(atlasUrl)) {
-        const cachedKey = this.urlTextureCache.get(atlasUrl)!;
-        if (this.textures.exists(cachedKey)) return resolve(true);
-      }
-      if (this.textures.exists(key)) {
-        this.urlTextureCache.set(atlasUrl, key);
-        return resolve(true);
-      }
-
-      let settled = false;
-      const successHandler = () => {
-        if (!settled) {
-          settled = true;
-          this.load.off('loaderror', errorHandler);
-          this.urlTextureCache.set(atlasUrl, key);
-
-          if (!this.anims.exists(`${key}-blink`)) {
-            this.anims.create({
-              key: `${key}-blink`,
-              frames: this.anims.generateFrameNames(key, { prefix: 'blink_', start: 0, end: 3, zeroPad: 2 }),
-              frameRate: 8,
-              repeat: -1,
-              repeatDelay: 2000,
-            });
-          }
-
-          const expressions = ['neutral', 'happy', 'angry', 'sad', 'focused'];
-          for (const expression of expressions) {
-            const exprKey = `${key}-${expression}`;
-            if (!this.anims.exists(exprKey)) {
-              const frames = this.anims.generateFrameNames(key, {
-                prefix: `${expression}_`,
-                start: 0,
-                end: 3,
-                zeroPad: 2,
-              });
-              if (frames.length > 0) {
-                this.anims.create({ key: exprKey, frames, frameRate: 8, repeat: -1 });
-              }
-            }
-          }
-
-          resolve(true);
-        }
-      };
-
-      const errorHandler = (file: any) => {
-        if (file.key === key && !settled) {
-          settled = true;
-          this.load.off('loaderror', errorHandler);
-          this.load.image(key, textureUrl);
-          this.load.once(`filecomplete-${key}`, () => {
-            this.urlTextureCache.set(textureUrl, key);
-            resolve(false);
-          });
-          this.load.start();
-        }
-      };
-
-      this.load.on('loaderror', errorHandler);
-      this.load.once(`filecomplete-${key}`, successHandler);
-      this.load.atlas(key, textureUrl, atlasUrl);
-      this.load.start();
-    });
-  }
-}
-
-function buildHudContainer(scene: LocationScene, width: number, height: number, labelText: string, x: number): any {
-  const container = scene.add.container(x, 18);
-  container.setDepth(50);
-
-  const bg = scene.add.graphics();
-  bg.fillStyle(0x0a0a1a, 0.7);
-  bg.lineStyle(1, 0x00d4ff, 0.25);
-  const bw = x < width / 2 ? 80 : 100;
-  bg.fillRoundedRect(-bw / 2, -18, bw, 36, 8);
-  bg.strokeRoundedRect(-bw / 2, -18, bw, 36, 8);
-  container.add(bg);
-
-  const label = scene.add.text(0, 8, labelText, {
-    font: '10px monospace',
-    fontSize: '10px',
-    color: '#ffffff',
-    align: 'center',
-  }).setOrigin(0.5).setAlpha(0.7).setLetterSpacing(2);
-  container.add(label);
-
-  const valueText = scene.add.text(0, 0, '', {
-    font: '16px monospace',
-    color: '#00d4ff',
-    align: 'center',
-  }).setOrigin(0.5);
-  container.add(valueText);
-
-  return { container, valueText };
 }

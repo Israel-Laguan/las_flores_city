@@ -1,0 +1,225 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.buttonBar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.primaryButton {
+  background: var(--accent);
+  color: #000;
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summaryCard {
+  text-align: center;
+  padding: 1rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+}
+
+.summaryValue {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.summaryLabel {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.successColor {
+  color: var(--accent);
+}
+
+.warningColor {
+  color: #ffaa00;
+}
+
+.errorColor {
+  color: var(--danger);
+}
+
+.successBox {
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--accent);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+}
+
+.warningBox {
+  background: rgba(255, 170, 0, 0.2);
+  border: 1px solid #ffaa00;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+}
+
+.filterBar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.filterBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.filterBtnActive {
+  border-color: var(--accent);
+  background: rgba(0, 255, 0, 0.1);
+  color: var(--accent);
+}
+
+.section {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+.sectionHeading {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.5rem;
+}
+
+.issueGroup {
+  margin-bottom: 1rem;
+}
+
+.collapsibleHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.issueGroupTitle {
+  font-weight: bold;
+}
+
+.expandIcon {
+  color: #666;
+}
+
+.issueRow {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #222;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.issueIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.issueBody {
+  flex: 1;
+}
+
+.issueMessage {
+  margin-bottom: 0.25rem;
+}
+
+.issueFile {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.issueType {
+  color: #555;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-left: 0.5rem;
+}
+
+.badge {
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.errorBadge {
+  background: var(--danger);
+  color: #fff;
+}
+
+.warningBadge {
+  background: #ffaa00;
+  color: #000;
+}
+
+.cleanMessage {
+  color: var(--accent);
+  text-align: center;
+  padding: 2rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.mutedSmall {
+  color: var(--muted);
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.errorPre {
+  margin: 0;
+  white-space: pre-wrap;
+}

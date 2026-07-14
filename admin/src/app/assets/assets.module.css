@@ -1,0 +1,287 @@
+.page {
+  padding: 2rem;
+  font-family: monospace;
+  background-color: #1a1a2e;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.title {
+  color: #00ff00;
+  margin-bottom: 2rem;
+}
+
+.errorBanner {
+  background: #ff0000;
+  color: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+}
+
+.sectionTitle {
+  color: #00ff00;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader h2 {
+  color: #00ff00;
+  margin: 0;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.catalogGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.categoryCard {
+  border: 1px solid #00ff00;
+  padding: 1.5rem;
+  border-radius: 5px;
+}
+
+.categoryTitle {
+  color: #00ff00;
+  margin-bottom: 1rem;
+}
+
+.entryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.entryBtn {
+  background: #0d0d1a;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  font-family: monospace;
+}
+
+.entryBtnName {
+  font-weight: bold;
+}
+
+.entryBtnMeta {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.btnRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.btnPrimary {
+  padding: 0.75rem 1.5rem;
+  background: #00ff00;
+  color: #000;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+
+.btnSecondary {
+  padding: 0.75rem 1.5rem;
+  background: #00aaff;
+  color: #000;
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+}
+
+.btnDanger {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #ff4444;
+  cursor: pointer;
+  border: 1px solid #ff4444;
+  font-weight: bold;
+}
+
+.btnDanger:disabled {
+  cursor: not-allowed;
+}
+
+.btnSmall {
+  padding: 0.4rem 0.8rem;
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: none;
+}
+
+.btnSmallPrimary {
+  composes: btnSmall;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+}
+
+.btnSmallDanger {
+  composes: btnSmall;
+  color: #ff4444;
+  border: 1px solid #ff4444;
+}
+
+.btnSmallFull {
+  composes: btnSmall;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  width: 100%;
+}
+
+.muted {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.headerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.catalogBtn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.infoBox {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #0d0d1a;
+  border: 1px solid #00ff00;
+  border-radius: 5px;
+}
+
+.infoBoxTitle {
+  color: #00ff00;
+  margin-bottom: 0.5rem;
+}
+
+.infoBoxMeta {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.card {
+  border: 2px solid #444;
+  padding: 1rem;
+  border-radius: 5px;
+  position: relative;
+}
+
+.cardChosen {
+  border-color: #00ff00;
+}
+
+.cardNew {
+  border-color: #00aaff;
+}
+
+.badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.badgeNew {
+  composes: badge;
+  background: #00aaff;
+  color: #000;
+}
+
+.badgeChosen {
+  composes: badge;
+  background: #00ff00;
+  color: #000;
+}
+
+.cardImage {
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+  border-radius: 3px;
+}
+
+.cardMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: center;
+}
+
+.variantGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 600px;
+  margin-bottom: 1rem;
+}
+
+.formInput {
+  padding: 0.5rem;
+  background: #0d0d1a;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sliderLabel {
+  color: #00ff00;
+}
+
+.sliderInput {
+  flex: 1;
+}
+
+.publishSection {
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 5px;
+  max-width: 400px;
+}
