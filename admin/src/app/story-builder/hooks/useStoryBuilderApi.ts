@@ -77,3 +77,22 @@ export async function fetchTemplates() {
     '/admin/story-builder/templates',
   );
 }
+
+export async function approvePlan(planId: string, plan: ContentPlan) {
+  return adminFetch<{ success: boolean; data?: { planId: string; status: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ plan, status: 'approved' }),
+    },
+  );
+}
+
+export async function regenerateLore(planId: string, itemId: string) {
+  return adminFetch<{ success: boolean; data?: { lorePath: string; content: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}/items/${itemId}/lore`,
+    {
+      method: 'POST',
+    },
+  );
+}
