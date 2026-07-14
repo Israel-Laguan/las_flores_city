@@ -10,7 +10,9 @@ import styles from './ReviewStep.module.css';
 
 interface ReviewStepProps {
   plan: ContentPlan;
+  planId: string | null;
   loading: boolean;
+  onRegenerateLore: (itemId: string) => void;
   refineFeedback: string;
   setRefineFeedback: (v: string) => void;
   showRefine: boolean;
@@ -27,7 +29,7 @@ interface ReviewStepProps {
 }
 
 export default function ReviewStep({
-  plan, loading, refineFeedback, setRefineFeedback, showRefine, setShowRefine,
+  plan, planId, loading, onRegenerateLore, refineFeedback, setRefineFeedback, showRefine, setShowRefine,
   onRefine, onUpdateItem, onRemoveItem, onAddItem, onAssetPathRemove,
   onDependsOnChange, onUpdateLink, onAddLink, onRemoveLink,
 }: ReviewStepProps) {
@@ -46,6 +48,9 @@ export default function ReviewStep({
           item={item}
           index={i}
           allItems={plan.items}
+          planId={planId}
+          disabled={loading}
+          onRegenerateLore={onRegenerateLore}
           onFieldChange={onUpdateItem}
           onRemove={onRemoveItem}
           onAssetPathRemove={onAssetPathRemove}

@@ -27,6 +27,9 @@ interface ContentCardProps {
   item: ContentPlanItem;
   index: number;
   allItems?: ContentPlanItem[];
+  planId?: string | null;
+  disabled?: boolean;
+  onRegenerateLore?: (itemId: string) => void;
   onFieldChange: (index: number, field: string, value: string) => void;
   onRemove: (index: number) => void;
   onAssetPathRemove?: (index: number, key: string) => void;
@@ -178,7 +181,7 @@ function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
   );
 }
 
-export default function ContentCard({ item, index, allItems = [], onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -204,12 +207,24 @@ export default function ContentCard({ item, index, allItems = [], onFieldChange,
         </div>
         <div className={styles.headerActions}>
           {lorePath && (
-            <button
-              className={cn('btn', 'btn--secondary', 'btn--small')}
-              onClick={() => setShowLore(true)}
-            >
-              Lore
-            </button>
+            <>
+              <button
+                className={cn('btn', 'btn--secondary', 'btn--small')}
+                onClick={() => setShowLore(true)}
+              >
+                Lore
+              </button>
+              {onRegenerateLore && planId && (
+                <button
+                  className={cn('btn', 'btn--secondary', 'btn--small')}
+                  onClick={() => onRegenerateLore(item.id)}
+                  disabled={disabled}
+                  title="Regenerate lore content"
+                >
+                  Regenerate
+                </button>
+              )}
+            </>
           )}
           {narrativePath && (
             <button

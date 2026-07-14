@@ -31,7 +31,7 @@ export function useStoryBuilder(initialPlanId: string | null) {
   const apiCallbacks = useStoryPlanApi({
     setLoading, setError, setPlan, setStep, setPlanId,
     setRefineFeedback, setShowRefine, setPreviewData,
-    setStagingResult, setMigrationResult, description,
+    setStagingResult, setMigrationResult, description, plan,
   });
 
   useEffect(() => {
@@ -83,9 +83,11 @@ export function useStoryBuilder(initialPlanId: string | null) {
     handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
     handlePreview: () => { if (planId) apiCallbacks.handlePreview(planId); },
     handleStage: () => { if (planId) apiCallbacks.handleStage(planId); },
+    handleApprove: () => { if (planId) apiCallbacks.handleApprove(planId); },
     handleMigrate: () => { if (planId) apiCallbacks.handleMigrate(planId); },
     handleRetry: () => { if (planId) apiCallbacks.handleRetry(planId); },
     handleSelectTemplate: apiCallbacks.handleSelectTemplate,
+    handleRegenerateLore: (itemId: string) => { if (planId) apiCallbacks.handleRegenerateLore(planId, itemId); },
     updateItemField: (i: number, f: string, v: string) => applyMutation(p => mutations.updateItemField(p, i, f, v)),
     updateItemDependsOn: (i: number, d: string[]) => applyMutation(p => mutations.updateItemDependsOn(p, i, d)),
     addLink: () => applyMutation(mutations.addLink),
@@ -95,6 +97,5 @@ export function useStoryBuilder(initialPlanId: string | null) {
     removeAssetPath: (i: number, k: string) => applyMutation(p => mutations.removeAssetPath(p, i, k)),
     addItem: () => applyMutation(mutations.addItem),
     goBack: useCallback(() => { setStep(s => (s > 1 && s < 5 ? (s - 1) as Step : s)); }, []),
-    goToStage: useCallback(() => { if (plan && plan.items.length > 0) setStep(3); }, [plan]),
   };
 }

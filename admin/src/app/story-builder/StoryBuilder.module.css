@@ -3,8 +3,15 @@
   min-height: 100vh;
 }
 
-.heading {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
+}
+
+.heading {
+  margin-bottom: 0;
 }
 
 .navBar {

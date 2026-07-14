@@ -77,3 +77,65 @@ export async function fetchTemplates() {
     '/admin/story-builder/templates',
   );
 }
+
+export async function approvePlan(planId: string, plan: ContentPlan) {
+  return adminFetch<{ success: boolean; data?: { planId: string; status: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ plan, status: 'approved' }),
+    },
+  );
+}
+
+export async function regenerateLore(planId: string, itemId: string) {
+  return adminFetch<{ success: boolean; data?: { lorePath: string; content: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}/items/${itemId}/lore`,
+    {
+      method: 'POST',
+    },
+  );
+}
+
+export async function listPlans(limit?: number, offset?: number) {
+  const params = new URLSearchParams();
+  if (limit) params.set('limit', String(limit));
+  if (offset) params.set('offset', String(offset));
+  return adminFetch<{
+    success: boolean;
+    data?: {
+      plans: Array<{
+        id: string;
+        description: string;
+        status: string;
+        created_at: string;
+        updated_at: string;
+        item_count: number;
+      }>;
+      total: number;
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans?${params.toString()}`);
+}
+
+export async function deletePlan(planId: string) {
+  return adminFetch<{ success: boolean; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    { method: 'DELETE' },
+  );
+}
+
+export async function getPlanVersions(planId: string) {
+  return adminFetch<{
+    success: boolean;
+    data?: {
+      id: string;
+      description: string;
+      status: string;
+      created_at: string;
+      parent_plan_id: string | null;
+      children: any[];
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans/${planId}/versions`);
+}

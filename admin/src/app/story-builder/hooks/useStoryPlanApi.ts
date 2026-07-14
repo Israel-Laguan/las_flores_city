@@ -17,10 +17,11 @@ interface Callbacks {
   setStagingResult: SetState<any>;
   setMigrationResult: SetState<any>;
   description: string;
+  plan: ContentPlan | null;
 }
 
 export function useStoryPlanApi(cb: Callbacks) {
-  const { setLoading, setError, setPlan, setStep, setPlanId, description } = cb;
+  const { setLoading, setError, setPlan, setStep, setPlanId, description, plan } = cb;
 
   const handleGeneratePlan = useCallback(async () => {
     setLoading(true);
@@ -75,6 +76,20 @@ export function useStoryPlanApi(cb: Callbacks) {
     } catch (err: any) { setError(err.message); } finally { setLoading(false); }
   }, [setLoading, setError, setStep, cb]);
 
+  const handleApprove = useCallback(async (planId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (!plan) {
+        setError('No plan to approve');
+        return;
+      }
+      const data = await api.approvePlan(planId, plan);
+      if (data.success) { setStep(3); }
+      else { setError(data.error || 'Approval failed'); }
+    } catch (err: any) { setError(err.message); } finally { setLoading(false); }
+  }, [setLoading, setError, setStep, plan]);
+
   const handleMigrate = useCallback(async (planId: string) => {
     setLoading(true);
     setError(null);
@@ -112,13 +127,29 @@ export function useStoryPlanApi(cb: Callbacks) {
     } catch (err: any) { setError(err.message); } finally { setLoading(false); }
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
 
+  const handleRegenerateLore = useCallback(async (planId: string, itemId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await api.regenerateLore(planId, itemId);
+      if (data.success && data.data) {
+        // Lore was regenerated successfully - no need to update UI state
+        // The LoreViewer will show the updated content on next open
+      } else {
+        setError(data.error || 'Failed to regenerate lore');
+      }
+    } catch (err: any) { setError(err.message); } finally { setLoading(false); }
+  }, [setLoading, setError]);
+
   return {
     handleGeneratePlan,
     handleRefine,
     handlePreview,
     handleStage,
+    handleApprove,
     handleMigrate,
     handleRetry,
     handleSelectTemplate,
+    handleRegenerateLore,
   };
 }

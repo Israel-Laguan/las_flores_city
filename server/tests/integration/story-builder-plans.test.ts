@@ -198,6 +198,21 @@ describe('PUT /admin/story-builder/plans/:id', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data.status).toBe('approved');
   });
+
+  test('approves a plan and returns updated status', async () => {
+    mockQueryOLTP.mockResolvedValueOnce({
+      rows: [{ id: TEST_PLAN_ID, plan_json: MOCK_PLAN }],
+      rowCount: 1, command: 'UPDATE', oid: 0, fields: [],
+    });
+
+    const res = await request(app)
+      .put(`/admin/story-builder/plans/${TEST_PLAN_ID}`)
+      .send({ plan: MOCK_PLAN, status: 'approved' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.status).toBe('approved');
+  });
 });
 
 describe('DELETE /admin/story-builder/plans/:id', () => {

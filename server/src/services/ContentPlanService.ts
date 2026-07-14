@@ -1,7 +1,9 @@
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
-import { createLLMProvider, type LLMProvider, type ExistingContentContext } from './LLMService.js';
+import { createLLMProvider } from './LLMService.js';
+import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
+import { generateForPlan } from './LoreGenerator.js';
 
 export class ContentPlanService {
   private provider: LLMProvider;
@@ -25,6 +27,11 @@ export class ContentPlanService {
 
     // 5. Inject asset needs based on content type
     injectAssetNeeds(validated.items);
+
+    // 6. Generate lore files (non-fatal - log warnings on failure)
+    generateForPlan(validated, this.provider, context).catch(err => {
+      console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
+    });
 
     return validated;
   }
@@ -58,7 +65,20 @@ export class ContentPlanService {
     // 5. Re-inject asset needs for any new items
     injectAssetNeeds(validated.items);
 
-    // 6. Create a NEW plan row (versioning) instead of updating in place
+    // 6. Generate lore for NEW items only (skip existing to preserve user edits)
+    const existingItemIds = new Set(existingPlan.items.map(i => i.id));
+    const newItems = validated.items.filter(i => !existingItemIds.has(i.id));
+    if (newItems.length > 0) {
+      const partialPlan: ContentPlan = {
+        ...validated,
+        items: newItems,
+      };
+      generateForPlan(partialPlan, this.provider, context).catch(err => {
+        console.warn(`[ContentPlanService] Lore generation for new items in refine failed: ${err.message}`);
+      });
+    }
+
+    // 7. Create a NEW plan row (versioning) instead of updating in place
     const feedbackEntry = {
       feedback,
       timestamp: new Date().toISOString(),
@@ -77,7 +97,11 @@ export class ContentPlanService {
     return validated;
   }
 
-  private async gatherContext(): Promise<ExistingContentContext> {
+  async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
+    return this.provider.generateLore(item, context);
+  }
+
+  async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM characters ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM scenes ORDER BY name ASC'),

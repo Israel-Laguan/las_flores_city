@@ -8,6 +8,7 @@ import ReviewStep from './components/ReviewStep';
 import StageStep from './components/StageStep';
 import MigrateStep from './components/MigrateStep';
 import ResultsStep from './components/ResultsStep';
+import Link from 'next/link';
 import styles from './StoryBuilder.module.css';
 
 interface StoryBuilderProps {
@@ -20,15 +21,21 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
     stagingResult, migrationResult, previewData, templates,
     handleGeneratePlan, handleRefine, handlePreview, handleStage,
-    handleMigrate, handleRetry, handleSelectTemplate,
+    handleApprove, handleMigrate, handleRetry, handleSelectTemplate,
+    handleRegenerateLore,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem,
-    goBack, goToStage,
+    goBack, planId,
   } = useStoryBuilder(initialPlanId);
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.heading}>Story Builder</h1>
+      <div className={styles.header}>
+        <h1 className={styles.heading}>Story Builder</h1>
+        <Link href="/story-builder/plans" className={cn('btn', 'btn--secondary')}>
+          My Plans
+        </Link>
+      </div>
 
       <StepIndicator step={step} />
 
@@ -48,7 +55,9 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
       {step === 2 && plan && (
         <ReviewStep
           plan={plan}
+          planId={planId}
           loading={loading}
+          onRegenerateLore={handleRegenerateLore}
           refineFeedback={refineFeedback}
           setRefineFeedback={setRefineFeedback}
           showRefine={showRefine}
@@ -97,11 +106,11 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
         )}
         {step === 2 && (
           <button
-            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length) && 'btn--disabled')}
-            onClick={goToStage}
-            disabled={!plan || !plan.items?.length}
+            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length || !planId) && 'btn--disabled')}
+            onClick={handleApprove}
+            disabled={!plan || !plan.items?.length || !planId}
           >
-            Approve &amp; Stage &rarr;
+            Approve Plan &rarr;
           </button>
         )}
       </div>
