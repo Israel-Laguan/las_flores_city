@@ -69,6 +69,134 @@ const styles = {
 
 const stepLabels = ['Describe', 'Review & Refine', 'Stage', 'Migrate', 'Assets'];
 
+// JSON syntax highlighting colors
+const jsonStyles = {
+  key: { color: '#00ff00' },
+  string: { color: '#ffff00' },
+  number: { color: '#ff8800' },
+  boolean: { color: '#0088ff' },
+  null: { color: '#888888' },
+  bracket: { color: '#aaaaaa' },
+  colon: { color: '#aaaaaa' },
+  comma: { color: '#aaaaaa' },
+};
+
+// Format JSON with syntax highlighting
+function syntaxHighlightJSON(json: unknown): JSX.Element {
+  const stringified = JSON.stringify(json, null, 2);
+  const tokenRegex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|[{}[\]:,]|\s+|[^"\s{}[\]:,]+)/g;
+
+  return (
+    <pre style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'monospace' }}>
+      {stringified.split('\n').map((line, i) => {
+        const tokens: JSX.Element[] = [];
+        let match;
+        tokenRegex.lastIndex = 0;
+
+        while ((match = tokenRegex.exec(line)) !== null) {
+          const token = match[0];
+          let style: React.CSSProperties = {};
+
+          if (token.startsWith('"')) {
+            const isKey = line.substring(match.index + token.length).trim().startsWith(':');
+            style = isKey ? jsonStyles.key : jsonStyles.string;
+          } else if (token === 'true' || token === 'false') {
+            style = jsonStyles.boolean;
+          } else if (token === 'null') {
+            style = jsonStyles.null;
+          } else if (/^[0-9-]/.test(token)) {
+            style = jsonStyles.number;
+          } else if ('{}[]'.includes(token)) {
+            style = jsonStyles.bracket;
+          } else if (token === ':') {
+            style = jsonStyles.colon;
+          } else if (token === ',') {
+            style = jsonStyles.comma;
+          }
+
+          tokens.push(
+            <span key={match.index} style={style}>
+              {token}
+            </span>
+          );
+        }
+
+        return (
+          <div key={i} style={{ display: 'block' }}>
+            {tokens}
+          </div>
+        );
+      })}
+    </pre>
+  );
+}
+
+// Collapsible JSON viewer component
+function JsonViewer({ data, label = 'JSON Data', defaultOpen = false }: { 
+  data: unknown; 
+  label?: string; 
+  defaultOpen?: boolean 
+}): JSX.Element {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [copied, setCopied] = useState(false);
+  
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => console.error('Copy to clipboard failed'));
+  };
+  
+  return (
+    <details style={{ marginTop: '0.5rem' }} open={isOpen}>
+      <summary 
+        style={{ 
+          color: '#00ff00', 
+          fontSize: '0.85rem', 
+          cursor: 'pointer',
+          padding: '0.25rem 0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(!isOpen);
+        }}
+      >
+        <span>{label}</span>
+        <span style={{ color: '#888', fontSize: '0.75rem' }}>
+          {isOpen ? '\u25B2' : '\u25BC'} {data && typeof data === 'object' && data !== null && Object.keys(data).length > 0 ? `(${Object.keys(data).length} items)` : ''}
+        </span>
+      </summary>
+      <div style={{ 
+        backgroundColor: '#0d0d1a', 
+        padding: '0.75rem', 
+        borderRadius: '5px',
+        marginTop: '0.25rem',
+        border: '1px solid #333'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.5rem' }}>
+          <button
+            style={{ 
+              ...styles.button, 
+              ...styles.secondaryButton,
+              fontSize: '0.75rem',
+              padding: '0.25rem 0.5rem'
+            }}
+            onClick={copyToClipboard}
+          >
+            {copied ? 'Copied!' : 'Copy JSON'}
+          </button>
+        </div>
+        {syntaxHighlightJSON(data)}
+      </div>
+    </details>
+  );
+}
+
 async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
@@ -84,6 +212,153 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
     throw new Error('Expected JSON response from server');
   }
   return res.json();
+}
+
+function extractFieldsFromYaml(yamlString: string): Record<string, string> {
+  const fields: Record<string, string> = {};
+  try {
+    const lines = yamlString.split('\n');
+    for (const line of lines) {
+      if (line.startsWith(' ') || line.startsWith('\t')) {
+        continue;
+      }
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes(':')) {
+        const [key, ...valueParts] = trimmed.split(':');
+        const value = valueParts.join(':').trim();
+        fields[key.trim()] = value || '(empty)';
+      }
+    }
+  } catch (e) {
+    // If parsing fails, return empty
+  }
+  return fields;
+}
+
+function getImageFromYaml(yamlString: string): string | null {
+  try {
+    const lines = yamlString.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      if (trimmed.match(/^(image_path|image|portrait|thumbnail)\s*:/i)) {
+        const match = trimmed.match(/:\s*(.+)/);
+        if (match) {
+          const path = match[1].trim().replace(/['"]/g, '');
+          if (path && !path.startsWith('data:')) {
+            return path;
+          }
+        }
+      }
+
+      if (trimmed.match(/^asset_paths\s*:/i)) {
+        let j = i + 1;
+        while (j < lines.length) {
+          const rawLine = lines[j];
+          const trimmedNext = rawLine.trim();
+          if (!trimmedNext || trimmedNext.startsWith('#')) {
+            j++;
+            continue;
+          }
+          if (rawLine.startsWith(' ') || rawLine.startsWith('\t')) {
+            const assetMatch = trimmedNext.match(/^\s*(\w+)\s*:\s*(.+)/);
+            if (assetMatch) {
+              const key = assetMatch[1];
+              const value = assetMatch[2].trim().replace(/['"]/g, '');
+              if (key.match(/image|portrait|avatar/i) && value) {
+                return value;
+              }
+            }
+            j++;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // If parsing fails, return null
+  }
+  return null;
+}
+
+function PreviewItem({ item, index }: { item: any; index: number }) {
+  const [imageError, setImageError] = useState(false);
+  const fields = extractFieldsFromYaml(item.yamlPreview);
+  const imagePath = getImageFromYaml(item.yamlPreview);
+
+  return (
+    <div key={index} style={{ ...styles.card, marginBottom: '0.75rem' }}>
+      <div style={styles.cardHeader}>
+        <span style={styles.cardType}>{item.type}</span>
+        <span style={styles.cardAction}>
+          {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
+        </span>
+      </div>
+
+      <div style={{ marginBottom: '0.5rem' }}>
+        {fields.name && (
+          <p style={{ color: '#00ff00', fontSize: '0.9rem', margin: '0.25rem 0' }}>
+            <strong>Name:</strong> {fields.name}
+          </p>
+        )}
+        {fields.description && (
+          <p style={{ color: '#aaa', fontSize: '0.85rem', margin: '0.25rem 0', maxHeight: '100px', overflow: 'auto' }}>
+            <strong>Description:</strong> {fields.description}
+          </p>
+        )}
+        {fields.slug && (
+          <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
+            <strong>Slug:</strong> {fields.slug}
+          </p>
+        )}
+        {fields.id && (
+          <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
+            <strong>ID:</strong> {fields.id}
+          </p>
+        )}
+
+        {imagePath && !imageError && (
+          <div style={{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#0a0a14', borderRadius: '5px', border: '1px solid #333' }}>
+            <img
+              src={`/api/admin/asset?path=${encodeURIComponent(imagePath)}`}
+              alt="Preview"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '200px',
+                borderRadius: '5px',
+                objectFit: 'contain',
+                backgroundColor: '#1a1a2e'
+              }}
+              onError={() => setImageError(true)}
+            />
+            <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.25rem' }}>
+              {imagePath}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <details>
+        <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+          View YAML
+        </summary>
+        <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+          {item.yamlPreview}
+        </pre>
+      </details>
+      {item.existingYaml && (
+        <details>
+          <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
+          <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+            {item.existingYaml}
+          </pre>
+        </details>
+      )}
+    </div>
+  );
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -371,6 +646,65 @@ export default function StoryBuilderPage() {
     setPlan({ ...plan, items: [...plan.items, newItem] });
   }
 
+  function renderTemplatesSection() {
+    if (templates.length === 0) return null;
+    return (
+      <div style={{ ...styles.subsection, marginBottom: '1rem' }}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Quick Start Templates</h3>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {templates.map(t => (
+            <button
+              key={t.id}
+              style={{
+                ...styles.button,
+                ...styles.secondaryButton,
+                fontSize: '0.85rem',
+                ...(loading ? styles.disabledButton : {}),
+              }}
+              disabled={loading}
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+                    `/api/admin/story-builder/templates/${t.id}`,
+                    { description: description || t.label }
+                  );
+                  if (data.success && data.data) {
+                    setPlan(data.data.plan);
+                    setStep(2);
+                    // Auto-save to DB (same as handleGeneratePlan)
+                    try {
+                      const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
+                        '/api/admin/story-builder/plans',
+                        { description: description || t.label, plan: data.data.plan }
+                      );
+                      if (saveRes.success && saveRes.data) {
+                        setPlanId(saveRes.data.planId);
+                      }
+                    } catch (e) {
+                      console.error('Auto-save failed:', e);
+                    }
+                  } else {
+                    setError(data.error || "Failed to build template plan");
+                  }
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.5rem' }}>
+          Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
+        </p>
+      </div>
+    );
+  }
+
   function renderStep1() {
     return (
       <div style={styles.section}>
@@ -379,55 +713,7 @@ export default function StoryBuilderPage() {
           Describe the content you want to create in natural language. The AI will generate a structured plan for your review.
         </p>
 
-        {templates.length > 0 && (
-          <div style={{ ...styles.subsection, marginBottom: '1rem' }}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Quick Start Templates</h3>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {templates.map(t => (
-                <button
-                  key={t.id}
-                  style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.85rem' }}
-                  onClick={async () => {
-                    setLoading(true);
-                    try {
-                      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-                        `/api/admin/story-builder/templates/${t.id}`,
-                        { description: description || t.label }
-                      );
-                      if (data.success && data.data) {
-                        setPlan(data.data.plan);
-                        setStep(2);
-                        // Auto-save to DB (same as handleGeneratePlan)
-                        try {
-                          const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
-                            '/api/admin/story-builder/plans',
-                            { description: description || t.label, plan: data.data.plan }
-                          );
-                          if (saveRes.success && saveRes.data) {
-                            setPlanId(saveRes.data.planId);
-                          }
-                        } catch (e) {
-                          console.error('Auto-save failed:', e);
-                        }
-                      } else {
-                        setError(data.error || "Failed to build template plan");
-                      }
-                    } catch (err: any) {
-                      setError(err.message);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                >
-                  {t.icon} {t.label}
-                </button>
-              ))}
-            </div>
-            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.5rem' }}>
-              Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
-            </p>
-          </div>
-        )}
+        {renderTemplatesSection()}
 
         <div style={styles.field}>
           <label style={styles.label}>Description *</label>
@@ -596,28 +882,7 @@ export default function StoryBuilderPage() {
           Files Preview ({previewData.items.length} items)
         </h3>
         {previewData.items.map((item: any, i: number) => (
-          <div key={i} style={{ ...styles.card, marginBottom: '0.75rem' }}>
-            <div style={styles.cardHeader}>
-              <span style={styles.cardType}>{item.type}</span>
-              <span style={styles.cardAction}>
-                {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
-              </span>
-            </div>
-            <details>
-              <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>YAML Preview</summary>
-              <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-                {item.yamlPreview}
-              </pre>
-            </details>
-            {item.existingYaml && (
-              <details>
-                <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
-                <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-                  {item.existingYaml}
-                </pre>
-              </details>
-            )}
-          </div>
+          <PreviewItem key={i} item={item} index={i} />
         ))}
       </div>
     );
@@ -798,9 +1063,7 @@ export default function StoryBuilderPage() {
               <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', color: '#ff6666' }}>{migrationResult.error}</p>
             )}
             {migrationResult.migrationResult && (
-              <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>
-                {JSON.stringify(migrationResult.migrationResult, null, 2)}
-              </pre>
+              <JsonViewer data={migrationResult.migrationResult} label="Migration Details" defaultOpen={!migrationResult.success} />
             )}
           </div>
         )}
@@ -845,12 +1108,7 @@ export default function StoryBuilderPage() {
         )}
 
         {migrationResult.migrationResult && (
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Migration Details</h3>
-            <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap' }}>
-              {JSON.stringify(migrationResult.migrationResult, null, 2)}
-            </pre>
-          </div>
+          <JsonViewer data={migrationResult.migrationResult} label="Full Migration Results" defaultOpen={false} />
         )}
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
