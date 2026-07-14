@@ -2,6 +2,7 @@ import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { createLLMProvider, type LLMProvider, type ExistingContentContext } from './LLMService.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
+import { generateForPlan } from './LoreGenerator.js';
 
 export class ContentPlanService {
   private provider: LLMProvider;
@@ -25,6 +26,11 @@ export class ContentPlanService {
 
     // 5. Inject asset needs based on content type
     injectAssetNeeds(validated.items);
+
+    // 6. Generate lore files (non-fatal - log warnings on failure)
+    generateForPlan(validated, this.provider, context).catch(err => {
+      console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
+    });
 
     return validated;
   }
@@ -77,7 +83,7 @@ export class ContentPlanService {
     return validated;
   }
 
-  private async gatherContext(): Promise<ExistingContentContext> {
+  async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM characters ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM scenes ORDER BY name ASC'),
