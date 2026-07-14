@@ -3,12 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StoryBuilderPlans from '../page';
 
-vi.mock('../hooks/useStoryBuilderApi', () => ({
+// Mock the API module
+vi.mock('../../hooks/useStoryBuilderApi', () => ({
   listPlans: vi.fn(),
   deletePlan: vi.fn(),
 }));
 
-import { listPlans } from '../hooks/useStoryBuilderApi';
+import { listPlans } from '../../hooks/useStoryBuilderApi';
 
 describe('StoryBuilderPlans', () => {
   it('should show loading state initially', () => {
