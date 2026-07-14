@@ -6,6 +6,7 @@
     "client",
     "server",
     "dashboard",
+    "admin",
     "shared"
   ],
   "scripts": {
