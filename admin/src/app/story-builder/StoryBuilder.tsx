@@ -8,6 +8,7 @@ import ReviewStep from './components/ReviewStep';
 import StageStep from './components/StageStep';
 import MigrateStep from './components/MigrateStep';
 import ResultsStep from './components/ResultsStep';
+import Link from 'next/link';
 import styles from './StoryBuilder.module.css';
 
 interface StoryBuilderProps {

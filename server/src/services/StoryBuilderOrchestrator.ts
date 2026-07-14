@@ -116,7 +116,7 @@ async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, f
   return createdFiles;
 }
 
-function buildLoreStub(item: ContentPlanItem, label: string): string {
+function buildLoreStub(item: ContentPlanItem, _label: string): string {
   const name = item.name || 'Untitled';
   const description = item.fields.description || '';
 
