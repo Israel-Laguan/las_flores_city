@@ -1,3 +1,5 @@
+import { PageHeader } from '@/components/ui';
+
 export default function Analytics() {
-  return <h1>Analytics</h1>;
+  return <PageHeader title="Analytics" description="Player engagement and telemetry data" />;
 }

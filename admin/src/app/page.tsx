@@ -1,3 +1,5 @@
+import { PageHeader } from '@/components/ui';
+
 export default function Home() {
-  return <h1>Admin Dashboard</h1>;
+  return <PageHeader title="Admin Dashboard" description="Las Flores 2077 content management" />;
 }
