@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && node ./scripts/copy-styles.mjs",
+    "lint": "eslint --ext .ts src/",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
