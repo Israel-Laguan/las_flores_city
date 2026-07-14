@@ -1,45 +1,50 @@
 /**
  * Admin Content Integration Tests
- * Tests for adminFetch helper usage and camelCase field normalization
+ * Tests that admin content operations use the shared adminFetch helper and that
+ * the server normalizes file fields to camelCase.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-describe('Admin API Routes Use adminFetch Helper', () => {
+describe('Admin Content Uses adminFetch Helper', () => {
   const projectRoot = join(__dirname, '..', '..', '..');
 
-  describe('Admin API routes use adminFetch helper', () => {
-    it('migrate route should use adminFetch helper', () => {
-      const routePath = join(projectRoot, 'admin', 'src', 'app', 'api', 'admin', 'content', 'migrate', 'route.ts');
-      const content = readFileSync(routePath, 'utf-8');
+  describe('adminFetch helper is exported', () => {
+    it('exports adminFetch from lib/client-api.ts', () => {
+      const content = readFileSync(
+        join(projectRoot, 'admin', 'src', 'lib', 'client-api.ts'),
+        'utf-8',
+      );
 
-      // Should import adminFetch
-      expect(content).toMatch(/import.*adminFetch/);
+      expect(content).toMatch(/export\s+async\s+function\s+adminFetch/);
+    });
+  });
 
-      // Should use adminFetch
-      expect(content).toMatch(/adminFetch\(/);
+  describe('Admin pages call content endpoints via adminFetch', () => {
+    it('migration page uses adminFetch for status and migrate', () => {
+      const content = readFileSync(
+        join(projectRoot, 'admin', 'src', 'app', 'migration', 'page.tsx'),
+        'utf-8',
+      );
+
+      // Imports the shared helper
+      expect(content).toMatch(/import\s+.*adminFetch.*from\s+['"]@\/lib\/client-api['"]/);
+
+      // Calls the server status + migrate endpoints through it
+      expect(content).toMatch(/adminFetch[<(]/);
+      expect(content).toMatch(/['"]\/admin\/content\/status['"]/);
+      expect(content).toMatch(/['"]\/admin\/content\/migrate['"]/);
     });
 
-    it('validate route should use adminFetch helper', () => {
-      const routePath = join(projectRoot, 'admin', 'src', 'app', 'api', 'admin', 'content', 'validate', 'route.ts');
-      const content = readFileSync(routePath, 'utf-8');
+    it('validation page uses adminFetch for validate', () => {
+      const content = readFileSync(
+        join(projectRoot, 'admin', 'src', 'app', 'validation', 'page.tsx'),
+        'utf-8',
+      );
 
-      // Should import adminFetch
-      expect(content).toMatch(/import.*adminFetch/);
-
-      // Should use adminFetch
-      expect(content).toMatch(/adminFetch\(/);
-    });
-
-    it('status route should use adminFetch helper', () => {
-      const routePath = join(projectRoot, 'admin', 'src', 'app', 'api', 'admin', 'content', 'status', 'route.ts');
-      const content = readFileSync(routePath, 'utf-8');
-
-      // Should import adminFetch
-      expect(content).toMatch(/import.*adminFetch/);
-
-      // Should use adminFetch
-      expect(content).toMatch(/adminFetch\(/);
+      expect(content).toMatch(/import\s+.*adminFetch.*from\s+['"]@\/lib\/client-api['"]/);
+      expect(content).toMatch(/adminFetch[<(]/);
+      expect(content).toMatch(/['"]\/admin\/content\/validate['"]/);
     });
   });
 
