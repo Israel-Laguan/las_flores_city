@@ -1,7 +1,7 @@
 'use client';
 
 import type { ContentPlan } from '@las-flores/shared';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import ContentCard from './ContentCard';
 import PlanSummary from './PlanSummary';
 import RefineSection from './RefineSection';

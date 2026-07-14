@@ -1,7 +1,7 @@
 'use client';
 
 import type { ContentPlan } from '@las-flores/shared';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import styles from './ReviewStep.module.css';
 
 interface LinksSectionProps {

@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { eventBus } from '../utils/EventBus';
-import '../styles/themes.css';
+import '@las-flores/ui/styles/themes.css';
 
 function getThemeColors() {
   const computed = getComputedStyle(document.body);

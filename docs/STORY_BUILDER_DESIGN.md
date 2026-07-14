@@ -3,7 +3,7 @@
 > **Status**: Implemented (all planned milestones complete)
 > **Created**: 2026-07-08
 > **Last Updated**: 2026-07-10
-> **Related**: `docs/ADMIN_PANEL.md`, `docs/MVW_ARCHITECTURE.md`
+> **Related**: `docs/ADMIN_ARCHITECTURE.md`, `docs/MVW_ARCHITECTURE.md`
 >
 > This began as a design/planning document. The feature has since shipped. Sections
 > 1–3 capture the design rationale and the options that were considered (kept for
@@ -1089,7 +1089,7 @@ Env vars used by the shipped implementation (`server/src/services/LLMService.ts`
 
 ## 7. References
 
-- `docs/ADMIN_PANEL.md` — Admin panel architecture
+- `docs/ADMIN_ARCHITECTURE.md` — Admin panel architecture
 - `docs/MVW_ARCHITECTURE.md` — Player state engine
 - `server/src/content/migrate.ts` — Content migration pipeline
 - `server/src/content/validate.ts` — Content validation

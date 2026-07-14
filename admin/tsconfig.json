@@ -27,6 +27,9 @@
       ],
       "@las-flores/shared": [
         "../shared/src"
+      ],
+      "@las-flores/ui": [
+        "../ui/src"
       ]
     },
     "allowJs": true,

@@ -1,6 +1,7 @@
 'use client';
 
 import { useStoryBuilder } from './hooks/useStoryBuilder';
+import { cn } from '@las-flores/ui';
 import StepIndicator from './components/StepIndicator';
 import DescribeStep from './components/DescribeStep';
 import ReviewStep from './components/ReviewStep';
@@ -31,7 +32,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
 
       <StepIndicator step={step} />
 
-      {error && <div className={styles.errorBox}>{error}</div>}
+      {error && <div className="error-box">{error}</div>}
 
       {step === 1 && (
         <DescribeStep
@@ -90,15 +91,15 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
 
       <div className={styles.navBar}>
         {step > 1 && step < 5 && (
-          <button className={`${styles.button} ${styles.secondaryButton}`} onClick={goBack}>
+          <button className={cn('btn', 'btn--secondary')} onClick={goBack}>
             &larr; Back
           </button>
         )}
         {step === 2 && (
           <button
-            className={`${styles.button} ${styles.primaryButton} ${(!plan || plan.items.length === 0) ? styles.disabledButton : ''}`}
+            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length) && 'btn--disabled')}
             onClick={goToStage}
-            disabled={!plan || plan.items.length === 0}
+            disabled={!plan || !plan.items?.length}
           >
             Approve &amp; Stage &rarr;
           </button>

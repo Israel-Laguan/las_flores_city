@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import '@las-flores/ui/styles/tokens.css';
+import '@las-flores/ui/styles/global.css';
+import '@las-flores/ui/styles/components.css';
 import { getAdminUser } from '@/lib/api';
 import AdminNav from '@/components/AdminNav';
 

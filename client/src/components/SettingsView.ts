@@ -1,5 +1,5 @@
 import '../styles/view.css';
-import '../styles/themes.css';
+import '@las-flores/ui/styles/themes.css';
 import { navigateTo } from '../router';
 import * as api from '../utils/api';
 import { getInventory, PlayerInventoryItem, equipShopItem, getMyMeProfile, updateDisplayName, changePassword } from '../utils/api';

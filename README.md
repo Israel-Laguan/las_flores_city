@@ -180,6 +180,14 @@ npm run lint --workspace=server
 npm run lint --workspace=client
 ```
 
+### UI Style System
+
+The project shares design tokens, theme variables, and reusable component classes through the `@las-flores/ui` workspace. Both `admin` and the game `client` consume it. See **[docs/UI_STYLE_SYSTEM.md](docs/UI_STYLE_SYSTEM.md)** for the contract, the available classes, the theme variable namespaces, and verification commands.
+
+### Admin Architecture
+
+The `admin/` Next.js panel is a 28-page App Router app that talks directly to the Express server (no API proxy). Pages fall into three archetypes — generic list, custom hook + sub-components, and multi-step orchestrator — and share primitives like `ContentListPage`, `ContentDetailPage`, `AdminNav`, and `Badge`. See **[docs/ADMIN_ARCHITECTURE.md](docs/ADMIN_ARCHITECTURE.md)** for the page inventory, the two `adminFetch` flavors, the auth flow, the conventions, and a recipe for adding a new CRUD page.
+
 ## API Reference
 
 | Endpoint | Method | Description |

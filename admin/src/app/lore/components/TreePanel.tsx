@@ -1,7 +1,7 @@
 'use client';
 
 import styles from './TreePanel.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 
 interface LoreFileEntry {
   path: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import styles from './mission-wizard.module.css';
 import MissionResultView from './components/MissionResultView';
 import { useMissionWizard } from './hooks/useMissionWizard';

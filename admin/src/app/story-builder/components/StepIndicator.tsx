@@ -1,7 +1,7 @@
 'use client';
 
 import type { Step } from '../types';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import styles from './StepIndicator.module.css';
 
 const stepLabels = ['Describe', 'Review & Refine', 'Stage', 'Migrate', 'Assets'];

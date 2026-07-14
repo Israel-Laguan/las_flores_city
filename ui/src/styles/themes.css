@@ -1,5 +1,6 @@
-/* Theme colours applied via class on <body>.
-   Settings page HTML uses the --color-* variables defined here;
+/* Theme colour variables applied via a class on <body>.
+   Ported from client/src/styles/themes.css for sharing via @las-flores/ui.
+   The Settings page HTML uses the --color-* variables defined here;
    the phone UI continues to use --neon-* vars set by the JS theme engine. */
 
 body.theme-terminal-dark {
@@ -36,6 +37,8 @@ body.theme-white-high-contrast {
   --scene-bg: #ffffff;
   --scene-title: #000000;
   --scene-muted: #333333;
+  --disabled-bg: #cccccc;
+  --disabled-text: #666666;
 }
 
 /* Fallback when no body theme class is present (also matches default) */

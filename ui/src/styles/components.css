@@ -1,0 +1,207 @@
+/* Reusable component classes — the "component-ize the CSS" pass.
+   Mirrors what dashboard's adminStyles.ts provided, but as real global CSS.
+   Page-level CSS Modules compose with these via cn(styles.local, 'btn', 'btn--primary'). */
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-weight: bold;
+  font-size: var(--text-base);
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.btn:disabled,
+.btn--disabled {
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #000;
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.btn--danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn--small {
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+}
+
+/* ---- Form controls ---- */
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: var(--space-2);
+  background: var(--page-bg);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  box-sizing: border-box;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ---- Cards ---- */
+.card {
+  border: 1px solid var(--border);
+  padding: var(--space-6);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+  background: var(--panel-bg);
+}
+
+.card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-2);
+}
+
+.card__title {
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.card__meta {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* ---- Tables ---- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-4);
+}
+
+.table__th {
+  text-align: left;
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--accent);
+}
+
+.table__td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-block;
+  padding: var(--space-1) 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: bold;
+}
+
+.badge--success {
+  background: var(--accent);
+  color: #000;
+}
+
+.badge--warning {
+  background: var(--warning);
+  color: #000;
+}
+
+.badge--danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.badge--info {
+  background: var(--info);
+  color: #fff;
+}
+
+.badge--muted {
+  background: #555;
+  color: #999;
+}
+
+/* ---- Sections ---- */
+.section {
+  border: 1px solid var(--accent);
+  padding: var(--space-6);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-8);
+}
+
+.section__heading {
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: var(--space-2);
+}
+
+.subsection {
+  margin-bottom: var(--space-4);
+}
+
+/* ---- Feedback boxes ---- */
+.error-box {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  margin-top: var(--space-4);
+}
+
+.success-box {
+  background: rgba(0, 255, 0, 0.15);
+  border: 1px solid var(--accent);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  margin-top: var(--space-4);
+}
+
+.warning-box {
+  background: rgba(255, 170, 0, 0.15);
+  border: 1px solid var(--warning);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  margin-top: var(--space-4);
+}
+
+/* ---- Utility ---- */
+.muted {
+  color: var(--muted);
+}
+
+.text-center {
+  text-align: center;
+}

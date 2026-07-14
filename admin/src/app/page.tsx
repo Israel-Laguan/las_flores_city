@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import styles from './home.module.css';
 

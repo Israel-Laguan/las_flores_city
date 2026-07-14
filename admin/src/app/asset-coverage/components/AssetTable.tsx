@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import styles from './AssetTable.module.css';
-import { cn } from '@/lib/cn';
+import { cn } from '@las-flores/ui';
 
 interface AssetTableRow {
   id: string;
