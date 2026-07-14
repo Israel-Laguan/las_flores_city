@@ -17,6 +17,8 @@ import { initThemeEngine } from './utils/themeEngine';
 import { eventBus } from './utils/EventBus';
 import { navigateTo, startRouter } from './router';
 import { registerRoutes } from './router/routes.js';
+import { createElement } from 'react';
+import * as api from './utils/api';
 
 declare global {
   interface Window {
@@ -58,7 +60,6 @@ async function mountReactView(component: any, props: Record<string, unknown>): P
   const mountEl = document.createElement('div');
   container.appendChild(mountEl);
   const { createRoot } = await import('react-dom/client');
-  const { createElement } = await import('react');
   const root = createRoot(mountEl);
   root.render(createElement(component, props));
   currentView = { destroy: () => { root.unmount(); mountEl.remove(); } };
@@ -226,7 +227,7 @@ function initializeUI(): void {
 function restoreSession(initialPath: string): void {
   void (async () => {
     try {
-      const state = await (await import('./utils/api')).getPlayerState();
+      const state = await api.getPlayerState();
       if (state.success) {
         cachedPlayerState = state.data;
         isAuthenticated = true;

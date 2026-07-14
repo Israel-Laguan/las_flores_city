@@ -545,6 +545,59 @@ export default function StoryBuilderPage() {
     setPlan({ ...plan, items: [...plan.items, newItem] });
   }
 
+  function renderTemplatesSection() {
+    if (templates.length === 0) return null;
+    return (
+      <div style={{ ...styles.subsection, marginBottom: '1rem' }}>
+        <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Quick Start Templates</h3>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {templates.map(t => (
+            <button
+              key={t.id}
+              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.85rem' }}
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+                    `/api/admin/story-builder/templates/${t.id}`,
+                    { description: description || t.label }
+                  );
+                  if (data.success && data.data) {
+                    setPlan(data.data.plan);
+                    setStep(2);
+                    // Auto-save to DB (same as handleGeneratePlan)
+                    try {
+                      const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
+                        '/api/admin/story-builder/plans',
+                        { description: description || t.label, plan: data.data.plan }
+                      );
+                      if (saveRes.success && saveRes.data) {
+                        setPlanId(saveRes.data.planId);
+                      }
+                    } catch (e) {
+                      console.error('Auto-save failed:', e);
+                    }
+                  } else {
+                    setError(data.error || "Failed to build template plan");
+                  }
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.5rem' }}>
+          Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
+        </p>
+      </div>
+    );
+  }
+
   function renderStep1() {
     return (
       <div style={styles.section}>
@@ -553,55 +606,7 @@ export default function StoryBuilderPage() {
           Describe the content you want to create in natural language. The AI will generate a structured plan for your review.
         </p>
 
-        {templates.length > 0 && (
-          <div style={{ ...styles.subsection, marginBottom: '1rem' }}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Quick Start Templates</h3>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {templates.map(t => (
-                <button
-                  key={t.id}
-                  style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.85rem' }}
-                  onClick={async () => {
-                    setLoading(true);
-                    try {
-                      const data = await postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
-                        `/api/admin/story-builder/templates/${t.id}`,
-                        { description: description || t.label }
-                      );
-                      if (data.success && data.data) {
-                        setPlan(data.data.plan);
-                        setStep(2);
-                        // Auto-save to DB (same as handleGeneratePlan)
-                        try {
-                          const saveRes = await postJSON<{ success: boolean; data?: { planId: string } }>(
-                            '/api/admin/story-builder/plans',
-                            { description: description || t.label, plan: data.data.plan }
-                          );
-                          if (saveRes.success && saveRes.data) {
-                            setPlanId(saveRes.data.planId);
-                          }
-                        } catch (e) {
-                          console.error('Auto-save failed:', e);
-                        }
-                      } else {
-                        setError(data.error || "Failed to build template plan");
-                      }
-                    } catch (err: any) {
-                      setError(err.message);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                >
-                  {t.icon} {t.label}
-                </button>
-              ))}
-            </div>
-            <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.5rem' }}>
-              Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
-            </p>
-          </div>
-        )}
+        {renderTemplatesSection()}
 
         <div style={styles.field}>
           <label style={styles.label}>Description *</label>

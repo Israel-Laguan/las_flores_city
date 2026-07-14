@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1500,
     chunkFileNames: 'assets/js/[name]-[hash].js',
     entryFileNames: 'assets/js/[name]-[hash].js',
     assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
