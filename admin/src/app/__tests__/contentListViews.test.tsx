@@ -28,6 +28,7 @@ import CharactersPage from '../characters/page';
 import DialogueDetailPage from '../dialogues/[id]/page';
 import SceneDetailPage from '../scenes/[id]/page';
 import CharacterDetailPage from '../characters/[id]/page';
+import LocationDetailPage from '../locations/[id]/page';
 import AdminNav from '../components/AdminNav';
 
 // ── Global fetch mock ─────────────────────────────────────────────────────────
@@ -229,6 +230,22 @@ describe('CharacterDetailPage', () => {
   });
 });
 
+describe('LocationDetailPage', () => {
+  beforeEach(() => { (useParams as ReturnType<typeof vi.fn>).mockReturnValue({ id: 'loc-uuid-1' }); });
+
+  it('shows "← Back to Locations" back link', async () => {
+    global.fetch = mockDetailResponse({ id: 'loc-uuid-1', name: 'Test' });
+    render(<LocationDetailPage />);
+    expect(screen.getByText('← Back to Locations')).toBeInTheDocument();
+  });
+
+  it('shows "Not found." for 404 response', async () => {
+    global.fetch = mockFetch404();
+    render(<LocationDetailPage />);
+    await waitFor(() => { expect(screen.getByText('Not found.')).toBeInTheDocument(); });
+  });
+});
+
 // Nav test — renders AdminNav (the root layout's nav) directly to avoid
 // exercising the full Next.js root layout in jsdom.
 describe('Nav layout', () => {
@@ -295,6 +312,25 @@ describe('Detail page field display — P6', () => {
       fc.asyncProperty(flatRecordArb, async (record) => {
         global.fetch = mockDetailResponse(record);
         const { unmount } = render(<CharacterDetailPage />);
+        await waitFor(() => { expect(screen.queryByText('Loading...')).not.toBeInTheDocument(); });
+        // Click the "Raw JSON" button to expand the collapsible section
+        fireEvent.click(screen.getByText('Raw JSON'));
+        await waitFor(() => { expect(document.querySelector('pre')).not.toBeNull(); });
+        const pre = document.querySelector('pre');
+        const preText = pre!.textContent ?? '';
+        for (const key of Object.keys(record)) { expect(preText).toContain(key); }
+        unmount();
+      }),
+      { numRuns: 100, timeout: 30000 },
+    );
+  });
+
+  it('location detail: all top-level record keys appear in raw JSON (100 iterations)', async () => {
+    (useParams as ReturnType<typeof vi.fn>).mockReturnValue({ id: 'loc-test' });
+    await fc.assert(
+      fc.asyncProperty(flatRecordArb, async (record) => {
+        global.fetch = mockDetailResponse(record);
+        const { unmount } = render(<LocationDetailPage />);
         await waitFor(() => { expect(screen.queryByText('Loading...')).not.toBeInTheDocument(); });
         // Click the "Raw JSON" button to expand the collapsible section
         fireEvent.click(screen.getByText('Raw JSON'));
