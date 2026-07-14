@@ -2,7 +2,7 @@
 
 > Permanent reference for the `admin` Next.js workspace: how the app is architected, how it talks to the Express server, and the conventions every page follows.
 >
-> Replaces the stale `docs/ADMIN_PANEL.md` (which still described the old `dashboard` workspace and a removed API proxy). The new doc reflects the current state after the M0–M7 refactor.
+> Replaces the stale `docs/ADMIN_PANEL.md` (which still described the old `dashboard` workspace and a removed API proxy). The new doc reflects the current state after the multi-stage admin refactor.
 
 ## Overview
 
@@ -30,7 +30,7 @@ What it is **not**:
 | Styling | CSS Modules + shared `@las-flores/ui` classes (see [docs/UI_STYLE_SYSTEM.md](UI_STYLE_SYSTEM.md)) |
 | Tests | Vitest + Testing Library + jsdom (7 files, 76 tests) |
 | Lint | ESLint 8 (custom config in `admin/.eslintrc.json`) |
-| Port | 3001 in dev (via `start-stack.sh`), 3000 inside Docker |
+| Port | 3002 on the host (via `docker-compose.yml` or `start-stack.sh`), 3000 inside the container |
 
 ## Workspace contract
 
@@ -185,7 +185,7 @@ adminFetch<T>(url: string, options?: RequestInit): Promise<T>
 
 ### No API proxy
 
-There are **zero** `/api/admin/*` route handlers. Pages and hooks do not call any Next.js route to reach Express; they call Express directly. The only `app/api/` route handlers are the two auth routes that need to relay `Set-Cookie` to the browser on the admin origin. This was a deliberate decision in M1 (replacing the `dashboard` workspace's ~30 proxy routes).
+There are **zero** `/api/admin/*` route handlers. Pages and hooks do not call any Next.js route to reach Express; they call Express directly. The only `app/api/` route handlers are the two auth routes that need to relay `Set-Cookie` to the browser on the admin origin. This replaced the old `dashboard` workspace's ~30 proxy routes.
 
 
 ## Shared components
@@ -413,7 +413,7 @@ A `{"success":true,...}` response from that command is the source of truth.
 
 ## Conventions
 
-When contributing to `admin/`, follow these rules. They are the result of the M0–M7 refactor and the post-M7 cleanup that introduced the shared `@las-flores/ui` package.
+When contributing to `admin/`, follow these rules. They are the result of the multi-stage admin refactor and the shared `@las-flores/ui` package cleanup.
 
 1. **Page markers**: every interactive page declares `'use client'` at the top. The only server components are `app/layout.tsx` and a few pure-render pages (rare).
 2. **No API proxy**: pages and hooks call Express directly via `adminFetch`. New API proxy routes under `app/api/admin/*` are **not** added.
@@ -457,11 +457,10 @@ When contributing to `admin/`, follow these rules. They are the result of the M0
 
 ## Open follow-ups
 
-These are tracked in `docs/UI_STYLE_SYSTEM.md` and the `AGENTS.md` codebase facts; they are not blockers:
+These are tracked in `docs/UI_STYLE_SYSTEM.md`; they are not blockers:
 
-1. **`cn` centralization** — `admin/src/lib/cn.ts` is identical to `@las-flores/ui/lib/cn`. Migrate to the shared import. Low risk, one-line PR.
-2. **Page-level `.module.css` migration** — not every page module composes the shared classes yet. The pattern is established; the rest is mechanical.
-3. **Optional React wrappers** — `Button.tsx` / `Input.tsx` / `Card.tsx` / `Badge.tsx` in `@las-flores/ui` are deliberately deferred. They can be added later without breaking the CSS-first contract.
+1. **Page-level `.module.css` migration** — not every page module composes the shared classes yet. The pattern is established; the rest is mechanical.
+2. **Optional React wrappers** — `Button.tsx` / `Input.tsx` / `Card.tsx` / `Badge.tsx` in `@las-flores/ui` are deliberately deferred. They can be added later without breaking the CSS-first contract.
 
 The only known "real" gap is that **`/users` and `/settings` are stubs** (placeholders, not implemented). They are not on the active roadmap.
 

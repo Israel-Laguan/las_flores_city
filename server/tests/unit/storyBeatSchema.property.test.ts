@@ -675,6 +675,140 @@ describe('Scene beat slug cross-reference', () => {
   });
 });
 
+// ── Dialogue tree required_story_beat cross-reference ───────
+//
+// For any dialogue tree YAML with metadata.required_story_beat
+// (string or string[]), the slug(s) must exist in the registry.
+// This mirrors the scene block above so that the same authoring
+// rules apply to both surfaces — the runtime gate in
+// `server/src/routes/dialogue-helpers.ts` (`isStoryBeatAllowed`)
+// and the content validator in `server/src/content/validate.ts`
+// (`validateDialogueTreeBeatSlugs`) must agree.
+//
+// Validates: NEXT_STEPS item 1 (dialogue-tree gating by beat)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Mirrors the dialogue-tree `metadata.required_story_beat` cross-reference
+ * block in `server/src/content/validate.ts::validateDialogueTreeBeatSlugs`.
+ * `requiredBeat` is the value of `data.metadata?.required_story_beat`.
+ */
+function runDialogueTreeBeatCrossRef(
+  requiredBeat: string | string[] | undefined | null,
+  validSlugs: Set<string>
+): string[] {
+  if (requiredBeat === undefined || requiredBeat === null) return [];
+  const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
+  const messages: string[] = [];
+  for (const slug of slugsToCheck) {
+    if (typeof slug !== 'string') {
+      messages.push(
+        `Invalid required_story_beat value on dialogue tree: expected string or string[], got ${typeof slug}`,
+      );
+      continue;
+    }
+    if (!validSlugs.has(slug)) {
+      messages.push(`Unknown required_story_beat slug "${slug}" in dialogue tree — not in registry`);
+    }
+  }
+  return messages;
+}
+
+describe('Dialogue tree beat slug cross-reference', () => {
+  it('produces no error when required_story_beat (string) is in the registry', () => {
+    fc.assert(
+      fc.property(
+        validSlugSetArb(1, 8),
+        (validSlugs) => {
+          const validSlugArray = Array.from(validSlugs);
+          for (const slug of validSlugArray) {
+            const errors = runDialogueTreeBeatCrossRef(slug, validSlugs);
+            expect(errors).toHaveLength(0);
+          }
+        },
+      ),
+      { numRuns: 100, verbose: false },
+    );
+  });
+
+  it('produces no error when required_story_beat (string[]) contains only registered slugs', () => {
+    fc.assert(
+      fc.property(
+        validSlugSetArb(2, 8),
+        fc.integer({ min: 1, max: 4 }),
+        (validSlugs, count) => {
+          const validSlugArray = Array.from(validSlugs);
+          const picked = Array.from(
+            { length: count },
+            (_, i) => validSlugArray[i % validSlugArray.length],
+          );
+          const errors = runDialogueTreeBeatCrossRef(picked, validSlugs);
+          expect(errors).toHaveLength(0);
+        },
+      ),
+      { numRuns: 100, verbose: false },
+    );
+  });
+
+  it('produces an error naming the slug when required_story_beat (string) is NOT in the registry', () => {
+    fc.assert(
+      fc.property(
+        validSlugSetArb(1, 6),
+        invalidSlugArb().filter(s => s.length > 0),
+        (validSlugs, badSlug) => {
+          fc.pre(!validSlugs.has(badSlug));
+
+          const errors = runDialogueTreeBeatCrossRef(badSlug, validSlugs);
+
+          expect(errors.length).toBeGreaterThanOrEqual(1);
+          const matchingError = errors.find(msg => msg.includes(`"${badSlug}"`));
+          expect(matchingError).toBeDefined();
+        },
+      ),
+      { numRuns: 100, verbose: false },
+    );
+  });
+
+  it('produces an error for each unregistered slug in required_story_beat (string[])', () => {
+    fc.assert(
+      fc.property(
+        validSlugSetArb(1, 4),
+        fc.array(
+          invalidSlugArb().filter(s => s.length > 0),
+          { minLength: 1, maxLength: 4 },
+        ),
+        (validSlugs, badSlugs) => {
+          const trulyBad = badSlugs.filter(s => !validSlugs.has(s));
+          fc.pre(trulyBad.length > 0);
+
+          const errors = runDialogueTreeBeatCrossRef(trulyBad, validSlugs);
+
+          expect(errors.length).toBeGreaterThanOrEqual(trulyBad.length);
+          for (const bad of trulyBad) {
+            const found = errors.some(msg => msg.includes(`"${bad}"`));
+            expect(found).toBe(true);
+          }
+        },
+      ),
+      { numRuns: 100, verbose: false },
+    );
+  });
+
+  it('produces no error when required_story_beat is absent (undefined/null)', () => {
+    fc.assert(
+      fc.property(
+        validSlugSetArb(1, 6),
+        fc.constantFrom(undefined, null),
+        (validSlugs, absent) => {
+          const errors = runDialogueTreeBeatCrossRef(absent, validSlugs);
+          expect(errors).toHaveLength(0);
+        },
+      ),
+      { numRuns: 100, verbose: false },
+    );
+  });
+});
+
 // ── Processing order — story_beat before dialogue and scene ──
 //
 // For any collection of file paths that includes at least one story_beat,

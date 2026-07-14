@@ -73,6 +73,36 @@ async function validateSceneBeatSlugs(filePath: string, data: any, errors: Valid
   }
 }
 
+/**
+ * Validate that any `metadata.required_story_beat` on a dialogue
+ * tree references a slug that exists in the story_beats registry.
+ *
+ * Mirrors `validateSceneBeatSlugs` above so the same authoring
+ * rules apply to both scenes and dialogue trees (symmetric with
+ * the runtime gate in `server/src/routes/dialogue-helpers.ts`).
+ */
+async function validateDialogueTreeBeatSlugs(filePath: string, data: any, errors: ValidationError[]) {
+  const requiredBeat = data?.metadata?.required_story_beat;
+  if (requiredBeat === undefined || requiredBeat === null) return;
+  const validSlugs = await loadValidBeatSlugs();
+  if (validSlugs === null) {
+    errors.push({ file: filePath, message: 'Beat registry unavailable: required_story_beat cross-reference checks skipped', severity: 'warning' });
+  } else if (validSlugs.size === 0) {
+    errors.push({ file: filePath, message: 'Cannot validate required_story_beat on dialogue tree: story_beats registry is empty. Run story_beats.yaml migration first.', severity: 'warning' });
+  } else {
+    const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
+    for (const slug of slugsToCheck) {
+      if (typeof slug !== 'string') {
+        errors.push({ file: filePath, message: `Invalid required_story_beat value on dialogue tree: expected string or string[], got ${typeof slug}`, severity: 'error' });
+        continue;
+      }
+      if (!validSlugs.has(slug)) {
+        errors.push({ file: filePath, message: `Unknown required_story_beat slug "${slug}" in dialogue tree — not in registry`, severity: 'error' });
+      }
+    }
+  }
+}
+
 export async function validateYAMLFile(filePath: string, schemaOnly: boolean = false): Promise<ValidationResult> {
   const errors: ValidationError[] = [];
   const warnings: string[] = [];
@@ -109,6 +139,7 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
       if (!hasSchemaErrors) {
         if (contentType === 'dialogue') {
           await validateDialogueBeatSlugs(filePath, data, errors);
+          await validateDialogueTreeBeatSlugs(filePath, data, errors);
         } else if (contentType === 'scene') {
           await validateSceneBeatSlugs(filePath, data, errors);
         }

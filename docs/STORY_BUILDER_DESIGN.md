@@ -1,6 +1,6 @@
 # Story Builder Design Document
 
-> **Status**: Implemented (all planned milestones complete)
+> **Status**: Shipped
 > **Created**: 2026-07-08
 > **Last Updated**: 2026-07-10
 > **Related**: `docs/ADMIN_ARCHITECTURE.md`, `docs/MVW_ARCHITECTURE.md`
@@ -446,7 +446,7 @@ This approach balances reliability with practicality. For AI agent plans specifi
 ```
 **Yes, you can get away with just `type + name + fields` for a true Minimum Viable Plan Item.**
 
-### MVP Definition (Day 1)
+### Initial Definition (Day 1)
 A plan item should be the smallest useful unit that lets you:
 
 1. Identify it unambiguously.
@@ -470,19 +470,19 @@ This is enough to start building:
 - Rendering dynamic forms based on `type`
 - Export/import
 
-### What the MVP hides (but the schema keeps)
+### What the initial UI hides (but the schema keeps)
 
-The shared Zod schema (`shared/src/schemas/story-builder.ts`) includes `slug`, `assetNeeds`, and `dependsOn` on every plan item, but the **MVP admin UI** hides them to keep the interface simple. These fields are always present in storage — they just get sensible defaults (`slug` derived from name, `assetNeeds: []`, `dependsOn: []`).
+The shared Zod schema (`shared/src/schemas/story-builder.ts`) includes `slug`, `assetNeeds`, and `dependsOn` on every plan item, but the **initial admin UI** hides them to keep the interface simple. These fields are always present in storage — they just get sensible defaults (`slug` derived from name, `assetNeeds: []`, `dependsOn: []`).
 
 This means the schema is stable from day one; only the UI presentation evolves:
-- **MVP UI**: Only shows `type`, `name`, `action`, `fields`. Other fields default.
+- **initial UI**: Only shows `type`, `name`, `action`, `fields`. Other fields default.
 - **Phase 2 UI**: Expose `slug` (auto-generated) and `status` in the editor.
 - **Phase 3 UI**: Add `dependsOn` visualization and editing (dependency graph).
 - **Phase 4 UI**: Show `assetNeeds` per item with asset status tracking.
 
 ### Recommended evolution path
 
-1. **MVP** — Schema has all fields; UI shows `type + name + action + fields` only
+1. **Initial schema** — Schema has all fields; UI shows `type + name + action + fields` only
 2. **Phase 2** → Expose `slug` (auto-generated) and `status` in the editor
 3. **Phase 3** → Expose `dependsOn` with dependency graph visualization
 4. **Phase 4** → Expose `assetNeeds` with asset generation status tracking
@@ -490,7 +490,7 @@ This means the schema is stable from day one; only the UI presentation evolves:
 ### Practical tip
 Make `fields` properly versioned or typed per `type` (either via JSON schema, a simple registry, or TypeScript discriminated unions). This keeps the core minimal while preventing chaos as the system grows.
 
-**Bottom line**: The full schema (`type + name + fields + slug + assetNeeds + dependsOn`) is the contract from day one. The MVP simply hides the extra fields in the UI, keeping things simple while the storage model is already complete.
+**Bottom line**: The full schema (`type + name + fields + slug + assetNeeds + dependsOn`) is the contract from day one. The initial UI simply hides the extra fields, keeping things simple while the storage model is already complete.
 ```
 
 5. **How do we represent "update existing content" safely?** Should the plan include a diff of proposed changes, or just the final state? How do we show the user what will change?
@@ -661,7 +661,7 @@ async function parseDescription(description: string): Promise<ContentPlan> {
 
 ### 3.3 Plan Persistence
 
-#### Option A: Session-Only (MVP)
+#### Option A: Session-Only (initial)
 
 Plans live in browser state only. If the user closes the tab, the plan is lost.
 
@@ -706,7 +706,7 @@ Store plans as JSON files in `content/plans/` directory.
 **Pros**: No migration, fits existing file-based content pattern.
 **Cons**: No query capability, concurrency issues, doesn't fit the "content is YAML" convention.
 
-**Recommendation**: **Option A for MVP, Option B as roadmap item.** Start session-only to validate the flow, then add persistence once the UX is proven.
+**Recommendation**: **Option A for the initial release, Option B as roadmap item.** Start session-only to validate the flow, then add persistence once the UX is proven.
 
 #### Deep Research Queries
 
@@ -769,7 +769,7 @@ Generate the skeleton with templates, then use LLM to fill in `TODO` fields.
 **Pros**: Structured skeleton + rich content.
 **Cons**: Two-step process, more complex.
 
-**Recommendation**: **Option A** (template-based) for MVP. The templates can be derived from existing content files (use a real character YAML as the template base).
+**Recommendation**: ****Option A** (template-based) for the initial release. The templates can be derived from existing content files (use a real character YAML as the template base).
 
 #### Deep Research Queries
 
@@ -828,7 +828,7 @@ const TIERS = {
 **Pros**: Flexible, predictable within tiers.
 **Cons**: Need to define tiers, LLM must correctly classify.
 
-**Recommendation**: **Option A** (static rules) for MVP, **Option C** (tiered) as enhancement. The static rules already match the existing `generate-prompt.mjs` templates.
+**Recommendation**: ****Option A** (static rules) for the initial release, **Option C** (tiered) as enhancement. The static rules already match the existing `generate-prompt.mjs` templates.
 
 #### Deep Research Queries
 
@@ -896,7 +896,7 @@ res.end();
 **Pros**: Real-time feedback, no polling.
 **Cons**: SSE support in Next.js proxy, connection management.
 
-**Recommendation**: **Option A** (synchronous) for MVP with a generous timeout. Move to **Option B** (background job) if plans get large. The existing migration endpoint is already synchronous.
+**Recommendation**: ****Option A** (synchronous) for the initial release with a generous timeout. Move to **Option B** (background job) if plans get large. The existing migration endpoint is already synchronous.
 
 #### Deep Research Queries
 
@@ -950,7 +950,7 @@ Story builder as a modal overlay on the existing admin dashboard.
 **Pros**: Non-disruptive, can be opened from anywhere.
 **Cons**: Limited screen space, can't show complex plans.
 
-**Recommendation**: **Option A** (single-page wizard) for MVP. The plan lives in React state; if the user navigates away, they lose the plan (acceptable for session-only MVP).
+**Recommendation**: **Option A** (single-page wizard) for the initial release. The plan lives in React state; if the user navigates away, they lose the plan (acceptable for session-only initial release).
 
 #### Deep Research Queries
 
@@ -960,7 +960,7 @@ Story builder as a modal overlay on the existing admin dashboard.
 
 3. **How do we show progress during execution?** Progress bar, step list, log output? What gives the user confidence that things are working?
 
-4. **Should we support collaborative editing?** If two admins view the same plan, should they see each other's changes? (Probably not for MVP, but worth considering.)
+4. **Should we support collaborative editing?** If two admins view the same plan, should they see each other's changes? (Probably not for the initial release, but worth considering.)
 
 5. **How do we handle large plans in the UI?** If a plan has 20 items, do we paginate, scroll, or collapse? What about plans with 100+ items?
 
@@ -968,23 +968,23 @@ Story builder as a modal overlay on the existing admin dashboard.
 
 ---
 
-## 4. Implementation Status
+## 4. Shipped state
 
-The Story Builder shipped across five milestones, all complete. The wizard flow is:
+The Story Builder shipped. The wizard flow is:
 
 ```
 Idea → AI Proposal → Iterate → Approve → Stage → Migrate
 ```
 
-### 4.1 What was built (by milestone)
+### 4.1 What was built
 
-| Milestone | Delivered |
+| Area | Delivered |
 |-----------|-----------|
-| **M1: MVP Foundation** | 4-step wizard, ContentPlan Zod schema, LLM-backed plan generation (Mock + LiteLLM providers), template-based YAML skeletons for all 12 content types, synchronous orchestrator (create → validate → migrate), server + admin proxy routes, asset pipeline integration, content-linker, in-card lore viewer/editor. |
-| **M2: Plan Persistence + Iteration** | `content_plans` table, 6-state status enum (draft → proposed → approved → staged → migrated → failed), `refinePlan()` with feedback log + versioning, CRUD + refine endpoints, plan list page, auto-save + load-from-URL wizard, integration tests. |
-| **M3: Staging + Migration Gate** | Split execute into `previewPlan()` (dry-run), `stagePlan()` (write YAML + validate), and `migrateStagedPlan()` (DB upsert). 5-step wizard (Describe → Review → Stage → Migrate → Assets), before/after preview UI, integration tests. |
-| **M4: Asset Needs + Lore Generation** | `AssetNeedsService` (static rules per content type) injected during parse/refine, `generateLoreStubs()` (writes `.md` at lore/narrative paths), `PromptFileGenerator` (writes `.prompt.md` for the asset pipeline), staging result surfaces lore + prompt files, unit tests. |
-| **M5: Polish + UX** | Execute-proxy validation fix, plan templates (mystery, shopkeeper, location), partial-failure recovery with per-item status + "Retry Failed" endpoint/UI, plan versioning (`parent_plan_id`) with version-history UI, keyboard shortcuts (Ctrl+Enter, Ctrl+S), template/versioning tests. |
+| **Foundation** | 4-step wizard, ContentPlan Zod schema, LLM-backed plan generation (Mock + LiteLLM providers), template-based YAML skeletons for all 12 content types, synchronous orchestrator (create → validate → migrate), server + admin proxy routes, asset pipeline integration, content-linker, in-card lore viewer/editor. |
+| **Plan Persistence + Iteration** | `content_plans` table, 6-state status enum (draft → proposed → approved → staged → migrated → failed), `refinePlan()` with feedback log + versioning, CRUD + refine endpoints, plan list page, auto-save + load-from-URL wizard, integration tests. |
+| **Staging + Migration Gate** | Split execute into `previewPlan()` (dry-run), `stagePlan()` (write YAML + validate), and `migrateStagedPlan()` (DB upsert). 5-step wizard (Describe → Review → Stage → Migrate → Assets), before/after preview UI, integration tests. |
+| **Asset Needs + Lore Generation** | `AssetNeedsService` (static rules per content type) injected during parse/refine, `generateLoreStubs()` (writes `.md` at lore/narrative paths), `PromptFileGenerator` (writes `.prompt.md` for the asset pipeline), staging result surfaces lore + prompt files, unit tests. |
+| **Polish + UX** | Execute-proxy validation fix, plan templates (mystery, shopkeeper, location), partial-failure recovery with per-item status + "Retry Failed" endpoint/UI, plan versioning (`parent_plan_id`) with version-history UI, keyboard shortcuts (Ctrl+Enter, Ctrl+S), template/versioning tests. |
 
 ### 4.2 Architecture decisions that held
 
@@ -1017,9 +1017,9 @@ Idea → AI Proposal → Iterate → Approve → Stage → Migrate
 | `admin/src/app/api/admin/story-builder/` | Next.js proxy routes (plan, execute, plans CRUD/refine/preview/stage/migrate/retry/versions, templates) |
 | `server/src/routes/assets.ts` | Asset API routes (catalog, generate, approve, publish) |
 
-### 4.4 Possible future enhancements
+### 4.4 Future extensions
 
-Not planned, but noted during design as natural extensions:
+Not planned, but noted during design as natural extensions. These are aspirational and require their own design review before implementation:
 
 - Tiered asset needs (major/standard/minor character).
 - LLM-generated content fill beyond skeletons.
@@ -1085,9 +1085,156 @@ Env vars used by the shipped implementation (`server/src/services/LLMService.ts`
 
 8. **What analytics should we track?** Plan creation rate, execution success rate, average items per plan, LLM cost per plan. What metrics help us improve the feature?
 
+9. **Should `story_beat` be enforced strictly (404 if missing) or allow fallback dialogues?** Resolved: scenes already gate by `metadata.required_story_beat` (`server/src/routes/location.ts:244-271`); dialogues now mirror that pattern via `metadata.required_story_beat` on dialogue trees (`server/src/routes/dialogue-helpers.ts:resolveDialogueTree`, `isStoryBeatAllowed`). If the tree is gated and the player doesn\'t satisfy the gate, `resolveDialogueTree` returns `null` and `handleStartDialogue` 404s with the existing "No dialogue available" error.
+
 ---
 
-## 7. References
+## 7. Story Beat Semantics
+
+> Authoritative reference for how `story_beat` slugs work at runtime
+> and in content. When this section conflicts with a comment in
+> code, code wins; please update this doc to match the implementation.
+
+A **story beat** is a free-form string slug that marks the player\'s
+position on the main narrative arc. The slug set is fixed by
+`content/story_beats.yaml`; the player\'s current beat is stored on
+`player_states.story_beat`. This section documents what authors
+and operators can rely on.
+
+### 7.1 Authoring model
+
+- **Slugs** are `^[a-z][a-z0-9_]*$`, validated by
+  `shared/src/schemas/yaml-content.ts::StoryBeatRegistrySchema`.
+  Free-form: any slug matching the pattern is allowed, no other
+  semantic constraint.
+- **`order`** is an integer, conventional for display only
+  (admin story-beats list sorts by it). The DB and runtime **do
+  not** enforce any ordering, and the runtime does not compare
+  `order` between beats.
+- **`description`** is a free-text note for authors and admins.
+  It is never displayed to players in the current build.
+- **The registry** lives in `content/story_beats.yaml` and is
+  migrated to `story_beats`. Two server-side beats are seeded
+  with slugs `act2_mystery_active` and `act3_finale_unlocked`;
+  these are set automatically by the join-mystery flow and the
+  LeaderboardWorker respectively, and must remain in the registry
+  for those flows to compile.
+
+### 7.2 How `story_beat` is read and written
+
+| Path | Read | Write |
+|---|---|---|
+| `setStoryBeat` (effects.story_beat on a dialogue node) | — | Flat `UPDATE player_states SET story_beat = $1` (`server/src/database/repositories/PlayerStateRepository.write.ts:setStoryBeat`). No monotonicity check, no transition validation. |
+| `getFullState` (player-state assembly) | `ps.story_beat` | — |
+| `resolveDialogueTree` (gating) | `ps.story_beat` | — |
+| `DialogueResolver` cache key | `ps.story_beat` | — |
+| Scene gating (`location.ts:265-271`) | `ps.story_beat` | — |
+| Admin story-beats list | `story_beats.story_beat` | Admin CRUD writes the registry table; player `story_beat` is not directly editable. |
+
+### 7.3 Forward-only? — No, by convention
+
+`setStoryBeat` does **not** enforce forward-only progression.
+`story_beat` is a free cursor, and the writer does not consult
+`order` before overwriting. This is deliberate:
+
+- **Time travel**: the breakthrough-solve and archive flows must be
+  able to move a player backward and forward to test endings.
+- **Debugging**: operators may need to revert a player\'s beat to
+  reproduce a bug.
+- **Replay and experimentation**: content authors can explore
+  branches without restart friction.
+
+**Author responsibility**: a dialogue tree whose terminal node
+sets `effects.story_beat: act1_first_contact` should be reachable
+from `act1_awakening` and from `act1_first_contact` itself. If a
+branch can lead the player *backward* (e.g. a node that sets
+`act1_awakening` on a path that started in `act1_first_contact`),
+the author is responsible for either accepting that or adding a
+`required_flags` / `required_story_beat` gate to prevent the
+backward transition. The runtime will not protect against it.
+
+### 7.4 Branches that set different beats — last write wins
+
+When two branches in the same tree end in nodes that set
+`effects.story_beat` to *different* slugs, the player\'s final
+`story_beat` is whichever terminal node they actually reached. The
+runtime does not record the path, only the final write. If
+authors need the player to remember which branch they took, use
+`flag_set` (see `shared/src/schemas/dialogue.ts::EffectsSchema`).
+A future "branch memory" feature would also need a separate
+storage path; the current `story_beat` is intentionally minimal.
+
+### 7.5 Gating contracts
+
+A gate is metadata on the gated surface (scene or dialogue tree)
+that constrains visibility based on the player\'s `story_beat`.
+Two surfaces share the same gate semantics:
+
+- **Scenes**: `metadata.required_story_beat` (string or string[]).
+  Enforced in `server/src/routes/location.ts:265-271`. Slugs are
+  cross-referenced against the registry at content-migration time
+  (`server/src/content/validate.ts::validateSceneBeatSlugs`,
+  `server/tests/unit/storyBeatSchema.property.test.ts:Scene beat
+  slug cross-reference`).
+- **Dialogue trees**: `metadata.required_story_beat` (string or
+  string[]). Enforced in `server/src/routes/dialogue-helpers.ts::
+  resolveDialogueTree` via the `isStoryBeatAllowed` helper. Slugs
+  are cross-referenced at migration time
+  (`validateDialogueTreeBeatSlugs`, property-test block in
+  `storyBeatSchema.property.test.ts`).
+
+The gate\'s contract, in both cases:
+
+| `metadata.required_story_beat` | Player satisfies when… |
+|---|---|
+| absent or `null` | always (backwards-compatible) |
+| string | player\'s beat equals that string |
+| `string[]` (non-empty) | player\'s beat is in the array |
+| `string[]` (empty) | never (defensive fail-closed) |
+| any other type | never (defensive fail-closed) |
+
+When a dialogue tree fails the gate, `resolveDialogueTree` falls
+through to the speaker-only fallback query (so a beat-unlocked
+alternative tree can still serve the same character). If the
+fallback also fails the gate, the function returns `null` and
+`handleStartDialogue` returns the existing
+`"No dialogue available for this character at this location"`
+404 error.
+
+### 7.6 Server-side beats (auto-set, not authored from a choice)
+
+Two beats are set server-side, not from a dialogue `effects.story_beat`:
+
+- `act2_mystery_active` — set when the player joins a mystery
+  via the `join_mystery` flow.
+- `act3_finale_unlocked` — set by the `LeaderboardWorker` when
+  a mystery is solved and the finale becomes accessible.
+
+These are identified in `server/src/routes/admin-story-beats.ts`
+via `const SERVER_SIDE_BEATS = new Set(['act2_mystery_active',
+'act3_finale_unlocked'])` so the admin UI can flag them as
+"system-managed" and refuse deletion while in use.
+
+### 7.7 Cross-references
+
+- `docs/NEXT_STEPS.md` — open action items (the beat-semantics
+  doc was opened as item 2; this section closes it).
+- `server/src/routes/location.ts:244-271` — scene gating
+  implementation (the reference for the dialogue-tree mirror).
+- `server/src/routes/dialogue-helpers.ts` — `isStoryBeatAllowed`
+  and `resolveDialogueTree` (tree-level gate).
+- `server/src/services/DialogueResolver.ts` — cache-key partitioning
+  by `beat:` so beat changes invalidate correctly.
+- `server/src/database/repositories/PlayerStateRepository.write.ts::
+  setStoryBeat` — the write path. No monotonicity enforcement;
+  see §7.3.
+- `shared/src/schemas/dialogue.ts` — `EffectsSchema` (story_beat
+  is an optional string slug, max 100 chars).
+- `content/story_beats.yaml` — the registry.
+
+---
+
+## 8. References
 
 - `docs/ADMIN_ARCHITECTURE.md` — Admin panel architecture
 - `docs/MVW_ARCHITECTURE.md` — Player state engine

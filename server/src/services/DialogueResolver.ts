@@ -137,6 +137,19 @@ export class DialogueResolver {
   }
 
   /**
+   * Fetch the player's current `story_beat` slug (defaults to
+   * 'prologue' when the player has no row yet). Mirrors the
+   * default used in `server/src/routes/location.ts:252`.
+   */
+  private static async getUserStoryBeat(userId: string): Promise<string> {
+    const result = await queryOLTP<{ story_beat: string | null }>(
+      `SELECT story_beat FROM player_states WHERE user_id = $1`,
+      [userId]
+    );
+    return result.rows[0]?.story_beat || 'prologue';
+  }
+
+  /**
    * Inner implementation of resolveTreeForUser, separated so the public
    * method can wrap it with Promise deduping.
    */
@@ -144,11 +157,12 @@ export class DialogueResolver {
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {
-    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment] = await Promise.all([
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment, storyBeat] = await Promise.all([
       DialogueResolver.getActiveMysteryIds(userId),
       DialogueResolver.getActiveMysteries(),
       DialogueResolver.getUserNsfwStatus(userId),
       DialogueResolver.getUserAlignment(userId),
+      DialogueResolver.getUserStoryBeat(userId),
     ]);
 
     // Combine investigating + active mysteries for overlay loading.
@@ -171,7 +185,14 @@ export class DialogueResolver {
     // Alignment is part of the cache key so the
     // post-commit invalidate in /dialogue/choose forces a fresh
     // merge once a player picks the finale choice.
-    const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:align:${alignment}:mysteries:${cacheSuffix}`;
+    // `storyBeat` is part of the cache key so that a player whose
+    // story_beat advances (or who has their story_beat restored
+    // after a backup) re-evaluates gating. Tree-level beat gating
+    // is enforced upstream in `resolveDialogueTree()`; the cache
+    // key here just ensures resolution of a *started* tree is
+    // partitioned correctly when the resolver is called from
+    // other paths (e.g. /dialogue/active fallback).
+    const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
 
     const cachedTree = await getCache<ResolvedTree>(cacheKey);
     if (cachedTree) {
@@ -376,11 +397,12 @@ export class DialogueResolver {
     const chunkRow = await DialogueResolver.loadBaseChunk(chunkId);
 
     // 2. Load user context (mirrors resolveTreeForUser pattern)
-    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment] = await Promise.all([
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment, storyBeat] = await Promise.all([
       DialogueResolver.getActiveMysteryIds(userId),
       DialogueResolver.getActiveMysteries(),
       DialogueResolver.getUserNsfwStatus(userId),
       DialogueResolver.getUserAlignment(userId),
+      DialogueResolver.getUserStoryBeat(userId),
     ]);
 
     const allMysteryIds = [...new Set([...investigatingIds, ...activeMysteryIds])].sort();
@@ -395,7 +417,11 @@ export class DialogueResolver {
       allMysteryIds.length > 0
         ? `${allMysteryIds.join('_')}:${overlayFingerprint}`
         : `base:${overlayFingerprint}`;
-    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:mysteries:${cacheSuffix}`;
+    // Cache key must include every per-user variable that can change
+    // the resolved tree, so cache is partitioned correctly across
+    // the same (tree, chunk) pair for different users. `storyBeat`
+    // is included so a player whose beat advances re-resolves.
+    const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
 
     const cachedChunk = await getCache<ResolvedChunk>(cacheKey);
     if (cachedChunk) {

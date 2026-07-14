@@ -10,7 +10,7 @@
 
 Before the workspace existed, the same cyberpunk theme was duplicated three times (the old `dashboard` workspace, the new `admin` workspace, and the game `client`). The shared package removes that duplication and makes the "tokens + theme + component classes" model a hard contract.
 
-It is **not** a React component library — it is CSS-first with a tiny `cn()` helper. React wrappers (`Button`, `Input`, `Card`, `Badge`) are deliberately out of scope for now; the global classes can be composed with `cn(...)` or used directly. See [Open follow-ups](#open-follow-ups).
+It is **not** primarily a React component library — it is CSS-first with a tiny `cn()` helper. As of 2026-07-14, thin React wrappers (`Button`, `Input`, `Card`, `Badge`) are available as opt-in conveniences; they apply the same global classes that `cn(...)` would. See [Open follow-ups](#open-follow-ups).
 
 ## Package contract — `@las-flores/ui`
 
@@ -20,7 +20,7 @@ It is **not** a React component library — it is CSS-first with a tiny `cn()` h
 | `package.json` `name` | `@las-flores/ui` |
 | `type` | `module` (ESM) |
 | `main` / `types` | `./src/index.ts` (sources are imported directly — no transpile step needed) |
-| `exports."."` | `./src/index.ts` (re-exports `cn`, `ClassValue`) |
+| `exports."."` | `./src/index.ts` (re-exports `cn`, `ClassValue`, and the React wrappers `Button`, `Input`, `Card`, `Badge`) |
 | `exports."./styles/*"` | `./src/styles/*` (CSS files imported by app bundles) |
 | `exports."./lib/cn"` | `./src/lib/cn.ts` |
 | Build | `npm run build --workspace=ui` → `tsc -p tsconfig.json && node ./scripts/copy-styles.mjs` (emits `dist/` for declarations + copies `src/styles/` → `dist/styles/`) |
@@ -58,7 +58,7 @@ ui/src/
    import '@las-flores/ui/styles/global.css';
    import '@las-flores/ui/styles/components.css';
    ```
-4. **`cn` helper** — currently imported as the local `admin/src/lib/cn`. The shared `cn` is also available via `@las-flores/ui/lib/cn` (or just `@las-flores/ui`). See [Open follow-ups](#open-follow-ups).
+4. **`cn` helper** — imported from `@las-flores/ui` (re-exports the helper from `ui/src/lib/cn.ts`). No local copy remains.
 
 The legacy `admin/src/app/globals.css` and `admin/src/styles/` directory are gone — all admin styling flows through the shared package.
 
@@ -112,7 +112,7 @@ The vocabulary available to **any** page (admin or client) that imports `compone
 **Composition pattern** (the convention established by the core primitives in `admin`):
 
 ```tsx
-import { cn } from '@/lib/cn';                  // or '@las-flores/ui'
+import { cn } from '@las-flores/ui';
 import styles from './MyPage.module.css';
 
 <button className={cn(styles.submit, 'btn', 'btn--primary')}>Save</button>
@@ -144,9 +144,8 @@ This is deliberately deferred. **Do not rename one side without the other.**
 
 ## Open follow-ups
 
-1. **`cn` follow-up (low risk)**: `admin` still imports its local `admin/src/lib/cn` (identical implementation to the shared one). Centralize to `@las-flores/ui/lib/cn` (or `@las-flores/ui`) in a one-line PR. Blockers: none.
-2. **Page-level `.module.css` migration (incremental)**: not all admin page modules compose the shared classes yet. The pattern is established by the core primitives; the rest is mechanical. Track in follow-up issues, not in this doc.
-3. **Optional React wrappers (deferred)**: thin `Button.tsx` / `Input.tsx` / `Card.tsx` / `Badge.tsx` components that apply the global classes are intentionally **not** in `@las-flores/ui` today. They can be layered on later without breaking the CSS-first contract.
+1. **Page-level `.module.css` migration (incremental)**: not all admin page modules compose the shared classes yet. The pattern is established by the core primitives and has at least one live consumer (`admin/src/app/login/`); the rest is mechanical. Track in follow-up issues, not in this doc.
+2. **React wrappers — wider adoption**: `Button` / `Input` / `Card` / `Badge` are now in `@las-flores/ui` as opt-in conveniences. Adoption across the admin pages is a follow-up, not a blocker — pages that compose classes directly with `cn()` keep working unchanged.
 
 ## Verification commands
 

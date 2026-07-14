@@ -1,3 +1,15 @@
+/* Page-local styles for the admin login page. The shared
+ * component classes in `@las-flores/ui/styles/components.css`
+ * cover the form layout, inputs, and primary button — only the
+ * page-level layout (`.main`, `.heading`, `.form`, `.formGroup`,
+ * `.label`, `.backLink`) and the error banner color (`.error`)
+ * need to live here.
+ *
+ * Token references (--accent, --panel-bg, --page-bg, --danger, …)
+ * come from `@las-flores/ui/styles/tokens.css`, which is imported
+ * in the root layout.
+ */
+
 .main {
   min-height: 100vh;
   display: flex;
@@ -28,27 +40,6 @@
 .label {
   display: block;
   margin-bottom: 0.5rem;
-}
-
-.input {
-  width: 100%;
-  padding: 0.75rem;
-  background: var(--page-bg);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
-  color: var(--accent);
-  font-family: var(--font-mono);
-}
-
-.button {
-  width: 100%;
-  padding: 0.75rem;
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 1rem;
 }
 
 .error {
