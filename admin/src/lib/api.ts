@@ -40,10 +40,15 @@ export async function adminFetch<T = unknown>(
     headers.set('Content-Type', 'application/json');
   }
 
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get('jwt_session');
+  if (sessionCookie) {
+    headers.set('Cookie', `jwt_session=${sessionCookie.value}`);
+  }
+
   const response = await fetch(`${SERVER_URL}${url}`, {
     ...options,
     headers,
-    credentials: 'include',
   });
 
   if (!response.ok) {

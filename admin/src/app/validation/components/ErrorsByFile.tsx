@@ -42,3 +42,10 @@ export default function ErrorsByFile({ errorsByFile }: Props) {
                   <td className={styles.td}>{err.message}</td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+}

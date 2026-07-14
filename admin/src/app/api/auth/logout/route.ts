@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
@@ -9,6 +9,11 @@ export async function POST() {
     const sessionCookie = cookieStore.get('jwt_session');
 
     cookieStore.delete('jwt_session');
+
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const protocol = headersList.get('x-forwarded-proto') || 'http';
+    const origin = `${protocol}://${host}`;
 
     if (sessionCookie) {
       const serverResponse = await fetch(`${SERVER_URL}/auth/logout`, {
@@ -21,14 +26,14 @@ export async function POST() {
         return new NextResponse(null, {
           status: 303,
           headers: {
-            location: new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001').toString(),
+            location: new URL('/login', origin).toString(),
             'set-cookie': setCookieHeader,
           },
         });
       }
     }
 
-    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'), { status: 303 });
+    return NextResponse.redirect(new URL('/login', origin), { status: 303 });
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'), { status: 303 });
