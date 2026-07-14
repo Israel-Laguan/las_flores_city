@@ -286,6 +286,17 @@ adminStoryBuilderRouter.post('/plans/:id/stage', async (req, res) => {
       return;
     }
 
+    // Status guard: only allow staging if proposed or approved
+    const currentStatus = result.rows[0].status;
+    if (currentStatus !== 'proposed' && currentStatus !== 'approved') {
+      res.status(400).json({
+        success: false,
+        error: `Plan must be proposed or approved before staging. Current status: ${currentStatus}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
     let plan;
     try {
       plan = ContentPlanSchema.parse(result.rows[0].plan_json);
