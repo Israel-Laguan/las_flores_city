@@ -181,6 +181,7 @@ function RawJson({ record }: { record: Character }) {
       <button
         onClick={() => setShowJson(!showJson)}
         style={collapsibleHeaderStyle}
+        aria-expanded={showJson}
       >
         <span>Raw JSON</span>
         <span>{showJson ? '▼' : '▶'}</span>

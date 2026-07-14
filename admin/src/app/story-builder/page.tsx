@@ -141,9 +141,12 @@ function JsonViewer({ data, label = 'JSON Data', defaultOpen = false }: {
   const [copied, setCopied] = useState(false);
   
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => console.error('Copy to clipboard failed'));
   };
   
   return (
@@ -209,6 +212,153 @@ async function postJSON<T>(url: string, payload: unknown): Promise<T> {
     throw new Error('Expected JSON response from server');
   }
   return res.json();
+}
+
+function extractFieldsFromYaml(yamlString: string): Record<string, string> {
+  const fields: Record<string, string> = {};
+  try {
+    const lines = yamlString.split('\n');
+    for (const line of lines) {
+      if (line.startsWith(' ') || line.startsWith('\t')) {
+        continue;
+      }
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes(':')) {
+        const [key, ...valueParts] = trimmed.split(':');
+        const value = valueParts.join(':').trim();
+        fields[key.trim()] = value || '(empty)';
+      }
+    }
+  } catch (e) {
+    // If parsing fails, return empty
+  }
+  return fields;
+}
+
+function getImageFromYaml(yamlString: string): string | null {
+  try {
+    const lines = yamlString.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      if (trimmed.match(/^(image_path|image|portrait|thumbnail)\s*:/i)) {
+        const match = trimmed.match(/:\s*(.+)/);
+        if (match) {
+          const path = match[1].trim().replace(/['"]/g, '');
+          if (path && !path.startsWith('data:')) {
+            return path;
+          }
+        }
+      }
+
+      if (trimmed.match(/^asset_paths\s*:/i)) {
+        let j = i + 1;
+        while (j < lines.length) {
+          const rawLine = lines[j];
+          const trimmedNext = rawLine.trim();
+          if (!trimmedNext || trimmedNext.startsWith('#')) {
+            j++;
+            continue;
+          }
+          if (rawLine.startsWith(' ') || rawLine.startsWith('\t')) {
+            const assetMatch = trimmedNext.match(/^\s*(\w+)\s*:\s*(.+)/);
+            if (assetMatch) {
+              const key = assetMatch[1];
+              const value = assetMatch[2].trim().replace(/['"]/g, '');
+              if (key.match(/image|portrait|avatar/i) && value) {
+                return value;
+              }
+            }
+            j++;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // If parsing fails, return null
+  }
+  return null;
+}
+
+function PreviewItem({ item, index }: { item: any; index: number }) {
+  const [imageError, setImageError] = useState(false);
+  const fields = extractFieldsFromYaml(item.yamlPreview);
+  const imagePath = getImageFromYaml(item.yamlPreview);
+
+  return (
+    <div key={index} style={{ ...styles.card, marginBottom: '0.75rem' }}>
+      <div style={styles.cardHeader}>
+        <span style={styles.cardType}>{item.type}</span>
+        <span style={styles.cardAction}>
+          {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
+        </span>
+      </div>
+
+      <div style={{ marginBottom: '0.5rem' }}>
+        {fields.name && (
+          <p style={{ color: '#00ff00', fontSize: '0.9rem', margin: '0.25rem 0' }}>
+            <strong>Name:</strong> {fields.name}
+          </p>
+        )}
+        {fields.description && (
+          <p style={{ color: '#aaa', fontSize: '0.85rem', margin: '0.25rem 0', maxHeight: '100px', overflow: 'auto' }}>
+            <strong>Description:</strong> {fields.description}
+          </p>
+        )}
+        {fields.slug && (
+          <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
+            <strong>Slug:</strong> {fields.slug}
+          </p>
+        )}
+        {fields.id && (
+          <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
+            <strong>ID:</strong> {fields.id}
+          </p>
+        )}
+
+        {imagePath && !imageError && (
+          <div style={{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#0a0a14', borderRadius: '5px', border: '1px solid #333' }}>
+            <img
+              src={`/api/admin/asset?path=${encodeURIComponent(imagePath)}`}
+              alt="Preview"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '200px',
+                borderRadius: '5px',
+                objectFit: 'contain',
+                backgroundColor: '#1a1a2e'
+              }}
+              onError={() => setImageError(true)}
+            />
+            <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.25rem' }}>
+              {imagePath}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <details>
+        <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+          View YAML
+        </summary>
+        <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+          {item.yamlPreview}
+        </pre>
+      </details>
+      {item.existingYaml && (
+        <details>
+          <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
+          <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+            {item.existingYaml}
+          </pre>
+        </details>
+      )}
+    </div>
+  );
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -505,7 +655,13 @@ export default function StoryBuilderPage() {
           {templates.map(t => (
             <button
               key={t.id}
-              style={{ ...styles.button, ...styles.secondaryButton, fontSize: '0.85rem' }}
+              style={{
+                ...styles.button,
+                ...styles.secondaryButton,
+                fontSize: '0.85rem',
+                ...(loading ? styles.disabledButton : {}),
+              }}
+              disabled={loading}
               onClick={async () => {
                 setLoading(true);
                 try {
@@ -714,162 +870,6 @@ export default function StoryBuilderPage() {
         {renderRefineSection()}
 
         {renderLinksSection()}
-      </div>
-    );
-  }
-
-  function extractFieldsFromYaml(yamlString: string): Record<string, string> {
-    const fields: Record<string, string> = {};
-    try {
-      // Simple parsing to extract top-level fields
-      const lines = yamlString.split('\n');
-      for (const line of lines) {
-        // Skip nested fields by checking indentation of the original line
-        if (line.startsWith(' ') || line.startsWith('\t')) {
-          continue;
-        }
-        const trimmed = line.trim();
-        if (trimmed && !trimmed.startsWith('#') && trimmed.includes(':')) {
-          const [key, ...valueParts] = trimmed.split(':');
-          const value = valueParts.join(':').trim();
-          fields[key.trim()] = value || '(empty)';
-        }
-      }
-    } catch (e) {
-      // If parsing fails, return empty
-    }
-    return fields;
-  }
-
-  function getImageFromYaml(yamlString: string): string | null {
-    try {
-      const lines = yamlString.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('#')) continue;
-
-        // Look for image_path or image fields at the top level
-        if (trimmed.match(/^(image_path|image|portrait|thumbnail)\s*:/i)) {
-          const match = trimmed.match(/:\s*(.+)/);
-          if (match) {
-            const path = match[1].trim().replace(/['"]/g, '');
-            if (path && !path.startsWith('data:')) {
-              return path;
-            }
-          }
-        }
-
-        // Look for asset_paths
-        if (trimmed.match(/^asset_paths\s*:/i)) {
-          let j = i + 1;
-          while (j < lines.length) {
-            const rawLine = lines[j];
-            const trimmedNext = rawLine.trim();
-            if (!trimmedNext || trimmedNext.startsWith('#')) {
-              j++;
-              continue;
-            }
-            // Ensure it is indented (nested under asset_paths)
-            if (rawLine.startsWith(' ') || rawLine.startsWith('\t')) {
-              const assetMatch = trimmedNext.match(/^\s*(\w+)\s*:\s*(.+)/);
-              if (assetMatch) {
-                const key = assetMatch[1];
-                const value = assetMatch[2].trim().replace(/['"]/g, '');
-                if (key.match(/image|portrait|avatar/i) && value) {
-                  return value;
-                }
-              }
-              j++;
-            } else {
-              break;
-            }
-          }
-        }
-      }
-    } catch (e) {
-      // If parsing fails, return null
-    }
-    return null;
-  }
-
-  // Preview item component to handle state per item
-  function PreviewItem({ item, index }: { item: any; index: number }) {
-    const [imageError, setImageError] = useState(false);
-    const fields = extractFieldsFromYaml(item.yamlPreview);
-    const imagePath = getImageFromYaml(item.yamlPreview);
-    
-    return (
-      <div key={index} style={{ ...styles.card, marginBottom: '0.75rem' }}>
-        <div style={styles.cardHeader}>
-          <span style={styles.cardType}>{item.type}</span>
-          <span style={styles.cardAction}>
-            {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
-          </span>
-        </div>
-        
-        {/* Display key fields clearly */}
-        <div style={{ marginBottom: '0.5rem' }}>
-          {fields.name && (
-            <p style={{ color: '#00ff00', fontSize: '0.9rem', margin: '0.25rem 0' }}>
-              <strong>Name:</strong> {fields.name}
-            </p>
-          )}
-          {fields.description && (
-            <p style={{ color: '#aaa', fontSize: '0.85rem', margin: '0.25rem 0', maxHeight: '100px', overflow: 'auto' }}>
-              <strong>Description:</strong> {fields.description}
-            </p>
-          )}
-          {fields.slug && (
-            <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
-              <strong>Slug:</strong> {fields.slug}
-            </p>
-          )}
-          {fields.id && (
-            <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
-              <strong>ID:</strong> {fields.id}
-            </p>
-          )}
-          
-          {/* Display image if available */}
-          {imagePath && !imageError && (
-            <div style={{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#0a0a14', borderRadius: '5px', border: '1px solid #333' }}>
-              <img
-                src={`/api/admin/asset?path=${encodeURIComponent(imagePath)}`}
-                alt="Preview"
-                style={{ 
-                  maxWidth: '100%', 
-                  maxHeight: '200px', 
-                  borderRadius: '5px',
-                  objectFit: 'contain',
-                  backgroundColor: '#1a1a2e'
-                }}
-                onError={() => setImageError(true)}
-              />
-              <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.25rem' }}>
-                {imagePath}
-              </p>
-            </div>
-          )}
-        </div>
-        
-        {/* Raw YAML in collapsible section */}
-        <details>
-          <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.5rem' }}>
-            View YAML
-          </summary>
-          <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-            {item.yamlPreview}
-          </pre>
-        </details>
-        {item.existingYaml && (
-          <details>
-            <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
-            <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-              {item.existingYaml}
-            </pre>
-          </details>
-        )}
       </div>
     );
   }
