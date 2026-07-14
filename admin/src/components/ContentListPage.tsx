@@ -32,11 +32,11 @@ function ListTable<T extends Record<string, unknown>>({
   onNavigate: (id: string) => void;
 }) {
   return (
-    <table className={styles.table}>
+    <table className="table">
       <thead>
         <tr>
           {columns.map(col => (
-            <th key={col.key} className={styles.th}>{col.label}</th>
+            <th key={col.key} className="table__th">{col.label}</th>
           ))}
         </tr>
       </thead>
@@ -58,7 +58,7 @@ function ListTable<T extends Record<string, unknown>>({
             }}
           >
             {columns.map(col => (
-              <td key={col.key} className={styles.td}>
+              <td key={col.key} className="table__td">
                 {col.render ? col.render(item) : String(item[col.key] ?? '\u2014')}
               </td>
             ))}
@@ -66,7 +66,7 @@ function ListTable<T extends Record<string, unknown>>({
         );})}
         {!loading && items.length === 0 && (
           <tr>
-            <td colSpan={columns.length} className={cn(styles.td, styles.muted, styles.textCenter)}>
+            <td colSpan={columns.length} className={cn('table__td', 'muted', styles.textCenter)}>
               No items found.
             </td>
           </tr>
@@ -93,15 +93,15 @@ function Pagination({
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
-        className={cn(styles.button, page === 1 && styles.disabledButton)}
+        className={cn('btn', page === 1 && 'btn--disabled')}
       >
         &larr; Prev
       </button>
-      <span className={styles.muted}>Page {page} of {totalPages}</span>
+      <span className="muted">Page {page} of {totalPages}</span>
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className={cn(styles.button, page >= totalPages && styles.disabledButton)}
+        className={cn('btn', page >= totalPages && 'btn--disabled')}
       >
         Next &rarr;
       </button>
@@ -159,9 +159,9 @@ export default function ContentListPage<T extends Record<string, unknown>>({
   return (
     <main className={styles.main}>
       <h1>{title}</h1>
-      {error && <div className={styles.errorBox}>{error}</div>}
-      <div className={styles.section}>
-        <h2 className={styles.sectionHeading}>{heading}</h2>
+      {error && <div className="error-box">{error}</div>}
+      <div className="section">
+        <h2 className="section__heading">{heading}</h2>
         {loading && items.length === 0 ? (
           <p className={styles.muted}>Loading...</p>
         ) : (

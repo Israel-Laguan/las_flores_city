@@ -86,12 +86,12 @@ function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: {
             )}
 
             <div className={styles.assetActions}>
-              <button className={cn(styles.button, styles.primaryButton)} onClick={() => window.open('/assets', '_blank')}>
+              <button className={cn('btn', 'btn--primary')} onClick={() => window.open('/assets', '_blank')}>
                 {assetPath ? 'Replace Image' : 'Generate Image'}
               </button>
               {assetPath && onRemoveAssetPath && (
                 <button
-                  className={cn(styles.button, styles.secondaryButton)}
+                  className={cn('btn', 'btn--secondary')}
                   onClick={() => onRemoveAssetPath(need.promptType || need.targetField)}
                 >
                   Remove
@@ -160,7 +160,7 @@ function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
             return (
               <button
                 key={other.id}
-                className={cn(styles.button, styles.depToggle, isSelected ? styles.primaryButton : styles.secondaryButton)}
+                className={cn('btn', 'btn--small', isSelected ? 'btn--primary' : 'btn--secondary')}
                 onClick={() => {
                   if (!onDependsOnChange) return;
                   const newDeps = isSelected
@@ -192,20 +192,20 @@ export default function ContentCard({ item, index, allItems = [], onFieldChange,
   }
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
+    <div className="card">
+      <div className="card__header">
         <div>
-          <h3 className={styles.cardTitle}>
+          <h3 className="card__title">
             {icon} {item.name || 'Untitled'}
           </h3>
-          <span className={styles.cardMeta}>
+          <span className="card__meta">
             {item.type} &middot; {item.action}
           </span>
         </div>
         <div className={styles.headerActions}>
           {lorePath && (
             <button
-              className={cn(styles.button, styles.secondaryButton, styles.smallButton)}
+              className={cn('btn', 'btn--secondary', 'btn--small')}
               onClick={() => setShowLore(true)}
             >
               Lore
@@ -213,13 +213,13 @@ export default function ContentCard({ item, index, allItems = [], onFieldChange,
           )}
           {narrativePath && (
             <button
-              className={cn(styles.button, styles.secondaryButton, styles.smallButton)}
+              className={cn('btn', 'btn--secondary', 'btn--small')}
               onClick={() => setShowNarrative(true)}
             >
               Narrative
             </button>
           )}
-          <button className={styles.removeButton} onClick={() => onRemove(index)}>
+          <button className="btn btn--danger" onClick={() => onRemove(index)}>
             Remove
           </button>
         </div>

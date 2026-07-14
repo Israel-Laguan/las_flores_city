@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@las-flores/shared'],
+  transpilePackages: ['@las-flores/shared', '@las-flores/ui'],
   async rewrites() {
     return [
       {

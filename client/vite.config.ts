@@ -6,6 +6,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       '@': resolve(__dirname, 'src'),
       '@shared': resolve(__dirname, '../shared'),
+      '@las-flores/ui': resolve(__dirname, '../ui/src'),
     },
   },
   server: {

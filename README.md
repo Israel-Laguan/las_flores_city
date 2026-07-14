@@ -180,6 +180,10 @@ npm run lint --workspace=server
 npm run lint --workspace=client
 ```
 
+### UI Style System
+
+The project shares design tokens, theme variables, and reusable component classes through the `@las-flores/ui` workspace. Both `admin` and the game `client` consume it. See **[docs/UI_STYLE_SYSTEM.md](docs/UI_STYLE_SYSTEM.md)** for the contract, the available classes, the theme variable namespaces, and verification commands.
+
 ## API Reference
 
 | Endpoint | Method | Description |

@@ -47,11 +47,11 @@ export default function AdminNav({ user }: AdminNavProps) {
           {user ? (
             <>
               <span>{user.username || user.email}</span>
-              <span className={styles.roleBadge}>{user.role}</span>
-              <Link href="/api/auth/logout" className={styles.logoutLink}>LOGOUT</Link>
+              <span className="badge badge--success">{user.role}</span>
+              <Link href="/api/auth/logout" className="btn btn--danger">LOGOUT</Link>
             </>
           ) : (
-            <Link href="/login" className={styles.logoutLink}>LOGIN</Link>
+            <Link href="/login" className="btn btn--danger">LOGIN</Link>
           )}
         </div>
       </nav>

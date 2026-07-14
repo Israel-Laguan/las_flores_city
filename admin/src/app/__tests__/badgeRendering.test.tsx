@@ -132,7 +132,7 @@ describe('Fast-check badge invariants', () => {
           await waitFor(() => { expect(screen.queryByText('Loading...')).not.toBeInTheDocument(); });
           for (const item of items) {
             if (item.beatAssociation !== null) {
-              const els = screen.queryAllByText(item.beatAssociation);
+              const els = screen.queryAllByText(item.beatAssociation, { selector: 'span' });
               expect(els.length).toBeGreaterThan(0);
               for (const el of els) { expect(el.tagName).toBe('SPAN'); expect(hasInfoBadge(el)).toBe(true); }
             }
@@ -157,8 +157,8 @@ describe('Fast-check badge invariants', () => {
           });
           const { unmount } = render(<CharactersPage />);
           await waitFor(() => { expect(screen.queryByText('Loading...')).not.toBeInTheDocument(); });
-          for (const badge of screen.queryAllByText('ready')) { expect(hasSuccessBadge(badge)).toBe(true); }
-          for (const badge of screen.queryAllByText('missing')) { expect(hasWarningBadge(badge)).toBe(true); }
+          for (const badge of screen.queryAllByText('ready', { selector: 'span' })) { expect(hasSuccessBadge(badge)).toBe(true); }
+          for (const badge of screen.queryAllByText('missing', { selector: 'span' })) { expect(hasWarningBadge(badge)).toBe(true); }
           unmount();
         },
       ),

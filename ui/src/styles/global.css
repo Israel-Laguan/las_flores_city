@@ -1,14 +1,5 @@
-:root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --muted: #888;
-  --accent: #00ff00;
-  --panel-bg: #0d0d1a;
-  --page-bg: #1a1a2e;
-  --border: #333;
-  --danger: #ff4444;
-  --font-mono: monospace;
-}
+/* Base element styles — imported once in the app root layout, after tokens.css.
+   Ported from admin/src/styles/global.css. */
 
 * {
   box-sizing: border-box;
@@ -32,9 +23,11 @@ a:hover {
   text-decoration: underline;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   color: var(--accent);
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 button {

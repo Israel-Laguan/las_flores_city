@@ -1,0 +1,38 @@
+/* Design tokens — framework-agnostic, shared across admin + client via @las-flores/ui.
+   Ported from admin/src/styles/tokens.css (originally admin/src/app/globals.css :root). */
+
+:root {
+  /* Color */
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #888;
+  --accent: #00ff00;
+  --panel-bg: #0d0d1a;
+  --page-bg: #1a1a2e;
+  --border: #333;
+  --danger: #ff4444;
+  --warning: #ffaa00;
+  --info: #0066ff;
+  --font-mono: monospace;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Radii */
+  --radius-sm: 3px;
+  --radius: 5px;
+  --radius-lg: 8px;
+
+  /* Elevation */
+  --shadow-glow: 0 0 8px rgba(0, 255, 0, 0.35);
+
+  /* Typography */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.9rem;
+}

@@ -3,69 +3,11 @@
   min-height: 100vh;
 }
 
-.errorBox {
-  background: rgba(255, 0, 0, 0.2);
-  border: 1px solid var(--danger);
-  padding: 1rem;
-  border-radius: 5px;
-  margin-top: 1rem;
-}
-
-.section {
-  border: 1px solid var(--accent);
-  padding: 1.5rem;
-  border-radius: 5px;
-  margin-bottom: 2rem;
-}
-
-.sectionHeading {
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--accent);
-  padding-bottom: 0.5rem;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.th {
-  text-align: left;
-  padding: 0.5rem;
-  border-bottom: 1px solid var(--accent);
-}
-
-.td {
-  padding: 0.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.muted {
-  color: var(--muted);
-}
-
 .pagination {
   margin-top: 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.button {
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  font-weight: bold;
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
-}
-
-.disabledButton {
-  background: #555;
-  color: #999;
-  border-color: #555;
-  cursor: not-allowed;
 }
 
 .clickableRow {
