@@ -1,4 +1,6 @@
 import express from 'express';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
@@ -37,24 +39,20 @@ adminStoryBuilderLoreRouter.post('/plans/:id/items/:itemId/lore', async (req: Au
       return;
     }
 
-    // Check if item has lore_path
-    const lorePath = item.fields.lore_path;
+    // Check if item has lore_path or narrative_path
+    const lorePath = item.fields.lore_path || item.fields.narrative_path;
     if (!lorePath) {
-      res.status(400).json({ success: false, error: 'Item does not have lore_path field', timestamp: new Date().toISOString() });
+      res.status(400).json({ success: false, error: 'Item does not have lore_path or narrative_path field', timestamp: new Date().toISOString() });
       return;
     }
 
     // Gather context and generate lore
     const context = await contentPlanService.gatherContext();
-    // Access private provider - we need to export it or use a getter
-    const provider = (contentPlanService as any).provider;
-    const loreContent = await provider.generateLore(item, context);
+    const loreContent = await contentPlanService.generateLore(item, context);
 
     // Write to lore file (overwrite existing)
-    const fs = await import('node:fs/promises');
-    const path = await import('node:path');
     const loreRoot = path.resolve(process.cwd(), 'docs', 'lore');
-    const fullPath = path.resolve(loreRoot, lorePath);
+    const fullPath = path.resolve(process.cwd(), lorePath);
 
     // Path safety check
     if (!fullPath.startsWith(loreRoot + path.sep) && fullPath !== loreRoot) {

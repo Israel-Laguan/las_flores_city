@@ -97,6 +97,10 @@ export class ContentPlanService {
     return validated;
   }
 
+  async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
+    return this.provider.generateLore(item, context);
+  }
+
   async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM characters ORDER BY name ASC'),

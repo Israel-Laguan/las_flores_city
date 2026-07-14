@@ -31,7 +31,7 @@ export async function generateForPlan(
       const relPath = item.fields[field];
       if (!relPath || typeof relPath !== 'string') continue;
 
-      const fullPath = path.resolve(loreRoot, relPath);
+      const fullPath = path.resolve(process.cwd(), relPath);
 
       // Path safety check - must be within loreRoot
       if (!fullPath.startsWith(loreRoot + path.sep) && fullPath !== loreRoot) {

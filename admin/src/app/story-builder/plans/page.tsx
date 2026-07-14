@@ -112,7 +112,7 @@ export default function StoryBuilderPlans() {
                     </span>
                   </td>
                   <td>{plan.item_count}</td>
-                  <td>{new Date(plan.updated_at).toLocaleDateString()}</td>
+                  <td suppressHydrationWarning>{new Date(plan.updated_at).toLocaleDateString()}</td>
                   <td className={styles.actionsCell}>
                     <Link
                       href={`/story-builder?planId=${plan.id}`}

@@ -51,8 +51,8 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
 // GET /admin/story-builder/plans — List all plans
 adminStoryBuilderPlansRouter.get('/plans', async (req, res) => {
   try {
-    const limit = Math.max(1, Math.min(parseInt(req.query.limit as string, 10) || 50, 100));
-    const offset = Math.max(0, parseInt(req.query.offset as string, 10) || 0);
+    const limit = Math.max(1, Math.min(Number(req.query.limit) || 50, 100));
+    const offset = Math.max(0, Number(req.query.offset) || 0);
 
     const result = await queryOLTP(
       `SELECT id, description, status, created_at, updated_at,
