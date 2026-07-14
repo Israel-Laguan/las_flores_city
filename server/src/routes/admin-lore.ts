@@ -98,8 +98,10 @@ export function validateLorePath(
     return { valid: false, reason: 'Path traversal sequences (..) are not allowed' };
   }
 
-  const firstSegment = relPath.split('/')[0] ?? '';
-  if (!(LORE_SUBDIRS as readonly string[]).includes(firstSegment)) {
+  const segments = relPath.split('/');
+  const firstSegment = segments[0] ?? '';
+  // Allow bare filenames (top-level lore files) or files inside a known subdirectory
+  if (segments.length > 1 && !(LORE_SUBDIRS as readonly string[]).includes(firstSegment)) {
     return {
       valid: false,
       reason: `Path must start with a known lore subdirectory; got "${firstSegment}"`,
@@ -165,12 +167,23 @@ export interface LoreFileEntry {
 async function walkLoreMdFiles(
   loreDir: string,
 ): Promise<Array<{ relativePath: string; absolutePath: string }>> {
+  const files: Array<{ relativePath: string; absolutePath: string }> = [];
+
+  // Include top-level .md files
+  const topEntries = await fs.promises.readdir(loreDir, { withFileTypes: true });
+  for (const entry of topEntries) {
+    if (!entry.isFile()) continue;
+    const filename = entry.name;
+    if (!filename.endsWith('.md') || filename.endsWith('.prompt.md')) continue;
+    const absolutePath = path.join(loreDir, filename);
+    files.push({ relativePath: filename, absolutePath });
+  }
+
+  // Recurse into subdirectories
   const dirents = await fs.promises.readdir(loreDir, {
     withFileTypes: true,
     recursive: true,
   });
-
-  const files: Array<{ relativePath: string; absolutePath: string }> = [];
 
   for (const dirent of dirents) {
     if (!dirent.isFile()) continue;
@@ -184,6 +197,9 @@ async function walkLoreMdFiles(
       .relative(loreDir, absolutePath)
       .split(path.sep)
       .join('/');
+
+    // Skip if already added as a top-level file
+    if (files.some(f => f.absolutePath === absolutePath)) continue;
 
     files.push({ relativePath, absolutePath });
   }

@@ -289,15 +289,17 @@ describe('Detail page field display — P6', () => {
     );
   });
 
-  it('character detail: all top-level record keys appear in <pre> block (100 iterations)', async () => {
+  it('character detail: all top-level record keys appear in raw JSON (100 iterations)', async () => {
     (useParams as ReturnType<typeof vi.fn>).mockReturnValue({ id: 'char-test' });
     await fc.assert(
       fc.asyncProperty(flatRecordArb, async (record) => {
         global.fetch = mockDetailResponse(record);
         const { unmount } = render(<CharacterDetailPage />);
         await waitFor(() => { expect(screen.queryByText('Loading...')).not.toBeInTheDocument(); });
+        // Click the "Raw JSON" button to expand the collapsible section
+        fireEvent.click(screen.getByText('Raw JSON'));
+        await waitFor(() => { expect(document.querySelector('pre')).not.toBeNull(); });
         const pre = document.querySelector('pre');
-        expect(pre).not.toBeNull();
         const preText = pre!.textContent ?? '';
         for (const key of Object.keys(record)) { expect(preText).toContain(key); }
         unmount();

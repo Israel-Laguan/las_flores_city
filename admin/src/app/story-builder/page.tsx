@@ -69,6 +69,180 @@ const styles = {
 
 const stepLabels = ['Describe', 'Review & Refine', 'Stage', 'Migrate', 'Assets'];
 
+// JSON syntax highlighting colors
+const jsonStyles = {
+  key: { color: '#00ff00' },
+  string: { color: '#ffff00' },
+  number: { color: '#ff8800' },
+  boolean: { color: '#0088ff' },
+  null: { color: '#888888' },
+  bracket: { color: '#aaaaaa' },
+  colon: { color: '#aaaaaa' },
+  comma: { color: '#aaaaaa' },
+};
+
+// Format JSON with syntax highlighting
+function syntaxHighlightJSON(json: unknown): JSX.Element {
+  const stringified = JSON.stringify(json, null, 2);
+  
+  return (
+    <pre style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'monospace' }}>
+      {stringified.split('\n').map((line, i) => {
+        // Split line into tokens
+        const tokens: Array<{ text: string; style: React.CSSProperties }> = [];
+        let pos = 0;
+        
+        while (pos < line.length) {
+          const char = line[pos];
+          
+          // Skip whitespace (preserve it but don't highlight)
+          if (char === ' ' || char === '\t') {
+            tokens.push({ text: char, style: {} });
+            pos++;
+            continue;
+          }
+          
+          // Match keys (quoted strings before colons)
+          if (char === '"') {
+            const endQuote = line.indexOf('"', pos + 1);
+            if (endQuote !== -1) {
+              const text = line.substring(pos, endQuote + 1);
+              // Check if this is a key (followed by colon, possibly with spaces)
+              const afterQuote = line.substring(endQuote + 1);
+              const isKey = afterQuote.trim().startsWith(':');
+              const style = isKey ? jsonStyles.key : jsonStyles.string;
+              tokens.push({ text, style });
+              pos = endQuote + 1;
+              continue;
+            }
+          }
+          
+          // Match brackets
+          if (char === '{' || char === '}' || char === '[' || char === ']') {
+            tokens.push({ text: char, style: jsonStyles.bracket });
+            pos++;
+            continue;
+          }
+          
+          if (char === ':') {
+            tokens.push({ text: char, style: jsonStyles.colon });
+            pos++;
+            continue;
+          }
+          
+          if (char === ',') {
+            tokens.push({ text: char, style: jsonStyles.comma });
+            pos++;
+            continue;
+          }
+          
+          // Match numbers
+          if (/[0-9-]/.test(char)) {
+            const numMatch = line.substring(pos).match(/^[0-9eE+.-]+/);
+            if (numMatch) {
+              tokens.push({ text: numMatch[0], style: jsonStyles.number });
+              pos += numMatch[0].length;
+              continue;
+            }
+          }
+          
+          // Match booleans and null
+          if (/[a-z]/.test(char)) {
+            const wordMatch = line.substring(pos).match(/^[a-zA-Z_]+/);
+            if (wordMatch) {
+              const word = wordMatch[0];
+              let style = {};
+              if (word === 'true' || word === 'false') {
+                style = jsonStyles.boolean;
+              } else if (word === 'null') {
+                style = jsonStyles.null;
+              }
+              tokens.push({ text: word, style });
+              pos += word.length;
+              continue;
+            }
+          }
+          
+          // Default: any other character
+          tokens.push({ text: char, style: {} });
+          pos++;
+        }
+        
+        return (
+          <div key={i} style={{ display: 'block' }}>
+            {tokens.map((token, j) => (
+              <span key={j} style={token.style}>{token.text}</span>
+            ))}
+          </div>
+        );
+      })}
+    </pre>
+  );
+}
+
+// Collapsible JSON viewer component
+function JsonViewer({ data, label = 'JSON Data', defaultOpen = false }: { 
+  data: unknown; 
+  label?: string; 
+  defaultOpen?: boolean 
+}): JSX.Element {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [copied, setCopied] = useState(false);
+  
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  return (
+    <details style={{ marginTop: '0.5rem' }} open={isOpen}>
+      <summary 
+        style={{ 
+          color: '#00ff00', 
+          fontSize: '0.85rem', 
+          cursor: 'pointer',
+          padding: '0.25rem 0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(!isOpen);
+        }}
+      >
+        <span>{label}</span>
+        <span style={{ color: '#888', fontSize: '0.75rem' }}>
+          {isOpen ? '\u25B2' : '\u25BC'} {data && typeof data === 'object' && data !== null && Object.keys(data).length > 0 ? `(${Object.keys(data).length} items)` : ''}
+        </span>
+      </summary>
+      <div style={{ 
+        backgroundColor: '#0d0d1a', 
+        padding: '0.75rem', 
+        borderRadius: '5px',
+        marginTop: '0.25rem',
+        border: '1px solid #333'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.5rem' }}>
+          <button
+            style={{ 
+              ...styles.button, 
+              ...styles.secondaryButton,
+              fontSize: '0.75rem',
+              padding: '0.25rem 0.5rem'
+            }}
+            onClick={copyToClipboard}
+          >
+            {copied ? 'Copied!' : 'Copy JSON'}
+          </button>
+        </div>
+        {syntaxHighlightJSON(data)}
+      </div>
+    </details>
+  );
+}
+
 async function postJSON<T>(url: string, payload: unknown): Promise<T> {
   const res = await fetch(url, {
     method: 'POST',
@@ -588,6 +762,155 @@ export default function StoryBuilderPage() {
     );
   }
 
+  function extractFieldsFromYaml(yamlString: string): Record<string, string> {
+    const fields: Record<string, string> = {};
+    try {
+      // Simple parsing to extract top-level fields
+      const lines = yamlString.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#') && trimmed.includes(':')) {
+          const [key, ...valueParts] = trimmed.split(':');
+          const value = valueParts.join(':').trim();
+          const cleanKey = key.trim();
+          // Skip nested fields for simplicity
+          if (!cleanKey.startsWith(' ') && !cleanKey.startsWith('\t')) {
+            fields[cleanKey] = value || '(empty)';
+          }
+        }
+      }
+    } catch (e) {
+      // If parsing fails, return empty
+    }
+    return fields;
+  }
+
+  function getImageFromYaml(yamlString: string): string | null {
+    try {
+      const lines = yamlString.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          // Look for image_path or image fields
+          if (trimmed.match(/^(image_path|image|portrait|thumbnail)\s*:/i)) {
+            const match = trimmed.match(/:\s*(.+)/);
+            if (match) {
+              const path = match[1].trim().replace(/['"]/g, '');
+              if (path && !path.startsWith('data:')) {
+                return path;
+              }
+            }
+          }
+          // Look for asset_paths
+          if (trimmed.match(/^asset_paths\s*:/i)) {
+            // Parse the asset_paths section
+            let j = lines.indexOf(line) + 1;
+            while (j < lines.length) {
+              const nextLine = lines[j].trim();
+              if (nextLine && !nextLine.startsWith('#') && nextLine.startsWith(' ')) {
+                const assetMatch = nextLine.match(/^\s*(\w+)\s*:\s*(.+)/);
+                if (assetMatch) {
+                  const key = assetMatch[1];
+                  const value = assetMatch[2].trim().replace(/['"]/g, '');
+                  if (key.match(/image|portrait|avatar/i) && value) {
+                    return value;
+                  }
+                }
+              } else {
+                break;
+              }
+              j++;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // If parsing fails, return null
+    }
+    return null;
+  }
+
+  // Preview item component to handle state per item
+  function PreviewItem({ item, index }: { item: any; index: number }) {
+    const [imageError, setImageError] = useState(false);
+    const fields = extractFieldsFromYaml(item.yamlPreview);
+    const imagePath = getImageFromYaml(item.yamlPreview);
+    
+    return (
+      <div key={index} style={{ ...styles.card, marginBottom: '0.75rem' }}>
+        <div style={styles.cardHeader}>
+          <span style={styles.cardType}>{item.type}</span>
+          <span style={styles.cardAction}>
+            {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
+          </span>
+        </div>
+        
+        {/* Display key fields clearly */}
+        <div style={{ marginBottom: '0.5rem' }}>
+          {fields.name && (
+            <p style={{ color: '#00ff00', fontSize: '0.9rem', margin: '0.25rem 0' }}>
+              <strong>Name:</strong> {fields.name}
+            </p>
+          )}
+          {fields.description && (
+            <p style={{ color: '#aaa', fontSize: '0.85rem', margin: '0.25rem 0', maxHeight: '100px', overflow: 'auto' }}>
+              <strong>Description:</strong> {fields.description}
+            </p>
+          )}
+          {fields.slug && (
+            <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
+              <strong>Slug:</strong> {fields.slug}
+            </p>
+          )}
+          {fields.id && (
+            <p style={{ color: '#888', fontSize: '0.8rem', margin: '0.25rem 0' }}>
+              <strong>ID:</strong> {fields.id}
+            </p>
+          )}
+          
+          {/* Display image if available */}
+          {imagePath && !imageError && (
+            <div style={{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#0a0a14', borderRadius: '5px', border: '1px solid #333' }}>
+              <img
+                src={`/api/admin/asset?path=${encodeURIComponent(imagePath)}`}
+                alt="Preview"
+                style={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '200px', 
+                  borderRadius: '5px',
+                  objectFit: 'contain',
+                  backgroundColor: '#1a1a2e'
+                }}
+                onError={() => setImageError(true)}
+              />
+              <p style={{ fontSize: '0.7rem', color: '#666', marginTop: '0.25rem' }}>
+                {imagePath}
+              </p>
+            </div>
+          )}
+        </div>
+        
+        {/* Raw YAML in collapsible section */}
+        <details>
+          <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+            View YAML
+          </summary>
+          <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+            {item.yamlPreview}
+          </pre>
+        </details>
+        {item.existingYaml && (
+          <details>
+            <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
+            <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
+              {item.existingYaml}
+            </pre>
+          </details>
+        )}
+      </div>
+    );
+  }
+
   function renderPreviewFiles() {
     if (!previewData) return null;
     return (
@@ -596,28 +919,7 @@ export default function StoryBuilderPage() {
           Files Preview ({previewData.items.length} items)
         </h3>
         {previewData.items.map((item: any, i: number) => (
-          <div key={i} style={{ ...styles.card, marginBottom: '0.75rem' }}>
-            <div style={styles.cardHeader}>
-              <span style={styles.cardType}>{item.type}</span>
-              <span style={styles.cardAction}>
-                {item.isNew ? 'New' : 'Update'} &rarr; {item.filePath}
-              </span>
-            </div>
-            <details>
-              <summary style={{ color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>YAML Preview</summary>
-              <pre style={{ fontSize: '0.75rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-                {item.yamlPreview}
-              </pre>
-            </details>
-            {item.existingYaml && (
-              <details>
-                <summary style={{ color: '#ff6666', fontSize: '0.8rem', cursor: 'pointer' }}>Current File (will be overwritten)</summary>
-                <pre style={{ fontSize: '0.75rem', color: '#888', whiteSpace: 'pre-wrap', marginTop: '0.5rem', maxHeight: '200px', overflow: 'auto' }}>
-                  {item.existingYaml}
-                </pre>
-              </details>
-            )}
-          </div>
+          <PreviewItem key={i} item={item} index={i} />
         ))}
       </div>
     );
@@ -798,9 +1100,7 @@ export default function StoryBuilderPage() {
               <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', color: '#ff6666' }}>{migrationResult.error}</p>
             )}
             {migrationResult.migrationResult && (
-              <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>
-                {JSON.stringify(migrationResult.migrationResult, null, 2)}
-              </pre>
+              <JsonViewer data={migrationResult.migrationResult} label="Migration Details" defaultOpen={!migrationResult.success} />
             )}
           </div>
         )}
@@ -845,12 +1145,7 @@ export default function StoryBuilderPage() {
         )}
 
         {migrationResult.migrationResult && (
-          <div style={styles.subsection}>
-            <h3 style={{ color: '#00ff00', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Migration Details</h3>
-            <pre style={{ fontSize: '0.8rem', color: '#aaa', whiteSpace: 'pre-wrap' }}>
-              {JSON.stringify(migrationResult.migrationResult, null, 2)}
-            </pre>
-          </div>
+          <JsonViewer data={migrationResult.migrationResult} label="Full Migration Results" defaultOpen={false} />
         )}
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>

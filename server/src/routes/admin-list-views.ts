@@ -148,7 +148,7 @@ adminListViewsRouter.get('/scenes', makeListHandler({
     id,
     name,
     description,
-    district,
+    district_id AS "districtId",
     metadata->>'required_story_beat' AS "requiredStoryBeat",
     created_at AS "createdAt",
     updated_at AS "updatedAt"
@@ -257,7 +257,7 @@ adminListViewsRouter.get('/locations', makeListHandler({
     id,
     name,
     description,
-    district,
+    district_id AS "districtId",
     metadata->>'required_story_beat' AS "requiredStoryBeat",
     created_at AS "createdAt",
     updated_at AS "updatedAt"
