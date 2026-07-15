@@ -32,6 +32,7 @@ export function getPromptRoots(): string[] {
     path.resolve(cwd, 'content/locations'),
     path.resolve(cwd, 'content/scenes'),
     path.resolve(cwd, 'content/overlays'),
+    path.resolve(cwd, 'content/lore'),
     path.resolve(cwd, 'docs/lore/shared/assets'),
   ];
 }

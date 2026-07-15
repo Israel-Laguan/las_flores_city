@@ -16,7 +16,7 @@ import yaml from 'js-yaml';
 // ─── Configuration ────────────────────────────────────────────────────────────
 const SOURCE_ROOT = '/media/israel/DEEP_STORE/2024-10-15 flowers-from-the-red-soil - codex/characters';
 const TARGET_DIR = path.resolve('content/characters');
-const FLAG_FILE = path.resolve('docs/lore/conflicts/PENDING.md');
+const FLAG_FILE = path.resolve('content/lore/conflicts/PENDING.md');
 const DRY_RUN = process.argv.includes('--dry-run');
 
 // Known edge cases that need manual review

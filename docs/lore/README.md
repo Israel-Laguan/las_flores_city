@@ -1,68 +1,51 @@
-# Las Flores 2077 — Lore Bible
+# Las Flores 2077 — Lore Bible (Developer Reference)
 
-> Worldbuilding reference for the Las Flores 2077 universe.
-> This folder is the **source of truth** for narrative consistency.
-> Content here informs dialogue, mysteries, vault entries, and character design.
+> **Player-facing lore has moved to [`content/lore/`](../../content/lore/).**
+> This folder (`docs/lore/`) now contains only developer tools and workspace.
+> 
+> - `guides/` — Authoring guides & workflows
+> - `assets/` — Developer workspace (ui-concepts, scripts, registries, references, biometric, expressions, outfits)
+
+## 📚 Developer Guides
+
+For **creating new content** (lore, UI, assets), see:
+
+1. **[Lore Extraction Framework](guides/lore_extraction_framework.md)** – Extracted elements for lore, UI, and prompts
+2. **[Creative Mediums Guide](guides/creative_mediums_guide.md)** – Visual arts, literature, music applications
+3. **[Asset Generation Guide](guides/asset_generation_guide.md)** – Core principles and lore framework
+4. **[Templates](guides/templates.md)** – Copy-paste resources for quick creation
+5. **[Workflows](guides/workflows.md)** – Step-by-step processes for common tasks
+6. **[Prompt Library](guides/prompt_library.md)** – Image/video generation templates
+7. **[UI/UX System](guides/ui_ux_design_system.md)** – Visual identity and components
 
 ---
 
-## 📚 GUIDES & DOCUMENTATION
+## Where to Find Player-Facing Content
 
-For **creating new content** (lore, UI, assets), see the **[Guides](#-guides--documentation) section below**.
-
-### 🎯 Quick Start for Contributors
-1. **Read the [Lore Extraction Framework](guides/lore_extraction_framework.md)** – Extracted elements for lore, UI, and prompts
-2. **Explore [Creative Mediums Guide](guides/creative_mediums_guide.md)** – Visual arts, literature, music applications
-3. **Read the [Asset Generation Guide](guides/asset_generation_guide.md)** – Core principles and lore framework
-4. **Use the [Templates](guides/templates.md)** – Copy-paste resources for quick creation
-5. **Follow the [Workflows](guides/workflows.md)** – Step-by-step processes for common tasks
-6. **Reference the [Prompt Library](guides/prompt_library.md)** – Image/video generation templates
-7. **Design with the [UI/UX System](guides/ui_ux_design_system.md)** – Visual identity and components
-
----
-
-## Directory Structure
+All lore content now lives under **[`content/lore/`](../../content/lore/)**:
 
 ```
-docs/lore/
-├── guides/                 # Creation guides & workflows (NEW!)
-│   ├── asset_generation_guide.md  # Core principles & lore framework
-│   ├── ui_ux_design_system.md      # Visual identity & components
-│   ├── prompt_library.md           # Image/video generation templates
-│   ├── workflows.md                # Step-by-step processes
-│   ├── templates.md                # Copy-paste resources & cheat sheets
-│   ├── lore_extraction_framework.md # Extracted elements for lore/UI/prompts
-│   └── creative_mediums_guide.md   # Visual arts, literature, music guides
-│
-├── assets/                # Generated content (NEW!)
-│   └── prompts/            # Curated prompt collections
-│       ├── locations.txt   # Location-specific prompts
-│       ├── characters.txt  # Character portrait prompts
-│       └── scenes.txt      # Key story moment prompts
-│
-├── organizations/         # Power groups hub
-│   ├── companies/         # All companies (origin documented in each file)
-│   ├── families/          # Powerful family dynasties
-│   ├── movements/         # Global movements (e.g. humanity_first)
-│   ├── civil_society/     # Civil society & activist groups
-│   ├── criminal/          # Criminal organizations
-│   └── partnerships/      # Public-Private Partnerships (PPPs)
-├── media/                 # Information channels
-│   ├── press/             # Newspapers & magazines
-│   └── platforms/         # Social media (non-interactive, referenced in ads/lore)
-├── communities/           # Ethnic/cultural community profiles
-├── figures/               # Key individual profiles
-├── districts/             # City district profiles (11 districts)
-├── landmarks/             # Detailed landmark profiles by district
-├── stories/               # Narrative vignettes and character stories
-├── conflicts/             # Lore conflict tracking and resolution log
-├── geography.md           # Dimensions, elevation, travel distances
-├── climate.md             # Weather seasons and vegetation
-├── demography.md          # Population, ethnicity, socioeconomic data
-├── events/                # Major historical events
-├── transportation.md      # Metro, buses, streets, transit hubs
-├── timeline.md            # Historical timeline (2033–2077)
-└── city_overview.md       # City-wide overview
+content/lore/
+├── organizations/      # Companies, families, movements, civil society, criminal, partnerships
+├── media/              # Press & platforms
+├── communities/        # Ethnic/cultural community profiles
+├── events/             # Major historical events
+├── conflicts/          # Lore conflict tracking
+├── stories/            # Narrative vignettes
+├── districts/          # District profiles
+├── geography.md        # Dimensions, elevation, travel distances
+├── timeline.md         # Historical timeline (2033–2077)
+├── city_overview.md    # City-wide overview
+└── assets/             # Generated assets (ui-concepts, registries, biometric, etc.)
+```
+
+Per-entity game data (characters, scenes, locations, overlays, mysteries) lives in their respective `content/` directories:
+```
+content/characters/<slug>/    # Character YAML + lore + prompt + assets/
+content/locations/<slug>/     # Location YAML + lore + prompt + assets/
+content/scenes/<slug>/        # Scene YAML + lore + assets/
+content/overlays/<slug>/      # Overlay YAML + lore + assets/
+content/mysteries/<slug>/     # Mystery YAML + lore + assets/
 ```
 
 ---
@@ -179,7 +162,7 @@ Depending on the character's role, you must create files in the appropriate dire
 
 ### 1. The Lore Wiki: `docs/lore/figures/`
 If you are adding a person to the worldbuilding lore—whether they are a historical figure, a politician, a corporate executive, or a notable citizen—their profile goes here.
-- **Path:** `docs/lore/figures/<name>.md`
+- **Path:** `content/lore/figures/<name>.md`
 - **Purpose:** Deep lore reference, backstory, metadata, and cross-linking for writers and designers.
 - **Format:** Markdown file containing a tags block (e.g., `> Tags: #figure #faction`), overview, background, relationships, and legacy. 
 - **Rule:** Always use the `#figure` tag in the metadata block, never `#character`.
@@ -194,7 +177,7 @@ If the person is an **active NPC** that the player will interact with in the gam
 
 ### 3. The Dual-Track Character
 For major NPCs who are *both* deeply rooted in the lore and active in the game (e.g., Evelyn Ruthenberg, Dr. Wei Zhang, Ana Ramirez), you must create **all three files**:
-1. `docs/lore/figures/<name>.md` (For worldbuilding and linking)
+1. `content/lore/figures/<name>.md` (For worldbuilding and linking)
 2. `content/characters/char_<name>.yaml` (For the engine)
 3. `content/characters/char_<name>.md` (For the engine)
 
@@ -226,25 +209,25 @@ Use these tags when referencing lore in dialogue YAML or vault entries:
 Each character/figure lives in its own folder:
 
 ```
-docs/lore/figures/<name>/
+content/lore/figures/<name>/
   <name>.md          # lore / description
   <name>.prompt.md   # generated asset prompt
   assets/            # generated images, optional
 ```
 
-Example: `docs/lore/figures/aisha_al_sayed/aisha_al_sayed.md`
+Example: `content/lore/figures/aisha_al_sayed/aisha_al_sayed.md`
 
 ### Landmarks
 Each landmark lives inside its owning district, organized as:
 
 ```
-docs/lore/districts/<district>/landmarks/<name>/
+content/lore/districts/<district>/landmarks/<name>/
   <name>.md
   <name>.prompt.md
   assets/
 ```
 
-Example: `docs/lore/districts/city/landmarks/plaza_de_la_constitucion/plaza_de_la_constitucion.md`
+Example: `content/lore/districts/city/landmarks/plaza_de_la_constitucion/plaza_de_la_constitucion.md`
 
 Cross-district natural spaces (rivers, mountains, forests) are placed in the
 primary owning district with `adjacent_districts` noted in frontmatter.

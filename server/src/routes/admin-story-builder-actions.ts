@@ -226,3 +226,45 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
     res.status(500).json({ success: false, error: error.message || 'Failed to retry plan', timestamp: new Date().toISOString() });
   }
 });
+
+// POST /admin/story-builder/plans/:id/verify — Verify a migrated plan (stub — full impl in M05)
+adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await queryOLTP<{ plan_json: any; status: string }>(
+      'SELECT plan_json, status FROM content_plans WHERE id = $1',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    // Only allow verification of migrated plans
+    if (result.rows[0].status !== 'migrated') {
+      res.status(400).json({
+        success: false,
+        error: `Plan must be migrated before verification. Current status: ${result.rows[0].status}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Placeholder — full implementation in M05 PlanVerificationService
+    res.json({
+      success: true,
+      data: {
+        planId: id,
+        status: 'verified',
+        checks: [],
+        message: 'Verification stub — full implementation coming in M05',
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/verify error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to verify plan', timestamp: new Date().toISOString() });
+  }
+});

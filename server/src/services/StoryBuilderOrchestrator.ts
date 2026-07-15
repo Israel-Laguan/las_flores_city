@@ -395,6 +395,31 @@ export async function migrateStagedPlan(planId: string): Promise<MigrationResult
   }
 }
 
+/**
+ * Verify a migrated plan's cross-references.
+ * Stub — full implementation in M05 PlanVerificationService.
+ */
+export async function verifyPlan(planId: string): Promise<{ success: boolean; checks: string[]; error?: string }> {
+  try {
+    // Confirm the plan exists and is in 'migrated' status
+    const result = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [planId]
+    );
+    if (result.rows.length === 0) {
+      throw new Error(`Plan not found: ${planId}`);
+    }
+    if (result.rows[0].status !== 'migrated') {
+      throw new Error(`Plan must be migrated before verification. Current status: ${result.rows[0].status}`);
+    }
+
+    // Placeholder — full cross-reference checks in M05
+    return { success: true, checks: [] };
+  } catch (error: any) {
+    return { success: false, checks: [], error: error.message };
+  }
+}
+
 interface ValidationError {
   file?: string;
   message: string;
