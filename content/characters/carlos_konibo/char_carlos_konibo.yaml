@@ -1,0 +1,31 @@
+id: 463d6b83-62c0-4e37-ab09-8d3e804a5150
+name: Carlos Konibo
+title: Shipibo-Konibo Artisan and Cultural Entrepreneur
+description: |
+  Carlos Konibo is a proud Shipibo-Konibo artisan and entrepreneur in his late 30s. Born along Rio Las Flores, he learned traditional Shipibo art techniques from his community—mastering the intricate patterns, vibrant colors, and sacred geometry passed down through generations.
+
+  Witnessing globalization's impact on his people, Carlos developed a passion for sharing Shipibo heritage globally while preserving cultural integrity. He creates stunning textiles, pottery, and jewelry, selling through a cooperative to customers worldwide.
+
+  Currently in Central City negotiating with an international online store, Carlos seeks a partnership that could expand his business while ensuring fair compensation for artisans and protecting traditional craft integrity.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: culturally_proud_determined_entrepreneur
+  age: late 30s
+  gender: Male
+  ethnicity: Shipibo-Konibo
+  occupation: Artisan and Cultural Entrepreneur
+  physical_description: man in his late 30s with features reflecting his Shipibo-Konibo heritage, bearing the presence of someone deeply connected to his cultural roots
+  background: grew up along Rio Las Flores learning traditional Shipibo art techniques from his community, witnessed globalization's impact on indigenous ways of life, developed business to preserve and promote cultural heritage
+  residence: Central City (originally from Rio Las Flores region)
+  business: Shipibo Artesanias - sells textiles, pottery, and jewelry featuring traditional Shipibo designs through online cooperative
+  mannerisms: speaks with quiet pride about his heritage, carries himself with the dignity of someone representing his community, thoughtful and deliberate in business discussions
+  motivations: preserve Shipibo-Konibo cultural legacy, share indigenous art and traditions with global audience, provide sustainable income for his community, maintain integrity of traditional craft
+  fears: cultural appropriation or exploitation, unfair compensation for artisans, loss of traditional techniques and meanings in face of mass production, inability to meet demand while maintaining quality
+  goals: establish fair international partnership, expand market for Shipibo art while protecting cultural integrity, ensure artisans receive equitable compensation, pass down knowledge to next generation
+  challenges: navigating cultural differences in international business, ensuring fair compensation for fellow artisans, maintaining craft integrity amid increased demand, balancing tradition with modern market expectations
+  quote: I carry the spirit of the Shipibo-Konibo people in every piece I create. This partnership must honor our ancestors while building our future.
+lore_path: carlos_konibo.md
+asset_paths:
+  portrait: carlos_konibo__default.png

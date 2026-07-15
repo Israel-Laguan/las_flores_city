@@ -1,0 +1,14 @@
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567894
+name: Marco Torres
+title: Food Stall Manager
+description: Grew up in humble farming family, relocated to Playa de los Vientos, worked from dishwasher to food stall manager. Now manages a food stall at Playa de los Vientos, specializing in tacos and fish sandwiches. Rugged yet approachable with dark brown hair and deep brown eyes. Hardworking and dedicated, serious and reserved at first, takes pride in craft, prefers actions over words.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: hardworking_dedicated
+  organization: Playa de los Vientos Food Stall
+  district_affiliation: Playa de los Vientos
+lore_path: marco_torres.md
+asset_paths:
+  portrait: marco_torres__default.png

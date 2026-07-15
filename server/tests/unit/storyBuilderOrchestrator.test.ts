@@ -61,20 +61,20 @@ describe('StoryBuilderOrchestrator', () => {
       const result = await executePlan(plan);
 
       expect(result.success).toBe(true);
-      expect(result.createdFiles).toContain('characters/char_diego.yaml');
+      expect(result.createdFiles).toContain('characters/diego/char_diego.yaml');
 
       const content = await fs.readFile(
-        path.join(tmpDir, 'content', 'characters', 'char_diego.yaml'),
+        path.join(tmpDir, 'content', 'characters', 'diego', 'char_diego.yaml'),
         'utf-8'
       );
       expect(content).toContain('name: Diego');
     });
 
     it('should handle update action for existing files', async () => {
-      const scenesDir = path.join(tmpDir, 'content', 'scenes');
+      const scenesDir = path.join(tmpDir, 'content', 'scenes', 'central_plaza');
       await fs.mkdir(scenesDir, { recursive: true });
       await fs.writeFile(
-        path.join(scenesDir, 'central_plaza.yaml'),
+        path.join(scenesDir, 'scene_central_plaza.yaml'),
         'name: Central Plaza\ndescription: Old description\ndistrict: downtown\n',
         'utf-8'
       );
@@ -98,7 +98,7 @@ describe('StoryBuilderOrchestrator', () => {
 
       expect(result.success).toBe(true);
       const content = await fs.readFile(
-        path.join(scenesDir, 'central_plaza.yaml'),
+        path.join(scenesDir, 'scene_central_plaza.yaml'),
         'utf-8'
       );
       expect(content).toContain('Updated description');

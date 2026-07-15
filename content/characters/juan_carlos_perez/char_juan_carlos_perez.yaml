@@ -1,0 +1,28 @@
+id: d3e192f1-15ed-4bb8-988e-10c1d85a0eae
+name: Juan Carlos Pérez
+title: Community Organizer & Activist, Afro-Latino Rights Advocate
+description: |
+  Juan Carlos Pérez is a 45-year-old community organizer and activist born and raised in Old Las Flores. He has always been passionate about empowering his community, and after witnessing the marginalization of Afro-Latinos in politics and society, he became a vocal advocate for their rights.
+
+  His work with COFAVIC exposed him to the intersections of racial injustice, environmental degradation, and political corruption. He is a natural leader who inspires others through his charisma and tenacity, driven by a deep empathy for his fellow Afro-Latinos and marginalized communities.
+
+  He seeks to bridge the gap between Las Flores' diverse communities, fostering unity around shared goals of environmental restoration and social equity. He supports Yara Rossi's restoration efforts, seeing them as an opportunity to revitalize Old Las Flores and create jobs for its residents.
+metadata:
+  type: human
+  role: npc
+  faction: civil_society
+  personality: charismatic_tenacious
+  age: 45
+  gender: Male
+  ethnicity: Afro-Latino
+  occupation: Community Organizer & Activist, Afro-Latino Rights Advocate
+  background: born and raised in Old Las Flores, witnessed marginalization of Afro-Latinos in politics and society
+  residence: Old Las Flores
+  organization: COFAVIC
+  allies: progressive politicians, COFAVIC, Yara Rossi
+  mannerisms: speaks passionately and persuasively about the struggles of Afro-Latino communities, prefers direct action and grassroots organizing over political posturing, maintains strong sense of community spirit by hosting events and forums
+  motivations: give Afro-Latinos and marginalized communities a voice in Las Flores, bridge gaps between diverse communities around shared goals of environmental restoration and social equity
+  quote: It's time we have a voice in this city. Our community deserves representation, respect, and justice.
+lore_path: juan_carlos_perez.md
+asset_paths:
+  portrait: juan_carlos_perez__default.png

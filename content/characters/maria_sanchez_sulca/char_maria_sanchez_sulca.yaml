@@ -1,0 +1,12 @@
+id: c3000007-e29b-41d4-a716-446655440007
+name: Maria Sanchez Sulca
+title: Whistleblower in Exile
+description: A TPF secretary who discovered a massive bribery scheme involving Minera Estrella. After leaking documents to the press, she was exposed and fled to her parents home in the Andean forest.
+metadata:
+  type: human
+  role: npc
+  faction: civil_society
+  personality: courageous_truthseeker
+lore_path: maria_sanchez_sulca.md
+asset_paths:
+  portrait: maria_sanchez_sulca__default.png

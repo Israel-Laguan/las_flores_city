@@ -1,0 +1,12 @@
+id: eb347f5f-caf8-4ee9-bf7c-b1917777d567
+name: Dong van der Meer
+title: Leader of the Flowers Syndicate
+description: "The most controversial figure in the Van der Meer dynasty. While his family built a legitimate mining empire, Dong chose a different path — building the Flowers Syndicate into the most powerful criminal organization in Las Flores. His operations span drug trafficking, extortion, cybercrime, and illegal transport, with influence reaching into the Industrial Zone, Port District, and Far South smuggling routes. Under the Flowers Industries umbrella he now runs legitimate and illegitimate ventures side by side: mining rare earths beyond lithium, logistics, real estate, renewable energy, port infrastructure, and cybersecurity. A strategic, ruthless operator who thinks like a CEO and runs the Syndicate as a business, Dong has expanded his power to international levels — backing political candidates, manipulating strategic mineral markets, and consolidating control over the city's key transit routes. His health is declining from stress, alcohol, and an old shootout injury."
+metadata:
+  type: human
+  role: npc
+  faction: flowers_syndicate
+  personality: ruthless_strategist
+lore_path: dong_van_der_meer.md
+asset_paths:
+  portrait: dong_van_der_meer__default.png

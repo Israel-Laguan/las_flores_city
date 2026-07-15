@@ -75,10 +75,10 @@ function resolveContentDir(): string {
 /**
  * Generate placeholder lore/narrative markdown files for plan items.
  * Only creates files that don't already exist.
+ * Creates files in the per-entity folder (e.g. content/characters/<slug>/<slug>.md).
  */
 async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, fileSnapshots?: Map<string, string | null>): Promise<string[]> {
   const createdFiles: string[] = [];
-  const loreRoot = path.resolve(contentDir, '..', 'docs', 'lore');
 
   for (const item of items) {
     const pathsToCreate: Array<{ field: string; label: string }> = [
@@ -90,8 +90,12 @@ async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, f
       const relPath = item.fields[field];
       if (!relPath || typeof relPath !== 'string') continue;
 
-      const fullPath = path.resolve(loreRoot, relPath);
-      if (!fullPath.startsWith(loreRoot + path.sep) && fullPath !== loreRoot) {
+      // New per-folder layout: lore files are in the same directory as the YAML
+      const yamlDir = path.dirname(resolveFilePath(item));
+      const fullPath = path.join(contentDir, yamlDir, relPath);
+
+      // Security check: ensure the resolved path is within the content directory
+      if (!fullPath.startsWith(contentDir + path.sep) && fullPath !== contentDir) {
         console.warn(`[story-builder] Skipping unsafe path: ${relPath}`);
         continue;
       }
@@ -109,7 +113,7 @@ async function generateLoreStubs(items: ContentPlanItem[], contentDir: string, f
         fileSnapshots.set(fullPath, null);
       }
 
-      createdFiles.push(relPath);
+      createdFiles.push(`${yamlDir}/${relPath}`);
     }
   }
 

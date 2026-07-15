@@ -1,0 +1,21 @@
+id: 07d24da3-f0fd-4fab-a0c3-87e859fe415f
+name: Kun Zhang
+title: Retired Textile Factory Supervisor, Chinese Community Elder
+description: |
+  Kun Zhang, 75, Chinese immigrant and retired textile factory supervisor. Arrived young, rose to leadership over 30 years, now retired with pension. Unofficial liaison between Chinese officials and local business owners. Wise elder in Las Flores Chinese community, preserving traditions while mentoring family and younger residents.
+metadata:
+  type: human
+  role: npc
+  faction: chinese_community
+  personality: wise_elder_cautious_traditional
+  age: 75
+  gender: Male
+  ethnicity: Chinese
+  occupation: Retired Textile Factory Supervisor
+  background: first generation immigrant, rose through factory ranks, unofficial diplomatic liaison
+  mannerisms: cautious sharer, keeps thoughts close, gardens, mentors family
+  quote: A tree with strong roots can weather any storm.
+  methods: community mentoring, cultural preservation, discreet diplomacy
+lore_path: kun_zhang.md
+asset_paths:
+  portrait: kun_zhang__default.png

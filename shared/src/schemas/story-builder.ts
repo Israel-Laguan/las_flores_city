@@ -7,7 +7,7 @@ const contentType = ContentTypeSchema;
 export const AssetNeedSchema = z.object({
   promptType: z.string(),        // 'portrait' | 'background' | 'biometric' | etc.
   targetField: z.string(),       // e.g. "portrait_urls[0].url"
-  status: z.enum(['pending', 'generated', 'assigned']).default('pending'),
+  status: z.enum(['pending', 'drafted', 'chosen', 'published', 'assigned', 'failed']).default('pending'),
 });
 
 export const ContentPlanItemSchema = z.object({
@@ -34,7 +34,7 @@ export const ContentPlanSchema = z.object({
   description: z.string(),
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),
-  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'failed']).default('draft'),
+  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed']).default('draft'),
 });
 
 export const FeedbackLogEntrySchema = z.object({

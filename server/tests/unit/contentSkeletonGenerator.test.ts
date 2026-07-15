@@ -177,8 +177,8 @@ describe('ContentSkeletonGenerator', () => {
       });
       const result = generateYaml(item);
       expect(result).toContain('asset_paths:');
-      expect(result).toContain('portrait: characters/diego/portrait.png');
-      expect(result).toContain('biometric: characters/diego/biometric.png');
+      expect(result).toContain('portrait: diego__default.png');
+      expect(result).toContain('biometric: diego__default.png');
     });
 
     it('should generate asset_paths for scene', () => {
@@ -190,7 +190,7 @@ describe('ContentSkeletonGenerator', () => {
       });
       const result = generateYaml(item);
       expect(result).toContain('asset_paths:');
-      expect(result).toContain('background: scenes/central_plaza/background.jpg');
+      expect(result).toContain('background: central_plaza__default.png');
     });
 
     it('should generate asset_paths for location', () => {
@@ -202,8 +202,8 @@ describe('ContentSkeletonGenerator', () => {
       });
       const result = generateYaml(item);
       expect(result).toContain('asset_paths:');
-      expect(result).toContain('image: locations/plaza/image.jpg');
-      expect(result).toContain('background: locations/plaza/background.jpg');
+      expect(result).toContain('image: plaza__default.png');
+      expect(result).toContain('background: plaza__default.png');
     });
 
     it('should generate asset_paths for overlay', () => {
@@ -215,69 +215,69 @@ describe('ContentSkeletonGenerator', () => {
       });
       const result = generateYaml(item);
       expect(result).toContain('asset_paths:');
-      expect(result).toContain('background: overlays/diego_overlay/background.jpg');
+      expect(result).toContain('background: diego_overlay__default.png');
     });
   });
 
   describe('resolveFilePath', () => {
     it('should resolve character file path with char_ prefix', () => {
       const item = createItem({ type: 'character', slug: 'diego' });
-      expect(resolveFilePath(item)).toBe('characters/char_diego.yaml');
+      expect(resolveFilePath(item)).toBe('characters/diego/char_diego.yaml');
     });
 
-    it('should resolve dialogue file path without prefix', () => {
+    it('should resolve dialogue file path with dialogue_ prefix', () => {
       const item = createItem({ type: 'dialogue', slug: 'welcome' });
-      expect(resolveFilePath(item)).toBe('dialogues/welcome.yaml');
+      expect(resolveFilePath(item)).toBe('dialogues/welcome/dialogue_welcome.yaml');
     });
 
-    it('should resolve scene file path', () => {
+    it('should resolve scene file path with scene_ prefix', () => {
       const item = createItem({ type: 'scene', slug: 'central_plaza' });
-      expect(resolveFilePath(item)).toBe('scenes/central_plaza.yaml');
+      expect(resolveFilePath(item)).toBe('scenes/central_plaza/scene_central_plaza.yaml');
     });
 
-    it('should resolve overlay file path', () => {
+    it('should resolve overlay file path with overlay_ prefix', () => {
       const item = createItem({ type: 'overlay', slug: 'diego_overlay' });
-      expect(resolveFilePath(item)).toBe('overlays/diego_overlay.yaml');
+      expect(resolveFilePath(item)).toBe('overlays/diego_overlay/overlay_diego_overlay.yaml');
     });
 
-    it('should resolve mission file path', () => {
+    it('should resolve mission file path with mission_ prefix', () => {
       const item = createItem({ type: 'mission', slug: 'find_artifact' });
-      expect(resolveFilePath(item)).toBe('missions/find_artifact.yaml');
+      expect(resolveFilePath(item)).toBe('missions/find_artifact/mission_find_artifact.yaml');
     });
 
     it('should resolve story file path', () => {
       const item = createItem({ type: 'story', slug: 'main_quest' });
-      expect(resolveFilePath(item)).toBe('stories/main_quest.yaml');
+      expect(resolveFilePath(item)).toBe('stories/main_quest/main_quest.yaml');
     });
 
     it('should resolve shop_item file path', () => {
       const item = createItem({ type: 'shop_item', slug: 'health_potion' });
-      expect(resolveFilePath(item)).toBe('shop/health_potion.yaml');
+      expect(resolveFilePath(item)).toBe('shop/health_potion/health_potion.yaml');
     });
 
-    it('should resolve location file path', () => {
+    it('should resolve location file path with location_ prefix', () => {
       const item = createItem({ type: 'location', slug: 'plaza' });
-      expect(resolveFilePath(item)).toBe('locations/plaza.yaml');
+      expect(resolveFilePath(item)).toBe('locations/plaza/location_plaza.yaml');
     });
 
     it('should resolve map_tile file path', () => {
       const item = createItem({ type: 'map_tile', slug: 'tile_0_0' });
-      expect(resolveFilePath(item)).toBe('maps/tile_0_0.yaml');
+      expect(resolveFilePath(item)).toBe('maps/tile_0_0/tile_0_0.yaml');
     });
 
     it('should resolve story_beat file path', () => {
       const item = createItem({ type: 'story_beat', slug: 'city_arrival' });
-      expect(resolveFilePath(item)).toBe('story_beats/city_arrival.yaml');
+      expect(resolveFilePath(item)).toBe('story_beats/city_arrival/city_arrival.yaml');
     });
 
     it('should resolve gig file path', () => {
       const item = createItem({ type: 'gig', slug: 'delivery_job' });
-      expect(resolveFilePath(item)).toBe('gigs/delivery_job.yaml');
+      expect(resolveFilePath(item)).toBe('gigs/delivery_job/delivery_job.yaml');
     });
 
     it('should resolve vault file path', () => {
       const item = createItem({ type: 'vault', slug: 'ancient_key' });
-      expect(resolveFilePath(item)).toBe('vault/ancient_key.yaml');
+      expect(resolveFilePath(item)).toBe('vault/ancient_key/ancient_key.yaml');
     });
   });
 });

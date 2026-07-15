@@ -23,11 +23,11 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
         faction: item.fields.metadata?.faction || 'TODO: Add faction',
         personality: item.fields.metadata?.personality || 'TODO: Add personality',
       },
-      lore_path: `figures/${slug}/${slug}.md`,
-      narrative_path: `characters/char_${slug}.md`,
+      lore_path: `${slug}.md`,
+      narrative_path: `${slug}.md`,
       asset_paths: {
-        portrait: `characters/${slug}/portrait.png`,
-        biometric: `characters/${slug}/biometric.png`,
+        portrait: `${slug}__default.png`,
+        biometric: `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
@@ -59,7 +59,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
           is_end: true,
         },
       },
-      lore_path: `figures/${slug}/${slug}.md`,
+      lore_path: `${slug}.md`,
     }, YAML_OPTIONS);
   },
 
@@ -74,9 +74,9 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       district_subzone: item.fields.district_subzone || item.fields.district || 'TODO: Add district subzone',
       mood: item.fields.mood || 'TODO: Add mood',
       available_dialogues: [],
-      lore_path: `landmarks/${slug}.md`,
+      lore_path: `${slug}.md`,
       asset_paths: {
-        background: `scenes/${slug}/background.jpg`,
+        background: `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
@@ -89,9 +89,9 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       description: item.fields.description || 'TODO: Add description',
       target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
       modifications: [],
-      lore_path: `stories/${slug}.md`,
+      lore_path: `${slug}.md`,
       asset_paths: {
-        background: `overlays/${slug}/background.jpg`,
+        background: `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
@@ -103,7 +103,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       title: item.name,
       description: item.fields.description || 'TODO: Add description',
       status: 'ACTIVE',
-      lore_path: `stories/${slug}.md`,
+      lore_path: `${slug}.md`,
     }, YAML_OPTIONS);
   },
 
@@ -135,10 +135,10 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       daytime: item.fields.daytime || 'TODO: Add daytime description',
       nightlife: item.fields.nightlife || 'TODO: Add nightlife description',
       important_places: item.fields.important_places || [],
-      lore_path: `landmarks/${slug}.md`,
+      lore_path: `${slug}.md`,
       asset_paths: {
-        image: `locations/${slug}/image.jpg`,
-        background: `locations/${slug}/background.jpg`,
+        image: `${slug}__default.png`,
+        background: `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
@@ -202,6 +202,21 @@ export function resolveFilePath(item: ContentPlanItem): string {
   const dir = dirMap[item.type];
   if (!dir) throw new Error(`Cannot resolve directory for type: ${item.type}`);
 
-  const prefix = item.type === 'character' ? 'char_' : '';
-  return `${dir}/${prefix}${item.slug}.yaml`;
+  // Per-folder layout: content/<type>/<slug>/<prefix><slug>.yaml
+  const prefixMap: Record<ContentType, string> = {
+    character: 'char_',
+    scene: 'scene_',
+    location: 'location_',
+    overlay: 'overlay_',
+    mission: 'mission_',
+    dialogue: 'dialogue_',
+    story: '',
+    story_beat: '',
+    shop_item: '',
+    map_tile: '',
+    gig: '',
+    vault: '',
+  };
+  const prefix = prefixMap[item.type] || '';
+  return `${dir}/${item.slug}/${prefix}${item.slug}.yaml`;
 }

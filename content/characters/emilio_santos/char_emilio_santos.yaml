@@ -1,0 +1,12 @@
+id: c3000008-e29b-41d4-a716-446655440008
+name: Emilio Santos
+title: Disgraced Politician
+description: Born into a prominent Pacific District family, Emilio rose through politics only to fall into smuggling, gang threats, and bribery. Now lives alone in his beach house, reflecting on his ruined career.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: fallen_ambitious
+lore_path: emilio_santos.md
+asset_paths:
+  portrait: emilio_santos__default.png

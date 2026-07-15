@@ -1,0 +1,24 @@
+id: df2cde6a-f29c-40cd-bf38-b8661fc967ee
+name: Lucia Torres
+title: Airport Stand Vendor, Seller of Local Crafts and Andean Products
+description: |
+  Lucia Torres, 28, from Camino Verde neighborhood of Las Flores. Grew up in family that operated small shop, learning values of dedication and customer service. Runs stand at Aeropuerto Internacional de Las Flores selling local crafts, snacks, and traditional Andean products including handmade textiles, artisanal cheeses, and souvenirs. Emphasizes quality/authenticity, sharing cultural stories behind each product. Popular with locals/tourists for genuine representation of Las Flores heritage. Warm, optimistic, humorous presence in airport environment. Hardworking spirit of Camino Verde reflected in her business approach.
+metadata:
+  type: human
+  role: npc
+  faction: civilian
+  personality: friendly_adaptable_optimistic
+  age: 28
+  gender: Female
+  ethnicity: Latina
+  occupation: Airport Stand Vendor
+  background: grew up in Camino Verde neighborhood, family operated small local shop, learned hard work and entrepreneurship
+  residence: Camino Verde neighborhood, Las Flores
+  business: stand at Aeropuerto Internacional de Las Flores
+  mannerisms: friendly greeting to customers, shares stories about products and local culture, infectious optimism
+  motivations: create better life through honest entrepreneurship, share authentic culture, build successful business
+  quote: Every product has a story, and every story connects us to our community.
+  methods: quality/authenticity emphasis, cultural storytelling, warm customer relationships, continuous innovation
+lore_path: lucia_torres.md
+asset_paths:
+  portrait: lucia_torres__default.png

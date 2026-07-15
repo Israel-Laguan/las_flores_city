@@ -1,0 +1,12 @@
+id: c3000018-e29b-41d4-a716-446655440018
+name: Yang Chen
+title: PR Strategist, CLM
+description: CLM's master storyteller who framed the Las Flores partnership as a symbiotic dance of progress. Retired to Old Las Flores where he was dismissed as eccentric, only to leave his children a hidden fortune when he died in 2069.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: quiet_brilliant
+lore_path: yang_chen.md
+asset_paths:
+  portrait: yang_chen__default.png

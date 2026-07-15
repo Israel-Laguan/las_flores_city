@@ -1,0 +1,12 @@
+id: c1bd0891-0add-4bc9-8b6b-637fc508eae4
+name: Martín López
+title: 55-year-old Veteran Journalist & Investigative Reporter at El Diario de Las Flores
+description: 55-year-old veteran journalist and investigative reporter at El Diario de Las Flores. Began as local newspaper reporter. Tenacious truth pursuit uncovered corruption and organized crime. Despite threats from powerful figures, continued work, earning most respected journalist reputation. Unyielding truth commitment drives him to pursue difficult stories regardless of risks. Keen analytical mind connects events, exposes hidden corruption.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: investigative_journalist
+lore_path: martin_lopez.md
+asset_paths:
+  portrait: martin_lopez__default.png

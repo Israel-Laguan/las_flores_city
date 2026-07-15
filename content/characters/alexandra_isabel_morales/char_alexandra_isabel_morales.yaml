@@ -1,0 +1,12 @@
+id: 190961a1-a82f-4b5e-8cb8-7fd7f49a36a6
+name: Alexandra Isabel Morales
+title: Las Flores Resident
+description: A 28-year-old language teacher who specializes in English and Chinese in San Pedro de los Pescadores. Originally from Old Las Flores, Izzy has always been captivated by the idea of a sophisticated lifestyle often associated with the bustling city. Despite her humble beginnings, she has worked hard to establish herself as an engaging and trendy educator. Appearance Izzy carries herself with a polished demeanor that reflects her desire to be perceived as a classy city girl.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: passionate_advocate
+lore_path: alexandra_isabel_morales.md
+asset_paths:
+  portrait: alexandra_isabel_morales__default.png

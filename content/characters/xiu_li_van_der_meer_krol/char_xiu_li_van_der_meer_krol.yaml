@@ -1,0 +1,12 @@
+id: c1000015-e29b-41d4-a716-446655440015
+name: Xiu Li van der Meer Krol
+title: Councilwoman, Van der Meer Mining Operations
+description: Mixed-heritage politician and mining executive in her mid-40s. Studied geology and business, rising through the family mining company to head of operations. In 2075, she ran for and won a seat on the local council, championing gender equality, education access, and workers' rights. She balances political career with mining responsibilities.
+metadata:
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: determined_pragmatic
+lore_path: xiu_li_van_der_meer_krol.md
+asset_paths:
+  portrait: xiu_li_van_der_meer_krol__default.png

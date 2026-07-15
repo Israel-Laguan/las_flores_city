@@ -1,0 +1,13 @@
+id: c3000019-e29b-41d4-a716-446655440019
+name: Mauro (Kusi)
+title: Bus Driver, La Diabla
+description: A Quechua elder who lost his mining job during the Chinese expansion and became a bus driver. After accidentally striking a child with his bus, he turned down the music permanently and became the most vigilant driver in Old Las Flores.
+metadata:
+  type: human
+  role: npc
+  faction: indigenous
+  personality: redeemed_guilty
+  lore_doc: organizations/quechua.md
+lore_path: mauro.md
+asset_paths:
+  portrait: mauro__default.png

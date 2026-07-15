@@ -1,0 +1,33 @@
+id: 3127252b-bf23-3c09-fb9f-07f8c6a8d3ef
+type: location
+name: Far South
+color: null
+aliases:
+  - border
+  - desert
+tags:
+  - District
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The southern desert region is arid and sparsely populated, with unique geological formations and limited vegetation. It serves as a natural border with the unnamed country to the south. The Far South presents a stark contrast to the fertile river valley to the north, with elevation rising to 100–200 meters providing a plateau-like expanse that gradually descends toward the southern border.
+daytime: |
+  During daylight hours, the desert landscape reveals its stark beauty with unique rock formations and sparse vegetation adapted to dry conditions. The Río de las Flores cuts through the arid terrain, creating a narrow ribbon of life that sustains the fishing community of San Pedro de los Pescadores. Police patrols monitor the river and known smuggling routes, while indigenous community members tend to their small agricultural plots and traditional activities.
+nightlife: |
+  Night in the Far South brings a different character as the desert cools significantly. The reduced visibility and vast emptiness create both opportunity and danger — smugglers may use the cover of darkness to move illicit goods, while law enforcement maintains vigilance at the naval port and helicopter airport. The close-knit community of San Pedro de los Pescadores keeps to their homes, ever watchful of the tensions that can emerge after dark.
+important_places:
+  - name: San Pedro de los Pescadores
+    description: Primary fishing village settlement relying on river resources and agriculture, featuring rustic buildings and close-knit community bonds.
+  - name: Indigenous Desert Community
+    description: Small indigenous settlement practicing traditional survival skills and cultivating cactus fruit and resilient herbs in the harsh desert.
+  - name: Police Naval Port
+    description: Small river port with patrol boats monitoring for smuggling and maintaining order in the remote border area.
+  - name: Police Helicopter Airport
+    description: Modest facility enabling rapid deployment to isolated areas for emergencies and conflicts throughout the Far South.
+  - name: Smuggling Routes
+    description: Hidden paths used by smugglers to transport illicit goods across the international border, creating ongoing tension with authorities.
+conclusion: |
+  The Far South stands as a unique frontier where traditional desert survival, peaceful fishing communities, and the shadowy world of smuggling intersect. Its remote location and border position make it both a place of cultural preservation and ongoing conflict, embodying the complex realities of life on the edge of Las Flores.
+asset_paths:
+  image: far_south__default.png

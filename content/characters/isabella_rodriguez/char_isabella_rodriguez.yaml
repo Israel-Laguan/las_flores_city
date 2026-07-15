@@ -1,0 +1,33 @@
+id: a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+name: Isabella Rodriguez
+title: Humanity First Community Organizer and Environmental Activist
+description: |
+  Isabella "Izzy" Rodriguez is a 23-year-old environmental activist and community organizer born in Las Flores' City District. Completing her final year at Universidad Nacional in Environmental Science and Sustainable Development, she leads the university's Humanity First chapter and has interned with local conservation organizations.
+
+  As a key Humanity First organizer in the City District, Izzy spearheads initiatives on environmental sustainability, social justice, and community well-being. She educates through workshops on sustainable living and advocates for equitable policies. She balances academic demands with activism, navigates bureaucratic resistance with persistence, and wrestles with self-doubt while forging her own path beyond her parents' legacy.
+
+  She plans to graduate with distinction, launch a community garden in her neighborhood, and build a career in sustainable development—driven by the belief that persistent, collective action creates meaningful change.
+metadata:
+  type: human
+  role: npc
+  faction: humanity_first
+  personality: passionate_inquisitive_empathetic_resilient
+  age: 23
+  gender: Female
+  ethnicity: Latina
+  occupation: University Student and Community Organizer
+  physical_description: 5'6" athletic build with dark hair often tied back in a practical ponytail or bun, warm brown eyes, friendly open smile
+  style: casual and practical eco-friendly clothing with a Humanity First pin on backpack or jacket
+  background: born and raised in Las Flores City District, grew up in multicultural Industrial District neighborhood
+  education: final year at Universidad Nacional, Environmental Science and Sustainable Development, leads Humanity First university chapter
+  organization: Humanity First
+  residence: City District, Las Flores
+  mannerisms: speaks with genuine enthusiasm about sustainability and justice, wears Humanity First pin prominently, approachable and open in conversation
+  motivations: create sustainable inclusive communities, advance environmental justice, empower others through education and grassroots action
+  goals: graduate with distinction, launch community garden in her neighborhood, pursue career in sustainable development
+  challenges: balancing activism with academic workload, navigating bureaucratic resistance from officials and businesses, overcoming self-doubt and parental legacy pressure
+  allies: Humanity First mentors, university peers, local environmental organizations, tight-knit community friends
+  quote: Every act of kindness, every sustainable choice, every voice raised in the name of justice—they all add up. It's not about being perfect; it's about being persistent. That's how we create a better world, one step at a time.
+lore_path: isabella_rodriguez.md
+asset_paths:
+  portrait: isabella_rodriguez__default.png

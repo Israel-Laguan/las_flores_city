@@ -1,0 +1,22 @@
+id: c1000005-e29b-41d4-a716-44665544000e
+name: Lina Kim
+title: Esteemed Investigative Journalist, Mentor at La Prensa
+description: |
+  Lina Kim, 52, Korean-born investigative journalist at La Prensa. Known for 2053 Great Lithium Leak exposé. Meticulous reporting combined with empathy for marginalized voices. Now mentors young journalists. Driven by truth and justice, uses rigorous investigation and storytelling to evoke change.
+metadata:
+  type: human
+  role: npc
+  faction: media
+  personality: tenacious_fearless_intelligent_compassionate
+  age: 52
+  gender: Female
+  ethnicity: Korean
+  nationality: National Country
+  occupation: Investigative Journalist / Mentor
+  background: born to Korean immigrants, multicultural upbringing, passion for truth
+  mannerisms: neat professional appearance, glasses, scholarly look
+  motivations: uncover truth, seek justice, mentor next generation
+  quote: The truth may be inconvenient, but it is never optional.
+lore_path: lina_kim.md
+asset_paths:
+  portrait: lina_kim__default.png
