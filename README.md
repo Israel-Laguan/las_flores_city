@@ -180,6 +180,10 @@ npm run lint --workspace=server
 npm run lint --workspace=client
 ```
 
+### Dependencies
+
+All npm dependencies are pinned with `~` (patch-only ranges) for reproducible builds. Dependabot groups patch/minor updates into weekly PRs. See **[docs/DEPENDENCIES.md](docs/DEPENDENCIES.md)** for the full policy, current pinned versions, and known issues.
+
 ### UI Style System
 
 The project shares design tokens, theme variables, and reusable component classes through the `@las-flores/ui` workspace. Both `admin` and the game `client` consume it. See **[docs/UI_STYLE_SYSTEM.md](docs/UI_STYLE_SYSTEM.md)** for the contract, the available classes, the theme variable namespaces, and verification commands.

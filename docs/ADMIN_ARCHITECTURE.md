@@ -464,6 +464,10 @@ These are tracked in `docs/UI_STYLE_SYSTEM.md`; they are not blockers:
 
 The only known "real" gap is that **`/users` and `/settings` are stubs** (placeholders, not implemented). They are not on the active roadmap.
 
+### Dependency note
+
+`next@16.2.10` depends on `postcss@8.4.31` (< 8.5.10), which has a moderate XSS vuln (GHSA-qx2v-qp2m-jg93). This is waiting on a stable Next.js 16.3.x release — no action needed on our side. See `docs/DEPENDENCIES.md` for the full dependency policy.
+
 
 ## Verification commands
 
