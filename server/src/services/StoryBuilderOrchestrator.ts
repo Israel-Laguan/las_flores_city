@@ -14,6 +14,7 @@ import {
   applyLink,
   atomicWriteYaml,
 } from './StoryBuilderFileWriter.js';
+import { buildValidationErrors } from './StoryBuilderValidation.js';
 
 export interface ExecutionResult {
   success: boolean;
@@ -420,21 +421,5 @@ export async function verifyPlan(planId: string): Promise<{ success: boolean; ch
   }
 }
 
-interface ValidationError {
-  file?: string;
-  message: string;
-  severity: string;
-}
 
-function buildValidationErrors(
-  errors: ValidationError[],
-  depErrors: string[],
-): string[] {
-  return [
-    ...errors
-      .filter(e => e.severity === 'error')
-      .map(e => `${e.file ?? ''}: ${e.message}`),
-    ...depErrors,
-  ];
-}
 
