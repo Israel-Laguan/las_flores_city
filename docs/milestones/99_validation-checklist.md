@@ -90,7 +90,7 @@ Expected: 0 errors. Warnings are OK if they are pre-existing
 - [ ] The MinIO bucket has one object per published asset, with the
       original local filename (e.g. `<slug>__default.png`, or any file the user dropped in)
       — no `.dev`/`.staging` suffix in the object key
-- [ ] The DB `characters.portrait_url` column has the MinIO URL
+- [ ] The DB `characters.portrait_urls` JSONB has a `label:'dev'` entry with the MinIO URL
 - [ ] The YAML's `asset_paths.portrait` field still has the local filename
       (e.g. `<slug>__default.png`); it is not overwritten with a URL
 - [ ] The verification report is saved on the `content_plans` row
@@ -113,14 +113,15 @@ Expected: 0 errors. Warnings are OK if they are pre-existing
 - [ ] After approving a plan, MinIO has one object per published asset
       (with the local filename preserved as the object key, no `.dev`
       suffix)
-- [ ] After clicking "Promote to Staging", the DB column
-      `<field>_url_staging` is set to the same MinIO URL as dev
-      (cascade is in the column, not the key)
-- [ ] After clicking "Promote to Production", the DB column
-      `<field>_url_production` is set to the same MinIO URL
-- [ ] After clicking "Rollback from Staging", the
-      `<field>_url_staging` column is set to NULL
-- [ ] The promotion flow does NOT create new MinIO objects (no key copies)
+- [ ] After clicking "Promote to Staging", `portrait_urls` gains a
+      `label: 'staging'` entry (same MinIO URL as dev by default; cascade is
+      in the `label`, not the key)
+- [ ] After clicking "Promote to Production", `portrait_urls` gains a
+      `label: 'production'` entry
+- [ ] After clicking "Rollback from Staging", the `label: 'staging'` entry is
+      removed from `portrait_urls` (dev and production entries remain)
+- [ ] The promotion flow does NOT create new MinIO objects unless different
+      bytes are supplied (no key copies by default)
 
 ## After milestone 07 (client cascade)
 
@@ -195,19 +196,22 @@ cat content/characters/mateo_vargas/char_mateo_vargas.yaml
 # Expected:
 #   lore_path: mateo_vargas.md
 #   asset_paths:
-#     portrait: mateo_vargas.dev.png
+#     portrait: mateo_vargas__default.png   # local chosen file, unchanged
+#   portrait_urls:
+#     - url: http://minio:9000/las-flores/portrait/mateo_vargas__default.png
+#       label: dev                          # appended by M04
 
 # Check the local draft
 ls -la content/characters/mateo_vargas/assets/
-# Expected: mateo_vargas.dev.png (the chosen one)
+# Expected: mateo_vargas__default.png (the chosen one; local filename preserved)
 
 # Check MinIO (using the minio client or the admin UI /assets page)
-# Expected: las-flores/portrait/mateo_vargas.dev.png exists
+# Expected: las-flores/portrait/mateo_vargas__default.png exists (no suffix)
 
 # Check the DB
 psql -h localhost -U las_flores -d las_flores \
-  -c "SELECT name, portrait_url FROM characters WHERE name = 'Mateo Vargas';"
-# Expected: portrait_url is the dev URL
+  -c "SELECT name, portrait_urls FROM characters WHERE name = 'Mateo Vargas';"
+# Expected: portrait_urls has a label:'dev' entry with the MinIO URL
 ```
 
 ### Step 6: Promote
@@ -216,20 +220,21 @@ psql -h localhost -U las_flores -d las_flores \
 2. Find Mateo Vargas.
 3. Click "Promote to Staging".
 4. Click "Promote to Production".
-5. The three stage states are now all populated.
+5. `portrait_urls` now has `dev`, `staging`, and `production` entries.
 
 ### Step 7: Cascade in the client
 
 1. In a development build of the client, navigate to a scene that
    shows Mateo Vargas.
-2. The portrait uses the dev URL. The badge (if enabled) shows `[dev]`.
+2. The portrait uses the `dev` entry. The badge (if enabled) shows `[dev]`.
 3. In a production build (or with `import.meta.env.MODE='production'`),
-   the portrait uses the production URL.
+   the portrait uses the `production` entry.
 
 ### Step 8: Rollback
 
-1. In `/asset-promotion`, click "Rollback from Dev" on Mateo Vargas.
-2. The dev URL is gone from MinIO. The DB column is `NULL` for dev.
+1. In `/asset-promotion`, click "Rollback from Staging" on Mateo Vargas.
+2. The `label: 'staging'` entry is removed from `portrait_urls`. The dev and
+   production entries remain.
 3. The portrait in the client (dev build) falls back to staging, then
    production.
 

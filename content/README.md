@@ -47,7 +47,7 @@ asset_paths:
   portrait: <slug>__default.png    # local selected asset
 ```
 
-The DB column `<field>_url` holds the MinIO URL for the game client. Only the selected file is uploaded to MinIO.
+The chosen file is published to MinIO (object key = the local filename, no `.dev`/`.staging` suffix) and the resulting URL is stored in the `portrait_urls` JSONB array (on `characters`, and analogous arrays on `scenes` / `locations`) as an entry tagged `label: 'dev'`. Promotion to staging/production appends `label: 'staging'` / `label: 'production'` entries to the same array. The game client resolves the right URL per environment from these `label` entries. Only the selected file is uploaded to MinIO.
 
 ## Content Types
 

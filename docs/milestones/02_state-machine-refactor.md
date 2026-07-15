@@ -1,5 +1,8 @@
 # Milestone 02 — State machine refactor
 
+> **Status: IMPLEMENTED.** Migrations 049 + 050 applied. Zod schema updated.
+> `VALID_TRANSITIONS` guard in `AssetNeedsService.ts` matches this spec exactly.
+
 ## Goal
 
 Extend the `ContentPlan.status` and `AssetNeed.status` enums to model the full
@@ -19,12 +22,13 @@ After this milestone:
   - `verified` — cross-reference checks all pass.
   - `failed` — terminal failure at any step; the user must restart.
 
-- `AssetNeed.status` has 6 values:
+- `AssetNeed.status` has 6 values (in-memory, inside `plan_json` JSONB —
+  not a DB column with its own CHECK constraint):
   - `pending` — no local draft yet.
   - `drafted` — local PNG exists in `content/.../assets/<slug>__v<n>.png`
     (flat, no sub-folder), not in MinIO.
   - `chosen` — user selected this draft as the canonical one.
-  - `published` — chosen draft uploaded to MinIO with the `.dev.png` suffix.
+  - `published` — chosen draft uploaded to MinIO at the local filename (no suffix); a `label: 'dev'` entry is appended to `portrait_urls`.
   - `assigned` — published URL is wired into the YAML's `asset_paths.<field>`.
   - `failed` — generation or upload failed; user can retry.
 
@@ -73,7 +77,7 @@ ALTER TABLE content_plans ADD COLUMN IF NOT EXISTS verification_report JSONB DEF
 | `server/src/services/AssetNeedsService.ts` | Add status transition methods: `markDrafted()`, `markChosen()`, `markPublished()`, `markAssigned()`. Each method validates the prior state. |
 | `admin/src/app/story-builder/hooks/useStoryBuilderApi.ts` | Add a `verifyPlan(planId)` API call. |
 
-### Admin UI
+### Dashboard UI
 
 - `admin/src/app/story-builder/plans/page.tsx` — add a `verified` status color
   in the `STATUS_COLORS` map (currently has `proposed` as the fallback).
@@ -177,7 +181,7 @@ const VALID_PLAN_TRANSITIONS: Record<PlanStatus, PlanStatus[]> = {
 4. `npm run lint --workspace=server` → 0 errors.
 5. `npm run test --workspace=server` → all green, including the new state-machine tests.
 6. `npm run build --workspace=server` → passes.
-7. The admin `/story-builder/plans` page renders the `verified` status badge
+7. The dashboard `/story-builder/plans` page renders the `verified` status badge
    with the new color.
 
 ## Rollback plan

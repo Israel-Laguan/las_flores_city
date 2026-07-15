@@ -1,5 +1,10 @@
 # Milestone 01 — Colocate lore into `content/`
 
+> **Status: IMPLEMENTED.** File moves done via `scripts/move-lore-to-content.sh`.
+> 199 character folders, 81 location folders, 18 scene folders, 2 overlay
+> folders, 1 mission folder. `docs/lore/figures/` deleted. Remaining work:
+> scripts reorganization (T4) and docs updates (T6) still pending.
+
 ## Goal
 
 Move every per-entity lore file from `docs/lore/figures/<slug>/` and
