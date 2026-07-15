@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import type { ContentPlan } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import { resolveFilePath } from './ContentSkeletonGenerator.js';
 
 export interface LoreGenerationResult {
   createdFiles: string[];
@@ -11,6 +12,7 @@ export interface LoreGenerationResult {
 /**
  * Generates lore markdown files for plan items that have lore_path or narrative_path.
  * Only creates files that don't already exist (preserves user edits).
+ * Writes to per-entity folders: content/<type>s/<slug>/<slug>.md
  */
 export async function generateForPlan(
   plan: ContentPlan,
@@ -19,7 +21,7 @@ export async function generateForPlan(
 ): Promise<LoreGenerationResult> {
   const createdFiles: string[] = [];
   const errors: string[] = [];
-  const loreRoot = path.resolve(process.cwd(), 'docs', 'lore');
+  const contentDir = path.resolve(process.cwd(), 'content');
 
   for (const item of plan.items) {
     const pathsToCreate: Array<{ field: string; label: string }> = [
@@ -31,10 +33,12 @@ export async function generateForPlan(
       const relPath = item.fields[field];
       if (!relPath || typeof relPath !== 'string') continue;
 
-      const fullPath = path.resolve(process.cwd(), relPath);
+      // Per-folder layout: lore files are in the same directory as the YAML
+      const yamlDir = path.dirname(resolveFilePath(item));
+      const fullPath = path.join(contentDir, yamlDir, relPath);
 
-      // Path safety check - must be within loreRoot
-      if (!fullPath.startsWith(loreRoot + path.sep) && fullPath !== loreRoot) {
+      // Path safety check - must be within contentDir
+      if (!fullPath.startsWith(contentDir + path.sep) && fullPath !== contentDir) {
         console.warn(`[lore-generator] Skipping unsafe path: ${relPath}`);
         continue;
       }
@@ -52,7 +56,7 @@ export async function generateForPlan(
         const dir = path.dirname(fullPath);
         await fs.mkdir(dir, { recursive: true });
         await fs.writeFile(fullPath, loreContent, 'utf-8');
-        createdFiles.push(relPath);
+        createdFiles.push(`${yamlDir}/${relPath}`);
       } catch (err: any) {
         errors.push(`${label} for ${item.name}: ${err.message}`);
       }

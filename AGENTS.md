@@ -16,6 +16,7 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 
 - **Content uses per-folder layout**: Every entity (character, scene, location, overlay, mission) has its own folder under `content/<type>/<slug>/`. Each folder contains: `<prefix><slug>.yaml`, `<slug>.md` (lore), `<slug>.prompt.md` (image prompt), and `assets/` (flat directory with `<slug>__default.png` and other drafts). The `assets/` folder is flat — no sub-folders.
 - **YAML paths are relative to the YAML's directory**: `lore_path: <slug>.md`, `narrative_path: <slug>.md`, `asset_paths.portrait: <slug>__default.png`. The old `docs/lore/figures/<slug>/<slug>.md` paths are no longer used.
+- **Content layering contract**: `content/` = dev-mode file database (data only) · `docs/lore/` = world-level research · `scripts/` = file-to-file tools (never touch DB) · `shared/` = schema contract · `server/` = sole mediator. Scripts produce files, not DB rows.
 - Content migration now recognizes `/mysteries/` as a content type: `server/src/content/migrate.ts:87` and `server/src/content/validate.ts:193`.
 - Dialogue overlays are stored with both `modifications` and `nodes`; `upsertDialogueOverlay()` writes both columns: `server/src/content/migrate.ts:148-178`.
 - The resolver reads `dialogue_overlays.nodes` for mystery overlays: `server/src/services/DialogueResolver.ts:146-160`.

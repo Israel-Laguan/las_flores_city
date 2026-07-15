@@ -13,8 +13,8 @@
  *   node generate-prompt.mjs --type portrait --batch docs/lore/figures/ --force
  *
  * Usage (registry-based):
- *   node generate-prompt.mjs --type tile --registry docs/lore/assets/registries/tiles.yaml --output-dir docs/lore/assets/tiles/
- *   node generate-prompt.mjs --type overlay --registry docs/lore/assets/registries/landmarks.yaml --output-dir docs/lore/assets/overlays/
+ *   node generate-prompt.mjs --type tile --registry scripts/asset-pipeline/registries/tiles.yaml --output-dir content/maps/assets/tiles/
+ *   node generate-prompt.mjs --type overlay --registry scripts/asset-pipeline/registries/landmarks.yaml --output-dir content/overlays/assets/overlays/
  *
  * Character / location sheets:
  *   node generate-prompt.mjs --type character-sheet --source content/characters/char_diego_huaman.yaml
@@ -139,7 +139,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     return `---
 name: ${title}
 type: tile
-source: docs/lore/assets/registries/tiles.yaml
+source: scripts/asset-pipeline/registries/tiles.yaml
 target: \`base_image_url\` in \`content/maps/map_*.yaml\`
 consumer: tile
 ---
@@ -148,7 +148,7 @@ consumer: tile
 
 [CONSUMER: tile]
 **Type:** tile
-**Source:** docs/lore/assets/registries/tiles.yaml
+**Source:** scripts/asset-pipeline/registries/tiles.yaml
 **Target field:** \`base_image_url\` in \`content/maps/map_*.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -364,7 +364,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 [CONSUMER: biometric]
 **Type:** biometric
 **Source:** content/characters/char_${slugify(name)}.yaml
-**Target:** docs/lore/assets/biometric/${slugify(name)}/
+**Target:** content/characters/${slugify(name)}/assets/
 **Pipeline stage:** draft → refine
 **Recommended tools:** NIM (draft), Flux/Seedance (refine)
 
@@ -451,7 +451,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 [CONSUMER: biometric]
 **Type:** expression
 **Source:** content/characters/char_${slugify(name)}.yaml
-**Target:** docs/lore/assets/expressions/${slugify(name)}/expression_strip.png
+**Target:** content/characters/${slugify(name)}/assets/expression_strip.png
 **Pipeline stage:** draft → refine
 **Recommended tools:** NIM (draft), Flux/Seedance (refine)
 **Reference:** ${face_base_ref || 'Use face base from biometric sheets for consistency'}
@@ -473,7 +473,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 [CONSUMER: phaser-sprite]
 **Type:** outfit-pose
 **Source:** content/characters/char_${slugify(name)}.yaml
-**Target:** docs/lore/assets/outfits/${slugify(name)}/
+**Target:** content/characters/${slugify(name)}/assets/
 **Pipeline stage:** draft → refine
 **Recommended tools:** NIM (draft), Flux/Seedance (refine)
 **Body reference:** ${body_ref || 'Use body sheet from biometric phase'}
@@ -501,7 +501,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 [CONSUMER: biometric]
 **Type:** character-sheet
 **Source:** content/characters/char_${slugify(name)}.yaml
-**Target:** docs/lore/figures/${slugify(name)}/
+**Target:** content/characters/${slugify(name)}/assets/
 **Pipeline stage:** reference
 **Recommended tools:** Use biometric sheets (face + body) + moveset poses below
 
@@ -515,7 +515,7 @@ Ethnicity/face base and expressions are defined there.
 ## 2. Body Reference (minimal / plain clothes)
 Use the 3-panel orthographic body sheet from the biometric phase
 (front / side / rear, minimal black gym clothes, A-pose).
-Body shape is defined in \`docs/lore/assets/registries/body_shapes.yaml\`.
+Body shape is defined in \`scripts/asset-pipeline/registries/body_shapes.yaml\`.
 
 ## 3. Moveset — ${labelStr}
 **Occupation:** ${occStr}
@@ -523,7 +523,7 @@ Body shape is defined in \`docs/lore/assets/registries/body_shapes.yaml\`.
 ${descStr}
 
 This character's unique movement vocabulary, distinct from generic NPCs.
-Resolved from \`docs/lore/assets/registries/movesets.yaml\` by occupation.
+Resolved from \`scripts/asset-pipeline/registries/movesets.yaml\` by occupation.
 
 ${poseLines}
 
@@ -552,7 +552,7 @@ ${poseLines}
 
 **Type:** location-map
 **Source:** content/locations/location_${slugify(name)}.yaml
-**Target:** docs/lore/landmarks/${slugify(name)}/${slugify(name)}.map.md
+**Target:** content/locations/${slugify(name)}/${slugify(name)}.map.md
 **Consumer:** phaser-navmesh (data doc, not an image prompt)
 
 ---
@@ -705,7 +705,7 @@ function extractCharacterMeta(filePath) {
 
 function resolveMoveset(occupation) {
   const occ = (occupation || '').toLowerCase();
-  const regDir = path.resolve('docs/lore/assets/registries');
+  const regDir = path.resolve('scripts/asset-pipeline/registries');
   const movesetsPath = path.join(regDir, 'movesets.yaml');
   const posesPath = path.join(regDir, 'poses.yaml');
   if (!fs.existsSync(movesetsPath) || !fs.existsSync(posesPath)) {

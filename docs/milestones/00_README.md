@@ -62,8 +62,14 @@ The current pipeline has **silent drift** in three places:
 3. **No way to roll back a bad image** — once a portrait is published to
    MinIO and wired into the YAML, replacing it requires a full manual
    re-publish. There's no staging environment for assets.
+4. **Dev-time scripts that bypass the server** — `scripts/import-drafts.mjs`
+   creates its own `pg.Pool` and MinIO client, duplicating
+   `server/src/routes/assets-import.ts`. `LoreGenerator.ts` and
+   `PromptFileGenerator.ts` still write to stale `docs/lore/` paths instead of
+   `content/`. The server's role as the sole mediator between `content/` and the
+   database is not enforced, so the content boundary is blurry.
 
-The milestones below fix all three, in order.
+The milestones below fix all four, in order.
 
 ---
 
@@ -121,6 +127,38 @@ object key. There is no `.dev`/`.staging` suffix on disk or in MinIO.
 The cascade lives in the DB columns (`<field>_url`,
 `<field>_url_staging`, `<field>_url_production`), not in filenames or
 object keys.
+
+### Content layering contract
+
+The three layers have strict ownership rules. `content/` is the single
+source of truth; the server is the sole mediator between `content/` and the
+runtime stores.
+
+```
+content/          ← dev-mode file database (data only: YAML + .md + .prompt.md + assets/)
+docs/lore/        ← world-level research (markdown only: timeline, geography, communities, ...)
+scripts/          ← dev-time file-to-file tools (produce content/ files, NEVER touch the DB)
+shared/           ← the contract (Zod schemas + types — define what content IS)
+server/           ← the sole mediator (content/ ↔ Postgres, admin ↔ content/)
+```
+
+Binding rules (these are the architecture the milestones implement):
+
+1. **The server is the sole mediator** between `content/` and Postgres / Redis /
+   MinIO. No script may create its own DB pool, Redis client, or MinIO client.
+2. **Scripts produce files, not DB rows.** Dev-time scripts in `scripts/` may
+   read and write files under `content/` and `docs/lore/`, but they must not
+   connect to the database or object storage directly. If a script needs DB
+   access, it calls a server endpoint instead.
+3. **Admin reads content through server endpoints only.** The admin UI never
+   touches `content/` directly — every read (tree, file, validate, migrate,
+   drafts) goes through an Express route under `server/src/routes/`.
+4. **`content/` contains data only.** No TypeScript, no scripts, no compiled
+   code. The schemas that define content shapes live in `shared/src/schemas/`.
+5. **`docs/lore/` is world-level research.** After Milestone 01 it contains only
+   timeline, geography, communities, governance, organizations, media, events,
+   and world-level district docs — no per-entity files, no scripts, no
+   registries.
 
 **MinIO naming** — the local filename is preserved as the object key.
 There is no `.dev`/`.staging` suffix on the MinIO key; the cascade lives
