@@ -12,6 +12,7 @@ const YAML_OPTIONS = { lineWidth: -1, noRefs: true };
 const TEMPLATES: Record<ContentType, TemplateFn> = {
   character: (item) => {
     const slug = sanitizeSlug(item.slug);
+    const userAssetPaths = (item.fields as any)?.asset_paths;
     return yaml.dump({
       id: item.id,
       name: item.name,
@@ -26,8 +27,8 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       lore_path: `${slug}.md`,
       narrative_path: `${slug}.md`,
       asset_paths: {
-        portrait: `${slug}__default.png`,
-        biometric: `${slug}__default.png`,
+        portrait: userAssetPaths?.portrait ?? `${slug}__default.png`,
+        biometric: userAssetPaths?.biometric ?? `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
@@ -65,6 +66,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
 
   scene: (item) => {
     const slug = sanitizeSlug(item.slug);
+    const userAssetPaths = (item.fields as any)?.asset_paths;
     return yaml.dump({
       id: item.id,
       name: item.name,
@@ -76,13 +78,14 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       available_dialogues: [],
       lore_path: `${slug}.md`,
       asset_paths: {
-        background: `${slug}__default.png`,
+        background: userAssetPaths?.background ?? `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
 
   overlay: (item) => {
     const slug = sanitizeSlug(item.slug);
+    const userAssetPaths = (item.fields as any)?.asset_paths;
     return yaml.dump({
       id: item.id,
       name: item.name,
@@ -91,7 +94,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       modifications: [],
       lore_path: `${slug}.md`,
       asset_paths: {
-        background: `${slug}__default.png`,
+        background: userAssetPaths?.background ?? `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },
@@ -124,6 +127,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
 
   location: (item) => {
     const slug = sanitizeSlug(item.slug);
+    const userAssetPaths = (item.fields as any)?.asset_paths;
     return yaml.dump({
       id: item.id,
       type: 'location',
@@ -137,8 +141,8 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       important_places: item.fields.important_places || [],
       lore_path: `${slug}.md`,
       asset_paths: {
-        image: `${slug}__default.png`,
-        background: `${slug}__default.png`,
+        image: userAssetPaths?.image ?? `${slug}__default.png`,
+        background: userAssetPaths?.background ?? `${slug}__default.png`,
       },
     }, YAML_OPTIONS);
   },

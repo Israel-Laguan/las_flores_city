@@ -1,6 +1,6 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../src/database/connection.js';
-import { closeRedis } from '../src/database/redis.js';
-import { LeaderboardWorker } from '../src/workers/LeaderboardWorker.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
+import { closeRedis } from '../../src/database/redis.js';
+import { LeaderboardWorker } from '../../src/workers/LeaderboardWorker.js';
 import fs from 'fs';
 import path from 'path';
 
