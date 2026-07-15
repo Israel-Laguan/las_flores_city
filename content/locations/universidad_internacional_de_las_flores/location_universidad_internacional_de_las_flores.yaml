@@ -1,0 +1,27 @@
+id: a45f56dc-103b-3617-5fe2-db11dcd581ef
+type: location
+name: Universidad Internacional de Las Flores
+color: null
+aliases:
+  - UILF
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  Situated in the northern part of the Central district, with an additional campus dedicated to senior students, doctoral candidates, and postdocs in the Cultural Zone of the city center, Universidad Internacional stands as a testament to academic rigor and scientific advancement. With an evolving focus on engineering and scientific disciplines, this institution is a cornerstone of educational excellence, often juxtaposed with the Universidad Nacional in a healthy rivalry for supremacy.
+legacy: |
+  Originally established with a broad spectrum of academic programs, Universidad Internacional has refined its focus over time, channeling its resources and expertise into engineering and scientific domains. This strategic shift has positioned the university at the forefront of technological innovation and scientific research.
+dual_campus: |
+  The university's dual-campus system caters to students at different academic levels, fostering an environment conducive to both learning and high-level research. The city center campus, located within the vibrant Cultural Zone, provides an immersive setting for advanced students, facilitating their engagement with the broader cultural and intellectual life of the city.
+chinese_influence: |
+  The influence of Chinese stakeholders is palpable in Universidad Internacional's operations, contributing to its global outlook and fostering a competitive academic environment. The university takes pride in its fierce internal competition and its spirited rivalry with Universidad Nacional, which fuels a collective drive for excellence.
+university_fair: |
+  Each year, the University Fair becomes the highlight of the academic calendar, where students showcase their projects, competing for prestigious awards. This event is a testament to the institution's commitment to fostering innovation and providing students with a platform to excel.
+academic_rigor: |
+  The university is known for its intense cram sessions and summer classes, a tradition carried over from the secondary school level, emphasizing the institution's commitment to academic achievement. The entrance exam is notably challenging, and success in it is a source of significant pride among students, symbolizing their entry into a community of high achievers.
+conclusion: |
+  Universidad Internacional, with its dual campuses, focus on engineering and scientific excellence, and competitive academic culture, represents a beacon of advanced education in the region. The deep Chinese influence, coupled with a tradition of academic rigor and a calendar filled with enriching activities, makes it a crucible for shaping the scientific leaders of tomorrow.
+asset_paths:
+  image: universidad_internacional_de_las_flores__default.png

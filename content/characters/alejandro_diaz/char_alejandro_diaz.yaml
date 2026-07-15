@@ -1,0 +1,17 @@
+id: c3000003-e29b-41d4-a716-44665544000e
+name: Alejandro Díaz
+title: Corrupt Local Authority Figure
+description: |
+  Alejandro "Alex" Díaz is a 45-year-old local authority figure in San Pedro de los Pescadores who climbed through public administration ranks. Charismatic and smooth-talking, he charms others into viewing him as a dedicated public servant, but beneath lies a manipulative opportunist who evades work and engages in shady dealings.
+
+  His sturdy build and disheveled appearance reflect his disregard for formality—often in ill-fitting suits with flashy ties, slicked-back salt-and-pepper hair, and sharp green eyes betraying his cunning. He exploits his position through kickbacks, contract manipulation, and connections with unsavory characters.
+
+  A reckless gambler, Alex frequents casinos and underground betting spots, thriving on high-stakes wagering. He socializes with fellow corrupt authority figures, attending events to network and expand his empire. His primary goal is wealth and power, maintaining his public office to shield himself from scrutiny.
+metadata:
+  type: human
+  role: npc
+  faction: corrupt_authority
+  personality: manipulative_opportunist
+lore_path: alejandro_diaz.md
+asset_paths:
+  portrait: alejandro_diaz__default.png

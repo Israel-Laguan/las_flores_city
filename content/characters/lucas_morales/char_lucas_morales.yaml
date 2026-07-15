@@ -1,0 +1,21 @@
+id: b161b2dd-224c-4a51-9b25-51c0c710239c
+name: Lucas Morales
+title: First-Year Engineering Student, Aspiring Marine Biologist
+description: |
+  18-year-old from Playa de los Vientos fishing town. Grew up helping father on fishing boats, developed ocean connection. Now studying engineering at Universidad Nacional but struggling with coursework. Pressured by family to stick with engineering vs. true passion for marine biology. Homesick and uncertain about career path. Wearing casual attire, shows determination but hides insecurities. Fears disappointing family if he switches majors.
+metadata:
+  type: human
+  role: npc
+  faction: student
+  personality: friendly_optimistic_insecure_compassionate
+  age: 18
+  gender: Male
+  ethnicity: Latino
+  residence: University dorms
+  background: from coastal town, fishing family background, academic pressure
+  mannerisms: approachable, funny, keeps worries private
+  quote: The ocean gave me my first home; maybe it should be my future too.
+  methods: studying, seeking academic support, talking to professors
+lore_path: lucas_morales.md
+asset_paths:
+  portrait: lucas_morales__default.png

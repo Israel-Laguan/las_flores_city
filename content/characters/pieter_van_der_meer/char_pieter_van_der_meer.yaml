@@ -1,0 +1,19 @@
+id: c3000013-e29b-41d4-a716-446655440013
+name: Pieter van der Meer
+title: Global Lithium Corp Executive, Mining Industry Leader
+age: 85
+description: Pieter Van der Meer was a formidable figure in the international mining industry, born into a family of Dutch diplomats and businesspeople. With a towering presence and strategic mind, he built a distinguished career spanning continents, from African mining operations to establishing Global Lithium Corp's presence in Las Flores. His life was marked by ambition, innovation, and a commitment to responsible resource development that balanced economic growth with environmental stewardship and community benefit.
+metadata:
+  type: human
+  role: npc
+  faction: dutch_interest
+  personality: strategic_pragmatist
+  appearance: 6'1" height, 190 lbs, chestnut brown hair neatly trimmed, brown eyes with sharp intelligent glint, strong jawline, prominent nose, athletic build with rugged edge, impeccably dressed in tailored suits
+  interests: mining industry, global business, strategic planning, exploration, responsible resource development
+  goals: develop sustainable lithium mining operation in Las Flores, foster international collaboration, implement environmentally responsible practices, create jobs and economic growth
+  relationships: Annabella (wife, geologist), Alexander (son), Elisabeth (daughter), Jan (son)
+  career: Mining company executive (1985-2015 Africa), Global Lithium Corp representative in Las Flores (2015-2035+), retired around 2035
+  death: Died in 2045 at age 85
+lore_path: pieter_van_der_meer.md
+asset_paths:
+  portrait: pieter_van_der_meer__default.png

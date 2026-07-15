@@ -1179,7 +1179,10 @@ import { YAMLSceneSchema } from '@las-flores/shared';
 // (CONTENT_DIR is already declared above — reuse via inline resolve)
 
 function loadScene(filename: string): any {
-  const fullPath = resolve(CONTENT_DIR, 'scenes', filename);
+  // Per-folder layout: content/scenes/<slug>/<filename>
+  // Extract slug from filename (e.g., "scene_cafe.yaml" -> "cafe", "old_town_cafe.yaml" -> "old_town_cafe")
+  const slug = filename.replace(/\.yaml$/, '').replace(/^scene_/, '');
+  const fullPath = resolve(CONTENT_DIR, 'scenes', slug, filename);
   const raw = readFileSync(fullPath, 'utf-8');
   return yamlLib.load(raw);
 }

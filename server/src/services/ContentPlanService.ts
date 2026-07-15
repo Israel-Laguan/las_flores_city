@@ -97,6 +97,20 @@ export class ContentPlanService {
     return validated;
   }
 
+  /**
+   * Set the status of a content plan. The DB CHECK constraint validates the value.
+   * Throws if the plan is not found.
+   */
+  static async setStatus(planId: string, status: string): Promise<void> {
+    const result = await queryOLTP<{ status: string }>(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING status',
+      [status, planId]
+    );
+    if (result.rows.length === 0) {
+      throw new Error(`Plan not found: ${planId}`);
+    }
+  }
+
   async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
     return this.provider.generateLore(item, context);
   }

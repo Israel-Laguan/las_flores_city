@@ -19,30 +19,20 @@ export function resolvePromptFile(prompt_rel: string): string {
 }
 
 /**
- * Returns all three prompt root directories:
+ * Returns all prompt root directories:
  * 1. The existing ui-concepts root (respecting PROMPT_ROOT env var)
- * 2. docs/lore/figures — character portrait prompts
- * 3. docs/lore/districts/*\/landmarks — location background prompts
+ * 2. content/characters — character portrait prompts (per-folder layout)
+ * 3. content/locations — location background prompts (per-folder layout)
  */
 export function getPromptRoots(): string[] {
   const cwd = process.cwd();
-  const districtsDir = path.resolve(cwd, 'docs/lore/districts');
-  const landmarkDirs: string[] = [];
-  try {
-    const districtNames = require('node:fs').readdirSync(districtsDir);
-    for (const d of districtNames) {
-      const landmarksPath = path.join(districtsDir, d, 'landmarks');
-      try {
-        if (require('node:fs').statSync(landmarksPath).isDirectory()) {
-          landmarkDirs.push(landmarksPath);
-        }
-      } catch { /* skip non-dir entries */ }
-    }
-  } catch { /* districts dir may not exist */ }
   return [
     getPromptRoot(),
-    path.resolve(cwd, 'docs/lore/figures'),
-    ...landmarkDirs,
+    path.resolve(cwd, 'content/characters'),
+    path.resolve(cwd, 'content/locations'),
+    path.resolve(cwd, 'content/scenes'),
+    path.resolve(cwd, 'content/overlays'),
+    path.resolve(cwd, 'content/lore'),
     path.resolve(cwd, 'docs/lore/shared/assets'),
   ];
 }

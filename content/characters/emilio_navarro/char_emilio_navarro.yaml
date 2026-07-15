@@ -1,0 +1,31 @@
+id: f8a9b0c1-d2e3-4f4a-5b6c-7d8e9f0a1b2c
+name: Emilio Navarro
+title: Cultural Journalist, La Prensa
+description: |
+  Emilio Navarro is a 49-year-old cultural journalist at La Prensa, born and raised in Las Flores's multicultural neighborhoods. Educator parents nurtured his storytelling instincts and love of his city. At 25, his immersive coverage of local cultures and grassroots movements made him a rising star.
+
+  Warm and endlessly curious, Emilio connects with people from all walks of life. He dresses casually in colorful button-down shirts, has warm smile, and carries a camera to document cultures and hidden corners. On weekends he cycles through neighborhoods discovering new stories.
+
+  By 31, his coverage of Las Flores's emerging art scene brought national attention to local artists. At 49, he mentors younger journalists in narrative craft and the importance of giving voice to the voiceless, continuing to celebrate the diversity and resilience of Las Flores through participatory journalism.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: warm_curious_empathetic
+  age: "49"
+  gender: Male
+  ethnicity: Latino
+  occupation: Cultural Journalist, La Prensa
+  physical_description: casual approachable look with brown hair styled messily, warm smile, typically wears jeans and colorful button-down shirts that reflect his vibrant personality
+  background: born and raised in Las Flores's multicultural neighborhoods, parents were educators who encouraged storytelling and cultural exploration
+  education: journalism training through La Prensa mentorship and university studies
+  organization: La Prensa
+  mannerisms: photographs cultures and stories he encounters, cycles through city discovering new neighborhoods on weekends, immerses himself in communities he covers
+  motivations: bridge divides through narrative journalism, give voice to voiceless communities, celebrate diversity and resilience of Las Flores
+  fears: losing touch with the communities he covers, journalism losing its power to foster understanding, gentrification erasing cultural heritage
+  goals: continue mentoring next generation of narrative journalists, document and preserve Las Flores's cultural heritage, elevate underrepresented stories to national attention
+  challenges: balancing immersion with journalistic objectivity, keeping pace with changing media landscape as a mentor, witnessing rapid gentrification in neighborhoods he loves
+  quote: Every neighborhood has a story worth telling. My job is to listen long enough to find it.
+lore_path: emilio_navarro.md
+asset_paths:
+  portrait: emilio_navarro__default.png

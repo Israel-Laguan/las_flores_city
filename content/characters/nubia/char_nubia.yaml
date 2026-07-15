@@ -1,0 +1,16 @@
+id: 74e27d09-4ae2-4617-8adc-2cf9ed9d9e4b
+name: Nubia
+title: Activist, Karla's Partner
+description: "Karla's partner and fellow activist, murdered alongside Karla in February 2053. When Evelyn Ruthenberg discovered their apartment in September 2053, she found that the killers had ransacked the place but missed a small box containing crucial evidence: Karla's studies proving lithium contamination affected the Carinata crops, documentation of Minera Estrella's negligence, and the green pouch of Carinata seeds that had surprisingly resisted the contamination — seeds that would later become central to Dr. Wei Zhang's phytoremediation research."
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: caring_witness
+  gender: Female
+  background: Karla's partner and fellow activist. Shared an apartment in Las Flores where they stored evidence of Minera Estrella's contamination.
+  mannerisms: Karla's dying wish was for Nubia to take the money and flee the city.
+  status: Deceased (February 2053)
+lore_path: nubia.md
+asset_paths:
+  portrait: nubia__default.png

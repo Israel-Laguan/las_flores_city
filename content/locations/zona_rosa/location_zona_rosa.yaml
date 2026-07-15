@@ -1,0 +1,29 @@
+id: 6e934bc6-4eec-3543-b10f-1de915dfd88d
+type: location
+name: Zona Rosa
+color: null
+aliases: []
+tags:
+  - Landmark
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+overview: |
+  Zona Rosa is strategically located in the northeastern part of Las Flores, offering easy access to the affluent residential towers that dot the skyline. Its proximity to luxury apartment buildings ensures that residents and visitors can indulge in the vibrant nightlife without having to commute long distances. To reach Zona Rosa, one can take Bulevar Progreso or Avenida Esperanza, both of which are well-connected to the city's major landmarks and transport hubs. Additionally, it's nestled near the lush landscapes of Parque de las Montañas and Parque de los Pioneros, making it a scenic route regardless of how you choose to get there.
+daytime: |
+  During the day, Zona Rosa transforms into a tranquil, almost unrecognizable version of its nighttime self. The streets are quieter, with a few cafes and restaurants opening their doors to offer brunch or lunch to the early birds. It's a perfect time for a leisurely stroll, to enjoy the architecture, or to visit the nearby parks. The atmosphere is relaxed, with locals and tourists alike enjoying the serene greenery of Parque de las Montañas and Parque de los Pioneros before the area transitions into its vibrant night scene.
+nightlife: |
+  As the sun sets, Zona Rosa awakens, turning into a hub of activity and entertainment. The streets come alive with neon lights, music, and the chatter of patrons ready to experience the luxury nightlife. Here, one can find:
+  Exclusive Rooftop Lounges: Offering breathtaking views of the city and high-end mixology, these lounges are the epitome of luxury. They provide an intimate setting for patrons seeking a more refined nightlife experience.
+  High-Energy Dance Clubs: Equipped with state-of-the-art sound systems and light displays, these venues host the best DJs in the city, catering to those looking to dance the night away.
+  Sophisticated Wine Bars: Perfect for connoisseurs and those seeking a more laid-back evening, these venues offer an extensive selection of wines from around the world.
+  Live Music Venues: Showcasing the best of local and international talent, these spots are ideal for music lovers, offering genres ranging from jazz to contemporary pop.
+famous_spots: |
+  La Vista Rooftop Lounge: Known for its panoramic views and signature cocktails, La Vista is a must-visit for those seeking a taste of the high life.
+  Club Élan: A dance enthusiast's paradise, Club Élan is famous for electronic music, hosting international DJs and offering an immersive audio-visual experience.
+  Vino Veritas: A sophisticated wine bar with an impressive collection of vintages, offering wine tasting sessions and pairing events.
+  The Jazz Hole: A cozy venue dedicated to jazz, blues, and soul music, featuring live performances from local and international artists.
+conclusion: |
+  Zona Rosa effortlessly transitions from a peaceful daytime retreat to a bustling nighttime hotspot, offering diverse and luxurious entertainment options. Its strategic location and accessibility make it a focal point for those seeking to experience the best of Las Flores's nightlife, ensuring there's something for everyone amidst the neon lights and music-filled streets.
+asset_paths:
+  image: zona_rosa__default.png

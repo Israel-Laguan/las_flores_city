@@ -1,0 +1,30 @@
+id: d4e5f6a7-b8c9-4d01-e2f3-a4b5c6d7e8f9
+name: Diego Huamán
+title: Environmental Science Student and Community Advocate
+description: |
+  Diego Huamán is a 19-year-old Environmental Science major at the university in Central Las Flores. He grew up in a small Andean village where his family farms potatoes, quinoa, and raises llamas. His parents instilled hard work and education as the path forward.
+
+  Diego's athletic build comes from years of hiking mountain trails and working the family farm. He carries a handwoven mochila. Despite adapting to city life—with new friendships and financial challenges from part-time café work—he remains deeply connected to his Andean heritage through music and cultural events, and plays the charango.
+
+  His studies focus on sustainable agriculture. He dreams of returning to his village to establish a cooperative that promotes eco-friendly farming while preserving ancestral knowledge.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: ambitious_curious_resilient
+  age: "19"
+  gender: Male
+  ethnicity: Andean
+  occupation: University Student (Environmental Science Major)
+  physical_description: lean athletic build with dark curly hair and warm brown eyes; wears practical clothing suited for mountain and urban life; carries a handwoven mochila
+  background: grew up in Andean Mountains outside Las Flores in a family of farmers who cultivate potatoes, quinoa, and raise llamas; parents taught the value of hard work and education
+  residence: Central Las Flores (originally from Andean village)
+  mannerisms: shares stories of mountain life with others, plays charango at gatherings, friendly and respectful demeanor
+  motivations: complete his degree to help his family and community, promote sustainable farming in the Andes, preserve cultural heritage
+  fears: failing his community, losing touch with his roots, inability to bridge traditional knowledge with modern science
+  goals: graduate and return to his village with sustainable farming knowledge, establish a cooperative for local farmers, advocate for community interests
+  challenges: adapting to urban university life, homesickness, financial constraints, balancing studies with part-time café work
+  quote: Education is the bridge between my people's past and our future—I want to walk it for those who cannot.
+lore_path: diego_huaman.md
+asset_paths:
+  portrait: diego_huaman__default.png

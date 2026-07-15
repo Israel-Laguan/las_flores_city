@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS content_plans (
   description TEXT NOT NULL,
   plan_json JSONB NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'draft'
-    CHECK (status IN ('draft', 'proposed', 'approved', 'staged', 'migrated', 'failed')),
+    CHECK (status IN ('draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed')),
   feedback_log JSONB DEFAULT '[]'::jsonb,
   created_by UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),

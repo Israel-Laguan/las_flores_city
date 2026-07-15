@@ -145,7 +145,7 @@ Options:
 - **B) Organic shapes** — districts have irregular boundaries, tiles near edges are "void" or "water". More realistic but harder.
 - **C) Variable density** — some districts have more tiles (larger geographic area), others fewer. Matches your geography doc.
 
-**Recommendation:** C) Variable density. Your `docs/lore/geography.md` already gives district areas (City: 30 km², Pacific Coast: 10 km², Far South: 5 km²). Map area to tile count: 30 km² → 30 tiles, 10 km² → 10 tiles, etc. Tiles don't have to be rectangular districts — the grid can be cropped.
+**Recommendation:** C) Variable density. Your `content/lore/geography.md` already gives district areas (City: 30 km², Pacific Coast: 10 km², Far South: 5 km²). Map area to tile count: 30 km² → 30 tiles, 10 km² → 10 tiles, etc. Tiles don't have to be rectangular districts — the grid can be cropped.
 
 ### Q8: Tile Edge/Transition Handling
 **How do different terrain types meet?**
@@ -376,7 +376,7 @@ Copy and paste the text below into your design/visual chat.
 > - Game design: `docs/game_design.md`
 > - Asset prompt library: `docs/lore/guides/prompt_library.md`
 > - Location list: `content/locations/` (64 locations, see `location_playa_de_los_vientos.yaml` as example)
-> - City geography: `docs/lore/geography.md`
+> - City geography: `content/lore/geography.md`
 
 **END OF PROMPT**
 

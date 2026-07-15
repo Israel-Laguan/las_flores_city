@@ -126,7 +126,7 @@ adminStoryBuilderPlansRouter.put('/plans/:id', async (req, res) => {
       return;
     }
 
-    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'failed'];
+    const validStatuses = ['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed'];
     const finalStatus = validStatuses.includes(status) ? status : 'draft';
     validatedPlan.status = finalStatus;
 

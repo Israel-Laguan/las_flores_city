@@ -1,0 +1,29 @@
+id: e2f3a4b6-c6d7-4e8f-9a0b-1c2d3e4f5a6e
+name: Elisa Pérez
+title: Social Media & Community Manager, El Informador
+description: |
+  Elisa Pérez is a Social Media & Community Manager at El Informador de Las Flores. She joined the newspaper as an intern while studying communications at the University of Las Flores and quickly rose through the ranks to become the paper's point-person for digital outreach and engagement. Her campaigns helped significantly grow El Informador's online presence and reader loyalty.
+
+  Tech-savvy and empathetic, Elisa thrives on building two-way relationships between the newspaper and its audience. She crafts shareable content around local investigative stories, moderates community discussions, and turns readers into active participants in the news cycle. Despite the fast pace of digital media, she remains committed to responsible journalism and giving voice to underrepresented communities.
+metadata:
+  type: human
+  role: npc
+  faction: media
+  personality: digital_organizer_engaging_curious
+  age: mid 20s
+  gender: Female
+  ethnicity: Latina
+  occupation: Social Media & Community Manager
+  education: Communications degree, University of Las Flores
+  organization: El Informador de Las Flores
+  physical_description: polished professional with an approachable demeanor; dresses in smart casual attire reflecting a creative yet newsroom-appropriate style; expressive eyes and an alert, energetic presence
+  background: joined El Informador as an intern while studying communications at the University of Las Flores; advanced to digital outreach lead through consistent growth of online readership and engagement metrics
+  mannerisms: curates stories for viral reach, actively responds to reader comments, plans community-driven initiatives, stays updated on social platform algorithms and digital trends
+  motivations: grow El Informador's audience and deepen reader engagement, use social platforms to highlight marginalized voices, build a loyal online community invested in local journalism
+  fears: digital misinformation eroding trust in local journalism, platform algorithm changes that could cut off community reach, failing to keep the newspaper relevant as media habits shift
+  goals: continue expanding El Informador's digital footprint, launch new community engagement programs, mentor younger communicators in ethical digital outreach
+  challenges: balancing viral appeal with editorial integrity, managing negative or polarized online reactions, keeping pace with rapidly evolving social media platforms
+  quote: Community isn't just a metric to grow—it's the reason local journalism matters.
+lore_path: elisa_perez.md
+asset_paths:
+  portrait: elisa_perez__default.png
