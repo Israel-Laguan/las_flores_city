@@ -9,7 +9,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   /**
    * Render as a different element (e.g. a Next.js `<Link>`).
    */
-  asChild?: React.ElementType;
+  as?: React.ElementType;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
  * wrapper at the caller's discretion.
  */
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  function Badge({ variant = 'info', className, asChild, ...rest }, ref) {
+  function Badge({ variant = 'info', className, as: asChild, ...rest }, ref) {
     const Component: React.ElementType = asChild ?? 'span';
     return (
       <Component

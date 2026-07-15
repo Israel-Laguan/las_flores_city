@@ -30,14 +30,27 @@ async function withLoading<T>(
   try {
     return await fn();
   } catch (err: any) {
-    setError(err.message);
+    setError(err?.message || String(err));
   } finally {
     setLoading(false);
   }
 }
 
 export function useStoryPlanApi(cb: Callbacks) {
-  const { setLoading, setError, setPlan, setStep, setPlanId, description, plan } = cb;
+  const {
+    setLoading,
+    setError,
+    setPlan,
+    setStep,
+    setPlanId,
+    description,
+    plan,
+    setRefineFeedback,
+    setShowRefine,
+    setPreviewData,
+    setStagingResult,
+    setMigrationResult,
+  } = cb;
 
   const handleGeneratePlan = useCallback(async () => {
     const data = await withLoading(setLoading, setError, () => api.generatePlan(description));
@@ -58,26 +71,26 @@ export function useStoryPlanApi(cb: Callbacks) {
     if (!data) return;
     if (data.success && data.data) {
       setPlan(data.data.plan);
-      cb.setRefineFeedback('');
-      cb.setShowRefine(false);
+      setRefineFeedback('');
+      setShowRefine(false);
     } else {
       setError(data.error || 'Failed to refine plan');
     }
-  }, [setLoading, setError, setPlan, cb]);
+  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine]);
 
   const handlePreview = useCallback(async (planId: string) => {
     const data = await withLoading(setLoading, setError, () => api.previewPlan(planId));
     if (!data) return;
-    if (data.success && data.data) cb.setPreviewData(data.data);
+    if (data.success && data.data) setPreviewData(data.data);
     else setError(data.error || 'Failed to preview plan');
-  }, [setLoading, setError, cb]);
+  }, [setLoading, setError, setPreviewData]);
 
   const handleStage = useCallback(async (planId: string) => {
     const data = await withLoading(setLoading, setError, () => api.stagePlan(planId));
     if (!data) return;
-    if (data.success) { cb.setStagingResult(data.data); setStep(4); }
-    else { cb.setStagingResult(data.data); setError(data.data?.error || 'Staging failed'); }
-  }, [setLoading, setError, setStep, cb]);
+    if (data.success) { setStagingResult(data.data); setStep(4); }
+    else { setStagingResult(data.data); setError(data.data?.error || 'Staging failed'); }
+  }, [setLoading, setError, setStep, setStagingResult]);
 
   const handleApprove = useCallback(async (planId: string) => {
     if (!plan) { setError('No plan to approve'); return; }
@@ -90,16 +103,16 @@ export function useStoryPlanApi(cb: Callbacks) {
   const handleMigrate = useCallback(async (planId: string) => {
     const data = await withLoading(setLoading, setError, () => api.migratePlan(planId));
     if (!data) return;
-    if (data.success) { cb.setMigrationResult(data.data); setStep(5); }
-    else { cb.setMigrationResult(data.data); setError(data.data?.error || 'Migration failed'); }
-  }, [setLoading, setError, setStep, cb]);
+    if (data.success) { setMigrationResult(data.data); setStep(5); }
+    else { setMigrationResult(data.data); setError(data.data?.error || 'Migration failed'); }
+  }, [setLoading, setError, setStep, setMigrationResult]);
 
   const handleRetry = useCallback(async (planId: string) => {
     const data = await withLoading(setLoading, setError, () => api.retryPlan(planId));
     if (!data) return;
-    if (data.success) { cb.setStagingResult(data.data); if (data.data?.success) setStep(4); }
+    if (data.success) { setStagingResult(data.data); if (data.data?.success) setStep(4); }
     else setError(data.error || 'Retry failed');
-  }, [setLoading, setError, setStep, cb]);
+  }, [setLoading, setError, setStep, setStagingResult]);
 
   const handleSelectTemplate = useCallback(async (templateId: string) => {
     const data = await withLoading(setLoading, setError, () =>

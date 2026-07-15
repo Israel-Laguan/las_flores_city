@@ -150,6 +150,21 @@ export class DialogueResolver {
   }
 
   /**
+   * Combined query for alignment and story_beat from player_states.
+   * Avoids two separate DB round-trips for the same table.
+   */
+  private static async getUserState(userId: string): Promise<{ alignment: 'neutral' | 'loyalist' | 'fugitive'; storyBeat: string }> {
+    const result = await queryOLTP<{ alignment: 'neutral' | 'loyalist' | 'fugitive'; story_beat: string | null }>(
+      `SELECT alignment, story_beat FROM player_states WHERE user_id = $1`,
+      [userId]
+    );
+    return {
+      alignment: result.rows[0]?.alignment ?? 'neutral',
+      storyBeat: result.rows[0]?.story_beat || 'prologue',
+    };
+  }
+
+  /**
    * Inner implementation of resolveTreeForUser, separated so the public
    * method can wrap it with Promise deduping.
    */
@@ -157,13 +172,13 @@ export class DialogueResolver {
     userId: string,
     baseTreeId: string
   ): Promise<ResolvedTree> {
-    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment, storyBeat] = await Promise.all([
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, userState] = await Promise.all([
       DialogueResolver.getActiveMysteryIds(userId),
       DialogueResolver.getActiveMysteries(),
       DialogueResolver.getUserNsfwStatus(userId),
-      DialogueResolver.getUserAlignment(userId),
-      DialogueResolver.getUserStoryBeat(userId),
+      DialogueResolver.getUserState(userId),
     ]);
+    const { alignment, storyBeat } = userState;
 
     // Combine investigating + active mysteries for overlay loading.
     // This ensures hook choices (in overlays for ACTIVE mysteries) are
@@ -397,13 +412,13 @@ export class DialogueResolver {
     const chunkRow = await DialogueResolver.loadBaseChunk(chunkId);
 
     // 2. Load user context (mirrors resolveTreeForUser pattern)
-    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, alignment, storyBeat] = await Promise.all([
+    const [investigatingIds, activeMysteryIds, isNsfwUnlocked, userState] = await Promise.all([
       DialogueResolver.getActiveMysteryIds(userId),
       DialogueResolver.getActiveMysteries(),
       DialogueResolver.getUserNsfwStatus(userId),
-      DialogueResolver.getUserAlignment(userId),
-      DialogueResolver.getUserStoryBeat(userId),
+      DialogueResolver.getUserState(userId),
     ]);
+    const { alignment, storyBeat } = userState;
 
     const allMysteryIds = [...new Set([...investigatingIds, ...activeMysteryIds])].sort();
 

@@ -30,9 +30,14 @@ The `ui/src/` layout:
 
 ```text
 ui/src/
-├── index.ts          # re-exports { cn, ClassValue }
+├── index.ts          # re-exports { cn, ClassValue, Button, Input, Card, Badge }
 ├── lib/
 │   └── cn.ts         # the shared classname helper
+├── components/
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   ├── Card.tsx
+│   └── Badge.tsx
 └── styles/
     ├── tokens.css     # admin design tokens (--accent, --background, --space-*, --radius-*, …)
     ├── global.css     # base element styles (body, a, h1-h3, button, table, …) using tokens

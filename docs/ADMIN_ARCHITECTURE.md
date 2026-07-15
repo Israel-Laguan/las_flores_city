@@ -460,7 +460,7 @@ When contributing to `admin/`, follow these rules. They are the result of the mu
 These are tracked in `docs/UI_STYLE_SYSTEM.md`; they are not blockers:
 
 1. **Page-level `.module.css` migration** — not every page module composes the shared classes yet. The pattern is established; the rest is mechanical.
-2. **Optional React wrappers** — `Button.tsx` / `Input.tsx` / `Card.tsx` / `Badge.tsx` in `@las-flores/ui` are deliberately deferred. They can be added later without breaking the CSS-first contract.
+2. **Optional React wrappers** — `Button` / `Input` / `Card` / `Badge` are now available in `@las-flores/ui` as opt-in conveniences. Adoption across admin pages is a follow-up — pages that compose classes directly with `cn()` keep working unchanged.
 
 The only known "real" gap is that **`/users` and `/settings` are stubs** (placeholders, not implemented). They are not on the active roadmap.
 

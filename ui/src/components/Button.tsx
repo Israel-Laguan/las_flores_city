@@ -14,7 +14,7 @@ export interface ButtonProps
    * Render as a different element (e.g. a Next.js `<Link>`). The
    * component will spread its props onto the rendered element.
    */
-  asChild?: React.ElementType;
+  as?: React.ElementType;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface ButtonProps
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
-    { variant = 'primary', size = 'normal', className, asChild, ...rest },
+    { variant = 'primary', size = 'normal', className, as: asChild, ...rest },
     ref,
   ) {
     const Component: React.ElementType = asChild ?? 'button';

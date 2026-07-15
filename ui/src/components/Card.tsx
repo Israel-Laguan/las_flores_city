@@ -12,7 +12,7 @@ export interface CardProps
   /**
    * Render as a different element (e.g. `<section>` or `<article>`).
    */
-  asChild?: React.ElementType;
+  as?: React.ElementType;
 }
 
 /**
@@ -26,13 +26,13 @@ export interface CardProps
  *  </Card>
  *  ```
  *
- * The element is `<div>` by default. Pass `asChild` to render it
+ * The element is `<div>` by default. Pass `as` to render it
  * as a different element (e.g. an `<article>` or a Next.js
  * `<Link>`).
  */
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   function Card(
-    { header, title, meta, className, children, asChild, ...rest },
+    { header, title, meta, className, children, as: asChild, ...rest },
     ref,
   ) {
     const Component: React.ElementType = asChild ?? 'div';

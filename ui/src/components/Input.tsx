@@ -8,7 +8,7 @@ export interface InputProps
    * wrapper). The component spreads its props onto the rendered
    * element.
    */
-  asChild?: React.ElementType;
+  as?: React.ElementType;
 }
 
 /**
@@ -18,7 +18,7 @@ export interface InputProps
  * keeping it here documents the contract for callers).
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  function Input({ className, asChild, ...rest }, ref) {
+  function Input({ className, as: asChild, ...rest }, ref) {
     const Component: React.ElementType = asChild ?? 'input';
     return (
       <Component

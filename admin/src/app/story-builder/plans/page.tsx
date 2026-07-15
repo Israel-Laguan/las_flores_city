@@ -129,12 +129,12 @@ export default function StoryBuilderPlans() {
     setDeletingId(id);
     try {
       const data = await deletePlan(id);
-      if (data.success) setPlans(plans.filter(p => p.id !== id));
+      if (data.success) setPlans(prev => prev.filter(p => p.id !== id));
       else setError(data.error || 'Failed to delete plan');
     } catch (err: any) {
-      setError(err.message);
+      setError(err?.message || String(err));
     } finally {
-      setDeletingId(null);
+      setDeletingId(prev => prev === id ? null : prev);
     }
   }
 

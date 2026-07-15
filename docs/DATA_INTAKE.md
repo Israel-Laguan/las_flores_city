@@ -41,6 +41,7 @@ content/
 ├── dialogues/         # dialogue_<slug>.yaml
 ├── scenes/
 ├── missions/
+├── mysteries/
 ├── stories/
 ├── overlays/
 ├── locations/

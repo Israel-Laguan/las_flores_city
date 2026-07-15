@@ -29,11 +29,14 @@ sudo apt-get install -y docker.io docker-compose-v2
 # Or install Podman + jq
 sudo apt-get install -y podman jq
 
-# Verify installation
-docker --version        # Docker path
-docker compose version  # Compose v2+
-podman --version        # Podman path (should be v4.0+)
-jq --version            # Podman path only
+# Verify the selected runtime
+# Docker:
+docker --version
+docker compose version
+
+# Or Podman:
+podman --version
+jq --version
 ```
 
 ## Quick Start
