@@ -17,7 +17,6 @@ updates:
           - "minor"
     # Major updates get individual PRs for careful review
     open-pull-requests-limit: 10
-    reviewers: []
     labels:
       - "dependencies"
     commit-message:
