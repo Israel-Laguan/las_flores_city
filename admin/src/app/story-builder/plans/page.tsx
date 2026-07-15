@@ -24,6 +24,76 @@ const STATUS_COLORS: Record<string, string> = {
   failed: 'var(--status-error, #ef4444)',
 };
 
+function PlanRow({
+  plan,
+  deletingId,
+  onDelete,
+}: {
+  plan: Plan;
+  deletingId: string | null;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <tr>
+      <td className={styles.descriptionCell}>{plan.description}</td>
+      <td>
+        <span
+          className={styles.statusBadge}
+          style={{ backgroundColor: STATUS_COLORS[plan.status] || STATUS_COLORS.proposed }}
+        >
+          {plan.status}
+        </span>
+      </td>
+      <td>{plan.item_count}</td>
+      <td suppressHydrationWarning>{new Date(plan.updated_at).toLocaleDateString()}</td>
+      <td className={styles.actionsCell}>
+        <Link
+          href={`/story-builder?planId=${plan.id}`}
+          className={cn('btn', 'btn--secondary', 'btn--small')}
+        >
+          Resume
+        </Link>
+        <button
+          className={cn('btn', 'btn--danger', 'btn--small')}
+          onClick={() => onDelete(plan.id)}
+          disabled={deletingId === plan.id}
+        >
+          {deletingId === plan.id ? '...' : 'Delete'}
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function PlansTable({
+  plans,
+  deletingId,
+  onDelete,
+}: {
+  plans: Plan[];
+  deletingId: string | null;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Items</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {plans.map(plan => (
+          <PlanRow key={plan.id} plan={plan} deletingId={deletingId} onDelete={onDelete} />
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export default function StoryBuilderPlans() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +121,6 @@ export default function StoryBuilderPlans() {
         setLoading(false);
       }
     };
-
     loadPlans();
   }, [offset]);
 
@@ -60,15 +129,12 @@ export default function StoryBuilderPlans() {
     setDeletingId(id);
     try {
       const data = await deletePlan(id);
-      if (data.success) {
-        setPlans(plans.filter(p => p.id !== id));
-      } else {
-        setError(data.error || 'Failed to delete plan');
-      }
+      if (data.success) setPlans(prev => prev.filter(p => p.id !== id));
+      else setError(data.error || 'Failed to delete plan');
     } catch (err: any) {
-      setError(err.message);
+      setError(err?.message || String(err));
     } finally {
-      setDeletingId(null);
+      setDeletingId(prev => prev === id ? null : prev);
     }
   }
 
@@ -80,59 +146,14 @@ export default function StoryBuilderPlans() {
           + New Plan
         </Link>
       </div>
-
       {error && <div className="error-box">{error}</div>}
-
       {loading ? (
         <div className={styles.loading}>Loading plans...</div>
       ) : plans.length === 0 ? (
         <div className={styles.empty}>No plans found. Create your first plan!</div>
       ) : (
         <>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Items</th>
-                <th>Updated</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {plans.map(plan => (
-                <tr key={plan.id}>
-                  <td className={styles.descriptionCell}>{plan.description}</td>
-                  <td>
-                    <span
-                      className={styles.statusBadge}
-                      style={{ backgroundColor: STATUS_COLORS[plan.status] || STATUS_COLORS.proposed }}
-                    >
-                      {plan.status}
-                    </span>
-                  </td>
-                  <td>{plan.item_count}</td>
-                  <td suppressHydrationWarning>{new Date(plan.updated_at).toLocaleDateString()}</td>
-                  <td className={styles.actionsCell}>
-                    <Link
-                      href={`/story-builder?planId=${plan.id}`}
-                      className={cn('btn', 'btn--secondary', 'btn--small')}
-                    >
-                      Resume
-                    </Link>
-                    <button
-                      className={cn('btn', 'btn--danger', 'btn--small')}
-                      onClick={() => handleDelete(plan.id)}
-                      disabled={deletingId === plan.id}
-                    >
-                      {deletingId === plan.id ? '...' : 'Delete'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
+          <PlansTable plans={plans} deletingId={deletingId} onDelete={handleDelete} />
           {total > limit && (
             <div className={styles.pagination}>
               <button

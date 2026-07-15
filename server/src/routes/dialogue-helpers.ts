@@ -15,7 +15,64 @@ export async function getSpeaker(speakerId: string) {
   return result.rows.length > 0 ? result.rows[0] : null;
 }
 
-export async function resolveDialogueTree(characterId: string, sceneId: string) {
+/**
+ * Check whether the player's current `story_beat` satisfies a
+ * dialogue tree's `metadata.required_story_beat` gate.
+ *
+ * Mirrors the scene-gate logic in `server/src/routes/location.ts:265-271`:
+ *  - undefined / null → always visible (backwards-compatible default)
+ *  - string → must equal the player's current beat
+ *  - string[] → player must be in the allowed set
+ *
+ * Exported so dialogue-tree and chunk-level gating can share one
+ * implementation, and so property tests can drive it directly.
+ */
+export function isStoryBeatAllowed(
+  required: unknown,
+  playerStoryBeat: string
+): boolean {
+  if (required === undefined || required === null) return true;
+  if (Array.isArray(required)) {
+    return required.includes(playerStoryBeat);
+  }
+  if (typeof required === 'string') {
+    return required === playerStoryBeat;
+  }
+  // Defensive: any other type fails closed.
+  return false;
+}
+
+/**
+ * Resolve which dialogue tree to start for a given (characterId, sceneId).
+ *
+ * Beat gating: if the candidate tree carries
+ * `metadata.required_story_beat`, the player's `story_beat` must
+ * satisfy it (string equality, or membership if the requirement is
+ * a list). Trees without the gate are returned for any beat.
+ *
+ * Two query paths:
+ *  1. Scene-scoped: a tree explicitly attached to the scene.
+ *  2. Fallback: any tree whose start node has the speaker — used
+ *     for tests and for characters whose scene mapping is sparse.
+ *
+ * Both paths apply the same gate so a pre-gate player never
+ * reaches a gated tree via either route.
+ */
+export async function resolveDialogueTree(
+  characterId: string,
+  sceneId: string,
+  userId?: string
+) {
+  // Fetch the player's story beat up-front so we can apply the
+  // gate on both the scene-scoped and the fallback queries.
+  // Mirrors `location.ts:251-252`: default to 'prologue' if the
+  // player has no row yet (e.g. mid-onboarding).
+  let storyBeat = 'prologue';
+  if (userId) {
+    const playerRow = await PlayerStateRepository.getFullState(userId);
+    storyBeat = playerRow?.story_beat || 'prologue';
+  }
+
   const sceneResult = await queryOLTP(
     `SELECT dt.id, dt.name, dt.description, dt.start_node_id, dt.nodes, dt.metadata
      FROM dialogue_trees dt
@@ -30,7 +87,12 @@ export async function resolveDialogueTree(characterId: string, sceneId: string) 
   );
 
   if (sceneResult.rows.length > 0) {
-    return sceneResult.rows[0];
+    const tree = sceneResult.rows[0];
+    if (isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat)) {
+      return tree;
+    }
+    // Gated: fall through to the fallback so a beat-unlocked
+    // alternative tree can still serve the same character.
   }
 
   const fallbackResult = await queryOLTP(
@@ -41,7 +103,12 @@ export async function resolveDialogueTree(characterId: string, sceneId: string) 
     [characterId]
   );
 
-  return fallbackResult.rows.length > 0 ? fallbackResult.rows[0] : null;
+  if (fallbackResult.rows.length === 0) return null;
+  const fallback = fallbackResult.rows[0];
+  if (!isStoryBeatAllowed(fallback.metadata?.required_story_beat, storyBeat)) {
+    return null;
+  }
+  return fallback;
 }
 
 export async function filterChoices(choices: any[], userId: string) {

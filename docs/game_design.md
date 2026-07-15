@@ -97,9 +97,9 @@ Implementation: Map this to `relationship_change` + `required_flags` + `hidden_i
 
 ### 8. Story Progression
 
-**Source of truth:** `STORY_PROGRESSION_CONTEXT.md`
+**Source of truth:** `docs/NEXT_STEPS.md` (open items) and `docs/DATA_INTAKE.md` (content paths).
 
-- `player_states.story_beat` tracks the player's position in the main arc (proposed implementation).
+- `player_states.story_beat` tracks the player's position in the main arc.
 - Set atomically by the server when TB-costing choices are made.
 - Used to gate dialogue availability and scene metadata.
 - Beat slugs are authored in YAML, not hardcoded.
@@ -298,7 +298,7 @@ The entire game interface is rendered inside a phone-shaped DOM container layere
 - `docs/FOUNDATION_ARCHITECTURE.md` — infrastructure, content pipeline
 - `docs/MVW_ARCHITECTURE.md` — player state, flat interface
 - `docs/TIME_TRAVEL_ARCHITECTURE.md` — mystery lifecycle, leaderboard worker
-- `STORY_PROGRESSION_CONTEXT.md` — proposed `story_beat` implementation
+- `docs/NEXT_STEPS.md` — open action items for story-beat gating and admin follow-ups
 - `docs/lore/game_systems.md` — relationship schema (lore-side)
 - `shared/src/schemas/dialogue.ts` — dialogue node/choice/effects schema
 - `shared/src/schemas/gig.ts` — gig schema with reputation fields

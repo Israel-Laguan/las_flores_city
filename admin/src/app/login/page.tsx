@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { cn } from '@las-flores/ui';
 import styles from './login.module.css';
 
 export default function LoginPage() {
@@ -33,7 +34,7 @@ export default function LoginPage() {
             type="email"
             id="email"
             name="email"
-            className={styles.input}
+            className="input"
             required
             placeholder="admin@example.com"
           />
@@ -45,13 +46,15 @@ export default function LoginPage() {
             type="password"
             id="password"
             name="password"
-            className={styles.input}
+            className="input"
             required
             placeholder="••••••••"
           />
         </div>
 
-        <button type="submit" className={styles.button}>LOGIN</button>
+        <button type="submit" className={cn('btn', 'btn--primary')}>
+          LOGIN
+        </button>
       </form>
 
       <Link href="/" className={styles.backLink}>&larr; Back to Home</Link>

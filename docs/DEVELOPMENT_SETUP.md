@@ -1,6 +1,6 @@
 # Las Flores 2077 - Development Stack Setup Guide
 
-This guide documents how to set up and run the complete Las Flores development stack using Podman containers.
+This guide documents how to set up and run the complete Las Flores development stack. The project supports **two container runtimes**: Docker (via `docker-compose.yml`, the path documented in `AGENTS.md`) and Podman (via `start-stack.sh` and `scripts/apply-migrations.sh`). Pick one — both bring up the same services on the same host ports.
 
 ## Overview
 
@@ -10,27 +10,62 @@ The development stack consists of:
 - **Redis** (port 6379) - Session and cache store
 - **MinIO** (ports 9000-9001) - Object storage for assets
 - **Server** (port 3000) - Backend API
-- **Admin UI** (port 3002) - Next.js admin interface
+- **Admin UI** (port 3002 via `start-stack.sh`) - Next.js admin interface
 
 ## Prerequisites
 
-- **Podman** (v4.0+) - Container runtime (Docker is NOT used)
-- **jq** - JSON processor for container IP extraction
-- **Node.js** (optional) - Only needed for local development, not for running containers
+Choose one container runtime:
+
+- **Docker** (with Compose v2+) — primary path, used by `docker-compose.yml` and `AGENTS.md`
+- **Podman** (v4.0+) — alternative path, used by `start-stack.sh` and `scripts/apply-migrations.sh`
+- **jq** — JSON processor for container IP extraction (Podman path only)
+- **Node.js** (optional) — only needed for local development, not for running containers
 
 ```bash
-# Install prerequisites on Debian/Ubuntu
+# Install Docker + Compose v2 on Debian/Ubuntu
 sudo apt-get update
+sudo apt-get install -y docker.io docker-compose-v2
+
+# Or install Podman + jq
 sudo apt-get install -y podman jq
 
-# Verify installation
-podman --version  # Should be v4.0+
-jq --version      # Should be v1.6+
+# Verify the selected runtime
+# Docker:
+docker --version
+docker compose version
+
+# Or Podman:
+podman --version
+jq --version
 ```
 
 ## Quick Start
 
-The easiest way to start the entire stack:
+### Docker (recommended)
+
+```bash
+# Clone and enter the repository
+cd /path/to/las_flores_city
+
+# Start all services (PostgreSQL, Redis, MinIO, server, admin, litellm)
+docker compose up -d
+
+# Apply database migrations (if the DB was freshly created)
+# NOTE: scripts/apply-migrations.sh currently uses `podman exec` internally.
+# On Docker, run the schema migration from inside the server container instead:
+docker exec las-flores-server npm run schema:migrate
+```
+
+`docker-compose.yml` defines: `postgres-oltp` (5434), `postgres-olap` (5433), `redis` (6379), `minio` (9000-9001), `server` (3000), `admin` (3002), `litellm`, `playwright`.
+
+Access the services:
+- **Server API:** http://localhost:3000
+- **Health Check:** `docker exec las-flores-server wget -qO- http://localhost:3000/health` (the alpine image has no curl; see `AGENTS.md` for the health-check gotcha)
+- **Admin UI:** http://localhost:3002
+
+### Podman (alternative)
+
+The easiest way to start the entire stack with Podman:
 
 ```bash
 # Clone and enter the repository
@@ -48,16 +83,20 @@ The script will:
 2. Create the podman network and volumes
 3. Start backing services (PostgreSQL, Redis, MinIO)
 4. Build and start the server
- 5. Build and start the admin panel
+5. Build and start the admin panel
 6. Apply database migrations
 7. Output service URLs
 
 Access the services:
 - **Server API:** http://localhost:3000
 - **Health Check:** http://localhost:3000/health
-- **Admin UI:** http://localhost:3002
+- **Admin UI:** http://localhost:3002 (mapped from container port 3000)
+
+> Both runtimes expose the admin panel on host port 3002. The admin container internally listens on 3000; the host mapping is `3002:3000` in both `docker-compose.yml` and `start-stack.sh`.
 
 ## Manual Setup (For Debugging)
+
+> The manual steps below are for the **Podman** path. Docker users rarely need manual setup — `docker compose up -d <service>` handles networking and volumes automatically. Use these steps only if you need fine-grained control over individual Podman containers.
 
 If you need to start services individually:
 

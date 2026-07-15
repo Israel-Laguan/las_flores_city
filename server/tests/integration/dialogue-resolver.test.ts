@@ -337,7 +337,7 @@ describe('DialogueResolver', () => {
       await DialogueResolver.resolveTreeForUser(TEST_USER_ID, TEST_TREE_ID);
 
       const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, [TEST_MYSTERY_ID]);
-      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:mysteries:${cacheSuffix}`;
+      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}`;
       const cached = await getCache(expectedKey);
       expect(cached).toBeDefined();
       expect((cached as any).rootId).toBe('root');
@@ -369,7 +369,7 @@ describe('DialogueResolver', () => {
         TEST_TREE_ID
       );
       const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, []);
-      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:mysteries:${cacheSuffix}`;
+      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}`;
       const cached = await getCache(expectedKey);
       expect(cached).toBeDefined();
       expect((cached as any).nodes.root.text).toBe('Base text');

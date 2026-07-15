@@ -21,7 +21,7 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
       });
     }
 
-    const dialogue = await resolveDialogueTree(characterId, sceneId);
+    const dialogue = await resolveDialogueTree(characterId, sceneId, userId);
 
     if (!dialogue) {
       return res.status(404).json({
