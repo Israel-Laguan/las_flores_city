@@ -32,7 +32,8 @@ export function isValidAssetFilename(filename: string): boolean {
  */
 export function buildGeneratedAssetFilename(slug: string, ext: string = '.png'): string {
   const ts = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
-  return `${slug}__${ts}${ext}`;
+  const rand = Math.random().toString(36).substring(2, 6);
+  return `${slug}__${ts}_${rand}${ext}`;
 }
 
 /**
@@ -165,8 +166,11 @@ export async function listLocalAssets(entityRootDir: string): Promise<LocalAsset
       out.push({ filename: entry.name, fullPath, sizeBytes: stat.size, mtime: stat.mtime });
     }
     out.sort((a, b) => {
-      if (a.filename.endsWith('__default.png')) return -1;
-      if (b.filename.endsWith('__default.png')) return 1;
+      const aDefault = a.filename.endsWith('__default.png');
+      const bDefault = b.filename.endsWith('__default.png');
+      if (aDefault && bDefault) return 0;
+      if (aDefault) return -1;
+      if (bDefault) return 1;
       return b.mtime.getTime() - a.mtime.getTime();
     });
     return out;

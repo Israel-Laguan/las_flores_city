@@ -175,13 +175,14 @@ adminStoryBuilderDraftsRouter.post('/plans/:id/choose-draft', async (req: AuthRe
       return;
     }
 
+    const fieldName = getAssetFieldName(need);
+    if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
+    (item.fields as any).asset_paths[fieldName] = filename;
+
     const contentDir = resolveContentDir();
     const entityRoot = resolveEntityRootDir(item, contentDir);
     await chooseDraft(item, entityRoot, filename, contentDir);
 
-    const fieldName = getAssetFieldName(need);
-    if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
-    (item.fields as any).asset_paths[fieldName] = filename;
     transitionAssetNeed(need, 'chosen');
 
     await queryOLTP('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [plan, id]);

@@ -63,7 +63,7 @@ afterAll(async () => {
 describe('buildGeneratedAssetFilename', () => {
   it('produces <slug>__<ISO-timestamp>.<ext>', () => {
     const name = buildGeneratedAssetFilename('aisha_al_sayed', '.png');
-    expect(name).toMatch(/^aisha_al_sayed__\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.png$/);
+    expect(name).toMatch(/^aisha_al_sayed__\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}_\w{4}\.png$/);
   });
 
   it('defaults to .png extension', () => {
@@ -152,7 +152,7 @@ describe('generateLocalDrafts', () => {
 
     expect(files).toHaveLength(3);
     for (const f of files) {
-      expect(f).toMatch(/^gen_test__\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.png$/);
+      expect(f).toMatch(/^gen_test__\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}_\w{4}\.png$/);
       const fullPath = path.join(dir, 'assets', f);
       const stat = await fs.stat(fullPath);
       expect(stat.isFile()).toBe(true);
