@@ -1,49 +1,68 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
+import type {
+  PolymorphicComponent,
+  PolymorphicProps,
+} from '../lib/polymorphic';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger';
 export type ButtonSize = 'small' | 'normal';
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+/** The `Button`-specific props, independent of the rendered element. */
+export interface ButtonOwnProps {
   /** Visual variant. Default: `primary`. */
   variant?: ButtonVariant;
   /** Size modifier. Default: `normal`. */
   size?: ButtonSize;
-  /**
-   * Render as a different element (e.g. a Next.js `<Link>`). The
-   * component will spread its props onto the rendered element.
-   */
-  as?: React.ElementType;
 }
+
+/**
+ * Props for `Button` rendered as element `C` (defaults to `button`).
+ * Includes the intrinsic props of `C` plus {@link ButtonOwnProps} and
+ * the `as` prop.
+ */
+export type ButtonProps<C extends React.ElementType = 'button'> =
+  PolymorphicProps<C, ButtonOwnProps>;
 
 /**
  * Thin React wrapper around the shared `.btn` / `.btn--*` classes
  * defined in `@las-flores/ui/styles/components.css`.
  *
- * Opt-in: pages that prefer composing classes with `cn()` can
- * ignore this component. The CSS contract is the source of truth
- * — see `docs/UI_STYLE_SYSTEM.md`.
+ * Polymorphic: pass `as` to render as a different element or component
+ * (e.g. a Next.js `<Link>`); props and the forwarded `ref` are typed
+ * for the rendered element.
+ *
+ * Opt-in: pages that prefer composing classes with `cn()` can ignore
+ * this component. The CSS contract is the source of truth — see
+ * `docs/UI_STYLE_SYSTEM.md`.
  */
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(
-    { variant = 'primary', size = 'normal', className, as: asChild, ...rest },
-    ref,
-  ) {
-    const Component: React.ElementType = asChild ?? 'button';
-    return (
-      <Component
-        ref={ref}
-        className={cn(
-          'btn',
-          variant === 'primary' && 'btn--primary',
-          variant === 'secondary' && 'btn--secondary',
-          variant === 'danger' && 'btn--danger',
-          size === 'small' && 'btn--small',
-          className,
-        )}
-        {...rest}
-      />
-    );
-  },
-);
+export const Button = React.forwardRef(function Button<
+  C extends React.ElementType = 'button',
+>(
+  {
+    as,
+    variant = 'primary',
+    size = 'normal',
+    className,
+    ...rest
+  }: ButtonProps<C>,
+  ref: React.ForwardedRef<Element>,
+) {
+  const Component = (as ?? 'button') as React.ElementType;
+  return (
+    <Component
+      ref={ref}
+      className={cn(
+        'btn',
+        variant === 'primary' && 'btn--primary',
+        variant === 'secondary' && 'btn--secondary',
+        variant === 'danger' && 'btn--danger',
+        size === 'small' && 'btn--small',
+        className,
+      )}
+      {...rest}
+    />
+  );
+}) as PolymorphicComponent<'button', ButtonOwnProps>;
+
+Button.displayName = 'Button';

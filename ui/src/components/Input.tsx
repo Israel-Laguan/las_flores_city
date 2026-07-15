@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
+import type {
+  PolymorphicComponent,
+  PolymorphicProps,
+} from '../lib/polymorphic';
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  /**
-   * Render as a different element (e.g. a `textarea` or a custom
-   * wrapper). The component spreads its props onto the rendered
-   * element.
-   */
-  as?: React.ElementType;
-}
+/**
+ * Props for `Input` rendered as element `C` (defaults to `input`).
+ * Pass `as` to render as another element (e.g. `'textarea'`); props
+ * and the forwarded `ref` are typed for the rendered element.
+ */
+export type InputProps<C extends React.ElementType = 'input'> =
+  PolymorphicProps<C>;
 
 /**
  * Thin React wrapper around the shared `.input` class defined in
@@ -17,15 +19,11 @@ export interface InputProps
  * 100% width by default (the CSS rule already enforces that, but
  * keeping it here documents the contract for callers).
  */
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  function Input({ className, as: asChild, ...rest }, ref) {
-    const Component: React.ElementType = asChild ?? 'input';
-    return (
-      <Component
-        ref={ref}
-        className={cn('input', className)}
-        {...rest}
-      />
-    );
-  },
-);
+export const Input = React.forwardRef(function Input<
+  C extends React.ElementType = 'input',
+>({ as, className, ...rest }: InputProps<C>, ref: React.ForwardedRef<Element>) {
+  const Component = (as ?? 'input') as React.ElementType;
+  return <Component ref={ref} className={cn('input', className)} {...rest} />;
+}) as PolymorphicComponent<'input'>;
+
+Input.displayName = 'Input';

@@ -10,10 +10,24 @@ export type { ClassValue } from './lib/cn';
 export { Button, Input, Card, Badge } from './components';
 export type {
   ButtonProps,
+  ButtonOwnProps,
   ButtonVariant,
   ButtonSize,
   InputProps,
   CardProps,
+  CardOwnProps,
   BadgeProps,
+  BadgeOwnProps,
   BadgeVariant,
 } from './components';
+
+// Polymorphic type helpers, exported for consumers building their own
+// `as`-based wrappers on top of the shared contract.
+export type {
+  Merge,
+  AsProp,
+  PolymorphicProps,
+  PolymorphicPropsWithRef,
+  PolymorphicRef,
+  PolymorphicComponent,
+} from './lib/polymorphic';

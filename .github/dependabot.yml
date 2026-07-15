@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # npm dependencies — weekly, grouped to reduce PR noise
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      # Patch updates (bug fixes, security) — auto-merge candidate
+      patches:
+        update-types:
+          - "patch"
+      # Minor updates (new features, non-breaking) — review needed
+      minors:
+        update-types:
+          - "minor"
+    # Major updates get individual PRs for careful review
+    open-pull-requests-limit: 10
+    reviewers: []
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # GitHub Actions — weekly
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      actions:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "ci"
