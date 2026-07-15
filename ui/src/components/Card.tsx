@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
-import type {
-  PolymorphicComponent,
-  PolymorphicProps,
-} from '../lib/polymorphic';
+import type { PolymorphicProps, PolymorphicPropsWithRef } from '../lib/polymorphic';
 
 /** The `Card`-specific props, independent of the rendered element. */
 export interface CardOwnProps {
@@ -42,12 +39,16 @@ export type CardProps<C extends React.ElementType = 'div'> = PolymorphicProps<
  * as a different element (e.g. an `<article>` or a Next.js
  * `<Link>`).
  */
-export const Card = React.forwardRef(function Card<
-  C extends React.ElementType = 'div',
->(
-  { as, header, title, meta, className, children, ...rest }: CardProps<C>,
-  ref: React.ForwardedRef<Element>,
-) {
+export function Card<C extends React.ElementType = 'div'>({
+  as,
+  header,
+  title,
+  meta,
+  className,
+  children,
+  ref,
+  ...rest
+}: PolymorphicPropsWithRef<C, CardOwnProps>) {
   const Component = (as ?? 'div') as React.ElementType;
   return (
     <Component ref={ref} className={cn('card', className)} {...rest}>
@@ -61,6 +62,6 @@ export const Card = React.forwardRef(function Card<
       {children}
     </Component>
   );
-}) as PolymorphicComponent<'div', CardOwnProps>;
+}
 
 Card.displayName = 'Card';

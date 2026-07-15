@@ -21,9 +21,9 @@
     "seed:dev": "tsx src/database/seedAdmin.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "~3.1070.0",
-    "@aws-sdk/cloudfront-signer": "~3.1069.0",
-    "@aws-sdk/s3-request-presigner": "~3.1070.0",
+    "@aws-sdk/client-s3": "~3.1087.0",
+    "@aws-sdk/cloudfront-signer": "~3.1087.0",
+    "@aws-sdk/s3-request-presigner": "~3.1087.0",
     "bcryptjs": "~3.0.3",
     "cors": "~2.8.6",
     "dotenv": "~16.6.1",

@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
-import type {
-  PolymorphicComponent,
-  PolymorphicProps,
-} from '../lib/polymorphic';
+import type { PolymorphicProps, PolymorphicPropsWithRef } from '../lib/polymorphic';
 
 /**
  * Props for `Input` rendered as element `C` (defaults to `input`).
@@ -19,11 +16,14 @@ export type InputProps<C extends React.ElementType = 'input'> =
  * 100% width by default (the CSS rule already enforces that, but
  * keeping it here documents the contract for callers).
  */
-export const Input = React.forwardRef(function Input<
-  C extends React.ElementType = 'input',
->({ as, className, ...rest }: InputProps<C>, ref: React.ForwardedRef<Element>) {
+export function Input<C extends React.ElementType = 'input'>({
+  as,
+  className,
+  ref,
+  ...rest
+}: PolymorphicPropsWithRef<C>) {
   const Component = (as ?? 'input') as React.ElementType;
   return <Component ref={ref} className={cn('input', className)} {...rest} />;
-}) as PolymorphicComponent<'input'>;
+}
 
 Input.displayName = 'Input';

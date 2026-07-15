@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
-import type {
-  PolymorphicComponent,
-  PolymorphicProps,
-} from '../lib/polymorphic';
+import type { PolymorphicProps, PolymorphicPropsWithRef } from '../lib/polymorphic';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger';
 export type ButtonSize = 'small' | 'normal';
@@ -36,18 +33,14 @@ export type ButtonProps<C extends React.ElementType = 'button'> =
  * this component. The CSS contract is the source of truth — see
  * `docs/UI_STYLE_SYSTEM.md`.
  */
-export const Button = React.forwardRef(function Button<
-  C extends React.ElementType = 'button',
->(
-  {
-    as,
-    variant = 'primary',
-    size = 'normal',
-    className,
-    ...rest
-  }: ButtonProps<C>,
-  ref: React.ForwardedRef<Element>,
-) {
+export function Button<C extends React.ElementType = 'button'>({
+  as,
+  variant = 'primary',
+  size = 'normal',
+  className,
+  ref,
+  ...rest
+}: PolymorphicPropsWithRef<C, ButtonOwnProps>) {
   const Component = (as ?? 'button') as React.ElementType;
   return (
     <Component
@@ -63,6 +56,6 @@ export const Button = React.forwardRef(function Button<
       {...rest}
     />
   );
-}) as PolymorphicComponent<'button', ButtonOwnProps>;
+}
 
 Button.displayName = 'Button';

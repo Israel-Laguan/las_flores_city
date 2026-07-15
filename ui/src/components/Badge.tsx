@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { cn } from '../lib/cn';
-import type {
-  PolymorphicComponent,
-  PolymorphicProps,
-} from '../lib/polymorphic';
+import type { PolymorphicProps, PolymorphicPropsWithRef } from '../lib/polymorphic';
 
 export type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted';
 
@@ -31,12 +28,13 @@ export type BadgeProps<C extends React.ElementType = 'span'> =
  * slight background-color difference) or be migrated to this
  * wrapper at the caller's discretion.
  */
-export const Badge = React.forwardRef(function Badge<
-  C extends React.ElementType = 'span',
->(
-  { as, variant = 'info', className, ...rest }: BadgeProps<C>,
-  ref: React.ForwardedRef<Element>,
-) {
+export function Badge<C extends React.ElementType = 'span'>({
+  as,
+  variant = 'info',
+  className,
+  ref,
+  ...rest
+}: PolymorphicPropsWithRef<C, BadgeOwnProps>) {
   const Component = (as ?? 'span') as React.ElementType;
   return (
     <Component
@@ -53,6 +51,6 @@ export const Badge = React.forwardRef(function Badge<
       {...rest}
     />
   );
-}) as PolymorphicComponent<'span', BadgeOwnProps>;
+}
 
 Badge.displayName = 'Badge';
