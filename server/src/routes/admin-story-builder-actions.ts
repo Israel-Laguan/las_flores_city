@@ -1,9 +1,12 @@
+import path from 'node:path';
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
+import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir } from '../services/LocalDraftService.js';
+import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -134,6 +137,46 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
     }
 
     const stagingResult = await stagePlan(plan);
+
+    // Auto-generate local drafts for pending asset needs (non-fatal on error)
+    if (stagingResult.success) {
+      const contentDir = path.resolve(process.cwd(), 'content');
+      try {
+        for (const item of plan.items) {
+          const pendingNeeds = item.assetNeeds.filter(n => n.status === 'pending');
+          if (pendingNeeds.length === 0) continue;
+
+          const entityRoot = resolveEntityRootDir(item, contentDir);
+          await generateLocalDrafts(item, entityRoot, 1);
+
+          // Auto-choose the first available draft
+          const assets = await listLocalAssets(entityRoot);
+          if (assets.length > 0) {
+            const firstDraft = assets[0].filename;
+            for (const need of pendingNeeds) {
+              markDrafted(need);
+            }
+            // Choose the first asset (default or generated)
+            const firstNeed = pendingNeeds[0];
+            if (firstNeed) {
+              const assetFieldName = firstNeed.targetField.split('.').pop()!;
+              if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
+              (item.fields as any).asset_paths[assetFieldName] = firstDraft;
+              for (const need of pendingNeeds) {
+                markChosen(need);
+              }
+            }
+          }
+        }
+        // Persist auto-draft selections back to the plan
+        await queryOLTP(
+          'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+          [plan, id]
+        );
+      } catch (err: any) {
+        console.warn(`[story-builder] Auto-draft generation failed (non-fatal): ${err.message}`);
+      }
+    }
 
     const newStatus = stagingResult.success ? 'staged' : 'failed';
     await queryOLTP(
