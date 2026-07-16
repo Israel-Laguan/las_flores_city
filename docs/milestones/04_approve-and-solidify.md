@@ -13,8 +13,10 @@ When the user clicks **Approve**:
 2. The orchestrator writes the YAML + lore `.md` + prompt `.md` to disk
    (`status='staged'`).
 3. The orchestrator uploads the chosen draft for each `AssetNeed` to
-   MinIO with the `.dev.png` suffix and writes the URL into the YAML's
-   `asset_paths.<field>` (`AssetNeed.status='published'`).
+   MinIO at `las-flores/<assetType>/<filename>` (the local filename is
+   preserved as the object key — no `.dev` suffix) and appends a
+   `portrait_urls` entry tagged `label: 'dev'`. The YAML's `asset_paths.<field>`
+   keeps the local filename (`AssetNeed.status='published'`).
 4. The orchestrator runs the migration (`status='migrated'`).
 5. The orchestrator runs the cross-reference verification
    (`status='verified'` or `status='failed'`).
@@ -50,16 +52,16 @@ row.
   - Read the bytes from `assets/<filename>` in the per-entity folder.
   - Upload the bytes to MinIO at `las-flores/<assetType>/<filename>` —
     **the local filename is preserved in the MinIO key** (no `.dev`
-    suffix on the object key; the cascade is recorded in the YAML
-    field `<field>_url` and `<field>_url_staging`, not in the key).
+    suffix; the cascade is recorded as a `label: 'dev'` entry in the
+    `portrait_urls` JSONB array, not in the key).
   - Read the public URL from MinIO.
-  - Write the URL into the DB column `<field>_url` (the canonical /
-    dev-stage URL).
+  - Write the URL into the DB `portrait_urls` JSONB array as a
+    `label: 'dev'` entry (the canonical / dev-stage URL).
   - Set `AssetNeed.status='published'`.
 
   See Milestone 06 for the `promoteToStaging` / `promoteToProduction`
-  methods that copy the dev URL into `<field>_url_staging` and
-  `<field>_url_production`.
+  methods that append `label: 'staging'` / `label: 'production'` entries
+  to the `portrait_urls` JSONB array.
 
 ### New route
 
@@ -164,7 +166,7 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
         const objectKey = `las-flores/${assetType}/${localFilename}`;
         const url = await uploadToMinio(buf, objectKey, 'image/png');
 
-        // Write the URL into the DB column (e.g. characters.portrait_url).
+        // Write the URL into the DB `portrait_urls` JSONB array (label: 'dev').
         // The YAML's asset_paths.<field> keeps the local filename.
         await setItemAssetUrl(item, need.promptType, url);
 
@@ -207,7 +209,7 @@ The "Results" step now shows:
   4. Choose one draft.
   5. Call `POST /approve-and-solidify`.
   6. Verify the plan status is `verified`.
-  7. Verify the YAML on disk has the `.dev.png` references.
+  7. Verify the YAML on disk keeps `asset_paths.<field>` as the local filename and `portrait_urls` has a `label:'dev'` entry with the MinIO URL.
   8. Verify the MinIO bucket has the chosen local PNG (with the
      original filename, no `.dev` suffix).
   9. Verify the DB row has the dev URL.
@@ -220,13 +222,13 @@ The "Results" step now shows:
 1. A new plan created via the admin UI can be approved in one click.
 2. The approve operation:
    - Writes the YAML, lore, and prompt files to disk.
-   - Uploads chosen drafts to MinIO with `.dev.png` suffix.
+   - Uploads chosen drafts to MinIO at the local filename (no suffix) and tags the `portrait_urls` entry `label:'dev'`.
    - Migrates the DB.
    - Runs verification.
    - Sets `status='verified'` on success.
 3. The verification report is visible on the `/story-builder/plans` page.
-4. The MinIO bucket has the `.dev.png` objects for every published asset.
-5. The DB `characters.portrait_url` column has the dev URL.
+4. The MinIO bucket has one object per published asset (local filename preserved, no suffix) and `portrait_urls` has a `label:'dev'` entry for each.
+5. The DB `characters.portrait_urls` JSONB has a `label:'dev'` entry with the MinIO URL.
 6. `npm run lint --workspace=server` → 0 errors.
 7. `npm run test --workspace=server` → all green.
 8. `npm run build --workspace=server` → passes.

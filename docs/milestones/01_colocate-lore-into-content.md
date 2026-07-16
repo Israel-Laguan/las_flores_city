@@ -1,5 +1,10 @@
 # Milestone 01 — Colocate lore into `content/`
 
+> **Status: IMPLEMENTED.** File moves done via `scripts/move-lore-to-content.sh`.
+> 199 character folders, 81 location folders, 18 scene folders, 2 overlay
+> folders, 1 mission folder. `docs/lore/figures/` deleted. Remaining work:
+> scripts reorganization (T4) and docs updates (T6) still pending.
+
 ## Goal
 
 Move every per-entity lore file from `docs/lore/figures/<slug>/` and
@@ -61,6 +66,64 @@ None. This is the data foundation; everything else depends on it.
 | `server/src/services/StoryBuilderOrchestrator.ts` | Pass per-folder paths to `ContentSkeletonGenerator` and `LoreGenerator`. |
 | `scripts/migrate-content-paths.mjs` | Either delete (conventions are now obvious from the folder layout) or update to compute paths from the YAML's directory. |
 | `start-stack.sh` | Remove or update `PROMPT_ROOT` env var — the asset pipeline reads prompts from `content/` now. |
+| `server/src/services/LoreGenerator.ts` | Change `loreRoot` (line 22, currently `path.resolve(process.cwd(), 'docs', 'lore')`) so generated lore is written into the per-entity folder `content/<type>/<slug>/<slug>.md` instead of `docs/lore/`. Update the path-safety check to validate against `contentDir`, not `loreRoot`. |
+| `server/src/services/PromptFileGenerator.ts` | Change `promptsRoot` (line 29, currently `path.resolve(contentDir, '..', 'docs', 'lore', 'assets', 'prompts')`) so `.prompt.md` files are written into the per-entity folder `content/<type>/<slug>/<slug>.prompt.md` (matching the per-folder layout), not `docs/lore/assets/prompts/`. |
+| `scripts/import-drafts.mjs` | **Retire (delete).** It creates its own `pg.Pool` and MinIO client, violating the layering contract (see `00_README.md`). The server route `GET /assets/import-drafts` (`server/src/routes/assets-import.ts`, backed by `assets-import.drafts.ts`) does the same filesystem → MinIO → Postgres work using the canonical `queryOLTP` / `StorageService` patterns. |
+
+### Scripts and registries to reorganize
+
+The asset-generation pipeline scripts and their registries currently live
+under `docs/lore/assets/`. Per the layering contract, dev-time tools move to
+`scripts/` and `docs/lore/` shrinks to world-level research. Move everything
+with `git mv` (one commit per sub-step) and update any hardcoded paths.
+
+- **9 live scripts → `scripts/asset-pipeline/scripts/`** (the audit report
+  Bucket 1.2 set, including the deprecated `generate-nim-drafts.mjs` shim):
+  `generate-prompt.mjs`, `verify-assets.mjs`, `generate-drafts-unified.mjs`,
+  `generate-pollinations-drafts.mjs`, `generate-drafts.sh`,
+  `generate-nim-drafts.mjs`, `check-prompt-lengths.mjs`, `RUN_GENERATION_PROMPT.md`,
+  `generate-drafts-state.tsv`.
+- **12 registries → `scripts/asset-pipeline/registries/`**: `tiles.yaml`,
+  `landmarks.yaml`, `backgrounds.yaml`, `app_icons.yaml`, `phone_wallpapers.yaml`,
+  `body_shapes.yaml`, `ethnicities.yaml`, `movesets.yaml`, `poses.yaml`,
+  `personality_poses.yaml`, `expressions.yaml`, `style_prefix.yaml`.
+  - `style_prefix.yaml` is currently dead (not loaded by any script, see audit
+    report §1.1) — either wire it into `refactor-prompts.mjs` or delete it.
+- **15 one-off scripts → `scripts/asset-pipeline/archive/`** (audit report
+  Bucket 3.1): `backfill-draft-prompts.mjs`, `cleanup-duplicate-text.mjs`,
+  `clean-prompts-for-gen.mjs`, `enrich-prompt-descriptions.mjs`,
+  `extract-biometrics.mjs`, `fix-prompt-placeholders.mjs`, `fix-prompt-sources.mjs`,
+  `fix-vst-prompts.mjs`, `migrate-lore-layout.mjs`, `migrate-lore-layout-v2.mjs`,
+  `refactor-place-prompts.mjs`, `refactor-prompts.mjs`,
+  `update-physical-descriptions.mjs`, `generate_ui_assets.py`, `generate-style-test.sh`.
+- **Delete** stale output reports and handoff prompts under
+  `docs/lore/assets/`: `biometrics-report.json`, `missing-characteristics-report.md`,
+  `needs-character-details.md`, and the `references/CONTINUE_*.md` / `NEXT_STEPS_PROMPT.md`
+  handoff prompts (track pending work in GitHub issues instead).
+- **Update `generate-prompt.mjs`** (DONE as part of the M01 file move): the
+  hardcoded registry path (line 708: `path.resolve('docs/lore/assets/registries')`)
+  was repointed to `scripts/asset-pipeline/registries`, and the `Usage` header
+  examples (lines 16-17) now reference `scripts/asset-pipeline/registries/` and
+  `content/...` output dirs. All `**Target:**` output-hint references inside the
+  generated `.prompt.md` content were redirected to the per-entity layout,
+  consistent with the `**Source:**` field above each and the M01/M03 "flat
+  `assets/` bag, no sub-folders" rule:
+    - `biometric/`, `expressions/`, `outfits/` (lines 367 / 454 / 476) →
+      `content/characters/${slug}/assets/`
+    - `figures/` character-sheet (line 504) → `content/characters/${slug}/assets/`
+    - `landmarks/` location-map (line 555) → `content/locations/${slug}/${slug}.map.md`
+      (a `.map.md` data doc, so it lands as an entity-folder sibling next to the
+      YAML/lore, not in the image `assets/` bag)
+  These are documentation hints only (the script emits `.prompt.md` text; the
+  `**Target:**` strings themselves are not read by any code), so redirecting them
+  is behavior-neutral. NOTE: the script's *actual* output-routing code — lines
+  ~959/963 resolve `path.resolve('docs/lore/figures', slug)` /
+  `path.resolve('docs/lore/landmarks', slug)`, and line ~996 computes
+  `meta.sourcePath` relative to `docs/lore` — still writes to (and reads from)
+  the legacy `docs/lore/figures` / `docs/lore/landmarks` directories. Repointing
+  that generation *output* to the `content/` per-folder layout is a genuine
+  behavior change (not just a doc string) and is intentionally out of scope here;
+  it is tracked as a follow-up in Milestone 03 (local image drafts).
 
 ### YAML files to update (~130 characters + ~60 locations + ~150 scenes)
 - Rewrite `lore_path: docs/lore/figures/<slug>/<slug>.md` → `lore_path: <slug>.md`.
@@ -79,6 +142,10 @@ None. This is the data foundation; everything else depends on it.
 - `docs/lore/README.md` — rewrite to describe it as world-level research, not engine content.
 - `docs/game_design.md` and `docs/STORY_BUILDER_DESIGN.md` — update references.
 - `AGENTS.md` — update the "current codebase facts" section.
+- `docs/development/asset-pipeline/audit-report.md` — update the proposed
+  archive location from `docs/development/asset-pipeline/archive/scripts/` to
+  `scripts/asset-pipeline/archive/` (this milestone moves those one-off scripts
+  there).
 
 ## Implementation outline
 
@@ -206,7 +273,82 @@ for (const f of files) await rewriteYaml(f);
 Remove `docs/lore/figures/` (now empty after the move).
 Remove `docs/lore/districts/*/landmarks/` (now empty after the move).
 Keep `docs/lore/districts/*/<district>.md` (world-level district reference).
-Keep everything else (`timeline.md`, `geography.md`, `communities/`, etc.).
+Remove `docs/lore/assets/` **entirely** — its scripts are moved to
+`scripts/asset-pipeline/scripts/`, its registries to `scripts/asset-pipeline/registries/`,
+its one-off scripts to `scripts/asset-pipeline/archive/`, and its stale output
+reports / handoff prompts are deleted. Keep only world-level research under
+`docs/lore/` (`timeline.md`, `geography.md`, `communities/`, `governance/`,
+`organizations/`, `media/`, `events/`, and world-level `districts/` docs).
+
+### Step 5b: Move dev-time scripts and registries
+
+```bash
+# From the repo root
+mkdir -p scripts/asset-pipeline/scripts scripts/asset-pipeline/registries scripts/asset-pipeline/archive
+
+# 9 live scripts
+git mv docs/lore/assets/scripts/generate-prompt.mjs        scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/verify-assets.mjs          scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/generate-drafts-unified.mjs scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/generate-pollinations-drafts.mjs scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/generate-drafts.sh        scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/generate-nim-drafts.mjs    scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/check-prompt-lengths.mjs   scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/RUN_GENERATION_PROMPT.md   scripts/asset-pipeline/scripts/
+git mv docs/lore/assets/scripts/generate-drafts-state.tsv  scripts/asset-pipeline/scripts/
+
+# 12 registries
+git mv docs/lore/assets/registries/*.yaml                  scripts/asset-pipeline/registries/
+
+# 15 one-off scripts → archive
+git mv docs/lore/assets/scripts/backfill-draft-prompts.mjs    scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/cleanup-duplicate-text.mjs   scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/clean-prompts-for-gen.mjs    scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/enrich-prompt-descriptions.mjs scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/extract-biometrics.mjs        scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/fix-prompt-placeholders.mjs   scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/fix-prompt-sources.mjs        scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/fix-vst-prompts.mjs           scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/migrate-lore-layout.mjs       scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/migrate-lore-layout-v2.mjs    scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/refactor-place-prompts.mjs    scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/refactor-prompts.mjs          scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/update-physical-descriptions.mjs scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/generate_ui_assets.py         scripts/asset-pipeline/archive/
+git mv docs/lore/assets/scripts/generate-style-test.sh        scripts/asset-pipeline/archive/
+
+# Stale output + handoff prompts
+git rm docs/lore/assets/biometrics-report.json \
+       docs/lore/assets/missing-characteristics-report.md \
+       docs/lore/assets/needs-character-details.md
+git rm docs/lore/assets/references/CONTINUE_ADMIN_ENHANCEMENTS.md \
+       docs/lore/assets/references/CONTINUE_ASSET_GENERATION_PROMPT.md \
+       docs/lore/assets/references/NEXT_STEPS_PROMPT.md
+```
+
+### Step 5c: Retire `scripts/import-drafts.mjs`
+
+```bash
+git rm scripts/import-drafts.mjs
+```
+
+This script created its own `pg.Pool` + MinIO client and bypassed the server.
+The canonical replacement is the server route `GET /assets/import-drafts`, which
+reads draft folders from the prompt roots and upserts into Postgres using
+`queryOLTP` / `StorageService`. If an offline import is ever needed, add it as a
+route rather than a standalone script with its own DB connection.
+
+### Step 5d: Resolve the ghost `content/package.json`
+
+`content/package.json` declares `name: las-flores-content` but is not in the
+npm `workspaces` array, exports no code, and only wraps server commands
+(`cd ../server && npm run validate`). `content/` is a data directory, not a
+package. Remove it so the boundary is honest; `npm run validate:content` from
+the repo root already works through the server workspace.
+
+```bash
+git rm content/package.json
+```
 
 ### Step 6: Update the code paths
 
@@ -242,6 +384,15 @@ matching still works. **No change needed in `migrate.ts`.**
    returns `{"success":true}`.
 10. A spot-check: open the admin `/characters` page, click on Aisha, the
     lore viewer shows the moved `content/characters/aisha_al_sayed/aisha_al_sayed.md`.
+11. `scripts/asset-pipeline/scripts/` holds the 9 live scripts,
+    `scripts/asset-pipeline/registries/` holds the 12 YAML registries, and
+    `scripts/asset-pipeline/archive/` holds the 15 one-off scripts.
+12. `scripts/import-drafts.mjs` no longer exists; `GET /assets/import-drafts`
+    still works and is the only import path.
+13. `docs/lore/assets/` no longer exists; `docs/lore/` contains only
+    world-level research (no scripts, no registries, no per-entity files).
+14. `content/package.json` no longer exists; `npm run validate:content` from the
+    repo root still passes.
 
 ## Rollback plan
 

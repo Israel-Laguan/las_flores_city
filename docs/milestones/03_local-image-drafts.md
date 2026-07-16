@@ -47,6 +47,18 @@ and creates a DB row. After this milestone, generation goes to local files
 first (flat, in the per-entity `assets/` folder), and the user has a real
 choice between the pre-existing default and newly generated drafts.
 
+> **Offline vs in-app generation.** The draft-generation scripts that live in
+> `scripts/asset-pipeline/scripts/` (`generate-drafts-unified.mjs`,
+> `generate-drafts.sh`, `generate-pollinations-drafts.mjs`) are the **manual /
+> offline** path — a developer runs them from the terminal to produce PNGs in a
+> `content/<type>/<slug>/assets/` folder. This milestone's **in-app** generator
+> uses the server route `POST /plans/:id/generate-drafts` (`admin-story-builder-drafts.ts`)
+> instead. Both write to the same flat `assets/` folder, so the admin selector
+> (Milestone 08) shows every valid file regardless of whether it came from the
+> in-app generator, the offline script, or a hand-dropped file. The offline
+> scripts are dev-time file-to-file tools only — they must never touch MinIO or
+> Postgres directly (see the layering contract in `00_README.md`).
+
 ## Pre-requisites
 
 - Milestone 01 (per-folder layout is in place — each entity has its own
@@ -360,3 +372,44 @@ behavior. The `AssetNeed.status='drafted'` is a new enum value; if a plan
 is in this state and the code is rolled back, the wizard will treat it as
 an invalid status — but no data is lost, just inaccessible until the code
 is restored. MinIO is untouched.
+
+## Follow-up: repoint the offline generator's actual output routing
+
+The offline `generate-prompt.mjs` (now at `scripts/asset-pipeline/scripts/`)
+still hard-codes the **legacy layout in its real output-writing code**, which
+Milestone 01 deleted:
+
+```js
+// scripts/asset-pipeline/scripts/generate-prompt.mjs
+const dir = path.resolve('docs/lore/figures', slug);     // biometric / character-sheet  (~line 959)
+const dir = path.resolve('docs/lore/landmarks', slug);   // location-map                (~line 963)
+meta.sourcePath = path.relative(path.resolve('docs/lore'), filePath)  // ~line 996
+```
+
+So although Milestone 01 redirected the `**Target:**` *hint strings* inside the
+generated `.prompt.md` content (lines 367 / 454 / 476 / 504 / 555) to the
+`content/` per-folder layout, the script's **actual** input/output routing still
+reads from and writes to the removed `docs/lore/figures` / `docs/lore/landmarks`
+directories. Running the offline generator against the new structure would
+write `.prompt.md` files into deleted paths (or create orphan dirs).
+
+This is a genuine **behavior change** (repointing generation I/O to `content/`),
+not a doc string, so it was intentionally left out of M01/M02. It belongs here
+because M03 is where the offline draft-generation scripts and the in-app
+generator meet the `content/<type>/<slug>/assets/` flat bag.
+
+**Scope of this follow-up (separate step, not part of M03's main deliverable):**
+- Repoint the output routing in `processFile()` (lines ~959/963) to write the
+  generated `.prompt.md` / `.map.md` into the per-entity folder
+  (`content/characters/<slug>/assets/` for biometric / character-sheet,
+  `content/locations/<slug>/` sibling for location-map `.map.md`), consistent
+  with the redirected `**Target:**` hints.
+- Repoint `meta.sourcePath` (line ~996) to be relative to the repo root (or
+  `content/`) so the embedded `**Source:**` path matches the colocated layout.
+- Decide input mode: the lore-based `--source` / `--batch` examples still assume
+  `docs/lore/figures/` inputs; either update the examples or document that the
+  offline generator now takes `content/<type>/<slug>/<prefix><slug>.yaml` inputs.
+- Add a test that runs the offline generator against a per-folder `content/`
+  entity and asserts the `.prompt.md` lands in the right `assets/` bag.
+
+**Acceptance:** `grep -rn 'docs/lore/figures\\|docs/lore/landmarks' scripts/asset-pipeline/scripts/generate-prompt.mjs` returns nothing, and the generator writes into `content/` when pointed at a colocated entity.

@@ -1,34 +1,38 @@
-# Milestone 06 — MinIO environment stages (`.dev`, `.staging`, bare)
+# Milestone 06 — Asset cascade via `portrait_urls` JSONB labels (dev/staging/production)
 
 ## Goal
 
-Add the three-stage cascade that supports the user's flow:
-- **dev** (canonical / local-authoring source of truth): the MinIO object
-  that M04 uploaded from the chosen local file. The DB column
-  `<field>_url` (e.g. `portrait_url`) holds this URL.
-- **staging**: manual QA-promoted. A reviewer in admin moves the dev URL
-  into `<field>_url_staging` when the content is ready for broader review.
-  The MinIO object is the **same** as the dev object (no copy); only the
-  DB column is updated.
-- **production**: the deploy pipeline promotes staging to production by
-  copying the dev-object bytes to a new `<field>_url_production` URL.
-  In a typical setup, production points to the same MinIO object as
-  dev (since they are byte-identical); the difference is the **label** on
-  the DB column that the client picks.
+Add the three-stage cascade that supports the user's flow, implemented
+entirely inside the existing `portrait_urls` JSONB array — **no new DB
+columns**.
 
-**No suffixed object keys in MinIO.** Per the user's revision, the local
-on-disk filename is preserved through to MinIO. The cascade is recorded
-in the **DB columns**, not in the object key:
+The YAML already carries two fields (documented in 00_README "Conventions"):
+- `asset_paths.<field>` — the **local selected** asset (relative filename
+  inside `assets/`). Authoring state.
+- `portrait_urls[]` — the **canonical selected** asset(s): the MinIO URLs the
+  game client fetches. Delivery state.
 
-- `<field>_url` (e.g. `portrait_url`) — the dev URL (set by M04).
-- `<field>_url_staging` (e.g. `portrait_url_staging`) — the staging URL
-  (set by manual promotion in M06).
-- `<field>_url_production` (e.g. `portrait_url_production`) — the
-  production URL (set by manual promotion in M06).
+Each `portrait_urls` entry is `{ url, label?, expression? }`. The `label`
+field carries the stage: `dev`, `staging`, or `production`. The cascade is
+resolved by the client (Milestone 07) by filtering entries on `label` in an
+environment-dependent priority order. **There are no `_staging` /
+`_production` TEXT columns** — the JSONB array already models the cascade.
 
-The cascade is resolved at runtime by the client, in Milestone 07.
-The user's earlier "object-key suffix" convention is superseded by this
-simpler model.
+- **dev** (local-authoring source of truth): the MinIO object M04 uploaded
+  from the chosen local file. Written as a `portrait_urls` entry with
+  `label: 'dev'`.
+- **staging**: manual QA-promoted. A reviewer in admin appends a
+  `portrait_urls` entry with `label: 'staging'` (reusing the same MinIO
+  object by default, since the bytes are identical; a new object is uploaded
+  only when the staging image actually differs).
+- **production**: manual/CI-promoted. Appends a `portrait_urls` entry with
+  `label: 'production'`.
+
+**No suffixed object keys in MinIO.** Per 00_README "Conventions" (binding),
+the local filename is preserved as the MinIO object key and the stage lives
+in the `label`, not in the key. Promotion reuses the existing MinIO object
+unless different bytes are supplied. The cascade is resolved by the client
+(Milestone 07).
 
 ## Pre-requisites
 
@@ -42,14 +46,15 @@ simpler model.
 - `server/src/services/AssetPublishService.ts` (from Milestone 04) — extend
   with three methods:
   - `publishDev(item, need)`: uploads the chosen local PNG to MinIO at
-    `las-flores/<assetType>/<filename>` (the local filename is preserved
-    as the object key). Writes the URL into the DB column
-    `<field>_url`.
-  - `promoteToStaging(item, need)`: copies the dev URL into the
-    `<field>_url_staging` DB column. No new MinIO object is created.
-  - `promoteToProduction(item, need)`: copies the dev URL into the
-    `<field>_url_production` DB column. No new MinIO object is created.
-  - `rollbackFromStaging(item, need)`: sets `<field>_url_staging` to NULL.
+    `las-flores/<assetType>/<filename>` (the local filename is preserved as
+    the object key) and upserts a `portrait_urls` entry `label: 'dev'`.
+  - `promoteToStaging(item, need, opts?)`: upserts a `portrait_urls` entry
+    `label: 'staging'`, reusing the dev MinIO object URL by default (or a
+    freshly uploaded object when `opts.newBuffer` differs).
+  - `promoteToProduction(item, need, opts?)`: upserts a `portrait_urls`
+    entry `label: 'production'` (same reuse semantics as staging).
+  - `rollbackFromStaging(item, need)`: removes the `label: 'staging'` entry
+    from the `portrait_urls` JSONB array.
 
 ### New routes
 
@@ -63,42 +68,27 @@ simpler model.
 
 ### Database schema
 
-- `characters` table — add `portrait_url_staging TEXT` and
-  `portrait_url_production TEXT` columns.
-- `scenes` table — same for `background_url_staging` and
-  `background_url_production`.
-- `locations` table — same for `image_url_staging` and
-  `image_url_production`.
-- The existing `portrait_url` column is repurposed to hold the **dev URL**
-  (so the existing migration logic does not change). The new columns hold
-  the staging and production URLs.
-
-```sql
--- server/src/database/migrations/051_asset_stage_columns.sql
-ALTER TABLE characters
-  ADD COLUMN IF NOT EXISTS portrait_url_staging TEXT,
-  ADD COLUMN IF NOT EXISTS portrait_url_production TEXT;
-ALTER TABLE scenes
-  ADD COLUMN IF NOT EXISTS background_url_staging TEXT,
-  ADD COLUMN IF NOT EXISTS background_url_production TEXT;
-ALTER TABLE locations
-  ADD COLUMN IF NOT EXISTS image_url_staging TEXT,
-  ADD COLUMN IF NOT EXISTS image_url_production TEXT;
-```
+**No schema change.** `characters.portrait_urls` (and the analogous JSONB
+columns on `scenes` / `locations`) already exist (migration 038 + the
+per-table columns). The cascade is stored as `label`-tagged entries inside
+those arrays. Do **not** add `portrait_url_staging` / `portrait_url_production`
+TEXT columns — that duplicates state the JSONB already models and was rejected
+in favor of the label approach. The previously planned migration
+`051_asset_stage_columns.sql` is therefore **removed**.
 
 ### Deploy pipeline
 
 - The deploy script (`start-stack.sh` for dev, `docker-compose.prod.yml` for
-  prod) does NOT need to change — MinIO has all three stages already after
-  the publish/promote flow. The cascade is read by the client (Milestone 07).
+  prod) does NOT need to change — MinIO has the objects and the cascade lives
+  in the `portrait_urls` JSONB array, read by the client (Milestone 07).
 
 ### Admin UI
 
 - `admin/src/app/asset-coverage/` — extend to show per-asset the current
-  state of all three stages (dev/staging/production). Show timestamps for
-  each stage.
-- `admin/src/app/editor/` (or a new `admin/src/app/asset-promotion/`) — add
-  a "Promote to Staging" and "Promote to Production" button per asset.
+  state of all three stages (dev/staging/production) by reading the `label`
+  of each `portrait_urls` entry. Show timestamps for each stage if available.
+- `admin/src/app/asset-promotion/` (new) — add a "Promote to Staging" and
+  "Promote to Production" button per asset that call the new routes.
 
 ## Implementation outline
 
@@ -106,25 +96,50 @@ ALTER TABLE locations
 
 ```ts
 // server/src/services/AssetPublishService.ts (additions)
-export async function promoteToStaging(
-  entity: { type: 'character' | 'scene' | 'location'; id: string; primaryAsset: { type: string; devUrl: string } },
-): Promise<{ stagingUrl: string }> {
-  // The dev URL is already pointing at the MinIO object. For staging, we
-  // can either reuse the same URL (since the bytes are identical) or copy
-  // to a new key. Per the user's revision, the cascade lives in the DB
-  // columns, so we simply copy the dev URL into the staging column.
-  // (If a future use-case requires a different staging image, this is
-  // the place to upload different bytes.)
-  const stagingUrl = entity.primaryAsset.devUrl;
+import { uploadToMinio } from '../services/StorageService.js';
 
+type Stage = 'dev' | 'staging' | 'production';
+
+// Upsert (replace any existing entry with the same label) a stage entry
+// in the entity's portrait_urls JSONB array. By default promotion reuses the
+// dev MinIO object URL; when `newBuffer` is supplied a new object is uploaded
+// first.
+export async function upsertStageEntry(
+  table: 'characters' | 'scenes' | 'locations',
+  column: 'portrait_urls' | 'image_url' | 'background_url',
+  id: string,
+  stage: Stage,
+  url: string,
+  expression?: string,
+): Promise<void> {
   await queryOLTP(
-    `UPDATE ${entity.type}s SET ${entity.primaryAsset.type}_url_staging = $1 WHERE id = $2`,
-    [stagingUrl, entity.id]
+    `UPDATE ${table}
+       SET ${column} = COALESCE(
+         (SELECT jsonb_agg(e) FROM jsonb_array_elements(${column}) e
+            WHERE e->>'label' IS DISTINCT FROM $2),
+         '[]'::jsonb
+       ) || jsonb_build_object('url', $3, 'label', $2, 'expression', $4)
+     WHERE id = $1`,
+    [id, stage, url, expression ?? null],
   );
+}
 
+export async function promoteToStaging(
+  item: { type: 'character' | 'scene' | 'location'; id: string },
+  devUrl: string,
+  newBuffer?: Buffer,
+): Promise<{ stagingUrl: string }> {
+  const stagingUrl = newBuffer
+    ? await uploadToMinio(newBuffer, /* computed key */ '', 'image/png')
+    : devUrl;
+  await upsertStageEntry(`${item.type}s`, 'portrait_urls', item.id, 'staging', stagingUrl);
   return { stagingUrl };
 }
 ```
+
+`promoteToProduction` follows the same shape with `stage: 'production'`.
+`rollbackFromStaging` removes the `label: 'staging'` entry using the same
+`COALESCE(jsonb_agg(...))` filter minus the append.
 
 `promoteToProduction` and `rollbackFromStaging` follow the same pattern.
 
@@ -154,53 +169,59 @@ This is what the user picked. Examples: `<slug>__default.png`,
 `<slug>__<timestamp>.png`. The YAML is the source of truth for the local
 selection.
 
-**DB `<field>_url` family** — the **canonical selected asset**: the
-MinIO URL(s) for the entity, written by the publish step (M04) and the
-promotion flow (M06). Three columns per field:
+**`portrait_urls[]` JSONB** — the **canonical selected asset(s)**: the MinIO
+URL(s) for the entity, written by the publish step (M04) and the promotion
+flow (M06). Three logical stages, modelled as `label`-tagged entries in one
+array:
 
-- `<field>_url` — dev (set by M04 from the chosen local file).
-- `<field>_url_staging` — staging (set by `promoteToStaging` in M06).
-- `<field>_url_production` — production (set by `promoteToProduction`).
+- `{ url, label: 'dev' }` — written by M04 from the chosen local file.
+- `{ url, label: 'staging' }` — appended by `promoteToStaging` in M06.
+- `{ url, label: 'production' }` — appended by `promoteToProduction` in M06.
 
-The client's `resolveAssetUrl()` (M07) reads from these DB columns, not
-from the YAML. The YAML is local-authoring state; the DB is delivery state.
+The client's `resolveAssetUrl()` (M07) reads from this JSONB array by `label`,
+not from the YAML and not from separate columns. The YAML is local-authoring
+state; the JSONB array is delivery state.
 
 ## Tests to add or update
 
 - `server/tests/integration/asset-promotion.test.ts` — new file. End-to-end:
-  1. Approve a plan with one character (publishes `.dev.png` to MinIO).
-  2. Promote to staging (copies `.dev.png` to `.staging.png`).
-  3. Promote to production (copies `.staging.png` to bare `.png`).
-  4. Rollback from dev (deletes `.dev.png`, sets
-     `AssetNeed.status='drafted'`).
-  5. Verify the DB columns have the right values.
-- `server/tests/unit/AssetPublishService.test.ts` — new file. Unit tests
-  for the three promotion methods, mocking `uploadToMinio` and
-  `downloadFromMinio`.
+  1. Approve a plan with one character (publishes to MinIO; `portrait_urls`
+     gains a `label: 'dev'` entry).
+  2. Promote to staging (`portrait_urls` gains a `label: 'staging'` entry; by
+     default the same MinIO URL as dev).
+  3. Promote to production (`portrait_urls` gains a `label: 'production'` entry).
+  4. Rollback from staging (the `label: 'staging'` entry is removed; `dev` and
+     `production` entries remain).
+  5. Verify the `portrait_urls` JSONB array has the expected `label` entries.
+- `server/tests/unit/AssetPublishService.test.ts` — new file. Unit tests for
+  the promotion methods, mocking `uploadToMinio` and `queryOLTP`, asserting the
+  correct `label`-tagged entries are upserted/removed.
 
 ## Validation gate
 
 1. After approving a plan, the MinIO bucket has one object per published
    asset (the chosen local PNG, with the original filename like
-   `<slug>__default.png` (the historical default) or any other file the user picked).
-2. The DB column `<field>_url` (e.g. `portrait_url`) holds the MinIO URL.
-3. After clicking "Promote to Staging", the DB column
-   `<field>_url_staging` is set to the same MinIO URL (cascade is
-   recorded in the column, not the object key).
-4. After clicking "Promote to Production", the DB column
-   `<field>_url_production` is set to the same MinIO URL.
-5. After clicking "Rollback from Staging", the
-   `<field>_url_staging` column is set to NULL.
-6. The promotion flow does not create new MinIO objects (no key copies).
+   `<slug>__default.png` (the historical default) or any other file the user picked)
+   — no `.dev`/`.staging` suffix in the key.
+2. The DB `characters.portrait_urls` JSONB has a `label: 'dev'` entry with
+   the MinIO URL.
+3. After clicking "Promote to Staging", `portrait_urls` has a `label:
+   'staging'` entry (cascade is in the `label`, not the object key).
+4. After clicking "Promote to Production", `portrait_urls` has a `label:
+   'production'` entry.
+5. After clicking "Rollback from Staging", the `label: 'staging'` entry is
+   removed from the array; `dev` and `production` entries remain.
+6. The promotion flow does NOT create new MinIO objects unless different bytes
+   are supplied (no key copies by default).
 7. `npm run lint --workspace=server` → 0 errors.
 8. `npm run test --workspace=server` → all green.
 9. `npm run build --workspace=server` → passes.
 
 ## Rollback plan
 
-The new columns are additive (nullable, no default). The new service
-methods are additive. The new admin page is additive. The promotion
-flow is opt-in — users who don't click the promotion buttons continue
-to see the dev URL in the client (Milestone 07's cascade picks dev
-first anyway). Removing the promotion routes and pages reverts to
-single-stage MinIO.
+No DB columns are added (the cascade is inside the existing `portrait_urls`
+JSONB). The new service methods and admin page are additive. The promotion
+flow is opt-in — entities without `staging`/`production` entries simply fall
+back to `dev` in the client (Milestone 07's cascade picks `dev` first anyway).
+Removing the promotion routes and pages reverts to single-stage MinIO; the
+`portrait_urls` array and its `dev` entries are left intact.

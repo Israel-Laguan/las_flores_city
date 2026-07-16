@@ -41,10 +41,10 @@
    on success. This is the "checked/verified" stage the user requested.
 
 6. **Per-asset environment cascade in MinIO** — every published asset gets
-   three MinIO objects: `<name>.dev.png`, `<name>.staging.png`, `<name>.png`.
-   The YAML stores the dev URL (the local-authoring source of truth), the SQL
-   migration copies the dev URL into the DB row, and the client picks the
-   right stage at runtime based on its environment (local/staging prefers
+   a single MinIO object (the chosen local filename, preserved as-is). The
+   `portrait_urls` JSONB array in the DB carries multiple entries tagged
+   with stage labels (`dev`, `staging`, `production`). The client picks the
+   right entry at runtime based on its environment (local/staging prefers
    dev → staging → production; production prefers production → staging → dev).
 
 ---
@@ -62,8 +62,14 @@ The current pipeline has **silent drift** in three places:
 3. **No way to roll back a bad image** — once a portrait is published to
    MinIO and wired into the YAML, replacing it requires a full manual
    re-publish. There's no staging environment for assets.
+4. **Dev-time scripts that bypass the server** — `scripts/import-drafts.mjs`
+   creates its own `pg.Pool` and MinIO client, duplicating
+   `server/src/routes/assets-import.ts`. `LoreGenerator.ts` and
+   `PromptFileGenerator.ts` still write to stale `docs/lore/` paths instead of
+   `content/`. The server's role as the sole mediator between `content/` and the
+   database is not enforced, so the content boundary is blurry.
 
-The milestones below fix all three, in order.
+The milestones below fix all four, in order.
 
 ---
 
@@ -110,27 +116,57 @@ asset_paths:
 
 The `portrait` field is the **local selected** asset — the file inside
 `assets/` that the user has marked as the one to publish. The
-`canonical_selected_asset` (or the existing `portrait_url` column on
-`characters`) holds the **MinIO URL** for the entity, which is what the
+`canonical_selected_asset` (or the `portrait_urls` JSONB column on
+`characters`) holds the **MinIO URL(s)** for the entity, which is what the
 game client actually fetches.
 
 **No suffixed versions, anywhere.** The local filename (e.g.
 `<slug>__default.png`, `<slug>__2026-07-15T01-30-12.png`, or anything
 else the user dropped in) is preserved as-is on disk AND as the MinIO
 object key. There is no `.dev`/`.staging` suffix on disk or in MinIO.
-The cascade lives in the DB columns (`<field>_url`,
-`<field>_url_staging`, `<field>_url_production`), not in filenames or
-object keys.
+The cascade lives in the `portrait_urls` JSONB array entries (tagged
+with `label`), not in filenames or object keys.
+
+### Content layering contract
+
+The three layers have strict ownership rules. `content/` is the single
+source of truth; the server is the sole mediator between `content/` and the
+runtime stores.
+
+```
+content/          ← dev-mode file database (data only: YAML + .md + .prompt.md + assets/)
+docs/lore/        ← world-level research (markdown only: timeline, geography, communities, ...)
+scripts/          ← dev-time file-to-file tools (produce content/ files, NEVER touch the DB)
+shared/           ← the contract (Zod schemas + types — define what content IS)
+server/           ← the sole mediator (content/ ↔ Postgres, admin ↔ content/)
+```
+
+Binding rules (these are the architecture the milestones implement):
+
+1. **The server is the sole mediator** between `content/` and Postgres / Redis /
+   MinIO. No script may create its own DB pool, Redis client, or MinIO client.
+2. **Scripts produce files, not DB rows.** Dev-time scripts in `scripts/` may
+   read and write files under `content/` and `docs/lore/`, but they must not
+   connect to the database or object storage directly. If a script needs DB
+   access, it calls a server endpoint instead.
+3. **Dashboard reads content through server endpoints only.** The dashboard UI never
+   touches `content/` directly — every read (tree, file, validate, migrate,
+   drafts) goes through an Express route under `server/src/routes/`.
+4. **`content/` contains data only.** No TypeScript, no scripts, no compiled
+   code. The schemas that define content shapes live in `shared/src/schemas/`.
+5. **`docs/lore/` is world-level research.** After Milestone 01 it contains only
+   timeline, geography, communities, governance, organizations, media, events,
+   and world-level district docs — no per-entity files, no scripts, no
+   registries.
 
 **MinIO naming** — the local filename is preserved as the object key.
 There is no `.dev`/`.staging` suffix on the MinIO key; the cascade lives
-in the DB columns (see "Database columns" below). Example for Aisha
-Al-Sayed with `<slug>__default.png` as the chosen local file:
+in the `portrait_urls` JSONB array. Example for Aisha Al-Sayed with
+`<slug>__default.png` as the chosen local file:
 
 - `las-flores/portrait/<slug>__default.png` — single MinIO object that
   holds the canonical image for this entity
-- The DB columns `portrait_url`, `portrait_url_staging`, and
-  `portrait_url_production` carry the cascade (see below).
+- The `portrait_urls` JSONB column carries the cascade (see below).
 
 **Key clarifications:**
 
@@ -142,11 +178,12 @@ Al-Sayed with `<slug>__default.png` as the chosen local file:
   sortable by time and unique). Files dropped in by hand can have any
   name. The admin selector reads the directory and shows every file
   with a valid asset extension.
-- **No suffixed filenames** for the published markers (`.dev.png`,
-  `.staging.png`, `.png` are MinIO object keys, not local filenames).
+- **No suffixed filenames** for the published markers — the local filename
+  is preserved as the MinIO object key. The cascade lives in the
+  `portrait_urls` JSONB array entries, not in filenames or object keys.
 - The YAML is the single source of truth for "which local file is
   selected" (`asset_paths.<field>`) and "what MinIO URL is canonical"
-  (the existing `<field>_url` DB column, written by M04).
+  (the `portrait_urls` JSONB column, written by M04).
 
 After Milestone 01, `docs/lore/` contains only **world-level research**
 (timeline, geography, communities, governance, organizations, media,
@@ -156,67 +193,81 @@ events, world-level district `.md` files, guides, assets/) and
 ### MinIO naming
 
 - **One bucket**: `las-flores`.
-- **One object per stage**, name suffix encodes the stage:
-  - `las-flores/portrait/aisha_al_sayed.dev.png`
-  - `las-flores/portrait/aisha_al_sayed.staging.png`
-  - `las-flores/portrait/aisha_al_sayed.png` (production)
-- **Same key prefix** as the asset type (`portrait/`, `background/`, `biometric/`, `tile/`, `overlay/`).
+- **One object per chosen asset** — the local filename is preserved as the
+  MinIO object key. No `.dev`/`.staging` suffix on the key; the cascade
+  lives in the `portrait_urls` JSONB array (see below).
+  - `las-flores/portrait/<slug>__default.png` — single canonical object
+- **Same key prefix** as the asset type (`portrait/`, `background/`,
+  `biometric/`, `tile/`, `overlay/`).
 
 ### Database columns
 
-- `characters.portrait_url` (existing) — stores the dev URL.
-- `characters.portrait_url_staging` (new) — stores the staging URL.
-- `characters.portrait_url_production` (new) — stores the production URL.
-- Same pattern for any other asset-bearing field (background, biometric, tile, overlay).
+Asset URLs are stored in a `JSONB` array, not as separate TEXT columns.
 
-The migration copies the dev URL into the production column by default;
-manual QA moves a URL from staging → production via admin.
+- `characters.portrait_urls` (`JSONB`, migration 038) — array of
+  `{ url, label?, expression? }` objects. Each entry is a MinIO URL
+  for a published portrait variant. The first entry (`[0]`) is the
+  canonical/dev URL.
+- `characters.avatar_url` (`VARCHAR(500)`) — legacy single URL.
+- `characters.atlas_url` (`TEXT`) — atlas/biometric sheet URL.
+- Same pattern for scenes (`image_url`, `background_url`) and other
+  asset-bearing tables.
+
+The `portrait_urls` JSONB array carries the cascade: the client picks
+the appropriate entry based on its environment. No separate staging
+or production columns are needed — the array entries are tagged with
+`label` when uploaded at different stages.
 
 ### Client cascade (in `client/src/services/assetResolver.ts` — new file)
 
 ```ts
 const ENV = import.meta.env.MODE; // 'development' | 'staging' | 'production'
 
-const STAGE_PRIORITY: Record<string, string[]> = {
+// Labels that identify which stage an entry in portrait_urls represents.
+const STAGE_LABELS: Record<string, string[]> = {
   development: ['dev', 'staging', 'production'],
   staging:     ['dev', 'staging', 'production'],
   production:  ['production', 'staging', 'dev'],
 };
 
-export function resolveAssetUrl(entity: { portrait_url?: string; portrait_url_staging?: string; portrait_url_production?: string }): string | null {
-  for (const stage of STAGE_PRIORITY[ENV]) {
-    const url = entity[`portrait_url_${stage === 'production' ? 'production' : stage}` as keyof typeof entity];
-    if (url) return url;
+interface AssetEntry { url: string; label?: string; expression?: string; }
+
+export function resolveAssetUrl(portraitUrls: AssetEntry[]): string | null {
+  for (const stageLabel of STAGE_LABELS[ENV]) {
+    const match = portraitUrls.find(e => e.label === stageLabel);
+    if (match) return match.url;
   }
-  return null;
+  // Fallback: first entry (canonical)
+  return portraitUrls[0]?.url ?? null;
 }
 ```
 
-This is the single function the game client uses to resolve any asset URL.
-Replacing a portrait in dev is now: upload the new image to MinIO with the
-`.dev` suffix, run the migration, the client picks it up. No code change.
+This is the single function the game client uses to resolve any asset URL
+from the `portrait_urls` JSONB array. Replacing a portrait in dev is:
+upload the new image to MinIO, add an entry with `label: 'dev'` to the
+JSONB array, and the client picks it up. No code change.
 
 ---
 
 ## Milestone index
 
-| # | Milestone | Risk | Reversible |
-|---|---|---|---|
-| 01 | Colocate lore into `content/` | Low (file moves) | Yes (git revert) |
-| 02 | State machine refactor (enums, CHECK constraints) | Low (additive) | Yes (down-migration) |
-| 03 | Local image drafts (no MinIO) | Medium (new route + UI) | Yes (delete folder) |
-| 04 | Single-click approve-and-solidify | Medium (wizard UX) | Yes (revert wizard) |
-| 05 | Verification step (cross-ref checks) | Low (new service) | Yes (delete service) |
-| 06 | MinIO env stages (`.dev`, `.staging`, bare) | Low (new upload paths) | Yes (delete dev rows) |
-| 07 | Client cascade resolver | Low (new file) | Yes (delete file) |
-| 08 | Admin UI updates (wizard, /assets) | Medium (UX changes) | Yes (revert components) |
+| # | Milestone | Status | Risk | Reversible |
+|---|---|---|---|---|
+| 01 | Colocate lore into `content/` | **Done** | Low (file moves) | Yes (git revert) |
+| 02 | State machine refactor (enums, CHECK constraints) | **Done** | Low (additive) | Yes (down-migration) |
+| 03 | Local image drafts (no MinIO) | Pending | Medium (new route + UI) | Yes (delete folder) |
+| 04 | Single-click approve-and-solidify | Pending | Medium (wizard UX) | Yes (revert wizard) |
+| 05 | Verification step (cross-ref checks) | Pending | Low (new service) | Yes (delete service) |
+| 06 | Asset cascade via `portrait_urls` JSONB `label` (dev/staging/production) | Pending | Low (JSONB upserts) | Yes (remove label entries) |
+| 07 | Client cascade resolver | Pending | Low (new file) | Yes (delete file) |
+| 08 | Admin UI updates (wizard, /assets) | Pending | Medium (UX changes) | Yes (revert components) |
 
 **Recommended execution order:** 01 → 02 → 03 → 06 → 05 → 04 → 07 → 08.
 
-The order is: lay the data foundation (01), extend the state machine (02), add
-the local-draft generation (03), wire up the MinIO env stages (06), add the
-post-migration verification (05), collapse the wizard (04), add the client
-side cascade (07), update the admin UI to surface the new states (08).
+M01 and M02 are complete. Remaining work: lay the local-draft generation
+(03), wire up the asset cascade in `portrait_urls` (06), add post-migration verification
+(05), collapse the wizard (04), add the client-side cascade (07), update
+the dashboard UI to surface the new states (08).
 
 ---
 

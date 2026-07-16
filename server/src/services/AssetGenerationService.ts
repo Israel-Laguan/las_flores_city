@@ -102,19 +102,32 @@ export async function fetchImageAsBase64(imageUrl: string): Promise<string> {
   return buffer.toString('base64');
 }
 
-export async function generateBaseImage(options: {
+/**
+ * Generate an image buffer from a text prompt (no upload, no DB).
+ *
+ * This is the network-only primitive extracted from generateBaseImage().
+ * It calls the NIM FLUX.2 Klein API (with Pollinations fallback) and returns
+ * the raw image bytes as a Buffer. The caller decides what to do with the
+ * buffer — upload to MinIO (existing base-image flow) or write to disk
+ * (Milestone 03 local-draft flow).
+ *
+ * `assetType` is accepted for future use (e.g. routing to different models)
+ * but does not change the current NIM/Pollinations call path.
+ */
+export async function generateImageBuffer(params: {
   prompt: string;
   negativePrompt?: string;
   width: number;
   height: number;
+  assetType?: string;
   seed?: number;
 }): Promise<Buffer> {
+  const { prompt, negativePrompt, width, height, seed = 0 } = params;
+
   const nimApiKey = process.env.NVIDIA_API_KEY || '';
   if (!nimApiKey) {
     throw new Error('NVIDIA_API_KEY missing');
   }
-
-  const { prompt, negativePrompt, width, height, seed = 0 } = options;
 
   const fullPrompt = negativePrompt
     ? `${prompt}\n\nNO ${cleanNegativePrompt(negativePrompt)}`
@@ -163,6 +176,19 @@ export async function generateBaseImage(options: {
 
   console.warn(`  ⚠️  NIM failed after ${MAX_RETRIES} attempts, falling back to Pollinations`);
   return generatePollinationsFallback(prompt, width, height);
+}
+
+export async function generateBaseImage(options: {
+  prompt: string;
+  negativePrompt?: string;
+  width: number;
+  height: number;
+  seed?: number;
+}): Promise<Buffer> {
+  // Delegate to the extracted network primitive.
+  // generateBaseImage kept for backward compatibility with existing callers
+  // (assets.generation.handlers.ts, tests).
+  return generateImageBuffer(options);
 }
 
 async function generatePollinationsFallback(prompt: string, width: number, height: number): Promise<Buffer> {

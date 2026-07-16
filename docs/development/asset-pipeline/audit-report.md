@@ -164,7 +164,7 @@ These are self-referential dev tools that ran their one-off migration and are no
 | `generate_ui_assets.py` | Python one-off batch (not part of JS pipeline) | Move to archive |
 | `generate-style-test.sh` | Wrote `style-exploration/modern-comic/` | Move to archive |
 
-**Proposed archive location:** `docs/development/asset-pipeline/archive/scripts/`
+**Proposed archive location:** `scripts/asset-pipeline/archive/` (superseded by Milestone 01, which moves the one-off scripts here).
 
 ### 3.2 Stale output reports
 
@@ -174,7 +174,7 @@ These are self-referential dev tools that ran their one-off migration and are no
 | `missing-characteristics-report.md` | 3 KB | `clean-prompts-for-gen.mjs` | Stale — underlying content moved |
 | `needs-character-details.md` | 10 KB | `update-physical-descriptions.mjs` | Stale — underlying content moved |
 
-**Proposed archive location:** `docs/development/asset-pipeline/archive/reports/`
+**Proposed archive location:** the stale reports are **deleted** by Milestone 01 (not archived), since their underlying content now lives in `content/`.
 
 ### 3.3 Handoff/continuation prompts (0 code references)
 
@@ -222,7 +222,7 @@ These are self-referential dev tools that ran their one-off migration and are no
 
 ## Recommendations summary
 
-1. **Move 14 one-off scripts** to `docs/development/asset-pipeline/archive/scripts/`
+1. **Move 14 one-off scripts** to `scripts/asset-pipeline/archive/` (per Milestone 01)
 2. **Delete 3 stale output reports** (biometrics-report.json, missing-characteristics-report.md, needs-character-details.md)
 3. **Delete 3 handoff prompts** (CONTINUE_ADMIN_ENHANCEMENTS.md, CONTINUE_ASSET_GENERATION_PROMPT.md, NEXT_STEPS_PROMPT.md)
 4. **Delete style-exploration/ and akool-test/**

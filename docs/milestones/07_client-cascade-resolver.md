@@ -20,7 +20,7 @@ option dev. the would allow us to rollback or reject a dev asset"*.
 
 ## Pre-requisites
 
-- Milestone 06 (the three MinIO stages and the DB columns exist).
+- Milestone 06 (the `portrait_urls` JSONB array carries the three `label`-tagged stage entries).
 
 ## Files to change
 
@@ -31,8 +31,8 @@ option dev. the would allow us to rollback or reject a dev asset"*.
 
 ### Modified client call sites
 
-The function replaces every direct `entity.portrait_url` access in the
-client. A grep finds all of them:
+The function replaces every direct `entity.portrait_urls[...].url` access in
+the client. A grep finds all of them:
 
 - `client/src/components/CharacterPortrait.ts`
 - `client/src/components/SceneBackground.ts`
@@ -42,18 +42,19 @@ client. A grep finds all of them:
 
 Each call site changes from:
 ```ts
-const url = character.portrait_url;
+const url = character.portrait_urls?.[0]?.url;
 ```
 to:
 ```ts
-const url = resolveAssetUrl(character, 'portrait_url');
+const url = resolveAssetUrl(character.portrait_urls);
 ```
 
 ### Server side
 
 No server-side change. The cascade is purely a client-side concern. The
-server returns the entity with all three URLs populated; the client picks
-the right one for its environment.
+server returns the entity with the `portrait_urls` (and `image_url` /
+`background_url`) JSONB array populated; the client picks the right entry for
+its environment by `label`.
 
 ## Implementation outline
 
@@ -63,30 +64,19 @@ the right one for its environment.
 // client/src/services/assetResolver.ts
 
 type Env = 'development' | 'staging' | 'production';
+type Stage = 'dev' | 'staging' | 'production';
 
-const STAGE_PRIORITY: Record<Env, ReadonlyArray<'dev' | 'staging' | 'production'>> = {
+const STAGE_PRIORITY: Record<Env, ReadonlyArray<Stage>> = {
   development: ['dev', 'staging', 'production'],
   staging:     ['dev', 'staging', 'production'],
   production:  ['production', 'staging', 'dev'],
 };
 
-// Map stage suffix to the DB column name suffix.
-const COLUMN_SUFFIX: Record<'dev' | 'staging' | 'production', string> = {
-  dev: '',             // <field> (existing column, e.g. portrait_url)
-  staging: '_staging', // <field>_staging
-  production: '_production',
-};
-
-interface AssetFields {
-  portrait_url?: string | null;
-  portrait_url_staging?: string | null;
-  portrait_url_production?: string | null;
-  background_url?: string | null;
-  background_url_staging?: string | null;
-  background_url_production?: string | null;
-  image_url?: string | null;
-  image_url_staging?: string | null;
-  image_url_production?: string | null;
+// One entry in the entity's portrait_urls (or image_url / background_url) JSONB array.
+interface AssetEntry {
+  url: string;
+  label?: Stage;
+  expression?: string;
 }
 
 function getEnv(): Env {
@@ -97,19 +87,18 @@ function getEnv(): Env {
   return 'production';
 }
 
-export function resolveAssetUrl<T extends AssetFields>(
-  entity: T,
-  field: 'portrait_url' | 'background_url' | 'image_url',
-): string | null {
+// Resolve the best URL for an asset from its portrait_urls (or image_url /
+// background_url) JSONB array, by stage label and environment priority.
+export function resolveAssetUrl(entries: AssetEntry[] | null | undefined): string | null {
+  if (!entries || entries.length === 0) return null;
   const env = getEnv();
-  const priority = STAGE_PRIORITY[env];
 
-  for (const stage of priority) {
-    const columnName = (field + COLUMN_SUFFIX[stage]) as keyof T;
-    const url = entity[columnName];
-    if (typeof url === 'string' && url.length > 0) return url;
+  for (const stage of STAGE_PRIORITY[env]) {
+    const match = entries.find((e) => e.label === stage && typeof e.url === 'string' && e.url.length > 0);
+    if (match) return match.url;
   }
-  return null;
+  // Fallback: first entry with a usable URL (canonical).
+  return entries.find((e) => typeof e.url === 'string' && e.url.length > 0)?.url ?? null;
 }
 ```
 
@@ -119,21 +108,15 @@ The user can see in dev/staging which stage is being served. Add a
 companion function:
 
 ```ts
-export function resolveAssetStage<T extends AssetFields>(
-  entity: T,
-  field: 'portrait_url' | 'background_url' | 'image_url',
-): { url: string; stage: 'dev' | 'staging' | 'production' } | null {
+export function resolveAssetStage(entries: AssetEntry[] | null | undefined): { url: string; stage: Stage } | null {
   const env = getEnv();
-  const priority = STAGE_PRIORITY[env];
 
-  for (const stage of priority) {
-    const columnName = (field + COLUMN_SUFFIX[stage]) as keyof T;
-    const url = entity[columnName];
-    if (typeof url === 'string' && url.length > 0) {
-      return { url, stage };
-    }
+  for (const stage of STAGE_PRIORITY[env]) {
+    const match = entries?.find((e) => e.label === stage && typeof e.url === 'string' && e.url.length > 0);
+    if (match) return { url: match.url, stage };
   }
-  return null;
+  const first = entries?.find((e) => typeof e.url === 'string' && e.url.length > 0);
+  return first ? { url: first.url, stage: (first.label as Stage) ?? 'dev' } : null;
 }
 ```
 
@@ -192,6 +175,6 @@ ripgrep.
 
 The new file is additive. The call-site changes are mechanical. Reverting
 the call-site commits restores the previous direct-access behavior. The
-DB columns are additive and unused, so the production deployment does not
-need to be reverted. The new function and the new columns can stay in
-place; only the call sites are reverted.
+`portrait_urls` JSONB array and its `label` entries are untouched by the
+client resolver, so no server/DB change is needed to revert. The new function
+can stay in place; only the call sites are reverted.

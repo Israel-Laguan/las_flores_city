@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import type { ContentPlanItem } from '@las-flores/shared';
 import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
+import { resolveFilePath } from './ContentSkeletonGenerator.js';
 
 const UNIVERSAL_NEGATIVES =
   '--no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural';
@@ -18,6 +19,7 @@ const DIMENSIONS_BY_TYPE: Record<string, string> = {
 /**
  * Generate .prompt.md files for items with asset needs.
  * These files are read by the asset generation pipeline.
+ * Writes to per-entity folders: content/<type>s/<slug>/<slug>.prompt.md
  *
  * Format follows the convention parsed by assets.helpers.ts:
  * - **Type:** <value> for asset type extraction
@@ -26,13 +28,19 @@ const DIMENSIONS_BY_TYPE: Record<string, string> = {
  */
 export async function generatePromptFiles(items: ContentPlanItem[], contentDir: string, fileSnapshots?: Map<string, string | null>): Promise<string[]> {
   const createdFiles: string[] = [];
-  const promptsRoot = path.resolve(contentDir, '..', 'docs', 'lore', 'assets', 'prompts');
 
   for (const item of items) {
     if (item.assetNeeds.length === 0) continue;
 
-    const typeDir = path.join(promptsRoot, item.type);
-    const filePath = path.join(typeDir, `${item.slug}.prompt.md`);
+    // Per-folder layout: prompt files are in the same directory as the YAML
+    const yamlDir = path.dirname(resolveFilePath(item));
+    const filePath = path.join(contentDir, yamlDir, `${item.slug}.prompt.md`);
+
+    // Path safety check
+    if (!filePath.startsWith(contentDir + path.sep)) {
+      console.warn(`[prompt-generator] Skipping unsafe path: ${filePath}`);
+      continue;
+    }
 
     try {
       await fs.access(filePath);
@@ -41,7 +49,8 @@ export async function generatePromptFiles(items: ContentPlanItem[], contentDir: 
       // File doesn't exist, create it
     }
 
-    await fs.mkdir(typeDir, { recursive: true });
+    const dir = path.dirname(filePath);
+    await fs.mkdir(dir, { recursive: true });
 
     const content = buildPromptFile(item);
     await atomicWriteYaml(filePath, content);
@@ -49,7 +58,7 @@ export async function generatePromptFiles(items: ContentPlanItem[], contentDir: 
       fileSnapshots.set(filePath, null);
     }
 
-    createdFiles.push(path.relative(promptsRoot, filePath));
+    createdFiles.push(`${yamlDir}/${item.slug}.prompt.md`);
   }
 
   return createdFiles;
