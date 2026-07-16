@@ -225,7 +225,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
 
     const result = await approveAndSolidifyPlan(id);
 
-    res.status(result.success ? 200 : 422).json({
+    res.status(200).json({
       success: result.success,
       data: result,
       timestamp: new Date().toISOString(),

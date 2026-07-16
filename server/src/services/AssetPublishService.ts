@@ -88,9 +88,21 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
     const chosenNeeds = item.assetNeeds.filter(n => n.status === 'chosen' || n.status === 'pending');
     if (chosenNeeds.length === 0) continue;
 
+    const uploadedNeeds: Array<{
+      need: ContentPlanItem['assetNeeds'][number];
+      localFilename: string;
+      url: string;
+      objectKey: string;
+    }> = [];
+
     for (const need of chosenNeeds) {
       const localFilename = assetPaths[need.promptType] || defaultLocalFilename(item);
-      const localPath = path.join(entityRoot, 'assets', localFilename);
+      const localPath = path.resolve(entityRoot, 'assets', localFilename);
+      const assetsRoot = path.resolve(entityRoot, 'assets');
+      if (localPath !== assetsRoot && !localPath.startsWith(assetsRoot + path.sep)) {
+        errors.push(`${item.name} / ${need.promptType}: local path escapes assets directory: ${localFilename}`);
+        continue;
+      }
       try {
         const buf = await fs.readFile(localPath);
         // The MinIO object key preserves the local filename. The bucket is
@@ -101,13 +113,14 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
         // Record the published URL in the YAML.
         // For characters, append to the portrait_urls cascade array.
         // For other types, write directly to the target field (e.g. image_url).
+        // portrait_urls entries are deduplicated by url+label to avoid
+        // duplicate dev entries on retry.
         if (need.targetField.startsWith('portrait_urls')) {
           const portraitUrls: Array<{ url: string; label?: string }> = Array.isArray(
             yamlData.portrait_urls,
           )
             ? (yamlData.portrait_urls as Array<{ url: string; label?: string }>)
             : [];
-          // Avoid duplicate dev entries if retrying
           if (!portraitUrls.some(p => p.url === url && p.label === 'dev')) {
             portraitUrls.push({ url, label: 'dev' });
           }
@@ -116,24 +129,30 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
           yamlData[need.targetField] = url;
         }
 
-        markPublished(need);
-        published.push({
-          itemId: item.id,
-          itemType: item.type,
-          needId: need.promptType,
-          localFilename,
-          url,
-          objectKey,
-        });
+        uploadedNeeds.push({ need, localFilename, url, objectKey });
       } catch (err: any) {
         errors.push(`${item.name} / ${need.promptType}: ${err.message}`);
       }
     }
 
-    try {
-      await fs.writeFile(yamlPath, yaml.dump(yamlData, { lineWidth: -1, noRefs: true }), 'utf-8');
-    } catch (err: any) {
-      errors.push(`${item.name}: failed to write portrait_urls to YAML: ${err.message}`);
+    // Only write the YAML if at least one upload succeeded for this item.
+    if (uploadedNeeds.length > 0) {
+      try {
+        await fs.writeFile(yamlPath, yaml.dump(yamlData, { lineWidth: -1, noRefs: true }), 'utf-8');
+        for (const { need, localFilename, url, objectKey } of uploadedNeeds) {
+          markPublished(need);
+          published.push({
+            itemId: item.id,
+            itemType: item.type,
+            needId: need.promptType,
+            localFilename,
+            url,
+            objectKey,
+          });
+        }
+      } catch (err: any) {
+        errors.push(`${item.name}: failed to write portrait_urls to YAML: ${err.message}`);
+      }
     }
   }
 

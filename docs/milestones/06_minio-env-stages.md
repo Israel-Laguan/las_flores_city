@@ -60,7 +60,7 @@ unless different bytes are supplied. The cascade is resolved by the client
 > `portrait_urls` cascade. For scenes/locations the cascade needs either a new
 > JSONB column or a different delivery field; confirm before implementing
 > promotion for those types.
-
+>
 > **Execution-order note:** 00_README lists the order as
 > `01 → 02 → 03 → 06 → 05 → 04 → 07 → 08`, but this milestone's
 > "Pre-requisites" says M04. The actual dependency is M04 (writes the `dev`

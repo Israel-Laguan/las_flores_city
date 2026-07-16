@@ -123,13 +123,13 @@
 }
 
 .statusSuccess {
-  background: rgba(0, 255, 0, 0.25);
-  color: #0a0;
+  background: var(--status-success-bg, rgba(16, 185, 129, 0.25));
+  color: var(--status-success, #10b981);
 }
 
 .statusError {
-  background: rgba(255, 0, 0, 0.25);
-  color: #c00;
+  background: var(--status-error-bg, rgba(239, 68, 68, 0.25));
+  color: var(--status-error, #ef4444);
 }
 
 .assetList {

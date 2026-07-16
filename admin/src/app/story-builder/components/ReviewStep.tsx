@@ -103,8 +103,8 @@ export default function ReviewStep({
       <div className={styles.shipFooter}>
         {pendingNeeds.length > 0 && (
           <p className={styles.shipNote}>
-            {pendingNeeds.length} asset{pendingNeeds.length === 1 ? '' : 's'} still have no
-            selected draft. The system will auto-pick <code>&lt;slug&gt;__default.png</code>{' '}
+            {pendingNeeds.length} asset{pendingNeeds.length === 1 ? ' is' : 's are'} still missing
+            a selected draft. The system will auto-pick <code>&lt;slug&gt;__default.png</code>{' '}
             for each. Choose a draft above to override.
           </p>
         )}
@@ -123,7 +123,7 @@ export default function ReviewStep({
           minutes for plans with many images.
         </p>
 
-        {typeof chosenNeeds.length === 'number' && (
+        {(chosenNeeds.length > 0 || publishedNeeds.length > 0) && (
           <p className={styles.shipCounts}>
             {chosenNeeds.length} chosen · {publishedNeeds.length} published
           </p>

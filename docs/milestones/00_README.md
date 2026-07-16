@@ -256,8 +256,8 @@ JSONB array, and the client picks it up. No code change.
 | 01 | Colocate lore into `content/` | **Done** | Low (file moves) | Yes (git revert) |
 | 02 | State machine refactor (enums, CHECK constraints) | **Done** | Low (additive) | Yes (down-migration) |
 | 03 | Local image drafts (no MinIO) | **Done** | Medium (new route + UI) | Yes (delete folder) |
-| 04 | Single-click approve-and-solidify | **Code-complete** (orchestrator + route + `AssetPublishService`; verification still a stub → M05) | Medium (wizard UX) | Yes (revert wizard) |
-| 05 | Verification step (cross-ref checks) | **Partial** (`verifyPlan` stub exists; `PlanVerificationService` + real checks pending) | Low (new service) | Yes (delete service) |
+| 04 | Single-click approve-and-solidify | **Done** (orchestrator + route + `AssetPublishService` + `PlanVerificationService` wired in) | Medium (wizard UX) | Yes (revert wizard) |
+| 05 | Verification step (cross-ref checks) | **Done** (`PlanVerificationService` implements 7 real checks: lore/narrative/asset path resolution, FK integrity, story-beat refs, cross-plan consistency, asset-need status) | Low (new service) | Yes (delete service) |
 | 06 | Asset cascade via `portrait_urls` JSONB `label` (dev/staging/production) | **Partial** (`dev` entry written by M04; `promoteToStaging`/`promoteToProduction` pending; scenes/locations cascade model TBD) | Low (JSONB upserts) | Yes (remove label entries) |
 | 07 | Client cascade resolver | Pending | Low (new file) | Yes (delete file) |
 | 08 | Admin UI updates (wizard, /assets) | Pending | Medium (UX changes) | Yes (revert components) |
@@ -266,11 +266,11 @@ JSONB array, and the client picks it up. No code change.
 (Note: M04's `dev` entry is already implemented and is the real pre-requisite
 for M06's promotion; the README order above is aspirational — see M06 "Status".)
 
-M01, M02, and M03 are complete. **M04 is largely implemented** (orchestrator,
-route, `AssetPublishService`); its verification step is a stub. Remaining work:
-implement the real verification checks (05), add the `staging`/`production`
-promotion methods and resolve the scenes/locations cascade model (06), add the
-client-side cascade (07), update the dashboard UI to surface the new states (08).
+M01, M02, and M03 are complete. **M04 and M05 are complete** (orchestrator,
+route, `AssetPublishService`, and `PlanVerificationService`). Remaining work:
+add the `staging`/`production` promotion methods and resolve the
+scenes/locations cascade model (06), add the client-side cascade (07), update
+the dashboard UI to surface the new states (08).
 
 ---
 

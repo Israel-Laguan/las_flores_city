@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { cn } from '@las-flores/ui';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 import VerificationReport from './VerificationReport';
 import type { VerificationReport as VerificationReportData } from '@las-flores/shared';
@@ -53,10 +54,6 @@ function liveContentHref(item: ContentPlanItem): string | null {
     default:
       return null;
   }
-}
-
-function cn(...classes: Array<string | false | undefined>): string {
-  return classes.filter(Boolean).join(' ');
 }
 
 function StatusBox({ result, verified, failed }: { result: SolidifyResultLite; verified: boolean; failed: boolean }) {
@@ -136,22 +133,21 @@ function PublishErrors({ publish }: { publish: NonNullable<SolidifyResultLite['p
 }
 
 function LiveContent({ plan }: { plan: ContentPlan }) {
-  if (plan.items.length === 0) return null;
+  const links = plan.items
+    .map(item => ({ item, href: liveContentHref(item) }))
+    .filter((entry): entry is { item: ContentPlanItem; href: string } => entry.href !== null);
+  if (links.length === 0) return null;
   return (
     <div className={styles.subsection}>
       <h3 className={styles.subsectionTitle}>Live content</h3>
       <ul className={styles.linkList}>
-        {plan.items.map(item => {
-          const href = liveContentHref(item);
-          if (!href) return null;
-          return (
-            <li key={item.id}>
-              <Link href={href} className={styles.contentLink} target="_blank" rel="noreferrer">
-                {item.name || item.slug} ({item.type})
-              </Link>
-            </li>
-          );
-        })}
+        {links.map(({ item, href }) => (
+          <li key={item.id}>
+            <Link href={href} className={styles.contentLink} target="_blank" rel="noreferrer">
+              {item.name || item.slug} ({item.type})
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

@@ -28,8 +28,8 @@ row.
 
 ## Implementation status
 
-> **Status: CODE-COMPLETE for the happy path; verification is a stub (see
-> Milestone 05).**
+> **Status: DONE.** The orchestrator, publish service, route, and real
+> verification checks are all implemented on the main branch.
 
 The orchestrator, publish service, and route described below are **already
 implemented** on the main branch. The original pseudocode in this document
@@ -51,9 +51,19 @@ drifted from the implementation; the deviations that matter:
   the full solidify sequence (publish **+ migrate**) runs.
 - `AssetNeed` ends at `published` (the actual code calls `markPublished`);
   it does **not** additionally transition to `assigned`.
-- `verifyPlan()` is currently a **stub** that returns
-  `{ success: true, checks: [] }`, so `status='verified'` is set without any
-  real cross-reference checks. Real verification is Milestone 05 (pending).
+- `verifyPlan()` is **implemented** by `PlanVerificationService.verifyPlanCrossReferences`,
+  which runs 7 real cross-reference checks:
+  1. `lore-path-resolution` — every `lore_path` resolves to a file on disk.
+  2. `narrative-path-resolution` — every `narrative_path` resolves to a file.
+  3. `asset-path-resolution` — every referenced asset exists in `assets/`.
+  4. `fk-integrity` — all referenced `dialogue_tree` / `character` / `mystery` /
+     `scene` UUIDs exist (malformed UUIDs and missing rows are reported, not
+     silently ignored).
+  5. `story-beat-references` — story `beats` slugs exist in `story_beats`.
+  6. `cross-plan-consistency` — internal `dependsOn` / `links` are self-consistent.
+  7. `asset-need-status` — no asset need is left `failed` or `pending`.
+  `status='verified'` is only set when `errors.length === 0`. Real verification
+  shipped with Milestone 05 (done).
 - The integration test (`server/tests/integration/approve-and-solidify.test.ts`)
   exists but **mocks the orchestrator**; it only asserts route status codes,
   not the 10-step end-to-end flow in "Tests to add or update" below.

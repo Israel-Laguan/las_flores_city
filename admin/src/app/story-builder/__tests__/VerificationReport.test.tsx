@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import VerificationReport from '../components/VerificationReport';
 import type { VerificationReport as VerificationReportData } from '@las-flores/shared';
@@ -66,10 +67,16 @@ describe('VerificationReport', () => {
     expect(screen.getByText('asset-need-status')).toBeInTheDocument();
   });
 
-  it('shows failing-check details by default and lets users collapse them', async () => {
+  it('shows failing-check details by default and collapses them on click', async () => {
+    const user = userEvent.setup();
     render(<VerificationReport report={createReport()} />);
     const detail = screen.getByText('Missing FK: dialogue_tree "abc" does not exist');
     expect(detail).toBeInTheDocument();
     expect(detail.closest('ul')).not.toBeNull();
+
+    const header = screen.getByText('fk-integrity').closest('button') as HTMLElement;
+    await user.click(header);
+
+    expect(screen.queryByText('Missing FK: dialogue_tree "abc" does not exist')).not.toBeInTheDocument();
   });
 });

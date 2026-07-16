@@ -1,5 +1,5 @@
 import { ContentPlanSchema, type VerificationReport } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { migrateContent } from '../content/migrate.js';
 import { ContentPlanService } from './ContentPlanService.js';
 import { publishChosenDrafts } from './AssetPublishService.js';
@@ -43,9 +43,11 @@ export interface SolidifyResult {
   error?: string;
 }
 
-export async function migrateStagedPlan(planId: string): Promise<MigrationResult> {
+export async function migrateStagedPlan(planId: string, client?: import('pg').PoolClient): Promise<MigrationResult> {
+  const exec = (text: string, params: any[]) =>
+    client ? client.query<any>(text, params) : queryOLTP<any>(text, params);
   try {
-    const result = await queryOLTP<{ plan_json: any; status: string }>(
+    const result = await exec(
       'SELECT plan_json, status FROM content_plans WHERE id = $1',
       [planId]
     );
@@ -62,20 +64,33 @@ export async function migrateStagedPlan(planId: string): Promise<MigrationResult
 
     const migrationResult = await migrateContent(contentDir);
 
-    const newStatus = migrationResult.success ? 'migrated' : 'failed';
-    await queryOLTP(
+    // Propagate migration failure: do not flip to 'migrated' on partial failure.
+    if (!migrationResult.success) {
+      await exec(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['failed', planId]
+      );
+      return {
+        success: false,
+        migrationResult,
+        error: migrationResult.errors.join('; '),
+      };
+    }
+
+    const newStatus = 'migrated';
+    await exec(
       'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
       [newStatus, planId]
     );
 
     return {
-      success: migrationResult.success,
+      success: true,
       migrationResult,
-      error: migrationResult.success ? undefined : migrationResult.errors.join('; '),
+      error: undefined,
     };
   } catch (error: any) {
     try {
-      await queryOLTP(
+      await exec(
         'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
         ['failed', planId]
       );
@@ -102,93 +117,108 @@ export async function migrateStagedPlan(planId: string): Promise<MigrationResult
  * remaining steps manually.
  */
 export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyResult> {
-  const load = await queryOLTP<{ plan_json: any; status: string }>(
-    'SELECT plan_json, status FROM content_plans WHERE id = $1',
-    [planId],
-  );
-  if (load.rows.length === 0) {
-    throw new Error(`Plan not found: ${planId}`);
-  }
+  // Serialize concurrent approve-and-solidify calls per-plan using an
+  // advisory lock held for the duration of the transaction. This prevents
+  // two requests from racing the SELECT + status flip on the same plan.
+  return withOLTPTransaction(async (client) => {
+    await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [planId]);
 
-  const currentStatus = load.rows[0].status;
-  if (currentStatus !== 'proposed' && currentStatus !== 'approved' && currentStatus !== 'failed') {
-    throw new Error(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${currentStatus}`);
-  }
-
-  const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
-
-  // 1. Lock the plan (no more refinement).
-  await ContentPlanService.setStatus(planId, 'approved');
-
-  // 2. Stage — write YAML + lore + prompt files to disk.
-  const stageResult = await stagePlan(plan);
-  if (!stageResult.success) {
-    await ContentPlanService.setStatus(planId, 'failed');
-    return { success: false, status: 'failed', stage: stageResult, error: stageResult.error ?? 'Staging failed' };
-  }
-  await ContentPlanService.setStatus(planId, 'staged');
-
-  // 3. Publish chosen drafts — upload to MinIO, tag portrait_urls label:'dev'.
-  const publishResult = await publishChosenDrafts(planId);
-  if (!publishResult.success) {
-    await ContentPlanService.setStatus(planId, 'failed');
-    return {
-      success: false,
-      status: 'failed',
-      stage: stageResult,
-      publish: publishResult,
-      error: 'Asset publish failed',
-    };
-  }
-
-  // 4. Migrate to the database.
-  const migrationResult = await migrateStagedPlan(planId);
-  if (!migrationResult.success) {
-    await ContentPlanService.setStatus(planId, 'failed');
-    return {
-      success: false,
-      status: 'failed',
-      stage: stageResult,
-      publish: publishResult,
-      migration: migrationResult,
-      error: migrationResult.error,
-    };
-  }
-  // migrateStagedPlan() already sets status='migrated' on success.
-
-  // 5. Verify cross-references.
-  const verificationReport = await verifyPlan(planId);
-  if (!verificationReport.passed) {
-    await ContentPlanService.setStatus(planId, 'failed');
-    await queryOLTP(
-      'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
-      [JSON.stringify(verificationReport), planId],
+    const load = await client.query<{ plan_json: any; status: string }>(
+      'SELECT plan_json, status FROM content_plans WHERE id = $1 FOR UPDATE',
+      [planId],
     );
-    return {
-      success: false,
-      status: 'failed',
-      stage: stageResult,
-      publish: publishResult,
-      migration: migrationResult,
-      verificationReport,
-      error: verificationReport.errors[0] || 'Verification failed',
-    };
-  }
+    if (load.rows.length === 0) {
+      throw new Error(`Plan not found: ${planId}`);
+    }
 
-  await ContentPlanService.setStatus(planId, 'verified');
-  await queryOLTP(
-    'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
-    [JSON.stringify(verificationReport), planId],
-  );
+    const currentStatus = load.rows[0].status;
+    if (currentStatus !== 'proposed' && currentStatus !== 'approved' && currentStatus !== 'failed') {
+      throw new Error(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${currentStatus}`);
+    }
 
-  return {
-    success: true,
-    status: 'verified',
-    stage: stageResult,
-    publish: publishResult,
-    migration: migrationResult,
-    verificationReport,
-  };
+    const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
+
+    try {
+      // 1. Lock the plan (no more refinement).
+      await ContentPlanService.setStatus(planId, 'approved', client);
+
+      // 2. Stage — write YAML + lore + prompt files to disk.
+      const stageResult = await stagePlan(plan);
+      if (!stageResult.success) {
+        await ContentPlanService.setStatus(planId, 'failed', client);
+        return { success: false, status: 'failed', stage: stageResult, error: stageResult.error ?? 'Staging failed' };
+      }
+      await ContentPlanService.setStatus(planId, 'staged', client);
+
+      // 3. Publish chosen drafts — upload to MinIO, tag portrait_urls label:'dev'.
+      const publishResult = await publishChosenDrafts(planId);
+      if (!publishResult.success) {
+        await ContentPlanService.setStatus(planId, 'failed', client);
+        return {
+          success: false,
+          status: 'failed',
+          stage: stageResult,
+          publish: publishResult,
+          error: 'Asset publish failed',
+        };
+      }
+
+      // 4. Migrate to the database.
+      const migrationResult = await migrateStagedPlan(planId, client);
+      if (!migrationResult.success) {
+        await ContentPlanService.setStatus(planId, 'failed', client);
+        return {
+          success: false,
+          status: 'failed',
+          stage: stageResult,
+          publish: publishResult,
+          migration: migrationResult,
+          error: migrationResult.error,
+        };
+      }
+      // migrateStagedPlan() already sets status='migrated' on success.
+
+      // 5. Verify cross-references.
+      const verificationReport = await verifyPlan(planId);
+      if (!verificationReport.passed) {
+        await client.query(
+          'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
+          ['failed', JSON.stringify(verificationReport), planId],
+        );
+        return {
+          success: false,
+          status: 'failed',
+          stage: stageResult,
+          publish: publishResult,
+          migration: migrationResult,
+          verificationReport,
+          error: verificationReport.errors[0] || 'Verification failed',
+        };
+      }
+
+      await client.query(
+        'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
+        ['verified', JSON.stringify(verificationReport), planId],
+      );
+
+      return {
+        success: true,
+        status: 'verified',
+        stage: stageResult,
+        publish: publishResult,
+        migration: migrationResult,
+        verificationReport,
+      };
+    } catch (error: any) {
+      // Any unexpected throw along the chain leaves the plan in a failed
+      // state (within the same transaction) so the user can re-trigger.
+      await client.query(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['failed', planId],
+      );
+      throw error;
+    }
+  });
 }
 
 /**

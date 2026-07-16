@@ -3,8 +3,9 @@
  * (Milestone 04 — single-click "Approve & Ship").
  *
  * The orchestrator `approveAndSolidifyPlan` is mocked so the route maintains
- * its contract: 200 on success, 422 on a logical failure, 404 when the plan is
- * absent, 400 when the plan status is invalid, 500 on an unexpected throw.
+ * its contract: 200 on success, 200 with a failed body on a logical
+ * failure (the route returns 200 so adminFetch can parse the JSON), 404 when
+ * the plan is absent, 400 when the plan status is invalid, 500 on a throw.
  */
 import express from 'express';
 import request from 'supertest';
@@ -30,7 +31,7 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 jest.mock('../../src/services/StoryBuilderOrchestrator.js');
 
-import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
+import { adminStoryBuilderActionsRouter } from '../../src/routes/admin-story-builder-actions.js';
 import { queryOLTP } from '../../src/database/connection.js';
 import { approveAndSolidifyPlan } from '../../src/services/StoryBuilderOrchestrator.js';
 
@@ -42,7 +43,7 @@ const TEST_PLAN_ID = '11111111-1111-1111-1111-111111111111';
 function makeApp() {
   const app = express();
   app.use(express.json());
-  app.use('/admin/story-builder', adminStoryBuilderRouter);
+  app.use('/admin/story-builder', adminStoryBuilderActionsRouter);
   return app;
 }
 
@@ -82,7 +83,7 @@ describe('POST /admin/story-builder/plans/:id/approve-and-solidify', () => {
     expect(mockApprove).toHaveBeenCalledWith(TEST_PLAN_ID);
   });
 
-  it('returns 422 when the solidify result fails', async () => {
+  it('returns 200 with a failed body when the solidify result fails', async () => {
     mockApprove.mockResolvedValueOnce({
       success: false,
       status: 'failed',
@@ -95,7 +96,7 @@ describe('POST /admin/story-builder/plans/:id/approve-and-solidify', () => {
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/approve-and-solidify`);
 
-    expect(res.status).toBe(422);
+    expect(res.status).toBe(200);
     expect(res.body.success).toBe(false);
     expect(res.body.data.error).toBe('Asset publish failed');
   });

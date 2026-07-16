@@ -117,6 +117,18 @@ export async function executePlan(plan: ContentPlan): Promise<ExecutionResult> {
     }
 
     const migrationResult = await migrateContent(contentDir);
+    if (!migrationResult.success) {
+      return {
+        success: false,
+        createdFiles,
+        updatedFiles,
+        validationErrors: migrationResult.errors,
+        warnings: depErrors,
+        migrationResult,
+        assetTasks: [],
+        error: migrationResult.errors[0] ?? 'Migration failed',
+      };
+    }
     const assetTasks = collectAssetTasks(plan.items);
 
     return {

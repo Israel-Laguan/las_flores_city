@@ -9,6 +9,20 @@ function yamlDir(item: ContentPlanItem, contentDir: string): string {
   return path.join(contentDir, path.dirname(resolveFilePath(item)));
 }
 
+/**
+ * Resolve `child` (relative to `base`) and verify the result stays within
+ * `base`. Returns null if the resolved path escapes the base directory
+ * (e.g. via `..` segments), so callers can skip/flag unsafe references.
+ */
+function safeResolveWithin(base: string, child: string): string | null {
+  const resolved = path.resolve(base, child);
+  const normalizedBase = path.resolve(base);
+  if (resolved !== normalizedBase && !resolved.startsWith(normalizedBase + path.sep)) {
+    return null;
+  }
+  return resolved;
+}
+
 // ─── Check 1: lore_path resolution ──────────────────────────────────────────
 
 async function checkLorePaths(items: ContentPlanItem[], contentDir: string): Promise<CheckResult> {
@@ -18,7 +32,11 @@ async function checkLorePaths(items: ContentPlanItem[], contentDir: string): Pro
     const lorePath = item.fields.lore_path;
     if (!lorePath || typeof lorePath !== 'string') continue;
 
-    const fullPath = path.join(yamlDir(item, contentDir), lorePath);
+    const fullPath = safeResolveWithin(yamlDir(item, contentDir), lorePath);
+    if (fullPath === null) {
+      details.push(`${item.name}: lore_path "${lorePath}" escapes content directory`);
+      continue;
+    }
     try {
       await fs.access(fullPath);
     } catch {
@@ -43,7 +61,11 @@ async function checkNarrativePaths(items: ContentPlanItem[], contentDir: string)
     const narrativePath = item.fields.narrative_path;
     if (!narrativePath || typeof narrativePath !== 'string') continue;
 
-    const fullPath = path.join(yamlDir(item, contentDir), narrativePath);
+    const fullPath = safeResolveWithin(yamlDir(item, contentDir), narrativePath);
+    if (fullPath === null) {
+      details.push(`${item.name}: narrative_path "${narrativePath}" escapes content directory`);
+      continue;
+    }
     try {
       await fs.access(fullPath);
     } catch {
@@ -71,7 +93,11 @@ async function checkAssetPaths(items: ContentPlanItem[], contentDir: string): Pr
     for (const [field, filename] of Object.entries(assetPaths)) {
       if (typeof filename !== 'string' || !filename) continue;
 
-      const fullPath = path.join(yamlDir(item, contentDir), 'assets', filename);
+      const fullPath = safeResolveWithin(path.join(yamlDir(item, contentDir), 'assets'), filename);
+      if (fullPath === null) {
+        details.push(`${item.name}.${field}: asset "${filename}" escapes assets directory`);
+        continue;
+      }
       try {
         await fs.access(fullPath);
       } catch {
@@ -175,9 +201,9 @@ async function checkForeignKeyIntegrity(items: ContentPlanItem[]): Promise<Check
     details,
     UUID_REGEX,
   );
-  await checkTableFks(characterIds, 'characters', 'character', details);
-  await checkTableFks(mysteryIds, 'mysteries', 'mystery', details);
-  await checkTableFks(sceneIds, 'scenes', 'scene', details);
+  await checkTableFks(characterIds, 'characters', 'character', details, UUID_REGEX);
+  await checkTableFks(mysteryIds, 'mysteries', 'mystery', details, UUID_REGEX);
+  await checkTableFks(sceneIds, 'scenes', 'scene', details, UUID_REGEX);
 
   return {
     name: 'fk-integrity',

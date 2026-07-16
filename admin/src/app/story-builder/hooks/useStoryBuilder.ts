@@ -6,6 +6,7 @@ import type { Step } from '../types';
 import { loadPlanFromDb, fetchTemplates } from './useStoryBuilderApi';
 import { useStoryPlanApi } from './useStoryPlanApi';
 import * as mutations from './useStoryBuilderMutations';
+import type { SolidifyResultLite } from '../components/ResultsStep';
 
 interface Template {
   id: string;
@@ -23,7 +24,7 @@ export function useStoryBuilder(initialPlanId: string | null) {
   const [planId, setPlanId] = useState<string | null>(null);
   const [refineFeedback, setRefineFeedback] = useState('');
   const [showRefine, setShowRefine] = useState(false);
-  const [solidifyResult, setSolidifyResult] = useState<any>(null);
+  const [solidifyResult, setSolidifyResult] = useState<SolidifyResultLite | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
 
   const apiCallbacks = useStoryPlanApi({

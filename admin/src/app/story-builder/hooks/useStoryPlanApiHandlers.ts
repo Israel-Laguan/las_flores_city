@@ -73,7 +73,7 @@ export function createStoryPlanHandlers(cb: Callbacks) {
     setStep(3); // Approving (transient while the single call runs)
     const data = await withLoading(setLoading, setError, () => api.approveAndSolidify(planId));
     if (!data) {
-      setStep(4);
+      setStep(2);
       return;
     }
     if (data.success && data.data) {
