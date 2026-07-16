@@ -88,6 +88,37 @@ async function checkAssetPaths(items: ContentPlanItem[], contentDir: string): Pr
   };
 }
 
+async function checkTableFks(
+  ids: Set<string>,
+  table: string,
+  label: string,
+  details: string[],
+  uuidRegex?: RegExp,
+): Promise<void> {
+  if (ids.size === 0) return;
+
+  let toCheck = [...ids];
+  if (uuidRegex) {
+    toCheck = toCheck.filter(id => {
+      if (uuidRegex.test(id)) return true;
+      details.push(`Invalid UUID format: ${label} reference "${id}" is not a valid UUID`);
+      return false;
+    });
+  }
+  if (toCheck.length === 0) return;
+
+  const result = await queryOLTP<{ id: string }>(
+    `SELECT id FROM ${table} WHERE id = ANY($1::uuid[])`,
+    [toCheck],
+  );
+  const found = new Set(result.rows.map(r => r.id));
+  for (const id of toCheck) {
+    if (!found.has(id)) {
+      details.push(`Missing FK: ${label} "${id}" does not exist`);
+    }
+  }
+}
+
 // ─── Check 4: FK integrity ──────────────────────────────────────────────────
 
 async function checkForeignKeyIntegrity(items: ContentPlanItem[]): Promise<CheckResult> {
@@ -134,62 +165,19 @@ async function checkForeignKeyIntegrity(items: ContentPlanItem[]): Promise<Check
     }
   }
 
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
   // Batch-check each table
-  if (dialogueTreeIds.size > 0) {
-    const ids = [...dialogueTreeIds];
-    const result = await queryOLTP<{ id: string }>(
-      'SELECT id FROM dialogue_trees WHERE id = ANY($1::uuid[])',
-      [ids],
-    );
-    const found = new Set(result.rows.map(r => r.id));
-    for (const id of ids) {
-      if (!found.has(id)) {
-        details.push(`Missing FK: dialogue_tree "${id}" does not exist`);
-      }
-    }
-  }
-
-  if (characterIds.size > 0) {
-    const ids = [...characterIds];
-    const result = await queryOLTP<{ id: string }>(
-      'SELECT id FROM characters WHERE id = ANY($1::uuid[])',
-      [ids],
-    );
-    const found = new Set(result.rows.map(r => r.id));
-    for (const id of ids) {
-      if (!found.has(id)) {
-        details.push(`Missing FK: character "${id}" does not exist`);
-      }
-    }
-  }
-
-  if (mysteryIds.size > 0) {
-    const ids = [...mysteryIds];
-    const result = await queryOLTP<{ id: string }>(
-      'SELECT id FROM mysteries WHERE id = ANY($1::uuid[])',
-      [ids],
-    );
-    const found = new Set(result.rows.map(r => r.id));
-    for (const id of ids) {
-      if (!found.has(id)) {
-        details.push(`Missing FK: mystery "${id}" does not exist`);
-      }
-    }
-  }
-
-  if (sceneIds.size > 0) {
-    const ids = [...sceneIds];
-    const result = await queryOLTP<{ id: string }>(
-      'SELECT id FROM scenes WHERE id = ANY($1::uuid[])',
-      [ids],
-    );
-    const found = new Set(result.rows.map(r => r.id));
-    for (const id of ids) {
-      if (!found.has(id)) {
-        details.push(`Missing FK: scene "${id}" does not exist`);
-      }
-    }
-  }
+  await checkTableFks(
+    dialogueTreeIds,
+    'dialogue_trees',
+    'dialogue_tree',
+    details,
+    UUID_REGEX,
+  );
+  await checkTableFks(characterIds, 'characters', 'character', details);
+  await checkTableFks(mysteryIds, 'mysteries', 'mystery', details);
+  await checkTableFks(sceneIds, 'scenes', 'scene', details);
 
   return {
     name: 'fk-integrity',

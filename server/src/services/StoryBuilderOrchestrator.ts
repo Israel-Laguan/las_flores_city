@@ -111,8 +111,8 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
   }
 
   const currentStatus = load.rows[0].status;
-  if (currentStatus !== 'proposed' && currentStatus !== 'approved') {
-    throw new Error(`Plan must be 'proposed' or 'approved' to approve. Current: ${currentStatus}`);
+  if (currentStatus !== 'proposed' && currentStatus !== 'approved' && currentStatus !== 'failed') {
+    throw new Error(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${currentStatus}`);
   }
 
   const plan = ContentPlanSchema.parse(load.rows[0].plan_json);

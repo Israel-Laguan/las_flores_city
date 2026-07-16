@@ -90,7 +90,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
       {step === 3 && (
         <ApprovingStep
           assetCount={
-            (plan?.items ?? []).flatMap(i => i.assetNeeds).filter(n => n.status === 'chosen' || n.status === 'pending').length
+            (plan?.items ?? []).flatMap(i => i.assetNeeds ?? []).filter(n => n.status === 'chosen' || n.status === 'pending').length
           }
         />
       )}

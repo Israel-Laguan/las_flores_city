@@ -85,7 +85,7 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
     }
 
     const assetPaths = (item.fields as any)?.asset_paths || {};
-    const chosenNeeds = item.assetNeeds.filter(n => n.status === 'chosen');
+    const chosenNeeds = item.assetNeeds.filter(n => n.status === 'chosen' || n.status === 'pending');
     if (chosenNeeds.length === 0) continue;
 
     for (const need of chosenNeeds) {
@@ -98,14 +98,23 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
         const objectKey = `${need.promptType}/${localFilename}`;
         const url = await uploadToMinio(buf, objectKey, 'image/png');
 
-        // Cascade: record the dev-stage URL in the YAML portrait_urls array.
-        const portraitUrls: Array<{ url: string; label?: string }> = Array.isArray(
-          yamlData.portrait_urls,
-        )
-          ? (yamlData.portrait_urls as Array<{ url: string; label?: string }>)
-          : [];
-        portraitUrls.push({ url, label: 'dev' });
-        yamlData.portrait_urls = portraitUrls;
+        // Record the published URL in the YAML.
+        // For characters, append to the portrait_urls cascade array.
+        // For other types, write directly to the target field (e.g. image_url).
+        if (need.targetField.startsWith('portrait_urls')) {
+          const portraitUrls: Array<{ url: string; label?: string }> = Array.isArray(
+            yamlData.portrait_urls,
+          )
+            ? (yamlData.portrait_urls as Array<{ url: string; label?: string }>)
+            : [];
+          // Avoid duplicate dev entries if retrying
+          if (!portraitUrls.some(p => p.url === url && p.label === 'dev')) {
+            portraitUrls.push({ url, label: 'dev' });
+          }
+          yamlData.portrait_urls = portraitUrls;
+        } else {
+          yamlData[need.targetField] = url;
+        }
 
         markPublished(need);
         published.push({

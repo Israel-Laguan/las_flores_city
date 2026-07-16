@@ -67,7 +67,7 @@ export default function VerificationReport({ report }: VerificationReportProps) 
           <span className={styles.warnCount}>{warned} warn</span>
           <span className={styles.failCount}>{failed} fail</span>
         </span>
-        <span className={styles.checkedAt}>
+        <span className={styles.checkedAt} suppressHydrationWarning>
           {new Date(report.checkedAt).toLocaleString()}
         </span>
       </div>
