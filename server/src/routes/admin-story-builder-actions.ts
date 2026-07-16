@@ -4,7 +4,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
-import { previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
+import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan } from '../services/StoryBuilderOrchestrator.js';
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 
@@ -214,6 +214,35 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req, res) => {
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/migrate error:', error);
     res.status(500).json({ success: false, error: error.message || 'Failed to migrate plan', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/plans/:id/approve-and-solidify — Single-click "Approve & Ship"
+// Collapses stage → publish → migrate → verify into one call (Milestone 04).
+adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await approveAndSolidifyPlan(id);
+
+    res.status(result.success ? 200 : 422).json({
+      success: result.success,
+      data: result,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/approve-and-solidify error:', error);
+    const message = error.message || 'Failed to approve and solidify plan';
+    const statusCode = message.includes('not found')
+      ? 404
+      : message.includes('must be') || message.includes("'proposed'")
+        ? 400
+        : 500;
+    res.status(statusCode).json({
+      success: false,
+      error: message,
+      timestamp: new Date().toISOString(),
+    });
   }
 });
 

@@ -11,6 +11,29 @@ This is the "checked/verified" stage the user requested. It catches the
 silent drift the current pipeline allows (broken `lore_path` references,
 broken asset URLs, missing FKs).
 
+## Status
+
+> **Status: PARTIAL — `verifyPlan` stub exists; real checks pending.**
+
+- `content_plans.verification_report` JSONB column and the `verified` status
+  value exist (Milestone 02 done).
+- `verifyPlan(planId)` exists in `server/src/services/StoryBuilderOrchestrator.ts`
+  but is a **stub**: it only confirms the plan is `migrated` and returns
+  `{ success: true, checks: [] }`. It does **not** yet run the cross-reference
+  checks below.
+- `PlanVerificationService.ts` and the real `GET /plans/:id/verification`
+  behaviour are **not implemented**.
+- Consequently `approveAndSolidifyPlan()` (Milestone 04) sets `status='verified'`
+  without any real verification. That is acceptable as a temporary happy-path
+  state, but the Validation-gate items 1–2 (real pass/fail checks) are **not**
+  satisfied yet.
+
+> **Doc drift:** the "Persisting the report" snippet below shows `verifyPlan`
+> writing `verification_report`. In the current code the
+> `UPDATE content_plans SET verification_report = ...` is performed by
+> `approveAndSolidifyPlan` itself (twice — on failure and on success), not by a
+> separate `verifyPlan` DB write.
+
 ## Pre-requisites
 
 - Milestone 02 (`verification_report` column exists, `verified` is a valid
@@ -18,23 +41,20 @@ broken asset URLs, missing FKs).
 
 ## Files to change
 
-### New service
+### New service — **PENDING (not implemented)**
 
 - `server/src/services/PlanVerificationService.ts` — new file with the
   `verifyPlan(planId): Promise<VerificationReport>` function. Returns a
   report with `errors[]`, `warnings[]`, `checks[]`, and a `passed: boolean`.
 
-### New route
+### New route — **PENDING (stub only)**
 
-- `server/src/routes/admin-story-builder-actions.ts` — add
-  `GET /plans/:id/verification` that returns the saved
+- `server/src/routes/admin-story-builder-actions.ts` — `GET /plans/:id/verification` already exists but returns a stub (`checks: []`). Real behaviour: return the saved
   `verification_report` from the `content_plans` row.
 
-### New orchestrator method
+### Orchestrator method — **DONE (stub)**
 
-- `server/src/services/StoryBuilderOrchestrator.ts` — add
-  `verifyPlan(planId)` that calls `PlanVerificationService.verifyPlan()` and
-  saves the result. Called by `approveAndSolidifyPlan()` (Milestone 04) after
+- `server/src/services/StoryBuilderOrchestrator.ts` — `verifyPlan(planId)` already exists but is a **stub**. It must be extended to call `PlanVerificationService.verifyPlan()` (once M05 implements it) and return the full report. Called by `approveAndSolidifyPlan()` (Milestone 04) after
   `migrateStagedPlan()`.
 
 ### Admin UI

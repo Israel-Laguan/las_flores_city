@@ -125,3 +125,54 @@
   background: var(--danger);
   color: #fff;
 }
+
+.shipFooter {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--border);
+  text-align: center;
+}
+
+.shipNote {
+  font-size: 0.85rem;
+  color: var(--warning, #f59e0b);
+  margin-bottom: 1rem;
+}
+
+.shipNote code {
+  background: var(--surface-2, #1f2937);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.shipButton {
+  padding: 0.85rem 2rem;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.shipPrimary {
+  background: var(--accent);
+  color: #000;
+}
+
+.shipPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shipHint {
+  font-size: 0.8rem;
+  color: var(--muted, #666);
+  margin-top: 0.85rem;
+  line-height: 1.4;
+}
+
+.shipCounts {
+  font-size: 0.78rem;
+  color: var(--muted, #666);
+  margin-top: 0.4rem;
+}

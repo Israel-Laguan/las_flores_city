@@ -1,11 +1,14 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import type { ContentPlan, ContentPlanItem, AssetNeed } from '@las-flores/shared';
+import { ContentPlanSchema } from '@las-flores/shared';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 import { validateContent } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
+import { ContentPlanService } from './ContentPlanService.js';
+import { publishChosenDrafts } from './AssetPublishService.js';
 import {
   writePlanItems,
   rollbackFiles,
@@ -66,6 +69,16 @@ export interface StagingResult {
 export interface MigrationResult {
   success: boolean;
   migrationResult: any;
+  error?: string;
+}
+
+export interface SolidifyResult {
+  success: boolean;
+  status: 'approved' | 'staged' | 'migrated' | 'verified' | 'failed';
+  stage?: StagingResult;
+  publish?: import('./AssetPublishService.js').PublishResult;
+  migration?: MigrationResult;
+  verificationReport?: any;
   error?: string;
 }
 
@@ -394,6 +407,109 @@ export async function migrateStagedPlan(planId: string): Promise<MigrationResult
       error: error.message,
     };
   }
+}
+
+/**
+ * Single-click "Approve & Solidify".
+ *
+ * Collapses the happy path (describe → review → stage → migrate → verify) into
+ * one call. The intermediate `staged` / `migrated` / `verified` statuses become
+ * an audit trail on the `content_plans` row rather than user-facing buttons.
+ *
+ * Sequence: lock → stage → publish chosen drafts → migrate → verify, flipping
+ * the plan status at each step and recording `failed` (with partial state) if
+ * any stage throws or returns unsuccessfully, so the user can re-trigger the
+ * remaining steps manually.
+ */
+export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyResult> {
+  const load = await queryOLTP<{ plan_json: any; status: string }>(
+    'SELECT plan_json, status FROM content_plans WHERE id = $1',
+    [planId],
+  );
+  if (load.rows.length === 0) {
+    throw new Error(`Plan not found: ${planId}`);
+  }
+
+  const currentStatus = load.rows[0].status;
+  if (currentStatus !== 'proposed' && currentStatus !== 'approved') {
+    throw new Error(`Plan must be 'proposed' or 'approved' to approve. Current: ${currentStatus}`);
+  }
+
+  const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
+
+  // 1. Lock the plan (no more refinement).
+  await ContentPlanService.setStatus(planId, 'approved');
+
+  // 2. Stage — write YAML + lore + prompt files to disk.
+  const stageResult = await stagePlan(plan);
+  if (!stageResult.success) {
+    await ContentPlanService.setStatus(planId, 'failed');
+    return { success: false, status: 'failed', stage: stageResult, error: stageResult.error ?? 'Staging failed' };
+  }
+  await ContentPlanService.setStatus(planId, 'staged');
+
+  // 3. Publish chosen drafts — upload to MinIO, tag portrait_urls label:'dev'.
+  const publishResult = await publishChosenDrafts(planId);
+  if (!publishResult.success) {
+    await ContentPlanService.setStatus(planId, 'failed');
+    return {
+      success: false,
+      status: 'failed',
+      stage: stageResult,
+      publish: publishResult,
+      error: 'Asset publish failed',
+    };
+  }
+
+  // 4. Migrate to the database.
+  const migrationResult = await migrateStagedPlan(planId);
+  if (!migrationResult.success) {
+    await ContentPlanService.setStatus(planId, 'failed');
+    return {
+      success: false,
+      status: 'failed',
+      stage: stageResult,
+      publish: publishResult,
+      migration: migrationResult,
+      error: migrationResult.error,
+    };
+  }
+  // migrateStagedPlan() already sets status='migrated' on success.
+
+  // 5. Verify cross-references (stub today — real impl in M05).
+  const verificationReport = await verifyPlan(planId);
+  const verificationErrorCount = (verificationReport as any)?.errors?.length ?? 0;
+  if (!verificationReport.success || verificationErrorCount > 0) {
+    await ContentPlanService.setStatus(planId, 'failed');
+    await queryOLTP(
+      'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
+      [JSON.stringify(verificationReport), planId],
+    );
+    return {
+      success: false,
+      status: 'failed',
+      stage: stageResult,
+      publish: publishResult,
+      migration: migrationResult,
+      verificationReport,
+      error: (verificationReport as any)?.error || 'Verification failed',
+    };
+  }
+
+  await ContentPlanService.setStatus(planId, 'verified');
+  await queryOLTP(
+    'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
+    [JSON.stringify(verificationReport), planId],
+  );
+
+  return {
+    success: true,
+    status: 'verified',
+    stage: stageResult,
+    publish: publishResult,
+    migration: migrationResult,
+    verificationReport,
+  };
 }
 
 /**

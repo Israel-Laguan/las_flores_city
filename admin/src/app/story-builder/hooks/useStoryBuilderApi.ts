@@ -88,6 +88,33 @@ export async function approvePlan(planId: string, plan: ContentPlan) {
   );
 }
 
+/**
+ * Single-click "Approve & Ship" (Milestone 04). Runs stage → publish →
+ * migrate → verify server-side and returns the full `SolidifyResult`.
+ */
+export async function approveAndSolidify(planId: string) {
+  return postJSON<{
+    success: boolean;
+    data?: {
+      success: boolean;
+      status: string;
+      stage?: any;
+      publish?: any;
+      migration?: any;
+      verificationReport?: any;
+      error?: string;
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans/${planId}/approve-and-solidify`, {});
+}
+
+/** Fetch the saved verification report for a plan. */
+export async function getVerification(planId: string) {
+  return adminFetch<{ success: boolean; data?: { verification_report: any }; error?: string }>(
+    `/admin/story-builder/plans/${planId}/verification`,
+  );
+}
+
 export async function regenerateLore(planId: string, itemId: string) {
   return adminFetch<{ success: boolean; data?: { lorePath: string; content: string }; error?: string }>(
     `/admin/story-builder/plans/${planId}/items/${itemId}/lore`,
