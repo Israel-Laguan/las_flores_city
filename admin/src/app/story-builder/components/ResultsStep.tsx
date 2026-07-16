@@ -58,6 +58,122 @@ function cn(...classes: Array<string | false | undefined>): string {
   return classes.filter(Boolean).join(' ');
 }
 
+function StatusBox({ result, verified, failed }: { result: SolidifyResultLite; verified: boolean; failed: boolean }) {
+  return (
+    <div className={verified ? styles.successBox : failed ? styles.errorBox : styles.neutralBox}>
+      <p className={styles.boldText}>
+        {verified ? '✓ Plan verified and shipped!' : failed ? '✗ Solidify failed' : 'Solidify finished'}
+      </p>
+      <p className={styles.statusLine}>
+        Final status: <strong>{result.status}</strong>
+      </p>
+      {result.error && <p className={styles.errorText}>{result.error}</p>}
+    </div>
+  );
+}
+
+function ItemResultsTable({ itemResults }: { itemResults: NonNullable<SolidifyResultLite['stage']>['itemResults'] }) {
+  if (!itemResults || itemResults.length === 0) return null;
+  return (
+    <div className={styles.subsection}>
+      <h3 className={styles.subsectionTitle}>Per-item results</h3>
+      <table className={styles.itemTable}>
+        <tbody>
+          {itemResults.map((r, i) => (
+            <tr key={i} className={styles.tableRow}>
+              <td className={styles.tableCellName}>{r.name}</td>
+              <td className={styles.tableCell}>
+                <span
+                  className={cn(
+                    styles.statusBadge,
+                    r.status === 'success' ? styles.statusSuccess : styles.statusError,
+                  )}
+                >
+                  {r.status}
+                </span>
+              </td>
+              <td className={styles.tableCellInfo}>{r.error || r.filePath || ''}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function PublishedAssets({ publish }: { publish: NonNullable<SolidifyResultLite['publish']> }) {
+  if (publish.published.length === 0) return null;
+  return (
+    <div className={styles.subsection}>
+      <h3 className={styles.subsectionTitle}>Published assets ({publish.published.length})</h3>
+      <ul className={styles.assetList}>
+        {publish.published.map((p, i) => (
+          <li key={i} className={styles.assetItem}>
+            <span className={styles.assetTag}>{p.needId}</span>{' '}
+            <a href={p.url} className={styles.assetLink} target="_blank" rel="noreferrer">
+              {p.localFilename || p.url}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function PublishErrors({ publish }: { publish: NonNullable<SolidifyResultLite['publish']> }) {
+  if (publish.errors.length === 0) return null;
+  return (
+    <div className={styles.errorBox}>
+      <p className={styles.boldText}>Asset publish errors</p>
+      <ul className={styles.errorList}>
+        {publish.errors.map((e, i) => (
+          <li key={i}>{e}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function LiveContent({ plan }: { plan: ContentPlan }) {
+  if (plan.items.length === 0) return null;
+  return (
+    <div className={styles.subsection}>
+      <h3 className={styles.subsectionTitle}>Live content</h3>
+      <ul className={styles.linkList}>
+        {plan.items.map(item => {
+          const href = liveContentHref(item);
+          if (!href) return null;
+          return (
+            <li key={item.id}>
+              <Link href={href} className={styles.contentLink} target="_blank" rel="noreferrer">
+                {item.name || item.slug} ({item.type})
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function ActionLinks({ planId }: { planId?: string | null }) {
+  return (
+    <div className={styles.actions}>
+      {planId && (
+        <Link href={`/story-builder/plans?focus=${planId}`} className={`${styles.button} ${styles.secondaryButton}`}>
+          View in DB
+        </Link>
+      )}
+      <Link href="/assets" className={`${styles.button} ${styles.secondaryButton}`}>
+        View Assets
+      </Link>
+      <Link href="/story-builder" className={`${styles.button} ${styles.primaryButton}`}>
+        New Plan
+      </Link>
+    </div>
+  );
+}
+
 export default function ResultsStep({ result, plan, planId }: ResultsStepProps) {
   if (!result) return null;
 
@@ -69,70 +185,13 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
     <div className={styles.section}>
       <h2 className={styles.sectionHeading}>Step 3: Results &amp; Assets</h2>
 
-      <div className={verified ? styles.successBox : failed ? styles.errorBox : styles.neutralBox}>
-        <p className={styles.boldText}>
-          {verified ? '✓ Plan verified and shipped!' : failed ? '✗ Solidify failed' : 'Solidify finished'}
-        </p>
-        <p className={styles.statusLine}>
-          Final status: <strong>{result.status}</strong>
-        </p>
-        {result.error && <p className={styles.errorText}>{result.error}</p>}
-      </div>
+      <StatusBox result={result} verified={verified} failed={failed} />
 
-      {itemResults.length > 0 && (
-        <div className={styles.subsection}>
-          <h3 className={styles.subsectionTitle}>Per-item results</h3>
-          <table className={styles.itemTable}>
-            <tbody>
-              {itemResults.map((r, i) => (
-                <tr key={i} className={styles.tableRow}>
-                  <td className={styles.tableCellName}>{r.name}</td>
-                  <td className={styles.tableCell}>
-                    <span
-                      className={cn(
-                        styles.statusBadge,
-                        r.status === 'success' ? styles.statusSuccess : styles.statusError,
-                      )}
-                    >
-                      {r.status}
-                    </span>
-                  </td>
-                  <td className={styles.tableCellInfo}>{r.error || r.filePath || ''}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <ItemResultsTable itemResults={itemResults} />
 
-      {result.publish && result.publish.published.length > 0 && (
-        <div className={styles.subsection}>
-          <h3 className={styles.subsectionTitle}>
-            Published assets ({result.publish.published.length})
-          </h3>
-          <ul className={styles.assetList}>
-            {result.publish.published.map((p, i) => (
-              <li key={i} className={styles.assetItem}>
-                <span className={styles.assetTag}>{p.needId}</span>{' '}
-                <a href={p.url} className={styles.assetLink} target="_blank" rel="noreferrer">
-                  {p.localFilename || p.url}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {result.publish && <PublishedAssets publish={result.publish} />}
 
-      {result.publish && result.publish.errors.length > 0 && (
-        <div className={styles.errorBox}>
-          <p className={styles.boldText}>Asset publish errors</p>
-          <ul className={styles.errorList}>
-            {result.publish.errors.map((e, i) => (
-              <li key={i}>{e}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {result.publish && <PublishErrors publish={result.publish} />}
 
       {result.verificationReport && (
         <div className={styles.subsection}>
@@ -141,38 +200,9 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
         </div>
       )}
 
-      {plan && plan.items.length > 0 && (
-        <div className={styles.subsection}>
-          <h3 className={styles.subsectionTitle}>Live content</h3>
-          <ul className={styles.linkList}>
-            {plan.items.map(item => {
-              const href = liveContentHref(item);
-              if (!href) return null;
-              return (
-                <li key={item.id}>
-                  <Link href={href} className={styles.contentLink} target="_blank" rel="noreferrer">
-                    {item.name || item.slug} ({item.type})
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+      {plan && <LiveContent plan={plan} />}
 
-      <div className={styles.actions}>
-        {planId && (
-          <Link href={`/story-builder/plans?focus=${planId}`} className={`${styles.button} ${styles.secondaryButton}`}>
-            View in DB
-          </Link>
-        )}
-        <Link href="/assets" className={`${styles.button} ${styles.secondaryButton}`}>
-          View Assets
-        </Link>
-        <Link href="/story-builder" className={`${styles.button} ${styles.primaryButton}`}>
-          New Plan
-        </Link>
-      </div>
+      <ActionLinks planId={planId} />
     </div>
   );
 }
