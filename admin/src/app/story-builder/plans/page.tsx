@@ -21,6 +21,7 @@ const STATUS_COLORS: Record<string, string> = {
   approved: 'var(--status-success, #10b981)',
   staged: 'var(--status-success, #10b981)',
   migrated: 'var(--status-success, #10b981)',
+  verified: 'var(--status-success, #10b981)',
   failed: 'var(--status-error, #ef4444)',
 };
 

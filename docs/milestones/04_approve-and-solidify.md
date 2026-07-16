@@ -26,6 +26,48 @@ When the user clicks **Approve**:
 The user sees a single click. The audit trail is on the `content_plans`
 row.
 
+## Implementation status
+
+> **Status: DONE.** The orchestrator, publish service, route, and real
+> verification checks are all implemented on the main branch.
+
+The orchestrator, publish service, and route described below are **already
+implemented** on the main branch. The original pseudocode in this document
+drifted from the implementation; the deviations that matter:
+
+- `approveAndSolidifyPlan(planId)` lives in
+  `server/src/services/StoryBuilderOrchestrator.ts` and chains
+  lock → `stagePlan()` → `publishChosenDrafts()` → `migrateStagedPlan()` →
+  `verifyPlan()`, flipping `content_plans.status` at each step and recording
+  `failed` (with partial state) on any error.
+- Entrance condition is **`proposed` OR `approved`** (not `proposed` only as
+  the pseudocode implies).
+- The chosen-draft URL is written as a `label: 'dev'` entry into the **YAML**
+  `portrait_urls` array by `publishChosenDrafts`, then carried into the DB by
+  the subsequent migration (`processContentFile` → `upsertCharacter` reads
+  `data.portrait_urls`). It is **not** written straight into the DB JSONB by a
+  `setItemAssetUrl` helper (that function does not exist). So the
+  Validation-gate assertions about the DB `portrait_urls` JSONB only hold when
+  the full solidify sequence (publish **+ migrate**) runs.
+- `AssetNeed` ends at `published` (the actual code calls `markPublished`);
+  it does **not** additionally transition to `assigned`.
+- `verifyPlan()` is **implemented** by `PlanVerificationService.verifyPlanCrossReferences`,
+  which runs 7 real cross-reference checks:
+  1. `lore-path-resolution` — every `lore_path` resolves to a file on disk.
+  2. `narrative-path-resolution` — every `narrative_path` resolves to a file.
+  3. `asset-path-resolution` — every referenced asset exists in `assets/`.
+  4. `fk-integrity` — all referenced `dialogue_tree` / `character` / `mystery` /
+     `scene` UUIDs exist (malformed UUIDs and missing rows are reported, not
+     silently ignored).
+  5. `story-beat-references` — story `beats` slugs exist in `story_beats`.
+  6. `cross-plan-consistency` — internal `dependsOn` / `links` are self-consistent.
+  7. `asset-need-status` — no asset need is left `failed` or `pending`.
+  `status='verified'` is only set when `errors.length === 0`. Real verification
+  shipped with Milestone 05 (done).
+- The integration test (`server/tests/integration/approve-and-solidify.test.ts`)
+  exists but **mocks the orchestrator**; it only asserts route status codes,
+  not the 10-step end-to-end flow in "Tests to add or update" below.
+
 ## Pre-requisites
 
 - Milestone 01 (per-folder layout).
@@ -34,17 +76,16 @@ row.
 
 ## Files to change
 
-### New orchestrator method
+### Orchestrator method — **DONE**
 
-- `server/src/services/StoryBuilderOrchestrator.ts` — add
-  `approveAndSolidifyPlan(planId: string): Promise<SolidifyResult>`. This
-  method calls `stagePlan()` + `publishChosenDrafts()` +
+- `server/src/services/StoryBuilderOrchestrator.ts` — `approveAndSolidifyPlan(planId: string): Promise<SolidifyResult>` already exists. It calls `stagePlan()` + `publishChosenDrafts()` +
   `migrateStagedPlan()` + `verifyPlan()` in sequence, transitioning the
-  status at each step.
+  status at each step. (See "Implementation status" for deviations from the
+  pseudocode below.)
 
-### New service
+### Publish service — **DONE** (`AssetPublishService.ts` exists)
 
-- `server/src/services/AssetPublishService.ts` — new file. Handles
+- `server/src/services/AssetPublishService.ts` — already implemented. Handles
   "publish the chosen draft" per asset need:
   - For each `AssetNeed` with `status='chosen'`, read the YAML's
     `asset_paths.<field>` field to find the local filename (e.g.
@@ -63,12 +104,11 @@ row.
   methods that append `label: 'staging'` / `label: 'production'` entries
   to the `portrait_urls` JSONB array.
 
-### New route
+### Route — **DONE**
 
-- `server/src/routes/admin-story-builder-actions.ts` — add
-  `POST /plans/:id/approve-and-solidify` that calls
-  `approveAndSolidifyPlan(planId)`. Returns the final state
-  (`status`, `verificationReport`).
+- `server/src/routes/admin-story-builder-actions.ts` — `POST /plans/:id/approve-and-solidify` already exists. It calls
+  `approveAndSolidifyPlan(planId)` and returns the full `SolidifyResult`
+  (`status`, `stage`, `publish`, `migration`, `verificationReport`, `error`).
 
 ### Admin UI changes
 
@@ -181,7 +221,17 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
 
   return { success: errors.length === 0, published, errors };
 }
-```
+
+> **Note — actual `publishChosenDrafts` differs from the snippet above.**
+> The real implementation (a) reads the staged YAML via
+> `resolveEntityRootDir` + `resolveFilePath` (there is no `resolveEntityRoot`
+> helper), (b) uses `uploadToMinio` and `markPublished` from
+> `AssetNeedsService` (not `transitionAssetNeed` twice), (c) appends the
+> `label: 'dev'` entry to the **YAML** `portrait_urls` array and writes the
+> YAML back to disk, then persists the updated `plan_json` (asset-need
+> statuses) — there is **no** `setItemAssetUrl` / `setItemAssetPath` DB
+> helper, and (d) leaves `AssetNeed` at `published` (it does not additionally
+> transition to `assigned`).
 
 ### Step 3: The wizard UX
 
@@ -201,7 +251,13 @@ The "Results" step now shows:
 
 ## Tests to add or update
 
-- `server/tests/integration/approve-and-solidify.test.ts` — new file.
+> **Current state:** `server/tests/integration/approve-and-solidify.test.ts`
+> exists but **mocks the orchestrator** (`jest.mock('.../StoryBuilderOrchestrator.js')`)
+> and only asserts route status codes (200/422/404/400/500). The real
+> end-to-end test described below is **still TODO**.
+
+- `server/tests/integration/approve-and-solidify.test.ts` — new file (currently
+  a mocked route-contract test; extend to a real end-to-end test):
   End-to-end test:
   1. Create a plan via `POST /plan`.
   2. Refine it once.

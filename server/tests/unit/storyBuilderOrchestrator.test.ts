@@ -9,7 +9,7 @@ jest.mock('../../src/content/validate.js', () => ({
   validateContent: jest.fn().mockResolvedValue({ valid: true, errors: [] }),
 }));
 jest.mock('../../src/content/migrate.js', () => ({
-  migrateContent: jest.fn().mockResolvedValue({ filesProcessed: 1, filesSkipped: 0, filesFailed: 0 }),
+  migrateContent: jest.fn().mockResolvedValue({ success: true, filesProcessed: 1, filesSkipped: 0, filesFailed: 0 }),
 }));
 
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';

@@ -4,7 +4,11 @@ import type { Step } from '../types';
 import { cn } from '@las-flores/ui';
 import styles from './StepIndicator.module.css';
 
-const stepLabels = ['Describe', 'Review & Refine', 'Stage', 'Migrate', 'Assets'];
+// Collapsed from 5 steps (Describe → Review → Stage → Migrate → Assets) to
+// Describe → Review → Results. "Approving" (step 3) is the transient state
+// while the single approve-and-solidify call runs, so the indicator shows
+// "Results" as in-progress.
+const stepLabels = ['Describe', 'Review', 'Results'];
 
 interface StepIndicatorProps {
   step: Step;

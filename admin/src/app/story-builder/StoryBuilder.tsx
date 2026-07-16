@@ -6,9 +6,8 @@ import StepIndicator from './components/StepIndicator';
 import { useDraftManager } from './hooks/useDraftManager';
 import DescribeStep from './components/DescribeStep';
 import ReviewStep from './components/ReviewStep';
-import StageStep from './components/StageStep';
-import MigrateStep from './components/MigrateStep';
-import ResultsStep from './components/ResultsStep';
+import ApprovingStep from './components/ApprovingStep';
+import ResultsStep, { type SolidifyResultLite } from './components/ResultsStep';
 import Link from 'next/link';
 import styles from './StoryBuilder.module.css';
 
@@ -20,14 +19,14 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
   const {
     step, description, setDescription, plan, loading, error,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
-    stagingResult, migrationResult, previewData, templates,
-    handleGeneratePlan, handleRefine, handlePreview, handleStage,
-    handleApprove, handleMigrate, handleRetry, handleSelectTemplate,
+    templates,
+    handleGeneratePlan, handleRefine,
+    handleApproveAndSolidify, handleSelectTemplate,
     handleRegenerateLore,
     handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem,
-    goBack, planId,
+    goBack, planId, solidifyResult,
   } = useStoryBuilder(initialPlanId);
 
   const { draftAssetsByItem, draftLoading, onGenerateDrafts, onChooseDraft } = useDraftManager({
@@ -83,43 +82,26 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           onChooseDraft={onChooseDraft}
           draftAssetsByItem={draftAssetsByItem}
           draftLoading={draftLoading}
+          onApproveAndShip={handleApproveAndSolidify}
+          approving={loading}
         />
       )}
 
       {step === 3 && (
-        <StageStep
-          loading={loading}
-          previewData={previewData}
-          stagingResult={stagingResult}
-          onPreview={handlePreview}
-          onStage={handleStage}
-          onRetry={handleRetry}
+        <ApprovingStep
+          assetCount={
+            (plan?.items ?? []).flatMap(i => i.assetNeeds ?? []).filter(n => n.status === 'chosen' || n.status === 'pending').length
+          }
         />
       )}
 
       {step === 4 && (
-        <MigrateStep
-          loading={loading}
-          stagingResult={stagingResult}
-          migrationResult={migrationResult}
-          onMigrate={handleMigrate}
-        />
+        <ResultsStep result={solidifyResult as SolidifyResultLite | null} plan={plan} planId={planId} />
       )}
 
-      {step === 5 && <ResultsStep migrationResult={migrationResult} />}
-
       <div className={styles.navBar}>
-        {step > 1 && step < 5 && (
-          <button className={cn('btn', 'btn--secondary')} onClick={goBack}>&larr; Back</button>
-        )}
         {step === 2 && (
-          <button
-            className={cn('btn', 'btn--primary', (!plan || !plan.items?.length || !planId) && 'btn--disabled')}
-            onClick={handleApprove}
-            disabled={!plan || !plan.items?.length || !planId}
-          >
-            Approve Plan &rarr;
-          </button>
+          <button className={cn('btn', 'btn--secondary')} onClick={goBack}>&larr; Back</button>
         )}
       </div>
     </main>

@@ -6,6 +6,7 @@ import type { Step } from '../types';
 import { loadPlanFromDb, fetchTemplates } from './useStoryBuilderApi';
 import { useStoryPlanApi } from './useStoryPlanApi';
 import * as mutations from './useStoryBuilderMutations';
+import type { SolidifyResultLite } from '../components/ResultsStep';
 
 interface Template {
   id: string;
@@ -23,15 +24,13 @@ export function useStoryBuilder(initialPlanId: string | null) {
   const [planId, setPlanId] = useState<string | null>(null);
   const [refineFeedback, setRefineFeedback] = useState('');
   const [showRefine, setShowRefine] = useState(false);
-  const [stagingResult, setStagingResult] = useState<any>(null);
-  const [migrationResult, setMigrationResult] = useState<any>(null);
-  const [previewData, setPreviewData] = useState<any>(null);
+  const [solidifyResult, setSolidifyResult] = useState<SolidifyResultLite | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
 
   const apiCallbacks = useStoryPlanApi({
     setLoading, setError, setPlan, setStep, setPlanId,
-    setRefineFeedback, setShowRefine, setPreviewData,
-    setStagingResult, setMigrationResult, description, plan,
+    setRefineFeedback, setShowRefine, setSolidifyResult,
+    description, plan,
   });
 
   useEffect(() => {
@@ -78,14 +77,10 @@ export function useStoryBuilder(initialPlanId: string | null) {
   return {
     step, description, setDescription, plan, loading, error, planId,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
-    stagingResult, migrationResult, previewData, templates,
+    solidifyResult, templates,
     handleGeneratePlan: apiCallbacks.handleGeneratePlan,
     handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
-    handlePreview: () => { if (planId) apiCallbacks.handlePreview(planId); },
-    handleStage: () => { if (planId) apiCallbacks.handleStage(planId); },
-    handleApprove: () => { if (planId) apiCallbacks.handleApprove(planId); },
-    handleMigrate: () => { if (planId) apiCallbacks.handleMigrate(planId); },
-    handleRetry: () => { if (planId) apiCallbacks.handleRetry(planId); },
+    handleApproveAndSolidify: () => { if (planId) apiCallbacks.handleApproveAndSolidify(planId); },
     handleSelectTemplate: apiCallbacks.handleSelectTemplate,
     handleRegenerateLore: (itemId: string) => { if (planId) apiCallbacks.handleRegenerateLore(planId, itemId); },
     handleGenerateDrafts: async (count?: number) => { if (planId) await apiCallbacks.handleGenerateDrafts(planId, count); },
@@ -100,6 +95,6 @@ export function useStoryBuilder(initialPlanId: string | null) {
     removeItem: (i: number) => applyMutation(p => mutations.removeItem(p, i)),
     removeAssetPath: (i: number, k: string) => applyMutation(p => mutations.removeAssetPath(p, i, k)),
     addItem: () => applyMutation(mutations.addItem),
-    goBack: useCallback(() => { setStep(s => (s > 1 && s < 5 ? (s - 1) as Step : s)); }, []),
+    goBack: useCallback(() => { setStep(s => (s === 2 ? 1 : s) as Step); }, []),
   };
 }

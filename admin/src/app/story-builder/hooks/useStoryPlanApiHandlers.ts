@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
 import type { Step } from '../types';
+import type { SolidifyResultLite } from '../components/ResultsStep';
 import * as api from './useStoryBuilderApi';
 import { createDraftPlanHandlers, refreshPlanFromDb } from './useDraftPlanApi';
 
@@ -14,9 +15,7 @@ export interface Callbacks {
   setPlanId: SetState<string | null>;
   setRefineFeedback: SetState<string>;
   setShowRefine: SetState<boolean>;
-  setPreviewData: SetState<any>;
-  setStagingResult: SetState<any>;
-  setMigrationResult: SetState<any>;
+  setSolidifyResult: SetState<SolidifyResultLite | null>;
   description: string;
   plan: ContentPlan | null;
 }
@@ -40,8 +39,7 @@ async function withLoading<T>(
 export function createStoryPlanHandlers(cb: Callbacks) {
   const {
     setLoading, setError, setPlan, setStep, setPlanId, description, plan,
-    setRefineFeedback, setShowRefine, setPreviewData, setStagingResult,
-    setMigrationResult,
+    setRefineFeedback, setShowRefine, setSolidifyResult,
   } = cb;
 
   const handleGeneratePlan = useCallback(async () => {
@@ -70,41 +68,24 @@ export function createStoryPlanHandlers(cb: Callbacks) {
     }
   }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine]);
 
-  const handlePreview = useCallback(async (planId: string) => {
-    const data = await withLoading(setLoading, setError, () => api.previewPlan(planId));
-    if (!data) return;
-    if (data.success && data.data) setPreviewData(data.data);
-    else setError(data.error || 'Failed to preview plan');
-  }, [setLoading, setError, setPreviewData]);
-
-  const handleStage = useCallback(async (planId: string) => {
-    const data = await withLoading(setLoading, setError, () => api.stagePlan(planId));
-    if (!data) return;
-    if (data.success) { setStagingResult(data.data); setStep(4); }
-    else { setStagingResult(data.data); setError(data.data?.error || 'Staging failed'); }
-  }, [setLoading, setError, setStep, setStagingResult]);
-
-  const handleApprove = useCallback(async (planId: string) => {
-    if (!plan) { setError('No plan to approve'); return; }
-    const data = await withLoading(setLoading, setError, () => api.approvePlan(planId, plan));
-    if (!data) return;
-    if (data.success) setStep(3);
-    else setError(data.error || 'Approval failed');
-  }, [setLoading, setError, setStep, plan]);
-
-  const handleMigrate = useCallback(async (planId: string) => {
-    const data = await withLoading(setLoading, setError, () => api.migratePlan(planId));
-    if (!data) return;
-    if (data.success) { setMigrationResult(data.data); setStep(5); }
-    else { setMigrationResult(data.data); setError(data.data?.error || 'Migration failed'); }
-  }, [setLoading, setError, setStep, setMigrationResult]);
-
-  const handleRetry = useCallback(async (planId: string) => {
-    const data = await withLoading(setLoading, setError, () => api.retryPlan(planId));
-    if (!data) return;
-    if (data.success) { setStagingResult(data.data); if (data.data?.success) setStep(4); }
-    else setError(data.error || 'Retry failed');
-  }, [setLoading, setError, setStep, setStagingResult]);
+  const handleApproveAndSolidify = useCallback(async (planId: string) => {
+    if (!planId) return;
+    setStep(3); // Approving (transient while the single call runs)
+    const data = await withLoading(setLoading, setError, () => api.approveAndSolidify(planId));
+    if (!data) {
+      setStep(2);
+      return;
+    }
+    if (data.success && data.data) {
+      setSolidifyResult(data.data as SolidifyResultLite);
+      setPlan(plan ? ({ ...plan, status: data.data.status } as ContentPlan) : plan);
+      setStep(4);
+    } else {
+      setSolidifyResult(data.data as SolidifyResultLite ?? null);
+      setError(data.error || 'Approve & Ship failed');
+      setStep(4);
+    }
+  }, [setLoading, setError, setStep, setPlan, setSolidifyResult, plan]);
 
   const handleSelectTemplate = useCallback(async (templateId: string) => {
     const data = await withLoading(setLoading, setError, () =>
@@ -130,8 +111,8 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   const { handleGenerateDrafts, handleChooseDraft } = createDraftPlanHandlers({ setLoading, setError, setPlan });
 
   return {
-    handleGeneratePlan, handleRefine, handlePreview, handleStage,
-    handleApprove, handleMigrate, handleRetry, handleSelectTemplate,
+    handleGeneratePlan, handleRefine, handleSelectTemplate,
     handleRegenerateLore, handleGenerateDrafts, handleChooseDraft,
+    handleApproveAndSolidify,
   };
 }

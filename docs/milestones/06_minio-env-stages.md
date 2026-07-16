@@ -34,6 +34,38 @@ in the `label`, not in the key. Promotion reuses the existing MinIO object
 unless different bytes are supplied. The cascade is resolved by the client
 (Milestone 07).
 
+## Status
+
+> **Status: PENDING — dev entry produced by M04; promotion methods not implemented.**
+
+- The `label: 'dev'` entry is **already produced** by Milestone 04's
+  `publishChosenDrafts`, which writes it into the **YAML** `portrait_urls`
+  array; the migration carries it into `characters.portrait_urls`. So the
+  "dev" half of this milestone is effectively done (via M04 + the migration).
+- The **promotion methods** (`promoteToStaging`, `promoteToProduction`,
+  `rollbackFromStaging`) are **not implemented** in `AssetPublishService.ts`
+  yet.
+- **Open design question — where do staging/production entries land?** M04
+  writes `dev` into the YAML and relies on migration to reach the DB. For
+  promotion, decide whether to (a) append `staging`/`production` to the **YAML**
+  `portrait_urls` and re-migrate, or (b) upsert directly into the DB JSONB
+  (bypassing the YAML). This also affects non-character entity types — see the
+  correction in "Database schema" below.
+
+> **Doc drift / correction:** the "Database schema" section below claims
+> `scenes` / `locations` have "analogous JSONB columns" to
+> `characters.portrait_urls`. They do **not** — `upsertScene` /
+> `upsertLocation` write `image_url` / `background_url` TEXT columns, not a
+> `portrait_urls` JSONB array. Today only `characters` carries the
+> `portrait_urls` cascade. For scenes/locations the cascade needs either a new
+> JSONB column or a different delivery field; confirm before implementing
+> promotion for those types.
+>
+> **Execution-order note:** 00_README lists the order as
+> `01 → 02 → 03 → 06 → 05 → 04 → 07 → 08`, but this milestone's
+> "Pre-requisites" says M04. The actual dependency is M04 (writes the `dev`
+> entry) → M06 (adds promotion). Treat M04 as the real pre-requisite.
+
 ## Pre-requisites
 
 - Milestone 04 (the publish step already uploads to MinIO; this milestone
@@ -41,10 +73,11 @@ unless different bytes are supplied. The cascade is resolved by the client
 
 ## Files to change
 
-### New service
+### Service — **PARTIAL (dev done via M04; promotion pending)**
 
-- `server/src/services/AssetPublishService.ts` (from Milestone 04) — extend
-  with three methods:
+- `server/src/services/AssetPublishService.ts` — `publishChosenDrafts` already
+  writes the `label: 'dev'` entry (Milestone 04). Extend it (or add siblings)
+  with the promotion methods:
   - `publishDev(item, need)`: uploads the chosen local PNG to MinIO at
     `las-flores/<assetType>/<filename>` (the local filename is preserved as
     the object key) and upserts a `portrait_urls` entry `label: 'dev'`.
@@ -68,10 +101,15 @@ unless different bytes are supplied. The cascade is resolved by the client
 
 ### Database schema
 
-**No schema change.** `characters.portrait_urls` (and the analogous JSONB
-columns on `scenes` / `locations`) already exist (migration 038 + the
-per-table columns). The cascade is stored as `label`-tagged entries inside
-those arrays. Do **not** add `portrait_url_staging` / `portrait_url_production`
+**Schema change likely required for scenes/locations.** `characters.portrait_urls`
+is a JSONB array and already carries the cascade. However, `scenes` and
+`locations` do **not** have an analogous `portrait_urls` JSONB column — their
+upserts write `image_url` / `background_url` TEXT columns. Today the cascade
+only works for `characters`. For scenes/locations either add a `portrait_urls`
+JSONB column (mirroring `characters`) or route promotion through the existing
+`image_url` / `background_url` fields. Confirm the chosen approach before
+implementing promotion for those types. `characters` itself needs **no** schema
+change. Do **not** add `portrait_url_staging` / `portrait_url_production`
 TEXT columns — that duplicates state the JSONB already models and was rejected
 in favor of the label approach. The previously planned migration
 `051_asset_stage_columns.sql` is therefore **removed**.

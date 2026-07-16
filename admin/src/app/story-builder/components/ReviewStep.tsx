@@ -31,6 +31,8 @@ interface ReviewStepProps {
   onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
   draftAssetsByItem?: Record<string, api.DraftAsset[]>;
   draftLoading?: boolean;
+  onApproveAndShip?: () => void;
+  approving?: boolean;
 }
 
 export default function ReviewStep({
@@ -38,7 +40,16 @@ export default function ReviewStep({
   onRefine, onUpdateItem, onRemoveItem, onAddItem, onAssetPathRemove,
   onDependsOnChange, onUpdateLink, onAddLink, onRemoveLink,
   onGenerateDrafts, onChooseDraft, draftAssetsByItem, draftLoading,
+  onApproveAndShip, approving,
 }: ReviewStepProps) {
+  // Asset needs that were never given a selected draft. The system will
+  // auto-pick the `<slug>__default.png` historical default for these.
+  const items = plan?.items ?? [];
+  const allNeeds = items.flatMap(item => item.assetNeeds ?? []);
+  const pendingNeeds = allNeeds.filter(n => n.status === 'pending');
+  const chosenNeeds = allNeeds.filter(n => n.status === 'chosen');
+  const publishedNeeds = allNeeds.filter(n => n.status === 'published');
+
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionHeading}>Step 2: Review Plan</h2>
@@ -89,6 +100,36 @@ export default function ReviewStep({
           onRemoveLink={onRemoveLink}
         />
       )}
+
+      <div className={styles.shipFooter}>
+        {pendingNeeds.length > 0 && (
+          <p className={styles.shipNote}>
+            {pendingNeeds.length} asset{pendingNeeds.length === 1 ? ' is' : 's are'} still missing
+            a selected draft. The system will auto-pick <code>&lt;slug&gt;__default.png</code>{' '}
+            for each. Choose a draft above to override.
+          </p>
+        )}
+
+        <button
+          className={cn(styles.shipButton, styles.shipPrimary)}
+          onClick={onApproveAndShip}
+          disabled={approving || !planId}
+        >
+          {approving ? 'Approving & Shipping…' : 'Approve & Ship →'}
+        </button>
+
+        <p className={styles.shipHint}>
+          One click writes the files, uploads chosen drafts to MinIO (dev cascade),
+          migrates the database, and verifies references. This can take up to a few
+          minutes for plans with many images.
+        </p>
+
+        {(chosenNeeds.length > 0 || publishedNeeds.length > 0) && (
+          <p className={styles.shipCounts}>
+            {chosenNeeds.length} chosen · {publishedNeeds.length} published
+          </p>
+        )}
+      </div>
     </div>
   );
 }
