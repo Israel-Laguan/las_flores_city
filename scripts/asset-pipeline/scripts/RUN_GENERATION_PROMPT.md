@@ -47,13 +47,11 @@ The script tries NIM first, falls back to Pollinations. It saves to `{promptDir}
 
 After generation completes, run these checks:
 
-1. **Count generated assets per type:**
+1. **Count generated assets:**
    ```bash
    echo "=== Generated asset counts ==="
-   for type in background overlay portrait thematic tile app-icon biometric; do
-     count=$(find content -path "*/assets/*${type}.png" -type f 2>/dev/null | wc -l)
-     echo "  $type: $count"
-   done
+   count=$(find content -path "*/assets/*.png" -type f 2>/dev/null | wc -l)
+   echo "  total: $count"
    ```
 
 2. **Check for zero-byte or corrupt files (< 5KB):**

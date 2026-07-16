@@ -196,6 +196,7 @@ export async function buildPromptCatalogFromRoots(
   roots: string[],
 ): Promise<z.infer<typeof PromptCatalogResponseSchema>> {
   const entries = new Map<string, ParsedPromptFile[]>();
+  const visitedFiles = new Set<string>();
 
   async function walk(dir: string) {
     const entries_fs = await fs.readdir(dir, { withFileTypes: true });
@@ -204,6 +205,8 @@ export async function buildPromptCatalogFromRoots(
       if (entry.isDirectory()) {
         await walk(full);
       } else if (entry.isFile() && entry.name.endsWith('.prompt.md')) {
+        if (visitedFiles.has(full)) continue;
+        visitedFiles.add(full);
         const parsed = await parsePromptFile(full);
         if (parsed) {
           const cat = parsed.category;

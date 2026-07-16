@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as api from './useStoryBuilderApi';
 
 interface UseDraftManagerOptions {
@@ -13,7 +13,7 @@ export function useDraftManager({ planId, handleGenerateDrafts, handleChooseDraf
   const [draftAssetsByItem, setDraftAssetsByItem] = useState<Record<string, api.DraftAsset[]>>({});
   const [draftLoading, setDraftLoading] = useState(false);
 
-  async function loadDrafts(pid: string) {
+  const loadDrafts = useCallback(async (pid: string) => {
     const res = await api.listDrafts(pid);
     if (!res.success || !res.data) return;
     const byItem: Record<string, api.DraftAsset[]> = {};
@@ -21,7 +21,13 @@ export function useDraftManager({ planId, handleGenerateDrafts, handleChooseDraf
       byItem[item.itemId] = item.assets;
     }
     setDraftAssetsByItem(byItem);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (planId) {
+      loadDrafts(planId);
+    }
+  }, [planId, loadDrafts]);
 
   const onGenerateDrafts = async (count?: number) => {
     if (!planId) return;

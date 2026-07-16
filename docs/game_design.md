@@ -248,7 +248,7 @@ The entire game interface is rendered inside a phone-shaped DOM container layere
 
 - **Lore / Worldbuilding:** `content/characters/<slug>/<slug>.md` — colocated narrative for the character.
 - **Game Engine:** `content/characters/<slug>/char_<slug>.yaml` + `<slug>.md` — NPC data for the dialogue system.
-- **Single source of truth:** Since Milestone 01, every entity's lore, YAML, and assets live together in `content/<type>/<slug>/`. There is no separate `docs/lore/figures/` track.
+- **Single source of truth:** Since Milestone 01, every entity's lore, YAML, and assets live together in `content/<type>/<slug>/`. There is no separate `docs/lore/figures/` track (see `docs/lore/guides/workflows/workflows.md` for the creation workflow).
 
 
 ---

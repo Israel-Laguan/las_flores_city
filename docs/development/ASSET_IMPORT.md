@@ -186,7 +186,7 @@ s3://las-flores/phone/app_mapa.png
 ### "No drafts folders found"
 - Make sure the stack is running
 - Check that `PROMPT_ROOT` environment variable is set correctly
-- Default is `content` (the repo root; `content/characters/*`, `content/locations/*`, etc. are scanned)
+- Default is `content` resolved relative to the server's cwd (e.g. from `server/` use `../content` to reach the repo root `content/`)
 
 ### Images not appearing after import
 - Check the server logs for import errors
@@ -218,7 +218,7 @@ MINIO_SECRET_KEY=minioadmin
 MINIO_BUCKET=las-flores
 
 # Prompt root (default)
-PROMPT_ROOT=content
+PROMPT_ROOT=../content  # relative to server/ cwd; use absolute path for clarity
 ```
 
 See `content/README.md` for the current per-folder layout and asset selection model.

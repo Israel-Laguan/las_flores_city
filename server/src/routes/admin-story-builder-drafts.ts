@@ -111,7 +111,6 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
     for (const item of plan.items) {
       const entityRoot = resolveEntityRootDir(item, contentDir);
       const assets = await listLocalAssets(entityRoot);
-      const slugDefault = `${item.slug}__default.png`;
       const preSelected = assets.length > 0 ? assets[0].filename : null;
 
       items.push({
@@ -125,19 +124,8 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
         preSelected,
       });
 
-      if (preSelected === slugDefault) {
-        for (const need of item.assetNeeds) {
-          if (need.status === 'pending') {
-            const fieldName = getAssetFieldName(need);
-            if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
-            (item.fields as any).asset_paths[fieldName] = slugDefault;
-            markChosen(need);
-          }
-        }
-      }
     }
 
-    await queryOLTP('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [plan, id]);
     res.json({ success: true, data: { planId: id, items }, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[story-builder] GET /plans/:id/drafts error:', error);

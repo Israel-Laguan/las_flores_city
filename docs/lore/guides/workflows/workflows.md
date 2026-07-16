@@ -72,7 +72,7 @@
   Photorealistic portrait of Javier "El Fantasma" Morales, a 30-year-old smuggler with a scar across his left cheek, dark circles under his eyes from sleepless nights, wearing a worn leather jacket and a cap pulled low. Background: a dimly lit alley in the eastern district, with crates of smuggled goods and a flickering streetlight. Moody lighting, tense expression, hyper-detailed, 8K.
   --no neon, no androids, no clean backgrounds
   ```
-- **Save As:** `content/characters/<slug>/assets/javier_morales.png`
+- **Save As:** `content/characters/<slug>/assets/<slug>__default.png`
 
 #### 6️⃣ Add to UI (5 min)
 - Create a **Character Profile Page** using the **[UI Component Library](../ui_ux_design_system.md#character-profile)**.

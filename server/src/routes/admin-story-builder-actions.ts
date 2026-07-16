@@ -5,7 +5,7 @@ import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { previewPlan, stagePlan, migrateStagedPlan } from '../services/StoryBuilderOrchestrator.js';
-import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir } from '../services/LocalDraftService.js';
+import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
@@ -156,18 +156,19 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
             for (const need of pendingNeeds) {
               markDrafted(need);
             }
-            // Choose the first asset (default or generated)
-            const firstNeed = pendingNeeds[0];
-            if (firstNeed) {
-              const assetFieldName = firstNeed.targetField.split('.').pop()!;
-              if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
+            // Choose the first asset (default or generated) for all pending needs
+            if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
+            for (const need of pendingNeeds) {
+              const assetFieldName = need.targetField.split('.').pop()!;
               (item.fields as any).asset_paths[assetFieldName] = firstDraft;
-              for (const need of pendingNeeds) {
-                markChosen(need);
-              }
+              markChosen(need);
             }
+            await writeAssetPathsToYaml(item, entityRoot, contentDir);
           }
         }
+        // Auto-select __default.png for any items that have it as first asset
+        await autoSelectDefaultDrafts(plan, contentDir);
+
         // Persist auto-draft selections back to the plan
         await queryOLTP(
           'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',

@@ -359,7 +359,7 @@ las_flores_city/
 ├── docs/
 │   └── lore/
 │       └── assets/
-│           └── ui-concepts/   # PROMPT_ROOT - Contains .prompt.md files
+│           └── ui-concepts/   # Legacy PROMPT_ROOT (see env vars below)
 └── shared/                 # Shared TypeScript types and schemas
 ```
 

@@ -90,7 +90,7 @@ export function useStoryBuilder(initialPlanId: string | null) {
     handleRegenerateLore: (itemId: string) => { if (planId) apiCallbacks.handleRegenerateLore(planId, itemId); },
     handleGenerateDrafts: async (count?: number) => { if (planId) await apiCallbacks.handleGenerateDrafts(planId, count); },
     handleChooseDraft: async (itemId: string, promptType: string, filename: string) => {
-      if (planId) apiCallbacks.handleChooseDraft(planId, itemId, promptType, filename);
+      if (planId) await apiCallbacks.handleChooseDraft(planId, itemId, promptType, filename);
     },
     updateItemField: (i: number, f: string, v: string) => applyMutation(p => mutations.updateItemField(p, i, f, v)),
     updateItemDependsOn: (i: number, d: string[]) => applyMutation(p => mutations.updateItemDependsOn(p, i, d)),

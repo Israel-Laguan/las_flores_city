@@ -35,7 +35,7 @@ interface ContentCardProps {
   onRemove: (index: number) => void;
   onAssetPathRemove?: (index: number, key: string) => void;
   onDependsOnChange?: (index: number, dependsOn: string[]) => void;
-  onGenerateDrafts?: (itemId: string) => void;
+  onGenerateDrafts?: () => void;
   onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
   draftAssets?: api.DraftAsset[];
   draftLoading?: boolean;
@@ -68,12 +68,12 @@ function AssetNeedsSection({
   assetNeeds: ContentPlanItem['assetNeeds'];
   assetPaths?: Record<string, string>;
   onRemoveAssetPath?: (key: string) => void;
-  onGenerateDrafts?: (itemId: string) => void;
+  onGenerateDrafts?: () => void;
   onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
   draftAssets?: api.DraftAsset[];
   draftLoading?: boolean;
 }) {
-  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [expanded, setExpanded] = useState(true);
 
   function getAssetImageUrl(assetPath: string): string {
@@ -100,12 +100,12 @@ function AssetNeedsSection({
               <span className={styles.assetStatus}>[{need.status}]</span>
             </div>
 
-            {imageUrl && !imageErrors[i] ? (
+            {imageUrl && !imageErrors[imageUrl] ? (
               <img
                 src={imageUrl}
                 alt={need.promptType}
                 className={styles.assetPreview}
-                onError={() => setImageErrors(prev => ({ ...prev, [i]: true }))}
+                onError={() => setImageErrors(prev => ({ ...prev, [imageUrl]: true }))}
               />
             ) : (
               <div className={styles.imagePlaceholder}>
@@ -116,7 +116,7 @@ function AssetNeedsSection({
             <div className={styles.assetActions}>
               <button
                 className={cn('btn', 'btn--primary')}
-                onClick={() => onGenerateDrafts?.(item.id)}
+                onClick={() => onGenerateDrafts?.()}
                 disabled={draftLoading}
                 title="Generate local PNG drafts from the entity prompt"
               >
