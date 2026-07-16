@@ -7,6 +7,7 @@ import { contentPlanService } from '../services/ContentPlanService.js';
 import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, verifyPlan } from '../services/StoryBuilderOrchestrator.js';
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
+import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -233,9 +234,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/approve-and-solidify error:', error);
     const message = error.message || 'Failed to approve and solidify plan';
-    const statusCode = message.includes('not found')
+    const statusCode = isPlanNotFoundError(error)
       ? 404
-      : message.includes('must be') || message.includes("'proposed'")
+      : isPlanStatusError(error)
         ? 400
         : 500;
     res.status(statusCode).json({
@@ -307,11 +308,20 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
 
     const report = await verifyPlan(id);
 
-    // Persist the report to DB
-    await queryOLTP(
+    // Persist the report to DB — verify the row was actually updated.
+    const updateResult = await queryOLTP(
       'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
       [JSON.stringify(report), id],
     );
+
+    if (updateResult.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        error: 'Plan not found',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
 
     res.json({
       success: true,
@@ -320,9 +330,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
     });
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/verify error:', error);
-    const status = error.message.includes('not found')
+    const status = isPlanNotFoundError(error)
       ? 404
-      : error.message.includes('must be')
+      : isPlanStatusError(error)
         ? 400
         : 500;
     res.status(status).json({

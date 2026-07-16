@@ -5,6 +5,7 @@ import { ContentPlanService } from './ContentPlanService.js';
 import { publishChosenDrafts } from './AssetPublishService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from './PlanVerificationService.js';
+import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import {
   executePlan,
   previewPlan,
@@ -53,11 +54,11 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
     );
 
     if (result.rows.length === 0) {
-      throw new Error(`Plan not found: ${planId}`);
+      throw new PlanNotFoundError(planId);
     }
 
     if (result.rows[0].status !== 'staged' && result.rows[0].status !== 'approved') {
-      throw new Error(`Plan must be staged before migration. Current status: ${result.rows[0].status}`);
+      throw new PlanStatusError(`Plan must be staged before migration. Current status: ${result.rows[0].status}`);
     }
 
     const contentDir = resolveContentDir();
@@ -128,12 +129,12 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
       [planId],
     );
     if (load.rows.length === 0) {
-      throw new Error(`Plan not found: ${planId}`);
+      throw new PlanNotFoundError(planId);
     }
 
     const currentStatus = load.rows[0].status;
     if (currentStatus !== 'proposed' && currentStatus !== 'approved' && currentStatus !== 'failed') {
-      throw new Error(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${currentStatus}`);
+      throw new PlanStatusError(`Plan must be 'proposed', 'approved', or 'failed' to approve. Current: ${currentStatus}`);
     }
 
     const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
@@ -151,7 +152,7 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
       await ContentPlanService.setStatus(planId, 'staged', client);
 
       // 3. Publish chosen drafts — upload to MinIO, tag portrait_urls label:'dev'.
-      const publishResult = await publishChosenDrafts(planId);
+      const publishResult = await publishChosenDrafts(planId, client);
       if (!publishResult.success) {
         await ContentPlanService.setStatus(planId, 'failed', client);
         return {
@@ -232,11 +233,11 @@ export async function verifyPlan(planId: string): Promise<VerificationReport> {
   );
 
   if (result.rows.length === 0) {
-    throw new Error(`Plan not found: ${planId}`);
+    throw new PlanNotFoundError(planId);
   }
 
   if (result.rows[0].status !== 'migrated') {
-    throw new Error(`Plan must be migrated before verification. Current status: ${result.rows[0].status}`);
+    throw new PlanStatusError(`Plan must be migrated before verification. Current status: ${result.rows[0].status}`);
   }
 
   const plan = ContentPlanSchema.parse(result.rows[0].plan_json);

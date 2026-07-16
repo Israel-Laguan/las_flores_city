@@ -7,6 +7,7 @@ import { markPublished } from './AssetNeedsService.js';
 import { resolveEntityRootDir } from './LocalDraftService.js';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { queryOLTP } from '../database/connection.js';
+import type pg from 'pg';
 
 export interface PublishedAsset {
   itemId: string;
@@ -54,8 +55,14 @@ function defaultLocalFilename(item: ContentPlanItem): string {
  * LOCAL filename — it is the source of truth for the author, while MinIO is
  * the delivery layer for the engine.
  */
-export async function publishChosenDrafts(planId: string): Promise<PublishResult> {
-  const load = await queryOLTP<{ plan_json: any }>(
+export async function publishChosenDrafts(
+  planId: string,
+  client?: pg.PoolClient,
+): Promise<PublishResult> {
+  const exec = <T extends pg.QueryResultRow = any>(text: string, params?: any[]) =>
+    client ? client.query<T>(text, params) : queryOLTP<T>(text, params);
+
+  const load = await exec<{ plan_json: any }>(
     'SELECT plan_json FROM content_plans WHERE id = $1',
     [planId],
   );
@@ -157,7 +164,7 @@ export async function publishChosenDrafts(planId: string): Promise<PublishResult
   }
 
   // Persist the updated asset-need statuses back into plan_json (audit trail).
-  await queryOLTP('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [
+  await exec('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [
     plan,
     planId,
   ]);

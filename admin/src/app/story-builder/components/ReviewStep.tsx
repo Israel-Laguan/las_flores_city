@@ -45,9 +45,10 @@ export default function ReviewStep({
   // Asset needs that were never given a selected draft. The system will
   // auto-pick the `<slug>__default.png` historical default for these.
   const items = plan?.items ?? [];
-  const pendingNeeds = items.flatMap(item => item.assetNeeds ?? []).filter(n => n.status === 'pending');
-  const chosenNeeds = items.flatMap(item => item.assetNeeds ?? []).filter(n => n.status === 'chosen');
-  const publishedNeeds = items.flatMap(item => item.assetNeeds ?? []).filter(n => n.status === 'published');
+  const allNeeds = items.flatMap(item => item.assetNeeds ?? []);
+  const pendingNeeds = allNeeds.filter(n => n.status === 'pending');
+  const chosenNeeds = allNeeds.filter(n => n.status === 'chosen');
+  const publishedNeeds = allNeeds.filter(n => n.status === 'published');
 
   return (
     <div className={styles.section}>
