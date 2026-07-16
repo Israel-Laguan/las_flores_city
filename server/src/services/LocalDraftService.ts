@@ -5,6 +5,7 @@ import type { ContentPlanItem, AssetNeed } from '@las-flores/shared';
 import { generateImageBuffer } from './AssetGenerationService.js';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
+import { markChosen } from './AssetNeedsService.js';
 
 /**
  * Valid asset extensions. The admin selector shows every file in `assets/`
@@ -248,4 +249,36 @@ export function findNeedByPromptType(
 export function getAssetFieldName(need: AssetNeed): string {
   const parts = need.targetField.split('.');
   return parts[parts.length - 1];
+}
+
+/**
+ * Auto-select the __default.png draft for items that have it as the first asset.
+ * Writes asset paths to both in-memory plan and on-disk YAML.
+ */
+export async function autoSelectDefaultDrafts(
+  plan: { items: ContentPlanItem[] },
+  contentDir: string,
+): Promise<boolean> {
+  let anyChanged = false;
+  for (const item of plan.items) {
+    const entityRoot = resolveEntityRootDir(item, contentDir);
+    const assets = await listLocalAssets(entityRoot);
+    const slugDefault = `${item.slug}__default.png`;
+    if (assets.length === 0 || assets[0].filename !== slugDefault) continue;
+
+    let itemChanged = false;
+    for (const need of item.assetNeeds) {
+      if (need.status !== 'pending') continue;
+      const fieldName = getAssetFieldName(need);
+      if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
+      (item.fields as any).asset_paths[fieldName] = slugDefault;
+      markChosen(need);
+      itemChanged = true;
+    }
+    if (itemChanged) {
+      await writeAssetPathsToYaml(item, entityRoot, contentDir);
+      anyChanged = true;
+    }
+  }
+  return anyChanged;
 }

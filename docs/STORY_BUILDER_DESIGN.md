@@ -1246,7 +1246,7 @@ via `const SERVER_SIDE_BEATS = new Set(['act2_mystery_active',
 - `server/src/routes/admin-content-asset.ts` — Asset assignment
 - `server/src/routes/assets.helpers.ts` — Prompt catalog and parsing
 - `server/src/routes/assets.generation.handlers.ts` — Asset generation
-- `docs/lore/assets/scripts/generate-prompt.mjs` — Prompt file generation
+- `scripts/asset-pipeline/scripts/generate-prompt.mjs` — Prompt file generation
 - `shared/src/schemas/yaml-content.ts` — YAML content schemas
 - `shared/src/schemas/content-validation.ts` — Content types
 - `shared/src/schemas/assets.ts` — Asset schemas

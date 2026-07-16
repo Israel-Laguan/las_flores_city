@@ -142,12 +142,12 @@ Before submitting a prompt, verify:
 
 ### Check Prompt Lengths
 ```bash
-node docs/lore/assets/scripts/check-prompt-lengths.mjs
+node scripts/asset-pipeline/scripts/check-prompt-lengths.mjs
 ```
 
 ### Generate Drafts
 ```bash
-node docs/lore/assets/scripts/generate-nim-drafts.mjs --filter background
+node scripts/asset-pipeline/scripts/generate-nim-drafts.mjs --filter background
 ```
 
 ## 📚 Examples

@@ -3,14 +3,14 @@
 /**
  * generate-prompt.mjs
  *
- * Reads lore markdown files or registry YAMLs from docs/lore/ and generates
- * .prompt.md files. Each .prompt.md contains a copy-pasteable AI prompt for
- * generating an asset (image, audio, video).
+ * Reads lore markdown files or registry YAMLs from content/ (and docs/lore/ for world-level
+ * research) and generates .prompt.md files. Each .prompt.md contains a copy-pasteable AI
+ * prompt for generating an asset (image, audio, video).
  *
  * Usage (lore-based):
- *   node generate-prompt.mjs --type portrait --source docs/lore/figures/miguel_jhonson/miguel_jhonson.md
- *   node generate-prompt.mjs --type portrait --batch docs/lore/figures/
- *   node generate-prompt.mjs --type portrait --batch docs/lore/figures/ --force
+ *   node generate-prompt.mjs --type portrait --source content/characters/miguel_jhonson/miguel_jhonson.md
+ *   node generate-prompt.mjs --type portrait --batch content/characters/
+ *   node generate-prompt.mjs --type portrait --batch content/characters/ --force
  *
  * Usage (registry-based):
  *   node generate-prompt.mjs --type tile --registry scripts/asset-pipeline/registries/tiles.yaml --output-dir content/maps/assets/tiles/
@@ -71,7 +71,7 @@ Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asy
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/${sourcePath}
+**Source:** ${sourcePath}
 **Target field:** \`portrait_urls[].url\` in \`content/characters/char_${slugify(name)}.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -102,7 +102,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     return `---
 name: ${name}
 type: background
-source: docs/lore/${sourcePath}
+source: ${sourcePath}
 target: \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
 consumer: html-background
 ---
@@ -111,7 +111,7 @@ consumer: html-background
 
 [CONSUMER: html-background]
 **Type:** background
-**Source:** docs/lore/${sourcePath}
+**Source:** ${sourcePath}
 **Target field:** \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -170,7 +170,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     return `---
 name: ${name}
 type: overlay
-source: docs/lore/${sourcePath}
+source: ${sourcePath}
 target: \`overlay_image_url\` in \`content/maps/map_*.yaml\`
 consumer: phaser-sprite
 ---
@@ -179,7 +179,7 @@ consumer: phaser-sprite
 
 [CONSUMER: phaser-sprite]
 **Type:** overlay
-**Source:** docs/lore/${sourcePath}
+**Source:** ${sourcePath}
 **Target field:** \`overlay_image_url\` in \`content/maps/map_*.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -201,7 +201,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     return `---
 name: ${name}
 type: thematic
-source: docs/lore/events/${slugify(name)}.md
+source: content/lore/events/${slugify(name)}.md
 target: Vault entry or loading screen
 consumer: thematic
 ---
@@ -209,7 +209,7 @@ consumer: thematic
 # Prompt: ${name} (thematic art)
 
 **Type:** thematic
-**Source:** docs/lore/events/${slugify(name)}.md
+**Source:** content/lore/events/${slugify(name)}.md
 **Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
@@ -228,7 +228,7 @@ ${fullPrompt}
     return `# Prompt: ${name} (ambient audio)
 
 **Type:** ambient
-**Source:** docs/lore/landmarks/${slugify(name)}/${slugify(name)}.md
+**Source:** content/locations/${slugify(name)}/${slugify(name)}.md
 **Target field:** \`scene.ambient_sound_url\` in \`content/locations/location_${slugify(name)}.yaml\`
 **Tool:** Suno
 
@@ -244,7 +244,7 @@ ambient, soundscape, las flores, ${timeOfDay}, ${mood.toLowerCase()}, cyberpunk,
     return `# Prompt: ${name} (sound effect)
 
 **Type:** sfx
-**Source:** docs/lore/events/${slugify(name)}.md
+**Source:** content/lore/events/${slugify(name)}.md
 **Target:** Sound effect reference
 **Tool:** ElevenLabs
 
@@ -260,7 +260,7 @@ sfx, ${mood.toLowerCase()}, cinematic, las flores
     return `# Prompt: ${name} (musical theme)
 
 **Type:** music
-**Source:** docs/lore/figures/${slugify(name)}/${slugify(name)}.md
+**Source:** content/characters/${slugify(name)}/${slugify(name)}.md
 **Target:** Musical theme reference
 **Tool:** Suno
 
@@ -509,7 +509,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
 ## 1. Face Reference
 Use the horizontal and vertical face arcs from the biometric phase
-(\`docs/lore/figures/${slugify(name)}/${slugify(name)}_biometric.prompt.md\`).
+(\`content/characters/${slugify(name)}/${slugify(name)}_biometric.prompt.md\`).
 Ethnicity/face base and expressions are defined there.
 
 ## 2. Body Reference (minimal / plain clothes)
@@ -829,13 +829,13 @@ function printHelp() {
 generate-prompt.mjs — Generate AI asset prompts from lore files or registries
 
 Usage (lore-based):
-  node generate-prompt.mjs --type <type> --source <file>
-  node generate-prompt.mjs --type <type> --batch <directory>
-  node generate-prompt.mjs --type <type> --batch <directory> --force
+  node generate-prompt.mjs --type <type> --source content/<type>/<slug>/<slug>.md
+  node generate-prompt.mjs --type <type> --batch content/<type>/
+  node generate-prompt.mjs --type <type> --batch content/<type>/ --force
 
 Usage (registry-based):
-  node generate-prompt.mjs --type tile --registry registries/tiles.yaml --output-dir tiles/
-  node generate-prompt.mjs --type overlay --registry registries/landmarks.yaml --output-dir overlays/
+  node generate-prompt.mjs --type tile --registry scripts/asset-pipeline/registries/tiles.yaml --output-dir tiles/
+  node generate-prompt.mjs --type overlay --registry scripts/asset-pipeline/registries/landmarks.yaml --output-dir overlays/
 
 Types:
   ${PROMPT_TYPES.join(', ')}
@@ -956,11 +956,11 @@ function processFile(filePath, type, force) {
   if (type === 'biometric' || type === 'character-sheet') {
     const slug = path.basename(filePath, '.yaml').replace(/^char_/, '');
     const suffix = type === 'biometric' ? '_biometric' : '.character-sheet';
-    const dir = path.resolve('docs/lore/figures', slug);
+    const dir = path.resolve('content/characters', slug);
     outputPath = path.join(dir, `${slug}${suffix}.prompt.md`);
   } else if (type === 'location-map') {
     const slug = path.basename(filePath, '.yaml').replace(/^location_/, '');
-    const dir = path.resolve('docs/lore/landmarks', slug);
+    const dir = path.resolve('content/locations', slug);
     outputPath = path.join(dir, `${slug}.map.md`);
   } else {
     outputPath = getOutputPath(filePath);
@@ -993,7 +993,7 @@ function processFile(filePath, type, force) {
   }
 
   meta.negatives = meta.negatives || '';
-  meta.sourcePath = path.relative(path.resolve('docs/lore'), filePath).replace(/\\/g, '/');
+  meta.sourcePath = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
 
   const prompt = generatePrompt(type, meta);
   if (!prompt) return false;

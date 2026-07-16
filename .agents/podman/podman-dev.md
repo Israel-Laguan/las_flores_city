@@ -92,10 +92,16 @@ podman run -d --name las-flores-server \
   -e MINIO_PORT="9000" \
   -e MINIO_ACCESS_KEY="minioadmin" \
   -e MINIO_SECRET_KEY="minioadmin" \
-  -e JWT_SECRET="your-jwt-secret-change-in-production" \
-  -e PROMPT_ROOT="/app/docs/lore/assets/ui-concepts" \
+  -e JWT_SECRET="dev-secret" \
+  -e PROMPT_ROOT="/app/content" \
   las-flores-server
 ```
+
+> **Note on DNS:** This relies on `--add-host` (injected into the server's
+> `/etc/hosts`). Because rootless Podman here has **no `aardvark-dns`**, you
+> cannot use bare container names in `DATABASE_URL` without `--add-host`. The
+> simpler, equally-valid alternative is to put the raw container IPs directly in
+> the env vars — see the IP-discovery snippet in [podman-ops.md](./podman-ops.md).
 
 ### 6. Build and start dashboard
 
@@ -131,8 +137,44 @@ podman ps --filter name=las-flores
 ## Health
 
 ```bash
-curl http://localhost:3000/health
+# Authoritative: verify from INSIDE the container (image has no curl, and
+# host-side curl often returns exit 56 on this rootless host even when healthy)
+podman exec las-flores-server wget -qO- http://localhost:3000/health
+# expected: {"success":true,"data":{"status":"healthy",...}}
 ```
+
+## Running Tests (jump-in)
+
+The integration tests and health check require the Podman stack. Use the bundled
+runner, which launches a `node:20` container on `--network host` so it reaches the
+backing services through the host-mapped ports (localhost:5434/5433/6379). It
+reads env from `.env` (`DATABASE_URL`, `REDIS_URL`, `ANALYTICS_DATABASE_URL`,
+`MINIO_*`, `JWT_SECRET`).
+
+**Path quirk:** the test path is relative to the repo root AND must include the
+`server/` prefix (the runner does `cd server && npm test -- <path>`):
+
+```bash
+# Full integration suite (needs the stack up + migrations applied)
+./scripts/run-tests-podman.sh server/tests/integration
+
+# Unit / smoke only
+./scripts/run-tests-podman.sh server/tests/unit
+./scripts/run-tests-podman.sh server/tests/smoke
+
+# A single file
+./scripts/run-tests-podman.sh server/tests/integration/story-builder-drafts.test.ts
+```
+
+Confirmed-green baseline (run 2026-07-16 on this Podman stack):
+- `npm run lint --workspace=server` → clean
+- `npm run build --workspace=server` → clean
+- `run-tests-podman.sh server/tests/unit` → 42 suites / 512 tests
+- `run-tests-podman.sh server/tests/integration` → 35 suites / 269 tests
+  (includes `story-builder-drafts.test.ts`, `story-builder-plans.test.ts`, etc.)
+- `podman exec las-flores-server wget -qO- http://localhost:3000/health` → healthy
+
+Host-equivalent (if node + deps are installed locally): `npm run test --workspace=server`.
 
 ## Logs
 

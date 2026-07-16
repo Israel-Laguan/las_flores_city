@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import type { AssetNeed } from '@las-flores/shared';
-import { transitionAssetNeed } from '../../src/services/AssetNeedsService.js';
+import { transitionAssetNeed, markDrafted, markChosen, markPublished } from '../../src/services/AssetNeedsService.js';
 
 /** Helper: build an AssetNeed with a given status. */
 function need(status: AssetNeed['status']): AssetNeed {
@@ -130,6 +130,27 @@ describe('AssetNeedsService — state machine transitions', () => {
       const result = transitionAssetNeed(n, 'drafted');
       expect(result).toBeUndefined(); // void return
       expect(n.status).toBe('drafted'); // same object mutated
+    });
+  });
+
+  describe('lifecycle wrappers — delegate to transitionAssetNeed', () => {
+
+    it('markDrafted transitions pending → drafted', () => {
+      const n = need('pending');
+      markDrafted(n);
+      expect(n.status).toBe('drafted');
+    });
+
+    it('markChosen transitions drafted → chosen', () => {
+      const n = need('drafted');
+      markChosen(n);
+      expect(n.status).toBe('chosen');
+    });
+
+    it('markPublished transitions chosen → published', () => {
+      const n = need('chosen');
+      markPublished(n);
+      expect(n.status).toBe('published');
     });
   });
 });

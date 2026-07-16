@@ -195,11 +195,11 @@ podman run -d \
   -e MINIO_ACCESS_KEY="minioadmin" \
   -e MINIO_SECRET_KEY="minioadmin" \
   -e JWT_SECRET="your-jwt-secret-change-in-production" \
-  -e PROMPT_ROOT="/app/docs/lore/assets/ui-concepts" \
+  -e PROMPT_ROOT="/app/content" \
   las-flores-server
 ```
 
-**Important:** The `PROMPT_ROOT` environment variable must point to `/app/docs/lore/assets/ui-concepts` because the server's working directory is `/app/server`, and without this explicit setting, it would look for `/app/server/docs/lore/assets/ui-concepts` (which doesn't exist).
+**Important:** The `PROMPT_ROOT` environment variable must point to `/app/content` because the server's working directory is `/app/server`, and without this explicit setting it would look for `/app/server/content` (which doesn't exist). The modern pipeline scans `content/characters/*`, `content/locations/*`, `content/scenes/*`, etc. for prompt files.
 
 ### 5. Build and Start Admin UI
 
@@ -277,7 +277,7 @@ curl http://localhost:3000/assets/list-all
 **Fix:** Added `--add-host` flags to map container names to their IP addresses. The `get_container_ip()` function in `start-stack.sh` uses `jq` to extract IPs from podman inspect output.
 
 ### 4. Assets not visible in admin UI
-**Fix:** Added `PROMPT_ROOT="/app/docs/lore/assets/ui-concepts"` environment variable to the server container. Without this, the server looks for prompts in `/app/server/docs/lore/assets/ui-concepts` (wrong path).
+**Fix:** Added `PROMPT_ROOT="/app/content"` environment variable to the server container. Without this, the server looks for prompts in `/app/server/content` (wrong path).
 
 ## Troubleshooting
 
@@ -359,7 +359,7 @@ las_flores_city/
 ├── docs/
 │   └── lore/
 │       └── assets/
-│           └── ui-concepts/   # PROMPT_ROOT - Contains .prompt.md files
+│           └── ui-concepts/   # Legacy PROMPT_ROOT (see env vars below)
 └── shared/                 # Shared TypeScript types and schemas
 ```
 
@@ -377,7 +377,7 @@ las_flores_city/
 | MINIO_ACCESS_KEY | minioadmin | MinIO access key |
 | MINIO_SECRET_KEY | minioadmin | MinIO secret key |
 | JWT_SECRET | your-jwt-secret... | JWT signing secret |
-| PROMPT_ROOT | /app/docs/lore/assets/ui-concepts | Path to prompt files |
+| PROMPT_ROOT | /app/content | Path to content root (prompt files scanned under `content/characters/*`, `content/locations/*`, etc.) |
 
 ### Admin Environment Variables
 
@@ -398,4 +398,4 @@ las_flores_city/
 
 4. **MinIO access:** Use the MinIO console at http://localhost:9001 (user: minioadmin, pass: minioadmin)
 
-5. **Adding new prompt files:** Place `.prompt.md` files in `docs/lore/assets/ui-concepts/<category>/` and they will automatically appear in the prompt catalog.
+5. **Adding new prompt files:** Place `.prompt.md` files in the appropriate `content/<type>/<slug>/` folder (e.g. `content/characters/<slug>/<slug>.prompt.md`) and they will automatically appear in the prompt catalog.

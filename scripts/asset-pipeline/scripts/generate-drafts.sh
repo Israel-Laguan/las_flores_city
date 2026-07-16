@@ -4,12 +4,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Derive project root deterministically:
-# This script lives in docs/lore/assets/scripts, so repo root is 4 levels up.
-ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+# This script lives in scripts/asset-pipeline/scripts, so repo root is 3 levels up.
+ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 PROMPT_ROOTS=(
-  "$ROOT/docs/lore/shared/assets"
-  "$ROOT/docs/lore/landmarks"
-  "$ROOT/docs/lore/figures"
+  "$ROOT/content/characters"
+  "$ROOT/content/locations"
+  "$ROOT/content/scenes"
+  "$ROOT/content/lore/shared"
 )
 JS_SCRIPT="$SCRIPT_DIR/generate-pollinations-drafts.mjs"
 NIM_SCRIPT="$SCRIPT_DIR/generate-nim-drafts.mjs"

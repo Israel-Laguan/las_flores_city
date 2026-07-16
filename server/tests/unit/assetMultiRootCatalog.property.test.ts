@@ -122,10 +122,10 @@ const promptFilenamesArb = (minFiles = 0, maxFiles = 5): fc.Arbitrary<string[]> 
   });
 
 /** The three canonical root paths used in tests. */
-const ROOT_UI = '/app/docs/lore/assets/ui-concepts';
-const ROOT_FIGURES = '/app/docs/lore/figures';
-const ROOT_LANDMARKS = '/app/docs/lore/districts/city/landmarks';
-const ALL_ROOTS = [ROOT_UI, ROOT_FIGURES, ROOT_LANDMARKS];
+const ROOT_CHARACTERS = '/app/content/characters';
+const ROOT_LOCATIONS = '/app/content/locations';
+const ROOT_SCENES = '/app/content/scenes';
+const ALL_ROOTS = [ROOT_CHARACTERS, ROOT_LOCATIONS, ROOT_SCENES];
 
 /**
  * Generates a distribution of .prompt.md filenames across the three roots.
@@ -142,11 +142,11 @@ const rootDistributionArb = (): fc.Arbitrary<{
     promptFilenamesArb(0, 5), // landmarks files
   )
     .filter(([a, b, c]) => a.length + b.length + c.length > 0) // at least one file exists
-    .map(([uiFiles, figFiles, lmkFiles]) => ({
+    .map(([characterFiles, locationFiles, sceneFiles]) => ({
       rootFiles: [
-        { root: ROOT_UI, filenames: uiFiles },
-        { root: ROOT_FIGURES, filenames: figFiles },
-        { root: ROOT_LANDMARKS, filenames: lmkFiles },
+        { root: ROOT_CHARACTERS, filenames: characterFiles },
+        { root: ROOT_LOCATIONS, filenames: locationFiles },
+        { root: ROOT_SCENES, filenames: sceneFiles },
       ],
       allRoots: ALL_ROOTS,
     }));
@@ -333,23 +333,23 @@ describe('Property 8: Multi-root prompt catalog completeness', () => {
 
   it('spot-check: two files in figures root appear in catalog', async () => {
     const rootFiles = [
-      { root: ROOT_FIGURES, filenames: ['ana_kim.prompt.md', 'carlos.prompt.md'] },
+      { root: ROOT_LOCATIONS, filenames: ['ana_kim.prompt.md', 'carlos.prompt.md'] },
     ];
-    const vfs = buildVirtualFS(rootFiles, [ROOT_UI, ROOT_LANDMARKS]);
+    const vfs = buildVirtualFS(rootFiles, [ROOT_CHARACTERS, ROOT_SCENES]);
     installMocks(vfs);
 
     const result = await buildPromptCatalogFromRoots(ALL_ROOTS);
     const allFiles = result.categories.flatMap((c) => c.entries.map((e) => e.prompt_file));
 
-    expect(allFiles).toContain(path.join(ROOT_FIGURES, 'ana_kim.prompt.md'));
-    expect(allFiles).toContain(path.join(ROOT_FIGURES, 'carlos.prompt.md'));
+    expect(allFiles).toContain(path.join(ROOT_LOCATIONS, 'ana_kim.prompt.md'));
+    expect(allFiles).toContain(path.join(ROOT_LOCATIONS, 'carlos.prompt.md'));
   });
 
   it('spot-check: one file in each root all appear in catalog', async () => {
     const rootFiles = [
-      { root: ROOT_UI, filenames: ['hero_tile.prompt.md'] },
-      { root: ROOT_FIGURES, filenames: ['ana_kim.prompt.md'] },
-      { root: ROOT_LANDMARKS, filenames: ['city_plaza.prompt.md'] },
+      { root: ROOT_CHARACTERS, filenames: ['hero_tile.prompt.md'] },
+      { root: ROOT_LOCATIONS, filenames: ['ana_kim.prompt.md'] },
+      { root: ROOT_SCENES, filenames: ['city_plaza.prompt.md'] },
     ];
     const vfs = buildVirtualFS(rootFiles, []);
     installMocks(vfs);
@@ -357,24 +357,24 @@ describe('Property 8: Multi-root prompt catalog completeness', () => {
     const result = await buildPromptCatalogFromRoots(ALL_ROOTS);
     const allFiles = result.categories.flatMap((c) => c.entries.map((e) => e.prompt_file));
 
-    expect(allFiles).toContain(path.join(ROOT_UI, 'hero_tile.prompt.md'));
-    expect(allFiles).toContain(path.join(ROOT_FIGURES, 'ana_kim.prompt.md'));
-    expect(allFiles).toContain(path.join(ROOT_LANDMARKS, 'city_plaza.prompt.md'));
+    expect(allFiles).toContain(path.join(ROOT_CHARACTERS, 'hero_tile.prompt.md'));
+    expect(allFiles).toContain(path.join(ROOT_LOCATIONS, 'ana_kim.prompt.md'));
+    expect(allFiles).toContain(path.join(ROOT_SCENES, 'city_plaza.prompt.md'));
   });
 
   it('spot-check: absent landmarks root does not break ui-concepts results', async () => {
     const rootFiles = [
-      { root: ROOT_UI, filenames: ['hero_tile.prompt.md'] },
-      { root: ROOT_FIGURES, filenames: ['ana_kim.prompt.md'] },
+      { root: ROOT_CHARACTERS, filenames: ['hero_tile.prompt.md'] },
+      { root: ROOT_LOCATIONS, filenames: ['ana_kim.prompt.md'] },
     ];
-    const vfs = buildVirtualFS(rootFiles, [ROOT_LANDMARKS]);
+    const vfs = buildVirtualFS(rootFiles, [ROOT_SCENES]);
     installMocks(vfs);
 
     const result = await buildPromptCatalogFromRoots(ALL_ROOTS);
     const allFiles = result.categories.flatMap((c) => c.entries.map((e) => e.prompt_file));
 
-    expect(allFiles).toContain(path.join(ROOT_UI, 'hero_tile.prompt.md'));
-    expect(allFiles).toContain(path.join(ROOT_FIGURES, 'ana_kim.prompt.md'));
-    expect(allFiles).not.toContain(expect.stringContaining(ROOT_LANDMARKS));
+    expect(allFiles).toContain(path.join(ROOT_CHARACTERS, 'hero_tile.prompt.md'));
+    expect(allFiles).toContain(path.join(ROOT_LOCATIONS, 'ana_kim.prompt.md'));
+    expect(allFiles).not.toContain(expect.stringContaining(ROOT_SCENES));
   });
 });

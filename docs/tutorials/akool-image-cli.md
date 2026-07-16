@@ -133,7 +133,7 @@ akool-cli -e dev credit       # Development environment
 
 ## Production Images
 
-The test images generated on 2026-07-01 are saved in `docs/lore/assets/akool-test/`:
+The test images generated on 2026-07-01 are saved in `content/lore/shared/akool-test/` (or the per-folder `assets/` directory where they were migrated):
 - `text2image-cyberpunk-las-flores.jpeg` — Las Vegas cyberpunk street scene
 - `img2image-kodachrome.jpeg` — Kodachrome-style transformation
 

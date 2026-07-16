@@ -10,7 +10,7 @@ import fs from 'node:fs';
 
 // Set PROMPT_ROOT to the actual location relative to repo root
 // In CI and podman, process.cwd() is the server directory.
-process.env.PROMPT_ROOT = path.resolve(process.cwd(), '../docs/lore/assets/ui-concepts');
+process.env.PROMPT_ROOT = path.resolve(process.cwd(), '../content');
 
 // Mock AWS SDK and StorageService using ESM mocks
 // These must be set up before importing the routes
