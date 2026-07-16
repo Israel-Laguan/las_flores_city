@@ -234,9 +234,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/approve-and-solidify error:', error);
     const message = error.message || 'Failed to approve and solidify plan';
-    const statusCode = isPlanNotFoundError(error)
+    const statusCode = isPlanNotFoundError(error) || message.includes('not found')
       ? 404
-      : isPlanStatusError(error)
+      : isPlanStatusError(error) || message.includes('must be') || message.includes("'proposed'")
         ? 400
         : 500;
     res.status(statusCode).json({
@@ -330,9 +330,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
     });
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/verify error:', error);
-    const status = isPlanNotFoundError(error)
+    const status = isPlanNotFoundError(error) || error.message.includes('not found')
       ? 404
-      : isPlanStatusError(error)
+      : isPlanStatusError(error) || error.message.includes('must be')
         ? 400
         : 500;
     res.status(status).json({
