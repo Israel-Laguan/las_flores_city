@@ -30,6 +30,7 @@ function NavLinksRow() {
       <Link href="/analytics" className={styles.navLink}>Analytics</Link>
       <Link href="/coverage" className={styles.navLink}>Coverage</Link>
       <Link href="/asset-coverage" className={styles.navLink}>Assets</Link>
+      <Link href="/asset-promotion" className={styles.navLink}>Promote</Link>
     </div>
   );
 }

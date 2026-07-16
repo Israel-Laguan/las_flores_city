@@ -164,3 +164,121 @@ describe('AssetPublishService', () => {
     expect(result.errors.length).toBeGreaterThan(0);
   });
 });
+
+// ─── Promotion methods (Milestone 06) ───────────────────────────────────────
+
+import {
+  promoteToStaging,
+  promoteToProduction,
+  rollbackFromStaging,
+  listPromotionStatus,
+} from '../../src/services/AssetPublishService.js';
+
+describe('promotion methods', () => {
+  let tmpDir: string;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'asset-promotion-test-'));
+    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    const entityDir = path.join(tmpDir, 'content', 'characters', 'diego');
+    await fs.mkdir(path.join(entityDir, 'assets'), { recursive: true });
+    await fs.writeFile(
+      path.join(entityDir, 'char_diego.yaml'),
+      yaml.dump({
+        id: 'item-00000000-0000-0000-0000-000000000002',
+        name: 'Diego',
+        portrait_urls: [
+          { url: 'https://minio.test/portrait/diego__chosen.png', label: 'dev' },
+        ],
+      }),
+      'utf-8',
+    );
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    mockUploadToMinio.mockClear();
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('promoteToStaging reuses the dev URL and appends a label:staging entry', async () => {
+    const result = await promoteToStaging('characters/diego/char_diego.yaml');
+    expect(result.stage).toBe('staging');
+    expect(result.url).toBe('https://minio.test/portrait/diego__chosen.png');
+    expect(result.createdObject).toBe(false);
+    expect(mockUploadToMinio).not.toHaveBeenCalled();
+
+    const yamlPath = path.join(tmpDir, 'content', 'characters', 'diego', 'char_diego.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    expect(data.portrait_urls).toEqual([
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'dev' },
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'staging' },
+    ]);
+  });
+
+  it('promoteToProduction appends a label:production entry', async () => {
+    await promoteToStaging('characters/diego/char_diego.yaml');
+    const result = await promoteToProduction('characters/diego/char_diego.yaml');
+    expect(result.stage).toBe('production');
+    expect(result.url).toBe('https://minio.test/portrait/diego__chosen.png');
+
+    const yamlPath = path.join(tmpDir, 'content', 'characters', 'diego', 'char_diego.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    expect(data.portrait_urls).toEqual([
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'dev' },
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'staging' },
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'production' },
+    ]);
+  });
+
+  it('rollbackFromStaging removes the staging entry', async () => {
+    await promoteToStaging('characters/diego/char_diego.yaml');
+    await promoteToProduction('characters/diego/char_diego.yaml');
+    const result = await rollbackFromStaging('characters/diego/char_diego.yaml');
+    expect(result.removed).toBe(true);
+
+    const yamlPath = path.join(tmpDir, 'content', 'characters', 'diego', 'char_diego.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    expect(data.portrait_urls).toEqual([
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'dev' },
+      { url: 'https://minio.test/portrait/diego__chosen.png', label: 'production' },
+    ]);
+  });
+
+  it('promoteToStaging is idempotent — replaces existing staging entry', async () => {
+    await promoteToStaging('characters/diego/char_diego.yaml');
+    const result = await promoteToStaging('characters/diego/char_diego.yaml');
+    expect(result.stage).toBe('staging');
+
+    const yamlPath = path.join(tmpDir, 'content', 'characters', 'diego', 'char_diego.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    expect(data.portrait_urls.filter((p: any) => p.label === 'staging').length).toBe(1);
+  });
+
+  it('throws when promoting without a dev entry', async () => {
+    const entityDir = path.join(tmpDir, 'content', 'characters', 'diego');
+    await fs.writeFile(
+      path.join(entityDir, 'char_diego.yaml'),
+      yaml.dump({
+        id: 'item-00000000-0000-0000-0000-000000000002',
+        name: 'Diego',
+        portrait_urls: [],
+      }),
+      'utf-8',
+    );
+    await expect(promoteToStaging('characters/diego/char_diego.yaml')).rejects.toThrow('No dev entry');
+  });
+
+  it('listPromotionStatus scans characters and returns stage maps', async () => {
+    const statuses = await listPromotionStatus();
+    const diego = statuses.find(s => s.slug === 'diego');
+    expect(diego).toBeDefined();
+    expect(diego!.stages.dev).toBeDefined();
+    expect(diego!.stages.staging).toBeUndefined();
+  });
+
+  it('rollbackFromStaging returns removed:false when no staging entry exists', async () => {
+    const result = await rollbackFromStaging('characters/diego/char_diego.yaml');
+    expect(result.removed).toBe(false);
+  });
+});
