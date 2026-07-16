@@ -3,6 +3,7 @@
 import { useStoryBuilder } from './hooks/useStoryBuilder';
 import { cn } from '@las-flores/ui';
 import StepIndicator from './components/StepIndicator';
+import { useDraftManager } from './hooks/useDraftManager';
 import DescribeStep from './components/DescribeStep';
 import ReviewStep from './components/ReviewStep';
 import StageStep from './components/StageStep';
@@ -23,10 +24,17 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     handleGeneratePlan, handleRefine, handlePreview, handleStage,
     handleApprove, handleMigrate, handleRetry, handleSelectTemplate,
     handleRegenerateLore,
+    handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem,
     goBack, planId,
   } = useStoryBuilder(initialPlanId);
+
+  const { draftAssetsByItem, draftLoading, onGenerateDrafts, onChooseDraft } = useDraftManager({
+    planId,
+    handleGenerateDrafts,
+    handleChooseDraft,
+  });
 
   return (
     <main className={styles.main}>
@@ -71,6 +79,10 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           onUpdateLink={updateLink}
           onAddLink={addLink}
           onRemoveLink={removeLink}
+          onGenerateDrafts={onGenerateDrafts}
+          onChooseDraft={onChooseDraft}
+          draftAssetsByItem={draftAssetsByItem}
+          draftLoading={draftLoading}
         />
       )}
 
@@ -94,15 +106,11 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
         />
       )}
 
-      {step === 5 && (
-        <ResultsStep migrationResult={migrationResult} />
-      )}
+      {step === 5 && <ResultsStep migrationResult={migrationResult} />}
 
       <div className={styles.navBar}>
         {step > 1 && step < 5 && (
-          <button className={cn('btn', 'btn--secondary')} onClick={goBack}>
-            &larr; Back
-          </button>
+          <button className={cn('btn', 'btn--secondary')} onClick={goBack}>&larr; Back</button>
         )}
         {step === 2 && (
           <button

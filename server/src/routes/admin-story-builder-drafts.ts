@@ -1,9 +1,10 @@
+import fs from 'node:fs/promises';
 import express from 'express';
 import path from 'node:path';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
-import { transitionAssetNeed } from '../services/AssetNeedsService.js';
+import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { generatePromptFiles } from '../services/PromptFileGenerator.js';
 import {
   generateLocalDrafts,
@@ -12,6 +13,7 @@ import {
   resolveEntityRootDir,
   findNeedByPromptType,
   getAssetFieldName,
+  isValidAssetFilename,
 } from '../services/LocalDraftService.js';
 
 export const adminStoryBuilderDraftsRouter = express.Router();
@@ -79,7 +81,7 @@ adminStoryBuilderDraftsRouter.post('/plans/:id/generate-drafts', async (req: Aut
       const files = await generateLocalDrafts(item, entityRoot, count);
 
       for (const need of pendingNeeds) {
-        transitionAssetNeed(need, 'drafted');
+        markDrafted(need);
       }
       generated.push({ itemId: item.id, slug: item.slug, files });
     }
@@ -114,7 +116,12 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
 
       items.push({
         itemId: item.id, slug: item.slug, type: item.type,
-        assets: assets.map(a => ({ filename: a.filename, sizeBytes: a.sizeBytes, mtime: a.mtime.toISOString() })),
+        assets: assets.map(a => ({
+          filename: a.filename,
+          sizeBytes: a.sizeBytes,
+          mtime: a.mtime.toISOString(),
+          previewUrl: `/admin/story-builder/plans/${id}/drafts/preview?itemId=${encodeURIComponent(item.id)}&filename=${encodeURIComponent(a.filename)}`,
+        })),
         preSelected,
       });
 
@@ -124,7 +131,7 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
             const fieldName = getAssetFieldName(need);
             if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
             (item.fields as any).asset_paths[fieldName] = slugDefault;
-            transitionAssetNeed(need, 'chosen');
+            markChosen(need);
           }
         }
       }
@@ -183,7 +190,7 @@ adminStoryBuilderDraftsRouter.post('/plans/:id/choose-draft', async (req: AuthRe
     const entityRoot = resolveEntityRootDir(item, contentDir);
     await chooseDraft(item, entityRoot, filename, contentDir);
 
-    transitionAssetNeed(need, 'chosen');
+    markChosen(need);
 
     await queryOLTP('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [plan, id]);
     res.json({ success: true, data: { planId: id, itemId, promptType, filename, status: 'chosen' }, timestamp: new Date().toISOString() });
@@ -191,5 +198,71 @@ adminStoryBuilderDraftsRouter.post('/plans/:id/choose-draft', async (req: AuthRe
     console.error('[story-builder] POST /plans/:id/choose-draft error:', error);
     const status = error.message?.includes('ENOENT') || error.code === 'ENOENT' ? 404 : 500;
     res.status(status).json({ success: false, error: error.message || 'Failed to choose draft', timestamp: new Date().toISOString() });
+  }
+});
+
+// GET /plans/:id/drafts/preview — serve a local draft image for the admin thumbnail grid
+adminStoryBuilderDraftsRouter.get('/plans/:id/drafts/preview', async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const itemId = req.query.itemId;
+    const filename = req.query.filename;
+
+    if (!itemId || typeof itemId !== 'string') {
+      res.status(400).json({ success: false, error: 'itemId query parameter is required', timestamp: new Date().toISOString() });
+      return;
+    }
+    if (!filename || typeof filename !== 'string') {
+      res.status(400).json({ success: false, error: 'filename query parameter is required', timestamp: new Date().toISOString() });
+      return;
+    }
+    if (filename.includes('..') || path.isAbsolute(filename)) {
+      res.status(403).json({ success: false, error: 'Invalid filename', timestamp: new Date().toISOString() });
+      return;
+    }
+    if (!isValidAssetFilename(filename)) {
+      res.status(400).json({ success: false, error: 'Unsupported file type', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const loaded = await loadPlan(id);
+    if (!loaded.ok) {
+      res.status(loaded.status).json({ success: false, error: loaded.error, timestamp: new Date().toISOString() });
+      return;
+    }
+    const plan = loaded.plan;
+
+    const item = plan.items.find(i => i.id === itemId);
+    if (!item) {
+      res.status(404).json({ success: false, error: 'Item not found in plan', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const contentDir = resolveContentDir();
+    const entityRoot = resolveEntityRootDir(item, contentDir);
+    const filePath = path.join(entityRoot, 'assets', filename);
+
+    // Path safety: must be inside contentDir
+    if (!filePath.startsWith(contentDir + path.sep)) {
+      res.status(403).json({ success: false, error: 'Access denied', timestamp: new Date().toISOString() });
+      return;
+    }
+
+    const imageBuffer = await fs.readFile(filePath);
+    const ext = path.extname(filename).toLowerCase();
+    const contentTypeMap: Record<string, string> = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+    };
+    res.setHeader('Content-Type', contentTypeMap[ext] || 'application/octet-stream');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.send(imageBuffer);
+  } catch (error: any) {
+    console.error('[story-builder] GET /plans/:id/drafts/preview error:', error);
+    const status = error.code === 'ENOENT' ? 404 : 500;
+    res.status(status).json({ success: false, error: error.message || 'Failed to preview draft', timestamp: new Date().toISOString() });
   }
 });

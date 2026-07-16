@@ -6,7 +6,7 @@ import { uploadToMinio } from '../src/services/StorageService.js';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PROMPT_ROOT = path.resolve(__dirname, '../../docs/lore/assets/ui-concepts');
+const PROMPT_ROOT = path.resolve(__dirname, '../../content');
 
 function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');

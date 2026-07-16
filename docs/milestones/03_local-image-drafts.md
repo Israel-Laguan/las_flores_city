@@ -312,23 +312,15 @@ The selection flow is:
 
 ## Tests to add or update
 
-- `server/tests/unit/LocalDraftService.test.ts` — new file. Tests:
-  - `buildGeneratedAssetFilename(slug, ext)` produces a string of the
-    form `<slug>__<ISO-timestamp><ext>`.
-  - `isValidAssetFilename()` accepts `.png`, `.jpg`, `.jpeg`, `.webp`,
-    `.gif` (case-insensitive) and rejects everything else (including
-    `.txt`, `.DS_Store`, no extension).
-  - `generateLocalDrafts()` writes files to `assets/`, returns the list
-    of filenames, and does NOT call `uploadToMinio` (mock it and assert
-    it was not called).
-  - `listLocalAssets()` returns every valid file in `assets/`, sorted
-    with `__default.png` first and the rest by mtime descending.
-  - `listLocalAssets()` skips files with non-image extensions and
-    sub-directories.
-- `server/tests/integration/admin-story-builder-drafts.test.ts` — new file.
-  Tests the three routes end-to-end with a hermetic file system.
+- `server/tests/unit/LocalDraftService.test.ts` — new file. (Exists; covers the helpers.)
+- `server/tests/integration/story-builder-drafts.test.ts` — existing integration
+  test for the three routes. (The original milestone name was `admin-story-builder-drafts.test.ts`; the actual file uses the `story-builder-drafts` prefix.)
+- `server/tests/unit/generate-prompt-repoint.test.ts` — new file. Verifies the
+  offline `generate-prompt.mjs` writes `.prompt.md` files into the per-folder
+  `content/` layout and contains no `docs/lore/figures` or `docs/lore/landmarks`
+  strings.
 - `admin/src/app/story-builder/__tests__/ContentCard.test.tsx` — add a test
-  that the Asset Needs section shows draft thumbnails when `status='drafted'`.
+  that the Asset Needs section shows draft thumbnails and calls the choose handler.
 
 ## Validation gate
 

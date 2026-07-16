@@ -72,12 +72,12 @@
   Photorealistic portrait of Javier "El Fantasma" Morales, a 30-year-old smuggler with a scar across his left cheek, dark circles under his eyes from sleepless nights, wearing a worn leather jacket and a cap pulled low. Background: a dimly lit alley in the eastern district, with crates of smuggled goods and a flickering streetlight. Moody lighting, tense expression, hyper-detailed, 8K.
   --no neon, no androids, no clean backgrounds
   ```
-- **Save As:** `docs/lore/assets/images/characters/javier_morales.png`
+- **Save As:** `content/characters/<slug>/assets/javier_morales.png`
 
 #### 6️⃣ Add to UI (5 min)
 - Create a **Character Profile Page** using the **[UI Component Library](../ui_ux_design_system.md#character-profile)**.
 - Link from:
-  - **Figures Index** (`docs/lore/figures/README.md`)
+  - **Figures Index** (`content/README.md`)
   - **Related Characters** (in their profiles)
   - **Locations** (where they appear)
 
@@ -143,7 +143,7 @@
   Concept art of a rooftop garden on the Vega Tower in Las Flores, wide landscape view from above. Withered plants and contaminated soil in an otherwise luxurious garden, string lights flickering. In the background, the poor districts sprawl below, and the Andean foothills rise misty and foreboding in the distance. The scene captures the contrast between the elite's false beauty and the city's decay. Environmental storytelling, moody lighting, hyper-detailed textures, 8K, atmospheric.
   --no neon, no androids, no clean environments, no utopian
   ```
-- **Save As:** `docs/lore/assets/images/locations/garden_of_lies.jpg`
+- **Save As:** `content/locations/<slug>/assets/garden_of_lies.jpg`
 
 #### 7️⃣ Add to UI (5 min)
 - Create a **Location Page** using the **[UI Component Library](../ui_ux_design_system.md#location-card)**.
@@ -216,7 +216,7 @@
   Mercado Central at dusk, a vendor slipping a small USB drive into a loaf of bread on a market stall. A woman in a cardigan (Ana) pretends to examine the bread while a large man (Miguel) keeps watch. In the background, a suspicious vendor eyes them from behind his stall. Warm lighting from setting sun and street lamps, tense atmosphere, photorealistic, 8K.
   --no modern tech, no clean market, no bright lighting
   ```
-- **Save As:** `docs/lore/assets/images/scenes/mercado_usb_handoff.jpg`
+- **Save As:** `content/scenes/<slug>/assets/mercado_usb_handoff.jpg`
 
 #### 7️⃣ Add to Timeline (5 min)
 - Update the **[Timeline](../../timeline.md)** with:
@@ -327,8 +327,8 @@
 **Steps:**
 
 #### 1️⃣ Gather Content (10 min)
-- **Character Profile** (from `docs/lore/figures/[name].md`)
-- **Portrait Image** (from `docs/lore/assets/images/characters/[name].png`)
+- **Character Profile** (from `content/characters/<slug>/<slug>.md`)
+- **Portrait Image** (from `content/characters/<slug>/assets/<slug>__default.png`)
 - **Connections** (other characters, locations)
 - **Visual Cues** (from the profile)
 
@@ -399,7 +399,7 @@
 
 #### 1️⃣ Gather Content (10 min)
 - **Location Entry** (from `docs/lore/locations/[name].md`)
-- **Concept Art** (from `docs/lore/assets/images/locations/[name].jpg`)
+- **Concept Art** (from `content/locations/<slug>/assets/<slug>__default.png`)
 - **Connected Characters** (who appears here?)
 - **Connected Events** (what happened here?)
 
@@ -610,8 +610,8 @@
 #### 8️⃣ Save & Organize (3 min)
 - **Filename:** `[location_name]_[view]_[style].jpg`
 - *Example: `garden_of_lies_wide_concept_art.jpg`*
-- **Save To:** `docs/lore/assets/images/locations/`
-- **Add to Gallery:** Update `docs/lore/assets/prompts/locations.txt` with the prompt.
+- **Save To:** `content/locations/<slug>/assets/`
+- **Add to Gallery:** Update `content/locations/<slug>/<slug>.prompt.md` with the prompt.
 
 **Example Output:** [The Garden of Lies Image](#)
 
@@ -703,8 +703,8 @@
   - `javier_morales_action.jpg`
   - `javier_morales_emotional.jpg`
   - `javier_morales_group.jpg`
-- **Save To:** `docs/lore/assets/images/characters/`
-- **Add to Gallery:** Update `docs/lore/assets/prompts/characters.txt` with prompts.
+- **Save To:** `content/characters/<slug>/assets/`
+- **Add to Gallery:** Update `content/characters/<slug>/<slug>.prompt.md` with prompts.
 
 ---
 
@@ -794,8 +794,8 @@
   - `mercado_usb_handoff_wide.jpg`
   - `mercado_usb_handoff_medium.jpg`
   - `mercado_usb_handoff_closeup.jpg`
-- **Save To:** `docs/lore/assets/images/scenes/`
-- **Add to Gallery:** Update `docs/lore/assets/prompts/scenes.txt` with prompts.
+- **Save To:** `content/scenes/<slug>/assets/`
+- **Add to Gallery:** Update `content/scenes/<slug>/<slug>.prompt.md` with prompts.
 
 ---
 

@@ -134,10 +134,10 @@ while true; do
     -e MINIO_ENDPOINT="las-flores-minio" \
     -e MINIO_PORT="9000" \
     -e MINIO_ACCESS_KEY="minioadmin" \
-    -e MINIO_SECRET_KEY="minioadmin" \
-    -e JWT_SECRET="your-jwt-secret-change-in-production" \
-    -e PROMPT_ROOT="/app/docs/lore/assets/ui-concepts" \
-    las-flores-server || true
+  -e MINIO_SECRET_KEY="minioadmin" \
+  -e JWT_SECRET="dev-secret" \
+  -e PROMPT_ROOT="/app/content" \
+  las-flores-server || true
     
   # Check if container exists and is running
   if podman inspect las-flores-server >/dev/null 2>&1; then
@@ -185,7 +185,7 @@ podman run -d \
 echo "✅ Full stack is up:"
 echo "   • Server:   http://localhost:3000"
 echo "   • Admin UI:     http://localhost:3002 (try it!)"
-echo "   • Health:   Run 'curl http://localhost:3000/health' or check Vite console"
+echo "   • Health:   podman exec las-flores-server wget -qO- http://localhost:3000/health"
 
 # Keep main process alive to maintain container lifecycle
 while true; do

@@ -100,30 +100,12 @@ with `git mv` (one commit per sub-step) and update any hardcoded paths.
   `docs/lore/assets/`: `biometrics-report.json`, `missing-characteristics-report.md`,
   `needs-character-details.md`, and the `references/CONTINUE_*.md` / `NEXT_STEPS_PROMPT.md`
   handoff prompts (track pending work in GitHub issues instead).
-- **Update `generate-prompt.mjs`** (DONE as part of the M01 file move): the
-  hardcoded registry path (line 708: `path.resolve('docs/lore/assets/registries')`)
-  was repointed to `scripts/asset-pipeline/registries`, and the `Usage` header
-  examples (lines 16-17) now reference `scripts/asset-pipeline/registries/` and
-  `content/...` output dirs. All `**Target:**` output-hint references inside the
-  generated `.prompt.md` content were redirected to the per-entity layout,
-  consistent with the `**Source:**` field above each and the M01/M03 "flat
-  `assets/` bag, no sub-folders" rule:
-    - `biometric/`, `expressions/`, `outfits/` (lines 367 / 454 / 476) →
-      `content/characters/${slug}/assets/`
-    - `figures/` character-sheet (line 504) → `content/characters/${slug}/assets/`
-    - `landmarks/` location-map (line 555) → `content/locations/${slug}/${slug}.map.md`
-      (a `.map.md` data doc, so it lands as an entity-folder sibling next to the
-      YAML/lore, not in the image `assets/` bag)
-  These are documentation hints only (the script emits `.prompt.md` text; the
-  `**Target:**` strings themselves are not read by any code), so redirecting them
-  is behavior-neutral. NOTE: the script's *actual* output-routing code — lines
-  ~959/963 resolve `path.resolve('docs/lore/figures', slug)` /
-  `path.resolve('docs/lore/landmarks', slug)`, and line ~996 computes
-  `meta.sourcePath` relative to `docs/lore` — still writes to (and reads from)
-  the legacy `docs/lore/figures` / `docs/lore/landmarks` directories. Repointing
-  that generation *output* to the `content/` per-folder layout is a genuine
-  behavior change (not just a doc string) and is intentionally out of scope here;
-  it is tracked as a follow-up in Milestone 03 (local image drafts).
+**Update `generate-prompt.mjs`** (DONE): the
+  hardcoded registry path was repointed to `scripts/asset-pipeline/registries`, and the `Usage` header
+  examples now reference `content/<type>/<slug>/`. The actual output-routing code (lines ~959/963/996)
+  was repointed from `docs/lore/figures` and `docs/lore/landmarks` to `content/characters/<slug>/` and
+  `content/locations/<slug>/`, and `meta.sourcePath` is now relative to the repo root. The `**Target:**`
+  hint strings inside the generated `.prompt.md` content were already redirected to the per-entity layout.
 
 ### YAML files to update (~130 characters + ~60 locations + ~150 scenes)
 - Rewrite `lore_path: docs/lore/figures/<slug>/<slug>.md` → `lore_path: <slug>.md`.

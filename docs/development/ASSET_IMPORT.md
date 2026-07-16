@@ -6,10 +6,10 @@ This guide explains how to import your existing locally-generated drafts into th
 
 You have 145 draft images already generated in:
 ```text
-docs/lore/assets/ui-concepts/*/assets/*/drafts/
+content/<type>/<slug>/assets/
 ```
 
-These are organized by concept (isometric-map, vn-interface, phone-terminal) and asset type (tiles, landmarks, backgrounds, portraits, app icons, etc.).
+These are organized per entity (characters, locations, scenes, etc.) and live alongside each entity's YAML and `.prompt.md` files.
 
 To use these assets in the admin UI and create variations, you need to:
 1. Import them into MinIO (object storage)
@@ -106,37 +106,22 @@ curl "http://localhost:3000/assets/import-drafts?all=true"
 
 Your drafts are organized as:
 ```
-docs/lore/assets/ui-concepts/
-├── isometric-map/
+content/
+├── characters/<slug>/
 │   └── assets/
-│       ├── tile_street.prompt/
-│       │   └── drafts/
-│       │       ├── tile_street__base.png
-│       │       ├── tile_street__night_variant.png
-│       │       └── tile_street__wet_rainy_variant.png
-│       └── lm_palacio_municipal.prompt/
-│           └── drafts/
-│               ├── lm_palacio_municipal__base.png
-│               ├── lm_palacio_municipal__day_lit_variant.png
-│               └── lm_palacio_municipal__night_glow_variant.png
-├── vn-interface/
+│       ├── <slug>__default.png
+│       ├── <slug>__<timestamp>.png
+│       └── ...
+├── locations/<slug>/
 │   └── assets/
-│       ├── bg_puerto_noche.prompt/
-│       │   └── drafts/
-│       │       ├── bg_puerto_noche__base.jpg
-│       │       └── ...
-│       └── portrait_alex.prompt/
-│           └── drafts/
-│               └── portrait_alex__base.png
-└── phone-terminal/
-    └── assets/
-        ├── wallpaper_las_flores.prompt/
-        │   └── drafts/
-        │       └── wallpaper_las_flores__base.jpg
-        └── app_mapa.prompt/
-            └── drafts/
-                └── app_mapa__base.png
+│       └── ...
+├── scenes/<slug>/
+│   └── assets/
+│       └── ...
+└── ...
 ```
+
+Drafts are stored **flat** inside each entity's `assets/` folder (no sub-folders). The active file is selected by the `asset_paths.<field>` field in the entity YAML.
 
 ## File Naming Convention
 
@@ -196,10 +181,12 @@ s3://las-flores/phone/app_mapa.png
 
 ## Troubleshooting
 
+> **Note:** This guide references the pre-colocation location of the old UI-concepts assets. Those assets now live in `content/<type>/<slug>/assets/`; the import endpoint still reads from `PROMPT_ROOT` and supports the new per-folder layout.
+
 ### "No drafts folders found"
 - Make sure the stack is running
 - Check that `PROMPT_ROOT` environment variable is set correctly
-- Default is `docs/lore/assets/ui-concepts`
+- Default is `content` (the repo root; `content/characters/*`, `content/locations/*`, etc. are scanned)
 
 ### Images not appearing after import
 - Check the server logs for import errors
@@ -231,8 +218,10 @@ MINIO_SECRET_KEY=minioadmin
 MINIO_BUCKET=las-flores
 
 # Prompt root (default)
-PROMPT_ROOT=docs/lore/assets/ui-concepts
+PROMPT_ROOT=content
 ```
+
+See `content/README.md` for the current per-folder layout and asset selection model.
 
 ## Files Modified
 
@@ -256,4 +245,4 @@ After importing and publishing assets:
 2. **Test in game** to verify assets render correctly
 3. **Iterate** on variants and regenerate as needed
 
-See `docs/lore/assets/ui-concepts/UI_ASSET_INVENTORY.md` for the complete client integration map.
+See `content/README.md` for the current asset layout and selection model.

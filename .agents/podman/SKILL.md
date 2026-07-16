@@ -72,7 +72,7 @@ podman run -d --name las-flores-server \
   -e MINIO_PORT=9000 \
   -e MINIO_ACCESS_KEY=minioadmin \
   -e MINIO_SECRET_KEY=minioadmin \
-  -e JWT_SECRET=your-jwt-secret-change-in-production \
+  -e JWT_SECRET=dev-secret \
   las-flores-server
 
 # 6. Verify health
@@ -81,7 +81,11 @@ podman exec las-flores-server wget -qO- http://localhost:3000/health
 
 ### Host-Network Mode (When Backing Services Use Host Ports)
 
-When Postgres, Redis, and MinIO are already running on host-mapped ports (e.g., `0.0.0.0:5434`, `0.0.0.0:6379`), use `--network host` so the server can reach them via `localhost`. This avoids container-IP discovery entirely:
+When Postgres, Redis, and MinIO are already running on host-mapped ports (e.g.,
+`0.0.0.0:5434`, `0.0.0.0:6379`), use `--network host` so the server can reach
+them via `localhost`. This avoids container-IP discovery entirely. This is the
+same pattern `scripts/run-tests-podman.sh` uses to run the test suite against the
+host-mapped DB ports.
 
 ```bash
 podman run -d --name las-flores-server \
@@ -97,7 +101,7 @@ podman run -d --name las-flores-server \
   -e MINIO_PORT=9000 \
   -e MINIO_ACCESS_KEY=minioadmin \
   -e MINIO_SECRET_KEY=minioadmin \
-  -e JWT_SECRET=your-jwt-secret-change-in-production \
+  -e JWT_SECRET=dev-secret \
   -e PORT=3000 \
   -e NODE_ENV=development \
   -e CLIENT_ORIGIN_URL=http://localhost:5173 \
@@ -113,7 +117,9 @@ podman run -d --name las-flores-server \
 - Running the full stack from scratch (no pre-existing host-port bindings).
 - Production-like isolation where containers should not share the host network namespace.
 
-With host-network mode, `curl http://localhost:3000/health` works directly from the host (no `wget` inside container needed).
+> **Health check note:** even in host-network mode, verify health from inside the
+> container with `podman exec las-flores-server wget -qO- http://localhost:3000/health`.
+> Host-side `curl` can return exit 56 on this rootless host even when healthy.
 
 ### Clean Shutdown
 ```bash

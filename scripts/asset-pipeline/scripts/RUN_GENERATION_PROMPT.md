@@ -3,15 +3,12 @@
 ## Context
 
 The project has ~200 `.prompt.md` files across these directories, all needing image generation:
-- `docs/lore/landmarks/` — 55 background/overlay prompts
-- `docs/lore/figures/` — 128 portrait prompts
-- `docs/lore/organizations/companies/` — 15 thematic prompts
-- `docs/lore/organizations/` — 9 thematic prompts
-- `docs/lore/media/` — 5 thematic prompts
-- `docs/lore/shared/assets/phone/` — 9 app icon prompts
-- `docs/lore/shared/assets/tiles/` — 17 tile prompts
+- `content/characters/*/` — ~128 portrait/biometric prompts
+- `content/locations/*/` — ~55 background/overlay prompts
+- `content/scenes/*/` — ~18 scene background prompts
+- `content/lore/shared/*/` — app icon, tile, and thematic prompts
 
-Generated images go to `assets/` sibling directories next to each `.prompt.md` file. Naming: `{name}-{timestamp}.{type}.png`.
+Generated images go to the flat `assets/` directory inside each entity folder (e.g. `content/characters/<slug>/assets/`). Naming follows `<slug>__<ISO-timestamp>.png`.
 
 ## Instructions
 
@@ -20,10 +17,10 @@ Run the full asset generation pipeline. Follow these steps in order:
 ### Step 1: Pre-flight checks
 
 1. Verify NVIDIA API key is available: check `.env` for `NVIDIA_API_KEY` or env var
-2. Verify the unified generator script exists at `docs/lore/assets/scripts/generate-drafts-unified.mjs`
+2. Verify the unified generator script exists at `scripts/asset-pipeline/scripts/generate-drafts-unified.mjs`
 3. Do a dry-run first to see what would be generated:
    ```bash
-   node docs/lore/assets/scripts/generate-drafts-unified.mjs --dry-run
+   node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --dry-run
    ```
 4. Report total prompt variants found and any issues
 
@@ -33,15 +30,15 @@ Run the unified draft generator. Use `--filter` to batch by type if needed to ma
 
 ```bash
 # Full run (all types)
-node docs/lore/assets/scripts/generate-drafts-unified.mjs
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs
 
 # Or batch by type if full run is too large:
-node docs/lore/assets/scripts/generate-drafts-unified.mjs --filter background
-node docs/lore/assets/scripts/generate-drafts-unified.mjs --filter overlay
-node docs/lore/assets/scripts/generate-drafts-unified.mjs --filter portrait
-node docs/lore/assets/scripts/generate-drafts-unified.mjs --filter thematic
-node docs/lore/assets/scripts/generate-drafts-unified.mjs --filter tile
-node docs/lore/assets/scripts/generate-drafts-unified.mjs --filter app-icon
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --filter background
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --filter overlay
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --filter portrait
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --filter thematic
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --filter tile
+node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --filter app-icon
 ```
 
 The script tries NIM first, falls back to Pollinations. It saves to `{promptDir}/assets/`.
@@ -54,15 +51,15 @@ After generation completes, run these checks:
    ```bash
    echo "=== Generated asset counts ==="
    for type in background overlay portrait thematic tile app-icon biometric; do
-     count=$(find docs/lore -path "*/assets/*${type}.png" -type f 2>/dev/null | wc -l)
+     count=$(find content -path "*/assets/*${type}.png" -type f 2>/dev/null | wc -l)
      echo "  $type: $count"
    done
    ```
 
 2. **Check for zero-byte or corrupt files (< 5KB):**
    ```bash
-   find docs/lore -path "*/assets/*.png" -size 0 -type f
-   find docs/lore -path "*/assets/*.png" -size -5k -type f
+   find content -path "*/assets/*.png" -size 0 -type f
+   find content -path "*/assets/*.png" -size -5k -type f
    ```
 
 3. **Verify every prompt file has at least one generated asset:**
@@ -76,7 +73,7 @@ If any prompts failed to generate (no assets, or zero-byte files):
 
 1. Use the `--force` flag to regenerate only failed ones:
    ```bash
-   node docs/lore/assets/scripts/generate-drafts-unified.mjs --force --filter <type>
+   node scripts/asset-pipeline/scripts/generate-drafts-unified.mjs --force --filter <type>
    ```
 
 2. If NIM is failing (check for 429 rate limits or auth errors), the script should auto-fallback to Pollinations. If both fail, report the error and skip.

@@ -246,9 +246,10 @@ The entire game interface is rendered inside a phone-shaped DOM container layere
 
 ### Character vs Figure
 
-- **Lore Wiki:** `docs/lore/figures/<name>.md` — worldbuilding reference, no `#character` tag.
-- **Game Engine:** `content/characters/char_<name>.yaml` + `char_<name>.md` — NPC data for dialogue system.
-- **Dual-track:** Major NPCs need both (e.g., `docs/lore/figures/evelyn_ruthenberg.md` + `content/characters/char_evelyn_ruthenberg.yaml`).
+- **Lore / Worldbuilding:** `content/characters/<slug>/<slug>.md` — colocated narrative for the character.
+- **Game Engine:** `content/characters/<slug>/char_<slug>.yaml` + `<slug>.md` — NPC data for the dialogue system.
+- **Single source of truth:** Since Milestone 01, every entity's lore, YAML, and assets live together in `content/<type>/<slug>/`. There is no separate `docs/lore/figures/` track.
+
 
 ---
 

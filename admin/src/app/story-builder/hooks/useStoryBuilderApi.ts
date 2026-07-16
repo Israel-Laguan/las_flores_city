@@ -125,6 +125,42 @@ export async function deletePlan(planId: string) {
   );
 }
 
+export async function generateDrafts(planId: string, count?: number) {
+  const params = new URLSearchParams();
+  if (count) params.set('count', String(count));
+  return postJSON<{ success: boolean; data?: any; error?: string }>(
+    `/admin/story-builder/plans/${planId}/generate-drafts?${params.toString()}`,
+    {},
+  );
+}
+
+export interface DraftAsset {
+  filename: string;
+  sizeBytes: number;
+  mtime: string;
+  previewUrl: string;
+}
+
+export interface DraftItem {
+  itemId: string;
+  slug: string;
+  assets: DraftAsset[];
+  preSelected: string | null;
+}
+
+export async function listDrafts(planId: string) {
+  return adminFetch<{ success: boolean; data?: { planId: string; items: DraftItem[] }; error?: string }>(
+    `/admin/story-builder/plans/${planId}/drafts`,
+  );
+}
+
+export async function chooseDraft(planId: string, itemId: string, promptType: string, filename: string) {
+  return postJSON<{ success: boolean; data?: { planId: string; itemId: string; promptType: string; filename: string; status: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}/choose-draft`,
+    { itemId, promptType, filename },
+  );
+}
+
 export async function getPlanVersions(planId: string) {
   return adminFetch<{
     success: boolean;

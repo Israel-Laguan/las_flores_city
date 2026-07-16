@@ -66,7 +66,7 @@ curl -s "https://gen.pollinations.ai/image/[PROMPT]?model=flux&width=512&height=
 ```
 
 ## Output Structure
-Save to `docs/lore/assets/style-exploration/[style-name]/`:
+Save to `content/lore/shared/style-exploration/[style-name]/`:
 - `character.png`
 - `environment.png`  
 - `ui-preview.png`

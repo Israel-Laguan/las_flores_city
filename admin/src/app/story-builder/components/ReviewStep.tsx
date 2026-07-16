@@ -2,6 +2,7 @@
 
 import type { ContentPlan } from '@las-flores/shared';
 import { cn } from '@las-flores/ui';
+import * as api from '../hooks/useStoryBuilderApi';
 import ContentCard from './ContentCard';
 import PlanSummary from './PlanSummary';
 import RefineSection from './RefineSection';
@@ -26,12 +27,17 @@ interface ReviewStepProps {
   onUpdateLink: (index: number, field: string, value: string) => void;
   onAddLink: () => void;
   onRemoveLink: (index: number) => void;
+  onGenerateDrafts?: (count?: number) => void;
+  onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
+  draftAssetsByItem?: Record<string, api.DraftAsset[]>;
+  draftLoading?: boolean;
 }
 
 export default function ReviewStep({
   plan, planId, loading, onRegenerateLore, refineFeedback, setRefineFeedback, showRefine, setShowRefine,
   onRefine, onUpdateItem, onRemoveItem, onAddItem, onAssetPathRemove,
   onDependsOnChange, onUpdateLink, onAddLink, onRemoveLink,
+  onGenerateDrafts, onChooseDraft, draftAssetsByItem, draftLoading,
 }: ReviewStepProps) {
   return (
     <div className={styles.section}>
@@ -55,6 +61,10 @@ export default function ReviewStep({
           onRemove={onRemoveItem}
           onAssetPathRemove={onAssetPathRemove}
           onDependsOnChange={onDependsOnChange}
+          onGenerateDrafts={() => onGenerateDrafts?.()}
+          onChooseDraft={onChooseDraft}
+          draftAssets={draftAssetsByItem?.[item.id]}
+          draftLoading={draftLoading}
         />
       ))}
 

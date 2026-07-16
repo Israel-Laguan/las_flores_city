@@ -71,8 +71,8 @@ Lessons learned from fixing the asset test suites under podman/CI:
 
 1. **PROMPT_ROOT is cwd-dependent.**  
    In CI and podman, `process.cwd()` is `server/`, so:
-   - ✅ `path.resolve(process.cwd(), '../docs/lore/assets/ui-concepts')`
-   - ❌ `path.resolve(process.cwd(), '../../docs/lore/assets/ui-concepts')`
+   - ✅ `path.resolve(process.cwd(), '../content')`
+   - ❌ `path.resolve(process.cwd(), 'content')`
 
 2. **`jest.unstable_mockModule()` is unreliable under ts-jest / CJS transform.**  
    Prefer `jest.doMock()` + `await import()` in `beforeAll`:

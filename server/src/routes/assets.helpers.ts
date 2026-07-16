@@ -8,7 +8,7 @@ import { z } from 'zod';
 export function getPromptRoot(): string {
   return process.env.PROMPT_ROOT
     ? path.resolve(process.env.PROMPT_ROOT)
-    : path.resolve(process.cwd(), 'docs/lore/assets/ui-concepts');
+    : path.resolve(process.cwd(), 'content');
 }
 
 /** @deprecated Use getPromptRoot() — this value is frozen at module load time */

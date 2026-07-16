@@ -142,9 +142,9 @@ docs/lore/figures/<slug>/<slug>.md
         ↓
 scripts/generate-lore-stubs.mjs  (or Story Builder's LoreGenerator)
         ↓
-docs/lore/assets/scripts/generate-prompt.mjs
+scripts/asset-pipeline/scripts/generate-prompt.mjs
         ↓
-docs/lore/assets/ui-concepts/<category>/*.prompt.md
+content/<type>/<slug>/<slug>.prompt.md
         ↓
 AKOOL pipeline (/assets admin page)
         ↓
@@ -159,7 +159,7 @@ MinIO + asset_bases / asset_variants tables
 |---|---|
 | `docs/lore/` | Narrative source of truth (characters, locations, stories, events, etc.) |
 | `scripts/generate-lore-stubs.mjs` | Creates placeholder lore markdown from content |
-| `docs/lore/assets/scripts/generate-prompt.mjs` | Creates `.prompt.md` files from lore/registries |
+| `scripts/asset-pipeline/scripts/generate-prompt.mjs` | Creates `.prompt.md` files from lore/registries |
 | `server/src/routes/assets.ts` | Asset catalog, generation, approval, publish endpoints |
 | `server/src/routes/admin-content-asset.ts` | Assign a published asset URL to a content YAML field |
 | `admin/src/app/assets/` | Asset generation pipeline UI |

@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
 import type { Step } from '../types';
 import * as api from './useStoryBuilderApi';
+import { createDraftPlanHandlers } from './useDraftPlanApi';
 
 type SetState<T> = (v: T | ((prev: T) => T)) => void;
 
@@ -123,12 +124,17 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   const handleRegenerateLore = useCallback(async (planId: string, itemId: string) => {
     const data = await withLoading(setLoading, setError, () => api.regenerateLore(planId, itemId));
     if (!data) return;
-    if (!data.success) setError(data.error || 'Failed to regenerate lore');
-  }, [setLoading, setError]);
+    const refreshed = await api.loadPlanFromDb(planId).catch(() => null);
+    if (refreshed?.success && refreshed.data?.plan_json) {
+      setPlan(refreshed.data.plan_json);
+    }
+  }, [setLoading, setError, setPlan]);
+
+  const { handleGenerateDrafts, handleChooseDraft } = createDraftPlanHandlers({ setLoading, setError, setPlan });
 
   return {
     handleGeneratePlan, handleRefine, handlePreview, handleStage,
     handleApprove, handleMigrate, handleRetry, handleSelectTemplate,
-    handleRegenerateLore,
+    handleRegenerateLore, handleGenerateDrafts, handleChooseDraft,
   };
 }

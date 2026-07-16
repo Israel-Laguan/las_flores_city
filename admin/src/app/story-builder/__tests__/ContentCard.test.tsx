@@ -28,6 +28,91 @@ function createItem(overrides: Partial<ContentPlanItem> = {}): ContentPlanItem {
   };
 }
 
+vi.mock('@/lib/client-api', () => ({
+  serverAssetUrl: (p: string) => `/admin/asset?path=${p}`,
+  adminFetch: vi.fn(),
+}));
+
+describe('ContentCard draft selector', () => {
+  it('renders draft thumbnails when draftAssets are provided', () => {
+    const item = createItem({
+      id: 'item-abc',
+      slug: 'test_character',
+      assetNeeds: [{ promptType: 'portrait', targetField: 'asset_paths.portrait', status: 'drafted' }],
+      fields: { name: 'Test Character', asset_paths: { portrait: 'test_character__default.png' } },
+    });
+    const draftAssets = [
+      { filename: 'test_character__default.png', sizeBytes: 1234, mtime: new Date().toISOString(), previewUrl: '/preview/default.png' },
+      { filename: 'test_character__variant.png', sizeBytes: 5678, mtime: new Date().toISOString(), previewUrl: '/preview/variant.png' },
+    ];
+    const onChooseDraft = vi.fn();
+    render(
+      <ContentCard
+        item={item}
+        index={0}
+        planId="plan-123"
+        onFieldChange={vi.fn()}
+        onRemove={vi.fn()}
+        draftAssets={draftAssets}
+        onChooseDraft={onChooseDraft}
+      />,
+    );
+
+    expect(screen.getByText('Generate Drafts')).toBeInTheDocument();
+    expect(screen.getAllByRole('img')).toHaveLength(3);
+    expect(screen.getByTitle(/Select test_character__default.png \(default\)/)).toBeInTheDocument();
+  });
+
+  it('calls onChooseDraft when a thumbnail is clicked', () => {
+    const item = createItem({
+      id: 'item-abc',
+      slug: 'test_character',
+      assetNeeds: [{ promptType: 'portrait', targetField: 'asset_paths.portrait', status: 'drafted' }],
+      fields: { name: 'Test Character', asset_paths: { portrait: 'test_character__default.png' } },
+    });
+    const draftAssets = [
+      { filename: 'test_character__default.png', sizeBytes: 1234, mtime: new Date().toISOString(), previewUrl: '/preview/default.png' },
+    ];
+    const onChooseDraft = vi.fn();
+    render(
+      <ContentCard
+        item={item}
+        index={0}
+        planId="plan-123"
+        onFieldChange={vi.fn()}
+        onRemove={vi.fn()}
+        draftAssets={draftAssets}
+        onChooseDraft={onChooseDraft}
+      />,
+    );
+
+    fireEvent.click(screen.getAllByRole('button').find(b => b.title?.startsWith('Select')) as HTMLElement);
+    expect(onChooseDraft).toHaveBeenCalledWith('item-abc', 'portrait', 'test_character__default.png');
+  });
+
+  it('does not render draft grid when draftAssets is empty', () => {
+    const item = createItem({
+      id: 'item-abc',
+      slug: 'test_character',
+      assetNeeds: [{ promptType: 'portrait', targetField: 'asset_paths.portrait', status: 'pending' }],
+      fields: { name: 'Test Character' },
+    });
+    render(
+      <ContentCard
+        item={item}
+        index={0}
+        planId="plan-123"
+        onFieldChange={vi.fn()}
+        onRemove={vi.fn()}
+        draftAssets={[]}
+      />,
+    );
+
+    expect(screen.getByText('Generate Drafts')).toBeInTheDocument();
+    expect(screen.queryAllByRole('img')).toHaveLength(0);
+  });
+});
+
 describe('ContentCard lore regeneration', () => {
   it('should show Regenerate button when lore_path exists and onRegenerateLore is provided', () => {
     const onRegenerateLore = vi.fn();

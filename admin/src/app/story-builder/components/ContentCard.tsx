@@ -6,6 +6,7 @@ import { cn } from '@las-flores/ui';
 import { serverAssetUrl } from '@/lib/client-api';
 import { getFieldsForType, type FieldDefinition } from './FieldDefinitions';
 import LoreViewer from './LoreViewer';
+import * as api from '../hooks/useStoryBuilderApi';
 import styles from './ContentCard.module.css';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -34,6 +35,10 @@ interface ContentCardProps {
   onRemove: (index: number) => void;
   onAssetPathRemove?: (index: number, key: string) => void;
   onDependsOnChange?: (index: number, dependsOn: string[]) => void;
+  onGenerateDrafts?: (itemId: string) => void;
+  onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
+  draftAssets?: api.DraftAsset[];
+  draftLoading?: boolean;
 }
 
 function getNestedValue(obj: Record<string, any>, path: string): string {
@@ -49,17 +54,37 @@ function getNestedValue(obj: Record<string, any>, path: string): string {
   return current !== undefined && current !== null ? String(current) : '';
 }
 
-function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: {
+function AssetNeedsSection({
+  item,
+  assetNeeds,
+  assetPaths,
+  onRemoveAssetPath,
+  onGenerateDrafts,
+  onChooseDraft,
+  draftAssets,
+  draftLoading,
+}: {
+  item: ContentPlanItem;
   assetNeeds: ContentPlanItem['assetNeeds'];
   assetPaths?: Record<string, string>;
   onRemoveAssetPath?: (key: string) => void;
+  onGenerateDrafts?: (itemId: string) => void;
+  onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
+  draftAssets?: api.DraftAsset[];
+  draftLoading?: boolean;
 }) {
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [expanded, setExpanded] = useState(true);
 
   function getAssetImageUrl(assetPath: string): string {
     if (!assetPath) return '';
     return serverAssetUrl(assetPath);
   }
+
+  const defaultAssetName = `${item.slug}__default.png`;
+  const selectedFilename = assetPaths
+    ? Object.values(assetPaths)[0]
+    : undefined;
 
   return (
     <div className={styles.imageSection}>
@@ -79,18 +104,23 @@ function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: {
               <img
                 src={imageUrl}
                 alt={need.promptType}
-                style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '5px', marginBottom: '0.5rem', background: 'var(--page-bg)' }}
+                className={styles.assetPreview}
                 onError={() => setImageErrors(prev => ({ ...prev, [i]: true }))}
               />
             ) : (
               <div className={styles.imagePlaceholder}>
-                {assetPath ? 'Failed to load image' : 'No image path specified'}
+                {assetPath ? 'Failed to load image' : 'No image selected'}
               </div>
             )}
 
             <div className={styles.assetActions}>
-              <button className={cn('btn', 'btn--primary')} onClick={() => window.open('/assets', '_blank')}>
-                {assetPath ? 'Replace Image' : 'Generate Image'}
+              <button
+                className={cn('btn', 'btn--primary')}
+                onClick={() => onGenerateDrafts?.(item.id)}
+                disabled={draftLoading}
+                title="Generate local PNG drafts from the entity prompt"
+              >
+                {draftLoading ? 'Generating…' : 'Generate Drafts'}
               </button>
               {assetPath && onRemoveAssetPath && (
                 <button
@@ -104,9 +134,54 @@ function AssetNeedsSection({ assetNeeds, assetPaths, onRemoveAssetPath }: {
           </div>
         );
       })}
+
+      {(draftAssets && draftAssets.length > 0) && (
+        <div className={styles.draftGridSection}>
+          <button className={cn('btn', 'btn--secondary', 'btn--small', styles.draftToggle)} onClick={() => setExpanded(e => !e)}>
+            {expanded ? 'Hide' : 'Show'} drafts ({draftAssets.length})
+          </button>
+          {expanded && <DraftGrid item={item} draftAssets={draftAssets} assetNeeds={assetNeeds} selectedFilename={selectedFilename} defaultAssetName={defaultAssetName} onChooseDraft={onChooseDraft} />}
+        </div>
+      )}
     </div>
   );
 }
+
+function DraftGrid({ item, draftAssets, assetNeeds, selectedFilename, defaultAssetName, onChooseDraft }: {
+  item: ContentPlanItem;
+  draftAssets: api.DraftAsset[];
+  assetNeeds: ContentPlanItem['assetNeeds'];
+  selectedFilename?: string;
+  defaultAssetName: string;
+  onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
+}) {
+  return (
+    <div className={styles.draftGrid}>
+      {draftAssets.map(draft => {
+        const isSelected = draft.filename === selectedFilename;
+        const isDefault = draft.filename === defaultAssetName;
+        return (
+          <button
+            key={draft.filename}
+            className={cn(styles.draftThumb, isSelected && styles.draftThumbSelected)}
+            onClick={() => {
+              const need = assetNeeds.find(n => (n.status === 'pending' || n.status === 'drafted' || n.status === 'chosen'));
+              if (need) onChooseDraft?.(item.id, need.promptType, draft.filename);
+            }}
+            title={`Select ${draft.filename}${isDefault ? ' (default)' : ''}`}
+            type="button"
+          >
+            <img src={draft.previewUrl} alt={draft.filename} className={styles.draftImage} />
+            {isSelected && <span className={styles.draftCheck}>✓</span>}
+            {isDefault && !isSelected && <span className={styles.draftDefaultBadge}>D</span>}
+            <span className={styles.draftLabel}>{draft.filename}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 
 function FieldsSection({ fields, item, onFieldChange }: {
   fields: FieldDefinition[];
@@ -181,7 +256,7 @@ function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
   );
 }
 
-export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange, onGenerateDrafts, onChooseDraft, draftAssets, draftLoading }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -246,9 +321,14 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
 
       {item.assetNeeds.length > 0 && (
         <AssetNeedsSection
+          item={item}
           assetNeeds={item.assetNeeds}
           assetPaths={assetPaths}
           onRemoveAssetPath={onAssetPathRemove ? (key) => onAssetPathRemove(index, key) : undefined}
+          onGenerateDrafts={onGenerateDrafts}
+          onChooseDraft={onChooseDraft}
+          draftAssets={draftAssets}
+          draftLoading={draftLoading}
         />
       )}
 

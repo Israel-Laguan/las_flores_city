@@ -255,7 +255,7 @@ JSONB array, and the client picks it up. No code change.
 |---|---|---|---|---|
 | 01 | Colocate lore into `content/` | **Done** | Low (file moves) | Yes (git revert) |
 | 02 | State machine refactor (enums, CHECK constraints) | **Done** | Low (additive) | Yes (down-migration) |
-| 03 | Local image drafts (no MinIO) | Pending | Medium (new route + UI) | Yes (delete folder) |
+| 03 | Local image drafts (no MinIO) | **Done** | Medium (new route + UI) | Yes (delete folder) |
 | 04 | Single-click approve-and-solidify | Pending | Medium (wizard UX) | Yes (revert wizard) |
 | 05 | Verification step (cross-ref checks) | Pending | Low (new service) | Yes (delete service) |
 | 06 | Asset cascade via `portrait_urls` JSONB `label` (dev/staging/production) | Pending | Low (JSONB upserts) | Yes (remove label entries) |
@@ -264,8 +264,7 @@ JSONB array, and the client picks it up. No code change.
 
 **Recommended execution order:** 01 → 02 → 03 → 06 → 05 → 04 → 07 → 08.
 
-M01 and M02 are complete. Remaining work: lay the local-draft generation
-(03), wire up the asset cascade in `portrait_urls` (06), add post-migration verification
+M01, M02, and M03 are complete. Remaining work: wire up the asset cascade in `portrait_urls` (06), add post-migration verification
 (05), collapse the wizard (04), add the client-side cascade (07), update
 the dashboard UI to surface the new states (08).
 
