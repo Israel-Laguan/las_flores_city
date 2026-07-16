@@ -107,6 +107,7 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
     const plan = loaded.plan;
     const contentDir = resolveContentDir();
 
+    let planModified = false;
     const items = [];
     for (const item of plan.items) {
       const entityRoot = resolveEntityRootDir(item, contentDir);
@@ -124,6 +125,23 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
         preSelected,
       });
 
+      // Auto-choose __default.png for pending asset needs
+      const defaultAsset = assets.find(a => a.filename.endsWith('__default.png'));
+      if (defaultAsset) {
+        for (const need of item.assetNeeds) {
+          if (need.status === 'pending') {
+            const fieldName = getAssetFieldName(need);
+            if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
+            (item.fields as any).asset_paths[fieldName] = defaultAsset.filename;
+            markChosen(need);
+            planModified = true;
+          }
+        }
+      }
+    }
+
+    if (planModified) {
+      await queryOLTP('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [plan, id]);
     }
 
     res.json({ success: true, data: { planId: id, items }, timestamp: new Date().toISOString() });
