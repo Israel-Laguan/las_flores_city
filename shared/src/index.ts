@@ -207,3 +207,12 @@ export type {
   ContentPlan,
   FeedbackLogEntry,
 } from './schemas/story-builder.js';
+
+export {
+  CheckResultSchema,
+  VerificationReportSchema,
+} from './schemas/verification.js';
+export type {
+  CheckResult,
+  VerificationReport,
+} from './schemas/verification.js';

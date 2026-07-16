@@ -4,7 +4,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
-import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan } from '../services/StoryBuilderOrchestrator.js';
+import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, verifyPlan } from '../services/StoryBuilderOrchestrator.js';
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 
@@ -300,44 +300,69 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
   }
 });
 
-// POST /admin/story-builder/plans/:id/verify — Verify a migrated plan (stub — full impl in M05)
+// POST /admin/story-builder/plans/:id/verify — Run verification on a migrated plan
 adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await queryOLTP<{ plan_json: any; status: string }>(
-      'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
+    const report = await verifyPlan(id);
+
+    // Persist the report to DB
+    await queryOLTP(
+      'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
+      [JSON.stringify(report), id],
+    );
+
+    res.json({
+      success: true,
+      data: report,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/verify error:', error);
+    const status = error.message.includes('not found')
+      ? 404
+      : error.message.includes('must be')
+        ? 400
+        : 500;
+    res.status(status).json({
+      success: false,
+      error: error.message || 'Failed to verify plan',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
+adminStoryBuilderActionsRouter.get('/plans/:id/verification', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await queryOLTP<{ verification_report: any }>(
+      'SELECT verification_report FROM content_plans WHERE id = $1',
+      [id],
     );
 
     if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    // Only allow verification of migrated plans
-    if (result.rows[0].status !== 'migrated') {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
-        error: `Plan must be migrated before verification. Current status: ${result.rows[0].status}`,
+        error: 'Plan not found',
         timestamp: new Date().toISOString(),
       });
       return;
     }
 
-    // Placeholder — full implementation in M05 PlanVerificationService
     res.json({
       success: true,
-      data: {
-        planId: id,
-        status: 'verified',
-        checks: [],
-        message: 'Verification stub — full implementation coming in M05',
-      },
+      data: { verification_report: result.rows[0].verification_report },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('[story-builder] POST /plans/:id/verify error:', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to verify plan', timestamp: new Date().toISOString() });
+    console.error('[story-builder] GET /plans/:id/verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch verification report',
+      timestamp: new Date().toISOString(),
+    });
   }
 });

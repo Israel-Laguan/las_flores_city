@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
-import JsonViewer from './JsonViewer';
+import VerificationReport from './VerificationReport';
+import type { VerificationReport as VerificationReportData } from '@las-flores/shared';
 import styles from './ResultsStep.module.css';
 
 /** Shape of the result returned by POST /plans/:id/approve-and-solidify. */
@@ -196,7 +197,7 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
       {result.verificationReport && (
         <div className={styles.subsection}>
           <h3 className={styles.subsectionTitle}>Verification report</h3>
-          <JsonViewer data={result.verificationReport} label="Verification report" defaultOpen={!verified} />
+          <VerificationReport report={result.verificationReport as unknown as VerificationReportData} />
         </div>
       )}
 

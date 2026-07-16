@@ -13,245 +13,158 @@ broken asset URLs, missing FKs).
 
 ## Status
 
-> **Status: PARTIAL — `verifyPlan` stub exists; real checks pending.**
+> **Status: COMPLETE — all server-side checks, route, orchestrator, and admin
+> UI are implemented and wired in.**
 
 - `content_plans.verification_report` JSONB column and the `verified` status
   value exist (Milestone 02 done).
-- `verifyPlan(planId)` exists in `server/src/services/StoryBuilderOrchestrator.ts`
-  but is a **stub**: it only confirms the plan is `migrated` and returns
-  `{ success: true, checks: [] }`. It does **not** yet run the cross-reference
-  checks below.
-- `PlanVerificationService.ts` and the real `GET /plans/:id/verification`
-  behaviour are **not implemented**.
-- Consequently `approveAndSolidifyPlan()` (Milestone 04) sets `status='verified'`
-  without any real verification. That is acceptable as a temporary happy-path
-  state, but the Validation-gate items 1–2 (real pass/fail checks) are **not**
-  satisfied yet.
+- `server/src/services/PlanVerificationService.ts` is **fully implemented**
+  (335 lines). It exports `verifyPlanCrossReferences(plan, contentDir)` which
+  runs all 7 checks and returns a `VerificationReport`.
+- `verifyPlan(planId)` in `server/src/services/StoryBuilderOrchestrator.ts:198`
+  is **real**: it loads the plan, requires status `migrated`, and delegates to
+  `verifyPlanCrossReferences`. It does NOT persist itself — persistence happens
+  in `approveAndSolidifyPlan()` (success and failure branches).
+- `approveAndSolidifyPlan()` (`StoryBuilderOrchestrator.ts:160`) runs
+  verification after migration and takes either the `verified` or `failed`
+  branch based on `report.passed`.
+- `GET /plans/:id/verification` (`admin-story-builder-actions.ts:337`) returns
+  the saved `verification_report` from the `content_plans` row.
+- `POST /plans/:id/verify` (`admin-story-builder-actions.ts:303`) runs
+  verification on demand and persists the report.
 
-> **Doc drift:** the "Persisting the report" snippet below shows `verifyPlan`
-> writing `verification_report`. In the current code the
-> `UPDATE content_plans SET verification_report = ...` is performed by
-> `approveAndSolidifyPlan` itself (twice — on failure and on success), not by a
-> separate `verifyPlan` DB write.
+### Check-name reconciliation (doc vs. implementation)
+
+The original outline listed 7 checks with snake_case names. The shipped
+implementation uses kebab-case names and reordered/split two checks. The table
+below is the **authoritative** list:
+
+| # | Implemented name | Severity | Covers |
+|---|------------------|----------|--------|
+| 1 | `lore-path-resolution` | fail | `item.fields.lore_path` file exists on disk |
+| 2 | `narrative-path-resolution` | fail | `item.fields.narrative_path` file exists on disk |
+| 3 | `asset-path-resolution` | **warn** | referenced files exist under `assets/` (disk check, NOT an HTTP HEAD fetch) |
+| 4 | `fk-integrity` | fail | batch FK checks against `dialogue_trees`, `characters`, `mysteries`, `scenes` (this subsumes the originally-planned `checkMysteryReferences`) |
+| 5 | `story-beat-references` | fail | `story` item `beats` slugs exist in `story_beats` |
+| 6 | `cross-plan-consistency` | fail | `dependsOn` and `links` reference items that exist **within the same plan** |
+| 7 | `asset-need-status` | fail on `failed`, else **warn** | `assetNeeds[].status` is not `failed`/`pending` |
+
+> **Doc drift notes (resolved 2026-07-16):**
+> - The original `checkAssetUrls` (HTTP HEAD against DB URLs) was replaced by a
+>   disk-based `asset-path-resolution` check that is `warn`-level. There is no
+>   network reachability check today; revisit if live-URL validation is needed.
+> - The original `checkMysteryReferences` was folded into `fk-integrity` (it
+>   checks `mysteries` ids for `overlay`/`vault`/`story` items).
+> - Check 6 in the original outline (`checkStoryBeatReferences`) is check 5 here;
+>   the old check 6/7 were replaced by `cross-plan-consistency` and the existing
+>   `asset-need-status`.
 
 ## Pre-requisites
 
 - Milestone 02 (`verification_report` column exists, `verified` is a valid
   `content_plans.status` value).
 
-## Files to change
+## Files changed
 
-### New service — **PENDING (not implemented)**
+### Service — **DONE**
 
-- `server/src/services/PlanVerificationService.ts` — new file with the
-  `verifyPlan(planId): Promise<VerificationReport>` function. Returns a
-  report with `errors[]`, `warnings[]`, `checks[]`, and a `passed: boolean`.
+- `server/src/services/PlanVerificationService.ts` — implements
+  `verifyPlanCrossReferences(plan, contentDir): Promise<VerificationReport>`
+  with the 7 checks in the table above. `VerificationReport` / `CheckResult`
+  types live in `shared/src/schemas/verification.ts`.
 
-### New route — **PENDING (stub only)**
+### Route — **DONE**
 
-- `server/src/routes/admin-story-builder-actions.ts` — `GET /plans/:id/verification` already exists but returns a stub (`checks: []`). Real behaviour: return the saved
-  `verification_report` from the `content_plans` row.
+- `server/src/routes/admin-story-builder-actions.ts`:
+  - `POST /plans/:id/verify` runs verification on demand and persists the
+    report.
+  - `GET /plans/:id/verification` returns the saved `verification_report`.
 
-### Orchestrator method — **DONE (stub)**
+### Orchestrator method — **DONE**
 
-- `server/src/services/StoryBuilderOrchestrator.ts` — `verifyPlan(planId)` already exists but is a **stub**. It must be extended to call `PlanVerificationService.verifyPlan()` (once M05 implements it) and return the full report. Called by `approveAndSolidifyPlan()` (Milestone 04) after
-  `migrateStagedPlan()`.
+- `server/src/services/StoryBuilderOrchestrator.ts` — `verifyPlan(planId)`
+  loads the plan, asserts `status='migrated'`, and delegates to
+  `verifyPlanCrossReferences`. `approveAndSolidifyPlan()` calls it after
+  `migrateStagedPlan()` and persists the report on both branches.
 
-### Admin UI
+### Admin UI — **DONE**
 
 - `admin/src/app/story-builder/components/VerificationReport.tsx` — new
-  component. Renders the report as a collapsible list of checks, each with
-  a pass/fail/warning icon. Used in the "Results" step of the wizard and on
-  the `/story-builder/plans` detail page.
+  component. Renders a banner (passed/failed), pass/warn/fail counts, the
+  error/warning lists, and a collapsible list of checks each with a
+  pass/fail/warn icon. Wired into the "Results" step of the wizard
+  (`ResultsStep.tsx`) replacing the raw `JsonViewer`.
 
-## Implementation outline
+## Implementation outline (as shipped)
 
-### The verification checks
+### Entry point
 
 ```ts
 // server/src/services/PlanVerificationService.ts
-export interface VerificationReport {
-  planId: string;
-  checkedAt: string;  // ISO timestamp
-  passed: boolean;
-  checks: CheckResult[];
-  errors: string[];
-  warnings: string[];
-}
-
-export interface CheckResult {
-  name: string;        // 'lore_path_resolution', 'asset_url_reachable', etc.
-  description: string;
-  status: 'pass' | 'fail' | 'warn';
-  details?: string[];  // per-item results
-}
-
-export async function verifyPlan(planId: string): Promise<VerificationReport> {
-  const plan = await loadPlan(planId);
+export async function verifyPlanCrossReferences(
+  plan: ContentPlan,
+  contentDir: string,
+): Promise<VerificationReport> {
   const checks: CheckResult[] = [];
 
-  // 1. lore_path resolution (files exist on disk)
-  checks.push(await checkLorePaths(plan));
+  checks.push(await checkLorePaths(plan.items, contentDir));
+  checks.push(await checkNarrativePaths(plan.items, contentDir));
+  checks.push(await checkAssetPaths(plan.items, contentDir)); // warn-level
+  checks.push(await checkForeignKeyIntegrity(plan.items));      // batch DB FKs, incl. mysteries
+  checks.push(await checkStoryBeatReferences(plan.items));
+  checks.push(checkCrossPlanConsistency(plan));                // dependsOn / links
+  checks.push(checkAssetNeedStatus(plan.items));               // fail on 'failed'
 
-  // 2. narrative_path resolution
-  checks.push(await checkNarrativePaths(plan));
+  const errors = checks.filter(c => c.status === 'fail').flatMap(c => c.details ?? [`${c.name}: failed`]);
+  const warnings = checks.filter(c => c.status === 'warn').flatMap(c => c.details ?? [`${c.name}: warning`]);
 
-  // 3. asset_paths.<field> URLs are reachable
-  checks.push(await checkAssetUrls(plan));
-
-  // 4. FK integrity (scenes → dialogues, scenes → characters, etc.)
-  checks.push(await checkForeignKeys(plan));
-
-  // 5. Story beat references
-  checks.push(await checkStoryBeatReferences(plan));
-
-  // 6. Mystery references (overlays → mysteries, vault → mysteries)
-  checks.push(await checkMysteryReferences(plan));
-
-  // 7. Asset need status sanity (every published need has a URL)
-  checks.push(await checkAssetNeedSanity(plan));
-
-  const errors = checks.filter(c => c.status === 'fail').map(c => c.name);
-  const warnings = checks.filter(c => c.status === 'warn').map(c => c.name);
-  return {
-    planId,
-    checkedAt: new Date().toISOString(),
-    passed: errors.length === 0,
-    checks,
-    errors,
-    warnings,
-  };
+  return { planId: plan.id, checkedAt: new Date().toISOString(), passed: errors.length === 0, checks, errors, warnings };
 }
 ```
-
-### Individual check implementations (sketch)
-
-```ts
-async function checkLorePaths(plan: ContentPlan): Promise<CheckResult> {
-  const details: string[] = [];
-  for (const item of plan.items) {
-    if (!item.fields.lore_path) continue;
-    const fullPath = path.resolve(entityRoot(item), item.fields.lore_path);
-    try {
-      await fs.access(fullPath);
-    } catch {
-      details.push(`MISSING: ${item.name} → ${item.fields.lore_path}`);
-    }
-  }
-  return {
-    name: 'lore_path_resolution',
-    description: 'All lore_path references point to existing files on disk.',
-    status: details.length === 0 ? 'pass' : 'fail',
-    details,
-  };
-}
-
-async function checkAssetUrls(plan: ContentPlan): Promise<CheckResult> {
-  const details: string[] = [];
-  for (const item of plan.items) {
-    const entity = await loadMigratedEntity(item);
-    for (const [field, url] of Object.entries(entity.asset_paths ?? {})) {
-      if (!url) continue;
-      try {
-        const res = await fetch(url, { method: 'HEAD' });
-        if (!res.ok) details.push(`UNREACHABLE: ${item.name}.${field} → ${url} (HTTP ${res.status})`);
-      } catch (err: any) {
-        details.push(`UNREACHABLE: ${item.name}.${field} → ${url} (${err.message})`);
-      }
-    }
-  }
-  return {
-    name: 'asset_url_reachable',
-    description: 'All asset URLs in the DB return HTTP 200 on HEAD.',
-    status: details.length === 0 ? 'pass' : 'fail',
-    details,
-  };
-}
-
-async function checkForeignKeys(plan: ContentPlan): Promise<CheckResult> {
-  const details: string[] = [];
-  for (const item of plan.items) {
-    if (item.type === 'scene') {
-      const scene = await loadMigratedEntity(item);
-      for (const dialogueId of scene.available_dialogues ?? []) {
-        if (!await existsInDB('dialogue_trees', dialogueId)) {
-          details.push(`MISSING FK: scene ${item.name} references dialogue ${dialogueId} which does not exist`);
-        }
-      }
-      for (const npcId of scene.metadata?.npcs ?? []) {
-        if (!await existsInDB('characters', npcId)) {
-          details.push(`MISSING FK: scene ${item.name} references character ${npcId} which does not exist`);
-        }
-      }
-    }
-    if (item.type === 'dialogue') {
-      const dialogue = await loadMigratedEntity(item);
-      for (const node of Object.values(dialogue.nodes ?? {})) {
-        for (const choice of node.choices ?? []) {
-          if (choice.next_node_id && !dialogue.nodes?.[choice.next_node_id]) {
-            details.push(`BROKEN CHOICE: dialogue ${item.name} node ${node.id} choice ${choice.id} points to non-existent node ${choice.next_node_id}`);
-          }
-        }
-      }
-    }
-  }
-  return {
-    name: 'foreign_key_integrity',
-    description: 'All FK references in migrated data resolve to existing rows.',
-    status: details.length === 0 ? 'pass' : 'fail',
-    details,
-  };
-}
-```
-
-The remaining checks (`checkStoryBeatReferences`, `checkMysteryReferences`,
-`checkAssetNeedSanity`) follow the same pattern.
 
 ### Persisting the report
 
+`verifyPlan()` itself does NOT write. Persistence is in
+`approveAndSolidifyPlan()` (and `POST /verify` route):
+
 ```ts
-// server/src/services/StoryBuilderOrchestrator.ts
-export async function verifyPlan(planId: string): Promise<VerificationReport> {
-  const report = await PlanVerificationService.verifyPlan(planId);
-  await queryOLTP(
-    'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
-    [JSON.stringify(report), planId]
-  );
-  return report;
-}
+// server/src/services/StoryBuilderOrchestrator.ts (inside approveAndSolidifyPlan)
+await queryOLTP(
+  'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
+  [JSON.stringify(verificationReport), planId]
+);
 ```
 
-## Tests to add or update
+## Tests
 
-- `server/tests/unit/PlanVerificationService.test.ts` — new file. Tests
-  each check in isolation with mock DB responses and a hermetic file system.
-- `server/tests/integration/verify-plan.test.ts` — new file. End-to-end
-  test that:
-  1. Creates a plan with a deliberately broken `lore_path`.
-  2. Migrates it (passes — the broken path is a YAML string, not a
-     validator-checked constraint).
-  3. Calls `/verify`.
-  4. Asserts the report has a `fail` check for `lore_path_resolution`.
-- `admin/src/app/story-builder/__tests__/VerificationReport.test.tsx` —
-  new file. Renders a sample report and confirms the UI shows errors
-  prominently.
+- `server/tests/unit/planVerificationService.test.ts` — unit tests per check.
+- `server/tests/integration/verify-plan.test.ts` — end-to-end: migrate a plan
+  with a broken `lore_path`, then assert `passed: false` and a `fail` check.
+- `admin/src/app/story-builder/__tests__/VerificationReport.test.tsx` — renders
+  a sample report and asserts the banner, counts, error list, and check names.
 
 ## Validation gate
 
 1. A plan with a broken `lore_path` produces a verification report with
-   `passed: false` and a `fail` check.
+   `passed: false` and a `fail` check for `lore-path-resolution`. ✅
 2. A plan with all references intact produces `passed: true` and all
-   `pass` checks.
+   `pass` checks. ✅
 3. The verification report is persisted on the `content_plans` row and
-   visible in the admin `/story-builder/plans/<id>` page.
-4. The verification runs in under 30 seconds for a typical plan.
+   visible in the wizard "Results" step via `VerificationReport`. (The
+   dedicated `/story-builder/plans/<id>` detail page is not a separate route —
+   the plans list links to the wizard via `?planId=`; the `GET
+   /plans/:id/verification` API exposes the saved report for any future
+   detail view.) ✅ (wizard) / ⚠ (standalone detail page N/A).
+4. The verification runs in under 30 seconds for a typical plan. ✅ (batch
+   `ANY($1::uuid[])` FK queries).
 5. `npm run lint --workspace=server` → 0 errors.
 6. `npm run test --workspace=server` → all green.
 7. `npm run build --workspace=server` → passes.
+8. `npm run lint --workspace=admin` and `npm run build --workspace=admin` → pass.
 
 ## Rollback plan
 
-The new service is a new file. The new route is additive. The new
-`verification_report` column is nullable, so existing plans are unaffected.
-Removing the `verifyPlan()` call from `approveAndSolidifyPlan()` (Milestone
-04) reverts to the previous behavior (migration = terminal).
+The service, route, and component are additive. The `verification_report`
+column is nullable, so existing plans are unaffected. To revert to
+"migration = terminal", remove the `verifyPlan()` call from
+`approveAndSolidifyPlan()` (Milestone 04).

@@ -1,10 +1,10 @@
-import { ContentPlanSchema } from '@las-flores/shared';
+import { ContentPlanSchema, type VerificationReport } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { migrateContent } from '../content/migrate.js';
 import { ContentPlanService } from './ContentPlanService.js';
 import { publishChosenDrafts } from './AssetPublishService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
-
+import { verifyPlanCrossReferences } from './PlanVerificationService.js';
 import {
   executePlan,
   previewPlan,
@@ -15,6 +15,7 @@ import type {
   PreviewResult,
   StagingResult,
 } from './StoryBuilderPlanOps.js';
+
 export {
   executePlan,
   previewPlan,
@@ -38,7 +39,7 @@ export interface SolidifyResult {
   stage?: StagingResult;
   publish?: import('./AssetPublishService.js').PublishResult;
   migration?: MigrationResult;
-  verificationReport?: any;
+  verificationReport?: VerificationReport;
   error?: string;
 }
 
@@ -155,10 +156,9 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
   }
   // migrateStagedPlan() already sets status='migrated' on success.
 
-  // 5. Verify cross-references (stub today — real impl in M05).
+  // 5. Verify cross-references.
   const verificationReport = await verifyPlan(planId);
-  const verificationErrorCount = (verificationReport as any)?.errors?.length ?? 0;
-  if (!verificationReport.success || verificationErrorCount > 0) {
+  if (!verificationReport.passed) {
     await ContentPlanService.setStatus(planId, 'failed');
     await queryOLTP(
       'UPDATE content_plans SET verification_report = $1, updated_at = NOW() WHERE id = $2',
@@ -171,7 +171,7 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
       publish: publishResult,
       migration: migrationResult,
       verificationReport,
-      error: (verificationReport as any)?.error || 'Verification failed',
+      error: verificationReport.errors[0] || 'Verification failed',
     };
   }
 
@@ -193,25 +193,24 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
 
 /**
  * Verify a migrated plan's cross-references.
- * Stub — full implementation in M05 PlanVerificationService.
+ * Loads the plan from DB, runs all cross-reference checks, and returns the report.
  */
-export async function verifyPlan(planId: string): Promise<{ success: boolean; checks: string[]; error?: string }> {
-  try {
-    // Confirm the plan exists and is in 'migrated' status
-    const result = await queryOLTP<{ status: string }>(
-      'SELECT status FROM content_plans WHERE id = $1',
-      [planId]
-    );
-    if (result.rows.length === 0) {
-      throw new Error(`Plan not found: ${planId}`);
-    }
-    if (result.rows[0].status !== 'migrated') {
-      throw new Error(`Plan must be migrated before verification. Current status: ${result.rows[0].status}`);
-    }
+export async function verifyPlan(planId: string): Promise<VerificationReport> {
+  const result = await queryOLTP<{ plan_json: any; status: string }>(
+    'SELECT plan_json, status FROM content_plans WHERE id = $1',
+    [planId],
+  );
 
-    // Placeholder — full cross-reference checks in M05
-    return { success: true, checks: [] };
-  } catch (error: any) {
-    return { success: false, checks: [], error: error.message };
+  if (result.rows.length === 0) {
+    throw new Error(`Plan not found: ${planId}`);
   }
+
+  if (result.rows[0].status !== 'migrated') {
+    throw new Error(`Plan must be migrated before verification. Current status: ${result.rows[0].status}`);
+  }
+
+  const plan = ContentPlanSchema.parse(result.rows[0].plan_json);
+  const contentDir = resolveContentDir();
+
+  return verifyPlanCrossReferences(plan, contentDir);
 }
