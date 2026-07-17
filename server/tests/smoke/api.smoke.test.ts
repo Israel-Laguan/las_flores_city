@@ -78,12 +78,17 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await pool.query('DELETE FROM scene_characters WHERE scene_id = $1', [TEST_SCENE_ID]);
-  await pool.query('DELETE FROM scenes WHERE id = $1', [TEST_SCENE_ID]);
-  await pool.query('DELETE FROM characters WHERE id = $1', [TEST_CHARACTER_ID]);
-  await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
-  await pool.query('DELETE FROM districts WHERE id = $1', [TEST_DISTRICT_ID]);
-  await pool.end();
+  try {
+    await pool.query('DELETE FROM scene_characters WHERE scene_id = $1', [TEST_SCENE_ID]);
+    await pool.query('DELETE FROM scenes WHERE id = $1', [TEST_SCENE_ID]);
+    await pool.query('DELETE FROM characters WHERE id = $1', [TEST_CHARACTER_ID]);
+    await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+    await pool.query('DELETE FROM districts WHERE id = $1', [TEST_DISTRICT_ID]);
+  } catch (err) {
+    console.error('api.smoke cleanup error:', err);
+  } finally {
+    await pool.end();
+  }
 });
 
 describe('Smoke: HTTP endpoints', () => {
