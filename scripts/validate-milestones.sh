@@ -1016,7 +1016,7 @@ check_e2e_admin_health() {
     local http_response
     http_response=$($CONTAINER_RUNTIME exec las-flores-admin sh -c "wget -qO- --server-response http://localhost:3002/ 2>&1 | head -5" 2>/dev/null || echo "")
 
-    if echo "$http_response" | grep -q "200\|301\|302"; then
+    if echo "$http_response" | grep -Eq '^[[:space:]]*HTTP/[0-9.]+ (200|301|302)([[:space:]]|$)'; then
         log_pass "$label: responds"
         return 0
     else
