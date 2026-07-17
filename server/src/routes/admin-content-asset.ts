@@ -80,8 +80,8 @@ adminContentAssetRouter.post('/assets/promote-staging', async (req, res) => {
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[admin-content-asset] POST /assets/promote-staging error:', error);
-    const status = error.message.includes('not allowed') || error.message.includes('publish') ? 400 : 500;
-    res.status(status).json({ success: false, error: error.message || 'Internal server error', timestamp: new Date().toISOString() });
+    const isValidation = error.message.includes('not allowed') || error.message.includes('publish') || error.message.includes('No dev entry');
+    res.status(isValidation ? 400 : 500).json({ success: false, error: error.message || 'Internal server error', timestamp: new Date().toISOString() });
   }
 });
 
@@ -101,8 +101,8 @@ adminContentAssetRouter.post('/assets/promote-production', async (req, res) => {
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[admin-content-asset] POST /assets/promote-production error:', error);
-    const status = error.message.includes('not allowed') || error.message.includes('publish') ? 400 : 500;
-    res.status(status).json({ success: false, error: error.message || 'Internal server error', timestamp: new Date().toISOString() });
+    const isValidation = error.message.includes('not allowed') || error.message.includes('publish') || error.message.includes('No dev entry') || error.message.includes('No staging entry');
+    res.status(isValidation ? 400 : 500).json({ success: false, error: error.message || 'Internal server error', timestamp: new Date().toISOString() });
   }
 });
 
