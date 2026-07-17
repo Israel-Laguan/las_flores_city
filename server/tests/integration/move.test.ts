@@ -50,6 +50,26 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
+  // Ensure scenes exist for the foreign key reference
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location']
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [WELCOME_CENTER_ID, 'Welcome Center', 'Test welcome center location']
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, NULL, '{"type": "location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [CAFE_ID, 'The Cafe', 'Test cafe location']
+  );
+
   await pool.query(
     `INSERT INTO users (id, email, username, display_name)
      VALUES ($1, $2, $3, $4)

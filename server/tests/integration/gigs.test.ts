@@ -64,6 +64,14 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
+  // Ensure the apartment scene exists for the foreign key reference
+  await oltpPool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location']
+  );
+
   await oltpPool.query(
     `INSERT INTO users (id, email, username, display_name)
      VALUES ($1, 'gig-test@example.com', 'gig_test', 'Gig Test')

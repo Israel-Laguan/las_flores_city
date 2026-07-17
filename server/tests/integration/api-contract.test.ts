@@ -68,6 +68,20 @@ beforeAll(async () => {
   await applyMigration('018_vault_system.sql');
   await applyMigration('026_vault_signed_urls.sql');
 
+  // Ensure scenes exist for the foreign key reference
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [WELCOME_SCENE_ID, 'Welcome Center', 'Test welcome center location']
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [APARTMENT_SCENE_ID, 'Apartment', 'Test apartment location']
+  );
+
   await pool.query(
     `INSERT INTO users (id, email, username, display_name)
      VALUES ($1, $2, $3, $4)
