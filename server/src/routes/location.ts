@@ -9,6 +9,7 @@ import {
   buildNpcPayload,
   getSceneRelationships,
 } from './location.npcs.js';
+import { resolveAssetUrl } from '../services/AssetStageResolver.js';
 
 export const locationRouter = express.Router();
 
@@ -28,7 +29,7 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
 
   if (!sceneData) {
     const sceneResult = await queryOLTP(
-      `SELECT id, name, background_url, ambient_sound_url, mood
+      `SELECT id, name, background_url, background_urls, ambient_sound_url, mood
        FROM scenes WHERE id = $1`,
       [sceneId]
     );
@@ -38,10 +39,11 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
     }
 
     const row = sceneResult.rows[0];
+    const fromCascade = resolveAssetUrl(row.background_urls);
     sceneData = {
       id: row.id,
       title: row.name,
-      backgroundUrl: row.background_url || '/assets/scenes/default/background.png',
+      backgroundUrl: fromCascade || row.background_url || '/assets/scenes/default/background.png',
       ambientSoundUrl: row.ambient_sound_url || null,
       mood: row.mood || 'neutral',
     };

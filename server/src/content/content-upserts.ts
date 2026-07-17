@@ -74,14 +74,16 @@ export async function upsertScene(data: any): Promise<string> {
     ...(data.district_subzone ? { district_subzone: data.district_subzone } : {}),
   };
   const result = await queryOLTP(
-    `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, ambient_sound_url, mood, available_dialogues, metadata)
-      VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10)
+    `INSERT INTO scenes (id, name, description, district_id, image_url, background_url, background_urls, image_urls, ambient_sound_url, mood, available_dialogues, metadata)
+      VALUES ($1, $2, $3, (SELECT id FROM districts WHERE name = $4), $5, $6, $7, $8, $9, $10, $11, $12)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         description = EXCLUDED.description,
         district_id = (SELECT id FROM districts WHERE name = $4),
         image_url = EXCLUDED.image_url,
         background_url = EXCLUDED.background_url,
+        background_urls = EXCLUDED.background_urls,
+        image_urls = EXCLUDED.image_urls,
         ambient_sound_url = EXCLUDED.ambient_sound_url,
         mood = EXCLUDED.mood,
         available_dialogues = EXCLUDED.available_dialogues,
@@ -90,7 +92,10 @@ export async function upsertScene(data: any): Promise<string> {
       RETURNING id`,
     [
       data.id, data.name, sanitizeText(data.description), districtName,
-      data.image_url || null, data.background_url || null, data.ambient_sound_url || null,
+      data.image_url || null, data.background_url || null,
+      JSON.stringify(data.background_urls || []),
+      JSON.stringify(data.image_urls || []),
+      data.ambient_sound_url || null,
       data.mood || null, dialogArray, JSON.stringify(sceneMetadata)
     ]
   );
