@@ -4,7 +4,7 @@
 >
 > Open **design questions** (decisions, not tasks) live in `docs/STORY_BUILDER_DESIGN.md` §6. **Future extensions** (aspirational, not planned) live in `docs/STORY_BUILDER_DESIGN.md` §4.4.
 >
-> Last updated: 2026-07-14
+> Last updated: 2026-07-17
 
 ---
 
@@ -44,19 +44,18 @@ Items 3, 4, and 5 are **done**; item 6 is intentionally out of scope.
 
 ---
 
-## Content pipeline refactor (planned, not in this list)
+## Content pipeline refactor (completed)
 
-A larger refactor of the content authoring pipeline is captured in
-[`docs/milestones/00_README.md`](milestones/00_README.md) and the eight
-milestone documents that follow it. The plan covers:
+The content authoring pipeline refactor has shipped. All eight milestones are complete
+and documented in `docs/STORY_BUILDER_DESIGN.md` §4 "Shipped state":
 
-1. Colocating lore into per-entity folders under `content/` (so every
-   character/scene/location is one self-contained folder).
-2. Extending the plan state machine to support the three authoring
-   stages the user wants: idea intake (with local image drafts), iterate,
-   approve-and-solidify.
-3. Adding a per-asset dev/staging/production cascade in MinIO so the
-   game client can roll back a bad image without redeploying.
+1. ✅ Colocated lore into per-entity folders under `content/` (every character/scene/location
+   is one self-contained folder).
+2. ✅ Extended the plan state machine (draft → proposed → approved → staged → migrated →
+   verified → failed) with verification reporting.
+3. ✅ Added per-asset dev/staging/production cascade with server-side resolution via
+   `AssetStageResolver`.
 
-The milestones are designed to be picked up one at a time in a new
-session. Each one has a clear validation gate and rollback plan.
+The shipped implementation covers: Story Builder wizard (Describe → Review → Stage →
+Migrate), asset drafts generation (local files first, MinIO upload on approve),
+verification cross-reference checks, and the `/asset-promotion` admin page.
