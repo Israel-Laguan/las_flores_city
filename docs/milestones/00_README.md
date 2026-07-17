@@ -43,9 +43,11 @@
 6. **Per-asset environment cascade in MinIO** — every published asset gets
    a single MinIO object (the chosen local filename, preserved as-is). The
    `portrait_urls` JSONB array in the DB carries multiple entries tagged
-   with stage labels (`dev`, `staging`, `production`). The client picks the
-   right entry at runtime based on its environment (local/staging prefers
-   dev → staging → production; production prefers production → staging → dev).
+   with stage labels (`dev`, `staging`, `production`). The **server** picks
+   the right entry at request time based on `NODE_ENV` (development/staging
+   prefers dev → staging → production; production prefers
+   production → staging → dev) and flattens it to a single `portraitUrl` /
+   `backgroundUrl` string for the client. The client stays stage-unaware.
 
 ---
 
@@ -213,39 +215,60 @@ Asset URLs are stored in a `JSONB` array, not as separate TEXT columns.
 - Same pattern for scenes (`image_url`, `background_url`) and other
   asset-bearing tables.
 
-The `portrait_urls` JSONB array carries the cascade: the client picks
-the appropriate entry based on its environment. No separate staging
+The `portrait_urls` JSONB array carries the cascade: the server picks
+the appropriate entry based on `NODE_ENV` and flattens it to a single
+`portraitUrl`/`backgroundUrl` string for the client. No separate staging
 or production columns are needed — the array entries are tagged with
 `label` when uploaded at different stages.
 
-### Client cascade (in `client/src/services/assetResolver.ts` — new file)
+### Server cascade (in `server/src/services/AssetStageResolver.ts` — new file, Milestone 07)
+
+> **Updated 2026-07-17:** the cascade lives **server-side**, not in the client.
+> The original draft put it in `client/src/services/assetResolver.ts`, but the
+> server is the sole mediator and already flattens assets to single strings
+> (`portraitUrl`, `backgroundUrl`) before they reach the client. The client
+> never sees the stage array.
 
 ```ts
-const ENV = import.meta.env.MODE; // 'development' | 'staging' | 'production'
+// server/src/services/AssetStageResolver.ts
+type Env = 'development' | 'staging' | 'production';
+type Stage = 'dev' | 'staging' | 'production';
 
-// Labels that identify which stage an entry in portrait_urls represents.
-const STAGE_LABELS: Record<string, string[]> = {
+export const STAGE_PRIORITY: Record<Env, ReadonlyArray<Stage>> = {
   development: ['dev', 'staging', 'production'],
   staging:     ['dev', 'staging', 'production'],
   production:  ['production', 'staging', 'dev'],
 };
 
+export function getEnv(): Env {
+  const nodeEnv = process.env.NODE_ENV;
+  if (nodeEnv === 'development' || nodeEnv === 'staging') return nodeEnv;
+  return 'production';
+}
+
 interface AssetEntry { url: string; label?: string; expression?: string; }
 
-export function resolveAssetUrl(portraitUrls: AssetEntry[]): string | null {
-  for (const stageLabel of STAGE_LABELS[ENV]) {
-    const match = portraitUrls.find(e => e.label === stageLabel);
+export function resolveAssetUrl(entries: AssetEntry[] | null | undefined,
+                                opts?: { expression?: string }): string | null {
+  if (!entries || entries.length === 0) return null;
+  const eligible = opts?.expression
+    ? entries.filter(e => (e.expression || '').toLowerCase() === opts.expression!.toLowerCase())
+    : entries;
+  const pool = eligible.length > 0 ? eligible : entries;
+  for (const stage of STAGE_PRIORITY[getEnv()]) {
+    const match = pool.find(e => e.label === stage && typeof e.url === 'string' && e.url.length > 0);
     if (match) return match.url;
   }
-  // Fallback: first entry (canonical)
-  return portraitUrls[0]?.url ?? null;
+  return pool.find(e => typeof e.url === 'string' && e.url.length > 0)?.url ?? null;
 }
 ```
 
-This is the single function the game client uses to resolve any asset URL
-from the `portrait_urls` JSONB array. Replacing a portrait in dev is:
-upload the new image to MinIO, add an entry with `label: 'dev'` to the
-JSONB array, and the client picks it up. No code change.
+This is the single function the server uses to resolve any asset URL from its
+stage-tagged JSONB array (`portrait_urls`, `background_urls`, `image_urls`)
+before flattening it into the single string the client fetches. Replacing a
+portrait in dev is: upload the new image to MinIO, append an entry with
+`label: 'dev'` to the YAML `portrait_urls` array, re-migrate, and the server
+picks it up in dev builds. No client code change.
 
 ---
 
@@ -258,19 +281,19 @@ JSONB array, and the client picks it up. No code change.
 | 03 | Local image drafts (no MinIO) | **Done** | Medium (new route + UI) | Yes (delete folder) |
 | 04 | Single-click approve-and-solidify | **Done** (orchestrator + route + `AssetPublishService` + `PlanVerificationService` wired in) | Medium (wizard UX) | Yes (revert wizard) |
 | 05 | Verification step (cross-ref checks) | **Done** (`PlanVerificationService` implements 7 real checks: lore/narrative/asset path resolution, FK integrity, story-beat refs, cross-plan consistency, asset-need status) | Low (new service) | Yes (delete service) |
-| 06 | Asset cascade via `portrait_urls` JSONB `label` (dev/staging/production) | **Partial** (`dev` entry written by M04; `promoteToStaging`/`promoteToProduction` pending; scenes/locations cascade model TBD) | Low (JSONB upserts) | Yes (remove label entries) |
-| 07 | Client cascade resolver | Pending | Low (new file) | Yes (delete file) |
-| 08 | Admin UI updates (wizard, /assets) | Pending | Medium (UX changes) | Yes (revert components) |
+| 06 | Asset cascade via `portrait_urls` JSONB `label` (dev/staging/production) | **Done** (promotion methods + routes + admin `/asset-promotion` page for **characters**; scenes/locations deferred to M07) | Low (JSONB upserts) | Yes (remove label entries) |
+| 07 | Server-side env-aware cascade resolver (extends cascade to scenes/locations) | **Done** (`AssetStageResolver` + migration 051 + wired into `location.ts` background resolution) | Low (new service + additive migration) | Yes (drop columns + delete service) |
+| 08 | Admin UI updates (wizard, verification report, promotion page) | **Done** (2-step wizard, `VerificationReport` component, `/asset-promotion` page, `reviewStep` with draft panel) | Medium (UX changes) | Yes (revert components) |
 
 **Recommended execution order:** 01 → 02 → 03 → 06 → 05 → 04 → 07 → 08.
 (Note: M04's `dev` entry is already implemented and is the real pre-requisite
 for M06's promotion; the README order above is aspirational — see M06 "Status".)
 
-M01, M02, and M03 are complete. **M04 and M05 are complete** (orchestrator,
-route, `AssetPublishService`, and `PlanVerificationService`). Remaining work:
-add the `staging`/`production` promotion methods and resolve the
-scenes/locations cascade model (06), add the client-side cascade (07), update
-the dashboard UI to surface the new states (08).
+M01–M05 are complete. **M06 is complete** for characters (promotion methods,
+routes, admin page). **M07 is complete** (server-side `AssetStageResolver`,
+migration 051 adding JSONB arrays to scenes/locations, wired into route
+resolvers). **M08 is complete** (2-step wizard, verification report UI,
+asset drafts panel in ReviewStep, `/asset-promotion` page).
 
 ---
 

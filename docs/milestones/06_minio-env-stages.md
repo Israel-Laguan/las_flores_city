@@ -58,9 +58,14 @@ unless different bytes are supplied. The cascade is resolved by the client
 > `contentPath` in the request body instead of `:entityType/:entityId` path
 > params, consistent with the existing `POST /assign-asset` route.
  >
-> **Scope note:** Only `characters` are supported today. Scenes/locations do
-> not have a `portrait_urls` JSONB column (they use `image_url`/`background_url`
-> TEXT). Promotion for those types is deferred pending schema confirmation.
+> **Scope note (updated 2026-07-17):** Promotion is fully implemented for
+> `characters` (the `portrait_urls` JSONB array). Scenes/locations use single
+> TEXT columns (`background_url`/`image_url`) with no array to cascade over,
+> so promotion for those types is **not** done here. The schema extension
+> (`scenes.background_urls`, `locations.image_urls` JSONB arrays) and the
+> generalization of this service to scene/location content paths are picked up
+> by **Milestone 07** as part of the server-side resolver. M06's deliverable
+> (promotion methods + routes + admin page) is complete for characters.
 
 ## Pre-requisites
 

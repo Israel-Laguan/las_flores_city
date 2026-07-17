@@ -4,6 +4,16 @@ import { useAssetPromotion } from './hooks/useAssetPromotion';
 import PromotionRow from './components/PromotionRow';
 import styles from './asset-promotion.module.css';
 
+function entityType(contentPath: string): string {
+  const first = contentPath.split('/')[0];
+  const map: Record<string, string> = {
+    characters: 'Character',
+    scenes: 'Scene',
+    locations: 'Location',
+  };
+  return map[first] || first;
+}
+
 export default function AssetPromotionPage() {
   const { statuses, loading, mutating, error, promoteStaging, promoteProduction, rollbackStaging } = useAssetPromotion();
 
@@ -16,14 +26,15 @@ export default function AssetPromotionPage() {
       {error && <div className={styles.errorBox}>{error}</div>}
 
       {!loading && !error && statuses.length === 0 && (
-        <p className={styles.muted}>No characters found for asset promotion.</p>
+        <p className={styles.muted}>No entities found for asset promotion.</p>
       )}
 
       {!loading && !error && statuses.length > 0 && (
         <table className={styles.table}>
           <thead>
             <tr>
-              <th className={styles.th}>Character</th>
+              <th className={styles.th}>Type</th>
+              <th className={styles.th}>Entity</th>
               <th className={styles.th}>Dev</th>
               <th className={styles.th}>Staging</th>
               <th className={styles.th}>Production</th>
@@ -35,6 +46,7 @@ export default function AssetPromotionPage() {
               <PromotionRow
                 key={s.contentPath}
                 status={s}
+                entityType={entityType(s.contentPath)}
                 disabled={mutating}
                 onPromoteStaging={promoteStaging}
                 onPromoteProduction={promoteProduction}

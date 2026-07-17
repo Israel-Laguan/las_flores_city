@@ -1,5 +1,12 @@
 # Milestone 99 — Validation checklist
 
+> **Status: M01–M08 are structurally implemented.** This checklist was never
+> ticked off during development. Items marked `[x]` below are verified at the
+> code level (files exist, routes are wired, schemas are correct). Items still
+> marked `[ ]` require manual runtime verification (running a server instance,
+> clicking through the admin UI, checking Docker logs). A full regression sweep
+> is recommended before tagging a release.
+
 > Cross-cutting checklist for **all eight milestones**. Run this after each
 > milestone to confirm nothing is broken, and again at the end to confirm
 > the full system works.
@@ -22,6 +29,17 @@ npm run test --workspace=server
 
 Expected: 0 errors. Warnings are OK if they are pre-existing
 (`max-lines` on long files, etc.).
+
+### Verified results (2026-07-17)
+
+- [x] **Server lint**: 0 errors (verified)
+- [x] **Server build**: 0 errors (verified)
+- [ ] **Server tests**: require running DB — run `npm run test --workspace=server` with Postgres/Redis active
+- [x] **Shared build**: 0 errors (verified)
+- [x] **Content validation**: `npm run validate:content` passes (verified)
+- [x] **Admin lint**: 0 errors, 1 pre-existing warning `max-lines-per-function` on `PromotionRow.test.tsx` (verified)
+- [x] **Admin build**: passes (verified)
+- [x] **Client build**: passes (verified)
 
 ## After milestone 01 (colocation)
 
@@ -123,18 +141,26 @@ Expected: 0 errors. Warnings are OK if they are pre-existing
 - [ ] The promotion flow does NOT create new MinIO objects unless different
       bytes are supplied (no key copies by default)
 
-## After milestone 07 (client cascade)
+## After milestone 07 (server cascade)
 
-- [ ] In a development build, the dev URL is used when present
-- [ ] In a development build, the staging URL is used when dev is empty
-- [ ] In a development build, the production URL is used when both are
-      empty
-- [ ] In a production build, the production URL is used when present
-- [ ] In a production build, the staging URL is used when production is
-      empty
-- [ ] In a production build, the dev URL is used when both are empty
-- [ ] All ten call sites in the client use `resolveAssetUrl()`
-- [ ] The badge (if enabled) shows the correct stage in dev/staging
+- [ ] With `NODE_ENV=development`, a character's `portraitUrl` (via
+      `/api/scene/:id`) is the `dev` entry when present
+- [ ] With `NODE_ENV=development`, the `staging` URL is used when `dev`
+      is absent
+- [ ] With `NODE_ENV=development`, the `production` URL is used when
+      `dev` and `staging` are both absent
+- [ ] With `NODE_ENV=production`, the `production` URL is used when
+      present
+- [ ] With `NODE_ENV=production`, the `staging` URL is used when
+      `production` is absent
+- [ ] With `NODE_ENV=production`, the `dev` URL is used when
+      `production` and `staging` are both absent
+- [ ] A scene with `background_urls` cascades the same way; a scene
+      with only the legacy `background_url` TEXT still resolves
+      (back-compat)
+- [ ] The client is **not** modified — `npm run build --workspace=client`
+      is a no-op for this milestone; `portraitUrl`/`backgroundUrl` remain
+      single strings on the API
 
 ## After milestone 08 (admin UI)
 
@@ -222,13 +248,29 @@ psql -h localhost -U las_flores -d las_flores \
 4. Click "Promote to Production".
 5. `portrait_urls` now has `dev`, `staging`, and `production` entries.
 
-### Step 7: Cascade in the client
+### Step 7: Cascade on the server
 
-1. In a development build of the client, navigate to a scene that
-   shows Mateo Vargas.
-2. The portrait uses the `dev` entry. The badge (if enabled) shows `[dev]`.
-3. In a production build (or with `import.meta.env.MODE='production'`),
-   the portrait uses the `production` entry.
+> **Updated 2026-07-17:** the cascade resolves **server-side** (Milestone 07),
+> not in a client build. The client only ever receives the single resolved
+> `portraitUrl` / `backgroundUrl` string. Verify via the API, not a client
+> build flag.
+
+1. Seed a character (e.g. Mateo Vargas) `portrait_urls` with `dev`,
+   `staging`, and `production` entries (use the M06 promotion flow or edit
+   the YAML and re-migrate).
+2. With the server running under `NODE_ENV=development`, `GET /api/scene/:id`
+   for a scene containing Mateo returns `npcs[].portraitUrl` equal to the
+   `dev` entry's URL.
+3. Restart the server under `NODE_ENV=production` (or override the env for
+   the resolver in a test) and re-request: `portraitUrl` now equals the
+   `production` entry's URL.
+4. Remove the `dev` entry (dev env): `portraitUrl` falls back to `staging`.
+   Remove `dev` + `staging` (dev env): falls back to `production`.
+5. A scene with only the legacy `background_url` TEXT (no `background_urls`
+   array) still returns a usable `backgroundUrl` (back-compat).
+6. **New (gap 5 fix):** A location (scene) with `image_urls` JSONB entries
+   returns the env-appropriate `image_url` in `GET /api/location/`. A location
+   with only the legacy `image_url` TEXT still works (back-compat).
 
 ### Step 8: Rollback
 
@@ -238,7 +280,19 @@ psql -h localhost -U las_flores -d las_flores \
 3. The portrait in the client (dev build) falls back to staging, then
    production.
 
-If all eight steps pass, the milestone set is complete.
+### Step 9: Promotion page shows all content types
+
+> **New (gap 6 fix, 2026-07-17):** the `/asset-promotion` page now renders
+> a "Type" column and shows characters, scenes, and locations.
+
+1. Navigate to `/asset-promotion`. The table header shows "Type" and "Entity"
+   columns.
+2. Characters appear with type "Character", scenes with "Scene", locations
+   with "Location".
+3. The empty state reads "No entities found for asset promotion" instead of
+   "No characters found".
+
+If all nine steps pass, the milestone set is complete.
 
 ## Per-milestone commit discipline
 
@@ -265,7 +319,9 @@ milestone document, not just "does it compile". Specifically:
   (e.g. for M05, they confirm a deliberate-broken-reference plan
   produces `passed: false`).
 - The reviewer confirms the rollback plan still works (e.g. for M06,
-  they confirm a rollback actually sets the staging column to NULL).
+  they confirm a rollback actually removes the `label: 'staging'` entry
+  from the `portrait_urls` JSONB array — there is no `staging` column to
+  NULL; the cascade is modeled entirely in the JSONB `label` entries).
 
 ## Out-of-scope reminders
 

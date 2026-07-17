@@ -21,6 +21,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus()}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -35,6 +36,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' } } })}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -49,6 +51,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' }, staging: { url: 'http://staging' } } })}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -63,6 +66,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' }, staging: { url: 'http://staging' }, production: { url: 'http://prod' } } })}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -77,6 +81,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' } } })}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -91,6 +96,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' }, staging: { url: 'http://staging' } } })}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -105,6 +111,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' }, staging: { url: 'http://staging' } } })}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -121,6 +128,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' } } })}
+          entityType="Character"
           onPromoteStaging={onPromoteStaging}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -136,6 +144,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus()}
+          entityType="Character"
           onPromoteStaging={noop}
           onPromoteProduction={noop}
           onRollbackStaging={noop}
@@ -151,6 +160,7 @@ describe('PromotionRow', () => {
       <table><tbody>
         <PromotionRow
           status={createStatus({ stages: { dev: { url: 'http://dev' } } })}
+          entityType="Character"
           disabled={true}
           onPromoteStaging={noop}
           onPromoteProduction={noop}

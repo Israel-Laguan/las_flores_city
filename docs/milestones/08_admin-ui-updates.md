@@ -17,9 +17,14 @@ The UI changes are:
    thumbnails, let the user click to choose one. The first draft is
    auto-chosen so the user can see what was picked.
 
-3. **Asset promotion page** (`/asset-promotion`) — new page that shows
-   per-entity the current state of all three stages (dev/staging/production)
-   and lets the user promote or rollback.
+3. **Asset promotion page** (`/asset-promotion`) — **already shipped by
+   Milestone 06** for characters (page, hooks, `PromotionRow`, nav link all
+   exist). M08 does not re-build it. Once M07 generalizes
+   `AssetPublishService.listPromotionStatus` to scan `content/scenes/` and
+   `content/locations/`, the same page gains scene/location rows for free
+   (it renders a generic stage table). M08's only promotion-page task is to
+   verify the grouped-by-content-type rendering reads correctly once those
+   rows appear.
 
 4. **Verification report** in the Results step — show the report from
    Milestone 05 prominently. Per-item pass/fail/warning icons.
@@ -44,17 +49,23 @@ The UI changes are:
 | `admin/src/app/story-builder/plans/page.tsx` | Add `verified` to the status color map. Add a "View verification report" link per plan row. |
 | `admin/src/app/story-builder/hooks/useStoryBuilderApi.ts` | Add `generateDrafts(planId)`, `listDrafts(planId)`, `chooseDraft(planId, needId, filename)`, `approveAndSolidify(planId)`, `getVerification(planId)`. |
 
-### New admin pages
+### Existing admin pages (shipped by M06 — do not rebuild)
 
-- `admin/src/app/asset-promotion/page.tsx` — new page. Lists all entities
-  with asset needs, grouped by content type. Per entity, shows the three
-  stage states and Promote/Rollback buttons.
+- `admin/src/app/asset-promotion/page.tsx` — **already exists** (M06). Lists
+  characters with their three stage states and Promote/Rollback buttons. After
+  M07 generalizes the promotion service, this page automatically gains
+  scene/location rows; M08 only needs to confirm the grouping renders.
 
 ### New admin components
 
 - `admin/src/app/story-builder/components/AssetDraftsPanel.tsx` — new
   component. Renders the draft thumbnails for one item. Used inside
   ReviewStep.
+  > **Note:** As implemented, the draft panel was inlined inside
+  > `ReviewStep.tsx` instead of a separate file. The props interface
+  > (`draftAssetsByItem`, `onGenerateDrafts`, `onChooseDraft`) are
+  > passed through ReviewStep to the inline rendering. Functionally
+  > equivalent.
 - `admin/src/app/story-builder/components/VerificationReport.tsx` — new
   component. Renders a VerificationReport (from Milestone 05) as a
   collapsible list.
@@ -63,8 +74,9 @@ The UI changes are:
 
 ### Modified admin navigation
 
-- `admin/src/app/page.tsx` (or the dashboard) — add a link to
-  `/asset-promotion`.
+- `admin/src/app/page.tsx` (or the dashboard) — **link to
+  `/asset-promotion` already added by M06** (`AdminNav.tsx`). No M08 change
+  needed unless the dashboard landing card is desired.
 
 ## Implementation outline
 
@@ -249,8 +261,10 @@ export function PromotionRow({ entity }: { entity: EntityWithAssets }) {
 3. Clicking a thumbnail marks it as chosen (visual checkmark).
 4. Clicking "Approve & Ship" runs the full solidify flow and shows the
    verification report.
-5. The `/asset-promotion` page shows all entities with their three stages.
-6. Promote and Rollback buttons work and refresh the page.
+5. The `/asset-promotion` page shows all entities (characters, and — after
+   M07 — scenes/locations) with their three stages.
+6. Promote and Rollback buttons work and refresh the page (characters
+   shipped by M06; scene/location promotion arrives with M07).
 7. `npm run lint --workspace=admin` → 0 errors.
 8. `npm run test --workspace=admin` → all green.
 9. `npm run build --workspace=admin` → passes.
