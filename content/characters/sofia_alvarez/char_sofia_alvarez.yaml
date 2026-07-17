@@ -8,4 +8,6 @@ metadata:
   faction: humanity_first
   personality: inspiring_youth_leader
 asset_paths:
-  portrait: characters/sofia_alvarez/portrait.png
+  portrait: sofia_alvarez__default.png
+
+lore_path: sofia_alvarez.md

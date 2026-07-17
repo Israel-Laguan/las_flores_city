@@ -9,4 +9,6 @@ metadata:
   personality: society_mogul
   lore_doc: organizations/las_flores_chronicle.md
 asset_paths:
-  portrait: characters/isabella_vasquez/portrait.png
+  portrait: isabella_vasquez__default.png
+
+lore_path: isabella_vasquez.md

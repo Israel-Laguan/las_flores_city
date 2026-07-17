@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: nurturing_supporter
 asset_paths:
-  portrait: characters/sofia_garcia/portrait.png
+  portrait: sofia_garcia__default.png
+
+lore_path: sofia_garcia.md

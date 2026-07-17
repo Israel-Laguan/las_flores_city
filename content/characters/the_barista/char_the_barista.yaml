@@ -10,4 +10,6 @@ metadata:
   first_appearance: dialogue_first_contact
   is_reachable_via_sms: true
 asset_paths:
-  portrait: characters/the_barista/portrait.png
+  portrait: the_barista__default.png
+
+lore_path: the_barista.md

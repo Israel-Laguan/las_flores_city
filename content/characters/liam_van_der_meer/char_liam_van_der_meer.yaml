@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: strategic_executive
 asset_paths:
-  portrait: characters/liam_van_der_meer/portrait.png
+  portrait: liam_van_der_meer__default.png
+
+lore_path: liam_van_der_meer.md

@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: intelligent_professional
 asset_paths:
-  portrait: characters/manuel_ortega/portrait.png
+  portrait: manuel_ortega__default.png
+
+lore_path: manuel_ortega.md

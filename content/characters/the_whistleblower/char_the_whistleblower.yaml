@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: desperate_brave
 asset_paths:
-  portrait: characters/the_whistleblower/portrait.png
+  portrait: the_whistleblower__default.png
+
+lore_path: the_whistleblower.md

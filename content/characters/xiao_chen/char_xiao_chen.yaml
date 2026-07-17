@@ -11,4 +11,6 @@ metadata:
   lore_doc: companies/lw_group/overview.md
   district_affiliation: Northeast
 asset_paths:
-  portrait: characters/xiao_chen/portrait.png
+  portrait: xiao_chen__default.png
+
+lore_path: xiao_chen.md

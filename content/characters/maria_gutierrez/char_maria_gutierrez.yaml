@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: muckraking_journalist
 asset_paths:
-  portrait: characters/maria_gutierrez/portrait.png
+  portrait: maria_gutierrez__default.png
+
+lore_path: maria_gutierrez.md

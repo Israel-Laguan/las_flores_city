@@ -21,4 +21,6 @@ metadata:
   personality_traits: charming, cosmopolitan, discreet, family-oriented, diplomatic
   goals: maintain family business connections, support van der Meer legacy in Europe, keep family peace
 asset_paths:
-  portrait: characters/alexander_van_der_meer_jr/portrait.png
+  portrait: alexander_van_der_meer_jr__default.png
+
+lore_path: alexander_van_der_meer_jr.md

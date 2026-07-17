@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: bureau_chief
 asset_paths:
-  portrait: characters/mariana_de_la_cruz/portrait.png
+  portrait: mariana_de_la_cruz__default.png
+
+lore_path: mariana_de_la_cruz.md

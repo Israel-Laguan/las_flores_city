@@ -8,4 +8,6 @@ metadata:
   faction: civil_society
   personality: academic_activist
 asset_paths:
-  portrait: characters/maria_hernandez/portrait.png
+  portrait: maria_hernandez__default.png
+
+lore_path: maria_hernandez.md

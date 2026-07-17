@@ -9,4 +9,6 @@ metadata:
   faction: Nakamura & Morgan LTD
   first_appearance: dialogue_awakening
 asset_paths:
-  portrait: characters/character_handler/portrait.png
+  portrait: character_handler__default.png
+
+lore_path: character_handler.md

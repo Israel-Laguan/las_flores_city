@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: sharp_analytical
 asset_paths:
-  portrait: characters/isabella_student/portrait.png
+  portrait: isabella_student__default.png
+
+lore_path: isabella_student.md

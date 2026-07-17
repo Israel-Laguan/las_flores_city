@@ -13,4 +13,6 @@ metadata:
   residence: Port District, Las Flores
   status: Active (2077 and beyond)
 asset_paths:
-  portrait: characters/marco_reyes/portrait.png
+  portrait: marco_reyes__default.png
+
+lore_path: marco_reyes.md

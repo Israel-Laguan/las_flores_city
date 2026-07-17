@@ -30,6 +30,18 @@ npm run test --workspace=server
 Expected: 0 errors. Warnings are OK if they are pre-existing
 (`max-lines` on long files, etc.).
 
+### Automated tests for milestone-specific assertions
+
+These test files cover the unique coverage that was previously in `scripts/validate-milestones.sh`:
+
+| Test file | Coverage |
+|-----------|----------|
+| `server/tests/integration/migration.schema.test.ts` | Migration versions (049/050/051), `content_plans_status_check` constraint, `verification_report`, `background_urls`, `image_urls` columns |
+| `server/tests/integration/content-cleanup.test.ts` | Legacy `docs/lore/figures/` and `docs/lore/districts/*/landmarks/` removed, no `assets/drafts/` subfolder |
+| `server/tests/smoke/api.smoke.test.ts` | HTTP smoke: `/health`, `/location/:id` portrait URL resolution, `/admin/content/assets/promotion-status` |
+
+> Run with: `npm run test:integration --workspace=server` and `npm run test:smoke --workspace=server`
+
 ### Verified results (2026-07-17)
 
 - [x] **Server lint**: 0 errors (verified)

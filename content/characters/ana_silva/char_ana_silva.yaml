@@ -8,4 +8,6 @@ metadata:
   faction: government
   personality: progressive_advocate
 asset_paths:
-  portrait: characters/ana_silva/portrait.png
+  portrait: ana_silva__default.png
+
+lore_path: ana_silva.md

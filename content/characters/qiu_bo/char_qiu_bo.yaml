@@ -8,4 +8,6 @@ metadata:
   faction: lw_group
   personality: innovator
 asset_paths:
-  portrait: characters/qiu_bo/portrait.png
+  portrait: qiu_bo__default.png
+
+lore_path: qiu_bo.md

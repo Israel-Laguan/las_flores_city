@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: loyal_family_member
 asset_paths:
-  portrait: characters/jan_van_der_meer_jr/portrait.png
+  portrait: jan_van_der_meer_jr__default.png
+
+lore_path: jan_van_der_meer_jr.md

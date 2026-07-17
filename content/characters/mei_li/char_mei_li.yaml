@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: ambitious_entrepreneur
 asset_paths:
-  portrait: characters/mei_li/portrait.png
+  portrait: mei_li__default.png
+
+lore_path: mei_li.md

@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: city_editor
 asset_paths:
-  portrait: characters/pedro_escobar/portrait.png
+  portrait: pedro_escobar__default.png
+
+lore_path: pedro_escobar.md

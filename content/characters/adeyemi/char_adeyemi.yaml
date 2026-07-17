@@ -8,4 +8,6 @@ metadata:
   faction: law_enforcement
   personality: reformist_police_chief
 asset_paths:
-  portrait: characters/adeyemi/portrait.png
+  portrait: adeyemi__default.png
+
+lore_path: adeyemi.md

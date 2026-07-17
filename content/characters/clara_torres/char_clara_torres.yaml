@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: tech_savvy_journalist
 asset_paths:
-  portrait: characters/clara_torres/portrait.png
+  portrait: clara_torres__default.png
+
+lore_path: clara_torres.md

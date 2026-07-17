@@ -30,4 +30,6 @@ metadata:
   methods: protection rackets, labour exploitation, negotiated co-existence with rival organisations, community patronage, informal dispute resolution
   quote: The city decided not to govern this neighbourhood. Someone had to. I have been someone for a long time.
 asset_paths:
-  portrait: characters/don_pedro/portrait.png
+  portrait: don_pedro__default.png
+
+lore_path: don_pedro.md

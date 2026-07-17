@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: passionate_activist
 asset_paths:
-  portrait: characters/diego_reyes/portrait.png
+  portrait: diego_reyes__default.png
+
+lore_path: diego_reyes.md

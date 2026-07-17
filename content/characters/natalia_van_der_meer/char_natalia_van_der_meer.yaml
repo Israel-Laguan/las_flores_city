@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: artistic_rebel
 asset_paths:
-  portrait: characters/natalia_van_der_meer/portrait.png
+  portrait: natalia_van_der_meer__default.png
+
+lore_path: natalia_van_der_meer.md

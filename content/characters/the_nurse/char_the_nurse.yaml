@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: helpful_compassionate
 asset_paths:
-  portrait: characters/the_nurse/portrait.png
+  portrait: the_nurse__default.png
+
+lore_path: the_nurse.md

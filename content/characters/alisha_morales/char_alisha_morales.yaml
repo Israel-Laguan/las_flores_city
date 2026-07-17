@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: ambitious_professional
 asset_paths:
-  portrait: characters/alisha_morales/portrait.png
+  portrait: alisha_morales__default.png
+
+lore_path: alisha_morales.md

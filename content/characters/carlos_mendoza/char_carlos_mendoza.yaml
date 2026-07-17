@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: cautious_principled
 asset_paths:
-  portrait: characters/carlos_mendoza/portrait.png
+  portrait: carlos_mendoza__default.png
+
+lore_path: carlos_mendoza.md

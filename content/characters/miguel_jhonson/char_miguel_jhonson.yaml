@@ -22,7 +22,7 @@ metadata:
   status: Active (2077 and beyond)
 portrait_urls:
   - url: http://minio:9000/las-flores/portraits/miguel_jhonson/neutral.png
-    label: Standard portrait
+    label: dev
     expression: neutral
 lore_path: miguel_jhonson.md
 asset_paths:

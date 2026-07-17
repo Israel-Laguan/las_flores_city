@@ -33,6 +33,7 @@ const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
 const APARTMENT_SCENE_ID = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
 const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening
 const HANDLER_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004'; // The Handler — has dialogue at Welcome Center
+const DISTRICT_ID = 'd2000000-0000-0000-0000-000000000004';
 
 const app = express();
 app.use(express.json());
@@ -68,18 +69,26 @@ beforeAll(async () => {
   await applyMigration('018_vault_system.sql');
   await applyMigration('026_vault_signed_urls.sql');
 
+  // Ensure districts exist for scenes
+  await pool.query(
+    `INSERT INTO districts (id, name, slug, description, x, y)
+     VALUES ($1, $2, $3, $4, 0, 0)
+     ON CONFLICT (id) DO NOTHING`,
+    [DISTRICT_ID, 'API Contract Test District', 'api-contract-test-district', 'District for API contract tests']
+  );
+
   // Ensure scenes exist for the foreign key reference
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true}'::jsonb)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true}'::jsonb)
      ON CONFLICT (id) DO NOTHING`,
-    [WELCOME_SCENE_ID, 'Welcome Center', 'Test welcome center location']
+    [WELCOME_SCENE_ID, 'Welcome Center', 'Test welcome center location', DISTRICT_ID]
   );
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
      ON CONFLICT (id) DO NOTHING`,
-    [APARTMENT_SCENE_ID, 'Apartment', 'Test apartment location']
+    [APARTMENT_SCENE_ID, 'Apartment', 'Test apartment location', DISTRICT_ID]
   );
 
   await pool.query(
@@ -127,6 +136,8 @@ afterAll(async () => {
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM user_relationships WHERE user_id = $1', [TEST_USER_ID]);
+  // Note: We don't delete scenes/districts here as they may be shared with other tests
+  // and have FK constraints. The test data will be cleaned up by other test suites.
   await pool.end();
   await closeRedis();
 });

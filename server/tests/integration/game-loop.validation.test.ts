@@ -28,6 +28,7 @@ const { Pool } = pg;
 const APARTMENT_ID  = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 const TEST_USER_ID  = '550e8400-e29b-41d4-a716-446655440001';
 const GIG_NOODLE    = '880e8400-e29b-41d4-a716-446655440001'; // 16 TB cost, 50 payout
+const DISTRICT_ID   = 'd2000000-0000-0000-0000-000000000003';
 
 // ── App setup ────────────────────────────────────────────────────────────────
 
@@ -78,12 +79,20 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
+  // Ensure the district exists for the scenes
+  await oltpPool.query(
+    `INSERT INTO districts (id, name, slug, description, x, y)
+     VALUES ($1, $2, $3, $4, 0, 0)
+     ON CONFLICT (id) DO NOTHING`,
+    [DISTRICT_ID, 'Game Loop Test District', 'game-loop-test-district', 'District for game loop tests']
+  );
+
   // Ensure the apartment scene exists for the foreign key reference
   await oltpPool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, NULL, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
      ON CONFLICT (id) DO NOTHING`,
-    [APARTMENT_ID, 'The Apartment', 'Test apartment location']
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DISTRICT_ID]
   );
 
   // Seed test user
@@ -120,6 +129,8 @@ afterAll(async () => {
   await oltpPool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await oltpPool.query('DELETE FROM scenes WHERE id = $1', [APARTMENT_ID]);
+  await oltpPool.query('DELETE FROM districts WHERE id = $1', [DISTRICT_ID]);
   await oltpPool.end();
   await olapPool.end();
   await closeRedis();

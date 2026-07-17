@@ -2,4 +2,6 @@ id: 123e4567-e89b-12d3-a456-426614174000
 name: Aria
 description: A barista at the local Old Town café. Deeply connected to the neighborhood, highly observant, and secretly cynical about corporate expansion.
 asset_paths:
-  portrait: characters/character_barista/portrait.png
+  portrait: character_barista__default.png
+
+lore_path: character_barista.md

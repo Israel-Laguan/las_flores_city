@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: reluctant_brave
 asset_paths:
-  portrait: characters/ana_student/portrait.png
+  portrait: ana_student__default.png
+
+lore_path: ana_student.md

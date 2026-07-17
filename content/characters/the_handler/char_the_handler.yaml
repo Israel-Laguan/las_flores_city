@@ -10,4 +10,6 @@ metadata:
   first_appearance: dialogue_welcome_handler
   is_reachable_via_sms: true
 asset_paths:
-  portrait: characters/the_handler/portrait.png
+  portrait: the_handler__default.png
+
+lore_path: the_handler.md

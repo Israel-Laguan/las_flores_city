@@ -8,4 +8,6 @@ metadata:
   faction: lw_group
   personality: cold_professional
 asset_paths:
-  portrait: characters/the_doctor/portrait.png
+  portrait: the_doctor__default.png
+
+lore_path: the_doctor.md

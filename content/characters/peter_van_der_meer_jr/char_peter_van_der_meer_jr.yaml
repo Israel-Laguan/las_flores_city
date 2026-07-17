@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: activist_heir
 asset_paths:
-  portrait: characters/peter_van_der_meer_jr/portrait.png
+  portrait: peter_van_der_meer_jr__default.png
+
+lore_path: peter_van_der_meer_jr.md

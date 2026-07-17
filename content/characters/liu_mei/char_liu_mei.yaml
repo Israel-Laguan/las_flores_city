@@ -29,4 +29,6 @@ metadata:
   methods: legal expertise, coalition navigation, bilateral policy work, public advocacy, legislative compromise
   quote: I am the wrong person for both sides of every room I walk into, which means I am probably the right person for the room itself.
 asset_paths:
-  portrait: characters/liu_mei/portrait.png
+  portrait: liu_mei__default.png
+
+lore_path: liu_mei.md

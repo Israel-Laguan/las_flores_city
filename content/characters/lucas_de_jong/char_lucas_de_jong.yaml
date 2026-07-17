@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: cunning_manipulator
 asset_paths:
-  portrait: characters/lucas_de_jong/portrait.png
+  portrait: lucas_de_jong__default.png
+
+lore_path: lucas_de_jong.md

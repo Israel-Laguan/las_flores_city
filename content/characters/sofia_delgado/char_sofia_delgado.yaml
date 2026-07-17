@@ -8,4 +8,6 @@ metadata:
   faction: lw_group
   personality: shrewd_businessperson
 asset_paths:
-  portrait: characters/sofia_delgado/portrait.png
+  portrait: sofia_delgado__default.png
+
+lore_path: sofia_delgado.md
