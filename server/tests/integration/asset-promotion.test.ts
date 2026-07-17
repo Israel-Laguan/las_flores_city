@@ -1,7 +1,7 @@
 /**
  * Integration tests for asset promotion routes (Milestone 06).
  */
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, jest, beforeAll, beforeEach, afterEach } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import path from 'node:path';

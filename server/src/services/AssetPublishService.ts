@@ -93,10 +93,6 @@ function getPortraitUrls(data: Record<string, any>): Array<{ url: string; label?
   return Array.isArray(data.portrait_urls) ? data.portrait_urls : [];
 }
 
-function findDevEntry(portraitUrls: Array<{ url: string; label?: string }>): { url: string; label?: string } | undefined {
-  return portraitUrls.find(p => p.label === 'dev');
-}
-
 function defaultLocalFilename(item: ContentPlanItem): string {
   return `${item.slug}__default.png`;
 }
@@ -212,13 +208,14 @@ async function promoteStage(
   const data = await readYaml(absolutePath);
 
   const portraitUrls = getPortraitUrls(data);
-  const devEntry = findDevEntry(portraitUrls);
+  const sourceLabel = stage === 'staging' ? 'dev' : 'staging';
+  const sourceEntry = portraitUrls.find(p => p.label === sourceLabel);
 
-  if (!devEntry) {
-    throw new Error('No dev entry to promote; publish the asset first (Milestone 04)');
+  if (!sourceEntry) {
+    throw new Error(`No ${sourceLabel} entry to promote`);
   }
 
-  let url = devEntry.url;
+  let url = sourceEntry.url;
   let createdObject = false;
 
   if (opts?.newBuffer && opts?.filename) {
@@ -308,8 +305,8 @@ export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
         continue;
       }
     }
-  } catch {
-    // Directory doesn't exist or can't be read
+  } catch (err: any) {
+    if (err?.code !== 'ENOENT') throw err;
   }
 
   return results.sort((a, b) => a.name.localeCompare(b.name));

@@ -57,7 +57,7 @@ unless different bytes are supplied. The cascade is resolved by the client
 > entries that would be lost on re-migration. The route shape uses
 > `contentPath` in the request body instead of `:entityType/:entityId` path
 > params, consistent with the existing `POST /assign-asset` route.
-
+ >
 > **Scope note:** Only `characters` are supported today. Scenes/locations do
 > not have a `portrait_urls` JSONB column (they use `image_url`/`background_url`
 > TEXT). Promotion for those types is deferred pending schema confirmation.
