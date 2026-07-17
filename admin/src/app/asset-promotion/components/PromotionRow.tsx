@@ -10,15 +10,16 @@ interface PromotionStatus {
 
 interface PromotionRowProps {
   status: PromotionStatus;
+  disabled?: boolean;
   onPromoteStaging: (contentPath: string) => void;
   onPromoteProduction: (contentPath: string) => void;
   onRollbackStaging: (contentPath: string) => void;
 }
 
-export default function PromotionRow({ status, onPromoteStaging, onPromoteProduction, onRollbackStaging }: PromotionRowProps) {
-  const hasDev = !!status.stages.dev;
-  const hasStaging = !!status.stages.staging;
-  const hasProduction = !!status.stages.production;
+export default function PromotionRow({ status, disabled, onPromoteStaging, onPromoteProduction, onRollbackStaging }: PromotionRowProps) {
+  const hasDev = !!status.stages?.dev;
+  const hasStaging = !!status.stages?.staging;
+  const hasProduction = !!status.stages?.production;
 
   return (
     <tr>
@@ -40,7 +41,8 @@ export default function PromotionRow({ status, onPromoteStaging, onPromoteProduc
         ) : hasDev ? (
           <button
             onClick={() => onPromoteStaging(status.contentPath)}
-            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: 'pointer' }}
+            disabled={disabled}
+            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: disabled ? 'not-allowed' : 'pointer' }}
           >
             Promote to Staging
           </button>
@@ -56,7 +58,8 @@ export default function PromotionRow({ status, onPromoteStaging, onPromoteProduc
         ) : hasStaging ? (
           <button
             onClick={() => onPromoteProduction(status.contentPath)}
-            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: 'pointer' }}
+            disabled={disabled}
+            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: disabled ? 'not-allowed' : 'pointer' }}
           >
             Promote to Production
           </button>
@@ -68,7 +71,8 @@ export default function PromotionRow({ status, onPromoteStaging, onPromoteProduc
         {hasStaging && (
           <button
             onClick={() => onRollbackStaging(status.contentPath)}
-            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: 'pointer', color: '#c00' }}
+            disabled={disabled}
+            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: disabled ? 'not-allowed' : 'pointer', color: '#c00' }}
           >
             Rollback
           </button>

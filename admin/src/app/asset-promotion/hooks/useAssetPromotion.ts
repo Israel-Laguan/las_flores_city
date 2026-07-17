@@ -20,10 +20,13 @@ interface PromotionStatusResponse {
 export function useAssetPromotion() {
   const [statuses, setStatuses] = useState<PromotionStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mutating, setMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStatuses = useCallback(async () => {
-    setLoading(true);
+  const fetchStatuses = useCallback(async (silent = false) => {
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const json = await adminFetch<PromotionStatusResponse>('/admin/content/assets/promotion-status');
@@ -35,7 +38,9 @@ export function useAssetPromotion() {
     } catch {
       setError('Failed to load promotion status');
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -44,28 +49,52 @@ export function useAssetPromotion() {
   }, [fetchStatuses]);
 
   const promoteStaging = async (contentPath: string) => {
-    await adminFetch('/admin/content/assets/promote-staging', {
-      method: 'POST',
-      body: JSON.stringify({ contentPath }),
-    });
-    await fetchStatuses();
+    setMutating(true);
+    setError(null);
+    try {
+      await adminFetch('/admin/content/assets/promote-staging', {
+        method: 'POST',
+        body: JSON.stringify({ contentPath }),
+      });
+      await fetchStatuses(true);
+    } catch {
+      setError('Failed to promote to staging');
+    } finally {
+      setMutating(false);
+    }
   };
 
   const promoteProduction = async (contentPath: string) => {
-    await adminFetch('/admin/content/assets/promote-production', {
-      method: 'POST',
-      body: JSON.stringify({ contentPath }),
-    });
-    await fetchStatuses();
+    setMutating(true);
+    setError(null);
+    try {
+      await adminFetch('/admin/content/assets/promote-production', {
+        method: 'POST',
+        body: JSON.stringify({ contentPath }),
+      });
+      await fetchStatuses(true);
+    } catch {
+      setError('Failed to promote to production');
+    } finally {
+      setMutating(false);
+    }
   };
 
   const rollbackStaging = async (contentPath: string) => {
-    await adminFetch('/admin/content/assets/rollback-staging', {
-      method: 'POST',
-      body: JSON.stringify({ contentPath }),
-    });
-    await fetchStatuses();
+    setMutating(true);
+    setError(null);
+    try {
+      await adminFetch('/admin/content/assets/rollback-staging', {
+        method: 'POST',
+        body: JSON.stringify({ contentPath }),
+      });
+      await fetchStatuses(true);
+    } catch {
+      setError('Failed to rollback staging');
+    } finally {
+      setMutating(false);
+    }
   };
 
-  return { statuses, loading, error, promoteStaging, promoteProduction, rollbackStaging };
+  return { statuses, loading, mutating, error, promoteStaging, promoteProduction, rollbackStaging };
 }
