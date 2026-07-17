@@ -6,7 +6,6 @@ import StepIndicator from './components/StepIndicator';
 import { useDraftManager } from './hooks/useDraftManager';
 import DescribeStep from './components/DescribeStep';
 import ReviewStep from './components/ReviewStep';
-import ApprovingStep from './components/ApprovingStep';
 import ResultsStep, { type SolidifyResultLite } from './components/ResultsStep';
 import Link from 'next/link';
 import styles from './StoryBuilder.module.css';
@@ -88,14 +87,6 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
       )}
 
       {step === 3 && (
-        <ApprovingStep
-          assetCount={
-            (plan?.items ?? []).flatMap(i => i.assetNeeds ?? []).filter(n => n.status === 'chosen' || n.status === 'pending').length
-          }
-        />
-      )}
-
-      {step === 4 && (
         <ResultsStep result={solidifyResult as SolidifyResultLite | null} plan={plan} planId={planId} />
       )}
 

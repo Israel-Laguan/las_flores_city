@@ -10,7 +10,7 @@ export default function AssetPromotionPage() {
   return (
     <main className={styles.main}>
       <h1>Asset Promotion</h1>
-      <p className={styles.subtitle}>Manage dev → staging → production cascade for character portraits.</p>
+      <p className={styles.subtitle}>Manage dev → staging → production cascade for content assets.</p>
 
       {loading && <p className={styles.muted}>Loading...</p>}
       {error && <div className={styles.errorBox}>{error}</div>}

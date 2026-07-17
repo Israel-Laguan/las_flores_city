@@ -54,6 +54,14 @@ function PlanRow({
         >
           Resume
         </Link>
+        {plan.status === 'verified' && (
+          <Link
+            href={`/story-builder?planId=${plan.id}`}
+            className={cn('btn', 'btn--secondary', 'btn--small')}
+          >
+            View Report
+          </Link>
+        )}
         <button
           className={cn('btn', 'btn--danger', 'btn--small')}
           onClick={() => onDelete(plan.id)}

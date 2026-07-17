@@ -52,7 +52,7 @@ export default function ReviewStep({
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionHeading}>Step 2: Review Plan</h2>
+      <h2 className={styles.sectionHeading}>Review Plan</h2>
       <p className={styles.description}>
         Review and edit the proposed content. All text fields are editable.
       </p>

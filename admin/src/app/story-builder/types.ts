@@ -1,7 +1,6 @@
-// The wizard is collapsed from 5 steps to 4:
+// The wizard has 3 internal steps, shown as 2 indicator dots (Describe, Results):
 //   1 = Describe     (free-text intake)
 //   2 = Review       (edit / refine / choose drafts; "Approve & Ship" lives here)
-//   3 = Approving    (transient: the single approve-and-solidify call runs)
-//   4 = Results      (verification report + live-content links)
-export type Step = 1 | 2 | 3 | 4;
+//   3 = Results      (verification report + live-content links)
+export type Step = 1 | 2 | 3;
 
