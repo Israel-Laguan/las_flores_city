@@ -11,7 +11,7 @@
     "./lib/cn": "./src/lib/cn.ts"
   },
   "scripts": {
-    "lint": "eslint --ext .ts src/",
+    "lint": "eslint --ext .ts,.tsx src/",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
