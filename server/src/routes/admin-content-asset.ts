@@ -11,8 +11,7 @@ function resolveFieldFromContentPath(contentPath: string): AssetArrayField {
   if (contentPath.startsWith('characters/')) return 'portrait_urls';
   if (contentPath.startsWith('scenes/')) return 'background_urls';
   if (contentPath.startsWith('locations/')) return 'image_urls';
-  // Default for unknown types (character is the original type)
-  return 'portrait_urls';
+  throw new Error('Unsupported content type for asset promotion');
 }
 
 // ─── Router ─────────────────────────────────────────────────────────────

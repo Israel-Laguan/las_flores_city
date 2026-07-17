@@ -10,7 +10,7 @@ const safePath = z.string().max(255).refine(
 
 export const AssetEntrySchema = z.object({
   url: z.string().url(),
-  label: z.string().max(50).optional(),
+  label: z.enum(['dev', 'staging', 'production']).optional(),
   expression: z.string().max(50).optional(),
 });
 

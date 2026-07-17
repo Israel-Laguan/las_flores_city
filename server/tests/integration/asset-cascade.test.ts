@@ -16,9 +16,12 @@ import { deleteCache, closeRedis } from '../../src/database/redis.js';
 import { authMiddleware, AuthRequest, generateToken } from '../../src/middleware/auth.js';
 import { locationRouter } from '../../src/routes/location.js';
 
+// Collision-avoidance: these UUIDs use reserved high-value prefixes that
+// cannot collide with gen_random_uuid() values in production data.
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000099';
 const TEST_SCENE_ID = '10000000-0000-0000-0000-000000000001';
 const TEST_CHARACTER_ID = '20000000-0000-0000-0000-000000000001';
+const TEST_DISTRICT_ID = '30000000-0000-0000-0000-000000000001';
 
 const app = express();
 app.use(express.json());
@@ -39,8 +42,8 @@ beforeAll(async () => {
 
   // Ensure districts exist
   await queryOLTP(
-    `INSERT INTO districts (name, slug, x, y) VALUES ('Test District', 'test-district', 0, 0) ON CONFLICT (name) DO NOTHING`,
-    []
+    `INSERT INTO districts (id, name, slug, x, y) VALUES ($1, 'Cascade Test District', 'cascade-test-district', 0, 0) ON CONFLICT (id) DO NOTHING`,
+    [TEST_DISTRICT_ID]
   );
 });
 
@@ -51,6 +54,7 @@ afterAll(async () => {
   await queryOLTP('DELETE FROM scenes WHERE id = $1', [TEST_SCENE_ID]);
   await queryOLTP('DELETE FROM characters WHERE id = $1', [TEST_CHARACTER_ID]);
   await queryOLTP('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await queryOLTP('DELETE FROM districts WHERE id = $1', [TEST_DISTRICT_ID]);
   await deleteCache(`scene:global:${TEST_SCENE_ID}`);
   await deleteCache(`user:location:${TEST_USER_ID}:${TEST_SCENE_ID}`);
   await closeConnections();
@@ -86,9 +90,9 @@ describe('Asset cascade resolution', () => {
       // Create scene with the character
       await queryOLTP(
         `INSERT INTO scenes (id, name, description, district_id, background_url)
-         VALUES ($1, 'Cascade Scene', 'Test', (SELECT id FROM districts WHERE name = 'Test District'), 'https://legacy.example.com/bg.png')
+         VALUES ($1, 'Cascade Scene', 'Test', $2, 'https://legacy.example.com/bg.png')
          ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name`,
-        [TEST_SCENE_ID]
+        [TEST_SCENE_ID, TEST_DISTRICT_ID]
       );
       await queryOLTP(
         `INSERT INTO scene_characters (scene_id, character_id, is_permanent, default_mood)

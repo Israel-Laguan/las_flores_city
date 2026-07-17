@@ -109,7 +109,7 @@ execute_oltp_query() {
         return 1
     fi
     
-    $CONTAINER_RUNTIME exec las-flores-postgres-oltp psql -U las_flores -d las_flores -t -c "$query" 2>/dev/null
+    $CONTAINER_RUNTIME exec las-flores-postgres-oltp psql -U las_flores -d las_flores -tA -F '|' -c "$query" 2>/dev/null
 }
 
 # Execute SQL query against OLAP DB
@@ -122,7 +122,7 @@ execute_olap_query() {
         return 1
     fi
     
-    $CONTAINER_RUNTIME exec las-flores-postgres-olap psql -U las_flores_analytics -d las_flores_analytics -t -c "$query" 2>/dev/null
+    $CONTAINER_RUNTIME exec las-flores-postgres-olap psql -U las_flores_analytics -d las_flores_analytics -tA -F '|' -c "$query" 2>/dev/null
 }
 
 # Execute command in server container
@@ -246,8 +246,8 @@ check_character_lore_paths() {
     local resolved=0
     
     while IFS='|' read -r id name lore_path; do
-        # Skip header and empty lines
-        [[ "$id" =~ ^[0-9] ]] || continue
+        # Skip empty lines
+        [ -n "$id" ] || continue
         
         total=$((total + 1))
         
@@ -260,7 +260,7 @@ check_character_lore_paths() {
         else
             log_info "Character '$name': lore_path '$lore_path' not found at $expected_file"
         fi
-    done <<< "$(echo "$results" | tr '\n' '|' | sed 's/|$//')"
+    done <<< "$results"
     
     if [ $total -eq $resolved ]; then
         log_pass "$label: $resolved/$total resolved"
@@ -297,8 +297,8 @@ check_scene_lore_paths() {
     local resolved=0
     
     while IFS='|' read -r id slug lore_path; do
-        # Skip header and empty lines
-        [[ "$id" =~ ^[0-9] ]] || continue
+        # Skip empty lines
+        [ -n "$id" ] || continue
         
         total=$((total + 1))
         
@@ -310,7 +310,7 @@ check_scene_lore_paths() {
         else
             log_info "Scene '$slug': lore_path '$lore_path' not found at $expected_file"
         fi
-    done <<< "$(echo "$results" | tr '\n' '|' | sed 's/|$//')"
+    done <<< "$results"
     
     if [ $total -eq $resolved ]; then
         log_pass "$label: $resolved/$total resolved"
@@ -558,7 +558,10 @@ check_minio_object_naming() {
     fi
     
     # Check for objects with .dev or .staging suffix
-    local objects_with_suffix=$(mc ls "las-flores/portrait/" 2>/dev/null | grep -E '\.(dev|staging)\.png$' | wc -l)
+    local mc_output
+    mc_output=$(mc ls "${MINIO_BUCKET}/" 2>/dev/null) || { log_fail "$label: mc ls failed"; return 1; }
+    local objects_with_suffix
+    objects_with_suffix=$(echo "$mc_output" | grep -cE '\.(dev|staging)\.png$')
     
     if [ "${objects_with_suffix:-0}" -eq 0 ]; then
         log_pass "$label: no objects with .dev/.staging suffix"
@@ -583,7 +586,7 @@ check_portrait_urls_dev_label() {
     fi
     
     # Check if any character has portrait_urls with label: 'dev'
-    local count=$(execute_oltp_query "SELECT COUNT(*) FROM characters WHERE portrait_urls IS NOT NULL AND jsonb_path_exists(portrait_urls, '\[\*\].label ? (@ == \"dev\"')');" | tr -d ' ')
+    local count=$(execute_oltp_query "SELECT COUNT(*) FROM characters WHERE portrait_urls IS NOT NULL AND jsonb_path_exists(portrait_urls, '\$[*].label ? (@ == \"dev\")');" | tr -d ' ')
     
     # Ensure count is a number
     count=${count:-0}
@@ -787,13 +790,23 @@ check_scene_background_urls() {
         return 0
     fi
     
-    local columns=$(execute_oltp_query "\d scenes" | grep -E "(background_urls|image_urls)" | wc -l)
-    
-    if [ "${columns:-0}" -ge 2 ]; then
-        log_pass "$label: both columns exist"
+    local has_background_urls=0
+    local has_image_urls=0
+    if execute_oltp_query "SELECT 1 FROM information_schema.columns WHERE table_name = 'scenes' AND column_name = 'background_urls'" 2>/dev/null | grep -q 1; then
+        has_background_urls=1
+    fi
+    if execute_oltp_query "SELECT 1 FROM information_schema.columns WHERE table_name = 'locations' AND column_name = 'image_urls'" 2>/dev/null | grep -q 1; then
+        has_image_urls=1
+    fi
+
+    if [ "$has_background_urls" -eq 1 ] && [ "$has_image_urls" -eq 1 ]; then
+        log_pass "$label: scenes.background_urls and locations.image_urls exist"
         return 0
     else
-        log_fail "$label: missing columns (found $columns)"
+        local missing=""
+        [ "$has_background_urls" -eq 0 ] && missing="scenes.background_urls"
+        [ "$has_image_urls" -eq 0 ] && missing="$missing locations.image_urls"
+        log_fail "$label: missing:$missing"
         return 1
     fi
 }
@@ -801,7 +814,8 @@ check_scene_background_urls() {
 check_client_not_modified() {
     local label="Client not modified"
     
-    local changes=$(git diff --name-only client/ 2>/dev/null | wc -l)
+    local changes
+    changes=$(git diff --name-only "${BASE_REF:-origin/main}...HEAD" -- client/ 2>/dev/null | wc -l)
     
     if [ "${changes:-0}" -eq 0 ]; then
         log_pass "$label: no client changes"
@@ -914,14 +928,16 @@ check_e2e_characters_api() {
         return 0
     fi
     
-    # Use curl from within the container
-    local response=$(execute_in_server "curl -s http://localhost:3000/api/characters | head -c 100")
-    
-    if [ -n "$response" ] && ! echo "$response" | grep -q "error"; then
-        log_pass "$label: returns data"
+    # Use curl from within the container, capture HTTP status
+    local http_response
+    http_response=$(execute_in_server "curl -s -w '\n%{http_code}' http://localhost:3000/api/characters | tail -1")
+    local http_code="${http_response:-0}"
+
+    if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 400 ]; then
+        log_pass "$label: HTTP $http_code"
         return 0
     else
-        log_fail "$label: no data or error"
+        log_fail "$label: HTTP $http_code"
         return 1
     fi
 }
@@ -939,13 +955,15 @@ check_e2e_scenes_api() {
         return 0
     fi
     
-    local response=$(execute_in_server "curl -s http://localhost:3000/api/scenes | head -c 100")
-    
-    if [ -n "$response" ] && ! echo "$response" | grep -q "error"; then
-        log_pass "$label: returns data"
+    local http_response
+    http_response=$(execute_in_server "curl -s -w '\n%{http_code}' http://localhost:3000/api/scenes | tail -1")
+    local http_code="${http_response:-0}"
+
+    if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 400 ]; then
+        log_pass "$label: HTTP $http_code"
         return 0
     else
-        log_fail "$label: no data or error"
+        log_fail "$label: HTTP $http_code"
         return 1
     fi
 }
@@ -984,20 +1002,21 @@ check_e2e_portrait_resolution() {
 
 check_e2e_admin_health() {
     local label="Admin panel health"
-    
+
     if ! check_runtime; then
         log_skip "$label: container runtime not available"
         return 0
     fi
-    
+
     if ! $CONTAINER_RUNTIME inspect las-flores-admin &> /dev/null; then
         log_skip "$label: admin container not running"
         return 0
     fi
-    
-    local health=$(execute_in_server "curl -s http://localhost:3002/" | head -c 100)
-    
-    if [ -n "$health" ]; then
+
+    local http_response
+    http_response=$($CONTAINER_RUNTIME exec las-flores-admin sh -c "wget -qO- --server-response http://localhost:3002/ 2>&1 | head -5" 2>/dev/null || echo "")
+
+    if echo "$http_response" | grep -q "200\|301\|302"; then
         log_pass "$label: responds"
         return 0
     else
@@ -1019,13 +1038,15 @@ check_e2e_promotion_status() {
         return 0
     fi
     
-    local response=$(execute_in_server "curl -s http://localhost:3000/admin/content/assets/promotion-status")
-    
-    if [ -n "$response" ] && ! echo "$response" | grep -q "error"; then
-        log_pass "$label: works"
+    local http_response
+    http_response=$(execute_in_server "curl -s -w '\n%{http_code}' http://localhost:3000/admin/content/assets/promotion-status | tail -1")
+    local http_code="${http_response:-0}"
+
+    if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 400 ]; then
+        log_pass "$label: HTTP $http_code"
         return 0
     else
-        log_fail "$label: error or no response"
+        log_fail "$label: HTTP $http_code"
         return 1
     fi
 }
@@ -1072,6 +1093,7 @@ print_summary() {
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --milestone)
+            [ $# -ge 2 ] || { echo "Missing value for --milestone" >&2; exit 1; }
             MILESTONE="$2"
             shift 2
             ;;
@@ -1084,6 +1106,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --minio-bucket)
+            [ $# -ge 2 ] || { echo "Missing value for --minio-bucket" >&2; exit 1; }
             MINIO_BUCKET="$2"
             shift 2
             ;;

@@ -48,18 +48,19 @@ function PlanRow({
       <td>{plan.item_count}</td>
       <td suppressHydrationWarning>{new Date(plan.updated_at).toLocaleDateString()}</td>
       <td className={styles.actionsCell}>
-        <Link
-          href={`/story-builder?planId=${plan.id}`}
-          className={cn('btn', 'btn--secondary', 'btn--small')}
-        >
-          Resume
-        </Link>
-        {plan.status === 'verified' && (
+        {['verified', 'failed'].includes(plan.status) ? (
           <Link
             href={`/story-builder?planId=${plan.id}`}
             className={cn('btn', 'btn--secondary', 'btn--small')}
           >
             View Report
+          </Link>
+        ) : (
+          <Link
+            href={`/story-builder?planId=${plan.id}`}
+            className={cn('btn', 'btn--secondary', 'btn--small')}
+          >
+            Resume
           </Link>
         )}
         <button

@@ -112,6 +112,6 @@ describe('StoryBuilderPlans', () => {
     expect(viewReportLinks[0].closest('a')).toHaveAttribute('href', '/story-builder?planId=plan-verified');
 
     // Proposed plan should NOT have View Report link
-    expect(screen.getAllByText('Resume')).toHaveLength(2);
+    expect(screen.getAllByText('Resume')).toHaveLength(1);
   });
 });

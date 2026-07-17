@@ -163,7 +163,10 @@ export async function publishChosenDrafts(
           : null;
         if (arrayField) {
           const assetUrls: Array<{ url: string; label?: string }> = getAssetUrls(yamlData, arrayField);
-          if (!assetUrls.some(p => p.url === url && p.label === 'dev')) {
+          const idx = assetUrls.findIndex(p => p.label === 'dev');
+          if (idx >= 0) {
+            assetUrls[idx].url = url;
+          } else {
             assetUrls.push({ url, label: 'dev' });
           }
           yamlData[arrayField] = assetUrls;
