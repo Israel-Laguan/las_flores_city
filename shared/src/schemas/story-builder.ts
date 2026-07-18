@@ -20,6 +20,8 @@ export const ContentPlanItemSchema = z.object({
   fields: z.record(z.string(), z.any()),
   assetNeeds: z.array(AssetNeedSchema).default([]),
   dependsOn: z.array(z.string().uuid()).default([]),  // Optional for MVP
+  lore_refs: z.array(z.string()).optional(),  // LLM-suggested related lore items
+  filled_fields: z.array(z.string()).optional(),  // dot-paths of fields filled by the LLM fill pass (provenance)
 });
 
 export const ContentLinkSchema = z.object({

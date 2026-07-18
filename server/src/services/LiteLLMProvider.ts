@@ -102,4 +102,13 @@ export class LiteLLMProvider implements LLMProvider {
     const prompt = buildLorePrompt(item, context);
     return this.callLLMText(prompt, item.fields.description || item.name);
   }
+
+  async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {
+    const response = await this.callLLM('You are a content writer for Las Flores 2077.', prompt);
+    return {
+      fields: (response.fields as Record<string, string>) || {},
+      lore_refs: Array.isArray(response.lore_refs) ? response.lore_refs : [],
+    };
+  }
+
 }

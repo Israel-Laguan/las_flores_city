@@ -2,7 +2,6 @@
 
 import ContentListPage from '@/components/ContentListPage';
 import Badge from '@/components/Badge';
-import styles from './missions.module.css';
 
 function StatusBadge({ status }: { status: string }) {
   const variant = status === 'ACTIVE' ? 'success' : status === 'RESOLVING' ? 'warning' : 'muted';

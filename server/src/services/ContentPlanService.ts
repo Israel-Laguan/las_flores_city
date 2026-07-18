@@ -135,13 +135,13 @@ export class ContentPlanService {
 
   async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
-      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM characters ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM scenes ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string; role?: string; faction?: string; personality?: string; description?: string }>('SELECT id, name, metadata->>\'role\' as role, metadata->>\'faction\' as faction, metadata->>\'personality\' as personality, description FROM characters ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string; district: string; mood?: string; description?: string }>('SELECT id, name, district, mood, description FROM scenes ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_trees ORDER BY name ASC'),
       queryOLTP<{ id: string; title: string }>('SELECT id, title FROM mysteries ORDER BY title ASC'),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM stories ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM overlays ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string; district: string }>('SELECT id, name, district FROM locations ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string; district: string; daytime?: string; nightlife?: string; history?: string }>('SELECT id, name, district, daytime, nightlife, history FROM locations ORDER BY name ASC'),
     ]);
 
     return {

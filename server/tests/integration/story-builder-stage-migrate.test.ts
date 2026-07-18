@@ -55,6 +55,15 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
       status: 'proposed',
     })),
+    gatherContext: jest.fn(async () => ({
+      characters: [],
+      scenes: [],
+      dialogues: [],
+      missions: [],
+      stories: [],
+      overlays: [],
+      locations: [],
+    })),
   },
 }));
 

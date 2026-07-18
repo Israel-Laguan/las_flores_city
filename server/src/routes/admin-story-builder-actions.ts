@@ -8,6 +8,7 @@ import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, veri
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
+import { createLLMProvider } from '../services/LLMService.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -137,7 +138,18 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
       return;
     }
 
-    const stagingResult = await stagePlan(plan);
+    // Gather context and create provider for LLM field filling
+    const provider = createLLMProvider();
+    const context = await contentPlanService.gatherContext();
+    const stagingResult = await stagePlan(plan, { provider, context });
+
+    if (stagingResult.success) {
+      // Persist LLM-filled fields and lore references back to the database
+      await queryOLTP(
+        'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+        [plan, id]
+      );
+    }
 
     // Auto-generate local drafts for pending asset needs (non-fatal on error)
     if (stagingResult.success) {
@@ -280,15 +292,25 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
       return;
     }
 
+    // Gather context and create provider for LLM field filling
+    const provider = createLLMProvider();
+    const context = await contentPlanService.gatherContext();
     // Re-run staging
-    const stagingResult = await stagePlan(plan);
+    const stagingResult = await stagePlan(plan, { provider, context });
 
-    // Update plan status based on staging result
+    // Update plan status and persist LLM-filled fields based on staging result
     const newStatus = stagingResult.success ? 'staged' : 'failed';
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      [newStatus, id]
-    );
+    if (stagingResult.success) {
+      await queryOLTP(
+        'UPDATE content_plans SET plan_json = $1, status = $2, updated_at = NOW() WHERE id = $3',
+        [plan, newStatus, id]
+      );
+    } else {
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        [newStatus, id]
+      );
+    }
 
     res.json({
       success: stagingResult.success,

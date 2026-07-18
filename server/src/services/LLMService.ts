@@ -1,11 +1,11 @@
 import { LiteLLMProvider } from './LiteLLMProvider.js';
 import { MockProvider } from './MockProvider.js';
-import { buildSystemPrompt, buildRefinementPrompt, buildLorePrompt } from './LLMPrompts.js';
+import { buildSystemPrompt, buildRefinementPrompt, buildLorePrompt, buildFillFieldsPrompt } from './LLMPrompts.js';
 import type { ExistingContentContext, LLMProvider } from './types/LLMTypes.js';
 export type { ExistingContentContext, LLMProvider };
 
 // Re-export providers and prompt builders for backwards compatibility
-export { LiteLLMProvider, MockProvider, buildSystemPrompt, buildRefinementPrompt, buildLorePrompt };
+export { LiteLLMProvider, MockProvider, buildSystemPrompt, buildRefinementPrompt, buildLorePrompt, buildFillFieldsPrompt };
 
 export function createLLMProvider(): LLMProvider {
   const provider = process.env.LLM_PROVIDER || 'mock';

@@ -167,4 +167,34 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
 `;
     }
   }
+
+  async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {
+    // Mock provider returns reasonable defaults based on common patterns
+    const fields: Record<string, string> = {};
+
+    // Simple heuristic: extract item name from context clues in the prompt
+    // In production, the real LLM would generate these properly
+    if (prompt.includes('character')) {
+      fields['description'] = 'A weathered resident of Las Flores, shaped by the neon-soaked streets and corporate grind of 2077.';
+      fields['metadata.personality'] = 'streetwise';
+      fields['title'] = 'Resident of Las Flores';
+    } else if (prompt.includes('scene')) {
+      fields['description'] = 'Rain-slicked streets reflect the kaleidoscope of neon above, casting long shadows between corporate towers.';
+      fields['mood'] = 'atmospheric, tense';
+    } else if (prompt.includes('location')) {
+      fields['description'] = 'A notable landmark in the sprawling cityscape of Las Flores.';
+      fields['history'] = 'Built during the first wave of corporate expansion, this location has seen decades of change.';
+      fields['daytime'] = 'Bustling with commuters and street vendors.';
+      fields['nightlife'] = 'Transformed by neon signs and underground music.';
+    } else if (prompt.includes('dialogue')) {
+      fields['description'] = 'A conversation that reveals hidden truths about the city.';
+    } else if (prompt.includes('mission')) {
+      fields['description'] = 'A mission that could change the fate of Las Flores.';
+    } else {
+      fields['description'] = 'A piece of content in the world of Las Flores 2077.';
+    }
+
+    return { fields, lore_refs: [] };
+  }
+
 }

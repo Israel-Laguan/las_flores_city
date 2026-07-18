@@ -90,4 +90,26 @@ describe('ContentPlanSchema.superRefine', () => {
     });
     expect(ContentPlanSchema.safeParse(plan).success).toBe(true);
   });
+
+  it('accepts item with optional lore_refs', () => {
+    const plan = makePlan({
+      items: [
+        makeItem({ id: uuidFromChar('1'), lore_refs: ['diego', 'neon_flask'] }),
+      ],
+    });
+    expect(ContentPlanSchema.safeParse(plan).success).toBe(true);
+  });
+
+  it('accepts item without lore_refs (optional field)', () => {
+    const plan = makePlan({
+      items: [
+        makeItem({ id: uuidFromChar('1') }),
+      ],
+    });
+    const result = ContentPlanSchema.safeParse(plan);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.items[0].lore_refs).toBeUndefined();
+    }
+  });
 });
