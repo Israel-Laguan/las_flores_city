@@ -1,6 +1,8 @@
-# Podman Dev Command
-
-> **Note**: This documentation has been moved from `.kilo/command/podman-dev.md` to `.agents/podman/podman-dev.md` for accessibility by all agents.
+---
+description: Run, start, stop, or manage the Podman development environment for Las Flores 2077. Use when the user asks to bring up, tear down, or check the Podman stack. Do not use Docker commands when the target is Podman.
+allowed-tools: bash
+argument-hint: "[start|stop|status|health|test <path>]"
+---
 
 Use this command when the user asks to run, start, stop, or manage the Podman development environment for Las Flores 2077. Do not use Docker commands when the target is Podman.
 

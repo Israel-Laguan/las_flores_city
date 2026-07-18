@@ -4,20 +4,19 @@ This directory contains Podman-specific documentation for setting up and managin
 
 ## Files
 
-| File | Purpose | Source |
+| File | Purpose | Format |
 |------|---------|--------|
-| [podman-ops.md](./podman-ops.md) | Operational guidelines for Podman-based deployments | Moved from `.kilo/agent/podman-ops.md` |
-| [podman-dev.md](./podman-dev.md) | Command reference for starting/stopping services | Moved from `.kilo/command/podman-dev.md` |
+| [podman-ops.md](./podman-ops.md) | Behavioral agent enforcing correct Podman operational patterns (IP discovery, env vars, health checks, teardown) | Agent (YAML frontmatter + `prompt` body) |
+| [podman-dev.md](./podman-dev.md) | Command reference for starting/stopping services and running tests | Command (YAML frontmatter + instruction body) |
+| [SKILL.md](./SKILL.md) | Skill documenting common Podman pitfalls and the correct build/lint/test/health workflow | Skill |
 
 ## Why .agents/podman?
 
-These files were originally in `.kilo/` directories which are specific to the Kilo Code agent. By moving them to `.agents/podman/`, they become accessible to **all agents** including:
-
-- Mistral Vibe (you)
-- Kilo Code
-- Any other AI coding assistants
-
-This ensures consistent Podman operational knowledge across all agents working on this project.
+These files hold Podman operational knowledge for Las Flores 2077 in a
+tool-agnostic location so any AI coding assistant can read them. They are
+authored in the **Kilo agent/command format** (YAML frontmatter + markdown body)
+so they can be lifted into `.kilo/agent/` or `.kilo/command/` verbatim if a
+project wants Kilo to load them automatically.
 
 ## Quick Reference
 
