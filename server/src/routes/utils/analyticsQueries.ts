@@ -1,4 +1,4 @@
-import { queryOLTP } from '../../database/connection.js';
+import { queryOLTP, queryOLAP } from '../../database/connection.js';
 
 export interface DialogueRow {
   event_type: string;
@@ -67,12 +67,12 @@ export async function fetchAnalyticsQueries() {
 
   return {
     dialogueRates,
-    storyBeatReach: (storyBeatReach?.rows ?? []).map(row => ({
+    storyBeatReach: (storyBeatReach?.rows ?? []).map((row: StoryBeatRow) => ({
       storyBeat: row.story_beat, uniquePlayers: Number(row.unique_players),
       reachPercentage: playerCount > 0 ? Math.round((Number(row.unique_players) / playerCount) * 100) : 0,
     })),
     mysteryStatus: mysteryStatus.rows,
-    timeBlockSpend: (tbSpend?.rows ?? []).map(row => ({
+    timeBlockSpend: (tbSpend?.rows ?? []).map((row: TbSpendRow) => ({
       eventType: row.event_type, contentType: row.content_type, totalTbSpent: Number(row.total_tb),
     })),
     totalPlayers: playerCount,
