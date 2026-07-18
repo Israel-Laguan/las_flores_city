@@ -84,11 +84,16 @@ export function mergeFilledFields(
   item: ContentPlanItem,
   filledFields: Record<string, string>,
 ): void {
+  const filledPaths = new Set(item.filled_fields ?? []);
   for (const [path, value] of Object.entries(filledFields)) {
     const current = getNestedField(item.fields, path);
     // Only override if the current value is TODO or empty
     if (!current || current === '' || (typeof current === 'string' && current.startsWith('TODO'))) {
       setNestedField(item.fields, path, value);
+      filledPaths.add(path);
     }
   }
+  // Record provenance so the Review UI can distinguish LLM-filled from
+  // author-provided values, and so edits survive the merge.
+  item.filled_fields = Array.from(filledPaths);
 }
