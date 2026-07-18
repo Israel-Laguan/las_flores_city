@@ -94,19 +94,25 @@ beforeAll(async () => {
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
      VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
-     ON CONFLICT (id) DO NOTHING`,
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
     [APARTMENT_ID, 'The Apartment', 'Test apartment location', DOWNTOWN_ID]
   );
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
      VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true}'::jsonb)
-     ON CONFLICT (id) DO NOTHING`,
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
     [WELCOME_CENTER_ID, 'Welcome Center', 'Test welcome center location', DOWNTOWN_ID]
   );
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
      VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
-     ON CONFLICT (id) DO NOTHING`,
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
     [CAFE_ID, 'The Cafe', 'Test cafe location', OLD_TOWN_ID]
   );
 
