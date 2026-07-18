@@ -20,7 +20,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
     templates,
     handleGeneratePlan, handleRefine,
-    handleApproveAndSolidify, handleSelectTemplate,
+    handleApproveAndSolidify, handleSelectTemplate, handleClone, contentTree,
     handleRegenerateLore,
     handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
@@ -55,6 +55,8 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           loading={loading}
           templates={templates}
           onSelectTemplate={handleSelectTemplate}
+          contentTree={contentTree}
+          onClone={handleClone}
         />
       )}
 

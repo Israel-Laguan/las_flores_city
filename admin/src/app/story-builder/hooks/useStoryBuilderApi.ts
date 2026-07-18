@@ -78,6 +78,19 @@ export async function fetchTemplates() {
   );
 }
 
+export async function cloneEntity(sourcePath: string, newName: string) {
+  return postJSON<{ success: boolean; data?: { item: any }; error?: string }>(
+    '/admin/story-builder/clone',
+    { sourcePath, newName },
+  );
+}
+
+export async function fetchContentTree() {
+  return adminFetch<{ success: boolean; data?: { tree: Array<{ path: string; name: string; type: string; size: number; modifiedAt: string }> } }>(
+    '/admin/content/tree',
+  );
+}
+
 export async function approvePlan(planId: string, plan: ContentPlan) {
   return adminFetch<{ success: boolean; data?: { planId: string; status: string }; error?: string }>(
     `/admin/story-builder/plans/${planId}`,

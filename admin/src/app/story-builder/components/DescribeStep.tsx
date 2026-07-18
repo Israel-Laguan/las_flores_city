@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { cn } from '@las-flores/ui';
 import styles from './DescribeStep.module.css';
 
@@ -10,9 +11,20 @@ interface DescribeStepProps {
   loading: boolean;
   templates: Array<{ id: string; label: string; description: string; icon: string }>;
   onSelectTemplate: (id: string) => void;
+  contentTree: Array<{ path: string; name: string; type: string }>;
+  onClone: (sourcePath: string, newName: string) => void;
 }
 
-export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate }: DescribeStepProps) {
+export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate, contentTree, onClone }: DescribeStepProps) {
+  const [cloneSource, setCloneSource] = useState('');
+  const [cloneName, setCloneName] = useState('');
+  const [showClone, setShowClone] = useState(false);
+
+  const grouped = contentTree.reduce<Record<string, typeof contentTree>>((acc, entry) => {
+    (acc[entry.type] ??= []).push(entry);
+    return acc;
+  }, {});
+
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionHeading}>Step 1: Describe What You Want</h2>
@@ -38,6 +50,62 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
           <p className={styles.templateHint}>
             Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
           </p>
+        </div>
+      )}
+
+
+      {contentTree.length > 0 && (
+        <div className={styles.subsection}>
+          <div className={styles.cloneHeader}>
+            <h3 className={styles.templatesTitle}>Clone Existing</h3>
+            <button
+              className={styles.templateButton}
+              onClick={() => setShowClone(!showClone)}
+              disabled={loading}
+            >
+              {showClone ? 'Hide' : 'Clone as Template'}
+            </button>
+          </div>
+          {showClone && (
+            <div className={styles.cloneForm}>
+              <div className={styles.field}>
+                <label className={styles.label}>Source Entity *</label>
+                <select
+                  className={styles.select}
+                  value={cloneSource}
+                  onChange={e => setCloneSource(e.target.value)}
+                >
+                  <option value="">Select an entity to clone...</option>
+                  {Object.entries(grouped).map(([type, entries]) => (
+                    <optgroup key={type} label={type}>
+                      {entries.map(e => (
+                        <option key={e.path} value={e.path}>
+                          {e.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>New Name *</label>
+                <input
+                  className={styles.input}
+                  type="text"
+                  value={cloneName}
+                  onChange={e => setCloneName(e.target.value)}
+                  placeholder="Enter a name for the cloned entity"
+                />
+              </div>
+              <button
+                className={cn(styles.button, styles.primaryButton, (loading || !cloneSource || !cloneName.trim()) && styles.disabledButton)}
+                onClick={() => { if (cloneSource && cloneName.trim()) onClone(cloneSource, cloneName.trim()); }}
+                disabled={loading || !cloneSource || !cloneName.trim()}
+              >
+                Clone
+              </button>
+            </div>
+          )}
         </div>
       )}
 

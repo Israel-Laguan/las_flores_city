@@ -121,6 +121,30 @@ export function createStoryPlanHandlers(cb: Callbacks) {
     }
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
 
+
+  const handleClone = useCallback(async (sourcePath: string, newName: string) => {
+    const data = await withLoading(setLoading, setError, () =>
+      api.cloneEntity(sourcePath, newName));
+    if (!data || !data.success) return;
+    const newItem = data.data!.item;
+    if (plan) {
+      setPlan({ ...plan, items: [...plan.items, newItem] });
+    } else {
+      const newPlan: ContentPlan = {
+        id: crypto.randomUUID(),
+        description: `Cloned: ${newName}`,
+        items: [newItem],
+        links: [],
+        status: 'draft',
+      };
+      setPlan(newPlan);
+      setStep(2);
+      api.savePlan(`Cloned: ${newName}`, newPlan)
+        .then(r => { if (r.success && r.data) setPlanId(r.data.planId); })
+        .catch(e => console.error('Auto-save failed:', e));
+    }
+  }, [plan, setLoading, setError, setPlan, setStep, setPlanId]);
+
   const handleRegenerateLore = useCallback(async (planId: string, itemId: string) => {
     const data = await withLoading(setLoading, setError, () => api.regenerateLore(planId, itemId));
     if (!data) return;
@@ -130,7 +154,7 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   const { handleGenerateDrafts, handleChooseDraft } = createDraftPlanHandlers({ setLoading, setError, setPlan });
 
   return {
-    handleGeneratePlan, handleRefine, handleSelectTemplate,
+    handleGeneratePlan, handleRefine, handleSelectTemplate, handleClone,
     handleRegenerateLore, handleGenerateDrafts, handleChooseDraft,
     handleApproveAndSolidify,
   };

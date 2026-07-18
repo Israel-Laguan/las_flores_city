@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
 import type { Step } from '../types';
-import { loadPlanFromDb, fetchTemplates } from './useStoryBuilderApi';
+import { loadPlanFromDb, fetchTemplates, fetchContentTree } from './useStoryBuilderApi';
 import { useStoryPlanApi } from './useStoryPlanApi';
 import * as mutations from './useStoryBuilderMutations';
 import type { SolidifyResultLite } from '../components/ResultsStep';
@@ -26,6 +26,7 @@ export function useStoryBuilder(initialPlanId: string | null) {
   const [showRefine, setShowRefine] = useState(false);
   const [solidifyResult, setSolidifyResult] = useState<SolidifyResultLite | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
+  const [contentTree, setContentTree] = useState<Array<{ path: string; name: string; type: string }>>([]);
 
   const apiCallbacks = useStoryPlanApi({
     setLoading, setError, setPlan, setStep, setPlanId,
@@ -56,6 +57,12 @@ export function useStoryBuilder(initialPlanId: string | null) {
   }, []);
 
   useEffect(() => {
+    fetchContentTree()
+      .then(data => { if (data.success) setContentTree(data.data?.tree ?? []); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && step === 1 && description.trim() && !loading) {
         e.preventDefault();
@@ -77,11 +84,12 @@ export function useStoryBuilder(initialPlanId: string | null) {
   return {
     step, description, setDescription, plan, loading, error, planId,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
-    solidifyResult, templates,
+    solidifyResult, templates, contentTree,
     handleGeneratePlan: apiCallbacks.handleGeneratePlan,
     handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
     handleApproveAndSolidify: () => { if (planId) apiCallbacks.handleApproveAndSolidify(planId); },
     handleSelectTemplate: apiCallbacks.handleSelectTemplate,
+    handleClone: apiCallbacks.handleClone,
     handleRegenerateLore: (itemId: string) => { if (planId) apiCallbacks.handleRegenerateLore(planId, itemId); },
     handleGenerateDrafts: async (count?: number) => { if (planId) await apiCallbacks.handleGenerateDrafts(planId, count); },
     handleChooseDraft: async (itemId: string, promptType: string, filename: string) => {
