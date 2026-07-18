@@ -87,9 +87,6 @@ describe('M14 fill pass: TODO -> filled transition + provenance', () => {
     const result = await fillFields(item, mockContext, provider);
     mergeFilledFields(item, result.fields);
 
-    const remainingTodos = Object.values(item.fields).filter(
-      (v) => typeof v === 'string' && v.startsWith('TODO')
-    );
-    expect(remainingTodos).toHaveLength(0);
+    expect(JSON.stringify(item.fields)).not.toContain('TODO');
   });
 });

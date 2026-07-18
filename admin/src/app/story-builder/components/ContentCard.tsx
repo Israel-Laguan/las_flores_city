@@ -192,7 +192,7 @@ function FieldsSection({ fields, item, onFieldChange }: {
     <div>
       {fields.map((field) => {
         const value = getNestedValue(item.fields, field.key);
-        const isTodo = typeof value === 'string' && value.startsWith('TODO');
+        const isTodo = value.startsWith('TODO');
         const isFilled = !isTodo && !!value && item.filled_fields?.includes(field.key);
         return (
           <div key={field.key} className={styles.fieldGroup}>

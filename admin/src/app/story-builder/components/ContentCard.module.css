@@ -195,8 +195,8 @@
 }
 
 .todoBadge {
-  background: rgba(255, 165, 0, 0.15);
-  color: #ffa500;
+  background: rgba(255, 170, 0, 0.15);
+  color: var(--warning);
 }
 
 .filledBadge {

@@ -132,6 +132,7 @@ export function buildShopkeeperPlan(userDescription: string): ContentPlan {
 export function buildLocationPlan(userDescription: string): ContentPlan {
   const locationId = crypto.randomUUID();
   const sceneId = crypto.randomUUID();
+  const dialogueId = crypto.randomUUID();
 
   return {
     id: crypto.randomUUID(),
@@ -168,6 +169,7 @@ export function buildLocationPlan(userDescription: string): ContentPlan {
         dependsOn: [locationId],
       }),
       createItem({
+        id: dialogueId,
         type: 'dialogue',
         name: 'Location Dialogue',
         slug: 'location_dialogue',
@@ -189,7 +191,7 @@ export function buildLocationPlan(userDescription: string): ContentPlan {
       }),
     ],
     links: [
-      { fromItem: sceneId, toItem: locationId, field: 'available_dialogues', action: 'add' },
+      { fromItem: sceneId, toItem: dialogueId, field: 'available_dialogues', action: 'add' },
     ],
     status: 'draft',
   };
