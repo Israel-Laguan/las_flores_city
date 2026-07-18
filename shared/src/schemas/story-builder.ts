@@ -7,7 +7,7 @@ const contentType = ContentTypeSchema;
 export const AssetNeedSchema = z.object({
   promptType: z.string(),        // 'portrait' | 'background' | 'biometric' | etc.
   targetField: z.string(),       // e.g. "portrait_urls[0].url"
-  status: z.enum(['pending', 'drafted', 'chosen', 'published', 'assigned', 'failed']).default('pending'),
+  status: z.enum(['pending', 'generating', 'drafted', 'chosen', 'published', 'assigned', 'failed']).default('pending'),
 });
 
 export const ContentPlanItemSchema = z.object({

@@ -38,6 +38,7 @@ import { testConnections, closeConnections } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
+import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 
 dotenv.config();
 
@@ -173,6 +174,10 @@ async function initializeServer() {
     process.exit(1);
   }
 
+  // Startup reconciliation: reset stalled `generating` asset needs to `pending`
+  // so ContentAssetWorker can retry them on the first tick.
+  await ContentAssetWorker.reclaimStalledNeeds();
+
   // Start server
   app.listen(PORT, () => {
     console.log(`🎮 Las Flores 2077 Server running on port ${PORT}`);
@@ -189,6 +194,15 @@ async function initializeServer() {
     );
   }, LEADERBOARD_INTERVAL_MS);
   console.log(`🏆 LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
+
+  // Content asset worker — generate pending image drafts for verified plans every 30 seconds
+  const ASSET_WORKER_INTERVAL_MS = 30 * 1000;
+  setInterval(() => {
+    ContentAssetWorker.processPendingImageGeneration().catch((err) =>
+      console.error('[ContentAssetWorker] cron tick error:', err)
+    );
+  }, ASSET_WORKER_INTERVAL_MS);
+  console.log(`🎨 ContentAssetWorker scheduled every ${ASSET_WORKER_INTERVAL_MS / 1000}s`);
 }
 
 // Graceful shutdown
