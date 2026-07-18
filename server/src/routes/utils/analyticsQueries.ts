@@ -1,5 +1,4 @@
-import { queryOLAP } from '../../database/connection.js';
-import { queryOLTP } from '../../database/connection.js';
+import { queryOLTP, queryOLAP } from '../../database/connection.js';
 
 export interface DialogueRow {
   event_type: string;
@@ -68,14 +67,69 @@ export async function fetchAnalyticsQueries() {
 
   return {
     dialogueRates,
-    storyBeatReach: (storyBeatReach?.rows ?? []).map(row => ({
+    storyBeatReach: (storyBeatReach?.rows ?? []).map((row: StoryBeatRow) => ({
       storyBeat: row.story_beat, uniquePlayers: Number(row.unique_players),
       reachPercentage: playerCount > 0 ? Math.round((Number(row.unique_players) / playerCount) * 100) : 0,
     })),
     mysteryStatus: mysteryStatus.rows,
-    timeBlockSpend: (tbSpend?.rows ?? []).map(row => ({
+    timeBlockSpend: (tbSpend?.rows ?? []).map((row: TbSpendRow) => ({
       eventType: row.event_type, contentType: row.content_type, totalTbSpent: Number(row.total_tb),
     })),
     totalPlayers: playerCount,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Admin / Story Builder analytics (M17)
+// ---------------------------------------------------------------------------
+
+export interface AdminAnalyticsData {
+  plansCreated24h: number;
+  plansCreated7d: number;
+  eventsByType: Array<{ event_type: string; count: number }>;
+  avgItemsPerPlan: number;
+  successRate: number;
+}
+
+export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
+  const [plans24h, plans7d, eventsByType, avgItemsPerPlan, terminalEvents] = await Promise.all([
+    queryOLTP<{ count: string }>(
+      `SELECT count(*)::int AS count FROM admin_events
+       WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '24 hours'`
+    ),
+    queryOLTP<{ count: string }>(
+      `SELECT count(*)::int AS count FROM admin_events
+       WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '7 days'`
+    ),
+    queryOLTP<{ event_type: string; count: string }>(
+      `SELECT event_type, count(*)::int AS count FROM admin_events
+       WHERE created_at > NOW() - INTERVAL '7 days'
+       GROUP BY event_type ORDER BY count DESC`
+    ),
+    queryOLTP<{ avg_items: string }>(
+      `SELECT round(avg((event_data->>'itemCount')::numeric), 1) AS avg_items
+       FROM admin_events
+       WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '7 days'`
+    ),
+    queryOLTP<{ verified: string; failed: string }>(
+      `SELECT
+         count(*) FILTER (WHERE event_type = 'plan_verified')::int AS verified,
+         count(*) FILTER (WHERE event_type = 'plan_failed')::int AS failed
+       FROM admin_events
+       WHERE event_type IN ('plan_verified', 'plan_failed')
+         AND created_at > NOW() - INTERVAL '7 days'`
+    ),
+  ]);
+
+  const verified = Number(terminalEvents?.rows[0]?.verified ?? 0);
+  const failed = Number(terminalEvents?.rows[0]?.failed ?? 0);
+  const total = verified + failed;
+
+  return {
+    plansCreated24h: Number(plans24h?.rows[0]?.count ?? 0),
+    plansCreated7d: Number(plans7d?.rows[0]?.count ?? 0),
+    eventsByType: (eventsByType?.rows ?? []).map(r => ({ event_type: r.event_type, count: Number(r.count) })),
+    avgItemsPerPlan: Number(avgItemsPerPlan?.rows[0]?.avg_items ?? 0),
+    successRate: total > 0 ? Math.round((verified / total) * 100) : 0,
   };
 }

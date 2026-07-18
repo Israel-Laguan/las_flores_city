@@ -1,44 +1,43 @@
 # Next Steps
 
-> Consolidated list of open **action items** across the admin panel, content intake, and story-progression areas. When an item is done, remove it here and update the relevant long-term reference doc.
+> Open **action items** and **gaps** across the admin panel, content intake, and story-progression areas. When an item is done, remove it here and update the relevant long-term reference doc.
 >
-> Open **design questions** (decisions, not tasks) live in `docs/STORY_BUILDER_DESIGN.md` §6. **Future extensions** (aspirational, not planned) live in `docs/STORY_BUILDER_DESIGN.md` §4.4.
->
-> Last updated: 2026-07-17
+> Last updated: 2026-07-18
 
 ---
 
-## Completed
+## Open work
 
-The following items have shipped and are documented in their respective reference files:
+### Intake integrity
 
-### Story progression
-- **Dialogue-tree gating by beat** — scenes gate via `metadata.required_story_beat` in `location.ts:244-271`; dialogues mirror this pattern via `isStoryBeatAllowed` in `dialogue-helpers.ts`. See `docs/STORY_BUILDER_DESIGN.md` §7 for authoritative semantics.
+- **DB rollback on verify-after-migrate failure** — `migrateStagedPlan()` writes rows to Postgres before `verifyStagedPlan()` runs. If verification fails after the write, there is no automatic rollback. Decide + implement: capture written row PKs during migrate and delete them on verify failure, or re-run migrate after the author fixes the content.
 
-### Admin panel
-- **`cn` centralization** — thin `cn` helper removed; all admin imports use `@las-flores/ui`. See `docs/UI_STYLE_SYSTEM.md`.
-- **Page-level `.module.css` migration** — login page uses shared `.input` and `.btn` classes. Pattern can be applied to other pages incrementally.
-- **React wrappers in `@las-flores/ui`** — `Button`, `Input`, `Card`, `Badge` are opt-in thin wrappers around global CSS classes.
+### Analytics completeness (M17 follow-up)
 
-### Content pipeline refactor (M01-M08)
-All eight milestones shipped and documented in `docs/STORY_BUILDER_DESIGN.md` §4 "Shipped state":
-1. Colocated lore into per-entity folders under `content/` (self-contained character/scene/location folders)
-2. Extended plan state machine (draft → proposed → approved → staged → migrated → verified → failed) with verification reporting
-3. Added per-asset dev/staging/production cascade with server-side resolution via `AssetStageResolver`
+- **LLM token/cost tracking per plan** — `admin_events.event_data` is emitted for plan lifecycle events (`plan_created`, `plan_staged`, `plan_verified`, `plan_failed`) and user/settings events, but `LLMService.ts`/`LiteLLMProvider.ts` do not expose usage/token/cost fields today. Capture Provider-returned token counts and estimated cost into `event_data` so the analytics dashboard can surface LLM spend per plan.
+- **`admin_events` retention/TTL** — `053_admin_events.sql` creates the table with no retention policy. Decide + implement: a TTL (`created_at`-based purge), an `ON DELETE CASCADE` from `content_plans` for plan-scoped events, or an explicit archiving + deletion cron. If indefinite retention is required (for audit), document that decision here and in the migration.
+
+### Mission reporting (M15 follow-up)
+
+- **Mission completion/admin stats view** — `mission_reward_claims` is written atomically when a player claims a mission reward (`dialogue-helpers.ts:189`, `IronGateValidator.ts:253`), but no admin aggregation surface exists. Add a query + UI widget showing completion rate, claim counts, and unique users per mission, on `/missions` or `/analytics`.
+
+### Future extensions (aspirational, not planned)
+
+- Tiered asset needs (major/standard/minor character).
+- Collaborative editing.
+- Clone-and-link mode (e.g., clone a character and auto-link dialogue to the original character's ID).
+- External queue (BullMQ/streams) / SSE / horizontal scaling beyond single server — requires AGENTS.md constraint lift on new infra.
 
 ---
 
-## Pending Work
+## Out of scope for current roadmap
 
-### Admin panel — Out of scope for current roadmap
-
-- `/users` and `/settings` stubs remain as placeholder routes. These are intentionally
-  deferred to a future milestone focused on user management features.
+- `/users` and `/settings` admin pages are shipped (user management + editable system settings).
 
 ---
 
 ## Related docs
 
-- `docs/STORY_BUILDER_DESIGN.md` — shipped implementation, open questions (§6), future extensions (§4.4)
+- `docs/STORY_BUILDER_DESIGN.md` — shipped implementation, remaining open work (§4.4)
 - `docs/ADMIN_ARCHITECTURE.md` — admin panel structure and conventions
 - `docs/DATA_INTAKE.md` — content intake paths

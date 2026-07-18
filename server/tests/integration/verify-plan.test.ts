@@ -10,7 +10,8 @@ import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn(),
+  queryOLTP: jest.fn(async () => ({ rows: [], rowCount: 0, command: '', oid: 0, fields: [] })),
+  queryOLAP: jest.fn(async () => ({ rows: [] })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({

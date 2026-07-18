@@ -36,6 +36,7 @@ jest.mock('node:fs/promises', () => ({
 
 jest.mock('../../src/database/connection.js', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [] })),
+  queryOLAP: jest.fn(async () => ({ rows: [] })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({

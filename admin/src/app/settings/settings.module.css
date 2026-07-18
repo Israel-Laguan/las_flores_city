@@ -1,0 +1,70 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.heading {
+  margin-bottom: 1.5rem;
+}
+
+.settingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settingRow {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+.settingHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.settingKey {
+  font-family: var(--font-mono);
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.settingDesc {
+  font-size: 0.85rem;
+}
+
+.settingValue {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.valuePre {
+  flex: 1;
+  background: var(--panel-bg);
+  padding: 0.5rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.settingEdit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.valueTextarea {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.5rem;
+}

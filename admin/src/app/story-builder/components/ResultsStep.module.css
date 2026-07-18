@@ -81,6 +81,11 @@
   font-size: 0.9rem;
 }
 
+.pollingHint {
+  margin-left: 0.5rem;
+  opacity: 0.6;
+}
+
 .subsection {
   margin-bottom: 1.25rem;
 }

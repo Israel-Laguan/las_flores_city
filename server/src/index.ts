@@ -34,11 +34,14 @@ import { adminStoryBuilderRouter } from './routes/admin-story-builder.js';
 import { adminAssetRouter } from './routes/admin-asset.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminAnalyticsRouter } from './routes/admin-analytics.js';
+import { adminUsersRouter } from './routes/admin-users.js';
+import { adminSettingsRouter } from './routes/admin-settings.js';
 import { testConnections, closeConnections } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
+import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
 
 dotenv.config();
 
@@ -143,6 +146,8 @@ app.use('/admin/stats', adminStatsRouter);
 app.use('/admin/story-builder', adminStoryBuilderRouter);
 app.use('/admin/asset', adminAssetRouter);
 app.use('/admin/analytics', adminAnalyticsRouter);
+app.use('/admin/users', adminUsersRouter);
+app.use('/admin/settings', adminSettingsRouter);
 app.use('/admin', adminListViewsRouter);
 
 // Error handling middleware
@@ -177,6 +182,9 @@ async function initializeServer() {
   // Startup reconciliation: reset stalled `generating` asset needs to `pending`
   // so ContentAssetWorker can retry them on the first tick.
   await ContentAssetWorker.reclaimStalledNeeds();
+
+  // Startup recovery: reset orphaned in-flight solidify jobs to failed.
+  await resetOrphanedSolidifyJobs();
 
   // Start server
   app.listen(PORT, () => {

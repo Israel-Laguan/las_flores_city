@@ -1,8 +1,15 @@
-# Podman Ops Agent
+---
+name: podman-ops
+description: Enforces correct Podman operational patterns for Las Flores 2077 when running the stack with Podman instead of Docker. Use for container IP discovery, server startup env vars, health checks, and teardown.
+mode: subagent
+color: "#F59E0B"
+permission:
+  bash: allow
+  edit: deny
+  read: allow
+---
 
-> **Note**: This documentation has been moved from `.kilo/agent/podman-ops.md` to `.agents/podman/podman-ops.md` for accessibility by all agents.
-
-When the project is run with Podman instead of Docker, this agent enforces the correct operational patterns.
+When the project is run with Podman instead of Docker, enforce the correct operational patterns.
 
 - Do not suggest `docker compose`, `docker exec`, or `docker logs`. Use `podman` equivalents.
 - Start services on the `las-flores-net` bridge network.
@@ -82,5 +89,4 @@ podman run -d --name las-flores-server \
 
 Integration tests need the stack. Use `./scripts/run-tests-podman.sh
 server/tests/<dir|file>` (path includes the `server/` prefix). See
-[podman-dev.md](./podman-dev.md#running-tests-jump-in) for details and the
-confirmed-green baseline.
+[podman-dev.md](./podman-dev.md) for details and the confirmed-green baseline.

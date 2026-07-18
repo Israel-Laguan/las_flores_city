@@ -31,6 +31,8 @@ function NavLinksRow() {
       <Link href="/coverage" className={styles.navLink}>Coverage</Link>
       <Link href="/asset-coverage" className={styles.navLink}>Assets</Link>
       <Link href="/asset-promotion" className={styles.navLink}>Promote</Link>
+      <Link href="/users" className={styles.navLink}>Users</Link>
+      <Link href="/settings" className={styles.navLink}>Settings</Link>
     </div>
   );
 }

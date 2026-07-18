@@ -1,14 +1,19 @@
-import path from 'node:path';
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
-import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, verifyPlan } from '../services/StoryBuilderOrchestrator.js';
-import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
-import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
+import {
+  previewPlan,
+  migrateStagedPlan,
+  approveAndSolidifyPlan,
+  verifyPlan,
+  getSolidifyJobStatus,
+} from '../services/StoryBuilderOrchestrator.js';
 import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
-import { createLLMProvider } from '../services/LLMService.js';
+import { handleGetVerificationReport } from './admin-story-builder-verification.js';
+import { emitAdminEvent } from '../services/AdminEventEmitter.js';
+import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -28,6 +33,8 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
 
     const plan = await contentPlanService.parseDescription(description.trim());
 
+    emitAdminEvent('plan_created', { descriptionLength: description.trim().length, itemCount: plan.items.length }, plan.id, req.userId);
+
     res.json({
       success: true,
       data: { plan },
@@ -44,7 +51,7 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
-adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
     const { feedback } = req.body;
@@ -55,6 +62,8 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req, res) => {
     }
 
     const refinedPlan = await contentPlanService.refinePlan(id, feedback.trim());
+
+    emitAdminEvent('plan_refined', { feedbackLength: feedback.trim().length, itemCount: refinedPlan.items.length }, refinedPlan.id, req.userId);
 
     res.json({
       success: true,
@@ -105,102 +114,31 @@ adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/stage — Write YAML + validate (no DB migration)
-adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
-    const result = await queryOLTP<{ plan_json: any; status: string }>(
-      'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+    const loaded = await loadPlanForStaging(id, ['proposed', 'approved']);
+    if (loaded.error) {
+      res.status(loaded.error.status).json({ success: false, error: loaded.error.message, timestamp: new Date().toISOString() });
       return;
     }
 
-    // Status guard: only allow staging if proposed or approved
-    const currentStatus = result.rows[0].status;
-    if (currentStatus !== 'proposed' && currentStatus !== 'approved') {
-      res.status(400).json({
-        success: false,
-        error: `Plan must be proposed or approved before staging. Current status: ${currentStatus}`,
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
+    const outcome = await runStagingPipeline(loaded.plan, id);
 
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
-      return;
-    }
+    const newStatus = outcome.success ? 'staged' : 'failed';
+    await queryOLTP('UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2', [newStatus, id]);
 
-    // Gather context and create provider for LLM field filling
-    const provider = createLLMProvider();
-    const context = await contentPlanService.gatherContext();
-    const stagingResult = await stagePlan(plan, { provider, context });
-
-    if (stagingResult.success) {
-      // Persist LLM-filled fields and lore references back to the database
-      await queryOLTP(
-        'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-        [plan, id]
-      );
-    }
-
-    // Auto-generate local drafts for pending asset needs (non-fatal on error)
-    if (stagingResult.success) {
-      const contentDir = path.resolve(process.cwd(), 'content');
-      try {
-        for (const item of plan.items) {
-          const pendingNeeds = item.assetNeeds.filter(n => n.status === 'pending');
-          if (pendingNeeds.length === 0) continue;
-
-          const entityRoot = resolveEntityRootDir(item, contentDir);
-          await generateLocalDrafts(item, entityRoot, 1);
-
-          // Auto-choose the first available draft
-          const assets = await listLocalAssets(entityRoot);
-          if (assets.length > 0) {
-            const firstDraft = assets[0].filename;
-            for (const need of pendingNeeds) {
-              markDrafted(need);
-            }
-            // Choose the first asset (default or generated) for all pending needs
-            if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
-            for (const need of pendingNeeds) {
-              const assetFieldName = need.targetField.split('.').pop()!;
-              (item.fields as any).asset_paths[assetFieldName] = firstDraft;
-              markChosen(need);
-            }
-            await writeAssetPathsToYaml(item, entityRoot, contentDir);
-          }
-        }
-        // Auto-select __default.png for any items that have it as first asset
-        await autoSelectDefaultDrafts(plan, contentDir);
-
-        // Persist auto-draft selections back to the plan
-        await queryOLTP(
-          'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-          [plan, id]
-        );
-      } catch (err: any) {
-        console.warn(`[story-builder] Auto-draft generation failed (non-fatal): ${err.message}`);
-      }
-    }
-
-    const newStatus = stagingResult.success ? 'staged' : 'failed';
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      [newStatus, id]
+    emitAdminEvent(
+      outcome.success ? 'plan_staged' : 'plan_failed',
+      { itemCount: loaded.plan.items.length, success: outcome.success },
+      id,
+      req.userId,
     );
 
     res.json({
-      success: stagingResult.success,
-      data: stagingResult,
+      success: outcome.success,
+      data: outcome,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -210,11 +148,18 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/migrate — Run DB migration for staged plan
-adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
     const migrationResult = await migrateStagedPlan(id);
+
+    emitAdminEvent(
+      migrationResult.success ? 'plan_migrated' : 'plan_failed',
+      { success: migrationResult.success, error: migrationResult.error },
+      id,
+      req.userId,
+    );
 
     const statusCode = migrationResult.success
       ? 200
@@ -231,12 +176,12 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/approve-and-solidify — Single-click "Approve & Ship"
-// Collapses stage → publish → migrate → verify into one call (Milestone 04).
-adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req, res) => {
+// Fires async solidify and returns immediately with status=planId for polling.
+adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
-    const result = await approveAndSolidifyPlan(id);
+    const result = await approveAndSolidifyPlan(id, req.userId);
 
     res.status(200).json({
       success: result.success,
@@ -259,62 +204,78 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   }
 });
 
-// POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
-adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
+// GET /admin/story-builder/plans/:id/status — Poll async solidify job status
+adminStoryBuilderActionsRouter.get('/plans/:id/status', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
-    // Load plan from DB
-    const result = await queryOLTP<{ plan_json: any; status: string }>(
-      'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
-    );
+    const jobStatus = await getSolidifyJobStatus(id);
 
-    if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    if (result.rows[0].status !== 'failed') {
-      res.status(400).json({
-        success: false,
-        error: `Can only retry failed plans. Current status: ${result.rows[0].status}`,
+    if (!jobStatus) {
+      // No job in progress — fall back to DB status
+      const result = await queryOLTP<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1',
+        [id],
+      );
+      if (result.rows.length === 0) {
+        res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+        return;
+      }
+      res.json({
+        success: true,
+        data: { planId: id, status: result.rows[0].status },
         timestamp: new Date().toISOString(),
       });
       return;
     }
 
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+    res.json({
+      success: true,
+      data: jobStatus,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] GET /plans/:id/status error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to fetch status', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
+adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+
+    const loaded = await loadPlanForStaging(id, ['failed']);
+    if (loaded.error) {
+      res.status(loaded.error.status).json({ success: false, error: loaded.error.message, timestamp: new Date().toISOString() });
       return;
     }
 
-    // Gather context and create provider for LLM field filling
-    const provider = createLLMProvider();
-    const context = await contentPlanService.gatherContext();
-    // Re-run staging
-    const stagingResult = await stagePlan(plan, { provider, context });
+    const outcome = await runStagingPipeline(loaded.plan, id);
 
-    // Update plan status and persist LLM-filled fields based on staging result
-    const newStatus = stagingResult.success ? 'staged' : 'failed';
-    if (stagingResult.success) {
+    const newStatus = outcome.success ? 'staged' : 'failed';
+    if (outcome.success) {
       await queryOLTP(
         'UPDATE content_plans SET plan_json = $1, status = $2, updated_at = NOW() WHERE id = $3',
-        [plan, newStatus, id]
+        [loaded.plan, newStatus, id],
       );
     } else {
       await queryOLTP(
         'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-        [newStatus, id]
+        [newStatus, id],
       );
     }
 
+    emitAdminEvent(
+      outcome.success ? 'plan_staged' : 'plan_failed',
+      { retryOf: id, success: outcome.success },
+      id,
+      req.userId,
+    );
+
     res.json({
-      success: stagingResult.success,
-      data: stagingResult,
+      success: outcome.success,
+      data: outcome,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -324,7 +285,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/verify — Run verification on a migrated plan
-adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
@@ -343,6 +304,12 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
         timestamp: new Date().toISOString(),
       });
       return;
+    }
+
+    if (report.passed) {
+      emitAdminEvent('plan_verified', { passed: report.passed, errorCount: report.errors?.length ?? 0 }, id, req.userId);
+    } else {
+      emitAdminEvent('plan_failed', { passed: false, errorCount: report.errors?.length ?? 0 }, id, req.userId);
     }
 
     res.json({
@@ -366,35 +333,4 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
 });
 
 // GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
-adminStoryBuilderActionsRouter.get('/plans/:id/verification', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const result = await queryOLTP<{ verification_report: any }>(
-      'SELECT verification_report FROM content_plans WHERE id = $1',
-      [id],
-    );
-
-    if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        error: 'Plan not found',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: { verification_report: result.rows[0].verification_report },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] GET /plans/:id/verification error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch verification report',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
+adminStoryBuilderActionsRouter.get('/plans/:id/verification', handleGetVerificationReport);

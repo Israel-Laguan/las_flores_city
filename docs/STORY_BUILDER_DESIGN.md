@@ -11,8 +11,8 @@
 > that make up the implementation.
 >
 > **Note (2026-07-17):** The per-milestone planning docs in `docs/milestones/` have
-> been removed. All eight milestones (M01-M08) are complete and their status is now
-> consolidated in `docs/NEXT_STEPS.md`.
+> been removed. All milestones (M01–M08, M13–M18) are complete; any remaining open
+> work is tracked in `docs/NEXT_STEPS.md`.
 
 ## 1. Context
 
@@ -1027,12 +1027,12 @@ migrate + verify), and the UI shows a 2-step flow for the happy path
 
 ### 4.4 Future extensions
 
-Not planned, but noted during design as natural extensions. These are aspirational and require their own design review before implementation:
+Not planned, but noted as natural extensions. These are aspirational and require their own design review before implementation. Remaining intake work is tracked in `docs/NEXT_STEPS.md`.
 
 - Tiered asset needs (major/standard/minor character).
-- LLM-generated content fill beyond skeletons.
-- Clone existing content as a template; collaborative editing.
-- Background job execution with polling for large plans.
+- Collaborative editing.
+- Clone-and-link mode (e.g., clone a character and auto-link dialogue to the original character's ID).
+- External queue (BullMQ/streams) / SSE / horizontal scaling beyond single server — requires AGENTS.md constraint lift on new infra.
 
 ---
 
@@ -1077,23 +1077,25 @@ Env vars used by the shipped implementation (`server/src/services/LLMService.ts`
 
 ## 6. Open Questions
 
-1. **Should the LLM have access to existing content?** If a user says "add a rival for Diego", the LLM needs to know who Diego is. Do we: (a) pass all character names, (b) let the LLM query via function calling, (c) ignore existing content?
+All questions are resolved. Multi-language support was decided against.
 
-2. **How do we handle lore references?** Content YAMLs have `lore_ref` fields. Should the plan include lore references, or should the user add them manually after execution?
+1. **Should the LLM have access to existing content?** Resolved: the LLM receives a `gatherContext()` summary (character/scene/dialogue/location names and IDs) via `ContentPlanService.gatherContext()` — not raw content, but enough to make informed choices.
 
-3. **What about story beats?** Story beats have a specific registry format. Should the story builder be able to create new story beats, or only reference existing ones?
+2. **How do we handle lore references?** Resolved: `ContentPlanItem.lore_refs?: string[]` is included in the plan schema (`shared/src/schemas/story-builder.ts:23`) and populated as LLM suggestions during `fillFields()`. Authors can confirm or edit them in the Review step.
 
-4. **How does this interact with the existing `/missions/new` wizard?** There's already a mission creation wizard. Should the story builder replace it, or should they coexist?
+3. **What about story beats?** Resolved: the story builder can reference existing story beats only. `ContentSkeletonGenerator.ts:158` produces a `story_beat` field in generated YAML; new beats must be added directly to `content/story_beats.yaml` and migrated separately.
 
-5. **Should we support "story templates"?** E.g., "Add a mystery" template that creates: mission + dialogue + overlay + vault item. How do we represent templates?
+4. **How does this interact with the existing `/missions/new` wizard?** Resolved: `/missions/new` redirects to `/story-builder` (`admin/src/app/missions/new/page.tsx`). The Story Builder is the single intake path; `/missions` remains browse-only.
 
-6. **What's the review process for LLM-generated content?** Should there be a "human approval required" step before content goes live, or does the plan approval step suffice?
+5. **Should we support "story templates"?** Resolved: plan-based templates exist in `PlanTemplates.ts` (add-mystery, add-shopkeeper, add-location). Templating via structured plans, not a separate mechanism.
 
-7. **How do we handle multi-language content?** Las Flores has Spanish and English content. Should the story builder support both, or is that a separate concern?
+6. **What's the review process for LLM-generated content?** Resolved: the plan Review step is the human approval gate. `filled_fields` provenance tracking (in `ContentPlanItem.filled_fields`) distinguishes template vs LLM-filled values.
 
-8. **What analytics should we track?** Plan creation rate, execution success rate, average items per plan, LLM cost per plan. What metrics help us improve the feature?
+7. **How do we handle multi-language content?** Resolved: not pursuing. Spanish and English content are handled by separate YAML files under `content/`.
 
-9. **Should `story_beat` be enforced strictly (404 if missing) or allow fallback dialogues?** Resolved: scenes already gate by `metadata.required_story_beat` (`server/src/routes/location.ts:244-271`); dialogues now mirror that pattern via `metadata.required_story_beat` on dialogue trees (`server/src/routes/dialogue-helpers.ts:resolveDialogueTree`, `isStoryBeatAllowed`). If the tree is gated and the player doesn\'t satisfy the gate, `resolveDialogueTree` returns `null` and `handleStartDialogue` 404s with the existing "No dialogue available" error.
+8. **What analytics should we track?** Resolved: `admin_events` OLAP table (`053_admin_events.sql`) with event emission for plan_created, plan_refined, plan_staged, plan_migrated, plan_verified, plan_failed, plus user/settings events. Remaining gap: LLM token/cost per plan (see `docs/NEXT_STEPS.md`).
+
+9. **Should `story_beat` be enforced strictly (404 if missing) or allow fallback dialogues?** Resolved: scenes gate by `metadata.required_story_beat` (`server/src/routes/location.ts:244-271`); dialogues mirror that pattern via `metadata.required_story_beat` on dialogue trees (`server/src/routes/dialogue-helpers.ts:resolveDialogueTree`, `isStoryBeatAllowed`). If the tree is gated and the player doesn't satisfy the gate, `resolveDialogueTree` returns `null` and `handleStartDialogue` 404s with the existing "No dialogue available" error.
 
 ---
 
