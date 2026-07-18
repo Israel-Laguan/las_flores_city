@@ -34,6 +34,8 @@ import { adminStoryBuilderRouter } from './routes/admin-story-builder.js';
 import { adminAssetRouter } from './routes/admin-asset.js';
 import { adminStatsRouter } from './routes/admin-stats.js';
 import { adminAnalyticsRouter } from './routes/admin-analytics.js';
+import { adminUsersRouter } from './routes/admin-users.js';
+import { adminSettingsRouter } from './routes/admin-settings.js';
 import { testConnections, closeConnections } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
@@ -143,6 +145,8 @@ app.use('/admin/stats', adminStatsRouter);
 app.use('/admin/story-builder', adminStoryBuilderRouter);
 app.use('/admin/asset', adminAssetRouter);
 app.use('/admin/analytics', adminAnalyticsRouter);
+app.use('/admin/users', adminUsersRouter);
+app.use('/admin/settings', adminSettingsRouter);
 app.use('/admin', adminListViewsRouter);
 
 // Error handling middleware

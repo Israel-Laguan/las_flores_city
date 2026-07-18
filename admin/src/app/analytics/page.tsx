@@ -13,6 +13,14 @@ interface AnalyticsData {
   totalPlayers: number;
 }
 
+interface StoryBuilderAnalytics {
+  plansCreated24h: number;
+  plansCreated7d: number;
+  eventsByType: Array<{ event_type: string; count: number }>;
+  avgItemsPerPlan: number;
+  successRate: number;
+}
+
 function StatCards({ data }: { data: AnalyticsData }) {
   const totalMysteries = (data.mysteryStatus ?? []).reduce((s, m) => s + m.count, 0);
   const cards = [
@@ -20,6 +28,25 @@ function StatCards({ data }: { data: AnalyticsData }) {
     { value: (data.dialogueRates ?? []).length, label: 'Dialogues Tracked' },
     { value: (data.storyBeatReach ?? []).length, label: 'Story Beats Set' },
     { value: totalMysteries, label: 'Total Mysteries' },
+  ];
+  return (
+    <div className={styles.statGrid}>
+      {cards.map(c => (
+        <div key={c.label} className={styles.statCard}>
+          <div className={styles.statValue}>{c.value}</div>
+          <div className={styles.statLabel}>{c.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SBStatCards({ data }: { data: StoryBuilderAnalytics }) {
+  const cards = [
+    { value: data.plansCreated24h, label: 'Plans (24h)' },
+    { value: data.plansCreated7d, label: 'Plans (7d)' },
+    { value: data.avgItemsPerPlan, label: 'Avg Items/Plan' },
+    { value: `${data.successRate}%`, label: 'Success Rate' },
   ];
   return (
     <div className={styles.statGrid}>
@@ -107,8 +134,26 @@ function TimeBlockSpendTable({ spend }: { spend: AnalyticsData['timeBlockSpend']
   );
 }
 
+function SBEventTable({ events }: { events: StoryBuilderAnalytics['eventsByType'] }) {
+  if (events.length === 0) return <p className={styles.muted}>No story builder events recorded yet.</p>;
+  return (
+    <table className={styles.table}>
+      <thead><tr><th className={styles.th}>Event Type</th><th className={styles.th}>Count</th></tr></thead>
+      <tbody>
+        {events.map(item => (
+          <tr key={item.event_type}>
+            <td className={styles.td}>{item.event_type}</td>
+            <td className={styles.td}>{item.count}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
+  const [sbData, setSbData] = useState<StoryBuilderAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -116,14 +161,18 @@ export default function AnalyticsPage() {
     let cancelled = false;
     async function fetchAnalytics() {
       try {
-        const result = await adminFetch<{ success: boolean; data?: AnalyticsData; error?: string }>(
-          '/admin/analytics/summary',
-        );
+        const [summaryResult, sbResult] = await Promise.all([
+          adminFetch<{ success: boolean; data?: AnalyticsData; error?: string }>('/admin/analytics/summary'),
+          adminFetch<{ success: boolean; data?: StoryBuilderAnalytics; error?: string }>('/admin/analytics/story-builder'),
+        ]);
         if (cancelled) return;
-        if (result.success) {
-          setData(result.data ?? null);
+        if (summaryResult.success) {
+          setData(summaryResult.data ?? null);
         } else {
-          setError(result.error || 'Failed to fetch analytics');
+          setError(summaryResult.error || 'Failed to fetch analytics');
+        }
+        if (sbResult.success) {
+          setSbData(sbResult.data ?? null);
         }
       } catch {
         if (cancelled) return;
@@ -142,17 +191,31 @@ export default function AnalyticsPage() {
       {error && <div className={styles.errorBox}>{error}</div>}
       {loading ? (
         <p className={styles.muted}>Loading analytics...</p>
-      ) : data ? (
+      ) : (
         <>
-          <StatCards data={data} />
-          <div className={styles.grid}>
-            <div className={styles.section}><h2 className={styles.sectionHeading}>Dialogue Completion Rates</h2><DialogueRatesTable rates={data.dialogueRates} /></div>
-            <div className={styles.section}><h2 className={styles.sectionHeading}>Story Beat Reach</h2><StoryBeatReachTable reach={data.storyBeatReach} /></div>
-            <div className={styles.section}><h2 className={styles.sectionHeading}>Mystery Status Distribution</h2><MysteryStatusTable status={data.mysteryStatus} /></div>
-            <div className={styles.section}><h2 className={styles.sectionHeading}>Time-Block Spend by Content</h2><TimeBlockSpendTable spend={data.timeBlockSpend} /></div>
-          </div>
+          {data && (
+            <>
+              <StatCards data={data} />
+              <div className={styles.grid}>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Dialogue Completion Rates</h2><DialogueRatesTable rates={data.dialogueRates} /></div>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Story Beat Reach</h2><StoryBeatReachTable reach={data.storyBeatReach} /></div>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Mystery Status Distribution</h2><MysteryStatusTable status={data.mysteryStatus} /></div>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Time-Block Spend by Content</h2><TimeBlockSpendTable spend={data.timeBlockSpend} /></div>
+              </div>
+            </>
+          )}
+
+          {sbData && (
+            <>
+              <h2 className={styles.sectionHeading}>Story Builder Analytics</h2>
+              <SBStatCards data={sbData} />
+              <div className={styles.grid}>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Events by Type (7d)</h2><SBEventTable events={sbData.eventsByType} /></div>
+              </div>
+            </>
+          )}
         </>
-      ) : null}
+      )}
     </main>
   );
 }

@@ -8,7 +8,9 @@ import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, veri
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
+import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { createLLMProvider } from '../services/LLMService.js';
+import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -28,6 +30,8 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
 
     const plan = await contentPlanService.parseDescription(description.trim());
 
+    emitAdminEvent('plan_created', { description: description.trim(), itemCount: plan.items.length }, plan.id, req.userId);
+
     res.json({
       success: true,
       data: { plan },
@@ -44,7 +48,7 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
-adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
     const { feedback } = req.body;
@@ -55,6 +59,8 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req, res) => {
     }
 
     const refinedPlan = await contentPlanService.refinePlan(id, feedback.trim());
+
+    emitAdminEvent('plan_refined', { feedback: feedback.trim(), itemCount: refinedPlan.items.length }, refinedPlan.id, req.userId);
 
     res.json({
       success: true,
@@ -105,7 +111,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/stage — Write YAML + validate (no DB migration)
-adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
@@ -198,6 +204,13 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
       [newStatus, id]
     );
 
+    emitAdminEvent(
+      stagingResult.success ? 'plan_staged' : 'plan_failed',
+      { itemCount: plan.items.length, success: stagingResult.success },
+      id,
+      req.userId,
+    );
+
     res.json({
       success: stagingResult.success,
       data: stagingResult,
@@ -210,11 +223,18 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/migrate — Run DB migration for staged plan
-adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
     const migrationResult = await migrateStagedPlan(id);
+
+    emitAdminEvent(
+      migrationResult.success ? 'plan_migrated' : 'plan_failed',
+      { success: migrationResult.success, error: migrationResult.error },
+      id,
+      req.userId,
+    );
 
     const statusCode = migrationResult.success
       ? 200
@@ -232,11 +252,18 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req, res) => {
 
 // POST /admin/story-builder/plans/:id/approve-and-solidify — Single-click "Approve & Ship"
 // Collapses stage → publish → migrate → verify into one call (Milestone 04).
-adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
     const result = await approveAndSolidifyPlan(id);
+
+    emitAdminEvent(
+      result.success ? 'plan_verified' : 'plan_failed',
+      { status: result.status },
+      id,
+      req.userId,
+    );
 
     res.status(200).json({
       success: result.success,
@@ -260,7 +287,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
 });
 
 // POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
-adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
@@ -312,6 +339,13 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
       );
     }
 
+    emitAdminEvent(
+      stagingResult.success ? 'plan_staged' : 'plan_failed',
+      { retryOf: id, success: stagingResult.success },
+      id,
+      req.userId,
+    );
+
     res.json({
       success: stagingResult.success,
       data: stagingResult,
@@ -324,7 +358,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
 });
 
 // POST /admin/story-builder/plans/:id/verify — Run verification on a migrated plan
-adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
+adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
@@ -344,6 +378,8 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
       });
       return;
     }
+
+    emitAdminEvent('plan_verified', { passed: report.passed, errorCount: report.errors?.length ?? 0 }, id, req.userId);
 
     res.json({
       success: true,
@@ -366,35 +402,4 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req, res) => {
 });
 
 // GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
-adminStoryBuilderActionsRouter.get('/plans/:id/verification', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const result = await queryOLTP<{ verification_report: any }>(
-      'SELECT verification_report FROM content_plans WHERE id = $1',
-      [id],
-    );
-
-    if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        error: 'Plan not found',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: { verification_report: result.rows[0].verification_report },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] GET /plans/:id/verification error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch verification report',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
+adminStoryBuilderActionsRouter.get('/plans/:id/verification', handleGetVerificationReport);
