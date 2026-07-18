@@ -34,4 +34,6 @@ metadata:
   methods: coalition-building, legislative compromise, public advocacy, selective confrontation with corporate interests
   quote: I govern the city that exists, not the city that should have been built. My job is to make them closer to the same thing, one bill at a time.
 asset_paths:
-  portrait: characters/carlos_rodriguez/portrait.png
+  portrait: carlos_rodriguez__default.png
+
+lore_path: carlos_rodriguez.md

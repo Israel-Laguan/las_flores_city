@@ -9,7 +9,7 @@ metadata:
   personality: analytical_determined
 portrait_urls:
   - url: http://minio:9000/las-flores/portraits/isabella_vargas/neutral.png
-    label: Standard portrait
+    label: dev
     expression: neutral
 lore_path: isabella_vargas.md
 asset_paths:

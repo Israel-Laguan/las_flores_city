@@ -8,4 +8,6 @@ metadata:
   faction: humanity_first
   personality: visionary_founder
 asset_paths:
-  portrait: characters/daniel_carter/portrait.png
+  portrait: daniel_carter__default.png
+
+lore_path: daniel_carter.md

@@ -7,36 +7,67 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
 const { Pool } = pg;
 
-// OLTP Database Connection (Main Game State)
-// Pool max increased to 50 to sustain 500+ concurrent VU load tests
-// without exhausting connections. Combined with PgBouncer in production.
-export const oltpPool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 50,                  // Max connections in pool
-  idleTimeoutMillis: 30000, // Close idle clients after 30s
-  connectionTimeoutMillis: 2000, // Fail if no connection available within 2s
+// Lazy database pools — only created when first accessed. Prevents Jest from
+// hanging on open TCPWRAP handles when test files import modules that
+// transitively pull in this file without actually querying the database.
+let _oltpPool: pg.Pool | null = null;
+let _olapPool: pg.Pool | null = null;
+
+function getOltpPool(): pg.Pool {
+  if (!_oltpPool) {
+    connectionsClosed = false;
+    // Pool max increased to 50 to sustain 500+ concurrent VU load tests
+    // without exhausting connections. Combined with PgBouncer in production.
+    _oltpPool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      max: 50,                  // Max connections in pool
+      idleTimeoutMillis: 30000, // Close idle clients after 30s
+      connectionTimeoutMillis: 2000, // Fail if no connection available within 2s
+    });
+  }
+  return _oltpPool;
+}
+
+function getOlapPool(): pg.Pool {
+  if (!_olapPool) {
+    connectionsClosed = false;
+    // connectionTimeoutMillis reduced to 1000ms so telemetry queries
+    // fail fast instead of holding Express request threads open when OLAP is degraded.
+    _olapPool = new Pool({
+      connectionString: process.env.ANALYTICS_DATABASE_URL,
+      max: 20,                  // Slightly larger headroom for background telemetry bursts
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 1000, // Fail fast — telemetry must never block gameplay
+    });
+  }
+  return _olapPool;
+}
+
+// Proxy-based lazy exports: `oltpPool.query()` / `oltpPool.connect()` etc.
+// delegate to the real pool only when first called — no TCPWRAP handle created
+// at module-import time.
+export const oltpPool: pg.Pool = new Proxy({} as pg.Pool, {
+  get(_, prop, receiver) {
+    return Reflect.get(getOltpPool(), prop, receiver);
+  },
 });
 
-// OLAP Database Connection (Analytics)
-// connectionTimeoutMillis reduced to 1000ms so telemetry queries
-// fail fast instead of holding Express request threads open when OLAP is degraded.
-export const olapPool = new Pool({
-  connectionString: process.env.ANALYTICS_DATABASE_URL,
-  max: 20,                  // Slightly larger headroom for background telemetry bursts
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 1000, // Fail fast — telemetry must never block gameplay
+export const olapPool: pg.Pool = new Proxy({} as pg.Pool, {
+  get(_, prop, receiver) {
+    return Reflect.get(getOlapPool(), prop, receiver);
+  },
 });
 
 // Test database connections
 export async function testConnections(): Promise<boolean> {
   try {
     // Test OLTP connection
-    const oltpClient = await oltpPool.connect();
+    const oltpClient = await getOltpPool().connect();
     console.log('✅ OLTP Database connected');
     oltpClient.release();
 
     // Test OLAP connection
-    const olapClient = await olapPool.connect();
+    const olapClient = await getOlapPool().connect();
     console.log('✅ OLAP Database connected');
     olapClient.release();
 
@@ -56,14 +87,20 @@ export async function closeConnections(): Promise<void> {
   }
 
   connectionsClosed = true;
-  await oltpPool.end();
-  await olapPool.end();
+  if (_oltpPool) {
+    await _oltpPool.end();
+    _oltpPool = null;
+  }
+  if (_olapPool) {
+    await _olapPool.end();
+    _olapPool = null;
+  }
   console.log('🔌 Database connections closed');
 }
 
 // Query helpers
 export async function queryOLTP<T extends pg.QueryResultRow = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
-  return oltpPool.query<T>(text, params);
+  return getOltpPool().query<T>(text, params);
 }
 
 /**
@@ -79,7 +116,7 @@ export async function queryOLAP<T extends pg.QueryResultRow = any>(
   params?: any[]
 ): Promise<pg.QueryResult<T> | null> {
   try {
-    return await olapPool.query<T>(text, params);
+    return await getOlapPool().query<T>(text, params);
   } catch (error) {
     // Swallow and log — OLAP telemetry is non-critical.
     // Controllers are expected to call this without await; an unhandled
@@ -93,7 +130,7 @@ export async function queryOLAP<T extends pg.QueryResultRow = any>(
 export async function withOLTPTransaction<T>(
   callback: (client: pg.PoolClient) => Promise<T>
 ): Promise<T> {
-  const client = await oltpPool.connect();
+  const client = await getOltpPool().connect();
   try {
     await client.query('BEGIN');
     const result = await callback(client);
@@ -110,7 +147,7 @@ export async function withOLTPTransaction<T>(
 export async function withOLAPTransaction<T>(
   callback: (client: pg.PoolClient) => Promise<T>
 ): Promise<T> {
-  const client = await olapPool.connect();
+  const client = await getOlapPool().connect();
   try {
     await client.query('BEGIN');
     const result = await callback(client);

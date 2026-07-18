@@ -13,4 +13,6 @@ metadata:
   residence: Old Las Flores District
   status: Active (2077 and beyond)
 asset_paths:
-  portrait: characters/roberto_mendoza/portrait.png
+  portrait: roberto_mendoza__default.png
+
+lore_path: roberto_mendoza.md

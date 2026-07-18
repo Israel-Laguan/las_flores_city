@@ -50,26 +50,7 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
-  await pool.query(
-    `INSERT INTO users (id, email, username, display_name)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (id) DO UPDATE SET
-       email = EXCLUDED.email,
-       username = EXCLUDED.username,
-       updated_at = NOW()`,
-    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test']
-  );
-  await pool.query(
-    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
-     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
-     ON CONFLICT (user_id) DO UPDATE SET
-       time_blocks = 48,
-       current_location_id = $2,
-       updated_at = NOW()`,
-    [TEST_USER_ID, APARTMENT_ID]
-  );
-
-  // Seed districts table (required for coordinate-based TB calculation)
+  // Seed districts table FIRST (required for scenes district_id FK)
   // Must use ON CONFLICT (name) because seed migrations 034/035 may have
   // already created these districts with auto-generated UUIDs. We want to
   // force our known UUIDs so the hardcoded constants above work as FK targets.
@@ -109,19 +90,49 @@ beforeAll(async () => {
   );
   const OLD_TOWN_ID = oldTownQ.rows[0].id;
 
-  // Ensure scenes are assigned to the correct districts for this test
-  // Apartment and Welcome Center -> Downtown, Cafe -> Old Town
+  // Now insert scenes with valid district_ids
   await pool.query(
-    `UPDATE scenes SET district_id = $1 WHERE id = $2`,
-    [DOWNTOWN_ID, APARTMENT_ID]
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DOWNTOWN_ID]
   );
   await pool.query(
-    `UPDATE scenes SET district_id = $1 WHERE id = $2`,
-    [DOWNTOWN_ID, WELCOME_CENTER_ID]
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
+    [WELCOME_CENTER_ID, 'Welcome Center', 'Test welcome center location', DOWNTOWN_ID]
   );
   await pool.query(
-    `UPDATE scenes SET district_id = $1 WHERE id = $2`,
-    [OLD_TOWN_ID, CAFE_ID]
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
+    [CAFE_ID, 'The Cafe', 'Test cafe location', OLD_TOWN_ID]
+  );
+
+  await pool.query(
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (id) DO UPDATE SET
+       email = EXCLUDED.email,
+       username = EXCLUDED.username,
+       updated_at = NOW()`,
+    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test']
+  );
+  await pool.query(
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
+       time_blocks = 48,
+       current_location_id = $2,
+       updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID]
   );
 
   await new Promise<void>((resolve) => {

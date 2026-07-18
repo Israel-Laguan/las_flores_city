@@ -8,4 +8,6 @@ metadata:
   faction: lw_group
   personality: ruthless_calculating
 asset_paths:
-  portrait: characters/yi_sang/portrait.png
+  portrait: yi_sang__default.png
+
+lore_path: yi_sang.md

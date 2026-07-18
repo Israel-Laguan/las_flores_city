@@ -8,4 +8,6 @@ metadata:
   faction: lw_group
   personality: persuasive_composed
 asset_paths:
-  portrait: characters/nadia_al_farsi/portrait.png
+  portrait: nadia_al_farsi__default.png
+
+lore_path: nadia_al_farsi.md

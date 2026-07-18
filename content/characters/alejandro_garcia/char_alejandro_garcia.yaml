@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: resilient_provider
 asset_paths:
-  portrait: characters/alejandro_garcia/portrait.png
+  portrait: alejandro_garcia__default.png
+
+lore_path: alejandro_garcia.md

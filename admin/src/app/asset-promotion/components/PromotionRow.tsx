@@ -10,19 +10,23 @@ interface PromotionStatus {
 
 interface PromotionRowProps {
   status: PromotionStatus;
+  entityType: string;
   disabled?: boolean;
   onPromoteStaging: (contentPath: string) => void;
   onPromoteProduction: (contentPath: string) => void;
   onRollbackStaging: (contentPath: string) => void;
 }
 
-export default function PromotionRow({ status, disabled, onPromoteStaging, onPromoteProduction, onRollbackStaging }: PromotionRowProps) {
+export default function PromotionRow({ status, entityType, disabled, onPromoteStaging, onPromoteProduction, onRollbackStaging }: PromotionRowProps) {
   const hasDev = !!status.stages?.dev;
   const hasStaging = !!status.stages?.staging;
   const hasProduction = !!status.stages?.production;
 
   return (
     <tr>
+      <td style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>
+        <span style={{ fontSize: '0.75rem', color: '#888' }}>{entityType}</span>
+      </td>
       <td style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>{status.name}</td>
       <td style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>
         {hasDev ? (

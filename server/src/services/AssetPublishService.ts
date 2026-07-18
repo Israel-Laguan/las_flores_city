@@ -89,8 +89,10 @@ async function writeYaml(absolutePath: string, data: Record<string, any>): Promi
   await fs.writeFile(absolutePath, newYaml, 'utf-8');
 }
 
-function getPortraitUrls(data: Record<string, any>): Array<{ url: string; label?: string }> {
-  return Array.isArray(data.portrait_urls) ? data.portrait_urls : [];
+export type AssetArrayField = 'portrait_urls' | 'background_urls' | 'image_urls';
+
+function getAssetUrls(data: Record<string, any>, field: AssetArrayField = 'portrait_urls'): Array<{ url: string; label?: string }> {
+  return Array.isArray(data[field]) ? data[field] : [];
 }
 
 function defaultLocalFilename(item: ContentPlanItem): string {
@@ -155,12 +157,19 @@ export async function publishChosenDrafts(
         const objectKey = `${need.promptType}/${localFilename}`;
         const url = await uploadToMinio(buf, objectKey, 'image/png');
 
-        if (need.targetField.startsWith('portrait_urls')) {
-          const portraitUrls: Array<{ url: string; label?: string }> = getPortraitUrls(yamlData);
-          if (!portraitUrls.some(p => p.url === url && p.label === 'dev')) {
-            portraitUrls.push({ url, label: 'dev' });
+        const arrayField: AssetArrayField | null = need.targetField.startsWith('portrait_urls') ? 'portrait_urls'
+          : need.targetField.startsWith('background_urls') ? 'background_urls'
+          : need.targetField.startsWith('image_urls') ? 'image_urls'
+          : null;
+        if (arrayField) {
+          const assetUrls: Array<{ url: string; label?: string }> = getAssetUrls(yamlData, arrayField);
+          const idx = assetUrls.findIndex(p => p.label === 'dev');
+          if (idx >= 0) {
+            assetUrls[idx].url = url;
+          } else {
+            assetUrls.push({ url, label: 'dev' });
           }
-          yamlData.portrait_urls = portraitUrls;
+          yamlData[arrayField] = assetUrls;
         } else {
           yamlData[need.targetField] = url;
         }
@@ -202,14 +211,15 @@ export async function publishChosenDrafts(
 async function promoteStage(
   contentPath: string,
   stage: Stage,
-  opts?: { newBuffer?: Buffer; filename?: string },
+  opts?: { newBuffer?: Buffer; filename?: string; field?: AssetArrayField },
 ): Promise<PromotionResult> {
+  const field = opts?.field ?? 'portrait_urls';
   const absolutePath = validateContentPathLocal(contentPath);
   const data = await readYaml(absolutePath);
 
-  const portraitUrls = getPortraitUrls(data);
+  const assetUrls = getAssetUrls(data, field);
   const sourceLabel = stage === 'staging' ? 'dev' : 'staging';
-  const sourceEntry = portraitUrls.find(p => p.label === sourceLabel);
+  const sourceEntry = assetUrls.find(p => p.label === sourceLabel);
 
   if (!sourceEntry) {
     throw new Error(`No ${sourceLabel} entry to promote`);
@@ -224,10 +234,10 @@ async function promoteStage(
     createdObject = true;
   }
 
-  const filtered = portraitUrls.filter(p => p.label !== stage);
+  const filtered = assetUrls.filter(p => p.label !== stage);
   filtered.push({ url, label: stage });
 
-  data.portrait_urls = filtered;
+  data[field] = filtered;
   await writeYaml(absolutePath, data);
 
   return { contentPath, stage, url, createdObject };
@@ -235,78 +245,91 @@ async function promoteStage(
 
 export async function promoteToStaging(
   contentPath: string,
-  opts?: { newBuffer?: Buffer; filename?: string },
+  opts?: { newBuffer?: Buffer; filename?: string; field?: AssetArrayField },
 ): Promise<PromotionResult> {
   return promoteStage(contentPath, 'staging', opts);
 }
 
 export async function promoteToProduction(
   contentPath: string,
-  opts?: { newBuffer?: Buffer; filename?: string },
+  opts?: { newBuffer?: Buffer; filename?: string; field?: AssetArrayField },
 ): Promise<PromotionResult> {
   return promoteStage(contentPath, 'production', opts);
 }
 
-export async function rollbackFromStaging(contentPath: string): Promise<RollbackResult> {
+export async function rollbackFromStaging(contentPath: string, field: AssetArrayField = 'portrait_urls'): Promise<RollbackResult> {
   const absolutePath = validateContentPathLocal(contentPath);
   const data = await readYaml(absolutePath);
 
-  const portraitUrls = getPortraitUrls(data);
-  const hasStaging = portraitUrls.some(p => p.label === 'staging');
+  const assetUrls = getAssetUrls(data, field);
+  const hasStaging = assetUrls.some(p => p.label === 'staging');
 
   if (!hasStaging) {
     return { contentPath, removed: false };
   }
 
-  data.portrait_urls = portraitUrls.filter(p => p.label !== 'staging');
+  data[field] = assetUrls.filter(p => p.label !== 'staging');
   await writeYaml(absolutePath, data);
 
   return { contentPath, removed: true };
 }
 
+interface ContentTypeConfig {
+  dir: string;
+  prefix: string;
+  field: AssetArrayField;
+}
+
+const CONTENT_TYPES: ContentTypeConfig[] = [
+  { dir: 'characters', prefix: 'char_', field: 'portrait_urls' },
+  { dir: 'scenes', prefix: 'scene_', field: 'background_urls' },
+  { dir: 'locations', prefix: 'loc_', field: 'image_urls' },
+];
+
 export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
   const contentDir = resolveContentDir();
-  const charactersDir = path.join(contentDir, 'characters');
-
   const results: EntityPromotionStatus[] = [];
 
-  try {
-    const entries = await fs.readdir(charactersDir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
+  for (const ct of CONTENT_TYPES) {
+    const typeDir = path.join(contentDir, ct.dir);
+    try {
+      const entries = await fs.readdir(typeDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
 
-      const slug = entry.name;
-      const entityDir = path.join(charactersDir, slug);
-      const yamlFiles = await fs.readdir(entityDir);
-      const yamlFile = yamlFiles.find(f => f.startsWith('char_') && f.endsWith('.yaml'));
-      if (!yamlFile) continue;
+        const slug = entry.name;
+        const entityDir = path.join(typeDir, slug);
+        const yamlFiles = await fs.readdir(entityDir);
+        const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
+        if (!yamlFile) continue;
 
-      const contentPath = `characters/${slug}/${yamlFile}`;
-      const absolutePath = path.join(entityDir, yamlFile);
+        const contentPath = `${ct.dir}/${slug}/${yamlFile}`;
+        const absolutePath = path.join(entityDir, yamlFile);
 
-      try {
-        const data = await readYaml(absolutePath);
-        const portraitUrls = getPortraitUrls(data);
+        try {
+          const data = await readYaml(absolutePath);
+          const assetUrls = getAssetUrls(data, ct.field);
 
-        const stages: EntityPromotionStatus['stages'] = {};
-        for (const entry of portraitUrls) {
-          if (entry.label === 'dev' || entry.label === 'staging' || entry.label === 'production') {
-            stages[entry.label] = { url: entry.url };
+          const stages: EntityPromotionStatus['stages'] = {};
+          for (const entry of assetUrls) {
+            if (entry.label === 'dev' || entry.label === 'staging' || entry.label === 'production') {
+              stages[entry.label] = { url: entry.url };
+            }
           }
-        }
 
-        results.push({
-          contentPath,
-          name: data.name || slug,
-          slug,
-          stages,
-        });
-      } catch {
-        continue;
+          results.push({
+            contentPath,
+            name: data.name || slug,
+            slug,
+            stages,
+          });
+        } catch {
+          continue;
+        }
       }
+    } catch (err: any) {
+      if (err?.code !== 'ENOENT') throw err;
     }
-  } catch (err: any) {
-    if (err?.code !== 'ENOENT') throw err;
   }
 
   return results.sort((a, b) => a.name.localeCompare(b.name));

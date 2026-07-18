@@ -27,4 +27,6 @@ metadata:
   challenges: work-life balance, difficulty connecting with potential partners due to workaholic tendencies, rebuilding tourism after environmental crisis
   quote: I want every visitor to leave with cherished memories and a desire to return to our beautiful region.
 asset_paths:
-  portrait: characters/camila_santander/portrait.png
+  portrait: camila_santander__default.png
+
+lore_path: camila_santander.md

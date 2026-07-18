@@ -8,4 +8,6 @@ metadata:
   faction: humanity_first
   personality: practical_skeptic
 asset_paths:
-  portrait: characters/carlos_lopez/portrait.png
+  portrait: carlos_lopez__default.png
+
+lore_path: carlos_lopez.md

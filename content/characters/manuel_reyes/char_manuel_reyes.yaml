@@ -8,4 +8,6 @@ metadata:
   faction: labor
   personality: charismatic_organizer
 asset_paths:
-  portrait: characters/manuel_reyes/portrait.png
+  portrait: manuel_reyes__default.png
+
+lore_path: manuel_reyes.md

@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: business_journalist
 asset_paths:
-  portrait: characters/diego_lopez/portrait.png
+  portrait: diego_lopez__default.png
+
+lore_path: diego_lopez.md

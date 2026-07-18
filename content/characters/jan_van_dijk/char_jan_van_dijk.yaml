@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: corporate_philanthropist
 asset_paths:
-  portrait: characters/jan_van_dijk/portrait.png
+  portrait: jan_van_dijk__default.png
+
+lore_path: jan_van_dijk.md

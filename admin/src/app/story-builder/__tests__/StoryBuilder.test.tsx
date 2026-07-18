@@ -1,7 +1,7 @@
 /**
- * Milestone 04 component tests: the wizard collapsed from 5 steps to
- * Describe / Review / Approving / Results. These tests assert the new
- * "Approve & Ship" surface and the removal of the old Stage / Migrate steps.
+ * Milestone 08 component tests: the wizard now shows 2 indicator dots
+ * (Describe, Results) with 3 internal steps. These tests assert the
+ * collapsed indicator and the removal of the ApprovingStep.
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -35,18 +35,18 @@ function createPlan(overrides: Partial<ContentPlan> = {}): ContentPlan {
 
 const noop = () => {};
 
-describe('StepIndicator (Milestone 04)', () => {
-  it('shows only Describe / Review / Results — no Stage or Migrate', () => {
+describe('StepIndicator (Milestone 08)', () => {
+  it('shows only Describe / Results — no Review, Stage, or Migrate', () => {
     render(<StepIndicator step={2} />);
     expect(screen.getByText('Describe')).toBeInTheDocument();
-    expect(screen.getByText('Review')).toBeInTheDocument();
     expect(screen.getByText('Results')).toBeInTheDocument();
+    expect(screen.queryByText('Review')).not.toBeInTheDocument();
     expect(screen.queryByText('Stage')).not.toBeInTheDocument();
     expect(screen.queryByText('Migrate')).not.toBeInTheDocument();
   });
 });
 
-describe('ReviewStep (Milestone 04)', () => {
+describe('ReviewStep (Milestone 08)', () => {
   const baseProps = {
     plan: createPlan(),
     planId: '00000000-0000-0000-0000-000000000001',
@@ -83,7 +83,7 @@ describe('ReviewStep (Milestone 04)', () => {
   });
 });
 
-describe('ResultsStep (Milestone 04)', () => {
+describe('ResultsStep (Milestone 08)', () => {
   it('shows a success banner and live-content link for a verified plan', () => {
     const result = {
       success: true,

@@ -73,4 +73,45 @@ describe('StoryBuilderPlans', () => {
       expect(newPlanBtn.closest('a')).toHaveAttribute('href', '/story-builder');
     });
   });
+
+  it('should show View Report link for verified plans', async () => {
+    vi.mocked(listPlans).mockResolvedValue({
+      success: true,
+      data: {
+        plans: [
+          {
+            id: 'plan-verified',
+            description: 'Verified Plan',
+            status: 'verified',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-02T00:00:00Z',
+            item_count: 2,
+          },
+          {
+            id: 'plan-proposed',
+            description: 'Proposed Plan',
+            status: 'proposed',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-02T00:00:00Z',
+            item_count: 1,
+          },
+        ],
+        total: 2,
+      },
+    });
+
+    render(<StoryBuilderPlans />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Verified Plan')).toBeInTheDocument();
+    });
+
+    // Verified plan should have View Report link
+    const viewReportLinks = screen.getAllByText('View Report');
+    expect(viewReportLinks).toHaveLength(1);
+    expect(viewReportLinks[0].closest('a')).toHaveAttribute('href', '/story-builder?planId=plan-verified');
+
+    // Proposed plan should NOT have View Report link
+    expect(screen.getAllByText('Resume')).toHaveLength(1);
+  });
 });

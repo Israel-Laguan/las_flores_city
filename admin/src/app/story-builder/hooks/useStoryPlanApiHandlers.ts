@@ -70,20 +70,16 @@ export function createStoryPlanHandlers(cb: Callbacks) {
 
   const handleApproveAndSolidify = useCallback(async (planId: string) => {
     if (!planId) return;
-    setStep(3); // Approving (transient while the single call runs)
     const data = await withLoading(setLoading, setError, () => api.approveAndSolidify(planId));
-    if (!data) {
-      setStep(2);
-      return;
-    }
+    if (!data) return;
     if (data.success && data.data) {
       setSolidifyResult(data.data as SolidifyResultLite);
       setPlan(plan ? ({ ...plan, status: data.data.status } as ContentPlan) : plan);
-      setStep(4);
+      setStep(3);
     } else {
       setSolidifyResult(data.data as SolidifyResultLite ?? null);
       setError(data.error || 'Approve & Ship failed');
-      setStep(4);
+      setStep(3);
     }
   }, [setLoading, setError, setStep, setPlan, setSolidifyResult, plan]);
 

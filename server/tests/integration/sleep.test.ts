@@ -10,6 +10,7 @@ const { Pool } = pg;
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000020';
 const APARTMENT_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 const CAFE_ID = 'e5f6a7b8-c9d0-1234-efab-345678901234';
+const DISTRICT_ID = 'd2000000-0000-0000-0000-000000000001';
 
 const app = express();
 app.use(express.json());
@@ -33,6 +34,28 @@ beforeAll(async () => {
     connectionString: process.env.ANALYTICS_DATABASE_URL || 'postgresql://las_flores_analytics:las_flores_analytics_dev_password@localhost:5433/las_flores_analytics',
     connectionTimeoutMillis: 5000,
   });
+
+  // Ensure the district exists for the scenes
+  await pool.query(
+    `INSERT INTO districts (id, name, slug, description, x, y)
+     VALUES ($1, $2, $3, $4, 0, 0)
+     ON CONFLICT (id) DO NOTHING`,
+    [DISTRICT_ID, 'Sleep Test District', 'sleep-test-district', 'District for sleep test']
+  );
+
+  // Ensure the apartment and cafe scenes exist for the foreign key reference
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DISTRICT_ID]
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO NOTHING`,
+    [CAFE_ID, 'The Cafe', 'Test cafe location', DISTRICT_ID]
+  );
 
   await pool.query(
     `INSERT INTO users (id, email, username, display_name)
@@ -67,6 +90,8 @@ afterAll(async () => {
   await pool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM scenes WHERE id IN ($1, $2)', [APARTMENT_ID, CAFE_ID]);
+  await pool.query('DELETE FROM districts WHERE id = $1', [DISTRICT_ID]);
   await analyticsPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await pool.end();
   await analyticsPool.end();

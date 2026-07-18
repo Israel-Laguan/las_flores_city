@@ -3,6 +3,18 @@ import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContentPath } from './admin-content.helpers.js';
 import { assignAsset } from '../services/ContentAssetService.js';
 import { promoteToStaging, promoteToProduction, rollbackFromStaging, listPromotionStatus } from '../services/AssetPublishService.js';
+import type { AssetArrayField } from '../services/AssetPublishService.js';
+
+// ─── Content-type resolution helpers ────────────────────────────────────
+
+function resolveFieldFromContentPath(contentPath: string): AssetArrayField {
+  if (contentPath.startsWith('characters/')) return 'portrait_urls';
+  if (contentPath.startsWith('scenes/')) return 'background_urls';
+  if (contentPath.startsWith('locations/')) return 'image_urls';
+  throw new Error('Unsupported content type for asset promotion');
+}
+
+// ─── Router ─────────────────────────────────────────────────────────────
 
 export const adminContentAssetRouter = express.Router();
 adminContentAssetRouter.use(authAndAdminMiddleware);
@@ -76,7 +88,7 @@ adminContentAssetRouter.post('/assets/promote-staging', async (req, res) => {
       res.status(400).json({ success: false, error: pathCheck.reason, timestamp: new Date().toISOString() });
       return;
     }
-    const result = await promoteToStaging(contentPath);
+    const result = await promoteToStaging(contentPath, { field: resolveFieldFromContentPath(contentPath) });
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[admin-content-asset] POST /assets/promote-staging error:', error);
@@ -97,7 +109,7 @@ adminContentAssetRouter.post('/assets/promote-production', async (req, res) => {
       res.status(400).json({ success: false, error: pathCheck.reason, timestamp: new Date().toISOString() });
       return;
     }
-    const result = await promoteToProduction(contentPath);
+    const result = await promoteToProduction(contentPath, { field: resolveFieldFromContentPath(contentPath) });
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[admin-content-asset] POST /assets/promote-production error:', error);
@@ -118,7 +130,7 @@ adminContentAssetRouter.post('/assets/rollback-staging', async (req, res) => {
       res.status(400).json({ success: false, error: pathCheck.reason, timestamp: new Date().toISOString() });
       return;
     }
-    const result = await rollbackFromStaging(contentPath);
+    const result = await rollbackFromStaging(contentPath, resolveFieldFromContentPath(contentPath));
     res.json({ success: true, data: result, timestamp: new Date().toISOString() });
   } catch (error: any) {
     console.error('[admin-content-asset] POST /assets/rollback-staging error:', error);

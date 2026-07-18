@@ -8,4 +8,6 @@ metadata:
   faction: civil_society
   personality: grassroots_activist
 asset_paths:
-  portrait: characters/juan_pablo_hernandez/portrait.png
+  portrait: juan_pablo_hernandez__default.png
+
+lore_path: juan_pablo_hernandez.md

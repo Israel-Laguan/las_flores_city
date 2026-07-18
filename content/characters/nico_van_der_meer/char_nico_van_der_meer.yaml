@@ -21,4 +21,6 @@ metadata:
   personality_traits: ambitious, diplomatic, observant, cautious, business-savvy
   goals: expand European-South American trade routes, build independent identity from family drama, navigate between legitimate business and criminal elements
 asset_paths:
-  portrait: characters/nico_van_der_meer/portrait.png
+  portrait: nico_van_der_meer__default.png
+
+lore_path: nico_van_der_meer.md

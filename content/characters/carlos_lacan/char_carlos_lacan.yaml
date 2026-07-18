@@ -22,7 +22,7 @@ metadata:
   status: Deceased (2077)
 portrait_urls:
   - url: http://minio:9000/las-flores/portraits/carlos_lacan/neutral.png
-    label: Standard portrait
+    label: dev
     expression: neutral
 lore_path: carlos_lacan.md
 asset_paths:

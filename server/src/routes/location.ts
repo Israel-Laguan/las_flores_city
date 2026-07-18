@@ -9,6 +9,7 @@ import {
   buildNpcPayload,
   getSceneRelationships,
 } from './location.npcs.js';
+import { resolveAssetUrl } from '../services/AssetStageResolver.js';
 
 export const locationRouter = express.Router();
 
@@ -28,7 +29,7 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
 
   if (!sceneData) {
     const sceneResult = await queryOLTP(
-      `SELECT id, name, background_url, ambient_sound_url, mood
+      `SELECT id, name, background_url, background_urls, ambient_sound_url, mood
        FROM scenes WHERE id = $1`,
       [sceneId]
     );
@@ -38,10 +39,11 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
     }
 
     const row = sceneResult.rows[0];
+    const fromCascade = resolveAssetUrl(row.background_urls);
     sceneData = {
       id: row.id,
       title: row.name,
-      backgroundUrl: row.background_url || '/assets/scenes/default/background.png',
+      backgroundUrl: fromCascade || row.background_url || '/assets/scenes/default/background.png',
       ambientSoundUrl: row.ambient_sound_url || null,
       mood: row.mood || 'neutral',
     };
@@ -253,7 +255,7 @@ locationRouter.get('/', authMiddleware, async (req: AuthRequest, res) => {
 
     // Fetch all scenes including metadata for gating check
     const result = await queryOLTP(
-      `SELECT s.id, s.name, s.description, s.image_url, s.metadata,
+      `SELECT s.id, s.name, s.description, s.image_url, s.image_urls, s.metadata,
               d.id as district_id, d.name as district, d.slug as district_slug,
               d.x as district_x, d.y as district_y
        FROM scenes s
@@ -269,7 +271,15 @@ locationRouter.get('/', authMiddleware, async (req: AuthRequest, res) => {
         if (Array.isArray(required)) return required.includes(storyBeat);
         return required === storyBeat;
       })
-      .map(({ metadata: _meta, ...rest }) => rest);
+      .map(({ metadata: _meta, image_urls, ...rest }) => {
+        // Cascade resolution: prefer env-aware resolved URL from image_urls,
+        // fall back to the legacy image_url TEXT column.
+        const resolved = resolveAssetUrl(image_urls);
+        return {
+          ...rest,
+          image_url: resolved || rest.image_url || null,
+        };
+      });
 
     res.json({
       success: true,

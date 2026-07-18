@@ -125,17 +125,20 @@ async function processLocationData(data: any): Promise<string> {
   if (!data?.name) throw new Error("Invalid location data: name is required");
   if (!data?.id) throw new Error("Invalid location data: id is required");
   const sceneData = {
+    ...data,
     id: data.id,
     name: data.name,
     description: sanitizeText(data.history || ''),
     district: 'Unknown',
-    image_url: null,
-    background_url: null,
+    image_url: data.image_url || null,
+    background_url: data.background_url || null,
     ambient_sound_url: null,
     mood: 'neutral',
     available_dialogues: [],
     metadata: { ...data, type: 'location' },
   };
+  // image_urls and background_urls (JSONB arrays for cascade) are carried
+  // from the source YAML via the spread above; no extra mapping needed.
   return upsertScene(sceneData);
 }
 

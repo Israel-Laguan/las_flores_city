@@ -8,4 +8,6 @@ metadata:
   faction: humanity_first
   personality: passionate_environmentalist
 asset_paths:
-  portrait: characters/javier_torres/portrait.png
+  portrait: javier_torres__default.png
+
+lore_path: javier_torres.md

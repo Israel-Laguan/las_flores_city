@@ -8,4 +8,6 @@ metadata:
   faction: civil_society
   personality: community_educator
 asset_paths:
-  portrait: characters/maria_martinez/portrait.png
+  portrait: maria_martinez__default.png
+
+lore_path: maria_martinez.md

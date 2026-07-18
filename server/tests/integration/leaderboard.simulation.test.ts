@@ -46,7 +46,7 @@ const PLAYER_IDS: Record<string, string> = {
   SimPlayerE: 'd0000000-0000-4000-8000-00000000000e',
 };
 
-const createdUserIds: string[] = [];
+let createdUserIds: string[] = [];
 
 async function applyMigration(filename: string): Promise<void> {
   const sql = fs.readFileSync(
@@ -71,6 +71,7 @@ async function ensurePublicProfile(userId: string, username: string): Promise<vo
 
 describe('OLAP Leaderboard Simulation', () => {
   beforeAll(async () => {
+    createdUserIds = [];
     await applyMigration('017_mystery_state.sql');
     await applyMigration('021_leaderboards.sql');
 

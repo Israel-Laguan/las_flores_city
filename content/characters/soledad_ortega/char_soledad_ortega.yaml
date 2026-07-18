@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: digital_editor
 asset_paths:
-  portrait: characters/soledad_ortega/portrait.png
+  portrait: soledad_ortega__default.png
+
+lore_path: soledad_ortega.md

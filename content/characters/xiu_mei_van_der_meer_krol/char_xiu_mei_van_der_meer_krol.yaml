@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: innovative_pioneer
 asset_paths:
-  portrait: characters/xiu_mei_van_der_meer_krol/portrait.png
+  portrait: xiu_mei_van_der_meer_krol__default.png
+
+lore_path: xiu_mei_van_der_meer_krol.md

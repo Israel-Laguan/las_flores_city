@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: passionate_advocate
 asset_paths:
-  portrait: characters/simon_de_vries/portrait.png
+  portrait: simon_de_vries__default.png
+
+lore_path: simon_de_vries.md

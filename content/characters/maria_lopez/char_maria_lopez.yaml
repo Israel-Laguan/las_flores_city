@@ -10,4 +10,6 @@ metadata:
   organization: GreenWatch
   lore_doc: organizations/greenwatch.md
 asset_paths:
-  portrait: characters/maria_lopez/portrait.png
+  portrait: maria_lopez__default.png
+
+lore_path: maria_lopez.md

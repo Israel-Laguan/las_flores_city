@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: principled_honest
 asset_paths:
-  portrait: characters/ana_castillo/portrait.png
+  portrait: ana_castillo__default.png
+
+lore_path: ana_castillo.md

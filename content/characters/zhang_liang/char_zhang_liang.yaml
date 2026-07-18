@@ -8,4 +8,6 @@ metadata:
   faction: lw_group
   personality: prudent_strategist
 asset_paths:
-  portrait: characters/zhang_liang/portrait.png
+  portrait: zhang_liang__default.png
+
+lore_path: zhang_liang.md

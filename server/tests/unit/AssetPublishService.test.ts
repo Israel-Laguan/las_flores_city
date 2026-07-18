@@ -282,3 +282,120 @@ describe('promotion methods', () => {
     expect(result.removed).toBe(false);
   });
 });
+
+// ─── Scene/Location promotion (Milestone 07) ───────────────────────────────
+
+describe('scene/location promotion', () => {
+  let tmpDir: string;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'asset-scene-promotion-test-'));
+    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+
+    // Create scene entity
+    const sceneDir = path.join(tmpDir, 'content', 'scenes', 'sunset_boulevard');
+    await fs.mkdir(path.join(sceneDir, 'assets'), { recursive: true });
+    await fs.writeFile(
+      path.join(sceneDir, 'scene_sunset_boulevard.yaml'),
+      yaml.dump({
+        id: '00000000-0000-0000-0000-000000000010',
+        name: 'Sunset Boulevard',
+        district: 'Downtown',
+        background_urls: [
+          { url: 'https://minio.test/bg/dev.png', label: 'dev' },
+        ],
+      }),
+      'utf-8',
+    );
+
+    // Create location entity
+    const locDir = path.join(tmpDir, 'content', 'locations', 'the_flats');
+    await fs.mkdir(path.join(locDir, 'assets'), { recursive: true });
+    await fs.writeFile(
+      path.join(locDir, 'loc_the_flats.yaml'),
+      yaml.dump({
+        id: '00000000-0000-0000-0000-000000000020',
+        name: 'The Flats',
+        type: 'location',
+        image_urls: [
+          { url: 'https://minio.test/img/dev.png', label: 'dev' },
+        ],
+      }),
+      'utf-8',
+    );
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('promoteToStaging with background_urls field promotes scene background', async () => {
+    const result = await promoteToStaging('scenes/sunset_boulevard/scene_sunset_boulevard.yaml', { field: 'background_urls' });
+    expect(result.stage).toBe('staging');
+    expect(result.url).toBe('https://minio.test/bg/dev.png');
+
+    const yamlPath = path.join(tmpDir, 'content', 'scenes', 'sunset_boulevard', 'scene_sunset_boulevard.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    expect(data.background_urls).toEqual([
+      { url: 'https://minio.test/bg/dev.png', label: 'dev' },
+      { url: 'https://minio.test/bg/dev.png', label: 'staging' },
+    ]);
+  });
+
+  it('promoteToStaging with image_urls field promotes location image', async () => {
+    const result = await promoteToStaging('locations/the_flats/loc_the_flats.yaml', { field: 'image_urls' });
+    expect(result.stage).toBe('staging');
+    expect(result.url).toBe('https://minio.test/img/dev.png');
+
+    const yamlPath = path.join(tmpDir, 'content', 'locations', 'the_flats', 'loc_the_flats.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    expect(data.image_urls).toEqual([
+      { url: 'https://minio.test/img/dev.png', label: 'dev' },
+      { url: 'https://minio.test/img/dev.png', label: 'staging' },
+    ]);
+  });
+
+  it('rollbackFromStaging with background_urls removes staging entry', async () => {
+    await promoteToStaging('scenes/sunset_boulevard/scene_sunset_boulevard.yaml', { field: 'background_urls' });
+    await promoteToProduction('scenes/sunset_boulevard/scene_sunset_boulevard.yaml', { field: 'background_urls' });
+    const result = await rollbackFromStaging('scenes/sunset_boulevard/scene_sunset_boulevard.yaml', 'background_urls');
+    expect(result.removed).toBe(true);
+
+    const yamlPath = path.join(tmpDir, 'content', 'scenes', 'sunset_boulevard', 'scene_sunset_boulevard.yaml');
+    const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
+    const labels = data.background_urls.map((e: any) => e.label);
+    expect(labels).toEqual(['dev', 'production']);
+  });
+
+  it('listPromotionStatus scans characters, scenes, and locations', async () => {
+    // Also create a character so we can verify all three types appear
+    const charDir = path.join(tmpDir, 'content', 'characters', 'diego');
+    await fs.mkdir(path.join(charDir, 'assets'), { recursive: true });
+    await fs.writeFile(
+      path.join(charDir, 'char_diego.yaml'),
+      yaml.dump({
+        id: 'item-00000000-0000-0000-0000-000000000002',
+        name: 'Diego',
+        portrait_urls: [
+          { url: 'https://minio.test/portrait/diego.png', label: 'dev' },
+        ],
+      }),
+      'utf-8',
+    );
+
+    const statuses = await listPromotionStatus();
+
+    const diego = statuses.find(s => s.slug === 'diego');
+    expect(diego).toBeDefined();
+    expect(diego!.contentPath).toMatch(/^characters\//);
+
+    const sunset = statuses.find(s => s.slug === 'sunset_boulevard');
+    expect(sunset).toBeDefined();
+    expect(sunset!.contentPath).toMatch(/^scenes\//);
+
+    const flats = statuses.find(s => s.slug === 'the_flats');
+    expect(flats).toBeDefined();
+    expect(flats!.contentPath).toMatch(/^locations\//);
+  });
+});

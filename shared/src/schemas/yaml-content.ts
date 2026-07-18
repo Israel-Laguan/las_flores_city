@@ -8,6 +8,14 @@ const safePath = z.string().max(255).refine(
   'Path must be a relative path without parent directory traversal',
 ).optional();
 
+export const AssetEntrySchema = z.object({
+  url: z.string().url(),
+  label: z.enum(['dev', 'staging', 'production']).optional(),
+  expression: z.string().max(50).optional(),
+});
+
+export type AssetEntry = z.infer<typeof AssetEntrySchema>;
+
 export const YAMLCharacterSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100),
@@ -15,11 +23,7 @@ export const YAMLCharacterSchema = z.object({
   description: z.string().max(1000),
   relationships: z.array(RelationshipSchema).optional(),
   avatar_url: z.string().url().optional(),
-  portrait_urls: z.array(z.object({
-    url: z.string().url(),
-    label: z.string().max(50).optional(),
-    expression: z.string().max(50).optional(),
-  })).optional(),
+  portrait_urls: z.array(AssetEntrySchema).optional(),
   atlas_url: z.string().optional(),
   biometric_refs: z.object({
     horizontal_face_sheet: z.string().url().optional(),
@@ -128,6 +132,8 @@ export const YAMLSceneSchema = z.object({
   written_by: z.string().max(100).optional(),
   image_url: z.string().url().optional(),
   background_url: z.string().optional(),
+  background_urls: z.array(AssetEntrySchema).optional(),
+  image_urls: z.array(AssetEntrySchema).optional(),
   ambient_sound_url: z.string().nullable().optional(),
   mood: z.string().max(50).optional(),
   available_dialogues: z.array(z.string().uuid()).optional(),
@@ -172,6 +178,7 @@ export const YAMLLocationSchema = z.object({
     })).optional(),
   }).optional(),
   lore_ref: z.string().max(255).optional(),
+  image_urls: z.array(AssetEntrySchema).optional(),
   lore_path: safePath,
   asset_paths: z.object({
     image: safePath,

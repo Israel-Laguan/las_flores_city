@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: investigative_reporter
 asset_paths:
-  portrait: characters/laura_silva/portrait.png
+  portrait: laura_silva__default.png
+
+lore_path: laura_silva.md

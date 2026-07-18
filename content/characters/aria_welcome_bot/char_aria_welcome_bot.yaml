@@ -8,4 +8,6 @@ metadata:
   personality: helpful
   first_appearance: dialogue_welcome
 asset_paths:
-  portrait: characters/aria_welcome_bot/portrait.png
+  portrait: aria_welcome_bot__default.png
+
+lore_path: aria_welcome_bot.md

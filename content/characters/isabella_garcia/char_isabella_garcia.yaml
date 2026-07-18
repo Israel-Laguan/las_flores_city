@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: resilient_artist
 asset_paths:
-  portrait: characters/isabella_garcia/portrait.png
+  portrait: isabella_garcia__default.png
+
+lore_path: isabella_garcia.md

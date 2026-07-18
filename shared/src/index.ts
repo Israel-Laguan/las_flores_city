@@ -75,6 +75,7 @@ export type {
 } from './schemas/api-response.js';
 
 export {
+  AssetEntrySchema,
   YAMLCharacterSchema,
   YAMLDialogueSchema,
   YAMLOverlaySchema,
@@ -84,6 +85,7 @@ export {
   YAMLLocationSchema,
 } from './schemas/yaml-content.js';
 export type {
+  AssetEntry,
   YAMLCharacter,
   YAMLDialogue,
   YAMLOverlay,

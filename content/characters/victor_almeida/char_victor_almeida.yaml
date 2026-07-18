@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: veteran_editor
 asset_paths:
-  portrait: characters/victor_almeida/portrait.png
+  portrait: victor_almeida__default.png
+
+lore_path: victor_almeida.md

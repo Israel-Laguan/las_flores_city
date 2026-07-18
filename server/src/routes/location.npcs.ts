@@ -1,4 +1,5 @@
 import { queryOLTP } from '../database/connection.js';
+import { resolveAssetUrl } from '../services/AssetStageResolver.js';
 
 // Portrait base path convention: /assets/portraits/{slug}/
 // Client assembles: ${basePath}/${mood}.png
@@ -148,20 +149,11 @@ export function selectPortraitUrl(
     }
   }
 
-  // 1. Try to find a portrait whose expression tag matches the current mood
-  if (urls.length > 0) {
-    const moodMatch = urls.find(u => (u.expression || '').toLowerCase() === mood.toLowerCase());
-    if (moodMatch) return moodMatch.url;
+  // Use the env-aware cascade resolver (stage priority + expression narrowing)
+  const resolved = resolveAssetUrl(urls, { expression: mood });
+  if (resolved) return resolved;
 
-    // 2. Fallback to the first entry with a label (usually "Standard portrait")
-    const labeled = urls.find(u => u.label && u.label.trim().length > 0);
-    if (labeled) return labeled.url;
-
-    // 3. Fallback to the first entry in the array
-    if (urls[0] && typeof urls[0].url === 'string') return urls[0].url;
-  }
-
-  // 4. Fallback to the convention-based path
+  // Fallback to the convention-based path
   return `${portraitBasePath(characterName)}/${mood}.png`;
 }
 

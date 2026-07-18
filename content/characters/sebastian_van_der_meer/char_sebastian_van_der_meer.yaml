@@ -8,4 +8,6 @@ metadata:
   faction: van_der_meer
   personality: ambitious_executive
 asset_paths:
-  portrait: characters/sebastian_van_der_meer/portrait.png
+  portrait: sebastian_van_der_meer__default.png
+
+lore_path: sebastian_van_der_meer.md

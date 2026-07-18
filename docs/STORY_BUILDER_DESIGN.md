@@ -2,13 +2,17 @@
 
 > **Status**: Shipped
 > **Created**: 2026-07-08
-> **Last Updated**: 2026-07-10
+> **Last Updated**: 2026-07-17
 > **Related**: `docs/ADMIN_ARCHITECTURE.md`, `docs/MVW_ARCHITECTURE.md`
 >
 > This began as a design/planning document. The feature has since shipped. Sections
 > 1–3 capture the design rationale and the options that were considered (kept for
 > historical context); Section 4 records what was actually built and the key files
 > that make up the implementation.
+>
+> **Note (2026-07-17):** The per-milestone planning docs in `docs/milestones/` have
+> been removed. All eight milestones (M01-M08) are complete and their status is now
+> consolidated in `docs/NEXT_STEPS.md`.
 
 ## 1. Context
 
@@ -973,15 +977,19 @@ Story builder as a modal overlay on the existing admin dashboard.
 The Story Builder shipped. The wizard flow is:
 
 ```
-Idea → AI Proposal → Iterate → Approve → Stage → Migrate
+Idea → AI Proposal → Iterate → Approve → Stage → Publish → Migrate → Verify
 ```
+
+Where `Approve` triggers the full "Approve & Solidify" pipeline (stage + publish +
+migrate + verify), and the UI shows a 2-step flow for the happy path
+(Describe → Approve → Results).
 
 ### 4.1 What was built
 
 | Area | Delivered |
 |-----------|-----------|
 | **Foundation** | 4-step wizard, ContentPlan Zod schema, LLM-backed plan generation (Mock + LiteLLM providers), template-based YAML skeletons for all 12 content types, synchronous orchestrator (create → validate → migrate), server + admin proxy routes, asset pipeline integration, content-linker, in-card lore viewer/editor. |
-| **Plan Persistence + Iteration** | `content_plans` table, 6-state status enum (draft → proposed → approved → staged → migrated → failed), `refinePlan()` with feedback log + versioning, CRUD + refine endpoints, plan list page, auto-save + load-from-URL wizard, integration tests. |
+| **Plan Persistence + Iteration** | `content_plans` table, 7-state status enum (draft → proposed → approved → staged → migrated → verified → failed), `refinePlan()` with feedback log + versioning, CRUD + refine endpoints, plan list page, auto-save + load-from-URL wizard, integration tests. |
 | **Staging + Migration Gate** | Split execute into `previewPlan()` (dry-run), `stagePlan()` (write YAML + validate), and `migrateStagedPlan()` (DB upsert). 5-step wizard (Describe → Review → Stage → Migrate → Assets), before/after preview UI, integration tests. |
 | **Asset Needs + Lore Generation** | `AssetNeedsService` (static rules per content type) injected during parse/refine, `generateLoreStubs()` (writes `.md` at lore/narrative paths), `PromptFileGenerator` (writes `.prompt.md` for the asset pipeline), staging result surfaces lore + prompt files, unit tests. |
 | **Polish + UX** | Execute-proxy validation fix, plan templates (mystery, shopkeeper, location), partial-failure recovery with per-item status + "Retry Failed" endpoint/UI, plan versioning (`parent_plan_id`) with version-history UI, keyboard shortcuts (Ctrl+Enter, Ctrl+S), template/versioning tests. |

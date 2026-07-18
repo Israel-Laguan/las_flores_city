@@ -8,4 +8,6 @@ metadata:
   faction: media
   personality: environmental_journalist
 asset_paths:
-  portrait: characters/sofia_cortez/portrait.png
+  portrait: sofia_cortez__default.png
+
+lore_path: sofia_cortez.md

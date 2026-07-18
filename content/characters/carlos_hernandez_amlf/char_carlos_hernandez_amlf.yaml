@@ -8,4 +8,6 @@ metadata:
   faction: labor
   personality: seasoned_labor_organizer
 asset_paths:
-  portrait: characters/carlos_hernandez_amlf/portrait.png
+  portrait: carlos_hernandez_amlf__default.png
+
+lore_path: carlos_hernandez_amlf.md

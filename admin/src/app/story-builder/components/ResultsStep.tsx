@@ -180,7 +180,7 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionHeading}>Step 3: Results &amp; Assets</h2>
+      <h2 className={styles.sectionHeading}>Results</h2>
 
       <StatusBox result={result} verified={verified} failed={failed} />
 

@@ -8,4 +8,6 @@ metadata:
   faction: independent
   personality: resourceful_selfreliant
 asset_paths:
-  portrait: characters/samuel_camacho/portrait.png
+  portrait: samuel_camacho__default.png
+
+lore_path: samuel_camacho.md
