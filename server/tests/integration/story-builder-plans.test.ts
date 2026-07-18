@@ -28,6 +28,7 @@ const MOCK_PLAN = {
 
 jest.mock('../../src/database/connection.js', () => ({
   queryOLTP: jest.fn(),
+  queryOLAP: jest.fn(async () => ({ rows: [] })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({

@@ -104,7 +104,7 @@ export interface SolidifyResult {
   error?: string;
 }
 
-export async function migrateStagedPlan(planId: string, client?: import('pg').PoolClient): Promise<MigrationResult> {
+export async function migrateStagedPlan(planId: string, client?: import('pg').PoolClient, files?: string[]): Promise<MigrationResult> {
   const exec = (text: string, params: any[]) =>
     client ? client.query<any>(text, params) : queryOLTP<any>(text, params);
   try {
@@ -121,9 +121,16 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
       throw new PlanStatusError(`Plan must be staged before migration. Current status: ${result.rows[0].status}`);
     }
 
+    // Take ownership of the migrating transition here so callers do not set
+    // status to migrating before this function validates the plan.
+    await exec(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+      ['migrating', planId]
+    );
+
     const contentDir = resolveContentDir();
 
-    const migrationResult = await migrateContent(contentDir);
+    const migrationResult = await migrateContent(contentDir, files);
 
     // Propagate migration failure: do not flip to 'migrated' on partial failure.
     if (!migrationResult.success) {
@@ -172,7 +179,7 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
  * the transaction, and returns immediately. The caller polls
  * `GET /plans/:id/status` for progress.
  */
-export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyResult> {
+export async function approveAndSolidifyPlan(planId: string, userId?: string): Promise<SolidifyResult> {
   // Serialize concurrent approve-and-solidify calls per-plan using an
   // advisory lock held for the duration of the transaction.
   await withOLTPTransaction(async (client) => {
@@ -195,14 +202,15 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
 
     // 1. Lock the plan and set pending status.
     await ContentPlanService.setStatus(planId, 'pending', client);
-
-    // 2. Write initial cache status.
-    await setJobStatus(planId, { status: 'pending' });
   });
+
+  // 2. Write initial cache status only after the transaction commits, so a
+  //    commit failure cannot leave a stale pending cache entry.
+  await setJobStatus(planId, { status: 'pending' });
 
   // 3. Fire async solidify OUTSIDE the transaction.
   //    Errors are caught and persisted to status by runSolidify.
-  runSolidify(planId).catch((err) => {
+  runSolidify(planId, userId).catch((err) => {
     console.error(`[story-builder] Unhandled runSolidify error for ${planId}:`, err);
   });
 
@@ -216,7 +224,7 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
  * Runs the full solidify pipeline outside a transaction.
  * Updates cache status at each stage and persists final status to DB.
  */
-async function runSolidify(planId: string): Promise<void> {
+async function runSolidify(planId: string, userId?: string): Promise<void> {
   try {
     // Load plan
     const load = await queryOLTP<{ plan_json: any; status: string }>(
@@ -257,13 +265,11 @@ async function runSolidify(planId: string): Promise<void> {
     }
 
     // --- Migrate ---
+    // The migrating DB transition is owned by migrateStagedPlan (after it
+    // validates the plan as staged/approved), so we only update the cache here.
     await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['migrating', planId],
-    );
 
-    const migrationResult = await migrateStagedPlan(planId);
+    const migrationResult = await migrateStagedPlan(planId, undefined, stageResult.createdFiles);
     await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult, migration: migrationResult });
 
     if (!migrationResult.success) {
@@ -293,7 +299,7 @@ async function runSolidify(planId: string): Promise<void> {
         verificationReport,
         error: verificationReport.errors[0] || 'Verification failed',
       });
-      emitAdminEvent('plan_failed', { status: 'failed', error: verificationReport.errors[0] }, planId);
+      emitAdminEvent('plan_failed', { status: 'failed', error: verificationReport.errors[0] }, planId, userId);
       return;
     }
 
@@ -308,7 +314,7 @@ async function runSolidify(planId: string): Promise<void> {
       migration: migrationResult,
       verificationReport,
     });
-    emitAdminEvent('plan_verified', { status: 'verified' }, planId);
+    emitAdminEvent('plan_verified', { status: 'verified' }, planId, userId);
   } catch (error: any) {
     console.error(`[story-builder] runSolidify failed for ${planId}:`, error.message);
     try {
@@ -321,7 +327,7 @@ async function runSolidify(planId: string): Promise<void> {
       status: 'failed',
       error: error.message,
     });
-    emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId);
+    emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
   }
 }
 

@@ -51,7 +51,14 @@ export class LiteLLMProvider implements LLMProvider {
 
         if (!response.ok) {
           const text = await response.text();
-          throw new Error(`LiteLLM request failed: ${response.status} ${response.statusText} — ${text}`);
+          const errorMsg = `LiteLLM request failed: ${response.status} ${response.statusText} — ${text}`;
+          const isRetryable = response.status === 429 || response.status >= 500;
+          if (!isRetryable) {
+            const nonRetryableError = new Error(errorMsg);
+            (nonRetryableError as any).isRetryable = false;
+            throw nonRetryableError;
+          }
+          throw new Error(errorMsg);
         }
 
         const data = await response.json();
@@ -67,6 +74,9 @@ export class LiteLLMProvider implements LLMProvider {
           throw new Error(`LiteLLM returned invalid JSON: ${(e as Error).message}. Content preview: ${cleanedContent.substring(0, 200)}`);
         }
       } catch (err: any) {
+        if (err.isRetryable === false) {
+          throw err;
+        }
         lastError = err;
         if (attempt === this.retries) break;
       }
@@ -102,7 +112,14 @@ export class LiteLLMProvider implements LLMProvider {
 
         if (!response.ok) {
           const text = await response.text();
-          throw new Error(`LiteLLM lore request failed: ${response.status} ${response.statusText} — ${text}`);
+          const errorMsg = `LiteLLM lore request failed: ${response.status} ${response.statusText} — ${text}`;
+          const isRetryable = response.status === 429 || response.status >= 500;
+          if (!isRetryable) {
+            const nonRetryableError = new Error(errorMsg);
+            (nonRetryableError as any).isRetryable = false;
+            throw nonRetryableError;
+          }
+          throw new Error(errorMsg);
         }
 
         const data = await response.json();
@@ -115,6 +132,9 @@ export class LiteLLMProvider implements LLMProvider {
 
         return content.trim();
       } catch (err: any) {
+        if (err.isRetryable === false) {
+          throw err;
+        }
         lastError = err;
         if (attempt === this.retries) break;
       }

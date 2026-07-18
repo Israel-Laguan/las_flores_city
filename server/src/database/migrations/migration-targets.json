@@ -43,7 +43,8 @@
     "048_content_plans_versioning.sql",
     "049_content_plans_verified.sql",
     "050_content_plans_verification.sql",
-    "051_scene_location_asset_cascade.sql"
+    "051_scene_location_asset_cascade.sql",
+    "053_admin_events.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

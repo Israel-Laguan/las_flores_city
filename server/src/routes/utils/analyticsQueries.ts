@@ -1,4 +1,3 @@
-import { queryOLAP } from '../../database/connection.js';
 import { queryOLTP } from '../../database/connection.js';
 
 export interface DialogueRow {
@@ -94,25 +93,25 @@ export interface AdminAnalyticsData {
 
 export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
   const [plans24h, plans7d, eventsByType, avgItemsPerPlan, terminalEvents] = await Promise.all([
-    queryOLAP<{ count: string }>(
+    queryOLTP<{ count: string }>(
       `SELECT count(*)::int AS count FROM admin_events
        WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '24 hours'`
     ),
-    queryOLAP<{ count: string }>(
+    queryOLTP<{ count: string }>(
       `SELECT count(*)::int AS count FROM admin_events
        WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '7 days'`
     ),
-    queryOLAP<{ event_type: string; count: string }>(
+    queryOLTP<{ event_type: string; count: string }>(
       `SELECT event_type, count(*)::int AS count FROM admin_events
        WHERE created_at > NOW() - INTERVAL '7 days'
        GROUP BY event_type ORDER BY count DESC`
     ),
-    queryOLAP<{ avg_items: string }>(
+    queryOLTP<{ avg_items: string }>(
       `SELECT round(avg((event_data->>'itemCount')::numeric), 1) AS avg_items
        FROM admin_events
        WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '7 days'`
     ),
-    queryOLAP<{ verified: string; failed: string }>(
+    queryOLTP<{ verified: string; failed: string }>(
       `SELECT
          count(*) FILTER (WHERE event_type = 'plan_verified')::int AS verified,
          count(*) FILTER (WHERE event_type = 'plan_failed')::int AS failed

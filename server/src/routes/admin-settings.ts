@@ -51,12 +51,22 @@ adminSettingsRouter.get('/', async (_req, res) => {
  */
 adminSettingsRouter.patch('/', async (req: AuthRequest, res) => {
   try {
-    const { key, value, description } = req.body;
+    const { key: rawKey, value, description } = req.body;
+    const key = typeof rawKey === 'string' ? rawKey.trim() : '';
 
-    if (!key || typeof key !== 'string') {
+    if (!key || key.length > 100) {
       res.status(400).json({
         success: false,
-        error: 'key is required and must be a string',
+        error: 'key must be a non-empty string of at most 100 characters',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    if (description !== undefined && description !== null && typeof description !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'description must be a string',
         timestamp: new Date().toISOString(),
       });
       return;
@@ -71,16 +81,18 @@ adminSettingsRouter.patch('/', async (req: AuthRequest, res) => {
       return;
     }
 
+    const hasDescription = 'description' in req.body;
+
     // Upsert the setting
     await queryOLTP(
       `INSERT INTO system_settings (key, value, description, updated_by, updated_at)
        VALUES ($1, $2::jsonb, $3, $4, NOW())
        ON CONFLICT (key) DO UPDATE
        SET value = $2::jsonb,
-           description = COALESCE($3, system_settings.description),
+           description = CASE WHEN $5 THEN $3 ELSE system_settings.description END,
            updated_by = $4,
            updated_at = NOW()`,
-      [key, JSON.stringify(value), description || null, req.userId!],
+      [key, JSON.stringify(value), description || null, req.userId!, hasDescription],
     );
 
     emitAdminEvent('settings_updated', { key, value, description }, undefined, req.userId);

@@ -12,7 +12,8 @@ import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn(),
+  queryOLTP: jest.fn(async () => ({ rows: [], rowCount: 0, command: '', oid: 0, fields: [] })),
+  queryOLAP: jest.fn(async () => ({ rows: [] })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({
@@ -80,7 +81,7 @@ describe('POST /admin/story-builder/plans/:id/approve-and-solidify', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.status).toBe('verified');
-    expect(mockApprove).toHaveBeenCalledWith(TEST_PLAN_ID);
+    expect(mockApprove.mock.calls[0][0]).toBe(TEST_PLAN_ID);
   });
 
   it('returns 200 with a failed body when the solidify result fails', async () => {

@@ -22,19 +22,29 @@ function SettingRow({
   saving,
 }: {
   setting: Setting;
-  onSave: (key: string, value: any, description?: string) => void;
+  onSave: (key: string, value: any, description?: string) => Promise<boolean>;
   saving: boolean;
 }) {
-  const [editValue, setEditValue] = useState(JSON.stringify(setting.value, null, 2));
+  const [editValue, setEditValue] = useState(
+    typeof setting.value === 'string' ? setting.value : JSON.stringify(setting.value, null, 2)
+  );
   const [isEditing, setIsEditing] = useState(false);
 
-  function handleSave() {
-    try {
-      const parsed = JSON.parse(editValue);
-      onSave(setting.key, parsed, setting.description ?? undefined);
+  async function handleSave() {
+    let parsed;
+    if (typeof setting.value === 'string') {
+      parsed = editValue;
+    } else {
+      try {
+        parsed = JSON.parse(editValue);
+      } catch {
+        alert('Invalid JSON value');
+        return;
+      }
+    }
+    const ok = await onSave(setting.key, parsed, setting.description ?? undefined);
+    if (ok) {
       setIsEditing(false);
-    } catch {
-      alert('Invalid JSON value');
     }
   }
 
@@ -48,7 +58,11 @@ function SettingRow({
       </div>
       {isEditing ? (
         <div className={styles.settingEdit}>
+          <label className="muted" htmlFor={`setting-value-${setting.key}`}>
+            Value for <code>{setting.key}</code>
+          </label>
           <textarea
+            id={`setting-value-${setting.key}`}
             className={cn('textarea', styles.valueTextarea)}
             value={editValue}
             onChange={e => setEditValue(e.target.value)}
@@ -65,7 +79,7 @@ function SettingRow({
             <button
               className={cn('btn', 'btn--secondary', 'btn--small')}
               onClick={() => {
-                setEditValue(JSON.stringify(setting.value, null, 2));
+                setEditValue(typeof setting.value === 'string' ? setting.value : JSON.stringify(setting.value, null, 2));
                 setIsEditing(false);
               }}
             >
@@ -118,8 +132,9 @@ export default function SettingsPage() {
     return () => { cancelled = true; };
   }, []);
 
-  async function handleSave(key: string, value: any, description?: string) {
+  async function handleSave(key: string, value: any, description?: string): Promise<boolean> {
     setSaving(true);
+    setError(null);
     try {
       const result = await adminFetch<{ success: boolean; error?: string }>(
         '/admin/settings',
@@ -133,11 +148,14 @@ export default function SettingsPage() {
         setSettings(prev =>
           prev.map(s => s.key === key ? { ...s, value, updated_at: new Date().toISOString() } : s)
         );
+        return true;
       } else {
         setError(result.error || 'Failed to save setting');
+        return false;
       }
     } catch {
       setError('Failed to save setting');
+      return false;
     } finally {
       setSaving(false);
     }

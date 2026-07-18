@@ -1,4 +1,4 @@
-import { queryOLAP } from '../database/connection.js';
+import { queryOLTP } from '../database/connection.js';
 
 export type AdminEventType =
   | 'plan_created' | 'plan_refined' | 'plan_staged'
@@ -7,7 +7,7 @@ export type AdminEventType =
 
 /**
  * Fire-and-forget admin event emitter.
- * Uses queryOLAP which swallows errors internally — never blocks the caller.
+ * Uses queryOLTP which swallows errors internally — never blocks the caller.
  */
 export function emitAdminEvent(
   eventType: AdminEventType,
@@ -15,7 +15,7 @@ export function emitAdminEvent(
   planId?: string,
   createdBy?: string,
 ): void {
-  queryOLAP(
+  queryOLTP(
     `INSERT INTO admin_events (event_type, event_data, plan_id, created_by)
      VALUES ($1, $2::jsonb, $3, $4)`,
     [eventType, JSON.stringify(eventData), planId || null, createdBy || null],

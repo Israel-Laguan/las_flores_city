@@ -27,7 +27,8 @@ const MOCK_PLAN = {
 };
 
 jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn(),
+  queryOLTP: jest.fn(async () => ({ rows: [], rowCount: 0, command: '', oid: 0, fields: [] })),
+  queryOLAP: jest.fn(async () => ({ rows: [] })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({
@@ -101,13 +102,46 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
   })),
 }));
 
+jest.mock('../../src/routes/admin-story-builder-staging.js', () => {
+  const MOCK_PLAN = {
+    id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+    description: 'Test plan for staging migration',
+    status: 'proposed',
+    items: [
+      {
+        id: '11111111-2222-3333-4444-555555555555',
+        type: 'character',
+        action: 'create',
+        name: 'Diego',
+        slug: 'diego',
+        fields: { title: 'Bartender', description: 'A friendly bartender' },
+        assetNeeds: [],
+        dependsOn: [],
+      },
+    ],
+    links: [],
+  };
+  return {
+    loadPlanForStaging: jest.fn(async (_id: string, _allowedStatuses: string[]) => ({
+      plan: MOCK_PLAN,
+      error: undefined,
+    })),
+    runStagingPipeline: jest.fn(async () => ({
+      plan: MOCK_PLAN,
+      success: true,
+    })),
+  };
+});
+
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { queryOLTP } from '../../src/database/connection.js';
-import { previewPlan, stagePlan, migrateStagedPlan } from '../../src/services/StoryBuilderOrchestrator.js';
+import { previewPlan, migrateStagedPlan } from '../../src/services/StoryBuilderOrchestrator.js';
+import { loadPlanForStaging, runStagingPipeline } from '../../src/routes/admin-story-builder-staging.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 const mockPreviewPlan = previewPlan as jest.MockedFunction<typeof previewPlan>;
-const mockStagePlan = stagePlan as jest.MockedFunction<typeof stagePlan>;
+const mockLoadPlanForStaging = loadPlanForStaging as jest.MockedFunction<typeof loadPlanForStaging>;
+const mockRunStagingPipeline = runStagingPipeline as jest.MockedFunction<typeof runStagingPipeline>;
 const mockMigrateStagedPlan = migrateStagedPlan as jest.MockedFunction<typeof migrateStagedPlan>;
 
 function makeApp() {
@@ -159,7 +193,10 @@ describe('POST /admin/story-builder/plans/:id/stage', () => {
   });
 
   test('returns 404 for non-existent plan', async () => {
-    mockQueryOLTP.mockResolvedValueOnce({ rows: [], rowCount: 0, command: 'SELECT', oid: 0, fields: [] });
+    mockLoadPlanForStaging.mockResolvedValueOnce({
+      plan: null as any,
+      error: { status: 404, message: 'Plan not found' },
+    });
 
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/stage`);
@@ -169,9 +206,9 @@ describe('POST /admin/story-builder/plans/:id/stage', () => {
   });
 
   test('rejects staging a draft plan', async () => {
-    mockQueryOLTP.mockResolvedValueOnce({
-      rows: [{ plan_json: MOCK_PLAN, status: 'draft' }],
-      rowCount: 1, command: 'SELECT', oid: 0, fields: [],
+    mockLoadPlanForStaging.mockResolvedValueOnce({
+      plan: null as any,
+      error: { status: 400, message: 'Plan must be proposed or approved before staging. Current status: draft' },
     });
 
     const res = await request(app)
@@ -183,44 +220,50 @@ describe('POST /admin/story-builder/plans/:id/stage', () => {
   });
 
   test('stages a valid plan and updates status', async () => {
-    mockQueryOLTP
-      .mockResolvedValueOnce({
-        rows: [{ plan_json: MOCK_PLAN, status: 'approved' }],
-        rowCount: 1, command: 'SELECT', oid: 0, fields: [],
-      })
-      .mockResolvedValueOnce({ rows: [], rowCount: 1, command: 'UPDATE', oid: 0, fields: [] });
+    const MOCK_PLAN = {
+      id: TEST_PLAN_ID,
+      description: 'Test plan',
+      status: 'approved',
+      items: [{
+        id: MOCK_ITEM_ID, type: 'character', action: 'create', name: 'Diego',
+        slug: 'diego', fields: { title: 'Bartender' }, assetNeeds: [], dependsOn: [],
+      }],
+      links: [],
+    };
+    mockLoadPlanForStaging.mockResolvedValueOnce({ plan: MOCK_PLAN as any, error: undefined });
+    mockRunStagingPipeline.mockResolvedValueOnce({ plan: MOCK_PLAN as any, success: true });
+    mockQueryOLTP.mockResolvedValueOnce({ rows: [], rowCount: 1, command: 'UPDATE', oid: 0, fields: [] });
 
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/stage`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.createdFiles).toContain('characters/char_diego.yaml');
-    expect(mockStagePlan).toHaveBeenCalled();
+    expect(res.body.data.plan).toBeDefined();
+    expect(mockRunStagingPipeline).toHaveBeenCalled();
   });
 
   test('handles staging failure', async () => {
-    mockStagePlan.mockResolvedValueOnce({
-      success: false,
-      createdFiles: [],
-      updatedFiles: [],
-      validationErrors: ['Invalid schema'],
-      warnings: [],
-    });
-
-    mockQueryOLTP
-      .mockResolvedValueOnce({
-        rows: [{ plan_json: MOCK_PLAN, status: 'approved' }],
-        rowCount: 1, command: 'SELECT', oid: 0, fields: [],
-      })
-      .mockResolvedValueOnce({ rows: [], rowCount: 1, command: 'UPDATE', oid: 0, fields: [] });
+    const MOCK_PLAN = {
+      id: TEST_PLAN_ID,
+      description: 'Test plan',
+      status: 'approved',
+      items: [{
+        id: MOCK_ITEM_ID, type: 'character', action: 'create', name: 'Diego',
+        slug: 'diego', fields: { title: 'Bartender' }, assetNeeds: [], dependsOn: [],
+      }],
+      links: [],
+    };
+    mockLoadPlanForStaging.mockResolvedValueOnce({ plan: MOCK_PLAN as any, error: undefined });
+    mockRunStagingPipeline.mockResolvedValueOnce({ plan: MOCK_PLAN as any, success: false, error: 'Invalid schema' });
+    mockQueryOLTP.mockResolvedValueOnce({ rows: [], rowCount: 1, command: 'UPDATE', oid: 0, fields: [] });
 
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/stage`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(false);
-    expect(res.body.data.validationErrors).toContain('Invalid schema');
+    expect(res.body.data.error).toContain('Invalid schema');
   });
 });
 

@@ -18,6 +18,8 @@ ALTER TABLE content_plans ADD CONSTRAINT content_plans_status_check
   CHECK (status IN (
     'draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed',
     'pending', 'staging', 'migrating', 'verifying'
-  ));
+  )) NOT VALID;
+
+ALTER TABLE content_plans VALIDATE CONSTRAINT content_plans_status_check;
 
 COMMIT;

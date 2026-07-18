@@ -33,7 +33,7 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
 
     const plan = await contentPlanService.parseDescription(description.trim());
 
-    emitAdminEvent('plan_created', { description: description.trim(), itemCount: plan.items.length }, plan.id, req.userId);
+    emitAdminEvent('plan_created', { descriptionLength: description.trim().length, itemCount: plan.items.length }, plan.id, req.userId);
 
     res.json({
       success: true,
@@ -63,7 +63,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest
 
     const refinedPlan = await contentPlanService.refinePlan(id, feedback.trim());
 
-    emitAdminEvent('plan_refined', { feedback: feedback.trim(), itemCount: refinedPlan.items.length }, refinedPlan.id, req.userId);
+    emitAdminEvent('plan_refined', { feedbackLength: feedback.trim().length, itemCount: refinedPlan.items.length }, refinedPlan.id, req.userId);
 
     res.json({
       success: true,
@@ -181,9 +181,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   try {
     const { id } = req.params;
 
-    const result = await approveAndSolidifyPlan(id);
-
-    emitAdminEvent('plan_staged', { status: result.status, async: true }, id, req.userId);
+    const result = await approveAndSolidifyPlan(id, req.userId);
 
     res.status(200).json({
       success: result.success,
@@ -308,7 +306,11 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req: AuthRequest
       return;
     }
 
-    emitAdminEvent('plan_verified', { passed: report.passed, errorCount: report.errors?.length ?? 0 }, id, req.userId);
+    if (report.passed) {
+      emitAdminEvent('plan_verified', { passed: report.passed, errorCount: report.errors?.length ?? 0 }, id, req.userId);
+    } else {
+      emitAdminEvent('plan_failed', { passed: false, errorCount: report.errors?.length ?? 0 }, id, req.userId);
+    }
 
     res.json({
       success: true,

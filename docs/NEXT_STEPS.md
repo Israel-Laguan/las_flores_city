@@ -32,7 +32,7 @@
 
 ## Out of scope for current roadmap
 
-- `/users` and `/settings` admin pages remain as stubs. Intentionally deferred to a future user-management milestone.
+- `/users` and `/settings` admin pages are shipped (user management + editable system settings).
 
 ---
 

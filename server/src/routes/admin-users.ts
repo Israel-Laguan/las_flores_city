@@ -46,7 +46,7 @@ adminUsersRouter.get('/', async (req, res) => {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    const countResult = await queryOLTP<{ count: string }>(
+    const countResult = await queryOLTP<{ count: number }>(
       `SELECT count(*)::int AS count FROM users ${whereClause}`,
       params,
     );
@@ -196,6 +196,26 @@ adminUsersRouter.patch('/:id', async (req: AuthRequest, res) => {
 
     // Role hierarchy: developer > admin > player
     const roleHierarchy: Record<string, number> = { player: 0, admin: 1, developer: 2 };
+
+    if (!selfRole || !(selfRole in roleHierarchy)) {
+      res.status(403).json({
+        success: false,
+        error: 'Unauthorized or invalid role',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Cannot modify a user with a higher-privileged role than your own.
+    const targetLevel = roleHierarchy[targetRole];
+    if (targetLevel === undefined || targetLevel > roleHierarchy[selfRole]) {
+      res.status(403).json({
+        success: false,
+        error: 'Cannot modify a user above your own role',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
 
     // Cannot promote above your own role
     if (roleHierarchy[role] > roleHierarchy[selfRole]) {

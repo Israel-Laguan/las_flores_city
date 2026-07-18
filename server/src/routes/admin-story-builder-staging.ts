@@ -19,27 +19,34 @@ export interface StagingOutcome {
   error?: string;
 }
 
-// Loads a plan by id, guarding on the allowed current status, and parses it.
+// Loads a plan by id, atomically claiming it by transitioning from an allowed
+// status into `staging`. This prevents concurrent stage/retry/approve operations
+// from racing and overwriting each other's lifecycle state.
 export async function loadPlanForStaging(
   id: string,
   allowedStatuses: string[],
 ): Promise<{ plan: ContentPlan; error?: { status: number; message: string } }> {
   const result = await queryOLTP<{ plan_json: any; status: string }>(
-    'SELECT plan_json, status FROM content_plans WHERE id = $1',
-    [id],
+    `UPDATE content_plans
+     SET status = 'staging', updated_at = NOW()
+     WHERE id = $1 AND status = ANY($2::text[])
+     RETURNING plan_json, status`,
+    [id, allowedStatuses],
   );
 
   if (result.rows.length === 0) {
-    return { plan: null as any, error: { status: 404, message: 'Plan not found' } };
-  }
-
-  const currentStatus = result.rows[0].status;
-  if (!allowedStatuses.includes(currentStatus)) {
+    const current = await queryOLTP<{ status: string }>(
+      'SELECT status FROM content_plans WHERE id = $1',
+      [id],
+    );
+    const currentStatus = current.rows[0]?.status;
     return {
       plan: null as any,
       error: {
-        status: 400,
-        message: `Plan must be ${allowedStatuses.join(' or ')} before staging. Current status: ${currentStatus}`,
+        status: currentStatus ? 400 : 404,
+        message: currentStatus
+          ? `Plan must be ${allowedStatuses.join(' or ')} before staging. Current status: ${currentStatus}`
+          : 'Plan not found',
       },
     };
   }

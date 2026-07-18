@@ -179,13 +179,17 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
   const [pollResult, setPollResult] = useState<SolidifyResultLite | null>(null);
   const [polling, setPolling] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollPlanIdRef = useRef<string | null>(null);
 
   const activeResult = pollResult ?? result;
 
   const poll = useCallback(async () => {
     if (!planId) return;
+    const requestPlanId = planId;
     try {
       const res = await getJobStatus(planId);
+      // Ignore stale responses from a previous plan.
+      if (requestPlanId !== pollPlanIdRef.current) return;
       if (res.success && res.data) {
         const mapped: SolidifyResultLite = {
           success: res.data.status === 'verified',
@@ -205,6 +209,14 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
     } catch {
       // Non-fatal — will retry on next tick
     }
+  }, [planId]);
+
+  // Reset polling state when switching to a different plan so a terminal
+  // pollResult from the previous plan cannot suppress polling the new one.
+  useEffect(() => {
+    setPollResult(null);
+    setPolling(false);
+    pollPlanIdRef.current = planId ?? null;
   }, [planId]);
 
   useEffect(() => {
@@ -243,7 +255,7 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
           <p className={styles.boldText}>{stageLabels[activeResult.status] || 'Processing...'}</p>
           <p className={styles.statusLine}>
             Status: <strong>{activeResult.status}</strong>
-            {polling && <span style={{ marginLeft: 8, opacity: 0.6 }}>(polling every 3s)</span>}
+            {polling && <span className={styles.pollingHint}>(polling every 3s)</span>}
           </p>
         </div>
       )}

@@ -161,18 +161,20 @@ export default function AnalyticsPage() {
     let cancelled = false;
     async function fetchAnalytics() {
       try {
-        const [summaryResult, sbResult] = await Promise.all([
+        const [summaryResult, sbResult] = await Promise.allSettled([
           adminFetch<{ success: boolean; data?: AnalyticsData; error?: string }>('/admin/analytics/summary'),
           adminFetch<{ success: boolean; data?: StoryBuilderAnalytics; error?: string }>('/admin/analytics/story-builder'),
         ]);
         if (cancelled) return;
-        if (summaryResult.success) {
-          setData(summaryResult.data ?? null);
-        } else {
-          setError(summaryResult.error || 'Failed to fetch analytics');
+        if (summaryResult.status === 'fulfilled' && summaryResult.value.success) {
+          setData(summaryResult.value.data ?? null);
+        } else if (summaryResult.status === 'rejected' || !summaryResult.value.success) {
+          setError(summaryResult.status === 'fulfilled'
+            ? summaryResult.value.error || 'Failed to fetch analytics'
+            : 'Failed to fetch analytics');
         }
-        if (sbResult.success) {
-          setSbData(sbResult.data ?? null);
+        if (sbResult.status === 'fulfilled' && sbResult.value.success) {
+          setSbData(sbResult.value.data ?? null);
         }
       } catch {
         if (cancelled) return;

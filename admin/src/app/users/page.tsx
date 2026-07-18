@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import styles from './users.module.css';
@@ -46,11 +46,13 @@ function Toolbar({
         placeholder="Search by username, email, or display name..."
         value={search}
         onChange={e => onSearchChange(e.target.value)}
+        aria-label="Search users by username, email, or display name"
         className={cn('input', styles.searchInput)}
       />
       <select
         value={roleFilter}
         onChange={e => onRoleFilterChange(e.target.value)}
+        aria-label="Filter users by role"
         className={cn('select', styles.roleFilter)}
       >
         <option value="">All Roles</option>
@@ -126,8 +128,10 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const pageSize = 50;
+  const requestSeq = useRef(0);
 
   const fetchUsers = useCallback(async () => {
+    const seq = ++requestSeq.current;
     setLoading(true);
     setError(null);
     try {
@@ -141,6 +145,7 @@ export default function UsersPage() {
       const result = await adminFetch<{ success: boolean; data?: UsersResponse; error?: string }>(
         `/admin/users?${params}`,
       );
+      if (seq !== requestSeq.current) return;
       if (result.success && result.data) {
         setUsers(result.data.users);
         setTotal(result.data.total);
@@ -148,9 +153,10 @@ export default function UsersPage() {
         setError(result.error || 'Failed to fetch users');
       }
     } catch {
+      if (seq !== requestSeq.current) return;
       setError('Failed to fetch users');
     } finally {
-      setLoading(false);
+      if (seq === requestSeq.current) setLoading(false);
     }
   }, [page, search, roleFilter]);
 
