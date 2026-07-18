@@ -41,6 +41,7 @@ import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
+import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
 
 dotenv.config();
 
@@ -181,6 +182,9 @@ async function initializeServer() {
   // Startup reconciliation: reset stalled `generating` asset needs to `pending`
   // so ContentAssetWorker can retry them on the first tick.
   await ContentAssetWorker.reclaimStalledNeeds();
+
+  // Startup recovery: reset orphaned in-flight solidify jobs to failed.
+  await resetOrphanedSolidifyJobs();
 
   // Start server
   app.listen(PORT, () => {

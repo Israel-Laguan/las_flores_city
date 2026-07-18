@@ -240,7 +240,7 @@ function getProcessingOrder(files: string[]): string[] {
   });
 }
 
-export async function migrateContent(contentDir: string): Promise<MigrationResult> {
+export async function migrateContent(contentDir: string, files?: string[]): Promise<MigrationResult> {
   console.log(`🚀 Starting content migration from: ${contentDir}`);
   
   const result: MigrationResult = {
@@ -269,9 +269,17 @@ export async function migrateContent(contentDir: string): Promise<MigrationResul
       validationResult.warnings.forEach(w => console.log(`  - ${w}`));
     }
 
-    const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
-    const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
-    let allFiles = [...yamlFiles, ...ymlFiles];
+    let allFiles: string[];
+    if (files && files.length > 0) {
+      // Scoped migrate: only process the provided file list (already absolute or resolved by caller)
+      allFiles = files.map(f => path.isAbsolute(f) ? f : path.resolve(contentDir, f));
+      console.log(`📁 Scoped migration: ${allFiles.length} specific file(s)`);
+    } else {
+      const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
+      const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
+      allFiles = [...yamlFiles, ...ymlFiles];
+      console.log(`📁 Found ${allFiles.length} content files`);
+    }
 
     allFiles = getProcessingOrder(allFiles);
 

@@ -36,7 +36,7 @@ export const ContentPlanSchema = z.object({
   description: z.string(),
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),
-  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed']).default('draft'),
+  status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying']).default('draft'),
 }).superRefine((plan, ctx) => {
   // 1. Reject duplicate (type, slug). Duplicate items silently overwrite files
   // on write, so they must be caught before staging.

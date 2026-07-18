@@ -1,16 +1,19 @@
-import path from 'node:path';
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
-import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, verifyPlan } from '../services/StoryBuilderOrchestrator.js';
-import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
-import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
+import {
+  previewPlan,
+  migrateStagedPlan,
+  approveAndSolidifyPlan,
+  verifyPlan,
+  getSolidifyJobStatus,
+} from '../services/StoryBuilderOrchestrator.js';
 import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
-import { createLLMProvider } from '../services/LLMService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
+import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -115,105 +118,27 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req: AuthRequest,
   try {
     const { id } = req.params;
 
-    const result = await queryOLTP<{ plan_json: any; status: string }>(
-      'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+    const loaded = await loadPlanForStaging(id, ['proposed', 'approved']);
+    if (loaded.error) {
+      res.status(loaded.error.status).json({ success: false, error: loaded.error.message, timestamp: new Date().toISOString() });
       return;
     }
 
-    // Status guard: only allow staging if proposed or approved
-    const currentStatus = result.rows[0].status;
-    if (currentStatus !== 'proposed' && currentStatus !== 'approved') {
-      res.status(400).json({
-        success: false,
-        error: `Plan must be proposed or approved before staging. Current status: ${currentStatus}`,
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
+    const outcome = await runStagingPipeline(loaded.plan, id);
 
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    // Gather context and create provider for LLM field filling
-    const provider = createLLMProvider();
-    const context = await contentPlanService.gatherContext();
-    const stagingResult = await stagePlan(plan, { provider, context });
-
-    if (stagingResult.success) {
-      // Persist LLM-filled fields and lore references back to the database
-      await queryOLTP(
-        'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-        [plan, id]
-      );
-    }
-
-    // Auto-generate local drafts for pending asset needs (non-fatal on error)
-    if (stagingResult.success) {
-      const contentDir = path.resolve(process.cwd(), 'content');
-      try {
-        for (const item of plan.items) {
-          const pendingNeeds = item.assetNeeds.filter(n => n.status === 'pending');
-          if (pendingNeeds.length === 0) continue;
-
-          const entityRoot = resolveEntityRootDir(item, contentDir);
-          await generateLocalDrafts(item, entityRoot, 1);
-
-          // Auto-choose the first available draft
-          const assets = await listLocalAssets(entityRoot);
-          if (assets.length > 0) {
-            const firstDraft = assets[0].filename;
-            for (const need of pendingNeeds) {
-              markDrafted(need);
-            }
-            // Choose the first asset (default or generated) for all pending needs
-            if (!(item.fields as any).asset_paths) (item.fields as any).asset_paths = {};
-            for (const need of pendingNeeds) {
-              const assetFieldName = need.targetField.split('.').pop()!;
-              (item.fields as any).asset_paths[assetFieldName] = firstDraft;
-              markChosen(need);
-            }
-            await writeAssetPathsToYaml(item, entityRoot, contentDir);
-          }
-        }
-        // Auto-select __default.png for any items that have it as first asset
-        await autoSelectDefaultDrafts(plan, contentDir);
-
-        // Persist auto-draft selections back to the plan
-        await queryOLTP(
-          'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-          [plan, id]
-        );
-      } catch (err: any) {
-        console.warn(`[story-builder] Auto-draft generation failed (non-fatal): ${err.message}`);
-      }
-    }
-
-    const newStatus = stagingResult.success ? 'staged' : 'failed';
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      [newStatus, id]
-    );
+    const newStatus = outcome.success ? 'staged' : 'failed';
+    await queryOLTP('UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2', [newStatus, id]);
 
     emitAdminEvent(
-      stagingResult.success ? 'plan_staged' : 'plan_failed',
-      { itemCount: plan.items.length, success: stagingResult.success },
+      outcome.success ? 'plan_staged' : 'plan_failed',
+      { itemCount: loaded.plan.items.length, success: outcome.success },
       id,
       req.userId,
     );
 
     res.json({
-      success: stagingResult.success,
-      data: stagingResult,
+      success: outcome.success,
+      data: outcome,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -251,19 +176,14 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthReques
 });
 
 // POST /admin/story-builder/plans/:id/approve-and-solidify — Single-click "Approve & Ship"
-// Collapses stage → publish → migrate → verify into one call (Milestone 04).
+// Fires async solidify and returns immediately with status=planId for polling.
 adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
     const result = await approveAndSolidifyPlan(id);
 
-    emitAdminEvent(
-      result.success ? 'plan_verified' : 'plan_failed',
-      { status: result.status },
-      id,
-      req.userId,
-    );
+    emitAdminEvent('plan_staged', { status: result.status, async: true }, id, req.userId);
 
     res.status(200).json({
       success: result.success,
@@ -286,69 +206,78 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   }
 });
 
-// POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
-adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req: AuthRequest, res) => {
+// GET /admin/story-builder/plans/:id/status — Poll async solidify job status
+adminStoryBuilderActionsRouter.get('/plans/:id/status', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params;
 
-    // Load plan from DB
-    const result = await queryOLTP<{ plan_json: any; status: string }>(
-      'SELECT plan_json, status FROM content_plans WHERE id = $1',
-      [id]
-    );
+    const jobStatus = await getSolidifyJobStatus(id);
 
-    if (result.rows.length === 0) {
-      res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
-      return;
-    }
-
-    if (result.rows[0].status !== 'failed') {
-      res.status(400).json({
-        success: false,
-        error: `Can only retry failed plans. Current status: ${result.rows[0].status}`,
+    if (!jobStatus) {
+      // No job in progress — fall back to DB status
+      const result = await queryOLTP<{ status: string }>(
+        'SELECT status FROM content_plans WHERE id = $1',
+        [id],
+      );
+      if (result.rows.length === 0) {
+        res.status(404).json({ success: false, error: 'Plan not found', timestamp: new Date().toISOString() });
+        return;
+      }
+      res.json({
+        success: true,
+        data: { planId: id, status: result.rows[0].status },
         timestamp: new Date().toISOString(),
       });
       return;
     }
 
-    let plan;
-    try {
-      plan = ContentPlanSchema.parse(result.rows[0].plan_json);
-    } catch {
-      res.status(400).json({ success: false, error: 'Stored plan failed schema validation', timestamp: new Date().toISOString() });
+    res.json({
+      success: true,
+      data: jobStatus,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] GET /plans/:id/status error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to fetch status', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
+adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+
+    const loaded = await loadPlanForStaging(id, ['failed']);
+    if (loaded.error) {
+      res.status(loaded.error.status).json({ success: false, error: loaded.error.message, timestamp: new Date().toISOString() });
       return;
     }
 
-    // Gather context and create provider for LLM field filling
-    const provider = createLLMProvider();
-    const context = await contentPlanService.gatherContext();
-    // Re-run staging
-    const stagingResult = await stagePlan(plan, { provider, context });
+    const outcome = await runStagingPipeline(loaded.plan, id);
 
-    // Update plan status and persist LLM-filled fields based on staging result
-    const newStatus = stagingResult.success ? 'staged' : 'failed';
-    if (stagingResult.success) {
+    const newStatus = outcome.success ? 'staged' : 'failed';
+    if (outcome.success) {
       await queryOLTP(
         'UPDATE content_plans SET plan_json = $1, status = $2, updated_at = NOW() WHERE id = $3',
-        [plan, newStatus, id]
+        [loaded.plan, newStatus, id],
       );
     } else {
       await queryOLTP(
         'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-        [newStatus, id]
+        [newStatus, id],
       );
     }
 
     emitAdminEvent(
-      stagingResult.success ? 'plan_staged' : 'plan_failed',
-      { retryOf: id, success: stagingResult.success },
+      outcome.success ? 'plan_staged' : 'plan_failed',
+      { retryOf: id, success: outcome.success },
       id,
       req.userId,
     );
 
     res.json({
-      success: stagingResult.success,
-      data: stagingResult,
+      success: outcome.success,
+      data: outcome,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

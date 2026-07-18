@@ -136,6 +136,25 @@ export async function approveAndSolidify(planId: string) {
   }>(`/admin/story-builder/plans/${planId}/approve-and-solidify`, {});
 }
 
+/** Poll async solidify job status. */
+export async function getJobStatus(planId: string) {
+  return adminFetch<{
+    success: boolean;
+    data?: {
+      planId: string;
+      status: string;
+      stage?: any;
+      publish?: any;
+      migration?: any;
+      verificationReport?: any;
+      error?: string;
+      startedAt?: string;
+      updatedAt?: string;
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans/${planId}/status`);
+}
+
 /** Fetch the saved verification report for a plan. */
 export async function getVerification(planId: string) {
   return adminFetch<{ success: boolean; data?: { verification_report: any }; error?: string }>(
