@@ -1,52 +1,46 @@
 ---
 status: planned
-goal: Make intake scale to large plans (10+ items, many assets) via git-tracked text + idempotent cron-driven image generation.
+goal: Make intake scale to large plans (10+ items, many assets) via in-process async approveAndSolidify with cache-backed status, scoped migrate, and LLM latency handling.
 background: |
-  - Author edits YAML/MD drafts in `content/`, tracked by git. Local image drafts are gitignored.
-  - Image generation (LLM + storage) is the only long-running step; it runs in a cron worker like LeaderboardWorker.
-  - `plan_json` in `content_plans` is the durable substrate: asset-need status lives inside it, so restarts can resume.
-  - Text interruption = regen from `plan_json` (deterministic) or `git checkout` (if hand-edited). No partial state risk.
-  - Final-approve (publish to MinIO + migrate to DB) is a single atomic transaction; interruption reverts via Postgres rollback.
+  - approveAndSolidify runs synchronously in one withOLTPTransaction; a large plan takes 30+ s (LLM + full-repo validate/migrate + MinIO publish).
+  - The async-execution spike (docs/spikes/async-execution.md) recommends in-process async + cache status as the next step (AGENTS.md-compliant: uses existing setCache/getCache/deleteCache).
+  - migrateContent re-globs entire content/ tree on every run; scoped migrate would skip unrelated files.
+  - LiteLLMProvider has a single 60s timeout with no retry; large plans are the worst case.
 scope:
   in:
-    - Image generation worker: `ContentAssetWorker` cron processes `verified` plans, generates missing drafts per asset need
-    - AssetNeed statuses: `pending`→`generating`→`drafted`/`chosen`→`published` (or `failed` on retry exhaustion)
-    - Idempotent draft gen: skip existing drafts; use advisory lock / status claim to prevent double-generation
-    - Staleness reclaim: `generating` needs with `updated_at < NOW() - 5min` reset to `pending` on tick
-    - scoped migrateContent(contentDir, files?) - Story Builder passes staged file list (perf)
+    - Async solidify: approveAndSolidifyPlan becomes launcher; runSolidify runs outside tx with cache updates
+    - New statuses: pending, staging, publishing, migrating, verifying, complete (migration rewriting CHECK)
+    - Status endpoint GET /admin/story-builder/plans/:id/status + UI polling in ResultsStep
+    - Scoped migrateContent(contentDir, files?: string[]) - Story Builder passes staged file list
     - LLM latency: LiteLLMProvider accepts {timeoutMs, retries}; Story Builder raises timeout for large plans
-    - Double-confirm modal in admin for final-approve (the one durable action that makes content live in game)
+    - Startup recovery: reset orphaned in-flight plans to failed on boot
   out:
-    - Fire-and-forget async with cache-status polling (eliminated: plan_json in OLTP already stores progress)
-    - New migration for status CHECK (eliminated: status lives in plan_json.assetNeeds[].status, not content_plans.status)
-    - External queue (BullMQ/streams) - no need; cron + plan_json is already durable
-    - SSE - infra complexity not required
+    - External queue (BullMQ/streams) - needs AGENTS.md constraint lift
+    - SSE - infra complexity
+    - Horizontal scaling beyond single server
 approach:
-  - Image gen runs in `ContentAssetWorker` cron (setInterval in index.ts, same pattern as LeaderboardWorker)
-  - Each tick scans `content_plans WHERE status = 'verified' AND assetNeeds contains 'pending'`
-  - Per-need: claim via advisory lock + flip status to `generating`, skip if draft exists, else fire image gen
-  - On draft save: `markDrafted(need)` + persist `plan_json`; on publish: `markPublished(need)` + persist
-  - Startup reconciliation resets `generating`→`pending` before first tick (in initializeServer)
-  - Final-approve calls `publishChosenDrafts` + `migrateContent` inside one `withOLTPTransaction` (atomic)
-  - Scoped migrateContent skips unrelated files; LLMProvider timeout/retry handles latency
+  - Async solidify: validate status, set pending, fire runSolidify(planId) outside tx, return jobId
+  - runSolidify updates setCache('story-builder:job:<planId>') at each stage
+  - New migration (e.g. 052_content_plans_async.sql) rewrites status CHECK with idempotent DROP+ADD
+  - Scoped migrate: skip full-tree checksum loop when file list provided
+  - LLM latency: parameterized timeout/retry in LiteLLMProvider
 risks:
-  - Drafts not regenerated after hard-kill — mitigated: next tick re-fires all `pending` needs; drafts are deterministic
-  - Orphaned partial drafts on disk — mitigated: scoped migrate ignores non-staged files; user can delete staging dir
-  - Image-gen hang (stuck in `generating`) — mitigated: staleness query resets to `pending` after 5 min
+  - In-process job lost on server restart - mitigation: startup reset to failed, re-triggerable
+  - Status drift between cache and DB - mitigation: DB status is source of truth, cache is hot read path
 files:
-  - server/src/workers/ContentAssetWorker.ts (new)
-  - server/src/index.ts (cron registration + startup reconciliation)
-  - server/src/services/AssetNeedsService.ts (add `generating` status + transition)
-  - shared/src/schemas/story-builder.ts (extend AssetNeedSchema status enum if needed)
-  - server/src/content/migrate.ts (files param for scoped migration)
+  - server/src/services/StoryBuilderOrchestrator.ts (async launcher + runSolidify)
+  - server/src/routes/admin-story-builder-actions.ts (status endpoint)
+  - server/src/database/migrations/052_content_plans_async.sql (new)
+  - shared/src/schemas/story-builder.ts (status enum update)
+  - server/src/content/migrate.ts (files param)
   - server/src/services/LiteLLMProvider.ts (timeout/retry opts)
-  - admin/src/app/story-builder/components/FinalApproveModal.tsx (new)
-  - admin/src/app/story-builder/hooks/useAssetGeneration.ts (poll plan_json for need statuses)
+  - admin/src/app/story-builder/components/ResultsStep.tsx (poll progress)
+  - admin/src/app/story-builder/hooks/useStoryBuilderApi.ts (status polling)
 verification:
-  - Unit: ContentAssetWorker.tick processes verified plans, skips existing drafts, resets stalled generating
-  - Integration: kill server mid-gen → restart → worker tick reclaims and resumes
-  - Integration: hand-edit YAML → approve → conflict loop → image gen → final-approve succeeds
-  - Perf: 10-item/5-asset plan image gen completes without timeout
+  - Unit: cache updates per stage (mocked)
+  - Integration: approve returns immediately, polls to verified
+  - Integration: kill server mid-run → restart → orphaned pending reset to failed
+  - Perf: 10-item/5-asset plan completes without timeout
 dependencies:
   - M13 must ship first (async builds on corrected stage/migrate)
   - Existing cache layer (no new infra)
