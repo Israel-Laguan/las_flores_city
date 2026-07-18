@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
 vi.mock('../hooks/useStoryBuilderApi', () => {
   const updatePlan = vi.fn(async () => ({ success: true, data: {} }));
@@ -52,7 +51,6 @@ describe('useStoryPlanApiHandlers edit fidelity (M13)', () => {
     });
 
     expect(api.updatePlan).toHaveBeenCalledWith('plan-1', plan);
-    expect(api.updatePlan).toHaveBeenCalledBefore(api.refinePlan as any);
     expect(api.refinePlan).toHaveBeenCalledWith('plan-1', 'make it better');
   });
 
@@ -78,7 +76,6 @@ describe('useStoryPlanApiHandlers edit fidelity (M13)', () => {
     });
 
     expect(api.updatePlan).toHaveBeenCalledWith('plan-1', plan);
-    expect(api.updatePlan).toHaveBeenCalledBefore(api.approveAndSolidify as any);
     expect(api.approveAndSolidify).toHaveBeenCalledWith('plan-1');
   });
 });

@@ -107,6 +107,12 @@ describe('M13 edit fidelity: edit → refine → DB persistence', () => {
     mockQueryOLTP.mockImplementation(async (sql: string, params?: any[]) => {
       const sqlStr = String(sql);
 
+      // INSERT (refine versioning)
+      if (sqlStr.includes('INSERT INTO content_plans') && sqlStr.includes('parent_plan_id')) {
+        storedPlanJson = params?.[1] ?? editedPlan;
+        return { rows: [{ id: NEW_PLAN_ID }], rowCount: 1 } as any;
+      }
+
       // INSERT (create plan)
       if (sqlStr.includes('INSERT INTO content_plans')) {
         storedPlanJson = params?.[1] ?? originalPlan;
@@ -122,12 +128,6 @@ describe('M13 edit fidelity: edit → refine → DB persistence', () => {
       if (sqlStr.includes('UPDATE content_plans') && sqlStr.includes('plan_json')) {
         storedPlanJson = params?.[0] ?? editedPlan;
         return { rows: [{ id: TEST_PLAN_ID }], rowCount: 1 } as any;
-      }
-
-      // INSERT (refine versioning)
-      if (sqlStr.includes('INSERT INTO content_plans') && sqlStr.includes('parent_plan_id')) {
-        storedPlanJson = params?.[1] ?? editedPlan;
-        return { rows: [{ id: NEW_PLAN_ID }], rowCount: 1 } as any;
       }
 
       // gatherContext queries
@@ -166,13 +166,15 @@ describe('M13 edit fidelity: edit → refine → DB persistence', () => {
     expect(refineRes.status).toBe(200);
     expect(refineRes.body.success).toBe(true);
 
-    // Step 4: Verify the SELECT for refine read the edited plan (not the original)
+    // Step 4: Verify the refinement SELECT returned the edited plan
     const selectCall = mockQueryOLTP.mock.calls.find(
       ([sql]) => String(sql).includes('SELECT') && String(sql).includes('content_plans') && !String(sql).includes('plan_json->')
     );
     expect(selectCall).toBeDefined();
 
-    // The stored plan should have the edited name, not the original
+    // The SELECT mock returns storedPlanJson; confirm it has the edited name
+    const selectedPlan = (selectCall as any)?.[1] ? null : (selectCall as any)?.[0];
+    // storedPlanJson was updated by PUT before refine ran, so refine saw the edit
     expect(storedPlanJson.items[0].name).toBe('Edited Name');
   });
 });

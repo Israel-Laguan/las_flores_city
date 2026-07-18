@@ -197,10 +197,17 @@ async function initializeServer() {
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;
-  setInterval(() => {
-    ContentAssetWorker.processPendingImageGeneration().catch((err) =>
-      console.error('[ContentAssetWorker] cron tick error:', err)
-    );
+  let isAssetWorkerRunning = false;
+  setInterval(async () => {
+    if (isAssetWorkerRunning) return;
+    isAssetWorkerRunning = true;
+    try {
+      await ContentAssetWorker.processPendingImageGeneration();
+    } catch (err) {
+      console.error('[ContentAssetWorker] cron tick error:', err);
+    } finally {
+      isAssetWorkerRunning = false;
+    }
   }, ASSET_WORKER_INTERVAL_MS);
   console.log(`🎨 ContentAssetWorker scheduled every ${ASSET_WORKER_INTERVAL_MS / 1000}s`);
 }

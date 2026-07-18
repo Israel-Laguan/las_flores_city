@@ -1,26 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { describe, it, expect, vi } from 'vitest';
 
-const replaceMock = vi.fn();
+const redirectMock = vi.fn();
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ replace: replaceMock }),
+  redirect: (...args: any[]) => redirectMock(...args),
 }));
 
 import MissionNewRedirect from '../page';
 
 describe('missions/new redirect (M13)', () => {
-  beforeEach(() => {
-    replaceMock.mockClear();
-  });
-
-  it('redirects to /story-builder on mount', () => {
-    render(<MissionNewRedirect />);
-    expect(replaceMock).toHaveBeenCalledWith('/story-builder');
-  });
-
-  it('renders a redirecting notice', () => {
-    render(<MissionNewRedirect />);
-    expect(screen.getByText(/Redirecting to Story Builder/i)).toBeInTheDocument();
+  it('redirects to /story-builder on render', () => {
+    try {
+      MissionNewRedirect();
+    } catch {
+      // redirect() throws a special NEXT_REDIRECT error; that's expected
+    }
+    expect(redirectMock).toHaveBeenCalledWith('/story-builder');
   });
 });

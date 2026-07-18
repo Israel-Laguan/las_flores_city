@@ -20,7 +20,7 @@ scope:
 approach:
   - Create `ContentFillService.ts` with `fillFields(item: ContentPlanItem, context: ExistingContentContext): Promise<Partial<Record<string, string>>>`
   - Refactor `ContentPlanService.gatherContext()` to include character role/faction/personality, scene mood
-  - Add `lore_refs?: string[]` to `ContentPlanItem.fields` (optional, inferred from LLM fill)
+  - Add `lore_refs?: string[]` to `ContentPlanItem.fields` (optional, inferred from LLM fill; stored as a separate typed field, not part of the string-valued fill result)
   - Update `LLMPrompts.ts` with a follow-up prompt that fills description/text/mood/history given the item and context
   - Modify `stagePlan()` to call `fillFields` for each item before writing YAML, then merge filled values into the template output
   - Update the Review UI: show LLM-filled values distinct from TODO placeholders (e.g., muted styling for TODO)
@@ -28,7 +28,7 @@ risks:
   - LLM may fabricate invalid values for constrained fields – mitigation: fill only free-text fields; run validate() after; human Review gate remains
   - Filled content may be too generic – mitigation: prompt-tune with few-shot examples from existing good content
 files:
-  - shared/src/schemas/story-builder.ts (optional lore_refs on plan items – TBD after Q2 design)
+  - shared/src/schemas/story-builder.ts (optional lore_refs on plan items – typed as string[], separate from fillFields result)
   - server/src/services/ContentFillService.ts (new)
   - server/src/services/ContentPlanService.ts (gatherContext enrichment)
   - server/src/services/LLMPrompts.ts (fill-fields prompt)

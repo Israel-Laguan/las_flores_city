@@ -9,7 +9,7 @@ background: |
 scope:
   in:
     - Async solidify: approveAndSolidifyPlan becomes launcher; runSolidify runs outside tx with cache updates
-    - New statuses: pending, staging, publishing, migrating, verifying, complete (migration rewriting CHECK)
+    - New statuses: pending, staging, migrating, verifying, verified, failed (additive migration; preserve existing staged/migrated/verified/failed rows and CHECK constraint)
     - Status endpoint GET /admin/story-builder/plans/:id/status + UI polling in ResultsStep
     - Scoped migrateContent(contentDir, files?: string[]) - Story Builder passes staged file list
     - LLM latency: LiteLLMProvider accepts {timeoutMs, retries}; Story Builder raises timeout for large plans
@@ -19,9 +19,9 @@ scope:
     - SSE - infra complexity
     - Horizontal scaling beyond single server
 approach:
-  - Async solidify: validate status, set pending, fire runSolidify(planId) outside tx, return jobId
+  - Async solidify: validate status, set pending, fire runSolidify(planId) outside tx with rejection handler that persists failed status and clears cache, return jobId
   - runSolidify updates setCache('story-builder:job:<planId>') at each stage
-  - New migration (e.g. 052_content_plans_async.sql) rewrites status CHECK with idempotent DROP+ADD
+  - New migration (e.g. 052_content_plans_async.sql) adds new status values idempotently via additive CHECK (DROP TRIGGER IF EXISTS + ALTER TABLE ... ADD CONSTRAINT pattern)
   - Scoped migrate: skip full-tree checksum loop when file list provided
   - LLM latency: parameterized timeout/retry in LiteLLMProvider
 risks:
@@ -38,7 +38,7 @@ files:
   - admin/src/app/story-builder/hooks/useStoryBuilderApi.ts (status polling)
 verification:
   - Unit: cache updates per stage (mocked)
-  - Integration: approve returns immediately, polls to verified
+  - Integration: approve returns immediately, polls to verified (terminal state)
   - Integration: kill server mid-run → restart → orphaned pending reset to failed
   - Perf: 10-item/5-asset plan completes without timeout
 dependencies:

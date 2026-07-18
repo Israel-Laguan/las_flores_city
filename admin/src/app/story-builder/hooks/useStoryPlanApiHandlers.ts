@@ -57,18 +57,22 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
 
   const handleRefine = useCallback(async (planId: string, refineFeedback: string) => {
-    // Persist author edits first so refine runs against the edited plan (server
-    // reloads the stored plan_json; without this, edits would be discarded).
-    if (plan) {
-      await api.updatePlan(planId, plan).catch(e => console.error('Pre-refine save failed:', e));
-    }
-    const data = await withLoading(setLoading, setError, () => api.refinePlan(planId, refineFeedback));
+    const data = await withLoading(setLoading, setError, async () => {
+      // Persist author edits first so refine runs against the edited plan (server
+      // reloads the stored plan_json; without this, edits would be discarded).
+      if (plan) {
+        const saveRes = await api.updatePlan(planId, plan);
+        if (!saveRes.success) {
+          throw new Error(saveRes.error || 'Failed to save plan edits before refining');
+        }
+      }
+      return api.refinePlan(planId, refineFeedback);
+    });
     if (!data) return;
     if (data.success && data.data) {
       setPlan(data.data.plan);
       // refinePlan versions the plan into a new row; adopt the new id.
-      const newId = (data.data as any).id ?? planId;
-      setPlanId(newId);
+      setPlanId(data.data.plan.id);
       setRefineFeedback('');
       setShowRefine(false);
     } else {
@@ -78,13 +82,18 @@ export function createStoryPlanHandlers(cb: Callbacks) {
 
   const handleApproveAndSolidify = useCallback(async (planId: string) => {
     if (!planId) return;
-    // Persist author edits first so ship uses the edited plan. The server
-    // re-parses plan_json from the DB during approve-and-solidify; without this
-    // the edits would be lost.
-    if (plan) {
-      await api.updatePlan(planId, plan).catch(e => console.error('Pre-ship save failed:', e));
-    }
-    const data = await withLoading(setLoading, setError, () => api.approveAndSolidify(planId));
+    const data = await withLoading(setLoading, setError, async () => {
+      // Persist author edits first so ship uses the edited plan. The server
+      // re-parses plan_json from the DB during approve-and-solidify; without this
+      // the edits would be lost.
+      if (plan) {
+        const saveRes = await api.updatePlan(planId, plan);
+        if (!saveRes.success) {
+          throw new Error(saveRes.error || 'Failed to save plan edits before shipping');
+        }
+      }
+      return api.approveAndSolidify(planId);
+    });
     if (!data) return;
     if (data.success && data.data) {
       setSolidifyResult(data.data as SolidifyResultLite);

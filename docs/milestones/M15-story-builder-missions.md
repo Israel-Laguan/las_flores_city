@@ -22,11 +22,11 @@ approach:
   - If (a): update `DialogueNodeSchema` and `recordChoiceAndEffects()` in dialogue-helpers.ts; update `IronGateValidator.ts` to apply grants atomically
   - If (b): add `is_mission` and `mission_reward` to `DialogueChoiceSchema`, keep `EffectsSchema` unchanged
   - Add a new template in `PlanTemplates.ts`: "add-mission-from-scene" with: scene + character (with role=faction='mission-giver') + dialogue tree with a "grant item/money" choice
-  - Model completion: use `flag_set` to mark a mission as complete, OR add a `missions_progress` table (open sub-question)
+  - Model completion: use `flag_set` to mark a mission as complete (lightweight; avoids new migration) — authoritative mission state lives in the dialogue tree + flag_set, not in `mysteries` table (mysteries remains for mystery-type content only; missions diverge into their own flag-based tracking)
   - Paid gate: when a dialogue choice has `grant_premium_cg`, check `user_entitlements.is_premium_unlocked` – existing pattern
 risks:
   - Extending `EffectsSchema` may affect existing dialogue validation – mitigation: add new optional fields; existing YAMLs unaffected
-  - Grant effects could be gamed – mitigation: all effects applied in `withOLTPTransaction`; server-side validation of reward values
+  - Grant effects could be gamed – mitigation: all effects applied in `withOLTPTransaction`; server-side validation of reward values; idempotent reward-claim key (e.g., `mission_<slug>_<user_id>_<choice_id>`) checked and recorded atomically before each grant to prevent double-rewards on retries
   - Overlap with vault system – mitigation: mission rewards are vault unlocks or direct currency grants, not new inventory logic
 files:
   - shared/src/schemas/dialogue.ts (EffectsSchema or DialogueChoiceSchema extension)

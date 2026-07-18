@@ -41,6 +41,6 @@ verification:
   - Unit: schema rejects duplicate (type,slug)
   - Unit: updateExistingFile deep-merges without dropping data
   - Integration: edit→refine→assert edit in DB
-  - E2E: `/missions/new` redirects to `/story-builder`
+  - Unit/UI: `/missions/new` redirects to `/story-builder`
 dependencies:
   - None on M14/M15/M16 – M13 is prerequisite for them

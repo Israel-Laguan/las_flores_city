@@ -96,6 +96,24 @@ export async function updateExistingFile(
  */
 const DEEP_MERGE_KEYS = new Set(['metadata', 'asset_paths', 'conditions']);
 
+function isObject(value: unknown): value is Record<string, any> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function mergeObjects(
+  target: Record<string, any>,
+  source: Record<string, any>,
+): Record<string, any> {
+  const result = { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    result[key] =
+      isObject(value) && isObject(result[key])
+        ? mergeObjects(result[key], value)
+        : value;
+  }
+  return result;
+}
+
 export function deepMergeFields(
   target: Record<string, any>,
   source: Record<string, any>,
@@ -104,10 +122,10 @@ export function deepMergeFields(
   for (const [key, value] of Object.entries(source)) {
     if (
       DEEP_MERGE_KEYS.has(key) &&
-      value && typeof value === 'object' && !Array.isArray(value) &&
-      result[key] && typeof result[key] === 'object' && !Array.isArray(result[key])
+      isObject(value) &&
+      isObject(result[key])
     ) {
-      result[key] = deepMergeFields(result[key], value);
+      result[key] = mergeObjects(result[key], value);
     } else {
       result[key] = value;
     }

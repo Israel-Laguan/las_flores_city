@@ -54,7 +54,7 @@ export class ContentAssetWorker {
         for (const item of plan.items || []) {
           for (const need of item.assetNeeds || []) {
             if (need.status === 'generating') {
-              need.status = 'pending';
+              transitionAssetNeed(need, 'pending');
               changed = true;
             }
           }
@@ -89,21 +89,21 @@ export class ContentAssetWorker {
       ? path.resolve(process.cwd(), '..', 'content')
       : path.resolve(process.cwd(), 'content');
 
+    let reclaimed = false;
     for (const item of plan.items) {
       for (const need of item.assetNeeds || []) {
         if (need.status === 'generating') {
           const isStalled = await this.checkStall(row.updated_at);
           if (isStalled) {
             transitionAssetNeed(need, 'pending');
+            reclaimed = true;
           }
         }
       }
     }
 
     // Persist reclaimed statuses
-    if (plan.items.some((i: any) =>
-      i.assetNeeds?.some((n: any) => n.status === 'pending')
-    )) {
+    if (reclaimed) {
       await ContentPlanService.updatePlanJson(row.id, plan);
     }
 
@@ -120,6 +120,10 @@ export class ContentAssetWorker {
       if (hasExisting) {
         // Auto-select if we have a default
         await autoSelectDefaultDrafts(plan, contentDir);
+        if (need.status === 'pending') {
+          markDrafted(need);
+        }
+        await ContentPlanService.updatePlanJson(row.id, plan);
         continue;
       }
 

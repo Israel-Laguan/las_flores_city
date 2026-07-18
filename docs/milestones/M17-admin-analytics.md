@@ -19,12 +19,12 @@ scope:
   out:
     - Async execution (moved to M18-big-requirement-throughput)
 approach:
-  - New migration `049_admin_events.sql`: `id` (uuid), `event_type`, `event_data` (jsonb), `created_at`, `plan_id` (optional fk to content_plans)
+  - New migration `049_admin_events.sql`: `id` (uuid), `event_type`, `event_data` (jsonb), `created_at`, `plan_id` (UUID, no FK — admin_events is OLAP, content_plans is OLTP; application-level validation only)
   - Inject event emission in `ContentPlanService.parseDescription()` (plan created), `refinePlan()` (refined), `StoryBuilderOrchestrator` (staged/migrated/verified/failed)
   - Add `getAdminAnalytics()` in `analyticsQueries.ts` aggregating by event_type, items_per_plan
   - Add widget on `/plans` page: total plans created (24h/7d), avg items/plan, success rate
-  - Add `server/src/routes/admin-users.ts` router with `GET /users`, `GET /users/:id`, `PATCH /users/:id` endpoints
-  - Add `server/src/routes/admin-settings.ts` router with `GET /settings`, `PATCH /settings` endpoints
+  - Add `server/src/routes/admin-users.ts` router with `GET /users`, `GET /users/:id`, `PATCH /users/:id` endpoints — all gated by `authAndAdminMiddleware`; PATCH requires admin role; role/status mutations require field-level restrictions and emit audit events
+  - Add `server/src/routes/admin-settings.ts` router with `GET /settings`, `PATCH /settings` endpoints — all gated by `authAndAdminMiddleware`; PATCH requires admin role; system-preference mutations emit audit events
   - Wire up `admin/src/app/users/page.tsx` and `admin/src/app/settings/page.tsx` to call the new endpoints
 verification:
   - Unit: queryOLAP wrapper emits correct JSON shape
