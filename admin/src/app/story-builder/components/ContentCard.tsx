@@ -313,7 +313,7 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
           <span className="card__meta">
             {item.type} &middot; {item.action}
             {hasGrantEffects(item) && (
-              <span style={{ marginLeft: '0.5rem', color: '#10b981', fontWeight: 600 }}>
+              <span style={{ marginLeft: '0.5rem', color: 'var(--accent)', fontWeight: 600 }}>
                 {'\u{1F381} Rewards: '}{getGrantSummary(item).join(', ')}
               </span>
             )}

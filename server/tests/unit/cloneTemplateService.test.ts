@@ -9,7 +9,7 @@ import yaml from 'js-yaml';
  * - return a ContentPlanItem of the correct type/name
  * - strip identity fields (id/created_at/updated_at) so there is no id collision
  * - reset all asset_paths to `<slug>__default.png`
- * - null out nested relationship UUIDs and type-level relationship fields
+ * - null out nested relationship UUIDs and omit type-level relationship fields
  */
 describe('CloneTemplateService', () => {
   const contentDir = resolveContentDir();
@@ -69,12 +69,12 @@ describe('CloneTemplateService', () => {
     expect(item.fields.asset_paths.biometric).toBe('diego_clone__default.png');
   });
 
-  it('clears the top-level relationship array', async () => {
+  it('sanitizes relationship UUIDs inside relationship arrays', async () => {
     const item = await cloneItem(relPath, 'Diego Clone');
-    expect(item.fields.relationships).toEqual([]);
+    expect(item.fields.relationships).toEqual([{ kind: 'ally' }]);
   });
 
-  it('nulls nested relationship UUIDs inside object relationship fields', async () => {
+  it('omits nested relationship UUIDs inside object relationship fields', async () => {
     const nestedRelPath = `dialogues/${slug}/dialogue_${slug}.yaml`;
     const nestedAbs = path.resolve(contentDir, nestedRelPath);
     await fs.mkdir(path.dirname(nestedAbs), { recursive: true });
@@ -91,7 +91,7 @@ describe('CloneTemplateService', () => {
     try {
       const item = await cloneItem(nestedRelPath, 'Clone Dialogue');
       expect(item.fields.id).toBeUndefined();
-      expect(item.fields.nodes.start.speaker_id).toBeNull();
+      expect(item.fields.nodes.start.speaker_id).toBeUndefined();
       expect(item.fields.nodes.start.text).toBe('hi');
     } finally {
       await fs.rm(path.dirname(nestedAbs), { recursive: true, force: true });

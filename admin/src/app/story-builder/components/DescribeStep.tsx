@@ -15,9 +15,63 @@ interface DescribeStepProps {
   onClone: (sourcePath: string, newName: string) => void;
 }
 
-export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate, contentTree, onClone }: DescribeStepProps) {
+function CloneForm({
+  grouped,
+  loading,
+  onClone,
+}: {
+  grouped: Record<string, DescribeStepProps['contentTree']>;
+  loading: boolean;
+  onClone: (sourcePath: string, newName: string) => void;
+}) {
   const [cloneSource, setCloneSource] = useState('');
   const [cloneName, setCloneName] = useState('');
+
+  return (
+    <div className={styles.cloneForm}>
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor="clone-source">Source Entity *</label>
+        <select
+          id="clone-source"
+          className="select"
+          value={cloneSource}
+          onChange={e => setCloneSource(e.target.value)}
+        >
+          <option value="">Select an entity to clone...</option>
+          {Object.entries(grouped).map(([type, entries]) => (
+            <optgroup key={type} label={type}>
+              {entries.map(e => (
+                <option key={e.path} value={e.path}>
+                  {e.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </div>
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor="clone-name">New Name *</label>
+        <input
+          id="clone-name"
+          className="input"
+          type="text"
+          value={cloneName}
+          onChange={e => setCloneName(e.target.value)}
+          placeholder="Enter a name for the cloned entity"
+        />
+      </div>
+      <button
+        className={cn(styles.button, styles.primaryButton, (loading || !cloneSource || !cloneName.trim()) && styles.disabledButton)}
+        onClick={() => { if (cloneSource && cloneName.trim()) onClone(cloneSource, cloneName.trim()); }}
+        disabled={loading || !cloneSource || !cloneName.trim()}
+      >
+        Clone
+      </button>
+    </div>
+  );
+}
+
+export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate, contentTree, onClone }: DescribeStepProps) {
   const [showClone, setShowClone] = useState(false);
 
   const grouped = contentTree.reduce<Record<string, typeof contentTree>>((acc, entry) => {
@@ -67,44 +121,7 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
             </button>
           </div>
           {showClone && (
-            <div className={styles.cloneForm}>
-              <div className={styles.field}>
-                <label className={styles.label}>Source Entity *</label>
-                <select
-                  className={styles.select}
-                  value={cloneSource}
-                  onChange={e => setCloneSource(e.target.value)}
-                >
-                  <option value="">Select an entity to clone...</option>
-                  {Object.entries(grouped).map(([type, entries]) => (
-                    <optgroup key={type} label={type}>
-                      {entries.map(e => (
-                        <option key={e.path} value={e.path}>
-                          {e.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>New Name *</label>
-                <input
-                  className={styles.input}
-                  type="text"
-                  value={cloneName}
-                  onChange={e => setCloneName(e.target.value)}
-                  placeholder="Enter a name for the cloned entity"
-                />
-              </div>
-              <button
-                className={cn(styles.button, styles.primaryButton, (loading || !cloneSource || !cloneName.trim()) && styles.disabledButton)}
-                onClick={() => { if (cloneSource && cloneName.trim()) onClone(cloneSource, cloneName.trim()); }}
-                disabled={loading || !cloneSource || !cloneName.trim()}
-              >
-                Clone
-              </button>
-            </div>
+            <CloneForm grouped={grouped} loading={loading} onClone={onClone} />
           )}
         </div>
       )}

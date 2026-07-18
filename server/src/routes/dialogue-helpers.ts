@@ -205,7 +205,7 @@ export async function recordChoiceAndEffects(
   fromNodeId: string,
   isEnd: boolean,
   nextNode: any
-): Promise<void> {
+): Promise<{ grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } }> {
   if (isEnd) {
     // Clear dialogue cursor + simulation flags so the player
     // returns to the live world after finishing an archive case.
@@ -245,6 +245,9 @@ export async function recordChoiceAndEffects(
     await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
   }
   // M15: grant rewards with idempotency check
+  let grantedCredits: { amount: number; currency: string } | undefined;
+  let grantedItem: { itemId: string } | undefined;
+
   if (effects?.grant_credits || effects?.grant_item) {
     const isFirstClaim = await tryClaimReward(client, userId, dialogueId, nextNodeId);
     if (isFirstClaim) {
@@ -252,15 +255,19 @@ export async function recordChoiceAndEffects(
         const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
         const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
         await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
+        grantedCredits = effects.grant_credits;
       }
       if (effects.grant_item) {
         await client.query(
           `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
           [userId, effects.grant_item]
         );
+        grantedItem = { itemId: effects.grant_item };
       }
     }
   }
+
+  return { grantedCredits, grantedItem };
 }
 
 export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string) {
@@ -455,7 +462,7 @@ export async function processChoice(
     unlockedVaultItem = result;
   }
 
-  await recordChoiceAndEffects(
+  const { grantedCredits, grantedItem } = await recordChoiceAndEffects(
     client,
     userId,
     dialogueId,
@@ -475,9 +482,6 @@ export async function processChoice(
     await processAlignmentChange(client, userId, chosenOption.alignment_change);
     alignmentChange = chosenOption.alignment_change;
   }
-
-  const grantedCredits: { amount: number; currency: string } | undefined = undefined;
-  const grantedItem: { itemId: string } | undefined = undefined;
 
 return {
     success: true,

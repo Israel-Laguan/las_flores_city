@@ -11,4 +11,3 @@ CREATE TABLE IF NOT EXISTS mission_reward_claims (
 );
 
 CREATE INDEX idx_mission_reward_claims_user ON mission_reward_claims(user_id);
-CREATE INDEX idx_mission_reward_claims_key ON mission_reward_claims(claim_key);

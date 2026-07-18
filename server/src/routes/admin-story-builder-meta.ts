@@ -173,7 +173,7 @@ adminStoryBuilderMetaRouter.post('/clone', async (req, res) => {
   try {
     const { sourcePath, newName } = req.body;
 
-    if (!sourcePath || typeof sourcePath !== 'string') {
+    if (typeof sourcePath !== 'string' || !sourcePath.trim()) {
       res.status(400).json({
         success: false,
         error: 'sourcePath is required',
@@ -182,7 +182,7 @@ adminStoryBuilderMetaRouter.post('/clone', async (req, res) => {
       return;
     }
 
-    if (!newName || typeof newName !== 'string') {
+    if (typeof newName !== 'string' || !newName.trim()) {
       res.status(400).json({
         success: false,
         error: 'newName is required',
@@ -191,7 +191,7 @@ adminStoryBuilderMetaRouter.post('/clone', async (req, res) => {
       return;
     }
 
-    const item = await cloneItem(sourcePath, newName);
+    const item = await cloneItem(sourcePath.trim(), newName.trim());
 
     res.json({
       success: true,

@@ -131,7 +131,7 @@ async function buildLegacyResponse(
         JSON.stringify({ dialogue_tree_id: dialogueId, choice_index: choiceIndex }),
         choiceResult.timeBlocksSpent,
       ]
-    ).catch((err: Error) => console.error('Dialogue choice telemetry error:', err));
+    );
   }
 
   if (choiceResult.unlockedVaultItem) {
@@ -140,7 +140,7 @@ async function buildLegacyResponse(
       `INSERT INTO player_events (id, user_id, event_type, event_data)
        VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
       [userId, JSON.stringify({ itemId: choiceResult.unlockedVaultItem.id })]
-    ).catch((err: Error) => console.error('Vault unlock telemetry error:', err));
+    );
   }
 
   if (choiceResult.grantedCredits) {
@@ -148,7 +148,7 @@ async function buildLegacyResponse(
       `INSERT INTO player_events (id, user_id, event_type, event_data)
        VALUES (gen_random_uuid(), $1, 'credits_granted', $2)`,
       [userId, JSON.stringify(choiceResult.grantedCredits)]
-    ).catch((err: Error) => console.error('Credits granted telemetry error:', err));
+    );
   }
 
   if (choiceResult.grantedItem) {
@@ -156,7 +156,7 @@ async function buildLegacyResponse(
       `INSERT INTO player_events (id, user_id, event_type, event_data)
        VALUES (gen_random_uuid(), $1, 'item_granted', $2)`,
       [userId, JSON.stringify(choiceResult.grantedItem)]
-    ).catch((err: Error) => console.error('Item granted telemetry error:', err));
+    );
   }
 
   return res.json({

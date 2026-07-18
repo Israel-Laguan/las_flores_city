@@ -59,7 +59,9 @@ export function useStoryBuilder(initialPlanId: string | null) {
   useEffect(() => {
     fetchContentTree()
       .then(data => { if (data.success) setContentTree(data.data?.tree ?? []); })
-      .catch(() => {});
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : 'Failed to load content tree');
+      });
   }, []);
 
   useEffect(() => {

@@ -87,14 +87,14 @@ export class IronGateValidator {
 
   private static async _validateGuardedLeaf(
     userId: string,
-    _chunkId: string,
-    _choiceId: string,
+    chunkId: string,
+    choiceId: string,
     leaf: GuardedLeaf
   ): Promise<ValidationResult> {
     return withOLTPTransaction(async (client: pg.PoolClient) => {
       const result: ValidationResult = { success: true };
       for (const reason of leaf.reasons) {
-        const failure = await IronGateValidator._applyReason(client, userId, reason, leaf, result);
+        const failure = await IronGateValidator._applyReason(client, userId, chunkId, choiceId, reason, leaf, result);
         if (failure) return failure;
       }
       return result;
@@ -108,6 +108,8 @@ export class IronGateValidator {
   private static async _applyReason(
     client: pg.PoolClient,
     userId: string,
+    chunkId: string,
+    choiceId: string,
     reason: string,
     leaf: GuardedLeaf,
     result: ValidationResult
@@ -125,7 +127,7 @@ export class IronGateValidator {
       case 'effects': {
         // Requirement 3.6: Apply effects to player state atomically
         const effectsResult = await IronGateValidator._validateEffects(
-          client, userId, leaf.effects
+          client, userId, chunkId, choiceId, leaf.effects
         );
         if (!effectsResult.success) {
           return { success: false, error: effectsResult.error as ValidationResult['error'] };
@@ -217,6 +219,8 @@ export class IronGateValidator {
   private static async _validateEffects(
     client: pg.PoolClient,
     userId: string,
+    chunkId: string,
+    choiceId: string,
     effects: GuardedLeaf['effects'] | undefined
   ): Promise<
     | { success: true; applied: Record<string, unknown> }
@@ -242,12 +246,22 @@ export class IronGateValidator {
       applied['story_beat'] = effects.story_beat;
     }
 
-    // M15: grant credits as mission reward
+    // M15: grant credits as mission reward (idempotent)
     if (effects.grant_credits) {
-      const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
-      const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
-      await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
-      applied['grant_credits'] = effects.grant_credits;
+      const claimKey = `grant_boundary_${userId}_${chunkId}_${choiceId}`;
+      const claimResult = await client.query(
+        `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (claim_key) DO NOTHING
+         RETURNING id`,
+        [userId, claimKey, chunkId, choiceId]
+      );
+      if (claimResult.rows.length > 0) {
+        const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
+        const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
+        await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
+        applied['grant_credits'] = effects.grant_credits;
+      }
     }
     // M15: grant vault item as mission reward
     if (effects.grant_item) {

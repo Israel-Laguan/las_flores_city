@@ -5,8 +5,9 @@
  */
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import pg from 'pg';
+import http from 'http';
 import express from 'express';
-import request from 'supertest';
+import request, { SuperTest, Test } from 'supertest';
 import { healthRouter } from '../../src/routes/health.js';
 import { locationRouter } from '../../src/routes/location.js';
 import { adminContentAssetRouter } from '../../src/routes/admin-content-asset.js';
@@ -23,8 +24,14 @@ const TEST_DISTRICT_ID = '30000000-0000-0000-0000-000000009999';
 // DB handle
 let pool: pg.Pool;
 
-// Test app
+// Test app + explicit server (reused across requests so it can be closed cleanly)
 let app: express.Application;
+let server: http.Server;
+let agent: SuperTest<Test>;
+
+// Wraps supertest requests against the shared server instance.
+const api = (method: 'get' | 'post' | 'put' | 'delete' | 'patch', url: string) =>
+  agent[method](url);
 
 beforeAll(() => {
   pool = new Pool({
@@ -58,6 +65,11 @@ beforeAll(() => {
     next();
   });
   app.use('/admin/content', adminContentAssetRouter);
+
+  // Create a single HTTP server for supertest to reuse and close cleanly.
+  server = http.createServer(app);
+  // Use supertest.agent() to reuse the same connection pool and close properly.
+  agent = request.agent(server);
 });
 
 beforeEach(async () => {
@@ -78,6 +90,9 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  if (server) {
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  }
   try {
     await pool.query('DELETE FROM scene_characters WHERE scene_id = $1', [TEST_SCENE_ID]);
     await pool.query('DELETE FROM scenes WHERE id = $1', [TEST_SCENE_ID]);
@@ -94,7 +109,7 @@ afterAll(async () => {
 describe('Smoke: HTTP endpoints', () => {
   describe('GET /health', () => {
     it('returns healthy status', async () => {
-      const res = await request(app).get('/api/health');
+      const res = await api('get', '/api/health');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.status).toBe('healthy');
@@ -130,8 +145,7 @@ describe('Smoke: HTTP endpoints', () => {
 
     it('returns portraitUrl in NPC payload', async () => {
       const token = generateToken(TEST_USER_ID);
-      const res = await request(app)
-        .get(`/api/location/${TEST_SCENE_ID}`)
+      const res = await api('get', `/api/location/${TEST_SCENE_ID}`)
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
@@ -149,8 +163,7 @@ describe('Smoke: HTTP endpoints', () => {
   describe('GET /admin/content/assets/promotion-status', () => {
     it('returns HTTP 200 with promotion status data', async () => {
       const token = generateToken(TEST_USER_ID);
-      const res = await request(app)
-        .get('/admin/content/assets/promotion-status')
+      const res = await api('get', '/admin/content/assets/promotion-status')
         .set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);

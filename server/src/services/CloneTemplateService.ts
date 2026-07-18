@@ -69,7 +69,7 @@ function deepStripRelationshipUuids(obj: any): any {
   const result: Record<string, any> = {};
   for (const key of Object.keys(obj)) {
     if (RELATIONSHIP_NESTED_IDS.has(key)) {
-      result[key] = null;
+      continue;
     } else {
       const val = obj[key];
       result[key] = val && typeof val === 'object' ? deepStripRelationshipUuids(val) : val;
@@ -89,11 +89,11 @@ function stripRelationshipFields(
     if (!(field in result)) continue;
     const val = result[field];
     if (Array.isArray(val)) {
-      result[field] = [];
+      result[field] = deepStripRelationshipUuids(val);
     } else if (val && typeof val === 'object') {
       result[field] = deepStripRelationshipUuids(val);
     } else {
-      result[field] = null;
+      delete result[field];
     }
   }
 
