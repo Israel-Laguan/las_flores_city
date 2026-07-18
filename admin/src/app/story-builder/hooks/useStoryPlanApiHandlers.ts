@@ -57,20 +57,43 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
 
   const handleRefine = useCallback(async (planId: string, refineFeedback: string) => {
-    const data = await withLoading(setLoading, setError, () => api.refinePlan(planId, refineFeedback));
+    const data = await withLoading(setLoading, setError, async () => {
+      // Persist author edits first so refine runs against the edited plan (server
+      // reloads the stored plan_json; without this, edits would be discarded).
+      if (plan) {
+        const saveRes = await api.updatePlan(planId, plan);
+        if (!saveRes.success) {
+          throw new Error(saveRes.error || 'Failed to save plan edits before refining');
+        }
+      }
+      return api.refinePlan(planId, refineFeedback);
+    });
     if (!data) return;
     if (data.success && data.data) {
       setPlan(data.data.plan);
+      // refinePlan versions the plan into a new row; adopt the new id.
+      setPlanId(data.data.plan.id);
       setRefineFeedback('');
       setShowRefine(false);
     } else {
       setError(data.error || 'Failed to refine plan');
     }
-  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine]);
+  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, plan]);
 
   const handleApproveAndSolidify = useCallback(async (planId: string) => {
     if (!planId) return;
-    const data = await withLoading(setLoading, setError, () => api.approveAndSolidify(planId));
+    const data = await withLoading(setLoading, setError, async () => {
+      // Persist author edits first so ship uses the edited plan. The server
+      // re-parses plan_json from the DB during approve-and-solidify; without this
+      // the edits would be lost.
+      if (plan) {
+        const saveRes = await api.updatePlan(planId, plan);
+        if (!saveRes.success) {
+          throw new Error(saveRes.error || 'Failed to save plan edits before shipping');
+        }
+      }
+      return api.approveAndSolidify(planId);
+    });
     if (!data) return;
     if (data.success && data.data) {
       setSolidifyResult(data.data as SolidifyResultLite);

@@ -7,7 +7,8 @@ type AssetNeedStatus = AssetNeed['status'];
  * Each key maps to the list of states that can follow it.
  */
 const VALID_TRANSITIONS: Record<AssetNeedStatus, AssetNeedStatus[]> = {
-  pending: ['drafted', 'chosen', 'failed'],
+  pending: ['generating', 'drafted', 'chosen', 'failed'],
+  generating: ['drafted', 'failed', 'pending'],  // pending = retry after stall
   drafted: ['chosen', 'failed', 'pending'],
   chosen: ['published', 'failed', 'drafted'],
   published: ['assigned', 'failed'],
@@ -30,6 +31,10 @@ export function transitionAssetNeed(need: AssetNeed, next: AssetNeedStatus): voi
  * Convenience wrappers that document the intended lifecycle transitions.
  * Each delegates to transitionAssetNeed().
  */
+export function markGenerating(need: AssetNeed): void {
+  transitionAssetNeed(need, 'generating');
+}
+
 export function markDrafted(need: AssetNeed): void {
   transitionAssetNeed(need, 'drafted');
 }

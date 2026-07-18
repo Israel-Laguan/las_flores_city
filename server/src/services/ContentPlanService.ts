@@ -113,6 +113,22 @@ export class ContentPlanService {
     }
   }
 
+  /**
+   * Update the plan_json for a content plan. Used by ContentAssetWorker
+   * to persist asset-need status changes. Throws if plan not found.
+   */
+  static async updatePlanJson(planId: string, planJson: any, client?: import('pg').PoolClient): Promise<void> {
+    const exec = (text: string, params: any[]) =>
+      client ? client.query<any>(text, params) : queryOLTP<any>(text, params);
+    const result = await exec(
+      'UPDATE content_plans SET plan_json = $1::jsonb, updated_at = NOW() WHERE id = $2',
+      [planJson, planId]
+    );
+    if (result.rowCount === 0) {
+      throw new Error(`Plan not found: ${planId}`);
+    }
+  }
+
   async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
     return this.provider.generateLore(item, context);
   }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import type { AssetNeed } from '@las-flores/shared';
-import { transitionAssetNeed, markDrafted, markChosen, markPublished } from '../../src/services/AssetNeedsService.js';
+import { transitionAssetNeed, markDrafted, markChosen, markPublished, markGenerating } from '../../src/services/AssetNeedsService.js';
 
 /** Helper: build an AssetNeed with a given status. */
 function need(status: AssetNeed['status']): AssetNeed {
@@ -9,6 +9,30 @@ function need(status: AssetNeed['status']): AssetNeed {
 
 describe('AssetNeedsService — state machine transitions', () => {
   describe('transitionAssetNeed — valid transitions', () => {
+    it('pending → generating (worker claims the need)', () => {
+      const n = need('pending');
+      transitionAssetNeed(n, 'generating');
+      expect(n.status).toBe('generating');
+    });
+
+    it('generating → drafted (draft saved successfully)', () => {
+      const n = need('generating');
+      transitionAssetNeed(n, 'drafted');
+      expect(n.status).toBe('drafted');
+    });
+
+    it('generating → failed (generation error)', () => {
+      const n = need('generating');
+      transitionAssetNeed(n, 'failed');
+      expect(n.status).toBe('failed');
+    });
+
+    it('generating → pending (stalled, retry)', () => {
+      const n = need('generating');
+      transitionAssetNeed(n, 'pending');
+      expect(n.status).toBe('pending');
+    });
+
     it('pending → drafted (local generation)', () => {
       const n = need('pending');
       transitionAssetNeed(n, 'drafted');
@@ -25,6 +49,16 @@ describe('AssetNeedsService — state machine transitions', () => {
       const n = need('pending');
       transitionAssetNeed(n, 'failed');
       expect(n.status).toBe('failed');
+    });
+
+    it('pending → chosen → published → assigned (valid lifecycle)', () => {
+      const n = need('pending');
+      transitionAssetNeed(n, 'chosen');
+      expect(n.status).toBe('chosen');
+      transitionAssetNeed(n, 'published');
+      expect(n.status).toBe('published');
+      transitionAssetNeed(n, 'assigned');
+      expect(n.status).toBe('assigned');
     });
 
     it('drafted → chosen (user picks a draft)', () => {
@@ -98,20 +132,28 @@ describe('AssetNeedsService — state machine transitions', () => {
       ['drafted', 'assigned'],
       // chosen cannot jump to assigned directly (must publish first)
       ['chosen', 'assigned'],
-      // published cannot go back to pending/drafted/chosen
+      // generating can only go to drafted/failed/pending (already handled)
+      // published cannot go back to pending/drafted/chosen/generating
       ['published', 'pending'],
       ['published', 'drafted'],
       ['published', 'chosen'],
+      ['published', 'generating'],
       // assigned is terminal except for failed
       ['assigned', 'pending'],
       ['assigned', 'drafted'],
       ['assigned', 'chosen'],
       ['assigned', 'published'],
+      ['assigned', 'generating'],
       // failed can only retry to pending
       ['failed', 'drafted'],
       ['failed', 'chosen'],
       ['failed', 'published'],
       ['failed', 'assigned'],
+      ['failed', 'generating'],
+      // generating cannot jump to chosen/published/assigned directly
+      ['generating', 'chosen'],
+      ['generating', 'published'],
+      ['generating', 'assigned'],
     ];
 
     for (const [from, to] of invalid) {
@@ -134,6 +176,12 @@ describe('AssetNeedsService — state machine transitions', () => {
   });
 
   describe('lifecycle wrappers — delegate to transitionAssetNeed', () => {
+
+    it('markGenerating transitions pending → generating', () => {
+      const n = need('pending');
+      markGenerating(n);
+      expect(n.status).toBe('generating');
+    });
 
     it('markDrafted transitions pending → drafted', () => {
       const n = need('pending');

@@ -7,7 +7,7 @@ const contentType = ContentTypeSchema;
 export const AssetNeedSchema = z.object({
   promptType: z.string(),        // 'portrait' | 'background' | 'biometric' | etc.
   targetField: z.string(),       // e.g. "portrait_urls[0].url"
-  status: z.enum(['pending', 'drafted', 'chosen', 'published', 'assigned', 'failed']).default('pending'),
+  status: z.enum(['pending', 'generating', 'drafted', 'chosen', 'published', 'assigned', 'failed']).default('pending'),
 });
 
 export const ContentPlanItemSchema = z.object({
@@ -35,6 +35,42 @@ export const ContentPlanSchema = z.object({
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),
   status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed']).default('draft'),
+}).superRefine((plan, ctx) => {
+  // 1. Reject duplicate (type, slug). Duplicate items silently overwrite files
+  // on write, so they must be caught before staging.
+  const seen = new Map<string, number>();
+  plan.items.forEach((item, i) => {
+    const key = `${item.type}:${item.slug}`;
+    const prev = seen.get(key);
+    if (prev !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['items', i, 'slug'],
+        message: `Duplicate (type, slug) "${key}" with item at index ${prev}`,
+      });
+    } else {
+      seen.set(key, i);
+    }
+  });
+
+  // 2. Reject cross-links that reference unknown items (conflicting cross-links).
+  const itemIds = new Set(plan.items.map(i => i.id));
+  plan.links.forEach((link, i) => {
+    if (!itemIds.has(link.fromItem)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['links', i, 'fromItem'],
+        message: `Link references unknown fromItem "${link.fromItem}"`,
+      });
+    }
+    if (!itemIds.has(link.toItem)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['links', i, 'toItem'],
+        message: `Link references unknown toItem "${link.toItem}"`,
+      });
+    }
+  });
 });
 
 export const FeedbackLogEntrySchema = z.object({

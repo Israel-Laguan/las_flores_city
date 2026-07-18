@@ -198,6 +198,28 @@ export async function previewPlan(plan: ContentPlan): Promise<PreviewResult> {
   };
 }
 
+/**
+ * Returns a list of human-readable conflict errors for any `create` item whose
+ * target file already exists on disk. `create` must never overwrite a file.
+ */
+export async function checkCreateConflicts(plan: ContentPlan, contentDir: string): Promise<string[]> {
+  const errors: string[] = [];
+  for (const item of plan.items) {
+    if (item.action !== 'create') continue;
+    const filePath = resolveFilePath(item);
+    const fullPath = path.join(contentDir, filePath);
+    try {
+      await fs.access(fullPath);
+      errors.push(`Item "${item.name}" (${item.type}:${item.slug}) targets existing file: ${filePath}`);
+    } catch (err: any) {
+      if (err.code !== 'ENOENT') {
+        errors.push(`Cannot stat target for "${item.name}" (${item.type}:${item.slug}): ${err.message}`);
+      }
+    }
+  }
+  return errors;
+}
+
 export async function stagePlan(plan: ContentPlan): Promise<StagingResult> {
   const createdFiles: string[] = [];
   const updatedFiles: string[] = [];
@@ -205,6 +227,22 @@ export async function stagePlan(plan: ContentPlan): Promise<StagingResult> {
   const contentDir = resolveContentDir();
 
   try {
+    // Hard error: a `create` action must not clobber an existing file. Catch
+    // this before writing anything so the failure is explicit rather than a
+    // silent overwrite.
+    const conflicts = await checkCreateConflicts(plan, contentDir);
+    if (conflicts.length > 0) {
+      return {
+        success: false,
+        createdFiles,
+        updatedFiles,
+        validationErrors: conflicts,
+        warnings: [],
+        itemResults: [],
+        error: `Refusing to stage: ${conflicts.length} 'create' item(s) target an existing file`,
+      };
+    }
+
     const { sorted: sortedItems } = topologicalSort(plan.items);
 
     const itemResults = await writePlanItems(sortedItems, contentDir, createdFiles, updatedFiles, fileSnapshots);

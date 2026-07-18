@@ -81,10 +81,56 @@ export async function updateExistingFile(
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     throw new Error(`Expected a YAML object in ${filePath}`);
   }
-  const updatedData = { ...(parsed as Record<string, any>), ...item.fields };
+  // Deep-merge known nested keys so updates don't drop existing data. Only the
+  // explicitly-merged keys recurse; everything else is overridden by source.
+  const updatedData = deepMergeFields(parsed as Record<string, any>, item.fields);
   const updatedYaml = yaml.dump(updatedData, { lineWidth: -1, noRefs: true });
   await atomicWriteYaml(fullPath, updatedYaml);
   updatedFiles.push(filePath);
+}
+
+/**
+ * Merge `fields` onto an existing YAML object. Keys in `DEEP_MERGE_KEYS` that
+ * are plain objects on *both* sides are merged recursively; all other values
+ * are overridden by the source. Arrays (including `nodes`) are replaced whole.
+ */
+const DEEP_MERGE_KEYS = new Set(['metadata', 'asset_paths', 'conditions']);
+
+function isObject(value: unknown): value is Record<string, any> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function mergeObjects(
+  target: Record<string, any>,
+  source: Record<string, any>,
+): Record<string, any> {
+  const result = { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    result[key] =
+      isObject(value) && isObject(result[key])
+        ? mergeObjects(result[key], value)
+        : value;
+  }
+  return result;
+}
+
+export function deepMergeFields(
+  target: Record<string, any>,
+  source: Record<string, any>,
+): Record<string, any> {
+  const result: Record<string, any> = { ...target };
+  for (const [key, value] of Object.entries(source)) {
+    if (
+      DEEP_MERGE_KEYS.has(key) &&
+      isObject(value) &&
+      isObject(result[key])
+    ) {
+      result[key] = mergeObjects(result[key], value);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
 }
 
 export async function rollbackFiles(snapshots: Map<string, string | null>): Promise<void> {

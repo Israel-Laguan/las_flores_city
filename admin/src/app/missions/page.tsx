@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import ContentListPage from '@/components/ContentListPage';
 import Badge from '@/components/Badge';
 import styles from './missions.module.css';
@@ -20,11 +19,6 @@ const columns = [
 export default function MissionsPage() {
   return (
     <div>
-      <div className={styles.createBar}>
-        <Link href="/missions/new" className={styles.createButton}>
-          + Create Mission
-        </Link>
-      </div>
       <ContentListPage
         title="Missions"
         heading="Mission List"
