@@ -242,6 +242,22 @@ export class IronGateValidator {
       applied['story_beat'] = effects.story_beat;
     }
 
+    // M15: grant credits as mission reward
+    if (effects.grant_credits) {
+      const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
+      const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
+      await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
+      applied['grant_credits'] = effects.grant_credits;
+    }
+    // M15: grant vault item as mission reward
+    if (effects.grant_item) {
+      await client.query(
+        `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+        [userId, effects.grant_item]
+      );
+      applied['grant_item'] = effects.grant_item;
+    }
+
     // location_discovered, app_opened, message_read are client-side
     // hints only — no server-side OLTP mutation needed for them.
     if (effects.location_discovered) {

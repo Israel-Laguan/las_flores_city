@@ -1,6 +1,8 @@
 import type { ContentPlan } from '@las-flores/shared';
 import { createItem } from './createPlanItem.js';
 
+/* eslint-disable max-lines -- plan template builders are cohesively grouped in one module */
+
 export function buildMysteryPlan(userDescription: string): ContentPlan {
   const missionId = crypto.randomUUID();
   const dialogueId = crypto.randomUUID();
@@ -348,6 +350,126 @@ export function buildVaultCollectionPlan(userDescription: string): ContentPlan {
       }),
     ],
     links: [],
+    status: 'draft',
+  };
+}
+export function buildMissionFromScenePlan(userDescription: string): ContentPlan { // eslint-disable-line max-lines-per-function -- single cohesive plan builder
+  const missionId = crypto.randomUUID();
+  const characterId = crypto.randomUUID();
+  const sceneId = crypto.randomUUID();
+  const dialogueId = crypto.randomUUID();
+
+  return {
+    id: crypto.randomUUID(),
+    description: `Mission from Scene: ${userDescription}`,
+    items: [
+      createItem({
+        id: missionId,
+        type: 'mission',
+        name: 'New Mission',
+        slug: 'new_mission',
+        fields: {
+          title: 'TODO: Mission title',
+          description: userDescription,
+          status: 'ACTIVE',
+        },
+      }),
+      createItem({
+        id: characterId,
+        type: 'character',
+        name: 'Mission Giver',
+        slug: 'mission_giver',
+        fields: {
+          name: 'TODO: Character name',
+          description: 'A mission giver who provides quests to the player',
+          title: 'TODO: Title',
+          metadata: {
+            type: 'human',
+            role: 'npc',
+            faction: 'TODO: Add faction',
+            personality: 'TODO: Add personality',
+          },
+        },
+      }),
+      createItem({
+        id: sceneId,
+        type: 'scene',
+        name: 'Mission Scene',
+        slug: 'mission_scene',
+        fields: {
+          name: 'TODO: Scene name',
+          description: 'Scene where the mission takes place',
+          district: 'TODO: Add district',
+          mood: 'TODO: Add mood',
+          available_dialogues: [],
+        },
+        dependsOn: [characterId],
+      }),
+      createItem({
+        id: dialogueId,
+        type: 'dialogue',
+        name: 'Mission Dialogue',
+        slug: 'mission_dialogue',
+        fields: {
+          name: 'Mission Intro',
+          description: 'Introduction dialogue for the mission with reward choice',
+          start_node_id: 'start',
+          nodes: {
+            start: {
+              id: 'start',
+              type: 'character',
+              speaker_id: characterId,
+              text: 'TODO: Mission giver dialogue text',
+              choices: [
+                {
+                  id: 'accept',
+                  text: 'Accept the mission',
+                  next_node_id: 'reward',
+                },
+                {
+                  id: 'decline',
+                  text: 'Decline',
+                  next_node_id: 'decline_end',
+                },
+              ],
+            },
+            reward: {
+              id: 'reward',
+              type: 'narrator',
+              text: 'TODO: Mission accepted, here is your reward',
+              is_end: true,
+              effects: {
+                grant_credits: {
+                  amount: 100,
+                  currency: 'credits',
+                },
+              },
+            },
+            decline_end: {
+              id: 'decline_end',
+              type: 'narrator',
+              text: 'TODO: Mission declined',
+              is_end: true,
+            },
+          },
+        },
+        dependsOn: [sceneId],
+      }),
+    ],
+    links: [
+      {
+        fromItem: sceneId,
+        toItem: dialogueId,
+        field: 'available_dialogues',
+        action: 'add',
+      },
+      {
+        fromItem: dialogueId,
+        toItem: missionId,
+        field: 'mission_id',
+        action: 'set',
+      },
+    ],
     status: 'draft',
   };
 }

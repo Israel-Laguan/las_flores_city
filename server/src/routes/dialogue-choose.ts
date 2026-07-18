@@ -184,6 +184,22 @@ function emitIntraChunkTelemetry(
       [userId, JSON.stringify({ itemId: choiceResult.unlockedVaultItem.id })]
     ).catch((err) => console.error('Vault unlock telemetry error:', err));
   }
+
+  if (choiceResult.grantedCredits) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'credits_granted', $2)`,
+      [userId, JSON.stringify(choiceResult.grantedCredits)]
+    ).catch((err) => console.error('Credits granted telemetry error:', err));
+  }
+
+  if (choiceResult.grantedItem) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'item_granted', $2)`,
+      [userId, JSON.stringify(choiceResult.grantedItem)]
+    ).catch((err) => console.error('Item granted telemetry error:', err));
+  }
 }
 
 async function emitIntraChunkSideEffects(

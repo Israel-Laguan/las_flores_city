@@ -7,6 +7,7 @@ COPY admin/package*.json ./admin/
 COPY shared/package*.json ./shared/
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
+COPY ui/package*.json ./ui/
 
 RUN npm ci
 
@@ -16,6 +17,7 @@ COPY client/ ./client/
 COPY admin/ ./admin/
 COPY server/ ./server/
 COPY shared/ ./shared/
+COPY ui/ ./ui/
 
 RUN npm run build --workspace=shared && npm run build --workspace=admin
 

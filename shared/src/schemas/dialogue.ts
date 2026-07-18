@@ -52,6 +52,14 @@ export const EffectsSchema = z.object({
   location_discovered: z.string().max(100).optional(),
   app_opened: z.string().max(50).optional(),
   message_read: z.string().max(100).optional(),
+  // M15: mission reward grants — credits or a vault item
+  grant_credits: z
+    .object({
+      amount: z.number().int().min(1).max(100000),
+      currency: z.enum(['credits', 'gold_credits']).default('credits'),
+    })
+    .optional(),
+  grant_item: z.string().uuid().optional(),
 }).strict();
 
 export type Effects = z.infer<typeof EffectsSchema>;

@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable max-lines -- content card is a single cohesive component module */
+
 import { useState } from 'react';
 import type { ContentPlanItem } from '@las-flores/shared';
 import { cn } from '@las-flores/ui';
@@ -23,6 +25,32 @@ const TYPE_ICONS: Record<string, string> = {
   story_beat: '\u{1F4D6}',
   map_tile: '\u{1F5FA}',
 };
+
+function hasGrantEffects(item: ContentPlanItem): boolean {
+  if (item.type !== 'dialogue') return false;
+  const nodes = item.fields.nodes as Record<string, any> | undefined;
+  if (!nodes) return false;
+  return Object.values(nodes).some(
+    (node: any) => node?.effects?.grant_credits || node?.effects?.grant_item
+  );
+}
+
+function getGrantSummary(item: ContentPlanItem): string[] {
+  if (item.type !== 'dialogue') return [];
+  const nodes = item.fields.nodes as Record<string, any> | undefined;
+  if (!nodes) return [];
+  const summaries: string[] = [];
+  for (const node of Object.values(nodes)) {
+    if (node?.effects?.grant_credits) {
+      const { amount, currency } = node.effects.grant_credits;
+      summaries.push(`Grant ${amount} ${currency}`);
+    }
+    if (node?.effects?.grant_item) {
+      summaries.push(`Grant vault item`);
+    }
+  }
+  return summaries;
+}
 
 interface ContentCardProps {
   item: ContentPlanItem;
@@ -284,6 +312,11 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
           </h3>
           <span className="card__meta">
             {item.type} &middot; {item.action}
+            {hasGrantEffects(item) && (
+              <span style={{ marginLeft: '0.5rem', color: '#10b981', fontWeight: 600 }}>
+                {'\u{1F381} Rewards: '}{getGrantSummary(item).join(', ')}
+              </span>
+            )}
           </span>
         </div>
         <div className={styles.headerActions}>

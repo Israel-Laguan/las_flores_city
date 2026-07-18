@@ -23,6 +23,21 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
 
     const dialogue = await resolveDialogueTree(characterId, sceneId, userId);
 
+    // M15: premium gate check
+    if (dialogue?.metadata?.requires_premium) {
+      const entitlement = await queryOLTP(
+        'SELECT is_premium_unlocked FROM user_entitlements WHERE user_id = $1',
+        [userId]
+      );
+      if (!entitlement.rows[0]?.is_premium_unlocked) {
+        return res.status(403).json({
+          success: false,
+          error: 'premium_required',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+
     if (!dialogue) {
       return res.status(404).json({
         success: false,
