@@ -29,7 +29,7 @@ function setNestedField(obj: any, path: string, value: any): void {
   let current = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
-    if (!(part in current) || typeof current[part] !== 'object') {
+    if (!(part in current) || current[part] === null || typeof current[part] !== 'object') {
       current[part] = {};
     }
     current = current[part];
@@ -64,9 +64,11 @@ export async function fillFields(
 
   // Validate: only accept values for the target fields we asked for
   const filteredFields: Record<string, string> = {};
-  for (const key of unfilled) {
-    if (key in response.fields && typeof response.fields[key] === 'string') {
-      filteredFields[key] = response.fields[key];
+  if (response?.fields) {
+    for (const key of unfilled) {
+      if (key in response.fields && typeof response.fields[key] === 'string') {
+        filteredFields[key] = response.fields[key];
+      }
     }
   }
 

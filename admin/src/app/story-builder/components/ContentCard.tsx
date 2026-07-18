@@ -203,7 +203,7 @@ function FieldsSection({ fields, item, onFieldChange }: {
             </label>
             {field.multiline ? (
               <textarea
-                className={`${styles.textarea} ${isTodo ? styles.todoField : ''} ${isFilled ? styles.filledField : ''}`}
+                className={cn(styles.textarea, isTodo && styles.todoField, isFilled && styles.filledField)}
                 value={value}
                 onChange={(e) => onFieldChange(field, e.target.value)}
                 placeholder={field.placeholder}
@@ -212,7 +212,7 @@ function FieldsSection({ fields, item, onFieldChange }: {
             ) : (
               <input
                 type="text"
-                className={`${styles.input} ${isTodo ? styles.todoField : ''} ${isFilled ? styles.filledField : ''}`}
+                className={cn(styles.input, isTodo && styles.todoField, isFilled && styles.filledField)}
                 value={value}
                 onChange={(e) => onFieldChange(field, e.target.value)}
                 placeholder={field.placeholder}

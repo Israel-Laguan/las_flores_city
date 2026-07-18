@@ -10,6 +10,7 @@ export function buildMysteryPlan(userDescription: string): ContentPlan {
     description: `Mystery: ${userDescription}`,
     items: [
       createItem({
+        id: missionId,
         type: 'mission',
         name: 'New Mystery',
         slug: 'new_mystery',
@@ -20,6 +21,7 @@ export function buildMysteryPlan(userDescription: string): ContentPlan {
         },
       }),
       createItem({
+        id: dialogueId,
         type: 'dialogue',
         name: 'Mystery Intro Dialogue',
         slug: 'mystery_intro',
@@ -79,6 +81,7 @@ export function buildShopkeeperPlan(userDescription: string): ContentPlan {
     description: `Shopkeeper: ${userDescription}`,
     items: [
       createItem({
+        id: characterId,
         type: 'character',
         name: 'New Shopkeeper',
         slug: 'new_shopkeeper',
@@ -135,6 +138,7 @@ export function buildLocationPlan(userDescription: string): ContentPlan {
     description: `Location: ${userDescription}`,
     items: [
       createItem({
+        id: locationId,
         type: 'location',
         name: 'New Location',
         slug: 'new_location',
@@ -150,6 +154,7 @@ export function buildLocationPlan(userDescription: string): ContentPlan {
         },
       }),
       createItem({
+        id: sceneId,
         type: 'scene',
         name: 'Location Scene',
         slug: 'location_scene',
@@ -209,6 +214,7 @@ export function buildGigPlan(userDescription: string): ContentPlan {
         },
       }),
       createItem({
+        id: sceneId,
         type: 'scene',
         name: 'Gig Location',
         slug: 'gig_scene',
@@ -222,6 +228,7 @@ export function buildGigPlan(userDescription: string): ContentPlan {
         dependsOn: [],
       }),
       createItem({
+        id: dialogueId,
         type: 'dialogue',
         name: 'Gig Briefing',
         slug: 'gig_briefing',
@@ -257,6 +264,7 @@ export function buildDialogueScenePlan(userDescription: string): ContentPlan {
     description: `Dialogue Scene: ${userDescription}`,
     items: [
       createItem({
+        id: dialogueId,
         type: 'dialogue',
         name: 'New Dialogue',
         slug: 'new_dialogue',
@@ -302,6 +310,7 @@ export function buildVaultCollectionPlan(userDescription: string): ContentPlan {
     description: `Vault Collection: ${userDescription}`,
     items: [
       createItem({
+        id: missionId,
         type: 'mission',
         name: 'Collection Mission',
         slug: 'collection_mission',

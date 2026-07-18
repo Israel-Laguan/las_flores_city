@@ -260,8 +260,9 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
           if (Object.keys(fillResult.fields).length > 0) {
             mergeFilledFields(item, fillResult.fields);
           }
-          if (fillResult.lore_refs) {
-            item.lore_refs = fillResult.lore_refs;
+          if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
+            const existing = item.lore_refs ?? [];
+            item.lore_refs = Array.from(new Set([...existing, ...fillResult.lore_refs]));
           }
         } catch (err: any) {
           console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);

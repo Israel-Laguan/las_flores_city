@@ -153,6 +153,9 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
         await ContentPlanService.setStatus(planId, 'failed', client);
         return { success: false, status: 'failed', stage: stageResult, error: stageResult.error ?? 'Staging failed' };
       }
+
+      // Persist the updated plan (with LLM-filled fields) to DB
+      await ContentPlanService.updatePlanJson(planId, plan, client);
       await ContentPlanService.setStatus(planId, 'staged', client);
 
       // 3. Publish chosen drafts — upload to MinIO, tag portrait_urls label:'dev'.
