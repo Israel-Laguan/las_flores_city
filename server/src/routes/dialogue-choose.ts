@@ -173,7 +173,7 @@ function emitIntraChunkTelemetry(
         }),
         choiceResult.timeBlocksSpent,
       ]
-    ).catch((err) => console.error('Dialogue choice telemetry error:', err));
+    );
   }
 
   if (choiceResult.unlockedVaultItem) {
@@ -182,7 +182,23 @@ function emitIntraChunkTelemetry(
       `INSERT INTO player_events (id, user_id, event_type, event_data)
        VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
       [userId, JSON.stringify({ itemId: choiceResult.unlockedVaultItem.id })]
-    ).catch((err) => console.error('Vault unlock telemetry error:', err));
+    );
+  }
+
+  if (choiceResult.grantedCredits) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'credits_granted', $2)`,
+      [userId, JSON.stringify(choiceResult.grantedCredits)]
+    );
+  }
+
+  if (choiceResult.grantedItem) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'item_granted', $2)`,
+      [userId, JSON.stringify(choiceResult.grantedItem)]
+    );
   }
 }
 
@@ -357,5 +373,5 @@ async function recordPostChoiceTelemetry(
       JSON.stringify(buildChoiceTelemetryEventData(dialogueId, choiceId, chunkId, isChunkBoundaryCrossing, leafType)),
       tbDeducted,
     ]
-  ).catch((err) => console.error('Dialogue choice telemetry error:', err));
+  );
 }

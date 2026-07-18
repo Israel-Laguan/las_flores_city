@@ -3,6 +3,7 @@ import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { executePlan } from '../services/StoryBuilderOrchestrator.js';
 import { PLAN_TEMPLATES, getTemplateById } from '../services/PlanTemplates.js';
+import { cloneItem } from '../services/CloneTemplateService.js';
 
 export const adminStoryBuilderMetaRouter = express.Router();
 
@@ -163,5 +164,46 @@ adminStoryBuilderMetaRouter.post('/templates/:id', async (req, res) => {
   } catch (error: any) {
     console.error('[story-builder] POST /templates/:id error:', error);
     res.status(500).json({ success: false, error: 'Failed to build template', timestamp: new Date().toISOString() });
+  }
+});
+
+
+// POST /admin/story-builder/clone — Clone an existing entity as a ContentPlanItem
+adminStoryBuilderMetaRouter.post('/clone', async (req, res) => {
+  try {
+    const { sourcePath, newName } = req.body;
+
+    if (typeof sourcePath !== 'string' || !sourcePath.trim()) {
+      res.status(400).json({
+        success: false,
+        error: 'sourcePath is required',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    if (typeof newName !== 'string' || !newName.trim()) {
+      res.status(400).json({
+        success: false,
+        error: 'newName is required',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const item = await cloneItem(sourcePath.trim(), newName.trim());
+
+    res.json({
+      success: true,
+      data: { item },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /clone error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to clone entity',
+      timestamp: new Date().toISOString(),
+    });
   }
 });

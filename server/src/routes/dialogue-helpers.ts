@@ -7,6 +7,8 @@ import {
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { DialogueChoice } from '@las-flores/shared';
 
+/* eslint-disable max-lines -- dialogue route helpers are cohesively grouped in one module */
+
 export async function getSpeaker(speakerId: string) {
   const result = await queryOLTP(
     'SELECT id, name, title, avatar_url FROM characters WHERE id = $1',
@@ -171,6 +173,28 @@ export async function processRelationshipChange(
   );
 }
 
+/**
+ * Atomically claim a reward for a dialogue node. Returns true if this
+ * is the first claim (grants should proceed), false if already claimed
+ * (grants should be skipped).
+ */
+async function tryClaimReward(
+  client: any,
+  userId: string,
+  dialogueId: string,
+  nodeId: string
+): Promise<boolean> {
+  const claimKey = `grant_${userId}_${dialogueId}_${nodeId}`;
+  const result = await client.query(
+    `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (claim_key) DO NOTHING
+     RETURNING id`,
+    [userId, claimKey, dialogueId, nodeId]
+  );
+  return result.rows.length > 0;
+}
+
 export async function recordChoiceAndEffects(
   client: any,
   userId: string,
@@ -181,7 +205,7 @@ export async function recordChoiceAndEffects(
   fromNodeId: string,
   isEnd: boolean,
   nextNode: any
-): Promise<void> {
+): Promise<{ grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } }> {
   if (isEnd) {
     // Clear dialogue cursor + simulation flags so the player
     // returns to the live world after finishing an archive case.
@@ -220,6 +244,30 @@ export async function recordChoiceAndEffects(
   if (effects?.story_beat) {
     await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
   }
+  // M15: grant rewards with idempotency check
+  let grantedCredits: { amount: number; currency: string } | undefined;
+  let grantedItem: { itemId: string } | undefined;
+
+  if (effects?.grant_credits || effects?.grant_item) {
+    const isFirstClaim = await tryClaimReward(client, userId, dialogueId, nextNodeId);
+    if (isFirstClaim) {
+      if (effects.grant_credits) {
+        const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
+        const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
+        await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
+        grantedCredits = effects.grant_credits;
+      }
+      if (effects.grant_item) {
+        await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+          [userId, effects.grant_item]
+        );
+        grantedItem = { itemId: effects.grant_item };
+      }
+    }
+  }
+
+  return { grantedCredits, grantedItem };
 }
 
 export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string) {
@@ -383,6 +431,8 @@ export async function processChoice(
     kind: 'winner' | 'solver' | 'late';
   };
   alignmentChange?: 'loyalist' | 'fugitive';
+  grantedCredits?: { amount: number; currency: string };
+  grantedItem?: { itemId: string };
 }> {
   let timeBlocksSpent = 0;
 
@@ -412,7 +462,7 @@ export async function processChoice(
     unlockedVaultItem = result;
   }
 
-  await recordChoiceAndEffects(
+  const { grantedCredits, grantedItem } = await recordChoiceAndEffects(
     client,
     userId,
     dialogueId,
@@ -440,5 +490,7 @@ return {
     mysterySolveStatus,
     breakthrough,
     alignmentChange,
+    grantedCredits,
+    grantedItem,
   };
 }

@@ -36,27 +36,35 @@ async function withLoading<T>(
   }
 }
 
-export function createStoryPlanHandlers(cb: Callbacks) {
-  const {
-    setLoading, setError, setPlan, setStep, setPlanId, description, plan,
-    setRefineFeedback, setShowRefine, setSolidifyResult,
-  } = cb;
+async function persistGenerate(
+  setPlan: SetState<ContentPlan | null>,
+  setStep: SetState<Step>,
+  setPlanId: SetState<string | null>,
+  description: string,
+  plan: ContentPlan,
+) {
+  setPlan(plan);
+  setStep(2);
+  api.savePlan(description, plan)
+    .then(r => { if (r.success && r.data) setPlanId(r.data.planId); })
+    .catch(e => console.error('Auto-save failed:', e));
+}
 
-  const handleGeneratePlan = useCallback(async () => {
+function makeGeneratePlan(cb: HandlersDeps) {
+  const { setLoading, setError, setPlan, setStep, setPlanId, description } = cb;
+  return useCallback(async () => {
     const data = await withLoading(setLoading, setError, () => api.generatePlan(description));
-    if (!data) return;
-    if (data.success && data.data) {
-      setPlan(data.data.plan);
-      setStep(2);
-      api.savePlan(description, data.data.plan)
-        .then(r => { if (r.success && r.data) setPlanId(r.data.planId); })
-        .catch(e => console.error('Auto-save failed:', e));
-    } else {
+    if (data?.success && data.data) {
+      await persistGenerate(setPlan, setStep, setPlanId, description, data.data.plan);
+    } else if (data) {
       setError(data.error || 'Failed to generate plan');
     }
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
+}
 
-  const handleRefine = useCallback(async (planId: string, refineFeedback: string) => {
+function makeRefine(cb: HandlersDeps) {
+  const { setLoading, setError, setPlan, setPlanId, setRefineFeedback, setShowRefine, plan } = cb;
+  return useCallback(async (planId: string, refineFeedback: string) => {
     const data = await withLoading(setLoading, setError, async () => {
       // Persist author edits first so refine runs against the edited plan (server
       // reloads the stored plan_json; without this, edits would be discarded).
@@ -79,8 +87,11 @@ export function createStoryPlanHandlers(cb: Callbacks) {
       setError(data.error || 'Failed to refine plan');
     }
   }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, plan]);
+}
 
-  const handleApproveAndSolidify = useCallback(async (planId: string) => {
+function makeApproveAndSolidify(cb: HandlersDeps) {
+  const { setLoading, setError, setStep, setPlan, setSolidifyResult, plan } = cb;
+  return useCallback(async (planId: string) => {
     if (!planId) return;
     const data = await withLoading(setLoading, setError, async () => {
       // Persist author edits first so ship uses the edited plan. The server
@@ -105,32 +116,79 @@ export function createStoryPlanHandlers(cb: Callbacks) {
       setStep(3);
     }
   }, [setLoading, setError, setStep, setPlan, setSolidifyResult, plan]);
+}
 
-  const handleSelectTemplate = useCallback(async (templateId: string) => {
-    const data = await withLoading(setLoading, setError, () =>
-      api.selectTemplate(templateId, description || templateId));
-    if (!data) return;
-    if (data.success && data.data) {
-      setPlan(data.data.plan);
-      setStep(2);
-      api.savePlan(description || templateId, data.data.plan)
-        .then(r => { if (r.success && r.data) setPlanId(r.data.planId); })
-        .catch(e => console.error('Auto-save failed:', e));
-    } else {
+function makeSelectTemplate(cb: HandlersDeps) {
+  const { setLoading, setError, setPlan, setStep, setPlanId, description } = cb;
+  return useCallback(async (templateId: string) => {
+    const seed = description || templateId;
+    const data = await withLoading(setLoading, setError, () => api.selectTemplate(templateId, seed));
+    if (data?.success && data.data) {
+      await persistGenerate(setPlan, setStep, setPlanId, seed, data.data.plan);
+    } else if (data) {
       setError(data.error || 'Failed to build template plan');
     }
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
+}
 
-  const handleRegenerateLore = useCallback(async (planId: string, itemId: string) => {
+function makeClone(cb: HandlersDeps) {
+  const { setLoading, setError, setPlan, setStep, setPlanId, plan } = cb;
+  return useCallback(async (sourcePath: string, newName: string) => {
+    await withLoading(setLoading, setError, async () => {
+      const res = await api.cloneEntity(sourcePath, newName);
+      if (!res.success) return null;
+      const newItem = res.data!.item;
+      if (plan) {
+        const updatedPlan = { ...plan, items: [...plan.items, newItem] };
+        setPlan(updatedPlan);
+        setStep(2);
+        const saveRes = await api.savePlan(plan.description || `Cloned: ${newName}`, updatedPlan);
+        if (saveRes.success && saveRes.data) setPlanId(saveRes.data.planId);
+        return null;
+      }
+      const newPlan: ContentPlan = {
+        id: crypto.randomUUID(),
+        description: `Cloned: ${newName}`,
+        items: [newItem],
+        links: [],
+        status: 'draft',
+      };
+      setPlan(newPlan);
+      setStep(2);
+      const saveRes = await api.savePlan(`Cloned: ${newName}`, newPlan);
+      if (saveRes.success && saveRes.data) setPlanId(saveRes.data.planId);
+      return null;
+    });
+  }, [plan, setLoading, setError, setPlan, setStep, setPlanId]);
+}
+
+function makeRegenerateLore(cb: HandlersDeps) {
+  const { setLoading, setError, setPlan } = cb;
+  return useCallback(async (planId: string, itemId: string) => {
     const data = await withLoading(setLoading, setError, () => api.regenerateLore(planId, itemId));
     if (!data) return;
     await refreshPlanFromDb(planId, setPlan);
   }, [setLoading, setError, setPlan]);
+}
+
+type HandlersDeps = Callbacks;
+
+export function createStoryPlanHandlers(cb: Callbacks) {
+  const {
+    setLoading, setError, setPlan,
+  } = cb;
+
+  const handleGeneratePlan = makeGeneratePlan(cb);
+  const handleRefine = makeRefine(cb);
+  const handleApproveAndSolidify = makeApproveAndSolidify(cb);
+  const handleSelectTemplate = makeSelectTemplate(cb);
+  const handleClone = makeClone(cb);
+  const handleRegenerateLore = makeRegenerateLore(cb);
 
   const { handleGenerateDrafts, handleChooseDraft } = createDraftPlanHandlers({ setLoading, setError, setPlan });
 
   return {
-    handleGeneratePlan, handleRefine, handleSelectTemplate,
+    handleGeneratePlan, handleRefine, handleSelectTemplate, handleClone,
     handleRegenerateLore, handleGenerateDrafts, handleChooseDraft,
     handleApproveAndSolidify,
   };

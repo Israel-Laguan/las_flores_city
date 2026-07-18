@@ -6,6 +6,7 @@ import {
   buildGigPlan,
   buildDialogueScenePlan,
   buildVaultCollectionPlan,
+  buildMissionFromScenePlan,
 } from './PlanTemplateBuilders.js';
 
 export interface PlanTemplate {
@@ -58,6 +59,13 @@ export const PLAN_TEMPLATES: PlanTemplate[] = [
     description: 'Creates a mission + multiple vault items',
     icon: '\u{1F510}',
     buildPlan: buildVaultCollectionPlan,
+  },
+  {
+    id: 'add-mission-from-scene',
+    label: 'Add a Mission',
+    description: 'Creates a mission + character + scene + dialogue with rewards',
+    icon: '🎯',
+    buildPlan: buildMissionFromScenePlan,
   },
 ];
 

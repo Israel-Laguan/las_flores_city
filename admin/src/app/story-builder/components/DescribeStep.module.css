@@ -110,3 +110,15 @@
   color: var(--muted);
   margin-top: 0.5rem;
 }
+
+
+.cloneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.cloneForm {
+  padding-top: 0.5rem;
+}

@@ -1,4 +1,4 @@
-import { queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import {
   filterChoices,
   getDialogState,
@@ -25,6 +25,21 @@ export async function handleLegacyChoiceIndex(
   }
 
   const state = await getDialogState(userId, dialogueId);
+
+  // M15: premium gate check
+  if ('dialogue' in state && state.dialogue?.metadata?.requires_premium) {
+    const entitlement = await queryOLTP(
+      'SELECT is_premium_unlocked FROM user_entitlements WHERE user_id = $1',
+      [userId]
+    );
+    if (!entitlement.rows[0]?.is_premium_unlocked) {
+      return res.status(403).json({
+        success: false,
+        error: 'premium_required',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
 
   if ('error' in state) {
     const statusMap: Record<string, number> = {
@@ -116,7 +131,7 @@ async function buildLegacyResponse(
         JSON.stringify({ dialogue_tree_id: dialogueId, choice_index: choiceIndex }),
         choiceResult.timeBlocksSpent,
       ]
-    ).catch((err) => console.error('Dialogue choice telemetry error:', err));
+    );
   }
 
   if (choiceResult.unlockedVaultItem) {
@@ -125,7 +140,23 @@ async function buildLegacyResponse(
       `INSERT INTO player_events (id, user_id, event_type, event_data)
        VALUES (gen_random_uuid(), $1, 'vault_item_unlocked', $2)`,
       [userId, JSON.stringify({ itemId: choiceResult.unlockedVaultItem.id })]
-    ).catch((err) => console.error('Vault unlock telemetry error:', err));
+    );
+  }
+
+  if (choiceResult.grantedCredits) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'credits_granted', $2)`,
+      [userId, JSON.stringify(choiceResult.grantedCredits)]
+    );
+  }
+
+  if (choiceResult.grantedItem) {
+    queryOLAP(
+      `INSERT INTO player_events (id, user_id, event_type, event_data)
+       VALUES (gen_random_uuid(), $1, 'item_granted', $2)`,
+      [userId, JSON.stringify(choiceResult.grantedItem)]
+    );
   }
 
   return res.json({
