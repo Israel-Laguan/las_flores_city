@@ -57,19 +57,33 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
 
   const handleRefine = useCallback(async (planId: string, refineFeedback: string) => {
+    // Persist author edits first so refine runs against the edited plan (server
+    // reloads the stored plan_json; without this, edits would be discarded).
+    if (plan) {
+      await api.updatePlan(planId, plan).catch(e => console.error('Pre-refine save failed:', e));
+    }
     const data = await withLoading(setLoading, setError, () => api.refinePlan(planId, refineFeedback));
     if (!data) return;
     if (data.success && data.data) {
       setPlan(data.data.plan);
+      // refinePlan versions the plan into a new row; adopt the new id.
+      const newId = (data.data as any).id ?? planId;
+      setPlanId(newId);
       setRefineFeedback('');
       setShowRefine(false);
     } else {
       setError(data.error || 'Failed to refine plan');
     }
-  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine]);
+  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, plan]);
 
   const handleApproveAndSolidify = useCallback(async (planId: string) => {
     if (!planId) return;
+    // Persist author edits first so ship uses the edited plan. The server
+    // re-parses plan_json from the DB during approve-and-solidify; without this
+    // the edits would be lost.
+    if (plan) {
+      await api.updatePlan(planId, plan).catch(e => console.error('Pre-ship save failed:', e));
+    }
     const data = await withLoading(setLoading, setError, () => api.approveAndSolidify(planId));
     if (!data) return;
     if (data.success && data.data) {

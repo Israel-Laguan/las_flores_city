@@ -37,7 +37,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
   return (
     <main className={styles.main}>
       <div className={styles.header}>
-        <h1 className={styles.heading}>Story Builder</h1>
+        <h1 className={styles.heading}>Story Builder — Add / Update Content</h1>
         <Link href="/story-builder/plans" className={cn('btn', 'btn--secondary')}>
           My Plans
         </Link>

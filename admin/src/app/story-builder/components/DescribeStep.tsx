@@ -17,7 +17,7 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
     <div className={styles.section}>
       <h2 className={styles.sectionHeading}>Step 1: Describe What You Want</h2>
       <p className={styles.description}>
-        Describe the content you want to create in natural language. The AI will generate a structured plan for your review.
+        Describe new content to create, or describe the changes you want to make to existing content. The AI will generate a structured plan for your review.
       </p>
 
       {templates.length > 0 && (

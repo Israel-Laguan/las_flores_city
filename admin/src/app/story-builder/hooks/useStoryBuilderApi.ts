@@ -89,6 +89,21 @@ export async function approvePlan(planId: string, plan: ContentPlan) {
 }
 
 /**
+ * Persist author edits to an in-flight (draft/proposed) plan without changing
+ * its lifecycle status. Used to flush ReviewStep edits to the DB before
+ * refine/ship so those operations run against the edited plan, not a stale copy.
+ */
+export async function updatePlan(planId: string, plan: ContentPlan, status?: string) {
+  return adminFetch<{ success: boolean; data?: { planId: string; plan: ContentPlan; status: string }; error?: string }>(
+    `/admin/story-builder/plans/${planId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ plan, status }),
+    },
+  );
+}
+
+/**
  * Single-click "Approve & Ship" (Milestone 04). Runs stage → publish →
  * migrate → verify server-side and returns the full `SolidifyResult`.
  */
