@@ -1,7 +1,7 @@
 import { ContentPlanSchema, type VerificationReport } from '@las-flores/shared';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { migrateContent } from '../content/migrate.js';
-import { ContentPlanService } from './ContentPlanService.js';
+import { ContentPlanService, contentPlanService } from './ContentPlanService.js';
 import { publishChosenDrafts } from './AssetPublishService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from './PlanVerificationService.js';
@@ -16,6 +16,7 @@ import type {
   PreviewResult,
   StagingResult,
 } from './StoryBuilderPlanOps.js';
+import { createLLMProvider } from './LLMService.js';
 
 export {
   executePlan,
@@ -144,7 +145,10 @@ export async function approveAndSolidifyPlan(planId: string): Promise<SolidifyRe
       await ContentPlanService.setStatus(planId, 'approved', client);
 
       // 2. Stage — write YAML + lore + prompt files to disk.
-      const stageResult = await stagePlan(plan);
+      // Gather context and create provider for LLM field filling
+      const provider = createLLMProvider();
+      const context = await contentPlanService.gatherContext();
+      const stageResult = await stagePlan(plan, { provider, context });
       if (!stageResult.success) {
         await ContentPlanService.setStatus(planId, 'failed', client);
         return { success: false, status: 'failed', stage: stageResult, error: stageResult.error ?? 'Staging failed' };

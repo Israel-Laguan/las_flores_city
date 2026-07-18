@@ -8,6 +8,7 @@ import { previewPlan, stagePlan, migrateStagedPlan, approveAndSolidifyPlan, veri
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, writeAssetPathsToYaml, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
+import { createLLMProvider } from '../services/LLMService.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -137,7 +138,10 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req, res) => {
       return;
     }
 
-    const stagingResult = await stagePlan(plan);
+    // Gather context and create provider for LLM field filling
+    const provider = createLLMProvider();
+    const context = await contentPlanService.gatherContext();
+    const stagingResult = await stagePlan(plan, { provider, context });
 
     // Auto-generate local drafts for pending asset needs (non-fatal on error)
     if (stagingResult.success) {
@@ -280,8 +284,11 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req, res) => {
       return;
     }
 
+    // Gather context and create provider for LLM field filling
+    const provider = createLLMProvider();
+    const context = await contentPlanService.gatherContext();
     // Re-run staging
-    const stagingResult = await stagePlan(plan);
+    const stagingResult = await stagePlan(plan, { provider, context });
 
     // Update plan status based on staging result
     const newStatus = stagingResult.success ? 'staged' : 'failed';

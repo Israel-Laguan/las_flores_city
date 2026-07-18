@@ -14,6 +14,8 @@ import {
 import { buildValidationErrors } from './StoryBuilderValidation.js';
 import { resolveContentDir, generateLoreStubs } from './StoryBuilderLore.js';
 import { generatePromptFiles } from './PromptFileGenerator.js';
+import { fillFields, mergeFilledFields } from './ContentFillService.js';
+import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 
 export interface ExecutionResult {
   success: boolean;
@@ -220,7 +222,12 @@ export async function checkCreateConflicts(plan: ContentPlan, contentDir: string
   return errors;
 }
 
-export async function stagePlan(plan: ContentPlan): Promise<StagingResult> {
+export interface StagePlanOptions {
+  provider?: LLMProvider;
+  context?: ExistingContentContext;
+}
+
+export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): Promise<StagingResult> {
   const createdFiles: string[] = [];
   const updatedFiles: string[] = [];
   const fileSnapshots = new Map<string, string | null>();
@@ -244,6 +251,23 @@ export async function stagePlan(plan: ContentPlan): Promise<StagingResult> {
     }
 
     const { sorted: sortedItems } = topologicalSort(plan.items);
+
+    // Fill free-text fields via LLM (non-fatal on error)
+    if (options?.provider && options?.context) {
+      for (const item of sortedItems) {
+        try {
+          const fillResult = await fillFields(item, options.context, options.provider);
+          if (Object.keys(fillResult.fields).length > 0) {
+            mergeFilledFields(item, fillResult.fields);
+          }
+          if (fillResult.lore_refs) {
+            item.lore_refs = fillResult.lore_refs;
+          }
+        } catch (err: any) {
+          console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);
+        }
+      }
+    }
 
     const itemResults = await writePlanItems(sortedItems, contentDir, createdFiles, updatedFiles, fileSnapshots);
 

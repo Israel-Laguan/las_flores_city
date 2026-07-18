@@ -20,6 +20,7 @@ export const ContentPlanItemSchema = z.object({
   fields: z.record(z.string(), z.any()),
   assetNeeds: z.array(AssetNeedSchema).default([]),
   dependsOn: z.array(z.string().uuid()).default([]),  // Optional for MVP
+  lore_refs: z.array(z.string()).optional(),  // LLM-suggested related lore items
 });
 
 export const ContentLinkSchema = z.object({

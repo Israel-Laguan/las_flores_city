@@ -202,3 +202,92 @@ ${structureGuide}
 ## Output Format
  Return ONLY the markdown content. Do NOT wrap it in code fences or JSON. Do NOT include any explanatory text outside the markdown.`;
 }
+
+// ── Fill Fields Prompt ────────────────────────────────────────────────
+
+/**
+ * Build a focused prompt that asks the LLM to fill only the specified
+ * free-text fields for a content item, using existing context for tone/style.
+ */
+export function buildFillFieldsPrompt(
+  item: ContentPlanItem,
+  targetFields: string[],
+  context: ExistingContentContext,
+): string {
+  const existingChars = context.characters.map((c) => {
+    const parts = [c.name];
+    if (c.role) parts.push(`role: ${c.role}`);
+    if (c.faction) parts.push(`faction: ${c.faction}`);
+    if (c.personality) parts.push(`personality: ${c.personality}`);
+    return parts.join(' — ');
+  }).join(', ') || '(none)';
+
+  const existingScenes = context.scenes.map((s) => {
+    const parts = [`${s.name} (${s.district})`];
+    if (s.mood) parts.push(`mood: ${s.mood}`);
+    return parts.join(' — ');
+  }).join(', ') || '(none)';
+
+  const existingLocations = context.locations.map((l) => {
+    const parts = [`${l.name} (${l.district})`];
+    if (l.daytime) parts.push(`daytime: ${l.daytime}`);
+    return parts.join(' — ');
+  }).join(', ') || '(none)';
+
+  // Build a summary of the current item fields
+  const currentItemSummary = Object.entries(item.fields)
+    .map(([k, v]) => `  ${k}: ${typeof v === 'object' ? JSON.stringify(v) : String(v)}`)
+    .join('\n');
+
+  // Type-specific writing instructions
+  const typeInstructions: Record<string, string> = {
+    character: `Write a compelling character description (2-3 sentences) for a cyberpunk NPC. Include physical appearance, personality traits, and their role in the city. Also fill personality with a concise 2-3 word descriptor.`,
+    scene: `Write an atmospheric scene description (2-3 sentences) capturing the cyberpunk ambiance. Include sensory details (neon, rain, sounds). Fill mood with a concise descriptor (e.g., "bustling, neon-lit, tense").`,
+    location: `Write rich location details: a 2-3 sentence description, plus separate daytime and nightlife descriptions, and a brief history paragraph. Capture the cyberpunk setting.`,
+    dialogue: `Write a concise dialogue description (1-2 sentences) explaining what this conversation is about and who participates.`,
+    mission: `Write a compelling mission description (2-3 sentences) explaining the objective, stakes, and tone.`,
+    overlay: `Write a description (1-2 sentences) explaining what this dialogue overlay modifies and why.`,
+    vault: `Write a description (1-2 sentences) explaining what this vault item is and its significance.`,
+    gig: `Write a description (2-3 sentences) explaining the gig, its risks, and the reward.`,
+    shop_item: `Write a description (1-2 sentences) for this item in a cyberpunk market.`,
+  };
+
+  const instructions = typeInstructions[item.type] || typeInstructions.character;
+
+  return `You are a content writer for Las Flores 2077, a narrative cyberpunk game set in a rain-soaked city of neon and corporate intrigue.
+
+## Task
+Fill in the following empty/TODO fields for a ${item.type} item. Write in a cyberpunk noir tone consistent with the Las Flores 2077 setting.
+
+## Item Details
+- Name: ${item.name}
+- Type: ${item.type}
+- Current fields:
+${currentItemSummary}
+
+## Fields to fill
+${targetFields.map(f => `- ${f}`).join('\n')}
+
+## Writing instructions
+${instructions}
+
+## Existing content (for style/tone reference)
+- Characters: ${existingChars}
+- Scenes: ${existingScenes}
+- Locations: ${existingLocations}
+
+## Output format
+Return a JSON object with two keys:
+{
+  "fields": {
+    "field.path": "filled value"
+  },
+  "lore_refs": ["optional_slug_of_related_content"]
+}
+
+Rules:
+- ONLY fill the fields listed above. Do not modify other fields.
+- Keep the cyberpunk Las Flores 2077 tone and setting.
+- lore_refs should be slugs of existing content items that are thematically related (can be empty array).
+- Output ONLY the JSON object, no markdown fences or explanation.`;
+}

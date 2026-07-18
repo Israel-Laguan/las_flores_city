@@ -192,12 +192,18 @@ function FieldsSection({ fields, item, onFieldChange }: {
     <div>
       {fields.map((field) => {
         const value = getNestedValue(item.fields, field.key);
+        const isTodo = typeof value === 'string' && value.startsWith('TODO');
+        const isFilled = item.lore_refs && item.lore_refs.length > 0 && !isTodo && value && value.length > 10;
         return (
           <div key={field.key} className={styles.fieldGroup}>
-            <label className={styles.label}>{field.label}</label>
+            <label className={styles.label}>
+              {field.label}
+              {isTodo && <span className={styles.todoBadge}>TODO</span>}
+              {isFilled && <span className={styles.filledBadge}>AI-filled</span>}
+            </label>
             {field.multiline ? (
               <textarea
-                className={styles.textarea}
+                className={`${styles.textarea} ${isTodo ? styles.todoField : ''} ${isFilled ? styles.filledField : ''}`}
                 value={value}
                 onChange={(e) => onFieldChange(field, e.target.value)}
                 placeholder={field.placeholder}
@@ -206,7 +212,7 @@ function FieldsSection({ fields, item, onFieldChange }: {
             ) : (
               <input
                 type="text"
-                className={styles.input}
+                className={`${styles.input} ${isTodo ? styles.todoField : ''} ${isFilled ? styles.filledField : ''}`}
                 value={value}
                 onChange={(e) => onFieldChange(field, e.target.value)}
                 placeholder={field.placeholder}
