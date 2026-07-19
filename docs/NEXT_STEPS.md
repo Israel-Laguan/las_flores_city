@@ -8,14 +8,6 @@
 
 ## Open work
 
-### Analytics completeness (M17 follow-up)
-
-- **LLM token/cost tracking per plan** — `admin_events.event_data` is emitted for plan lifecycle events (`plan_created`, `plan_staged`, `plan_verified`, `plan_failed`) and user/settings events, but `LLMService.ts`/`LiteLLMProvider.ts` do not expose usage/token/cost fields today. Capture Provider-returned token counts and estimated cost into `event_data` so the analytics dashboard can surface LLM spend per plan.
-
-### Mission reporting (M15 follow-up)
-
-- **Mission completion/admin stats view** — `mission_reward_claims` is written atomically when a player claims a mission reward (`dialogue-helpers.ts:189`, `IronGateValidator.ts:253`), but no admin aggregation query or UI widget exists. Add a query + UI widget showing completion rate, claim counts, and unique users per mission, on `/missions` or `/analytics`.
-
 ### Future extensions (aspirational, not planned)
 
 - Tiered asset needs (major/standard/minor character).
@@ -46,3 +38,7 @@
 ### `admin_events` retention
 
 **2026-07-19** — Indefinite retention for now. The table lives in OLTP (despite its analytics scope) and is low-volume (plan lifecycle + user/settings events only). Future work: migrate analytics tables (`admin_events`, `player_events`) to OLAP with date-based partitioning and regularly-refreshed materialized views so old data does not slow queries.
+
+### Mission reward claim stats
+
+**2026-07-19** — New `GET /admin/analytics/missions` endpoint aggregates `mission_reward_claims` by `dialogue_id` with completion rate (cross-DB: OLTP claims + OLAP `dialogue_started` starters, merged in Node). Widget appears on the `/analytics` page (full table) and the `/missions` list page (compact summary bar).

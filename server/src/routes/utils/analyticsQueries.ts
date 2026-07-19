@@ -148,3 +148,75 @@ export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
     estimatedCost7d,
   };
 }
+
+
+// ---------------------------------------------------------------------------
+// Mission reward claim stats (M15 follow-up)
+// ---------------------------------------------------------------------------
+
+export interface MissionClaimStatsRow {
+  dialogueId: string;
+  dialogueName: string;
+  claims: number;
+  uniqueUsers: number;
+  completionRate: number;
+  lastClaim: string;
+}
+
+export async function fetchMissionClaimStats(): Promise<MissionClaimStatsRow[]> {
+  // OLTP: claims grouped by dialogue_id
+  const claimsResult = await queryOLTP<{
+    dialogue_id: string;
+    dialogue_name: string;
+    claims: string;
+    unique_users: string;
+    last_claim: string;
+  }>(
+    `SELECT
+       mrc.dialogue_id,
+       COALESCE(dt.name, 'Unknown') AS dialogue_name,
+       count(*)::int AS claims,
+       count(DISTINCT mrc.user_id)::int AS unique_users,
+       max(mrc.claimed_at) AS last_claim
+     FROM mission_reward_claims mrc
+     LEFT JOIN dialogue_trees dt ON dt.id = mrc.dialogue_id
+     GROUP BY mrc.dialogue_id, dt.name
+     ORDER BY claims DESC`,
+  );
+
+  // OLAP: dialogue_started starters for completion rate denominator
+  const startersResult = await queryOLAP<{ dialogue_tree_id: string; starters: string }>(
+    `SELECT
+       event_data ->> 'dialogue_tree_id' AS dialogue_tree_id,
+       count(DISTINCT user_id)::int AS starters
+     FROM player_events
+     WHERE event_type = 'dialogue_started'
+       AND event_data ->> 'dialogue_tree_id' IS NOT NULL
+     GROUP BY event_data ->> 'dialogue_tree_id'`,
+  );
+
+  // Merge in Node
+  const startersMap = new Map<string, number>();
+  for (const row of startersResult?.rows ?? []) {
+    startersMap.set(row.dialogue_tree_id, Number(row.starters));
+  }
+
+  return (claimsResult?.rows ?? []).map((row) => {
+    const starters = startersMap.get(row.dialogue_id) ?? 0;
+    const claims = Number(row.claims);
+    const uniqueUsers = Number(row.unique_users);
+    const completionRate = starters > 0
+      ? Math.round((uniqueUsers / starters) * 100)
+      : 0;
+
+    return {
+      dialogueId: row.dialogue_id,
+      dialogueName: row.dialogue_name,
+      claims,
+      uniqueUsers,
+      completionRate,
+      lastClaim: row.last_claim,
+    };
+  });
+}
+

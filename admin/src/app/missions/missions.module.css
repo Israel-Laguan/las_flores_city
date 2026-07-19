@@ -16,3 +16,23 @@
   opacity: 0.9;
   text-decoration: none;
 }
+
+.statBar {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.statItem {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.statItem strong {
+  font-size: 1.125rem;
+  color: var(--text-primary);
+  margin-right: 0.25rem;
+}
+
