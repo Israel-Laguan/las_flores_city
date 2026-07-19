@@ -8,10 +8,6 @@
 
 ## Open work
 
-### Intake integrity
-
-- **DB rollback on verify-after-migrate failure** — `migrateStagedPlan()` writes rows to Postgres before `verifyPlan()` runs (in `runSolidify`). If verification fails after the write, the rows remain in the DB (plan is marked `failed` but data persists) with no automatic rollback. Decide + implement: capture written row PKs during migrate and delete them on verify failure, or re-run migrate after the author fixes the content.
-
 ### Analytics completeness (M17 follow-up)
 
 - **LLM token/cost tracking per plan** — `admin_events.event_data` is emitted for plan lifecycle events (`plan_created`, `plan_staged`, `plan_verified`, `plan_failed`) and user/settings events, but `LLMService.ts`/`LiteLLMProvider.ts` do not expose usage/token/cost fields today. Capture Provider-returned token counts and estimated cost into `event_data` so the analytics dashboard can surface LLM spend per plan.
@@ -38,6 +34,14 @@
 ---
 
 ## Decisions
+
+### Intake integrity — verify-after-migrate failure
+
+**2026-07-19** — No destructive rollback. Migration is an idempotent upsert from on-disk YAML/MD files (the source of truth). If verification fails after migration, rows persist in the DB but are overwritten on re-migrate. Recovery: fix the content files on disk → re-migrate (`POST /plans/:id/migrate`, status relaxed to accept `failed`) → re-verify. The status guard on `migrateStagedPlan()` now accepts `failed` to support this flow.
+
+### LLM token/cost tracking
+
+**2026-07-19** — Best-effort capture. The `LLMProvider` interface gained an optional `getLastUsage?()` method; `LiteLLMProvider` captures `data.usage` from the OpenAI-compatible API response and stashes it. Route handlers read it after `parseDescription` and `refinePlan` and include token counts and estimated cost in `plan_created` / `plan_refined` `admin_events`. Fire-and-forget lore/fill calls are excluded (best effort). The analytics page displays `totalTokens7d` and `estimatedCost7d`.
 
 ### `admin_events` retention
 
