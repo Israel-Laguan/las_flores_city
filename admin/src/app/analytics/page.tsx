@@ -19,6 +19,8 @@ interface StoryBuilderAnalytics {
   eventsByType: Array<{ event_type: string; count: number }>;
   avgItemsPerPlan: number;
   successRate: number;
+  totalTokens7d: number;
+  estimatedCost7d: number;
 }
 
 function StatCards({ data }: { data: AnalyticsData }) {
@@ -47,6 +49,8 @@ function SBStatCards({ data }: { data: StoryBuilderAnalytics }) {
     { value: data.plansCreated7d, label: 'Plans (7d)' },
     { value: data.avgItemsPerPlan, label: 'Avg Items/Plan' },
     { value: `${data.successRate}%`, label: 'Success Rate' },
+    { value: data.totalTokens7d.toLocaleString(), label: 'Tokens (7d)' },
+    { value: `${data.estimatedCost7d.toFixed(4)}`, label: 'Est. LLM Cost (7d)' },
   ];
   return (
     <div className={styles.statGrid}>

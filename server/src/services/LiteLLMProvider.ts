@@ -1,6 +1,7 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt } from './LLMPrompts.js';
+import { estimateCost } from './LLMCostEstimator.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
@@ -13,6 +14,7 @@ export class LiteLLMProvider implements LLMProvider {
   private model: string;
   private timeoutMs: number;
   private retries: number;
+  private lastUsage: LLMUsage | null = null;
 
   constructor(opts?: LiteLLMProviderOptions) {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
@@ -20,6 +22,25 @@ export class LiteLLMProvider implements LLMProvider {
     this.model = process.env.LLM_MODEL || 'poolside/laguna-m.1';
     this.timeoutMs = opts?.timeoutMs ?? 60_000;
     this.retries = opts?.retries ?? 2;
+  }
+
+  getLastUsage(): LLMUsage | null {
+    return this.lastUsage;
+  }
+
+  private stashUsage(data: any): void {
+    const usage = data?.usage;
+    if (usage && typeof usage.total_tokens === 'number') {
+      this.lastUsage = {
+        promptTokens: usage.prompt_tokens ?? 0,
+        completionTokens: usage.completion_tokens ?? 0,
+        totalTokens: usage.total_tokens,
+        model: this.model,
+        estimatedCostUsd: estimateCost(this.model, usage),
+      };
+    } else {
+      this.lastUsage = null;
+    }
   }
 
   private async callLLM(systemPrompt: string, userMessage: string): Promise<Record<string, unknown>> {
@@ -62,6 +83,7 @@ export class LiteLLMProvider implements LLMProvider {
         }
 
         const data = await response.json();
+        this.stashUsage(data);
         const content = data.choices?.[0]?.message?.content;
         if (!content) {
           throw new Error('LiteLLM response did not contain any message content.');
@@ -123,6 +145,7 @@ export class LiteLLMProvider implements LLMProvider {
         }
 
         const data = await response.json();
+        this.stashUsage(data);
         let content = data.choices?.[0]?.message?.content || '';
 
         if (content.startsWith('```markdown') || content.startsWith('```')) {

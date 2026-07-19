@@ -89,10 +89,12 @@ export interface AdminAnalyticsData {
   eventsByType: Array<{ event_type: string; count: number }>;
   avgItemsPerPlan: number;
   successRate: number;
+  totalTokens7d: number;
+  estimatedCost7d: number;
 }
 
 export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
-  const [plans24h, plans7d, eventsByType, avgItemsPerPlan, terminalEvents] = await Promise.all([
+  const [plans24h, plans7d, eventsByType, avgItemsPerPlan, terminalEvents, tokensCost] = await Promise.all([
     queryOLTP<{ count: string }>(
       `SELECT count(*)::int AS count FROM admin_events
        WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '24 hours'`
@@ -119,11 +121,22 @@ export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
        WHERE event_type IN ('plan_verified', 'plan_failed')
          AND created_at > NOW() - INTERVAL '7 days'`
     ),
+    queryOLTP<{ totalTokens: string; estimatedCost: string }>(
+      `SELECT
+         coalesce(sum((event_data->>'totalTokens')::numeric), 0)::numeric(12,0) AS totalTokens,
+         coalesce(sum((event_data->>'estimatedCostUsd')::numeric), 0)::numeric(12,6) AS estimatedCost
+       FROM admin_events
+       WHERE event_type IN ('plan_created', 'plan_refined')
+         AND created_at > NOW() - INTERVAL '7 days'`
+    ),
   ]);
 
   const verified = Number(terminalEvents?.rows[0]?.verified ?? 0);
   const failed = Number(terminalEvents?.rows[0]?.failed ?? 0);
   const total = verified + failed;
+  const tokensRow = tokensCost?.rows[0];
+  const totalTokens7d = Number(tokensRow?.totalTokens ?? 0);
+  const estimatedCost7d = Number(tokensRow?.estimatedCost ?? 0);
 
   return {
     plansCreated24h: Number(plans24h?.rows[0]?.count ?? 0),
@@ -131,5 +144,7 @@ export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
     eventsByType: (eventsByType?.rows ?? []).map(r => ({ event_type: r.event_type, count: Number(r.count) })),
     avgItemsPerPlan: Number(avgItemsPerPlan?.rows[0]?.avg_items ?? 0),
     successRate: total > 0 ? Math.round((verified / total) * 100) : 0,
+    totalTokens7d,
+    estimatedCost7d,
   };
 }

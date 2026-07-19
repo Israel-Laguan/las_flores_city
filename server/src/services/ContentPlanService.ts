@@ -1,7 +1,7 @@
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { createLLMProvider } from './LLMService.js';
-import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
 
@@ -131,6 +131,14 @@ export class ContentPlanService {
 
   async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
     return this.provider.generateLore(item, context);
+  }
+
+  /**
+   * Return LLM usage from the most recent provider call, if the provider
+   * captures it (LiteLLMProvider does; MockProvider returns null).
+   */
+  getLastUsage(): LLMUsage | null {
+    return this.provider.getLastUsage?.() ?? null;
   }
 
   async gatherContext(): Promise<ExistingContentContext> {
