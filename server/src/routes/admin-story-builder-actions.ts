@@ -65,7 +65,7 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
 adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const { feedback } = req.body;
 
     if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
@@ -104,7 +104,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest
 // POST /admin/story-builder/plans/:id/preview — Dry-run preview
 adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const result = await queryOLTP<{ plan_json: any }>(
       'SELECT plan_json FROM content_plans WHERE id = $1',
@@ -140,7 +140,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/preview', async (req, res) => {
 // POST /admin/story-builder/plans/:id/stage — Write YAML + validate (no DB migration)
 adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const loaded = await loadPlanForStaging(id, ['proposed', 'approved']);
     if (loaded.error) {
@@ -174,7 +174,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req: AuthRequest,
 // POST /admin/story-builder/plans/:id/migrate — Run DB migration for staged plan
 adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const migrationResult = await migrateStagedPlan(id);
 
@@ -203,7 +203,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthReques
 // Fires async solidify and returns immediately with status=planId for polling.
 adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const result = await approveAndSolidifyPlan(id, req.userId);
 
@@ -231,7 +231,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
 // GET /admin/story-builder/plans/:id/status — Poll async solidify job status
 adminStoryBuilderActionsRouter.get('/plans/:id/status', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const jobStatus = await getSolidifyJobStatus(id);
 
@@ -267,7 +267,7 @@ adminStoryBuilderActionsRouter.get('/plans/:id/status', async (req: AuthRequest,
 // POST /admin/story-builder/plans/:id/retry — Retry staging for a failed plan
 adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const loaded = await loadPlanForStaging(id, ['failed']);
     if (loaded.error) {
@@ -311,7 +311,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/retry', async (req: AuthRequest,
 // POST /admin/story-builder/plans/:id/verify — Run verification on a migrated plan
 adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     const report = await verifyPlan(id);
 

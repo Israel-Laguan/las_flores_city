@@ -318,7 +318,7 @@ commsRouter.get(
   authMiddleware,
   async (req: AuthRequest, res: Response, _next: NextFunction) => {
     const userId = req.userId!;
-    const { characterId } = req.params;
+    const { characterId } = req.params as Record<string, string>;
     try {
       const thread = await loadThread(userId, characterId);
       if (!thread) {

@@ -59,10 +59,7 @@ export class MainMenu {
   private buildTerminal(): HTMLDivElement {
     const terminal = document.createElement('div');
     terminal.className = 'main-menu-terminal';
-    const aboutUrl = import.meta.env.VITE_ABOUT_US_URL as string | undefined;
-    const aboutBtn = aboutUrl
-      ? `<button class="menu-btn" data-action="about">> ABOUT US</button>`
-      : '';
+    const aboutBtn = `<button class="menu-btn" data-action="about">> ABOUT US</button>`;
     terminal.innerHTML = `
       <h1>LAS FLORES 2077</h1>
       <div class="menu-subtitle">MAIN TERMINAL v2.0</div>
