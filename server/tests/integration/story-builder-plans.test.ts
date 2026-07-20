@@ -48,13 +48,16 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
     parseDescription: jest.fn(async (description: string) => ({
-      ...MOCK_PLAN,
-      description,
+      plan: { ...MOCK_PLAN, description },
+      usage: null,
     })),
     refinePlan: jest.fn(async (_planId: string, feedback: string) => ({
-      ...MOCK_PLAN,
-      description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
-      status: 'proposed',
+      plan: {
+        ...MOCK_PLAN,
+        description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
+        status: 'proposed',
+      },
+      usage: null,
     })),
     getLastUsage: jest.fn(() => null),
   },
