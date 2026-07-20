@@ -73,6 +73,10 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
   })),
 }));
 
+jest.mock('../../src/services/AdminEventEmitter.js', () => ({
+  emitAdminEvent: jest.fn(),
+}));
+
 afterAll(() => {
   jest.clearAllMocks();
 });
