@@ -14,7 +14,7 @@ export async function handleDevLogin(req: express.Request, res: express.Response
     return;
   }
   try {
-    const { userId } = req.body;
+    const { userId } = req.body ?? {};
 
     // Use provided userId or default test user
     const targetUserId = userId || '00000000-0000-0000-0000-000000000001';
@@ -94,7 +94,7 @@ export async function handleDevAdminLogin(req: express.Request, res: express.Res
     return;
   }
   try {
-    const { userId } = req.body;
+    const { userId } = req.body ?? {};
 
     // Use provided userId or default test admin user
     const targetUserId = userId || '00000000-0000-0000-0000-000000000001';
