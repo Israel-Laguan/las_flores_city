@@ -9,6 +9,11 @@ import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 
+export interface PlanWithUsage {
+  plan: ContentPlan;
+  usage: LLMUsage | null;
+}
+
 export class ContentPlanService {
   private provider: LLMProvider;
 
@@ -16,15 +21,15 @@ export class ContentPlanService {
     this.provider = provider || createLLMProvider();
   }
 
-  async parseDescription(description: string): Promise<ContentPlan> {
+  async parseDescription(description: string): Promise<PlanWithUsage> {
     // 1. Gather existing content context
     const context = await this.gatherContext();
 
-    // 2. Call LLM provider
-    const plan = await this.provider.parseDescription(description, context);
+    // 2. Call LLM provider — returns plan + usage directly, no shared state
+    const { plan: rawPlan, usage } = await this.provider.parseDescription(description, context);
 
     // 3. Validate against schema
-    const validated = ContentPlanSchema.parse(plan);
+    const validated = ContentPlanSchema.parse(rawPlan);
 
     // 4. Ensure description matches input
     validated.description = description;
@@ -37,10 +42,10 @@ export class ContentPlanService {
       console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
     });
 
-    return validated;
+    return { plan: validated, usage };
   }
 
-  async refinePlan(planId: string, feedback: string): Promise<ContentPlan> {
+  async refinePlan(planId: string, feedback: string): Promise<PlanWithUsage> {
     // 1. Load existing plan from DB
     const result = await queryOLTP<{ id: string; plan_json: any; description: string }>(
       'SELECT id, plan_json, description FROM content_plans WHERE id = $1',
@@ -60,16 +65,16 @@ export class ContentPlanService {
     // 2. Gather context
     const context = await this.gatherContext();
 
-    // 3. Call LLM to refine
-    const refinedPlan = await this.provider.refinePlan(existingPlan, feedback, context);
+    // 3. Call LLM to refine — returns plan + usage directly, no shared state
+    const { plan: rawRefined, usage } = await this.provider.refinePlan(existingPlan, feedback, context);
 
     // 4. Validate
-    const validated = ContentPlanSchema.parse(refinedPlan);
+    const validated = ContentPlanSchema.parse(rawRefined);
 
-    // 5. Re-inject asset needs for any new items
+    // 6. Re-inject asset needs for any new items
     injectAssetNeeds(validated.items);
 
-    // 6. Generate lore for NEW items only (skip existing to preserve user edits)
+    // 7. Generate lore for NEW items only (skip existing to preserve user edits)
     const existingItemIds = new Set(existingPlan.items.map(i => i.id));
     const newItems = validated.items.filter(i => !existingItemIds.has(i.id));
     if (newItems.length > 0) {
@@ -82,7 +87,7 @@ export class ContentPlanService {
       });
     }
 
-    // 7. Create a NEW plan row (versioning) instead of updating in place
+    // 8. Create a NEW plan row (versioning) instead of updating in place
     const feedbackEntry = {
       feedback,
       timestamp: new Date().toISOString(),
@@ -98,7 +103,7 @@ export class ContentPlanService {
 
     // Return the new plan with its new ID
     validated.id = newPlanResult.rows[0].id;
-    return validated;
+    return { plan: validated, usage };
   }
 
   /**
@@ -135,14 +140,6 @@ export class ContentPlanService {
 
   async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
     return this.provider.generateLore(item, context);
-  }
-
-  /**
-   * Return LLM usage from the most recent provider call, if the provider
-   * captures it (LiteLLMProvider does; MockProvider returns null).
-   */
-  getLastUsage(): LLMUsage | null {
-    return this.provider.getLastUsage?.() ?? null;
   }
 
   /**

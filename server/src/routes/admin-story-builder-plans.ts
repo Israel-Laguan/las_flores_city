@@ -25,7 +25,8 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
         return;
       }
     } else {
-      validatedPlan = await contentPlanService.parseDescription(description.trim());
+      const result = await contentPlanService.parseDescription(description.trim());
+      validatedPlan = result.plan;
     }
     validatedPlan.status = 'proposed';
 

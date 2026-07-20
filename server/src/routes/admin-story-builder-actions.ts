@@ -31,10 +31,8 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
       return;
     }
 
-    const plan = await contentPlanService.parseDescription(description.trim());
+    const { plan, usage } = await contentPlanService.parseDescription(description.trim());
 
-    // Best-effort capture of LLM usage from this call
-    const usage = contentPlanService.getLastUsage();
     const eventData: Record<string, unknown> = {
       descriptionLength: description.trim().length,
       itemCount: plan.items.length,
@@ -75,10 +73,8 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest
       return;
     }
 
-    const refinedPlan = await contentPlanService.refinePlan(id, feedback.trim());
+    const { plan: refinedPlan, usage: refinedUsage } = await contentPlanService.refinePlan(id, feedback.trim());
 
-    // Best-effort capture of LLM usage from this call
-    const refinedUsage = contentPlanService.getLastUsage();
     const refinedEventData: Record<string, unknown> = {
       feedbackLength: feedback.trim().length,
       itemCount: refinedPlan.items.length,

@@ -51,7 +51,7 @@ export function estimateCost(
   const promptTokens = usage.prompt_tokens ?? 0;
   const completionTokens = usage.completion_tokens ?? 0;
 
-  const inputCost = (promptTokens / 1000) * modelPrices.input;
-  const outputCost = (completionTokens / 1000) * modelPrices.output;
+  const inputCost = (promptTokens / 1000) * (modelPrices.input ?? 0);
+  const outputCost = (completionTokens / 1000) * (modelPrices.output ?? 0);
   return Math.round((inputCost + outputCost) * 100_000) / 100_000; // round to 5 decimal places
 }

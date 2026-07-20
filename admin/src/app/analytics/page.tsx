@@ -50,7 +50,7 @@ function SBStatCards({ data }: { data: StoryBuilderAnalytics }) {
     { value: data.avgItemsPerPlan, label: 'Avg Items/Plan' },
     { value: `${data.successRate}%`, label: 'Success Rate' },
     { value: data.totalTokens7d.toLocaleString(), label: 'Tokens (7d)' },
-    { value: `${data.estimatedCost7d.toFixed(4)}`, label: 'Est. LLM Cost (7d)' },
+    { value: `$${data.estimatedCost7d.toFixed(4)}`, label: 'Est. LLM Cost (7d)' },
   ];
   return (
     <div className={styles.statGrid}>
@@ -176,7 +176,7 @@ function MissionClaimTable({ stats }: { stats: MissionClaimStats[] }) {
             <td className={styles.td}>{item.claims}</td>
             <td className={styles.td}>{item.uniqueUsers}</td>
             <td className={styles.td}>{item.completionRate}%</td>
-            <td className={styles.td}>{new Date(item.lastClaim).toLocaleDateString()}</td>
+            <td className={styles.td}>{item.lastClaim ? new Date(item.lastClaim).toLocaleDateString() : '—'}</td>
           </tr>
         ))}
       </tbody>

@@ -47,7 +47,7 @@ export default function MissionsPage() {
       {stats && (
         <div className={styles.statBar}>
           <span className={styles.statItem}><strong>{stats.totalClaims}</strong> reward claims</span>
-          <span className={styles.statItem}><strong>{stats.totalPlayers}</strong> unique players</span>
+          <span className={styles.statItem}><strong>{stats.totalPlayers}</strong> total unique claims across missions</span>
         </div>
       )}
       <ContentListPage

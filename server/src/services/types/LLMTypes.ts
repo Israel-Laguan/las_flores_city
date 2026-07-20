@@ -28,10 +28,8 @@ export interface LLMUsage {
 }
 
 export interface LLMProvider {
-  parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan>;
-  refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<ContentPlan>;
+  parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
+  refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
   generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string>;
   generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }>;
-  /** Optional — returns usage from the most recent LLM call, if available. */
-  getLastUsage?(): LLMUsage | null;
 }

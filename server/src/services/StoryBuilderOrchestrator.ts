@@ -117,8 +117,8 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
       throw new PlanNotFoundError(planId);
     }
 
-    if (result.rows[0].status !== 'staged' && result.rows[0].status !== 'approved' && result.rows[0].status !== 'failed') {
-      throw new PlanStatusError(`Plan must be staged, approved, or failed before migration. Current status: ${result.rows[0].status}`);
+    if (result.rows[0].status !== 'staged' && result.rows[0].status !== 'approved') {
+      throw new PlanStatusError(`Plan must be staged or approved before migration. Current status: ${result.rows[0].status}. Use the retry flow to re-stage a failed plan first.`);
     }
 
     // Take ownership of the migrating transition here so callers do not set

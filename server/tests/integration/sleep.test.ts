@@ -90,10 +90,9 @@ afterAll(async () => {
   await pool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
-  // APARTMENT_ID / CAFE_ID are shared seed scenes (see content/scenes/* and
-  // seedFixtures.ts) and DISTRICT_ID may be referenced by scenes inserted by
-  // other suites — never delete shared fixtures. The throwaway district row is
-  // left behind; beforeAll's ON CONFLICT DO NOTHING makes it idempotent.
+  // Clean up test-specific fixtures: scenes and district created by this suite.
+  await pool.query('DELETE FROM scenes WHERE id IN ($1, $2)', [APARTMENT_ID, CAFE_ID]);
+  await pool.query('DELETE FROM districts WHERE id = $1', [DISTRICT_ID]);
   await analyticsPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);
   await pool.end();
   await analyticsPool.end();
