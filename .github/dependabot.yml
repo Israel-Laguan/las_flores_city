@@ -6,6 +6,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    ignore:
+      # TypeScript 7+ is not yet compatible with Next.js 16
+      - dependency-name: "typescript"
     groups:
       # Patch updates (bug fixes, security) — auto-merge candidate
       patches:
