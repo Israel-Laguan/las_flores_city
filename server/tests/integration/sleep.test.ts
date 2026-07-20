@@ -90,6 +90,7 @@ afterAll(async () => {
   await pool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  // Clean up test-specific fixtures: scenes and district created by this suite.
   await pool.query('DELETE FROM scenes WHERE id IN ($1, $2)', [APARTMENT_ID, CAFE_ID]);
   await pool.query('DELETE FROM districts WHERE id = $1', [DISTRICT_ID]);
   await analyticsPool.query('DELETE FROM player_events WHERE user_id = $1', [TEST_USER_ID]);

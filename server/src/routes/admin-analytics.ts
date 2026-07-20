@@ -1,6 +1,6 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { fetchAnalyticsQueries, fetchAdminAnalytics } from './utils/analyticsQueries.js';
+import { fetchAnalyticsQueries, fetchAdminAnalytics, fetchMissionClaimStats } from './utils/analyticsQueries.js';
 
 /**
  * Admin Analytics Router
@@ -63,6 +63,34 @@ adminAnalyticsRouter.get('/story-builder', async (_req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to fetch story builder analytics',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * GET /admin/analytics/missions
+ *
+ * Returns mission reward claim stats:
+ * - Claims per dialogue tree
+ * - Unique users per dialogue
+ * - Completion rate (claims / dialogue_started * 100)
+ * - Last claim timestamp
+ */
+adminAnalyticsRouter.get('/missions', async (_req, res) => {
+  try {
+    const data = await fetchMissionClaimStats();
+
+    res.json({
+      success: true,
+      data,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[admin-analytics] GET /analytics/missions error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch mission claim stats',
       timestamp: new Date().toISOString(),
     });
   }

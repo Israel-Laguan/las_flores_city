@@ -32,7 +32,7 @@ jest.mock('../../src/services/LLMService.js', () => ({
     parseDescription: jest.fn(),
     refinePlan: jest.fn(async (_plan: any, _feedback: string) => {
       // Return the plan unchanged — we only care about the DB round-trip
-      return _plan;
+      return { plan: _plan, usage: null };
     }),
     generateLore: jest.fn(async () => 'Lore text'),
   }),

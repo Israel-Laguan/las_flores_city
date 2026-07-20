@@ -19,6 +19,8 @@ interface StoryBuilderAnalytics {
   eventsByType: Array<{ event_type: string; count: number }>;
   avgItemsPerPlan: number;
   successRate: number;
+  totalTokens7d: number;
+  estimatedCost7d: number;
 }
 
 function StatCards({ data }: { data: AnalyticsData }) {
@@ -47,6 +49,8 @@ function SBStatCards({ data }: { data: StoryBuilderAnalytics }) {
     { value: data.plansCreated7d, label: 'Plans (7d)' },
     { value: data.avgItemsPerPlan, label: 'Avg Items/Plan' },
     { value: `${data.successRate}%`, label: 'Success Rate' },
+    { value: data.totalTokens7d.toLocaleString(), label: 'Tokens (7d)' },
+    { value: `$${data.estimatedCost7d.toFixed(4)}`, label: 'Est. LLM Cost (7d)' },
   ];
   return (
     <div className={styles.statGrid}>
@@ -151,9 +155,39 @@ function SBEventTable({ events }: { events: StoryBuilderAnalytics['eventsByType'
   );
 }
 
+interface MissionClaimStats {
+  dialogueId: string;
+  dialogueName: string;
+  claims: number;
+  uniqueUsers: number;
+  completionRate: number;
+  lastClaim: string;
+}
+
+function MissionClaimTable({ stats }: { stats: MissionClaimStats[] }) {
+  if (stats.length === 0) return <p className={styles.muted}>No mission reward claims recorded yet.</p>;
+  return (
+    <table className={styles.table}>
+      <thead><tr><th className={styles.th}>Dialogue</th><th className={styles.th}>Claims</th><th className={styles.th}>Unique Players</th><th className={styles.th}>Claim Rate</th><th className={styles.th}>Last Claim</th></tr></thead>
+      <tbody>
+        {stats.map(item => (
+          <tr key={item.dialogueId}>
+            <td className={styles.td}>{item.dialogueName}</td>
+            <td className={styles.td}>{item.claims}</td>
+            <td className={styles.td}>{item.uniqueUsers}</td>
+            <td className={styles.td}>{item.completionRate}%</td>
+            <td className={styles.td}>{item.lastClaim ? new Date(item.lastClaim).toLocaleDateString() : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [sbData, setSbData] = useState<StoryBuilderAnalytics | null>(null);
+  const [missionStats, setMissionStats] = useState<MissionClaimStats[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -161,9 +195,10 @@ export default function AnalyticsPage() {
     let cancelled = false;
     async function fetchAnalytics() {
       try {
-        const [summaryResult, sbResult] = await Promise.allSettled([
+        const [summaryResult, sbResult, missionResult] = await Promise.allSettled([
           adminFetch<{ success: boolean; data?: AnalyticsData; error?: string }>('/admin/analytics/summary'),
           adminFetch<{ success: boolean; data?: StoryBuilderAnalytics; error?: string }>('/admin/analytics/story-builder'),
+          adminFetch<{ success: boolean; data?: MissionClaimStats[]; error?: string }>('/admin/analytics/missions'),
         ]);
         if (cancelled) return;
         if (summaryResult.status === 'fulfilled' && summaryResult.value.success) {
@@ -175,6 +210,9 @@ export default function AnalyticsPage() {
         }
         if (sbResult.status === 'fulfilled' && sbResult.value.success) {
           setSbData(sbResult.value.data ?? null);
+        }
+        if (missionResult.status === 'fulfilled' && missionResult.value.success) {
+          setMissionStats(missionResult.value.data ?? null);
         }
       } catch {
         if (cancelled) return;
@@ -213,6 +251,15 @@ export default function AnalyticsPage() {
               <SBStatCards data={sbData} />
               <div className={styles.grid}>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Events by Type (7d)</h2><SBEventTable events={sbData.eventsByType} /></div>
+              </div>
+            </>
+          )}
+
+          {missionStats && (
+            <>
+              <h2 className={styles.sectionHeading}>Mission Reward Claims</h2>
+              <div className={styles.grid}>
+                <div className={styles.section}><MissionClaimTable stats={missionStats} /></div>
               </div>
             </>
           )}

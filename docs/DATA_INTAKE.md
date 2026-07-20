@@ -125,6 +125,16 @@ Describe  →  AI Proposal  →  Review/Refine  →  Approve  →  Stage  →  M
 - **Plan versioning**: refinements create new versions linked via `parent_plan_id`.
 - **Non-fatal lore generation**: AI lore generation is wrapped in `try/catch`; a failed lore call does not block plan creation.
 
+### File-driven ingestion (story bible → plan)
+
+The Story Builder path can be driven end-to-end from a long-form markdown brief (e.g. `~/Downloads/posts-compilation-complete.md`) instead of a typed description. The canonical harness is `server/scripts/latency_probe.ts`, which:
+
+1. Reads the input file (`INPUT_FILE` env, default `~/Downloads/posts-compilation-complete.md`).
+2. Derives the description from the file's first heading + a body brief.
+3. Logs in, `POST /admin/story-builder/plans` (LLM mode), `PUT .../plans/:id` to `verified`, then polls asset needs until terminal.
+
+The LLM pre-fill step calls `ContentPlanService.gatherContext()`, which must match the live schema: scenes are joined to `districts` (the old `scenes.district` column was dropped in migration `033`), and **locations are read from `content/locations/*/*.yaml` — there is no `locations` DB table**. A mismatch here throws before `stagePlan` writes any files, so the plan goes `failed` and no `content/` folders are produced. This was the root cause of an earlier "no output" ingestion run.
+
 ### Open questions
 
 See `docs/STORY_BUILDER_DESIGN.md` §6 for unresolved design questions and §4.4 for future extensions.

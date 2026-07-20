@@ -1,9 +1,18 @@
+import fs from 'node:fs/promises';
+import yaml from 'js-yaml';
+import { glob } from 'glob';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { createLLMProvider } from './LLMService.js';
-import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
+import { resolveContentDir } from './StoryBuilderLore.js';
+
+export interface PlanWithUsage {
+  plan: ContentPlan;
+  usage: LLMUsage | null;
+}
 
 export class ContentPlanService {
   private provider: LLMProvider;
@@ -12,15 +21,15 @@ export class ContentPlanService {
     this.provider = provider || createLLMProvider();
   }
 
-  async parseDescription(description: string): Promise<ContentPlan> {
+  async parseDescription(description: string): Promise<PlanWithUsage> {
     // 1. Gather existing content context
     const context = await this.gatherContext();
 
-    // 2. Call LLM provider
-    const plan = await this.provider.parseDescription(description, context);
+    // 2. Call LLM provider — returns plan + usage directly, no shared state
+    const { plan: rawPlan, usage } = await this.provider.parseDescription(description, context);
 
     // 3. Validate against schema
-    const validated = ContentPlanSchema.parse(plan);
+    const validated = ContentPlanSchema.parse(rawPlan);
 
     // 4. Ensure description matches input
     validated.description = description;
@@ -33,10 +42,10 @@ export class ContentPlanService {
       console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
     });
 
-    return validated;
+    return { plan: validated, usage };
   }
 
-  async refinePlan(planId: string, feedback: string): Promise<ContentPlan> {
+  async refinePlan(planId: string, feedback: string): Promise<PlanWithUsage> {
     // 1. Load existing plan from DB
     const result = await queryOLTP<{ id: string; plan_json: any; description: string }>(
       'SELECT id, plan_json, description FROM content_plans WHERE id = $1',
@@ -56,16 +65,16 @@ export class ContentPlanService {
     // 2. Gather context
     const context = await this.gatherContext();
 
-    // 3. Call LLM to refine
-    const refinedPlan = await this.provider.refinePlan(existingPlan, feedback, context);
+    // 3. Call LLM to refine — returns plan + usage directly, no shared state
+    const { plan: rawRefined, usage } = await this.provider.refinePlan(existingPlan, feedback, context);
 
     // 4. Validate
-    const validated = ContentPlanSchema.parse(refinedPlan);
+    const validated = ContentPlanSchema.parse(rawRefined);
 
-    // 5. Re-inject asset needs for any new items
+    // 6. Re-inject asset needs for any new items
     injectAssetNeeds(validated.items);
 
-    // 6. Generate lore for NEW items only (skip existing to preserve user edits)
+    // 7. Generate lore for NEW items only (skip existing to preserve user edits)
     const existingItemIds = new Set(existingPlan.items.map(i => i.id));
     const newItems = validated.items.filter(i => !existingItemIds.has(i.id));
     if (newItems.length > 0) {
@@ -78,7 +87,7 @@ export class ContentPlanService {
       });
     }
 
-    // 7. Create a NEW plan row (versioning) instead of updating in place
+    // 8. Create a NEW plan row (versioning) instead of updating in place
     const feedbackEntry = {
       feedback,
       timestamp: new Date().toISOString(),
@@ -94,7 +103,7 @@ export class ContentPlanService {
 
     // Return the new plan with its new ID
     validated.id = newPlanResult.rows[0].id;
-    return validated;
+    return { plan: validated, usage };
   }
 
   /**
@@ -133,15 +142,52 @@ export class ContentPlanService {
     return this.provider.generateLore(item, context);
   }
 
+  /**
+   * Load existing location context from the file-based content store.
+   * Locations are a YAML content type under content/locations/ — there is no
+   * `locations` DB table — so we read them directly from disk.
+   */
+  async gatherLocationContext(): Promise<ExistingLocation[]> {
+    const contentDir = resolveContentDir();
+    try {
+      const files = await glob(`${contentDir}/locations/*/*.yaml`, { absolute: true });
+      const out: ExistingLocation[] = [];
+      for (const file of files) {
+        try {
+          const raw = await fs.readFile(file, 'utf-8');
+          const data: any = yaml.load(raw);
+          if (!data || typeof data !== 'object' || !data.id) continue;
+          out.push({
+            id: String(data.id),
+            name: String(data.name ?? ''),
+            district: data.district ? String(data.district) : '',
+            daytime: data.daytime ? String(data.daytime) : undefined,
+            nightlife: data.nightlife ? String(data.nightlife) : undefined,
+            history: data.history ? String(data.history) : undefined,
+          });
+        } catch {
+          // skip files that fail to parse
+        }
+      }
+      return out;
+    } catch {
+      return [];
+    }
+  }
+
   async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string; role?: string; faction?: string; personality?: string; description?: string }>('SELECT id, name, metadata->>\'role\' as role, metadata->>\'faction\' as faction, metadata->>\'personality\' as personality, description FROM characters ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string; district: string; mood?: string; description?: string }>('SELECT id, name, district, mood, description FROM scenes ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string; district: string; mood?: string; description?: string }>(
+        `SELECT s.id, s.name, COALESCE(d.name, '') AS district, s.mood, s.description
+         FROM scenes s LEFT JOIN districts d ON d.id = s.district_id
+         ORDER BY s.name ASC`,
+      ),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_trees ORDER BY name ASC'),
       queryOLTP<{ id: string; title: string }>('SELECT id, title FROM mysteries ORDER BY title ASC'),
-      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM stories ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM overlays ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string; district: string; daytime?: string; nightlife?: string; history?: string }>('SELECT id, name, district, daytime, nightlife, history FROM locations ORDER BY name ASC'),
+      queryOLTP<{ id: string; title: string }>('SELECT id, title FROM stories ORDER BY title ASC'),
+      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_overlays ORDER BY name ASC'),
+      this.gatherLocationContext(),
     ]);
 
     return {
@@ -151,7 +197,7 @@ export class ContentPlanService {
       missions: missions.rows,
       stories: stories.rows,
       overlays: overlays.rows,
-      locations: locations.rows,
+      locations,
     };
   }
 }

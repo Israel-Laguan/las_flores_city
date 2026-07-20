@@ -15,7 +15,7 @@ export function buildSystemPrompt(context: ExistingContentContext): string {
   const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
   const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
   const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
-  const existingStories = context.stories.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
+  const existingStories = context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)';
   const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
   const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
 
@@ -87,7 +87,7 @@ export function buildRefinementPrompt(existingPlan: ContentPlan, feedback: strin
   const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
   const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
   const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
-  const existingStories = context.stories.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
+  const existingStories = context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)';
   const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
   const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
 

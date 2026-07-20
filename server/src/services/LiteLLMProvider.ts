@@ -1,6 +1,7 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt } from './LLMPrompts.js';
+import { estimateCost } from './LLMCostEstimator.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
@@ -22,7 +23,21 @@ export class LiteLLMProvider implements LLMProvider {
     this.retries = opts?.retries ?? 2;
   }
 
-  private async callLLM(systemPrompt: string, userMessage: string): Promise<Record<string, unknown>> {
+  private extractUsage(data: any): LLMUsage | null {
+    const usage = data?.usage;
+    if (usage && typeof usage.total_tokens === 'number') {
+      return {
+        promptTokens: usage.prompt_tokens ?? 0,
+        completionTokens: usage.completion_tokens ?? 0,
+        totalTokens: usage.total_tokens,
+        model: this.model,
+        estimatedCostUsd: estimateCost(this.model, usage),
+      };
+    }
+    return null;
+  }
+
+  private async callLLM(systemPrompt: string, userMessage: string): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
     let lastError: Error | null = null;
     for (let attempt = 0; attempt <= this.retries; attempt++) {
       try {
@@ -62,6 +77,7 @@ export class LiteLLMProvider implements LLMProvider {
         }
 
         const data = await response.json();
+        const usage = this.extractUsage(data);
         const content = data.choices?.[0]?.message?.content;
         if (!content) {
           throw new Error('LiteLLM response did not contain any message content.');
@@ -69,7 +85,7 @@ export class LiteLLMProvider implements LLMProvider {
         const fenceMatch = content.match(/```(?:json|JSON)\s*\n?([\s\S]*?)```/);
         const cleanedContent = fenceMatch ? fenceMatch[1].trim() : content.trim();
         try {
-          return JSON.parse(cleanedContent);
+          return { result: JSON.parse(cleanedContent), usage };
         } catch (e) {
           throw new Error(`LiteLLM returned invalid JSON: ${(e as Error).message}. Content preview: ${cleanedContent.substring(0, 200)}`);
         }
@@ -142,17 +158,17 @@ export class LiteLLMProvider implements LLMProvider {
     throw lastError!;
   }
 
-  async parseDescription(description: string, context: ExistingContentContext): Promise<ContentPlan> {
+  async parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
     const systemPrompt = buildSystemPrompt(context);
-    const planJson = await this.callLLM(systemPrompt, description);
-    return ContentPlanSchema.parse(planJson);
+    const { result, usage } = await this.callLLM(systemPrompt, description);
+    return { plan: ContentPlanSchema.parse(result), usage };
   }
 
-  async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<ContentPlan> {
+  async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
     const systemPrompt = buildRefinementPrompt(existingPlan, feedback, context);
-    const planJson = await this.callLLM(systemPrompt, feedback);
-    planJson.id = existingPlan.id;
-    return ContentPlanSchema.parse(planJson);
+    const { result, usage } = await this.callLLM(systemPrompt, feedback);
+    result.id = existingPlan.id;
+    return { plan: ContentPlanSchema.parse(result), usage };
   }
 
   async generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string> {
@@ -161,10 +177,10 @@ export class LiteLLMProvider implements LLMProvider {
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {
-    const response = await this.callLLM('You are a content writer for Las Flores 2077.', prompt);
+    const { result } = await this.callLLM('You are a content writer for Las Flores 2077.', prompt);
     return {
-      fields: (response.fields as Record<string, string>) || {},
-      lore_refs: Array.isArray(response.lore_refs) ? response.lore_refs : [],
+      fields: (result.fields as Record<string, string>) || {},
+      lore_refs: Array.isArray(result.lore_refs) ? result.lore_refs : [],
     };
   }
 

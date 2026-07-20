@@ -9,6 +9,7 @@ The development stack consists of:
 - **PostgreSQL OLAP** (port 5433) - Analytics database  
 - **Redis** (port 6379) - Session and cache store
 - **MinIO** (ports 9000-9001) - Object storage for assets
+- **LiteLLM** (port 4000) - LLM proxy for story builder (runs on host)
 - **Server** (port 3000) - Backend API
 - **Admin UI** (port 3002 via `start-stack.sh`) - Next.js admin interface
 
@@ -93,6 +94,60 @@ Access the services:
 - **Admin UI:** http://localhost:3002 (mapped from container port 3000)
 
 > Both runtimes expose the admin panel on host port 3002. The admin container internally listens on 3000; the host mapping is `3002:3000` in both `docker-compose.yml` and `start-stack.sh`.
+
+## LiteLLM Setup (Required for Story Builder)
+
+The Story Builder pipeline requires an LLM to generate content plans, lore, and prompts. LiteLLM acts as a unified proxy to LLM providers (Poolside, OpenRouter, etc.).
+
+### Why litellm runs on the host (not in a container)
+
+The litellm container can't reach external APIs (poolside.ai, openrouter.ai) because:
+- Podman rootless without `aardvark-dns` means containers have no DNS resolution
+- External HTTPS endpoints fail with `Temporary failure in name resolution`
+
+**Solution**: Run litellm on the host where DNS works, and have the server container reach it via `host.containers.internal`.
+
+### Start litellm
+
+```bash
+# Start litellm on the host (background)
+litellm --config ~/litellm_config/config.yaml --port 4000 &
+
+# Verify it's running
+sleep 3 && curl -s http://localhost:4000/health
+```
+
+The config file (`~/litellm_config/config.yaml`) should contain:
+```yaml
+model_list:
+  - model_name: poolside/laguna-m.1
+    litellm_params:
+      model: openai/poolside/laguna-m.1
+      api_key: <your-poolside-api-key>
+      api_base: https://inference.poolside.ai/v1
+  - model_name: openrouter/owl-alpha
+    litellm_params:
+      model: openrouter/owl-alpha
+      api_key: <your-openrouter-api-key>
+      api_base: https://openrouter.ai/api/v1
+      modify_params: True
+
+general_settings:
+  master_key: local-key
+```
+
+### Server environment for LLM
+
+When starting the server container, add these env vars:
+
+```bash
+-e LITELLM_BASE_URL=http://host.containers.internal:4000 \
+-e LITELLM_API_KEY=local-key \
+-e LLM_PROVIDER=litellm \
+-e LLM_MODEL=poolside/laguna-m.1 \
+```
+
+**Critical**: `LLM_PROVIDER` defaults to `mock` if not set. The mock provider returns minimal deterministic plans (1 item, 0 asset needs) — useful for testing the pipeline mechanically but won't generate real content.
 
 ## Manual Setup (For Debugging)
 
@@ -276,6 +331,18 @@ curl http://localhost:3000/assets/list-all
 ### 3. Container name resolution fails (aardvark-dns not found)
 **Fix:** Added `--add-host` flags to map container names to their IP addresses. The `get_container_ip()` function in `start-stack.sh` uses `jq` to extract IPs from podman inspect output.
 
+### 4. `podman-compose` doesn't expand `${VAR:-default}` syntax
+**Symptom:** Containers receive literal `${POSTGRES_PASSWORD:-las_flores_dev_password}` instead of `las_flores_dev_password`, causing password authentication failures.
+**Fix:** Use `podman run` with explicit `-e POSTGRES_PASSWORD=las_flores_dev_password` instead of relying on `podman-compose` for env var expansion. Or export the variables before running `podman-compose`.
+
+### 5. litellm container can't reach external APIs
+**Symptom:** `socket.gaierror: [Errno -3] Temporary failure in name resolution` when litellm tries to call poolside.ai or openrouter.ai.
+**Fix:** Run litellm on the host (not in a container). The server container reaches it via `--add-host=host.containers.internal:host-gateway`. See the LiteLLM Setup section above.
+
+### 6. Server LLM calls return minimal plans (1 item, 0 needs)
+**Symptom:** `LLM_PROVIDER` defaults to `mock`, which returns deterministic minimal plans.
+**Fix:** Set `LLM_PROVIDER=litellm` in the server container environment.
+
 ### 4. Assets not visible in admin UI
 **Fix:** Added `PROMPT_ROOT="/app/content"` environment variable to the server container. Without this, the server looks for prompts in `/app/server/content` (wrong path).
 
@@ -377,7 +444,11 @@ las_flores_city/
 | MINIO_ACCESS_KEY | minioadmin | MinIO access key |
 | MINIO_SECRET_KEY | minioadmin | MinIO secret key |
 | JWT_SECRET | your-jwt-secret... | JWT signing secret |
-| PROMPT_ROOT | /app/content | Path to content root (prompt files scanned under `content/characters/*`, `content/locations/*`, etc.) |
+| PROMPT_ROOT | /app/content | Path to content root |
+| LLM_PROVIDER | `mock` or `litellm` | LLM backend (default: `mock`) |
+| LITELLM_BASE_URL | http://host.containers.internal:4000 | LiteLLM gateway URL |
+| LITELLM_API_KEY | local-key | LiteLLM auth key |
+| LLM_MODEL | poolside/laguna-m.1 | Model name for plan generation |
 
 ### Admin Environment Variables
 

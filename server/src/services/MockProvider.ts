@@ -1,5 +1,5 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 
 const MOCK_IDS = {
   planId: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
@@ -9,7 +9,7 @@ const MOCK_IDS = {
 };
 
 export class MockProvider implements LLMProvider {
-  async parseDescription(description: string, _context: ExistingContentContext): Promise<ContentPlan> {
+  async parseDescription(description: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
     const lower = description.toLowerCase();
     const items: ContentPlan['items'] = [];
 
@@ -72,21 +72,27 @@ export class MockProvider implements LLMProvider {
       dependsOn: [],
     });
 
-    return ContentPlanSchema.parse({
-      id: MOCK_IDS.planId,
-      description: `Mock plan for: ${description}`,
-      items,
-      links: [],
-      status: 'draft',
-    });
+    return {
+      plan: ContentPlanSchema.parse({
+        id: MOCK_IDS.planId,
+        description: `Mock plan for: ${description}`,
+        items,
+        links: [],
+        status: 'draft',
+      }),
+      usage: null,
+    };
   }
 
-  async refinePlan(existingPlan: ContentPlan, feedback: string, _context: ExistingContentContext): Promise<ContentPlan> {
-    return ContentPlanSchema.parse({
-      ...existingPlan,
-      description: `${existingPlan.description} [Refined based on: ${feedback}]`,
-      status: 'proposed',
-    });
+  async refinePlan(existingPlan: ContentPlan, feedback: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
+    return {
+      plan: ContentPlanSchema.parse({
+        ...existingPlan,
+        description: `${existingPlan.description} [Refined based on: ${feedback}]`,
+        status: 'proposed',
+      }),
+      usage: null,
+    };
   }
 
   async generateLore(item: ContentPlanItem, _context: ExistingContentContext): Promise<string> {

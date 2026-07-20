@@ -31,9 +31,21 @@ adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
       return;
     }
 
-    const plan = await contentPlanService.parseDescription(description.trim());
+    const { plan, usage } = await contentPlanService.parseDescription(description.trim());
 
-    emitAdminEvent('plan_created', { descriptionLength: description.trim().length, itemCount: plan.items.length }, plan.id, req.userId);
+    const eventData: Record<string, unknown> = {
+      descriptionLength: description.trim().length,
+      itemCount: plan.items.length,
+    };
+    if (usage) {
+      eventData.totalTokens = usage.totalTokens;
+      eventData.promptTokens = usage.promptTokens;
+      eventData.completionTokens = usage.completionTokens;
+      eventData.model = usage.model;
+      eventData.estimatedCostUsd = usage.estimatedCostUsd;
+    }
+
+    emitAdminEvent('plan_created', eventData, plan.id, req.userId);
 
     res.json({
       success: true,
@@ -61,9 +73,21 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest
       return;
     }
 
-    const refinedPlan = await contentPlanService.refinePlan(id, feedback.trim());
+    const { plan: refinedPlan, usage: refinedUsage } = await contentPlanService.refinePlan(id, feedback.trim());
 
-    emitAdminEvent('plan_refined', { feedbackLength: feedback.trim().length, itemCount: refinedPlan.items.length }, refinedPlan.id, req.userId);
+    const refinedEventData: Record<string, unknown> = {
+      feedbackLength: feedback.trim().length,
+      itemCount: refinedPlan.items.length,
+    };
+    if (refinedUsage) {
+      refinedEventData.totalTokens = refinedUsage.totalTokens;
+      refinedEventData.promptTokens = refinedUsage.promptTokens;
+      refinedEventData.completionTokens = refinedUsage.completionTokens;
+      refinedEventData.model = refinedUsage.model;
+      refinedEventData.estimatedCostUsd = refinedUsage.estimatedCostUsd;
+    }
+
+    emitAdminEvent('plan_refined', refinedEventData, refinedPlan.id, req.userId);
 
     res.json({
       success: true,

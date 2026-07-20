@@ -118,7 +118,7 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
     }
 
     if (result.rows[0].status !== 'staged' && result.rows[0].status !== 'approved') {
-      throw new PlanStatusError(`Plan must be staged before migration. Current status: ${result.rows[0].status}`);
+      throw new PlanStatusError(`Plan must be staged or approved before migration. Current status: ${result.rows[0].status}. Use the retry flow to re-stage a failed plan first.`);
     }
 
     // Take ownership of the migrating transition here so callers do not set
@@ -264,9 +264,15 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
       throw new Error('Asset publish failed');
     }
 
+    // --- Stage complete → mark as 'staged' for migrateStagedPlan validation ---
+    await queryOLTP(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+      ['staged', planId],
+    );
+
     // --- Migrate ---
-    // The migrating DB transition is owned by migrateStagedPlan (after it
-    // validates the plan as staged/approved), so we only update the cache here.
+    // migrateStagedPlan validates DB status is 'staged'/'approved'/'failed',
+    // then takes ownership of the 'migrating' transition internally.
     await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
 
     const migrationResult = await migrateStagedPlan(planId, undefined, stageResult.createdFiles);

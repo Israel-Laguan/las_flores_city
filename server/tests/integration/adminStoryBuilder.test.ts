@@ -56,25 +56,29 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 jest.mock('../../src/services/ContentPlanService.js', () => ({
   contentPlanService: {
     parseDescription: jest.fn(async (description) => ({
-      id: MOCK_PLAN_ID,
-      description,
-      status: 'draft',
-      items: [
-        {
-          id: MOCK_ITEM_ID,
-          type: 'character',
-          action: 'create',
-          name: 'Diego',
-          slug: 'diego',
-          fields: { title: 'Bartender', description: 'A friendly bartender' },
-          assetNeeds: [],
-          dependsOn: [],
-        },
-      ],
-      links: [],
+      plan: {
+        id: MOCK_PLAN_ID,
+        description,
+        status: 'draft',
+        items: [
+          {
+            id: MOCK_ITEM_ID,
+            type: 'character',
+            action: 'create',
+            name: 'Diego',
+            slug: 'diego',
+            fields: { title: 'Bartender', description: 'A friendly bartender' },
+            assetNeeds: [],
+            dependsOn: [],
+          },
+        ],
+        links: [],
+      },
+      usage: null,
     })),
     gatherContext: jest.fn(async () => ({})),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
+    getLastUsage: jest.fn(() => null),
     provider: {
       generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     },

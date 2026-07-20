@@ -3,6 +3,7 @@ import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
+import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 
 export const adminStoryBuilderPlansRouter = express.Router();
 
@@ -17,6 +18,7 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
     }
 
     let validatedPlan: ContentPlan;
+    let usage = null;
     if (plan) {
       try {
         validatedPlan = ContentPlanSchema.parse(plan);
@@ -25,7 +27,9 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
         return;
       }
     } else {
-      validatedPlan = await contentPlanService.parseDescription(description.trim());
+      const result = await contentPlanService.parseDescription(description.trim());
+      validatedPlan = result.plan;
+      usage = result.usage;
     }
     validatedPlan.status = 'proposed';
 
@@ -37,6 +41,20 @@ adminStoryBuilderPlansRouter.post('/plans', async (req: AuthRequest, res) => {
     );
 
     const planId = result.rows[0].id;
+
+    const eventData: Record<string, unknown> = {
+      descriptionLength: description.trim().length,
+      itemCount: validatedPlan.items.length,
+    };
+    if (usage) {
+      eventData.totalTokens = usage.totalTokens;
+      eventData.promptTokens = usage.promptTokens;
+      eventData.completionTokens = usage.completionTokens;
+      eventData.model = usage.model;
+      eventData.estimatedCostUsd = usage.estimatedCostUsd;
+    }
+    emitAdminEvent('plan_created', eventData, planId, req.userId);
+
     res.json({
       success: true,
       data: { planId, plan: validatedPlan },

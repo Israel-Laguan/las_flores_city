@@ -7,7 +7,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/glo
 import pg from 'pg';
 import http from 'http';
 import express from 'express';
-import request, { SuperTest, Test } from 'supertest';
+import request, { Test } from 'supertest';
 import { healthRouter } from '../../src/routes/health.js';
 import { locationRouter } from '../../src/routes/location.js';
 import { adminContentAssetRouter } from '../../src/routes/admin-content-asset.js';
@@ -27,13 +27,22 @@ let pool: pg.Pool;
 // Test app + explicit server (reused across requests so it can be closed cleanly)
 let app: express.Application;
 let server: http.Server;
-let agent: SuperTest<Test>;
+// Resolved base URL of the listening server, used by supertest as a plain
+// client so the server fully owns its socket lifecycle (no lazy listen(0)
+// handle left dangling for detectOpenHandles to flag).
+let baseUrl: string;
+// Accepted sockets, tracked so we can forcibly destroy them on teardown to
+// guarantee no TCPWRAP handle lingers for detectOpenHandles.
+const serverSockets = new Set<import('net').Socket>();
 
-// Wraps supertest requests against the shared server instance.
-const api = (method: 'get' | 'post' | 'put' | 'delete' | 'patch', url: string) =>
-  agent[method](url);
+// Wraps supertest requests against the shared server instance using its base
+// URL. Connecting as a plain HTTP client (rather than passing the server
+// object) means supertest does not spin up its own lazy listen(0) socket, so
+// the only listening handle is ours and we close it cleanly in afterAll.
+const api = (method: 'get' | 'post' | 'put' | 'delete' | 'patch', url: string): Test =>
+  request(baseUrl)[method](url).set('Connection', 'close');
 
-beforeAll(() => {
+beforeAll(async () => {
   pool = new Pool({
     connectionString:
       process.env.DATABASE_URL ||
@@ -66,10 +75,18 @@ beforeAll(() => {
   });
   app.use('/admin/content', adminContentAssetRouter);
 
-  // Create a single HTTP server for supertest to reuse and close cleanly.
+  // Create a single HTTP server and bind it to an ephemeral port ourselves so
+  // we fully control its lifecycle. supertest then connects as a plain client
+  // to baseUrl, so the only listening socket is ours and we close it cleanly.
   server = http.createServer(app);
-  // Use supertest.agent() to reuse the same connection pool and close properly.
-  agent = request.agent(server);
+  server.on('connection', (socket) => {
+    serverSockets.add(socket);
+    socket.once('close', () => serverSockets.delete(socket));
+  });
+  await new Promise<void>((resolve) => server.listen(0, resolve));
+  const addr = server.address();
+  const port = typeof addr === 'object' && addr ? addr.port : 0;
+  baseUrl = `http://127.0.0.1:${port}`;
 });
 
 beforeEach(async () => {
@@ -91,7 +108,17 @@ beforeEach(async () => {
 
 afterAll(async () => {
   if (server) {
+    for (const socket of serverSockets) {
+      socket.destroy();
+    }
+    serverSockets.clear();
+    if (typeof (server as any).closeAllConnections === 'function') {
+      (server as any).closeAllConnections();
+    }
     await new Promise<void>((resolve) => server.close(() => resolve()));
+    // Allow the event loop to fully release the listening socket handle
+    // before Jest's open-handle detector runs.
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
   try {
     await pool.query('DELETE FROM scene_characters WHERE scene_id = $1', [TEST_SCENE_ID]);

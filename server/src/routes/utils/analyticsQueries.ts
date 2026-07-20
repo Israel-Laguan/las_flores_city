@@ -89,10 +89,12 @@ export interface AdminAnalyticsData {
   eventsByType: Array<{ event_type: string; count: number }>;
   avgItemsPerPlan: number;
   successRate: number;
+  totalTokens7d: number;
+  estimatedCost7d: number;
 }
 
 export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
-  const [plans24h, plans7d, eventsByType, avgItemsPerPlan, terminalEvents] = await Promise.all([
+  const [plans24h, plans7d, eventsByType, avgItemsPerPlan, terminalEvents, tokensCost] = await Promise.all([
     queryOLTP<{ count: string }>(
       `SELECT count(*)::int AS count FROM admin_events
        WHERE event_type = 'plan_created' AND created_at > NOW() - INTERVAL '24 hours'`
@@ -119,11 +121,22 @@ export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
        WHERE event_type IN ('plan_verified', 'plan_failed')
          AND created_at > NOW() - INTERVAL '7 days'`
     ),
+    queryOLTP<{ totalTokens: string; estimatedCost: string }>(
+      `SELECT
+         coalesce(sum((event_data->>'totalTokens')::numeric), 0)::numeric(12,0) AS totalTokens,
+         coalesce(sum((event_data->>'estimatedCostUsd')::numeric), 0)::numeric(12,6) AS estimatedCost
+       FROM admin_events
+       WHERE event_type IN ('plan_created', 'plan_refined')
+         AND created_at > NOW() - INTERVAL '7 days'`
+    ),
   ]);
 
   const verified = Number(terminalEvents?.rows[0]?.verified ?? 0);
   const failed = Number(terminalEvents?.rows[0]?.failed ?? 0);
   const total = verified + failed;
+  const tokensRow = tokensCost?.rows[0];
+  const totalTokens7d = Number(tokensRow?.totalTokens ?? 0);
+  const estimatedCost7d = Number(tokensRow?.estimatedCost ?? 0);
 
   return {
     plansCreated24h: Number(plans24h?.rows[0]?.count ?? 0),
@@ -131,5 +144,79 @@ export async function fetchAdminAnalytics(): Promise<AdminAnalyticsData> {
     eventsByType: (eventsByType?.rows ?? []).map(r => ({ event_type: r.event_type, count: Number(r.count) })),
     avgItemsPerPlan: Number(avgItemsPerPlan?.rows[0]?.avg_items ?? 0),
     successRate: total > 0 ? Math.round((verified / total) * 100) : 0,
+    totalTokens7d,
+    estimatedCost7d,
   };
 }
+
+
+// ---------------------------------------------------------------------------
+// Mission reward claim stats (M15 follow-up)
+// ---------------------------------------------------------------------------
+
+export interface MissionClaimStatsRow {
+  dialogueId: string;
+  dialogueName: string;
+  claims: number;
+  uniqueUsers: number;
+  completionRate: number;
+  lastClaim: string;
+}
+
+export async function fetchMissionClaimStats(): Promise<MissionClaimStatsRow[]> {
+  // OLTP: claims grouped by dialogue_id
+  const claimsResult = await queryOLTP<{
+    dialogue_id: string;
+    dialogue_name: string;
+    claims: string;
+    unique_users: string;
+    last_claim: string;
+  }>(
+    `SELECT
+       mrc.dialogue_id,
+       COALESCE(dt.name, 'Unknown') AS dialogue_name,
+       count(*)::int AS claims,
+       count(DISTINCT mrc.user_id)::int AS unique_users,
+       max(mrc.claimed_at) AS last_claim
+     FROM mission_reward_claims mrc
+     LEFT JOIN dialogue_trees dt ON dt.id = mrc.dialogue_id
+     GROUP BY mrc.dialogue_id, dt.name
+     ORDER BY claims DESC`,
+  );
+
+  // OLAP: dialogue_started starters for completion rate denominator
+  const startersResult = await queryOLAP<{ dialogue_tree_id: string; starters: string }>(
+    `SELECT
+       event_data ->> 'dialogue_tree_id' AS dialogue_tree_id,
+       count(DISTINCT user_id)::int AS starters
+     FROM player_events
+     WHERE event_type = 'dialogue_started'
+       AND event_data ->> 'dialogue_tree_id' IS NOT NULL
+     GROUP BY event_data ->> 'dialogue_tree_id'`,
+  );
+
+  // Merge in Node
+  const startersMap = new Map<string, number>();
+  for (const row of startersResult?.rows ?? []) {
+    startersMap.set(row.dialogue_tree_id, Number(row.starters));
+  }
+
+  return (claimsResult?.rows ?? []).map((row) => {
+    const starters = startersMap.get(row.dialogue_id) ?? 0;
+    const claims = Number(row.claims);
+    const uniqueUsers = Number(row.unique_users);
+    const completionRate = starters > 0
+      ? Math.round((uniqueUsers / starters) * 100)
+      : 0;
+
+    return {
+      dialogueId: row.dialogue_id,
+      dialogueName: row.dialogue_name,
+      claims,
+      uniqueUsers,
+      completionRate,
+      lastClaim: row.last_claim,
+    };
+  });
+}
+

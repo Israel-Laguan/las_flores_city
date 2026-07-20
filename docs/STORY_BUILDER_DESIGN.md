@@ -1093,7 +1093,7 @@ All questions are resolved. Multi-language support was decided against.
 
 7. **How do we handle multi-language content?** Resolved: not pursuing. Spanish and English content are handled by separate YAML files under `content/`.
 
-8. **What analytics should we track?** Resolved: `admin_events` OLAP table (`053_admin_events.sql`) with event emission for plan_created, plan_refined, plan_staged, plan_migrated, plan_verified, plan_failed, plus user/settings events. Remaining gap: LLM token/cost per plan (see `docs/NEXT_STEPS.md`).
+8. **What analytics should we track?** Resolved: `admin_events` table (lives in OLTP, analytics-scoped) with event emission for plan_created, plan_refined, plan_staged, plan_migrated, plan_verified, plan_failed, plus user/settings events. Retention: indefinite, with future migration to OLAP date-partitioned tables (see `docs/NEXT_STEPS.md` "Decisions"). Remaining gap: LLM token/cost per plan (see `docs/NEXT_STEPS.md`).
 
 9. **Should `story_beat` be enforced strictly (404 if missing) or allow fallback dialogues?** Resolved: scenes gate by `metadata.required_story_beat` (`server/src/routes/location.ts:244-271`); dialogues mirror that pattern via `metadata.required_story_beat` on dialogue trees (`server/src/routes/dialogue-helpers.ts:resolveDialogueTree`, `isStoryBeatAllowed`). If the tree is gated and the player doesn't satisfy the gate, `resolveDialogueTree` returns `null` and `handleStartDialogue` 404s with the existing "No dialogue available" error.
 
