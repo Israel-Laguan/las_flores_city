@@ -50,7 +50,7 @@ dialogueRouter.post('/:id/choose', authMiddleware, async (req: AuthRequest, res)
 dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
-    const chunkKey = req.params.chunkId;
+    const chunkKey = req.params.chunkId as string;
 
     let resolvedChunk;
     try {

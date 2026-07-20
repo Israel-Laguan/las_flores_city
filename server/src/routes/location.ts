@@ -109,7 +109,7 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
 locationRouter.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     // Try user-specific cache first (includes relationship data)
     const userCacheKey = userLocationCacheKey(userId, id);
@@ -154,7 +154,7 @@ locationRouter.get('/:id', authMiddleware, async (req: AuthRequest, res) => {
 locationRouter.post('/:id/invalidate', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     // Invalidate both global and user caches
     await deleteCache(sceneCacheKey(id));
@@ -178,7 +178,7 @@ locationRouter.post('/:id/invalidate', authMiddleware, async (req: AuthRequest, 
 // GET /location/:id/dialogues - Get available dialogues at location (requires auth)
 locationRouter.get('/:id/dialogues', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
 
     // Get location's available dialogues
     const locationResult = await queryOLTP(

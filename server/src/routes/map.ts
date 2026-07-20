@@ -68,7 +68,7 @@ mapRouter.get('/', authMiddleware, async (req: AuthRequest, res) => {
 // GET /map/:districtSlug — Full tile grid for a district
 mapRouter.get('/:districtSlug', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { districtSlug } = req.params;
+    const { districtSlug } = req.params as Record<string, string>;
 
     const cacheKey = districtMapCacheKey(districtSlug);
     const cached = await getCache(cacheKey);
@@ -152,8 +152,8 @@ mapRouter.get('/:districtSlug', authMiddleware, async (req: AuthRequest, res) =>
 // POST /map/:districtSlug/invalidate — Invalidate map cache (requires auth)
 mapRouter.post('/:districtSlug/invalidate', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { districtSlug } = req.params;
-    
+    const { districtSlug } = req.params as Record<string, string>;
+
     // Invalidate overview cache
     await deleteCache(mapOverviewCacheKey());
 

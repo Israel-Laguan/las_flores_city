@@ -44,7 +44,7 @@ async function loadPlan(id: string): Promise<{ ok: true; plan: ContentPlan } | {
 // POST /plans/:id/generate-drafts — generate local PNGs, no MinIO, no DB row
 adminStoryBuilderDraftsRouter.post('/plans/:id/generate-drafts', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const count = Math.max(1, Math.min(Number(req.query.count) || DEFAULT_DRAFT_COUNT, MAX_DRAFT_COUNT));
 
     const statusRes = await queryOLTP<{ status: string }>(
@@ -98,7 +98,7 @@ adminStoryBuilderDraftsRouter.post('/plans/:id/generate-drafts', async (req: Aut
 // GET /plans/:id/drafts — list local drafts for every item in the plan
 adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const loaded = await loadPlan(id);
     if (!loaded.ok) {
       res.status(loaded.status).json({ success: false, error: loaded.error, timestamp: new Date().toISOString() });
@@ -154,7 +154,7 @@ adminStoryBuilderDraftsRouter.get('/plans/:id/drafts', async (req, res) => {
 // POST /plans/:id/choose-draft — select a draft as canonical for an asset need
 adminStoryBuilderDraftsRouter.post('/plans/:id/choose-draft', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const { itemId, promptType, filename } = req.body;
 
     if (!itemId || typeof itemId !== 'string') {
@@ -210,7 +210,7 @@ adminStoryBuilderDraftsRouter.post('/plans/:id/choose-draft', async (req: AuthRe
 // GET /plans/:id/drafts/preview — serve a local draft image for the admin thumbnail grid
 adminStoryBuilderDraftsRouter.get('/plans/:id/drafts/preview', async (req: AuthRequest, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const itemId = req.query.itemId;
     const filename = req.query.filename;
 
