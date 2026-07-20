@@ -12,7 +12,6 @@
     "noEmit": true,
     "jsx": "preserve",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "baseUrl": ".",
     "paths": {
       "@las-flores/ui": ["../ui/src"]
     }
