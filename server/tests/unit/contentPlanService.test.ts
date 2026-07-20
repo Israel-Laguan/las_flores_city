@@ -53,8 +53,7 @@ describe('ContentPlanService', () => {
       .mockResolvedValueOnce({ rows: [{ id: 'dial-1', name: 'Existing Dialogue' }] } as any)
       .mockResolvedValueOnce({ rows: [{ id: 'mis-1', title: 'Existing Mission' }] } as any)
       .mockResolvedValueOnce({ rows: [{ id: 'sto-1', name: 'Existing Story' }] } as any)
-      .mockResolvedValueOnce({ rows: [{ id: 'ovl-1', name: 'Existing Overlay' }] } as any)
-      .mockResolvedValueOnce({ rows: [{ id: 'loc-1', name: 'Existing Location', district: 'downtown' }] } as any);
+      .mockResolvedValueOnce({ rows: [{ id: 'ovl-1', name: 'Existing Overlay' }] } as any);
 
     const parseSpy = jest.fn().mockResolvedValue({
       id: '12345678-1234-1234-1234-123456789012',
@@ -77,5 +76,31 @@ describe('ContentPlanService', () => {
         ]),
       })
     );
+  });
+
+  it('gatherContext joins districts and does not query a locations table', async () => {
+    // 6 DB queries (characters, scenes, dialogues, missions, stories, overlays).
+    // Locations are sourced from content YAML, not a DB table.
+    mockQueryOLTP
+      .mockResolvedValueOnce({ rows: [{ id: 'char-1', name: 'C' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'scene-1', name: 'S', district: 'Downtown', mood: 'tense' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'd-1', name: 'Dialogue' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'm-1', title: 'Mission' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'st-1', name: 'Story' }] } as any)
+      .mockResolvedValueOnce({ rows: [{ id: 'o-1', name: 'Overlay' }] } as any);
+
+    const service = new ContentPlanService(mockProvider);
+    const ctx = await service.gatherContext();
+
+    // scenes query must use the district JOIN (string district), not scenes.district column
+    expect(ctx.scenes).toHaveLength(1);
+    expect(ctx.scenes[0]).toMatchObject({ id: 'scene-1', name: 'S', district: 'Downtown', mood: 'tense' });
+    // locations come from content YAML and must always be an array (never a DB row array)
+    expect(Array.isArray(ctx.locations)).toBe(true);
+    // Exactly 6 DB queries were issued; no query referenced a non-existent `locations` table.
+    expect(mockQueryOLTP).toHaveBeenCalledTimes(6);
+    for (const call of mockQueryOLTP.mock.calls) {
+      expect(String(call[0]).toLowerCase()).not.toContain('from locations');
+    }
   });
 });

@@ -1,9 +1,13 @@
+import fs from 'node:fs/promises';
+import yaml from 'js-yaml';
+import { glob } from 'glob';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { createLLMProvider } from './LLMService.js';
-import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
+import { resolveContentDir } from './StoryBuilderLore.js';
 
 export class ContentPlanService {
   private provider: LLMProvider;
@@ -141,15 +145,52 @@ export class ContentPlanService {
     return this.provider.getLastUsage?.() ?? null;
   }
 
+  /**
+   * Load existing location context from the file-based content store.
+   * Locations are a YAML content type under content/locations/ — there is no
+   * `locations` DB table — so we read them directly from disk.
+   */
+  async gatherLocationContext(): Promise<ExistingLocation[]> {
+    const contentDir = resolveContentDir();
+    try {
+      const files = await glob(`${contentDir}/locations/*/*.yaml`, { absolute: true });
+      const out: ExistingLocation[] = [];
+      for (const file of files) {
+        try {
+          const raw = await fs.readFile(file, 'utf-8');
+          const data: any = yaml.load(raw);
+          if (!data || typeof data !== 'object' || !data.id) continue;
+          out.push({
+            id: String(data.id),
+            name: String(data.name ?? ''),
+            district: data.district ? String(data.district) : '',
+            daytime: data.daytime ? String(data.daytime) : undefined,
+            nightlife: data.nightlife ? String(data.nightlife) : undefined,
+            history: data.history ? String(data.history) : undefined,
+          });
+        } catch {
+          // skip files that fail to parse
+        }
+      }
+      return out;
+    } catch {
+      return [];
+    }
+  }
+
   async gatherContext(): Promise<ExistingContentContext> {
     const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string; role?: string; faction?: string; personality?: string; description?: string }>('SELECT id, name, metadata->>\'role\' as role, metadata->>\'faction\' as faction, metadata->>\'personality\' as personality, description FROM characters ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string; district: string; mood?: string; description?: string }>('SELECT id, name, district, mood, description FROM scenes ORDER BY name ASC'),
+      queryOLTP<{ id: string; name: string; district: string; mood?: string; description?: string }>(
+        `SELECT s.id, s.name, COALESCE(d.name, '') AS district, s.mood, s.description
+         FROM scenes s LEFT JOIN districts d ON d.id = s.district_id
+         ORDER BY s.name ASC`,
+      ),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_trees ORDER BY name ASC'),
       queryOLTP<{ id: string; title: string }>('SELECT id, title FROM mysteries ORDER BY title ASC'),
-      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM stories ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM overlays ORDER BY name ASC'),
-      queryOLTP<{ id: string; name: string; district: string; daytime?: string; nightlife?: string; history?: string }>('SELECT id, name, district, daytime, nightlife, history FROM locations ORDER BY name ASC'),
+      queryOLTP<{ id: string; title: string }>('SELECT id, title FROM stories ORDER BY title ASC'),
+      queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_overlays ORDER BY name ASC'),
+      this.gatherLocationContext(),
     ]);
 
     return {
@@ -159,7 +200,7 @@ export class ContentPlanService {
       missions: missions.rows,
       stories: stories.rows,
       overlays: overlays.rows,
-      locations: locations.rows,
+      locations,
     };
   }
 }

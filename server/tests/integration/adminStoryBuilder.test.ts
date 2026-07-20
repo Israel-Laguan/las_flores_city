@@ -75,6 +75,7 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
     })),
     gatherContext: jest.fn(async () => ({})),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
+    getLastUsage: jest.fn(() => null),
     provider: {
       generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     },

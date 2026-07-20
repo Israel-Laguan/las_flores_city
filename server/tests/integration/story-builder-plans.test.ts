@@ -56,6 +56,7 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       description: `${MOCK_PLAN.description} [Refined: ${feedback}]`,
       status: 'proposed',
     })),
+    getLastUsage: jest.fn(() => null),
   },
 }));
 
