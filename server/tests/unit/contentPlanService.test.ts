@@ -12,22 +12,25 @@ const mockQueryOLTP = jest.mocked(queryOLTP);
 const mockProvider: LLMProvider = {
   async parseDescription(description: string, _context: ExistingContentContext) {
     return {
-      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
-      description,
-      items: [
-        {
-          id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
-          type: 'character' as const,
-          action: 'create' as const,
-          name: 'Diego',
-          slug: 'diego',
-          fields: { description: 'A bartender at the Plaza' },
-          assetNeeds: [{ promptType: 'portrait', targetField: 'portrait_urls[0].url', status: 'pending' as const }],
-          dependsOn: [],
-        },
-      ],
-      links: [],
-      status: 'draft' as const,
+      plan: {
+        id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+        description,
+        items: [
+          {
+            id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
+            type: 'character' as const,
+            action: 'create' as const,
+            name: 'Diego',
+            slug: 'diego',
+            fields: { description: 'A bartender at the Plaza' },
+            assetNeeds: [{ promptType: 'portrait', targetField: 'portrait_urls[0].url', status: 'pending' as const }],
+            dependsOn: [],
+          },
+        ],
+        links: [],
+        status: 'draft' as const,
+      },
+      usage: null,
     };
   },
 };
@@ -40,7 +43,7 @@ describe('ContentPlanService', () => {
   it('should parse a description and return a valid ContentPlan', async () => {
     mockQueryOLTP.mockResolvedValue({ rows: [] } as any);
     const service = new ContentPlanService(mockProvider);
-    const plan = await service.parseDescription('Add a bartender named Diego', 'user-123');
+    const { plan } = await service.parseDescription('Add a bartender named Diego');
     expect(plan.items).toHaveLength(1);
     expect(plan.items[0].name).toBe('Diego');
     expect(plan.description).toBe('Add a bartender named Diego');
@@ -56,17 +59,20 @@ describe('ContentPlanService', () => {
       .mockResolvedValueOnce({ rows: [{ id: 'ovl-1', name: 'Existing Overlay' }] } as any);
 
     const parseSpy = jest.fn().mockResolvedValue({
-      id: '12345678-1234-1234-1234-123456789012',
-      description: 'test',
-      items: [],
-      links: [],
-      status: 'draft',
+      plan: {
+        id: '12345678-1234-1234-1234-123456789012',
+        description: 'test',
+        items: [],
+        links: [],
+        status: 'draft',
+      },
+      usage: null,
     });
 
     const provider: LLMProvider = { parseDescription: parseSpy };
     const service = new ContentPlanService(provider);
 
-    await service.parseDescription('Test description', 'user-123');
+    await service.parseDescription('Test description');
 
     expect(parseSpy).toHaveBeenCalledWith(
       'Test description',
