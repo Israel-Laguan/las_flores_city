@@ -80,6 +80,91 @@ Return a single JSON object matching this schema:
 5. Output ONLY the JSON object, no markdown fences or explanation.`;
 }
 
+// ── Outline Prompt Builder (skeleton with TODO: prose) ─────────────────────
+
+export function buildOutlinePrompt(context: ExistingContentContext): string {
+  const depth = process.env.PLAN_OUTLINE_CONTEXT_DEPTH || 'names';
+
+  const formatItem = (c: { id: string; name: string; role?: string; faction?: string; title?: string }) => {
+    if (depth === 'names') return c.name;
+    return `${c.name} (id: ${c.id})${c.role ? `, role: ${c.role}` : ''}${c.faction ? `, faction: ${c.faction}` : ''}`;
+  };
+
+  const existingChars = context.characters.map(formatItem).join(', ') || '(none)';
+  const existingScenes = context.scenes.map(s => depth === 'names' ? s.name : `${s.name} (id: ${s.id}, district: ${s.district})`).join(', ') || '(none)';
+  const existingDialogues = context.dialogues.map(d => d.name).join(', ') || '(none)';
+  const existingMissions = context.missions.map(m => m.title).join(', ') || '(none)';
+  const existingStories = context.stories.map(s => s.title).join(', ') || '(none)';
+  const existingOverlays = context.overlays.map(o => o.name).join(', ') || '(none)';
+  const existingLocations = context.locations.map(l => l.name).join(', ') || '(none)';
+
+  return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
+
+## Task
+Given a user's natural-language description, produce a ContentPlan skeleton with identifiers only. Write TODO: placeholders for all prose fields — the async fill step will write the actual content.
+
+## Available content types
+${CONTENT_TYPES.join(', ')}
+
+## Required fields per content type
+- character: name, description (TODO:), title (TODO:), metadata.type, metadata.role, metadata.faction, metadata.personality (TODO:), lore_path, narrative_path
+- scene: name, description (TODO:), district, mood (TODO:), lore_path
+- dialogue: name, description (TODO:), lore_path
+- overlay: name, description (TODO:), target_tree_id, modifications, lore_path
+- mission: title, description (TODO:), lore_path
+- story: name, description (TODO:), beats
+- shop_item: name, description (TODO:), price, currency
+- location: name, description (TODO:), district, tags, history (TODO:), daytime (TODO:), nightlife (TODO:), lore_path
+- map_tile: district_id, x, y, terrain_type
+- story_beat: id, description
+- gig: name, description (TODO:), reward (TODO:)
+- vault: name, description (TODO:), item_type
+
+## Existing content (avoid duplicates)
+- Characters: ${existingChars}
+- Scenes: ${existingScenes}
+- Dialogues: ${existingDialogues}
+- Missions: ${existingMissions}
+- Stories: ${existingStories}
+- Overlays: ${existingOverlays}
+- Locations: ${existingLocations}
+
+## Output format
+Return a single JSON object matching this schema:
+{
+  "id": "<UUID>",
+  "description": "<summary of the plan>",
+  "items": [
+    {
+      "id": "<UUID>",
+      "type": "<content type>",
+      "action": "create" | "update",
+      "name": "<item name>",
+      "description": "<brief description of the content item>",
+      "slug": "<lowercase_snake_case_slug>",
+      "fields": {
+        // ALL prose fields must use "TODO: " prefix, e.g.:
+        "description": "TODO: Add description",
+        "metadata.personality": "TODO: Add personality",
+        "mood": "TODO: Add mood"
+      },
+      "assetNeeds": [],
+      "dependsOn": []
+    }
+  ],
+  "links": [],
+  "status": "draft"
+}
+
+## Rules
+1. Pre-generate a UUID v4 for the plan id and every item id.
+2. Slugs must be lowercase alphanumeric with underscores only (e.g. "diego_the_bartender").
+3. ALL prose fields (description, personality, mood, history, daytime, nightlife, etc.) MUST be prefixed with "TODO: ".
+4. If the description references an existing item, use action "update" and include the existing id in fields.
+5. Keep identifiers short — just names/roles for the fill step to expand.
+6. Output ONLY the JSON object, no markdown fences or explanation.`;
+}
+
 // ── Refinement Prompt Builder ───────────────────────────────────────────
 
 export function buildRefinementPrompt(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): string {

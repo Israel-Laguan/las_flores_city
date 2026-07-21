@@ -232,59 +232,54 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
   const updatedFiles: string[] = [];
   const fileSnapshots = new Map<string, string | null>();
   const contentDir = resolveContentDir();
+  const isScaffolded = !!plan._meta?.scaffolded_at;
 
   try {
-    // Hard error: a `create` action must not clobber an existing file. Catch
-    // this before writing anything so the failure is explicit rather than a
-    // silent overwrite.
-    const conflicts = await checkCreateConflicts(plan, contentDir);
-    if (conflicts.length > 0) {
-      return {
-        success: false,
-        createdFiles,
-        updatedFiles,
-        validationErrors: conflicts,
-        warnings: [],
-        itemResults: [],
-        error: `Refusing to stage: ${conflicts.length} 'create' item(s) target an existing file`,
-      };
+    if (!isScaffolded) {
+      const conflicts = await checkCreateConflicts(plan, contentDir);
+      if (conflicts.length > 0) {
+        return {
+          success: false,
+          createdFiles,
+          updatedFiles,
+          validationErrors: conflicts,
+          warnings: [],
+          itemResults: [],
+          error: `Refusing to stage: ${conflicts.length} 'create' item(s) target an existing file`,
+        };
+      }
     }
 
     const { sorted: sortedItems } = topologicalSort(plan.items);
 
-    // Fill free-text fields via LLM (non-fatal on error)
-    if (options?.provider && options?.context) {
-      for (const item of sortedItems) {
-        try {
-          const fillResult = await fillFields(item, options.context, options.provider);
-          if (Object.keys(fillResult.fields).length > 0) {
-            mergeFilledFields(item, fillResult.fields);
-          }
-          if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
-            const existing = item.lore_refs ?? [];
-            item.lore_refs = Array.from(new Set([...existing, ...fillResult.lore_refs]));
-          }
-        } catch (err: any) {
-          console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);
-        }
+    await fillPlanItemsWithLLM(sortedItems, options);
+
+    let itemResults: Array<{ itemId: string; name: string; status: 'success' | 'failed' | 'skipped'; error?: string; filePath?: string }> = [];
+
+    if (!isScaffolded) {
+      const writeResults = await writePlanItems(sortedItems, contentDir, createdFiles, updatedFiles, fileSnapshots);
+      itemResults = writeResults;
+
+      const failedItems = itemResults.filter(r => r.status === 'failed');
+      if (failedItems.length > 0) {
+        await rollbackFiles(fileSnapshots);
+        return {
+          success: false,
+          createdFiles,
+          updatedFiles,
+          validationErrors: [],
+          warnings: [],
+          itemResults,
+          error: `${failedItems.length} item(s) failed`,
+        };
       }
-    }
-
-    const itemResults = await writePlanItems(sortedItems, contentDir, createdFiles, updatedFiles, fileSnapshots);
-
-    // If any items failed, roll back and report
-    const failedItems = itemResults.filter(r => r.status === 'failed');
-    if (failedItems.length > 0) {
-      await rollbackFiles(fileSnapshots);
-      return {
-        success: false,
-        createdFiles,
-        updatedFiles,
-        validationErrors: [],
-        warnings: [],
-        itemResults,
-        error: `${failedItems.length} item(s) failed`,
-      };
+    } else {
+      itemResults = sortedItems.map(item => ({
+        itemId: item.id,
+        name: item.name,
+        status: 'skipped' as const,
+        filePath: undefined,
+      }));
     }
 
     for (const link of plan.links) {
@@ -294,7 +289,9 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
     const validationResult = await validateContent(contentDir);
 
     if (!validationResult.valid) {
-      await rollbackFiles(fileSnapshots);
+      if (!isScaffolded) {
+        await rollbackFiles(fileSnapshots);
+      }
       return {
         success: false,
         createdFiles,
@@ -318,7 +315,9 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
       itemResults,
     };
   } catch (error: any) {
-    await rollbackFiles(fileSnapshots);
+    if (!isScaffolded) {
+      await rollbackFiles(fileSnapshots);
+    }
     return {
       success: false,
       createdFiles,
@@ -327,5 +326,31 @@ export async function stagePlan(plan: ContentPlan, options?: StagePlanOptions): 
       warnings: [],
       error: error.message,
     };
+  }
+}
+
+/**
+ * Fill free-text fields via LLM for each plan item (non-fatal on error).
+ * Shared by stagePlan for both scaffolded and non-scaffolded plans.
+ */
+async function fillPlanItemsWithLLM(
+  sortedItems: ContentPlanItem[],
+  options?: StagePlanOptions,
+): Promise<void> {
+  if (!options?.provider || !options?.context) return;
+
+  for (const item of sortedItems) {
+    try {
+      const fillResult = await fillFields(item, options.context, options.provider);
+      if (Object.keys(fillResult.fields).length > 0) {
+        mergeFilledFields(item, fillResult.fields);
+      }
+      if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
+        const existing = item.lore_refs ?? [];
+        item.lore_refs = Array.from(new Set([...existing, ...fillResult.lore_refs]));
+      }
+    } catch (err: any) {
+      console.warn(`[story-builder] LLM fill failed for ${item.name}: ${err.message}`);
+    }
   }
 }

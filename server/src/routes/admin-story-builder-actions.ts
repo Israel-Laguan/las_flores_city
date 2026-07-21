@@ -2,7 +2,6 @@ import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
-import { contentPlanService } from '../services/ContentPlanService.js';
 import {
   previewPlan,
   migrateStagedPlan,
@@ -14,53 +13,13 @@ import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
+import { contentPlanService } from '../services/ContentPlanService.js';
+import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
-// POST /admin/story-builder/plan — Generate a plan from description
-adminStoryBuilderActionsRouter.post('/plan', async (req: AuthRequest, res) => {
-  try {
-    const { description } = req.body;
-
-    if (!description || typeof description !== 'string' || description.trim().length === 0) {
-      res.status(400).json({
-        success: false,
-        error: 'description is required and must be a non-empty string',
-        timestamp: new Date().toISOString(),
-      });
-      return;
-    }
-
-    const { plan, usage } = await contentPlanService.parseDescription(description.trim());
-
-    const eventData: Record<string, unknown> = {
-      descriptionLength: description.trim().length,
-      itemCount: plan.items.length,
-    };
-    if (usage) {
-      eventData.totalTokens = usage.totalTokens;
-      eventData.promptTokens = usage.promptTokens;
-      eventData.completionTokens = usage.completionTokens;
-      eventData.model = usage.model;
-      eventData.estimatedCostUsd = usage.estimatedCostUsd;
-    }
-
-    emitAdminEvent('plan_created', eventData, plan.id, req.userId);
-
-    res.json({
-      success: true,
-      data: { plan },
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    console.error('[story-builder] POST /plan error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to generate plan',
-      timestamp: new Date().toISOString(),
-    });
-  }
-});
+// Generate endpoint (outline → scaffold → async fill) lives in admin-story-builder-generate.ts
+adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
 
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
 adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {

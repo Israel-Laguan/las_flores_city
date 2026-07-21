@@ -113,3 +113,29 @@ describe('stagePlan create-over-existing hard error', () => {
     expect(result.createdFiles).toContain('characters/diego/char_diego.yaml');
   });
 });
+
+describe('stagePlan on scaffolded plan (files already on disk)', () => {
+  beforeEach(() => {
+    (globalThis as any).__contentDir = contentDir;
+  });
+
+  it('skips checkCreateConflicts and writePlanItems when _meta.scaffolded_at is set', async () => {
+    const fullPath = path.join(contentDir, 'characters', 'diego', 'char_diego.yaml');
+    await fs.mkdir(path.dirname(fullPath), { recursive: true });
+    await fs.writeFile(fullPath, 'name: Diego\n', 'utf-8');
+
+    const plan: any = {
+      id: '00000000-0000-0000-0000-000000000001',
+      description: 'plan',
+      items: [makeItem()],
+      links: [],
+      status: 'proposed',
+      _meta: { scaffolded_at: new Date().toISOString() },
+    };
+
+    const result = await stagePlan(plan);
+    expect(result.success).toBe(true);
+    expect(result.itemResults.every((r: any) => r.status === 'skipped')).toBe(true);
+    expect(result.createdFiles).toHaveLength(0);
+  });
+});
