@@ -18,7 +18,8 @@
     "test:integration": "npx --no-install jest tests/integration --runInBand --detectOpenHandles --forceExit",
     "test:load": "k6 run tests/load/breakthrough_rush.js",
     "seed:load-users": "tsx scripts/seed_load_test_users.ts",
-    "seed:dev": "tsx src/database/seedAdmin.ts"
+    "seed:dev": "tsx src/database/seedAdmin.ts",
+    "fill-todos": "tsx src/scripts/fillExistingTodos.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "~3.1091.0",

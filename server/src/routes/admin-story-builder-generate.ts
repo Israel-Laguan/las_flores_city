@@ -7,6 +7,8 @@ import { checkCreateConflicts } from '../services/StoryBuilderPlanOps.js';
 import { resolveContentDir } from '../services/StoryBuilderLore.js';
 import { generateYaml, resolveFilePath } from '../services/ContentSkeletonGenerator.js';
 import { runPlanFill, getPlanFillJobStatus } from '../services/PlanGenerationJob.js';
+import { fillAllTodoPlaceholders, scanForTodoPlaceholders } from '../services/FillPlaceholders.js';
+import { createLLMProvider } from '../services/LLMService.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -199,5 +201,74 @@ adminStoryBuilderGenerateRouter.get('/plans/:id/generation-status', async (req: 
   } catch (error: any) {
     console.error('[story-builder] GET /plans/:id/generation-status error:', error);
     res.status(500).json({ success: false, error: error.message || 'Failed to fetch generation status', timestamp: new Date().toISOString() });
+  }
+});
+
+// POST /admin/story-builder/fill-placeholders — Scan content dir and fill existing TODO placeholders
+// This is a resume functionality for content that was scaffolded but not filled
+adminStoryBuilderGenerateRouter.post('/fill-placeholders', async (req: AuthRequest, res) => {
+  try {
+    const contentDir = resolveContentDir();
+    
+    // First, scan to see what needs to be filled
+    const scan = await scanForTodoPlaceholders(contentDir);
+    
+    if (scan.filesWithTodo === 0) {
+      res.json({
+        success: true,
+        data: { filled: 0, skipped: 0, errors: [], message: 'No TODO placeholders found' },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Create provider and context
+    const provider = createLLMProvider();
+    const context = await contentPlanService.gatherContext();
+    
+    // Fill all placeholders
+    const result = await fillAllTodoPlaceholders(provider, context, contentDir);
+    
+    emitAdminEvent('placeholders_filled', {
+      totalFiles: scan.totalFiles,
+      filesWithTodo: scan.filesWithTodo,
+      filled: result.filled,
+      skipped: result.skipped,
+      errorCount: result.errors.length,
+    }, undefined, req.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /fill-placeholders error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fill placeholders',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// GET /admin/story-builder/scan-placeholders — Scan for TODO placeholders without filling
+adminStoryBuilderGenerateRouter.get('/scan-placeholders', async (req: AuthRequest, res) => {
+  try {
+    const contentDir = resolveContentDir();
+    const scan = await scanForTodoPlaceholders(contentDir);
+    
+    res.json({
+      success: true,
+      data: scan,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] GET /scan-placeholders error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to scan for placeholders',
+      timestamp: new Date().toISOString(),
+    });
   }
 });
