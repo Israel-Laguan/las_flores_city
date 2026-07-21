@@ -5,7 +5,12 @@ import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
 
 export function resolveContentDir(): string {
-  return path.resolve(process.cwd(), 'content');
+  // Use __dirname to avoid issues with process.cwd() changing based on tsx watch location
+  // This file is at server/src/services/StoryBuilderLore.ts
+  // From /app/server/src/services/: 
+  //   ../../../content = /app/server/src/../../../content = /app/content
+  const result = path.resolve(__dirname, '../../../content');
+  return result;
 }
 
 /**

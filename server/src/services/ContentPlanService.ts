@@ -80,15 +80,9 @@ export class ContentPlanService {
     const context = await this.gatherContext();
 
     const { plan: rawPlan, usage } = await this.provider.generateOutline(description, context);
+    rawPlan.description = description;
 
-    const validated = ContentPlanSchema.parse(rawPlan);
-
-    validated.description = description;
-    validated._meta = {
-      ...validated._meta,
-      outline_source: 'llm' as const,
-      outline_repaired: false,
-    };
+    const validated = this.validateAndRepairOutline(rawPlan, description);
 
     injectAssetNeeds(validated.items);
 
