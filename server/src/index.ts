@@ -42,6 +42,7 @@ import { runAllMigrations } from './database/migrate.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
+import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 
 dotenv.config();
 
@@ -185,6 +186,9 @@ async function initializeServer() {
 
   // Startup recovery: reset orphaned in-flight solidify jobs to failed.
   await resetOrphanedSolidifyJobs();
+
+  // Startup recovery: reset orphaned fill jobs to failed.
+  await resetOrphanedFillJobs();
 
   // Start server
   app.listen(PORT, () => {

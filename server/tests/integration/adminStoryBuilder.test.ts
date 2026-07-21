@@ -32,11 +32,22 @@ const MOCK_PLAN = {
 jest.mock('node:fs/promises', () => ({
   mkdir: jest.fn(async () => undefined),
   writeFile: jest.fn(async () => undefined),
+  access: jest.fn(async () => { throw { code: 'ENOENT' }; }),
+  readFile: jest.fn(async () => ''),
 }));
 
 jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn(async () => ({ rows: [] })),
+  queryOLTP: jest.fn(async (text) => {
+    if (text.includes('INSERT INTO content_plans')) {
+      return { rows: [{ id: MOCK_PLAN_ID }], rowCount: 1 };
+    }
+    if (text.includes('SELECT status FROM content_plans')) {
+      return { rows: [{ status: 'draft' }], rowCount: 1 };
+    }
+    return { rows: [] };
+  }),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
+  withOLTPTransaction: jest.fn(async (cb) => cb({ query: jest.fn() })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({
@@ -51,6 +62,11 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
     _req.userId = MOCK_USER_ID;
     next();
   },
+}));
+
+jest.mock('../../src/services/StoryBuilderLore.js', () => ({
+  resolveContentDir: jest.fn(() => '/tmp/content'),
+  generateLoreStubs: jest.fn(async () => []),
 }));
 
 jest.mock('../../src/services/ContentPlanService.js', () => ({
@@ -76,6 +92,29 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       },
       usage: null,
     })),
+    generateOutline: jest.fn(async (description) => ({
+      plan: {
+        id: MOCK_PLAN_ID,
+        description,
+        status: 'draft',
+        items: [
+          {
+            id: MOCK_ITEM_ID,
+            type: 'character',
+            action: 'create',
+            name: 'Diego',
+            slug: 'diego',
+            fields: { title: 'TODO: Add title', description: 'TODO: Add description', metadata: { type: 'human', role: 'npc', faction: 'TODO: Add faction', personality: 'TODO: Add personality' } },
+            assetNeeds: [],
+            dependsOn: [],
+          },
+        ],
+        links: [],
+        _meta: { outline_source: 'llm', outline_repaired: false },
+      },
+      usage: null,
+    })),
+    validateAndRepairOutline: jest.fn((plan, _description) => plan),
     gatherContext: jest.fn(async () => ({})),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     getLastUsage: jest.fn(() => null),
@@ -95,10 +134,16 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
   })),
 }));
 
+jest.mock('../../src/services/PlanGenerationJob.js', () => ({
+  runPlanFill: jest.fn(async () => {}),
+  getPlanFillJobStatus: jest.fn(async () => null),
+}));
+
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
 import { queryOLTP } from '../../src/database/connection.js';
+import { resolveContentDir } from '../../src/services/StoryBuilderLore.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 
@@ -138,8 +183,11 @@ describe('POST /admin/story-builder/plan', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+    expect(res.body.data.planId).toBeDefined();
+    expect(res.body.data.plan).toBeDefined();
     expect(res.body.data.plan.items.length).toBeGreaterThan(0);
     expect(res.body.data.plan.items[0].name).toBe('Diego');
+    expect(res.body.data.status).toBe('generating');
   });
 });
 

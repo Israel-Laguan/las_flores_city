@@ -31,12 +31,21 @@ export const ContentLinkSchema = z.object({
   action: z.enum(['add', 'set']),
 });
 
+const ContentPlanMetaSchema = z.object({
+  outline_source: z.enum(['llm', 'fallback']).optional(),
+  outline_repaired: z.boolean().optional(),
+  scaffolded_at: z.string().optional(),
+  jobPrefix: z.string().optional(),
+  fill_attempts: z.record(z.string(), z.number()).optional(),
+}).optional();
+
 export const ContentPlanSchema = z.object({
   id: z.string().uuid(),
   description: z.string(),
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),
   status: z.enum(['draft', 'proposed', 'approved', 'staged', 'migrated', 'verified', 'failed', 'pending', 'staging', 'migrating', 'verifying']).default('draft'),
+  _meta: ContentPlanMetaSchema,
 }).superRefine((plan, ctx) => {
   // 1. Reject duplicate (type, slug). Duplicate items silently overwrite files
   // on write, so they must be caught before staging.

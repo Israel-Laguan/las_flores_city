@@ -110,3 +110,86 @@ describe('ContentPlanService', () => {
     }
   });
 });
+
+describe('generateOutline + validateAndRepairOutline', () => {
+  it('generateOutline returns a skeleton with TODO prose and _meta provenance', async () => {
+    mockQueryOLTP.mockResolvedValue({ rows: [] } as any);
+
+    const outlineProvider: LLMProvider = {
+      async generateOutline(description: string, _context: ExistingContentContext) {
+        return {
+          plan: {
+            id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+            description,
+            items: [
+              {
+                id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
+                type: 'character' as const,
+                action: 'create' as const,
+                name: 'Diego',
+                slug: 'diego',
+                fields: { description: 'TODO: Add description', title: 'TODO: Add title', metadata: { personality: 'TODO: Add personality' } },
+                assetNeeds: [],
+                dependsOn: [],
+              },
+            ],
+            links: [],
+            status: 'draft' as const,
+          },
+          usage: null,
+        };
+      },
+      async parseDescription() { return { plan: {} as any, usage: null }; },
+      async refinePlan() { return { plan: {} as any, usage: null }; },
+      async generateLore() { return ''; },
+      async generateFill() { return { fields: {} }; },
+    };
+
+    const service = new ContentPlanService(outlineProvider);
+    const { plan } = await service.generateOutline('Add a bartender named Diego');
+    expect(plan.items[0].fields.description).toContain('TODO');
+    expect(plan._meta?.outline_source).toBe('llm');
+    expect(plan._meta?.outline_repaired).toBe(false);
+  });
+
+  it('validateAndRepairOutline replaces bad UUIDs and slugifies invalid slugs', async () => {
+    mockQueryOLTP.mockResolvedValue({ rows: [] } as any);
+    const service = new ContentPlanService(mockProvider);
+
+    const plan: any = {
+      id: 'not-a-uuid',
+      description: 'plan',
+      items: [
+        {
+          id: 'also-bad',
+          type: 'character',
+          action: 'create',
+          name: 'Graciela Ramírez',
+          slug: 'Graciela Ramírez!',
+          fields: {},
+          assetNeeds: [],
+          dependsOn: [],
+        },
+      ],
+      links: [],
+      status: 'draft',
+    };
+
+    const repaired = service.validateAndRepairOutline(plan, 'plan');
+    expect(repaired.id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(repaired.items[0].id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(repaired.items[0].slug).toBe('graciela_ram_rez');
+    expect(repaired._meta?.outline_repaired).toBe(true);
+  });
+
+  it('validateAndRepairOutline produces a fallback skeleton when no items', async () => {
+    mockQueryOLTP.mockResolvedValue({ rows: [] } as any);
+    const service = new ContentPlanService(mockProvider);
+
+    const plan: any = { id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d', description: 'plan', items: [], links: [], status: 'draft' };
+    const repaired = service.validateAndRepairOutline(plan, 'Graciela is a hero in South America');
+    expect(repaired.items.length).toBeGreaterThan(0);
+    expect(repaired._meta?.outline_source).toBe('fallback');
+    expect(repaired.items.every((i: any) => i.fields.description?.startsWith('TODO'))).toBe(true);
+  });
+});

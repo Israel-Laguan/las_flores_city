@@ -1,26 +1,35 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
-import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
   retries?: number;
+  model?: string;
 }
 
 export class LiteLLMProvider implements LLMProvider {
   private baseUrl: string;
   private apiKey: string;
   private model: string;
-  private timeoutMs: number;
+  private defaultTimeoutMs: number;
   private retries: number;
 
   constructor(opts?: LiteLLMProviderOptions) {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
     this.apiKey = process.env.LITELLM_API_KEY || '';
-    this.model = process.env.LLM_MODEL || 'poolside/laguna-m.1';
-    this.timeoutMs = opts?.timeoutMs ?? 60_000;
+    this.model = opts?.model || process.env.LLM_MODEL || 'poolside/laguna-m.1';
+    this.defaultTimeoutMs = opts?.timeoutMs ?? parseInt(process.env.LLM_TIMEOUT_MS || '60000', 10);
     this.retries = opts?.retries ?? 2;
+  }
+
+  withTimeout(timeoutMs: number): LiteLLMProvider {
+    return new LiteLLMProvider({
+      timeoutMs,
+      retries: this.retries,
+      model: this.model,
+    });
   }
 
   private extractUsage(data: any): LLMUsage | null {
@@ -37,14 +46,19 @@ export class LiteLLMProvider implements LLMProvider {
     return null;
   }
 
-  private async callLLM(systemPrompt: string, userMessage: string): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
+  private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
+    const timeoutMs = customTimeoutMs ?? this.defaultTimeoutMs;
+    const maxTimeoutMs = parseInt(process.env.LLM_MAX_TIMEOUT_MS || '300000', 10);
     let lastError: Error | null = null;
+    let attemptTimeoutMs = timeoutMs;
+
     for (let attempt = 0; attempt <= this.retries; attempt++) {
       try {
         if (attempt > 0) {
           const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10_000);
-          console.log(`[LiteLLM] Retry ${attempt}/${this.retries} after ${delay}ms`);
+          console.log(`[LiteLLM] Retry ${attempt}/${this.retries} after ${delay}ms, timeout: ${attemptTimeoutMs}ms`);
           await new Promise(r => setTimeout(r, delay));
+          attemptTimeoutMs = Math.min(attemptTimeoutMs * 2, maxTimeoutMs);
         }
         const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
           method: 'POST',
@@ -61,7 +75,7 @@ export class LiteLLMProvider implements LLMProvider {
             temperature: 0.7,
             response_format: { type: 'json_object' },
           }),
-          signal: AbortSignal.timeout(this.timeoutMs),
+          signal: AbortSignal.timeout(attemptTimeoutMs),
         });
 
         if (!response.ok) {
@@ -123,7 +137,7 @@ export class LiteLLMProvider implements LLMProvider {
             ],
             temperature: 0.7,
           }),
-          signal: AbortSignal.timeout(this.timeoutMs),
+          signal: AbortSignal.timeout(this.defaultTimeoutMs),
         });
 
         if (!response.ok) {
@@ -161,6 +175,17 @@ export class LiteLLMProvider implements LLMProvider {
   async parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
     const systemPrompt = buildSystemPrompt(context);
     const { result, usage } = await this.callLLM(systemPrompt, description);
+    return { plan: ContentPlanSchema.parse(result), usage };
+  }
+
+  async generateOutline(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
+    const outlineModel = process.env.LLM_OUTLINE_MODEL || this.model;
+    const provider = outlineModel !== this.model
+      ? new LiteLLMProvider({ model: outlineModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
+      : this;
+
+    const systemPrompt = buildOutlinePrompt(context);
+    const { result, usage } = await provider.callLLM(systemPrompt, description);
     return { plan: ContentPlanSchema.parse(result), usage };
   }
 
