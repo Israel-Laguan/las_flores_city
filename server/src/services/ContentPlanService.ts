@@ -150,13 +150,11 @@ export class ContentPlanService {
       return plan;
     }
 
-    if (repaired) {
-      plan._meta = {
-        ...plan._meta,
-        outline_source: plan._meta?.outline_source || 'llm' as const,
-        outline_repaired: true,
-      };
-    }
+    plan._meta = {
+      ...plan._meta,
+      outline_source: plan._meta?.outline_source || 'llm' as const,
+      outline_repaired: repaired,
+    };
 
     return plan;
   }
