@@ -3,7 +3,6 @@ import fs from 'node:fs/promises';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 import { generateForItem } from './LoreGenerator.js';
 import { generatePromptForItem } from './PromptFileGenerator.js';
-import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { ContentPlanItemSchema } from '@las-flores/shared';
 import yaml from 'js-yaml';
 

@@ -4,6 +4,7 @@ import { setCache, getCache, deleteCache } from '../database/redis.js';
 import { createLLMProvider } from './LLMService.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { fillFields, mergeFilledFields } from './ContentFillService.js';
+import type { LLMProvider } from './types/LLMTypes.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 import { generateForItem } from './LoreGenerator.js';
@@ -99,40 +100,7 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
             items[itemStatusIdx].status = 'filling';
             await setPlanFillJobStatus(planId, { items: [...items] });
 
-            const fillResult = await fillFieldsWithTimeout(item, context, provider, timeoutMs);
-
-            if (Object.keys(fillResult.fields).length > 0) {
-              mergeFilledFields(item, fillResult.fields);
-            }
-            if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
-              const existing = item.lore_refs ?? [];
-              item.lore_refs = Array.from(new Set([...existing, ...fillResult.lore_refs]));
-            }
-
-            const filePath = resolveFilePath(item);
-            const fullPath = path.join(contentDir, filePath);
-            try {
-              const yamlContent = generateYaml(item);
-              await fs.writeFile(fullPath, yamlContent, 'utf-8');
-            } catch (fileErr) {
-              console.warn(`[plan-fill] Failed to write file for ${item.name}: ${(fileErr as Error).message}`);
-            }
-
-            // Generate lore markdown files after filling fields
-            // This overwrites TODO placeholders but preserves user-edited content
-            try {
-              await generateForItem(item, provider, context, true);
-            } catch (loreErr) {
-              console.warn(`[plan-fill] Failed to generate lore for ${item.name}: ${(loreErr as Error).message}`);
-            }
-
-            // Generate prompt markdown files after filling fields
-            // This overwrites TODO placeholders but preserves user-edited content
-            try {
-              await generatePromptForItem(item, contentDir, true);
-            } catch (promptErr) {
-              console.warn(`[plan-fill] Failed to generate prompt for ${item.name}: ${(promptErr as Error).message}`);
-            }
+            await fillAndWriteItem(item, provider, context, contentDir, timeoutMs);
 
             items[itemStatusIdx].status = 'done';
             await setPlanFillJobStatus(planId, { items: [...items] });
@@ -148,15 +116,16 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
 
     const completed = items.filter(i => i.status === 'done').length;
     const failed = items.filter(i => i.status === 'failed').length;
+    const finalStatus = failed > 0 && completed === 0 ? 'failed' : 'done';
     await setPlanFillJobStatus(planId, {
-      status: failed > 0 && completed === 0 ? 'failed' : 'done',
+      status: finalStatus,
       progress: { total: createItems.length, completed, failed },
     });
 
     await withOLTPTransaction(async (client) => {
       await client.query(
         'UPDATE content_plans SET plan_json = $1, status = $2, updated_at = NOW() WHERE id = $3',
-        [plan, 'proposed', planId],
+        [plan, finalStatus === 'failed' ? 'failed' : 'proposed', planId],
       );
     });
   } catch (error: any) {
@@ -172,19 +141,59 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
   }
 }
 
+async function fillAndWriteItem(
+  item: ContentPlanItem,
+  provider: LLMProvider,
+  context: Awaited<ReturnType<typeof contentPlanService.gatherContext>>,
+  contentDir: string,
+  timeoutMs: number,
+): Promise<void> {
+  const fillResult = await fillFieldsWithTimeout(item, context, provider, timeoutMs);
+
+  if (Object.keys(fillResult.fields).length > 0) {
+    mergeFilledFields(item, fillResult.fields);
+  }
+  if (fillResult.lore_refs && fillResult.lore_refs.length > 0) {
+    const existing = item.lore_refs ?? [];
+    item.lore_refs = Array.from(new Set([...existing, ...fillResult.lore_refs]));
+  }
+
+  const filePath = resolveFilePath(item);
+  const fullPath = path.join(contentDir, filePath);
+  try {
+    const yamlContent = generateYaml(item);
+    await fs.writeFile(fullPath, yamlContent, 'utf-8');
+  } catch (fileErr) {
+    console.warn(`[plan-fill] Failed to write file for ${item.name}: ${(fileErr as Error).message}`);
+  }
+
+  try {
+    await generateForItem(item, provider, context, true);
+  } catch (loreErr) {
+    console.warn(`[plan-fill] Failed to generate lore for ${item.name}: ${(loreErr as Error).message}`);
+  }
+
+  try {
+    await generatePromptForItem(item, contentDir, true);
+  } catch (promptErr) {
+    console.warn(`[plan-fill] Failed to generate prompt for ${item.name}: ${(promptErr as Error).message}`);
+  }
+}
+
 async function fillFieldsWithTimeout(
   item: ContentPlanItem,
   context: Parameters<typeof fillFields>[1],
   provider: Parameters<typeof fillFields>[2],
   timeoutMs: number,
 ) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
+  let timer: NodeJS.Timeout;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Fill timed out after ${timeoutMs}ms`)), timeoutMs);
+  });
   try {
-    return await fillFields(item, context, provider);
+    return await Promise.race([fillFields(item, context, provider), timeout]);
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(timer!);
   }
 }
 

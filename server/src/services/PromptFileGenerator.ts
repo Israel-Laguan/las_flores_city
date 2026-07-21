@@ -152,17 +152,14 @@ function buildPromptFile(item: ContentPlanItem): string {
 
   // Infer primary type from assetNeeds or asset_paths
   let primaryType = 'background';
-  let assetTypes = '';
-  
+
   if (item.assetNeeds.length > 0) {
     primaryType = item.assetNeeds[0]?.promptType || 'background';
-    assetTypes = item.assetNeeds.map(n => n.promptType).join(', ');
   } else if (item.fields.asset_paths && typeof item.fields.asset_paths === 'object') {
     const paths = Object.keys(item.fields.asset_paths);
     if (paths.length > 0) {
       // Infer type from the first asset path key
       primaryType = paths[0].replace(/__.*$/, ''); // Remove suffixes like __default
-      assetTypes = paths.join(', ');
     }
   }
 

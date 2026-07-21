@@ -65,7 +65,7 @@ function makeGeneratePlan(cb: HandlersDeps) {
     setStep(2);
 
     if (status === 'generating') {
-      const terminalStates = ['done', 'failed'];
+      const terminalStates = ['done', 'failed', 'proposed'];
       const poll = async () => {
         try {
           const statusRes = await api.getGenerationStatus(planId);

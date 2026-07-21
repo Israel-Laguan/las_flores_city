@@ -60,14 +60,7 @@ async function main() {
   const initStatus = cr.data.data.status;
   console.log('   plan=' + pid + ' status=' + initStatus + ' llm=' + (t1 - t0) + 'ms\n');
 
-  console.log('[3] Approve-and-solidify (bypass broken approve path)');
-  const t2 = Date.now();
-  const getPlan = await req<{ success: boolean; data: { plan: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
-  const put = await req('PUT', SERVER_URL + '/admin/story-builder/plans/' + pid, { plan: getPlan.data.data.plan, status: 'verified' }, cookie);
-  if (!put.ok) { console.error('FAIL', put.error); process.exit(1); }
-  console.log('   set verified\n');
-
-  console.log('[4] Poll generation status (wait for async fill)');
+  console.log('[3] Poll generation status (wait for async fill)');
   let terminalAt = 0;
   const pollStart = Date.now();
   let finalStatus = '';
@@ -81,6 +74,24 @@ async function main() {
   }
   console.log('   status=' + finalStatus + '\n');
 
+  if (finalStatus !== 'done') {
+    console.error('FAIL: Fill did not complete successfully (status=' + finalStatus + ')');
+    await req('DELETE', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+    process.exit(1);
+  }
+
+  console.log('[4] Approve-and-solidify');
+  const t2 = Date.now();
+  const getPlan = await req<{ success: boolean; data: { plan: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+  if (!getPlan.ok || !getPlan.data?.data?.plan) {
+    console.error('FAIL: Could not fetch plan for approval', getPlan.error);
+    await req('DELETE', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+    process.exit(1);
+  }
+  const put = await req('PUT', SERVER_URL + '/admin/story-builder/plans/' + pid, { plan: getPlan.data.data.plan, status: 'verified' }, cookie);
+  if (!put.ok) { console.error('FAIL', put.error); process.exit(1); }
+  console.log('   set verified\n');
+
   const tFinal = Date.now();
 
   // Clean up
@@ -88,8 +99,8 @@ async function main() {
 
   console.log('\n=== LATENCY REPORT ===');
   console.log('Plan creation (LLM): ' + (t1 - t0) + 'ms');
-  console.log('Status set to verified: ' + (t2 - t1) + 'ms');
-  console.log('Async fill wait: ' + (terminalAt ? (terminalAt - t2) : 'n/a') + 'ms');
+  console.log('Async fill wait: ' + (terminalAt ? (terminalAt - pollStart) : 'n/a') + 'ms');
+  console.log('Status set to verified: ' + (t2 - pollStart) + 'ms');
   console.log('Total pipeline: ' + (tFinal - t0) + 'ms');
   console.log('Final generation status: ' + finalStatus);
 }

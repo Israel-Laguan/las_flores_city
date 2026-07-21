@@ -94,6 +94,11 @@ export class ContentPlanService {
     const itemIds = new Set<string>();
     const slugCounts = new Map<string, number>();
 
+    if (!Array.isArray(plan.items)) {
+      plan.items = [];
+      repaired = true;
+    }
+
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(plan.id)) {
       plan.id = uuidv4();
       repaired = true;

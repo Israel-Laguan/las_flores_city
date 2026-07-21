@@ -1,5 +1,6 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
+import type { ContentPlanItem } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
@@ -14,6 +15,99 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 export const adminStoryBuilderGenerateRouter = express.Router();
+
+async function scaffoldPlanItems(
+  items: ContentPlanItem[],
+  contentDir: string,
+): Promise<string[]> {
+  const createdFiles: string[] = [];
+  for (const item of items) {
+    let filePath = '';
+    let fullPath = '';
+    try {
+      filePath = resolveFilePath(item);
+      fullPath = path.join(contentDir, filePath);
+      await fs.mkdir(path.dirname(fullPath), { recursive: true });
+      const yamlContent = generateYaml(item);
+      await fs.writeFile(fullPath, yamlContent, 'utf-8');
+      createdFiles.push(filePath);
+
+      const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.md');
+      await fs.writeFile(lorePath, `# ${item.name}\n\nTODO: Add lore content.\n`, 'utf-8');
+
+      const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.prompt.md');
+      await fs.writeFile(promptPath, `# Prompt for ${item.name}\n\nTODO: Add image generation prompt.\n`, 'utf-8');
+    } catch (writeErr) {
+      console.error(`[story-builder] CRITICAL: Failed to write scaffold file for ${item.name} (type=${item.type}, slug=${item.slug}):`, {
+        error: (writeErr as Error).message,
+        path: filePath,
+        fullPath,
+        stack: (writeErr as Error).stack?.substring(0, 300),
+      });
+    }
+  }
+  return createdFiles;
+}
+
+function buildPlanEventData(
+  trimmedDesc: string,
+  plan: any,
+  createdFileCount: number,
+  usage?: any,
+): Record<string, unknown> {
+  const eventData: Record<string, unknown> = {
+    descriptionLength: trimmedDesc.length,
+    itemCount: plan.items.length,
+    createdFiles: createdFileCount,
+    scaffolded: true,
+    outlineSource: plan._meta.outline_source,
+    outlineRepaired: plan._meta.outline_repaired,
+  };
+  if (usage) {
+    eventData.totalTokens = usage.totalTokens;
+    eventData.promptTokens = usage.promptTokens;
+    eventData.completionTokens = usage.completionTokens;
+    eventData.model = usage.model;
+    eventData.estimatedCostUsd = usage.estimatedCostUsd;
+  }
+  return eventData;
+}
+
+function buildPlanErrorResponse(error: any, description?: string): { status: number; body: Record<string, any> } {
+  const errorDetails: Record<string, any> = {
+    message: error.message,
+    name: error.name,
+    stack: error.stack?.substring(0, 500),
+  };
+  if (error.baseUrl) errorDetails.litellmUrl = error.baseUrl;
+  if (error.model) errorDetails.model = error.model;
+  if (error.timeoutMs) errorDetails.timeoutMs = error.timeoutMs;
+  if (error.cause) errorDetails.cause = String(error.cause);
+
+  console.error('[story-builder] POST /plan error:', {
+    error: errorDetails,
+    description: description?.substring(0, 100) || 'N/A',
+  });
+
+  let clientError = 'Failed to generate plan';
+  if (error.message?.includes('LiteLLM') || error.baseUrl) {
+    clientError = `LLM service error: ${error.message?.split('\n')[0] || clientError}`;
+  } else if (error.message?.includes('timeout') || error.name === 'TimeoutError') {
+    clientError = 'LLM request timed out. Check LiteLLM connectivity.';
+  } else if (error.message?.includes('conflict')) {
+    clientError = error.message;
+  }
+
+  return {
+    status: 500,
+    body: {
+      success: false,
+      error: clientError,
+      details: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
+      timestamp: new Date().toISOString(),
+    },
+  };
+}
 
 // POST /admin/story-builder/plan — Generate a plan from description (outline → scaffold → async fill)
 adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
@@ -59,33 +153,7 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
     };
 
     const createItems = repairedPlan.items.filter(i => i.action === 'create');
-    const createdFiles: string[] = [];
-    for (const item of createItems) {
-      let filePath = '';
-      let fullPath = '';
-      try {
-        filePath = resolveFilePath(item);
-        fullPath = path.join(contentDir, filePath);
-        await fs.mkdir(path.dirname(fullPath), { recursive: true });
-        const yamlContent = generateYaml(item);
-        await fs.writeFile(fullPath, yamlContent, 'utf-8');
-        createdFiles.push(filePath);
-
-        const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.md');
-        await fs.writeFile(lorePath, `# ${item.name}\n\nTODO: Add lore content.\n`, 'utf-8');
-
-        const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.prompt.md');
-        await fs.writeFile(promptPath, `# Prompt for ${item.name}\n\nTODO: Add image generation prompt.\n`, 'utf-8');
-      } catch (writeErr) {
-        console.error(`[story-builder] CRITICAL: Failed to write scaffold file for ${item.name} (type=${item.type}, slug=${item.slug}):`, {
-          error: (writeErr as Error).message,
-          path: filePath,
-          fullPath,
-          stack: (writeErr as Error).stack?.substring(0, 300),
-        });
-        // Track failure but don't block the entire plan
-      }
-    }
+    const createdFiles = await scaffoldPlanItems(createItems, contentDir);
 
     const planId = crypto.randomUUID();
     repairedPlan.id = planId;
@@ -102,23 +170,7 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
       console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
     });
 
-    const eventData: Record<string, unknown> = {
-      descriptionLength: trimmedDesc.length,
-      itemCount: repairedPlan.items.length,
-      createdFiles: createdFiles.length,
-      scaffolded: true,
-      outlineSource: repairedPlan._meta.outline_source,
-      outlineRepaired: repairedPlan._meta.outline_repaired,
-    };
-    if (usage) {
-      eventData.totalTokens = usage.totalTokens;
-      eventData.promptTokens = usage.promptTokens;
-      eventData.completionTokens = usage.completionTokens;
-      eventData.model = usage.model;
-      eventData.estimatedCostUsd = usage.estimatedCostUsd;
-    }
-
-    emitAdminEvent('plan_created', eventData, planId, req.userId);
+    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length, usage), planId, req.userId);
 
     res.json({
       success: true,
@@ -126,38 +178,8 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    // Extract actionable error details for logging and response
-    const errorDetails: Record<string, any> = {
-      message: error.message,
-      name: error.name,
-      stack: error.stack?.substring(0, 500),
-    };
-    if (error.baseUrl) errorDetails.litellmUrl = error.baseUrl;
-    if (error.model) errorDetails.model = error.model;
-    if (error.timeoutMs) errorDetails.timeoutMs = error.timeoutMs;
-    if (error.cause) errorDetails.cause = String(error.cause);
-
-    console.error('[story-builder] POST /plan error:', {
-      error: errorDetails,
-      description: req.body.description?.substring(0, 100) || 'N/A',
-    });
-
-    // Provide actionable error message to client
-    let clientError = 'Failed to generate plan';
-    if (error.message?.includes('LiteLLM') || error.baseUrl) {
-      clientError = `LLM service error: ${error.message?.split('\n')[0] || clientError}`;
-    } else if (error.message?.includes('timeout') || error.name === 'TimeoutError') {
-      clientError = 'LLM request timed out. Check LiteLLM connectivity.';
-    } else if (error.message?.includes('conflict')) {
-      clientError = error.message; // Conflict errors are already descriptive
-    }
-
-    res.status(500).json({
-      success: false,
-      error: clientError,
-      details: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
-      timestamp: new Date().toISOString(),
-    });
+    const { status, body } = buildPlanErrorResponse(error, req.body.description);
+    res.status(status).json(body);
   }
 });
 

@@ -119,18 +119,33 @@ describe('runPlanFill', () => {
       _meta: { scaffolded_at: new Date().toISOString() },
     } as any;
 
+    // Capture the plan written back to the DB
+    let writtenPlan: any = null;
+    const { withOLTPTransaction } = await import('../../src/database/connection.js');
+    (withOLTPTransaction as jest.Mock).mockImplementation(async (cb: any) => {
+      const mockClient = { query: jest.fn((text: string, params?: any[]) => {
+        if (text.includes('UPDATE content_plans SET plan_json')) {
+          writtenPlan = params?.[0];
+        }
+      }) };
+      return cb(mockClient);
+    });
+
     await runPlanFill('aaaaaaaa-1111-2222-3333-444444444444');
 
     const status = await getPlanFillJobStatus('aaaaaaaa-1111-2222-3333-444444444444');
     expect(status?.status).toBe('done');
     expect(status?.progress.completed).toBe(1);
     expect(status?.progress.total).toBe(1);
+    // Verify filled fields are persisted in the plan
+    expect(writtenPlan).not.toBeNull();
+    expect(writtenPlan.items[0].fields.description).toBe('Filled description');
   });
 
   it('per-item fill failure is non-fatal and leaves TODO intact', async () => {
     (globalThis as any).__fillImpl = jest.fn(async () => { throw new Error('LLM timeout'); });
 
-    (globalThis as any).__planForFill = {
+    const initialPlan = {
       id: 'aaaaaaaa-1111-2222-3333-444444444444',
       description: 'plan',
       items: [
@@ -141,6 +156,19 @@ describe('runPlanFill', () => {
       status: 'draft',
       _meta: { scaffolded_at: new Date().toISOString() },
     } as any;
+    (globalThis as any).__planForFill = initialPlan;
+
+    // Capture the plan written back to the DB
+    let writtenPlan: any = null;
+    const { withOLTPTransaction } = await import('../../src/database/connection.js');
+    (withOLTPTransaction as jest.Mock).mockImplementation(async (cb: any) => {
+      const mockClient = { query: jest.fn((text: string, params?: any[]) => {
+        if (text.includes('UPDATE content_plans SET plan_json')) {
+          writtenPlan = params?.[0];
+        }
+      }) };
+      return cb(mockClient);
+    });
 
     await runPlanFill('aaaaaaaa-1111-2222-3333-444444444444');
 
@@ -148,6 +176,11 @@ describe('runPlanFill', () => {
     expect(status?.progress.total).toBe(2);
     expect(status?.progress.failed).toBe(2);
     expect(status?.status).toBe('failed');
+    // Verify failed items retain their original TODO fields
+    expect(writtenPlan).not.toBeNull();
+    for (const item of writtenPlan.items) {
+      expect(item.fields.description).toContain('TODO');
+    }
   });
 });
 
