@@ -38,6 +38,8 @@ nodes:
     thought: "The network feels... quieter. Like something was about to break and someone chose to hold it together. For now."
     is_end: true
     effects:
+      state_set:
+        final_alignment: "loyalist"
       story_beat: finale_complete
 
   finale_fugitive_ending:
@@ -48,6 +50,8 @@ nodes:
     thought: "The network is screaming. Firewall after firewall collapsing. We just declared war on the largest corporation in the city. There's no going back."
     is_end: true
     effects:
+      state_set:
+        final_alignment: "fugitive"
       story_beat: finale_complete
 
 metadata:

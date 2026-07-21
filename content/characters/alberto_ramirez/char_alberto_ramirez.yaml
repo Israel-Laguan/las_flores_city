@@ -1,0 +1,14 @@
+id: alberto_ramirez
+name: Alberto Ramirez
+title: The Younger Brother
+description: Alberto is Sofia's (Graciela's) younger brother. Growing up in a secondary South American city, he found himself orbiting local gang activity, not as a kingpin, but as a disposable kid—a messenger, a watcher, a motorcycle runner. His presence in her life constantly reminds Sofia of the kids she is trying to save in Las Flores.
+metadata:
+  type: human
+  role: npc
+  faction: civilian
+  personality: restless_youth
+lore_path: alberto_ramirez.md
+narrative_path: alberto_ramirez.md
+asset_paths:
+  portrait: alberto_ramirez__default.png
+  biometric: alberto_ramirez__default.png

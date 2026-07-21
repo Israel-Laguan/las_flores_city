@@ -1,0 +1,104 @@
+id: "5f4a3b2c-1d0e-4f9a-8b7c-6d5e4f3a2b1c"
+name: "Beat 1 — The Encounter"
+description: "The player spots Sofia in South Las Flores being harassed by low-level gangers while handing out community flyers. Three options: intervene violently, intervene diplomatically, or ignore."
+start_node_id: "node_sofia_harassment_scene"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2026-07-21T12:00:00Z"
+  updated_at: "2026-07-21T12:00:00Z"
+  tags:
+    - "sofia_mendoza"
+    - "questline"
+    - "beat_1"
+    - "south_las_flores"
+    - "branch_point"
+  story_beat: "beat_sofia_intro"
+  location: "south_las_flores"
+  characters:
+    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
+
+nodes:
+  node_sofia_harassment_scene:
+    id: "node_sofia_harassment_scene"
+    type: "narrator"
+    text: "You spot a young woman in South Las Flores being harassed by two low-level gang members. She's handing out community flyers, her stack nearly empty. The gangers are blocking her path, their body language intimidating but not yet violent. She looks determined but worried."
+    thought: "This looks like Sofia Mendoza, the student activist from Universidad del Valle. Those are Los Culebras colors - they're testing the waters, seeing if the neighborhood will push back."
+    choices:
+      - id: "choice_intervene_violent"
+        text: "Intervene with force - show them what happens to bullies"
+        next_node_id: "node_violent_intervention"
+        time_block_cost:
+          amount: 2
+          description: "Physical confrontation takes time"
+
+      - id: "choice_intervene_diplomatic"
+        text: "Intervene diplomatically - talk them down"
+        next_node_id: "node_diplomatic_intervention"
+        time_block_cost:
+          amount: 3
+          description: "Negotiation requires patience"
+
+      - id: "choice_ignore"
+        text: "Ignore it - not your problem"
+        next_node_id: "node_ignore_path"
+        time_block_cost:
+          amount: 1
+          description: "Walking away is quick"
+
+  node_violent_intervention:
+    id: "node_violent_intervention"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "Stay away from her. Now."
+    thought: "Sofia sizes you up quickly. She's seen this before - the violence, the posturing. She's grateful, but there's something else in her eyes. Recognition? Wariness?"
+    choices:
+      - id: "choice_violent_continue"
+        text: "Make sure they don't come back"
+        next_node_id: "node_violent_resolution"
+
+  node_violent_resolution:
+    id: "node_violent_resolution"
+    type: "narrator"
+    text: "The confrontation is quick and brutal. The gang members retreat, nursing bruises. Sofia watches, her expression unreadable."
+    is_end: true
+    effects:
+      stat_set:
+        sofia_trust: 10
+      story_beat: "beat_sofia_intro"
+
+  node_diplomatic_intervention:
+    id: "node_diplomatic_intervention"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "You don't have to do this. Let her pass."
+    thought: "Sofia watches intently. There's a flicker of hope in her eyes - maybe, just maybe, there's another way."
+    choices:
+      - id: "choice_diplomatic_continue"
+        text: "Persuade them to walk away"
+        next_node_id: "node_diplomatic_resolution"
+
+  node_diplomatic_resolution:
+    id: "node_diplomatic_resolution"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "Thank you. That... that was impressive. Most people just walk by."
+    thought: "She's genuinely impressed. This wasn't just about helping her - it was about doing it the right way."
+    is_end: true
+    effects:
+      stat_set:
+        sofia_trust: 20
+      story_beat: "beat_sofia_intro"
+
+  node_ignore_path:
+    id: "node_ignore_path"
+    type: "narrator"
+    text: "You walk past, keeping your eyes forward. Behind you, you hear raised voices, then a muffled thud. By the time you turn around, Sofia is on the ground, the gang members walking away laughing."
+    thought: "That was your chance to make a difference. Now it's too late."
+    is_end: true
+    effects:
+      state_set:
+        sofia_status: "disillusioned"
+      stat_set:
+        sofia_trust: -50
+      story_beat: "beat_sofia_intro"

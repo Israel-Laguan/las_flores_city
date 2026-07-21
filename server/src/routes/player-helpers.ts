@@ -22,6 +22,8 @@ export async function assemblePlayerState(userId: string) {
     alignment: row.alignment || 'neutral',
     storyBeat: row.story_beat || 'prologue',
     flags: row.flags || {},
+    state: row.state || {},
+    stats: row.stats || {},
     lastLogin: row.last_login,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

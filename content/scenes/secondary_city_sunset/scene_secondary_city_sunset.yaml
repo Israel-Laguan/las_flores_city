@@ -1,0 +1,11 @@
+id: f6a7b8c9-d0e1-2345-f012-456789012345
+name: Secondary City Sunset
+description: The setting sun bleeds through the perpetual smog, casting long shadows across the terraced fields where holographic advertisements flicker above rusting irrigation systems. Neon signs from corporate agribusiness compounds reflect in rain-slicked furrows, their artificial light competing with the dying amber glow on the wet earth. The distant hum of processing machinery harmonizes with cicadas and the whisper of data streams carried on the evening breeze.
+district: South Las Flores
+district_lore: South Las Flores
+district_subzone: South Las Flores
+mood: melancholic, neon-drenched, transitional
+available_dialogues: []
+lore_path: secondary_city_sunset.md
+asset_paths:
+  background: secondary_city_sunset__default.png

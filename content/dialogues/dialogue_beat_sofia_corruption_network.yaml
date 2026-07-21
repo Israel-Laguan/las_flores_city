@@ -1,0 +1,98 @@
+id: "8g7h6f5a-4b3c-5f0a-bc8d-7e6f5f4a3b2f"
+name: "Beat 4 — The Machine Exposed"
+description: "Sofia discovers Los Culebras is funded by Minera Estrella to destabilize South Las Flores. Two options: civic heroism (leak to press, defend community center) or mercenary (steal data, blackmail)."
+start_node_id: "node_sofia_discovery"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2026-07-21T12:00:00Z"
+  updated_at: "2026-07-21T12:00:00Z"
+  tags:
+    - "sofia_mendoza"
+    - "minera_estrella"
+    - "los_culebras"
+    - "community_center_south"
+    - "questline"
+    - "beat_4"
+    - "branch_point"
+    - "corporate_corruption"
+  story_beat: "beat_sofia_corruption_network"
+  location: "south_las_flores"
+  characters:
+    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
+  required_stats:
+    sofia_trust: "gt:0"
+
+nodes:
+  node_sofia_discovery:
+    id: "node_sofia_discovery"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "I found something. Documents. Los Culebras isn't just some street gang - they're being funded. By Minera Estrella. They're using the gang to destabilize South Flores, make the land cheap for development."
+    thought: "Her hands are shaking. This isn't just about her brother or her neighborhood anymore. This is about the whole city."
+    choices:
+      - id: "choice_civic_heroism"
+        text: "We need to expose this. Leak it to the press, defend the community."
+        next_node_id: "node_civic_path"
+        time_block_cost:
+          amount: 6
+          description: "Investigating and leaking data takes time"
+
+      - id: "choice_mercenary"
+        text: "This is valuable information. We could blackmail them. Make some real money."
+        next_node_id: "node_mercenary_path"
+        time_block_cost:
+          amount: 4
+          description: "Planning the blackmail"
+
+  node_civic_path:
+    id: "node_civic_path"
+    type: "narrator"
+    text: "Over the next few days, you and Sofia work to verify the documents and get them to a trusted journalist. Meanwhile, Minera Estrella thugs start showing up at the Community Center South, trying to intimidate residents into silence."
+    thought: "This is the fight for the soul of South Las Flores."
+    choices:
+      - id: "choice_defend_center"
+        text: "Stand with Sofia. Defend the Community Center."
+        next_node_id: "node_civic_resolution"
+
+  node_civic_resolution:
+    id: "node_civic_resolution"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "We did it. The story is out. People are talking. They're starting to... to hope again."
+    thought: "There's a fire in her eyes. This is what she was meant to do."
+    is_end: true
+    effects:
+      stat_set:
+        sofia_trust: 20
+      story_beat: "beat_sofia_corruption_network"
+
+  node_mercenary_path:
+    id: "node_mercenary_path"
+    type: "narrator"
+    text: "The blackmail goes smoothly. Minera Estrella pays handsomely to keep their name out of the papers. You walk away with a small fortune."
+    thought: "Easy money. But at what cost?"
+    is_end: false
+    effects:
+      grant_credits:
+        amount: 25000
+        currency: "credits"
+      story_beat: "beat_sofia_corruption_network"
+    choices:
+      - id: "choice_face_sofia"
+        text: "Return to Sofia"
+        next_node_id: "node_mercenary_consequence"
+
+  node_mercenary_consequence:
+    id: "node_mercenary_consequence"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "I heard what you did. You took their money. After everything we... I thought you were different."
+    thought: "Her voice is flat. Disappointed. You've crossed a line she can't forgive."
+    is_end: true
+    effects:
+      stat_set:
+        sofia_trust: -50
+      state_set:
+        sofia_status: "disillusioned"
+      story_beat: "beat_sofia_corruption_network"

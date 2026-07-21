@@ -17,6 +17,7 @@ import type {
   SMSThreadChoice,
   SMSInboxResponse,
 } from '../../../shared/src/types/sms.js';
+import { choicePassesFilters, type PlayerConditionState } from '@las-flores/shared';
 
 export const commsRouter = express.Router();
 
@@ -193,24 +194,14 @@ export async function applyChoiceFilters(
   if (!player) return rawChoices;
 
   const credits = player.credits ?? 0;
-  const flags = player.flags ?? {};
+  // Shared evaluator (see filterChoices in dialogue-helpers.ts).
+  const playerState: PlayerConditionState = {
+    flags: player.flags ?? {},
+    state: player.state ?? {},
+    stats: player.stats ?? {},
+  };
 
-  return rawChoices.filter((choice: any) => {
-    if (choice.required_flags) {
-      for (const [flag, required] of Object.entries(choice.required_flags)) {
-        if (flags[flag] !== required) return false;
-      }
-    }
-    if (choice.hidden_if) {
-      for (const [flag, value] of Object.entries(choice.hidden_if)) {
-        if (flags[flag] === value) return false;
-      }
-    }
-    if (choice.time_block_cost && choice.time_block_cost.amount > 0) {
-      if (credits < choice.time_block_cost.amount) return false;
-    }
-    return true;
-  });
+  return rawChoices.filter((choice: any) => choicePassesFilters(choice, playerState, credits));
 }
 
 export async function invalidateCaches(userId: string) {

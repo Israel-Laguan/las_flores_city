@@ -1,0 +1,14 @@
+id: e5f6a7b8-c9d0-1234-ef01-345678901234
+name: Valentina Cruz
+title: Campus Provocateur
+description: A lean student with neon-green streaks in her dark hair and cybernetic ocular implants that flicker with data streams, Valentina Cruz moves through the university halls like a ghost in the system—spreading rumors and sabotaging competitors with methodical precision. Her rivalry knows no bounds, whether it's academic sabotage or corporate espionage, making her a dangerous peer to those who cross her path in the neon-soaked corridors of power.
+metadata:
+  type: human
+  role: npc
+  faction: 'TODO: Add faction'
+  personality: calculating_rival
+lore_path: valentina_cruz.md
+narrative_path: valentina_cruz.md
+asset_paths:
+  portrait: valentina_cruz__default.png
+  biometric: valentina_cruz__default.png

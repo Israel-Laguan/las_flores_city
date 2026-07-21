@@ -237,6 +237,16 @@ export class IronGateValidator {
       applied['flag_set'] = effects.flag_set;
     }
 
+    if (effects.state_set && Object.keys(effects.state_set).length > 0) {
+      await PlayerStateRepository.mergeState(client, userId, effects.state_set);
+      applied['state_set'] = effects.state_set;
+    }
+
+    if (effects.stat_set && Object.keys(effects.stat_set).length > 0) {
+      await PlayerStateRepository.mergeStats(client, userId, effects.stat_set);
+      applied['stat_set'] = effects.stat_set;
+    }
+
     if (effects.story_beat) {
       await PlayerStateRepository.setStoryBeat(
         client,

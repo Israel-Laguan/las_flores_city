@@ -1,0 +1,113 @@
+id: "9h8g7f6e-5b4c-6f1a-cd9d-8f7e6e5b4c3g"
+name: "Beat 5 — Finale"
+description: "The culmination of all choices. Branching based on sofia_status and sofia_trust: romanced/high trust = loyal ally, disillusioned = leaves or dies."
+start_node_id: "node_resolution_check"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2026-07-21T12:00:00Z"
+  updated_at: "2026-07-21T12:00:00Z"
+  tags:
+    - "sofia_mendoza"
+    - "graciela"
+    - "questline"
+    - "beat_5"
+    - "finale"
+    - "ending"
+  story_beat: "beat_sofia_resolution"
+  location: "south_las_flores"
+  characters:
+    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
+
+nodes:
+  node_resolution_check:
+    id: "node_resolution_check"
+    type: "system"
+    text: ""
+    is_end: false
+    choices:
+      - id: "check_romanced_or_high_trust"
+        text: ""
+        next_node_id: "node_loyal_ally_path"
+        hidden_if_state:
+          sofia_status: "romanced"
+        hidden_if_stats:
+          sofia_trust: "lt:75"
+
+      - id: "check_disillusioned"
+        text: ""
+        next_node_id: "node_disillusioned_path"
+        hidden_if_state:
+          sofia_status: "disillusioned"
+
+      - id: "check_default"
+        text: ""
+        next_node_id: "node_neutral_path"
+
+  node_loyal_ally_path:
+    id: "node_loyal_ally_path"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "I'm staying. This is my home now. And you... you're part of it. Together, we can build something that lasts. Something real."
+    thought: "She's no longer the uncertain girl you first met. She's a leader. A fighter. And she's choosing to trust you with her future."
+    is_end: true
+    effects:
+      state_set:
+        sofia_status: "alive"
+      story_beat: "beat_sofia_resolution"
+
+  node_loyal_ally_benefits:
+    id: "node_loyal_ally_benefits"
+    type: "narrator"
+    text: "With Sofia as your ally, you gain access to: Safehouses across South Las Flores, early warning about corporate and gang activities, intelligence on community movements, and the respect of civil society organizations."
+    thought: "This is the reward for doing things the right way."
+    is_end: true
+    effects:
+      story_beat: "beat_sofia_resolution"
+
+  node_disillusioned_path:
+    id: "node_disillusioned_path"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "I can't do this anymore. Not with you. Not here. I'm leaving Las Flores."
+    thought: "Her voice is hollow. You've pushed her past her breaking point."
+    is_end: true
+    effects:
+      state_set:
+        sofia_status: "disillusioned"
+      story_beat: "beat_sofia_resolution"
+
+  node_disillusioned_death:
+    id: "node_disillusioned_death"
+    type: "narrator"
+    text: "Weeks later, you hear the news. Sofia Mendoza was killed in a confrontation with corporate security forces. She was trying to expose Minera Estrella's operations alone. The city mourns a hero who never got the support she needed."
+    thought: "Her death is on your hands."
+    is_end: true
+    effects:
+      state_set:
+        sofia_status: "dead"
+      story_beat: "beat_sofia_resolution"
+    conditions:
+      sofia_status: "disillusioned"
+      alberto_status: "dead"
+
+  node_neutral_path:
+    id: "node_neutral_path"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "Well. This is it, then. I'll keep doing what I can. And I guess... you'll do the same."
+    thought: "It's not a happy ending, but it's an honest one. You've both made your choices."
+    is_end: true
+    effects:
+      story_beat: "beat_sofia_resolution"
+
+  node_loses_perks:
+    id: "node_loses_perks"
+    type: "narrator"
+    text: "Without Sofia's trust and leadership, you lose access to civil society perks in South Las Flores. The community center struggles without her organizing, and your reputation in the district suffers."
+    thought: "Some doors, once closed, never open again."
+    is_end: true
+    effects:
+      story_beat: "beat_sofia_resolution"
+    conditions:
+      sofia_status: "disillusioned"

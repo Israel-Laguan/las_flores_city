@@ -10,6 +10,9 @@ nodes:
     type: "narrator"
     text: "You spot a young woman sitting alone at a bench near the university courtyard, her dark hair tied back in a loose ponytail. She's clutching a notebook tightly, her posture a mix of attentiveness and nervous energy. Every now and then, she glances around as if still getting used to her surroundings."
     thought: "She looks out of place here—like a fish learning to swim in unfamiliar waters. Her casual clothes stand out among the more polished students."
+    effects:
+      flag_set:
+        valentina_contact_made: true
     choices:
       - id: "approach_val"
         text: "Approach her"
@@ -23,6 +26,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Observing Val"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   observe_val:
     id: "observe_val"
@@ -36,6 +45,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Approaching Val"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_greeting:
     id: "val_greeting"
@@ -43,6 +58,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Oh—hello! I... I didn't see you there. Sorry, I'm still getting used to... this place."
     thought: "Her accent has a distinctive rural quality—definitely not from the city. She seems friendly but a bit flustered."
+    effects:
+      flag_set:
+        valentina_contact_made: true
     choices:
       - id: "introduce_self"
         text: "I'm [Player Name]. New here myself."
@@ -56,6 +74,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her studies"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_relief:
     id: "val_relief"
@@ -76,6 +100,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her studies"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_studying:
     id: "val_studying"
@@ -83,6 +113,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Social work. I'm only in my first semester, so... everything is still pretty overwhelming. The vocabulary alone—I had to look up like ten words yesterday. *laughs nervously* My high school Spanish didn't quite prepare me for half the terms they use here."
     thought: "She smiles but there's vulnerability behind it. She's working hard to overcome the gaps in her education."
+    effects:
+      flag_set:
+        valentina_motivation_shared: true
     choices:
       - id: "encourage_val"
         text: "That sounds really ambitious. Social work is important work."
@@ -96,6 +129,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her motivation"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_motivation:
     id: "val_motivation"
@@ -103,6 +142,10 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "I want to help people who feel stuck between worlds, you know? People who don't fit neatly into either place. I grew up in a small town near the Río de las Flores—my dad is a fisherman there—and moving to Central City was... a lot."
     thought: "There's passion in her voice now, tempered by the weight of her own experiences. She's not just studying this—she's lived it."
+    effects:
+      flag_set:
+        valentina_motivation_shared: true
+        valentina_origin_revealed: true
     choices:
       - id: "ask_about_dad"
         text: "How's your dad doing with you being so far away?"
@@ -116,6 +159,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about challenges"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_origin:
     id: "val_origin"
@@ -123,6 +172,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Small town near the Río de las Flores. My dad works as a fisherman there—he's been trying to support us on his own since... well, that's complicated. I have an older brother who's already moved away, so it's just me and my dad now."
     thought: "Her expression softens when she talks about her dad, but there's a flicker of concern too. Family obligations weigh on her."
+    effects:
+      flag_set:
+        valentina_origin_revealed: true
     choices:
       - id: "ask_about_dad"
         text: "It sounds like you and your dad are close."
@@ -136,6 +188,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about challenges"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_family:
     id: "val_family"
@@ -143,6 +201,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "We are—though it's complicated. My dad remarried recently, and he's trying to balance supporting me through school with his new family. I call my mom back home every week—she's still there, and we talk about everything. I miss her a lot."
     thought: "There's genuine warmth when she mentions her mom, and a hint of worry about her dad. The family dynamics are clearly strained but loving."
+    effects:
+      flag_set:
+        valentina_family_context_known: true
     choices:
       - id: "ask_about_calls"
         text: "What do you and your mom talk about?"
@@ -156,6 +217,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about challenges"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_mom_calls:
     id: "val_mom_calls"
@@ -163,6 +230,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Everything. My classes, my worries, the strange things people say here—like, apparently 'the coffee is on fleek' is a compliment? My mom laughs at that one. She tells me about home, about the river, about dad... we FaceTime every Sunday."
     thought: "She smiles genuinely now, the homesickness visible in her eyes. Her mom sounds like her anchor."
+    effects:
+      flag_set:
+        valentina_family_context_known: true
     choices:
       - id: "ask_about_challenges"
         text: "It sounds like you have a strong support system. What about here?"
@@ -176,6 +246,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Offering friendship"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_challenges:
     id: "val_challenges"
@@ -183,6 +259,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Where do I start? The slang, the customs, the pace of everything... I feel like I'm learning a whole new language. In class, I sometimes don't understand the vocabulary, and I can tell it frustrates people when I ask questions."
     thought: "She looks down at her notebook, her grip tightening. This clearly weighs on her."
+    effects:
+      flag_set:
+        valentina_challenges_revealed: true
     choices:
       - id: "validate_struggles"
         text: "That's totally normal. The city has a learning curve."
@@ -196,6 +275,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about coping mechanisms"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_inner_strength:
     id: "val_inner_strength"
@@ -203,6 +288,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "I remind myself why I'm here. My dad works so hard to pay for my tuition—I can't waste this opportunity. And honestly? I want to make a difference. For people like me who feel lost between two worlds."
     thought: "Her resilience is evident. The struggle fuels her rather than defeats her."
+    effects:
+      flag_set:
+        valentina_determination_acknowledged: true
     choices:
       - id: "admire_determination"
         text: "That's really admirable, Val."
@@ -216,6 +304,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her goals"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_determination:
     id: "val_determination"
@@ -223,6 +317,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Thank you. Sometimes I don't feel very strong—I call my parents crying after hard exams, questioning everything. But then I remember the people in my hometown who never got the chance to leave, and I know I have to try."
     thought: "She's vulnerable but determined. The weight of representing her community is real for her."
+    effects:
+      flag_set:
+        valentina_determination_acknowledged: true
     choices:
       - id: "offer_encouragement"
         text: "You're doing something incredible. Don't forget that."
@@ -236,6 +333,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her goals"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_goals:
     id: "val_goals"
@@ -243,6 +346,9 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "I want to work with immigrants or rural migrants—people transitioning between worlds, trying to find their place. I know how isolating it can feel. If I can be even one person's bridge to belonging, that would mean everything."
     thought: "Her eyes light up when she talks about her purpose. This is her calling, not just her career."
+    effects:
+      flag_set:
+        valentina_goals_discussed: true
     choices:
       - id: "wish_luck"
         text: "I hope you achieve everything you're working toward, Val."
@@ -256,6 +362,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Offering support"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_encouragement_response:
     id: "val_encouragement_response"
@@ -270,6 +382,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Exchanging contact info"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_friendship:
     id: "val_friendship"
@@ -279,7 +397,7 @@ nodes:
     thought: "She smiles genuinely, some of her nervousness melting away."
     effects:
       flag_set:
-        val_friendship_offered: true
+        valentina_friendship_offered: true
     choices:
       - id: "close_conversation"
         text: "I'll see you around, Val. Good luck with everything."
@@ -287,6 +405,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Ending the conversation"
+      - id: "reject_val"
+        text: "I should go. Good luck with your studies."
+        next_node_id: "node_val_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   val_warm_farewell:
     id: "val_warm_farewell"
@@ -296,10 +420,34 @@ nodes:
     thought: "She seems genuinely happier than when you approached. A small win in a difficult transition."
     is_end: true
 
+  node_val_rejection:
+    id: "node_val_rejection"
+    type: "character"
+    speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
+    text: "Oh. Okay. *looks disappointed* I understand. It was nice meeting you."
+    is_end: true
+    effects:
+      flag_set:
+        valentina_contact_made: true
+        valentina_rejected: true
+      stat_set:
+        valentina_relationship: -5
+
 metadata:
   version: "1.0"
   author: "Las Flores Team"
   created_at: "2024-01-01"
+  flags:
+    - valentina_contact_made
+    - valentina_relationship
+    - valentina_rejected
+    - valentina_origin_revealed
+    - valentina_motivation_shared
+    - valentina_family_context_known
+    - valentina_challenges_revealed
+    - valentina_determination_acknowledged
+    - valentina_goals_discussed
+    - valentina_friendship_offered
   tags:
     - "valentina_reyes"
     - "university"

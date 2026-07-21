@@ -1,0 +1,15 @@
+id: beat_sofia_trust_building
+name: "Beat 3 — The Confession"
+description: "A quiet moment at a local food stand. Only unlocks if sofia_trust > 50. Sofia reveals her true name (Graciela) and tells the story of Camilo's death and her vigilante past. If the player responds with empathy and shares their own vulnerability, sofia_status = romanced is flagged. She becomes a permanent ally who provides safehouses and intel."
+metadata:
+  type: story_beat
+  story_slug: real_heroism_in_latam
+  order: 3
+  location: south_las_flores
+  characters:
+    - sofia_mendoza
+  required_flags:
+    - "sofia_trust > 50"
+  flags:
+    - sofia_status
+    - sofia_trust

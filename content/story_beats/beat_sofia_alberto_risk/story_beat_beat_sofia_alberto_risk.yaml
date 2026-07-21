@@ -1,0 +1,16 @@
+id: beat_sofia_alberto_risk
+name: "Beat 2 — The Brother's Orbit"
+description: "If the player helped Sofia, she later contacts them. Her brother Alberto is running packages for the Los Culebras gang. She needs the player to intercept him without killing him. Option A: Intercept & Reason - Talk Alberto down (alberto_status = saved, sofia_trust +30, unlocks romance path). Option B: Sell Out - Take bribe from gang (alberto_status = gang_member, player gets credits, but Sofia finds out: sofia_trust = -100, quest fails). Option C: Lethal Force - Kill gang members, Alberto caught in crossfire (alberto_status = dead, Sofia becomes permanent enemy)."
+metadata:
+  type: story_beat
+  story_slug: real_heroism_in_latam
+  order: 2
+  location: south_las_flores
+  characters:
+    - sofia_mendoza
+    - alberto_ramirez
+  required_flags:
+    - "sofia_trust > 0"
+  flags:
+    - alberto_status
+    - sofia_trust

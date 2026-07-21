@@ -1,0 +1,23 @@
+id: b2c3d4e5-f6a7-8901-bcde-f12345678901
+name: Real Heroism in Latam
+description: "A grounded, realistic Latin American story about Graciela (Sofia Mendoza) navigating violence, family, and heroism in a recognizable working-class city, leading to her eventual migration to Las Flores."
+beats:
+  - slug: beat_sofia_intro
+    label: "Beat 1 — The Encounter"
+    description: "The player spots Sofia being harassed while handing out community flyers. The player can intervene (violently or diplomatically) or walk away, setting the initial trust state and unlocking/locking her questline."
+
+  - slug: beat_sofia_alberto_risk
+    label: "Beat 2 — The Brother's Orbit"
+    description: "Sofia asks the player to intercept her brother Alberto, who is running for a local gang. The player can save him, sell him out to the gang, or use lethal force, drastically altering Sofia's trust and Alberto's fate."
+
+  - slug: beat_sofia_trust_building
+    label: "Beat 3 — The Confession"
+    description: "A quiet moment where high trust unlocks Sofia's true backstory (Graciela, Camilo's death). The player can choose empathetic responses to unlock the romance path and secure her as a permanent ally."
+
+  - slug: beat_sofia_corruption_network
+    label: "Beat 4 — The Machine Exposed"
+    description: "Discovering the gang is funded by a corporate entity. The player chooses to help Sofia expose the corruption for civic reputation, or steal the blackmail data for a massive credit payout at the cost of her alliance."
+
+  - slug: beat_sofia_resolution
+    label: "Beat 5 — Finale"
+    description: "The culmination of choices. Sofia either establishes a safe community zone (if romanced/high trust), leaves the city disillusioned, or becomes a casualty of the player's negligence."
