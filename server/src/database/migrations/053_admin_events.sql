@@ -7,7 +7,8 @@ CREATE TABLE admin_events (
     event_type VARCHAR(30) NOT NULL CHECK (event_type IN (
         'plan_created', 'plan_refined', 'plan_staged',
         'plan_migrated', 'plan_verified', 'plan_failed',
-        'user_role_changed', 'settings_updated'
+        'user_role_changed', 'settings_updated',
+        'placeholders_filled'
     )),
     event_data JSONB NOT NULL DEFAULT '{}',
     plan_id UUID,

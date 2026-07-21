@@ -3,7 +3,8 @@ import { queryOLTP } from '../database/connection.js';
 export type AdminEventType =
   | 'plan_created' | 'plan_refined' | 'plan_staged'
   | 'plan_migrated' | 'plan_verified' | 'plan_failed'
-  | 'user_role_changed' | 'settings_updated';
+  | 'user_role_changed' | 'settings_updated'
+  | 'placeholders_filled';
 
 /**
  * Fire-and-forget admin event emitter.

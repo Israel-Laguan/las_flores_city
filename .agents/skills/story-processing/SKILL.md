@@ -32,7 +32,19 @@ End-to-end workflow for processing narrative ideas, dialogues, and character arc
    - Are there specific alignment shifts or flags that need to be set (`flag_set`)?
 3. **Do not write code yet.** Wait for the user to confirm the mechanics and narrative scope.
 
-### Phase 2: Conflict & Continuity Check
+### Phase 2: Player-Centric vs. Lore Separation
+
+Before drafting any story beats or dialogue, ensure the narrative structure respects interactive game mechanics. Prevent the "Linear Biography" mistake:
+4. **The "Biography" Check**: Ensure the proposed story beats do not read like a linear biography of an NPC's life. 
+   - **Lore (Past)**: Events that happened *before* the player met the character (e.g., origin stories, past traumas) belong in `.md` lore files. They are **not** active `story_beats`.
+   - **Active Beats (Present)**: A `story_beat` MUST represent a phase of the **Player's** involvement with the character in the present day.
+5. **Enforce Player Agency**: Every quest arc must support multiple player choices, including:
+   - **Engagement**: Helping or allying with the NPC.
+   - **Rejection/Ignoring**: Walking away and defining the game-state consequences for doing so (e.g., quest locks, NPC dies).
+   - **Exploitation/Alternative**: Betraying the NPC or seeking a mercenary outcome.
+   - **State Tracking**: Define the specific flags (e.g., `trust_level`, `romanced_status`) that track these choices.
+
+### Phase 3: Conflict & Continuity Check
 
 Before drafting YAML, use your tools (like `grep_search`) against the `content/` directory to ensure narrative and mechanical integrity.
 
@@ -41,27 +53,27 @@ Before drafting YAML, use your tools (like `grep_search`) against the `content/`
    - Check if an NPC is already occupied in a specific scene (`scenes/*.yaml`) before placing them there.
    - Verify character IDs and scene IDs match what already exists in the local repository.
 
-### Phase 3: Style & Consistency Check
+### Phase 4: Style & Consistency Check
 
-5. **Enforce Tone & Voice**:
+8. **Enforce Tone & Voice**:
    - Writing should match the cyberpunk/noir aesthetic of Las Flores 2077.
    - Ensure characters maintain their established voices (e.g., Vance is pragmatic and corporate; the Barista is mysterious but grounded).
    - Dialogues should be punchy, avoiding overly long exposition dumps in a single node. Keep it interactive.
 
-### Phase 4: Drafting (Local Dev Mode)
+### Phase 5: Drafting (Local Dev Mode)
 
-6. **Write the YAML**: Create or update the files in the `content/` directory.
+9. **Write the YAML**: Create or update the files in the `content/` directory.
    - Follow strict schemas (refer to `shared/src/schemas/dialogue.ts` or similar schemas).
    - Use snake_case IDs.
    - Ensure time blocks (`time_block_cost`) and effects (`effects.flag_set`, `effects.story_beat`) are structurally perfect.
    - Avoid circular references.
 
-### Phase 5: Validation & Deployment
+### Phase 6: Validation & Deployment
 
-7. **Run Automated Validation**:
+10. **Run Automated Validation**:
    - Run `npm run validate:content` to ensure the new YAML files conform strictly to the game's schemas.
    - Fix any validation errors autonomously.
-8. **Final Approval & Migration**:
+11. **Final Approval & Migration**:
    - Present the validated YAML changes to the user for final approval.
    - Remind the user that the story is now safely in "Dev Mode" (the repository).
    - Inform the user they can deploy the story via the Admin Panel's "Content Migration" feature when ready.

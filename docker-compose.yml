@@ -86,6 +86,7 @@ services:
   litellm:
     image: ghcr.io/berriai/litellm:main-latest
     container_name: las-flores-litellm
+    profiles: ["disabled"]  # LiteLLM runs on HOST, not in container (see comment above)
     restart: unless-stopped
     ports:
       - "4000:4000"
@@ -153,8 +154,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      litellm:
-        condition: service_healthy
+    extra_hosts:
+      - "host.containers.internal:host-gateway"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 10s

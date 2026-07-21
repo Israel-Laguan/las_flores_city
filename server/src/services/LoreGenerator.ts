@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
+import { resolveContentDir } from './StoryBuilderLore.js';
 
 export interface LoreGenerationResult {
   createdFiles: string[];
@@ -27,7 +28,7 @@ export async function generateForPlan(
 ): Promise<LoreGenerationResult> {
   const createdFiles: string[] = [];
   const errors: string[] = [];
-  const contentDir = path.resolve(process.cwd(), 'content');
+  const contentDir = resolveContentDir();
 
   for (const item of plan.items) {
     const pathsToCreate: Array<{ field: string; label: string }> = [
@@ -95,7 +96,7 @@ export async function generateForItem(
   context: ExistingContentContext,
   overwrite?: boolean,
 ): Promise<{ createdFile: string | null; error: string | null }> {
-  const contentDir = path.resolve(process.cwd(), 'content');
+  const contentDir = resolveContentDir();
   
   const pathsToCreate: Array<{ field: string; label: string }> = [
     { field: 'lore_path', label: 'Lore' },

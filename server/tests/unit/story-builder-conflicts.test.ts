@@ -137,5 +137,9 @@ describe('stagePlan on scaffolded plan (files already on disk)', () => {
     expect(result.success).toBe(true);
     expect(result.itemResults.every((r: any) => r.status === 'skipped')).toBe(true);
     expect(result.createdFiles).toHaveLength(0);
+    expect(result.updatedFiles).toHaveLength(0);
+    // Verify original file content survives staging
+    const contents = await fs.readFile(fullPath, 'utf-8');
+    expect(contents).toBe('name: Diego\n');
   });
 });
