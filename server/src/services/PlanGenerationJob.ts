@@ -6,6 +6,8 @@ import { contentPlanService } from './ContentPlanService.js';
 import { fillFields, mergeFilledFields } from './ContentFillService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
+import { generateForItem } from './LoreGenerator.js';
+import { generatePromptForItem } from './PromptFileGenerator.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
@@ -114,6 +116,22 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
               await fs.writeFile(fullPath, yamlContent, 'utf-8');
             } catch (fileErr) {
               console.warn(`[plan-fill] Failed to write file for ${item.name}: ${(fileErr as Error).message}`);
+            }
+
+            // Generate lore markdown files after filling fields
+            // This overwrites TODO placeholders but preserves user-edited content
+            try {
+              await generateForItem(item, provider, context, true);
+            } catch (loreErr) {
+              console.warn(`[plan-fill] Failed to generate lore for ${item.name}: ${(loreErr as Error).message}`);
+            }
+
+            // Generate prompt markdown files after filling fields
+            // This overwrites TODO placeholders but preserves user-edited content
+            try {
+              await generatePromptForItem(item, contentDir, true);
+            } catch (promptErr) {
+              console.warn(`[plan-fill] Failed to generate prompt for ${item.name}: ${(promptErr as Error).message}`);
             }
 
             items[itemStatusIdx].status = 'done';

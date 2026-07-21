@@ -24,8 +24,8 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
         faction: item.fields.metadata?.faction || 'TODO: Add faction',
         personality: item.fields.metadata?.personality || 'TODO: Add personality',
       },
-      lore_path: `${slug}.md`,
-      narrative_path: `${slug}.md`,
+      lore_path: (item.fields as any)?.lore_path || `${slug}.md`,
+      narrative_path: (item.fields as any)?.narrative_path || `${slug}.md`,
       asset_paths: {
         portrait: userAssetPaths?.portrait ?? `${slug}__default.png`,
         biometric: userAssetPaths?.biometric ?? `${slug}__default.png`,
@@ -60,7 +60,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
           is_end: true,
         },
       },
-      lore_path: `${slug}.md`,
+      lore_path: (item.fields as any)?.lore_path || `${slug}.md`,
     }, YAML_OPTIONS);
   },
 
@@ -76,7 +76,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       district_subzone: item.fields.district_subzone || item.fields.district || 'TODO: Add district subzone',
       mood: item.fields.mood || 'TODO: Add mood',
       available_dialogues: [],
-      lore_path: `${slug}.md`,
+      lore_path: (item.fields as any)?.lore_path || `${slug}.md`,
       asset_paths: {
         background: userAssetPaths?.background ?? `${slug}__default.png`,
       },
@@ -92,7 +92,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       description: item.fields.description || 'TODO: Add description',
       target_tree_id: item.fields.target_tree_id || 'TODO: Add target dialogue tree UUID',
       modifications: [],
-      lore_path: `${slug}.md`,
+      lore_path: (item.fields as any)?.lore_path || `${slug}.md`,
       asset_paths: {
         background: userAssetPaths?.background ?? `${slug}__default.png`,
       },
@@ -106,7 +106,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       title: item.name,
       description: item.fields.description || 'TODO: Add description',
       status: 'ACTIVE',
-      lore_path: `${slug}.md`,
+      lore_path: (item.fields as any)?.lore_path || `${slug}.md`,
     }, YAML_OPTIONS);
   },
 
@@ -139,7 +139,7 @@ const TEMPLATES: Record<ContentType, TemplateFn> = {
       daytime: item.fields.daytime || 'TODO: Add daytime description',
       nightlife: item.fields.nightlife || 'TODO: Add nightlife description',
       important_places: item.fields.important_places || [],
-      lore_path: `${slug}.md`,
+      lore_path: (item.fields as any)?.lore_path || `${slug}.md`,
       asset_paths: {
         image: userAssetPaths?.image ?? `${slug}__default.png`,
         background: userAssetPaths?.background ?? `${slug}__default.png`,
