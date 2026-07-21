@@ -1,0 +1,14 @@
+id: c3d4e5f6-a7b8-9012-cdef-123456789012
+name: Sofia Mendoza
+title: Student Activist
+description: Sofia Mendoza navigates the working-class corridors of Universidad del Valle with a worn copy of vintage hero comic books tucked into her canvas jacket. Born in a secondary city in South America and having witnessed the collapse of community institutions firsthand, she carries a grounded belief in justice despite the social decay in Las Flores. Her modest street clothes and stack of printed community flyers reflect her practical, everyday realism in a city where corporate interests control public life.
+metadata:
+  type: human
+  role: npc
+  faction: civil_society
+  personality: idealistic_daydreamer
+lore_path: sofia_mendoza.md
+narrative_path: sofia_mendoza.md
+asset_paths:
+  portrait: sofia_mendoza__default.png
+  biometric: sofia_mendoza__default.png

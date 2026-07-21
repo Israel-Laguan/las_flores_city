@@ -8,6 +8,9 @@ nodes:
     type: "narrator"
     text: "The bell above the door jingles as you enter. The cafe is warm, the smell of coffee rich. Behind the counter, a man in his 40s is wiping down the espresso machine. He looks up and smiles."
     thought: "Finally, somewhere that doesn't feel like a simulation. The warmth hits my face like a memory I can't place."
+    effects:
+      flag_set:
+        marco_contact_made: true
     choices:
       - id: "approach_counter"
         text: "Approach the counter"
@@ -21,6 +24,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Taking in the atmosphere"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   observe_cafe:
     id: "observe_cafe"
@@ -34,6 +43,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Approaching the counter"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   marco_greeting:
     id: "marco_greeting"
@@ -41,6 +56,9 @@ nodes:
     speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
     text: "Hey there! First time? You've got that look—like you're seeing the city for the first time. I'm Marco. What can I get you?"
     thought: "He seems genuine. But so did the Handler, before she handed me my apartment keys and walked away."
+    effects:
+      flag_set:
+        marco_contact_made: true
     choices:
       - id: "just_water"
         text: "Just water for now"
@@ -63,6 +81,12 @@ nodes:
         relationship_change:
           stat: friendship
           amount: 2
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   water_conversation:
     id: "water_conversation"
@@ -70,6 +94,9 @@ nodes:
     speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
     text: "Water it is. Here you go. So, new in town? I can always tell. You've got that wide-eyed look. Don't worry—you'll fit in soon enough."
     thought: "He remembers faces. That's either a gift or a survival skill in a place like this."
+    effects:
+      flag_set:
+        marco_water_served: true
     choices:
       - id: "ask_about_districts"
         text: "What's good around here?"
@@ -83,6 +110,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Getting to know Marco"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   coffee_conversation:
     id: "coffee_conversation"
@@ -90,6 +123,9 @@ nodes:
     speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
     text: "Good choice. My special blend. Here—try it. *slides a cup across the counter* So, you're one of the new arrivals? We get a few every month. N&M LTD types, usually."
     thought: "He knows about N&M LTD. Everyone here seems to know more than they let on."
+    effects:
+      flag_set:
+        marco_coffee_served: true
     choices:
       - id: "ask_about_nnm"
         text: "You know about N&M LTD?"
@@ -106,6 +142,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Getting recommendations"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   city_advice:
     id: "city_advice"
@@ -129,6 +171,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Getting personal"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   district_tips:
     id: "district_tips"
@@ -139,6 +187,7 @@ nodes:
     effects:
       flag_set:
         districts_known: true
+        marco_districts_explained: true
     choices:
       - id: "thank_him"
         text: "Thanks, Marco. I'll be back."
@@ -149,6 +198,12 @@ nodes:
       - id: "ask_more"
         text: "Any other tips?"
         next_node_id: "additional_tips"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   marco_background:
     id: "marco_background"
@@ -172,6 +227,12 @@ nodes:
         relationship_change:
           stat: friendship
           amount: 5
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   nnm_knowledge:
     id: "nnm_knowledge"
@@ -182,6 +243,7 @@ nodes:
     effects:
       flag_set:
         nnm_suspicion: true
+        marco_nnm_knowledge_shared: true
     choices:
       - id: "what_experiment"
         text: "What kind of experiment?"
@@ -192,6 +254,12 @@ nodes:
       - id: "thank_him"
         text: "Interesting. Thanks, Marco."
         next_node_id: "farewell"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   experiment_details:
     id: "experiment_details"
@@ -199,7 +267,22 @@ nodes:
     speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
     text: "They don't tell us much. Just that it's about 'human behavior in controlled environments.' But between you and me? Something feels off. The people who stay too long... they change. Come back tomorrow. I might know more then."
     thought: "They change. What does that mean? What happens to people who stay too long?"
-    is_end: true
+    effects:
+      flag_set:
+        marco_experiment_details_shared: true
+    choices:
+      - id: "thank_him"
+        text: "Thanks for the information."
+        next_node_id: "farewell"
+        time_block_cost:
+          amount: 1
+          description: "Ending conversation"
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   additional_tips:
     id: "additional_tips"
@@ -210,6 +293,7 @@ nodes:
     effects:
       flag_set:
         tb_advice_received: true
+        marco_advice_given: true
     choices:
       - id: "thank_him_final"
         text: "Thanks, Marco. I'll remember that."
@@ -217,6 +301,12 @@ nodes:
         relationship_change:
           stat: friendship
           amount: 3
+      - id: "reject_marco"
+        text: "Actually, I need to go."
+        next_node_id: "node_marco_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   farewell:
     id: "farewell"
@@ -226,13 +316,45 @@ nodes:
     thought: "He's the first person here who's felt... safe. I'll come back."
     effects:
       flag_set:
+        marco_contact_made: true
         marco_relationship_formed: true
+      stat_set:
+        marco_relationship: 5
     is_end: true
+
+  node_marco_rejection:
+    id: "node_marco_rejection"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+    text: "Sure, no problem. My door's always open if you change your mind."
+    is_end: true
+    effects:
+      flag_set:
+        marco_contact_made: true
+        marco_rejected: true
+      stat_set:
+        marco_relationship: -5
 
 metadata:
   version: "1.1"
   author: "Las Flores Team"
   created_at: "2024-01-01"
+  flags:
+    - marco_contact_made
+    - marco_relationship
+    - marco_rejected
+    - marco_water_served
+    - marco_coffee_served
+    - marco_talked_about_city
+    - marco_districts_explained
+    - marco_personal_story_known
+    - marco_nnm_knowledge_shared
+    - marco_experiment_details_shared
+    - marco_advice_given
+    - marco_relationship_formed
+    - districts_known
+    - nnm_suspicion
+    - tb_advice_received
   tags:
     - "first_contact"
     - "tutorial"

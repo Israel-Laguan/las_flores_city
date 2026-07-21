@@ -1027,7 +1027,7 @@ migrate + verify), and the UI shows a 2-step flow for the happy path
 
 ### 4.4 Future extensions
 
-Not planned, but noted as natural extensions. These are aspirational and require their own design review before implementation. Remaining intake work is tracked in `docs/NEXT_STEPS.md`.
+Not planned, but noted as natural extensions. These are aspirational and require their own design review before implementation. Remaining intake work is tracked in `docs/NEXT_STEPS.md`. Operational findings, verification results, and runbook procedures are in `docs/STORY_BUILDER_OPERATIONS.md`.
 
 - Tiered asset needs (major/standard/minor character).
 - Collaborative editing.

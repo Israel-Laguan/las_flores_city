@@ -48,21 +48,21 @@ Before drafting any story beats or dialogue, ensure the narrative structure resp
 
 Before drafting YAML, use your tools (like `grep_search`) against the `content/` directory to ensure narrative and mechanical integrity.
 
-4. **Verify Existing Logic**:
+6. **Verify Existing Logic**:
    - Ensure the new `story_beat` or flag doesn't contradict an existing flow.
    - Check if an NPC is already occupied in a specific scene (`scenes/*.yaml`) before placing them there.
    - Verify character IDs and scene IDs match what already exists in the local repository.
 
 ### Phase 4: Style & Consistency Check
 
-8. **Enforce Tone & Voice**:
+7. **Enforce Tone & Voice**:
    - Writing should match the cyberpunk/noir aesthetic of Las Flores 2077.
    - Ensure characters maintain their established voices (e.g., Vance is pragmatic and corporate; the Barista is mysterious but grounded).
    - Dialogues should be punchy, avoiding overly long exposition dumps in a single node. Keep it interactive.
 
 ### Phase 5: Drafting (Local Dev Mode)
 
-9. **Write the YAML**: Create or update the files in the `content/` directory.
+8. **Write the YAML**: Create or update the files in the `content/` directory.
    - Follow strict schemas (refer to `shared/src/schemas/dialogue.ts` or similar schemas).
    - Use snake_case IDs.
    - Ensure time blocks (`time_block_cost`) and effects (`effects.flag_set`, `effects.story_beat`) are structurally perfect.
@@ -70,10 +70,10 @@ Before drafting YAML, use your tools (like `grep_search`) against the `content/`
 
 ### Phase 6: Validation & Deployment
 
-10. **Run Automated Validation**:
+9. **Run Automated Validation**:
    - Run `npm run validate:content` to ensure the new YAML files conform strictly to the game's schemas.
    - Fix any validation errors autonomously.
-11. **Final Approval & Migration**:
-   - Present the validated YAML changes to the user for final approval.
-   - Remind the user that the story is now safely in "Dev Mode" (the repository).
-   - Inform the user they can deploy the story via the Admin Panel's "Content Migration" feature when ready.
+10. **Final Approval & Migration**:
+    - Present the validated YAML changes to the user for final approval.
+    - Remind the user that the story is now safely in "Dev Mode" (the repository).
+    - Inform the user they can deploy the story via the Admin Panel's "Content Migration" feature when ready.

@@ -5,7 +5,8 @@ import {
   type BreakthroughResult,
 } from './dialogue-breakthrough-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import type { DialogueChoice } from '@las-flores/shared';
+import type { DialogueChoice, PlayerConditionState } from '@las-flores/shared';
+import { choicePassesFilters, metadataConditionsPass } from '@las-flores/shared';
 
 /* eslint-disable max-lines -- dialogue route helpers are cohesively grouped in one module */
 
@@ -70,9 +71,23 @@ export async function resolveDialogueTree(
   // Mirrors `location.ts:251-252`: default to 'prologue' if the
   // player has no row yet (e.g. mid-onboarding).
   let storyBeat = 'prologue';
+  // Build a typed condition snapshot (flags/state/stats) for both
+  // the story-beat gate and the metadata.required_* stat/state gate.
+  // Empty when there is no user / no player row yet (anonymous
+  // resolution skips stat gating — a stat gate can't be satisfied
+  // without a player, but trees without required_* metadata still
+  // resolve, preserving prior no-userId behavior).
+  let playerCondition: PlayerConditionState = { flags: {}, state: {}, stats: {} };
   if (userId) {
     const playerRow = await PlayerStateRepository.getFullState(userId);
     storyBeat = playerRow?.story_beat || 'prologue';
+    if (playerRow) {
+      playerCondition = {
+        flags: playerRow.flags || {},
+        state: playerRow.state || {},
+        stats: playerRow.stats || {},
+      };
+    }
   }
 
   const sceneResult = await queryOLTP(
@@ -90,7 +105,10 @@ export async function resolveDialogueTree(
 
   if (sceneResult.rows.length > 0) {
     const tree = sceneResult.rows[0];
-    if (isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat)) {
+    if (
+      isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
+      metadataConditionsPass(tree.metadata, playerCondition)
+    ) {
       return tree;
     }
     // Gated: fall through to the fallback so a beat-unlocked
@@ -107,7 +125,10 @@ export async function resolveDialogueTree(
 
   if (fallbackResult.rows.length === 0) return null;
   const fallback = fallbackResult.rows[0];
-  if (!isStoryBeatAllowed(fallback.metadata?.required_story_beat, storyBeat)) {
+  if (
+    !isStoryBeatAllowed(fallback.metadata?.required_story_beat, storyBeat) ||
+    !metadataConditionsPass(fallback.metadata, playerCondition)
+  ) {
     return null;
   }
   return fallback;
@@ -119,28 +140,19 @@ export async function filterChoices(choices: any[], userId: string) {
   const player = await PlayerStateRepository.getForChoiceFilter(userId);
   if (!player) return choices;
 
-  const flags = player.flags || {};
+  // Single source of truth: shared choicePassesFilters evaluates
+  // boolean flags (presence), categorical state (string ===), and
+  // numeric stats (op:number) across required_*/hidden_if_* plus the
+  // time_block_cost credit gate. Replaces the prior boolean-only ===
+  // loop that could not match "gt:50"-style numeric thresholds.
+  const playerState: PlayerConditionState = {
+    flags: player.flags || {},
+    state: player.state || {},
+    stats: player.stats || {},
+  };
   const credits = player.credits || 0;
 
-  return choices.filter((choice: any) => {
-    if (choice.required_flags) {
-      for (const [flag, required] of Object.entries(choice.required_flags)) {
-        if (flags[flag] !== required) return false;
-      }
-    }
-
-    if (choice.hidden_if) {
-      for (const [flag, value] of Object.entries(choice.hidden_if)) {
-        if (flags[flag] === value) return false;
-      }
-    }
-
-    if (choice.time_block_cost && choice.time_block_cost.amount > 0) {
-      if (credits < choice.time_block_cost.amount) return false;
-    }
-
-    return true;
-  });
+  return choices.filter((choice: any) => choicePassesFilters(choice, playerState, credits));
 }
 
 export async function processTimeBlockCost(
@@ -240,6 +252,12 @@ export async function recordChoiceAndEffects(
   const effects = nextNode.effects;
   if (effects?.flag_set) {
     await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
+  }
+  if (effects?.state_set) {
+    await PlayerStateRepository.mergeState(client, userId, effects.state_set);
+  }
+  if (effects?.stat_set) {
+    await PlayerStateRepository.mergeStats(client, userId, effects.stat_set);
   }
   if (effects?.story_beat) {
     await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);

@@ -1,6 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest/presets/default',
   testEnvironment: 'node',
   roots: ['<rootDir>/tests'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
@@ -13,16 +13,14 @@ export default {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
-        useESM: true,
         tsconfig: {
-          module: 'ESNext',
-          moduleResolution: 'bundler',
+          module: 'CommonJS',
+          moduleResolution: 'node',
           esModuleInterop: true,
         },
       },
     ],
   },
-  extensionsToTreatAsEsm: ['.ts'],
   testMatch: ['**/*.test.ts'],
   testTimeout: 15000,
   globalSetup: '<rootDir>/tests/globalSetup.cjs',

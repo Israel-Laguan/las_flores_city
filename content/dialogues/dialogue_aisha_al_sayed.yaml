@@ -8,6 +8,9 @@ nodes:
     type: "narrator"
     text: "As you enter the Old Town Cafe, you notice a woman sitting alone at a corner table, sipping her coffee while reviewing documents on a tablet. She looks up as you approach, her expression a mix of curiosity and wariness."
     thought: "She seems focused, yet there's a tension in her posture. Perhaps she's expecting someone, or maybe she's just cautious."
+    effects:
+      flag_set:
+        aisha_contact_made: true
     choices:
       - id: "approach_aisha"
         text: "Approach Aisha"
@@ -21,6 +24,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Observing Aisha"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   observe_aisha:
     id: "observe_aisha"
@@ -34,6 +43,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Approaching Aisha"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_greeting:
     id: "aisha_greeting"
@@ -41,6 +56,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "Hello. I don't believe we've met. I'm Aisha Al-Sayed. And you are?"
     thought: "Her tone is polite but guarded. She's sizing me up, trying to figure out if I'm a threat or just another patron."
+    effects:
+      flag_set:
+        aisha_contact_made: true
     choices:
       - id: "introduce_yourself"
         text: "I'm [Player Name]. Just stopping by for a coffee."
@@ -54,6 +72,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her work"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_response:
     id: "aisha_response"
@@ -74,6 +98,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Commenting on the cafe"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_cafe_comment:
     id: "aisha_cafe_comment"
@@ -94,6 +124,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Ending the conversation"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_work:
     id: "aisha_work"
@@ -101,6 +137,10 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "I'm an electrical engineer at Minera Estrella. I oversee a team of engineers and technicians. It's challenging work, but I enjoy it."
     thought: "She's proud of her work, but there's a hint of frustration in her voice. Maybe she's facing some challenges at her job."
+    effects:
+      flag_set:
+        aisha_work_mentioned: true
+        aisha_minera_estrella_discussed: true
     choices:
       - id: "ask_about_challenges"
         text: "It sounds like there might be some challenges. Care to share?"
@@ -114,6 +154,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about Minera Estrella"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_minera_estrella:
     id: "aisha_minera_estrella"
@@ -121,6 +167,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "Minera Estrella is demanding but rewarding. We supply critical minerals, and there's pressure to deliver. I've learned a lot about leadership there — though I won't pretend it's always been easy."
     thought: "She speaks with pride but her smile doesn't quite reach her eyes. There's clearly more beneath the surface."
+    effects:
+      flag_set:
+        aisha_minera_estrella_discussed: true
     choices:
       - id: "ask_about_challenges"
         text: "It sounds intense. Do you face many challenges there?"
@@ -134,6 +183,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her goals"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_challenges:
     id: "aisha_challenges"
@@ -141,6 +196,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "Well, it's no secret that there's been a lot of change lately. The company has been bringing in more employees from China, and... let's just say that not everyone is happy about it. There are whispers about favoritism, but I try to focus on my work and not get caught up in office politics."
     thought: "She's being diplomatic, but it's clear that there's tension at her workplace. Maybe she's been personally affected by these changes."
+    effects:
+      flag_set:
+        aisha_challenges_revealed: true
     choices:
       - id: "ask_about_favoritism"
         text: "Have you experienced any favoritism yourself?"
@@ -154,6 +212,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Offering support"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_support:
     id: "aisha_support"
@@ -161,6 +225,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "Thank you. That means more than you know. It's been... difficult to maintain my footing with everything happening at the mine. I don't have many people I can talk to about this."
     thought: "She seems genuinely touched. A slight softening in her posture."
+    effects:
+      flag_set:
+        aisha_support_offered: true
     choices:
       - id: "ask_about_documentation"
         text: "If you need to talk more, I'm here. Have you documented any of these issues?"
@@ -174,6 +241,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about favoritism"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_favoritism:
     id: "aisha_favoritism"
@@ -181,6 +254,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "Let's just say that I've noticed certain patterns. Promotions seem to go to specific individuals, and it's not always based on merit. But I'm not one to complain. I believe in working hard and letting my results speak for themselves."
     thought: "She's clearly frustrated, but she's trying to stay professional. Maybe she's documented some of these patterns."
+    effects:
+      flag_set:
+        aisha_favoritism_acknowledged: true
     choices:
       - id: "ask_about_documentation"
         text: "Have you documented any of these patterns?"
@@ -194,6 +270,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her goals"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_documentation:
     id: "aisha_documentation"
@@ -201,6 +283,10 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "I have kept some records, yes. It's always good to have documentation, just in case. But I'm not looking to cause trouble. I just want to ensure that my work is recognized and that I have a fair chance at advancement."
     thought: "She's being cautious, but it's clear that she's prepared. Maybe she's gathering evidence for a larger purpose."
+    effects:
+      flag_set:
+        aisha_has_documentation: true
+        aisha_documentation_revealed: true
     choices:
       - id: "offer_help"
         text: "If there's anything I can do to help, just let me know."
@@ -208,6 +294,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Offering help"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_help:
     id: "aisha_help"
@@ -215,6 +307,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "I appreciate that. Honestly, I may take you up on it. The more allies we have in this city, the better. Especially with forces like Neptunes Haven and Greenwatch stirring things up behind the scenes."
     thought: "She's opening up about broader stakes. This isn't just office politics — it's corporate warfare, and she's in the middle of it."
+    effects:
+      flag_set:
+        aisha_help_offered: true
     choices:
       - id: "ask_about_neptunes_haven"
         text: "Tell me more about Neptunes Haven."
@@ -228,6 +323,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about Greenwatch"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_goals:
     id: "aisha_goals"
@@ -235,6 +336,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "My goal is to advance within the company. I want to take on more responsibility and make a real impact. But I also want to ensure that the workplace is fair and that everyone has an equal opportunity to succeed."
     thought: "She's ambitious but also cares about fairness. It's a rare combination."
+    effects:
+      flag_set:
+        aisha_goals_discussed: true
     choices:
       - id: "wish_luck"
         text: "I wish you the best of luck with your goals."
@@ -248,6 +352,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about her personal life"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_luck:
     id: "aisha_luck"
@@ -262,6 +372,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Ending the conversation"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
 
   aisha_personal_life:
     id: "aisha_personal_life"
@@ -269,6 +385,9 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "Outside of work, I enjoy spending time with my husband. We live in a high-rise apartment near the financial district. I also like to attend professional development events and network with other engineers. It's important to stay connected and keep learning."
     thought: "She's dedicated to her career but also values her personal life. It's a good balance."
+    effects:
+      flag_set:
+        aisha_personal_life_discussed: true
     choices:
       - id: "end_conversation"
         text: "That sounds like a good balance. Take care, Aisha."
@@ -276,6 +395,26 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Ending the conversation"
+      - id: "reject_aisha"
+        text: "Actually, I need to go. This isn't my concern."
+        next_node_id: "node_aisha_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Rejecting conversation"
+
+
+  node_aisha_rejection:
+    id: "node_aisha_rejection"
+    type: "character"
+    speaker_id: "c1000013-e29b-41d4-a716-446655440013"
+    text: "I see. Well, if you change your mind, I'm usually here in the afternoons."
+    is_end: true
+    effects:
+      flag_set:
+        aisha_contact_made: true
+        aisha_rejected: true
+      stat_set:
+        aisha_relationship: -5
 
   farewell:
     id: "farewell"
@@ -283,12 +422,31 @@ nodes:
     speaker_id: "c1000013-e29b-41d4-a716-446655440013"
     text: "It was nice meeting you, [Player Name]. If you're ever in the area again, feel free to stop by. I'm usually here in the afternoons."
     thought: "She's opening up a bit more. Maybe she's starting to trust me."
+    effects:
+      flag_set:
+        aisha_contact_made: true
+      stat_set:
+        aisha_relationship: 5
     is_end: true
 
 metadata:
   version: "1.0"
   author: "Las Flores Team"
   created_at: "2024-01-01"
+  flags:
+    - aisha_contact_made
+    - aisha_relationship
+    - aisha_rejected
+    - aisha_work_mentioned
+    - aisha_minera_estrella_discussed
+    - aisha_challenges_revealed
+    - aisha_favoritism_acknowledged
+    - aisha_has_documentation
+    - aisha_documentation_revealed
+    - aisha_support_offered
+    - aisha_help_offered
+    - aisha_goals_discussed
+    - aisha_personal_life_discussed
   tags:
     - "aisha_al_sayed"
     - "minera_estrella"

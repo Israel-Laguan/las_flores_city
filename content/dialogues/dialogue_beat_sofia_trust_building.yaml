@@ -1,0 +1,106 @@
+id: "7f6e5f4a-3b2c-4f9a-ab7c-6d5e4f3a2b1e"
+name: "Beat 3 — The Confession"
+description: "A quiet moment at a food stand. Only available if sofia_trust > 50. Sofia reveals her true name (Graciela) and the story of Camilo's death. Romance path available."
+start_node_id: "node_food_stand_approach"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2026-07-21T12:00:00Z"
+  updated_at: "2026-07-21T12:00:00Z"
+  tags:
+    - "sofia_mendoza"
+    - "graciela"
+    - "camilo_orozco"
+    - "questline"
+    - "beat_3"
+    - "romance"
+    - "trust_gate"
+  story_beat: "beat_sofia_trust_building"
+  location: "south_las_flores"
+  characters:
+    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
+  required_stats:
+    sofia_trust: "gt:50"
+
+nodes:
+  node_food_stand_approach:
+    id: "node_food_stand_approach"
+    type: "narrator"
+    text: "You find Sofia at a small food stand in South Las Flores, eating alone. She spots you and gestures to the empty seat beside her. There's something different in her expression today - a softness, a willingness to let someone in."
+    thought: "This is the first time she's initiated contact. She must be ready to talk about something important."
+    choices:
+      - id: "choice_sit_down"
+        text: "Take a seat. 'You look like you have something on your mind.'"
+        next_node_id: "node_confession_start"
+
+  node_confession_start:
+    id: "node_confession_start"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "My name isn't really Sofia. It's... it's Graciela. Graciela Ramirez."
+    thought: "She's testing your reaction. Will you accept this vulnerability?"
+    choices:
+      - id: "choice_accept_name"
+        text: "Graciela. That's a beautiful name. Why the change?"
+        next_node_id: "node_camilo_story"
+
+  node_camilo_story:
+    id: "node_camilo_story"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "There was a boy. Camilo Orozco. My best friend. We both loved superheroes - the old comics, the stories about people standing up for what's right. He... he was killed. Street violence. Senseless. And I just... I couldn't let it go."
+    thought: "The pain is raw. This is the first time she's told this story to anyone in Las Flores."
+    choices:
+      - id: "choice_empathy"
+        text: "I'm so sorry, Graciela. That must have been... unbearable."
+        next_node_id: "node_empathy_path"
+
+      - id: "choice_change_subject"
+        text: "That's in the past. What matters is what you do now."
+        next_node_id: "node_neutral_path"
+
+  node_empathy_path:
+    id: "node_empathy_path"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "It changed me. I tried to be what I thought a hero should be - someone who fights back. But then I realized... Camilo wasn't about fighting. He was about hope. About believing people could be better."
+    thought: "She's sharing more than just facts. She's sharing her soul."
+    choices:
+      - id: "choice_share_vulnerability"
+        text: "I've lost people too. Sometimes I wonder if I'm still the person they believed in."
+        next_node_id: "node_romance_unlock"
+
+  node_romance_unlock:
+    id: "node_romance_unlock"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "...Thank you. For understanding. For not looking away."
+    thought: "There's a moment of connection here - something deeper than just trust."
+    is_end: true
+    effects:
+      state_set:
+        sofia_status: "romanced"
+      stat_set:
+        sofia_trust: 10
+      story_beat: "beat_sofia_trust_building"
+
+  node_neutral_path:
+    id: "node_neutral_path"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "You're right. The past is the past. But... thank you for listening. Not everyone does."
+    thought: "She's grateful, but there's a hint of disappointment. You didn't quite meet her where she needed you to be."
+    is_end: true
+    effects:
+      stat_set:
+        sofia_trust: 5
+      story_beat: "beat_sofia_trust_building"
+
+  node_insufficient_trust:
+    id: "node_insufficient_trust"
+    type: "narrator"
+    text: "You approach Sofia, but she barely acknowledges you. 'Not now,' she says, her voice cold. 'I don't have anything to say to you.'"
+    thought: "She doesn't trust you enough yet. You need to build that relationship first."
+    is_end: true
+    conditions:
+      sofia_trust: "lte:50"

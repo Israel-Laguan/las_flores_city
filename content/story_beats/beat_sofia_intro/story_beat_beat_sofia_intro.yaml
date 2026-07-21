@@ -1,0 +1,13 @@
+id: beat_sofia_intro
+name: "Beat 1 — The Encounter"
+description: "The player spots Sofia in South Las Flores being harassed by low-level gangers while handing out community flyers. The player can intervene violently (+10 trust, Sofia is grateful but disturbed), diplomatically/intimidation (+20 trust, Sofia is highly impressed), or ignore/walk away (sofia_status = disillusioned, sofia_trust = -50, questline locked until hospital bribe)."
+metadata:
+  type: story_beat
+  story_slug: real_heroism_in_latam
+  order: 1
+  location: south_las_flores
+  characters:
+    - sofia_mendoza
+  flags:
+    - sofia_status
+    - sofia_trust
