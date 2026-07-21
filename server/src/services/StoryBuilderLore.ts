@@ -1,19 +1,14 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 import type { ContentPlanItem } from '@las-flores/shared';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 export function resolveContentDir(): string {
-  // Use __dirname to avoid issues with process.cwd() changing based on tsx watch location
-  // This file is at server/src/services/StoryBuilderLore.ts
-  // From /app/server/src/services/: 
-  //   ../../../content = /app/server/src/../../../content = /app/content
-  const result = path.resolve(__dirname, '../../../content');
-  return result;
+  const isSubdir = process.cwd().endsWith('server');
+  return isSubdir
+    ? path.resolve(process.cwd(), '..', 'content')
+    : path.resolve(process.cwd(), 'content');
 }
 
 /**

@@ -236,9 +236,56 @@ export async function mergeFlags(
   flags: Record<string, boolean>
 ): Promise<void> {
   await client.query(
-    `UPDATE player_states SET flags = flags || $1, updated_at = NOW()
+    `UPDATE player_states SET flags = COALESCE(flags, '{}'::jsonb) || $1, updated_at = NOW()
      WHERE user_id = $2`,
     [JSON.stringify(flags), userId]
+  );
+}
+
+/**
+ * Overwrite-merge categorical story variables (string values).
+ * Mirrors `mergeFlags` semantics: right-hand value wins per key.
+ * e.g. state_set: { sofia_status: "romanced" } overwrites any prior
+ * sofia_status, leaving other state keys untouched.
+ */
+export async function mergeState(
+  client: pg.PoolClient,
+  userId: string,
+  state: Record<string, string>
+): Promise<void> {
+  await client.query(
+    `UPDATE player_states SET state = COALESCE(state, '{}'::jsonb) || $1, updated_at = NOW()
+     WHERE user_id = $2`,
+    [JSON.stringify(state), userId]
+  );
+}
+
+/**
+ * Additive-merge numeric stats. Unlike `mergeFlags`/`mergeState`
+ * (which overwrite), stats accumulate: for each key in `stats`,
+ * the stored value becomes `coalesce(existing, 0) + delta`.
+ * e.g. stat_set: { sofia_trust: 10 } applied twice yields 20.
+ *
+ * This is the one place the established `flags || $1` overwrite
+ * pattern does NOT suffice, so the merge is done per-key in SQL
+ * via jsonb_object_agg over the delta keys, then overlaid on the
+ * existing stats with `||` (preserving all non-delta keys).
+ */
+export async function mergeStats(
+  client: pg.PoolClient,
+  userId: string,
+  stats: Record<string, number>
+): Promise<void> {
+  await client.query(
+    `UPDATE player_states ps
+       SET stats = COALESCE(ps.stats, '{}'::jsonb) || COALESCE(
+             (SELECT jsonb_object_agg(key,
+                       (COALESCE((ps.stats->key)::numeric, 0) + (deltas->key)::numeric))
+              FROM jsonb_each($1) AS deltas),
+             '{}'::jsonb),
+           updated_at = NOW()
+     WHERE ps.user_id = $2`,
+    [JSON.stringify(stats), userId]
   );
 }
 
