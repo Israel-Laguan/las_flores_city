@@ -1,8 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import type { ContentPlanItem } from '@las-flores/shared';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export function resolveContentDir(): string {
   // Use __dirname to avoid issues with process.cwd() changing based on tsx watch location

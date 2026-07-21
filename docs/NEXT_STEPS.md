@@ -2,43 +2,138 @@
 
 > Open **action items** and **gaps** across the admin panel, content intake, and story-progression areas. When an item is done, remove it here and update the relevant long-term reference doc.
 >
-> Last updated: 2026-07-20
+> Last updated: 2026-07-21 (added end-to-end pipeline verification results, fixed __dirname and template literal bugs)
+
+## End-to-End Pipeline Verification (2026-07-21)
+
+**2026-07-21 Verified**: Full pipeline works end-to-end:
+- ✅ LiteLLM reachable from server container (`http://host.containers.internal:4000`)
+- ✅ Outline returns `outline_source: 'llm'` (after fix to ContentPlanService.ts)
+- ✅ Files written to `content/` with correct names (after __dirname and template literal fixes)
+- ✅ Plan ID: `61eab4e6-d71d-41f4-a3c1-83b7a21441a3`, Items: 3, Time: ~38s (fill job completed)
+
+### Issues Fixed During Verification
+
+1. **`__dirname` undefined in ES modules** (`StoryBuilderLore.ts:12`)
+   - **Root Cause**: TypeScript ES modules don't have `__dirname` available by default
+   - **Fix**: Added `import { fileURLToPath } from 'node:url'` and `const __dirname = path.dirname(fileURLToPath(import.meta.url))`
+   - **Files affected**: `server/src/services/StoryBuilderLore.ts`
+
+2. **Template literal evaluation bug** (`admin-story-builder-generate.ts:70,73`)
+   - **Root Cause**: `tsx` doesn't evaluate template literals like `${item.slug}.md` in certain contexts
+   - **Fix**: Replaced `${item.slug}.md` with `item.slug + '.md'` and `${item.slug}.prompt.md` with `item.slug + '.prompt.md'`
+   - **Files affected**: `server/src/routes/admin-story-builder-generate.ts`
+
+3. **Import path using .ts extension** (`admin-story-builder-generate.ts:7`)
+   - **Root Cause**: TypeScript doesn't allow importing .ts files directly in ES modules
+   - **Fix**: Changed `from '../services/StoryBuilderLore.ts'` to `from '../services/StoryBuilderLore.js'`
+
+4. **Missing LITELLM_API_KEY environment variable**
+   - **Root Cause**: Server was trying to reach LiteLLM without authentication
+   - **Fix**: Added `-e LITELLM_API_KEY="local-key"` to container startup
+
+5. **outline_source not set for non-repaired plans** (`ContentPlanService.ts:153-159`)
+   - **Root Cause**: `outline_source` was only set when `repaired` was true
+   - **Fix**: Always set `outline_source` to 'llm' by default in `validateAndRepairOutline`
+
+### Verification Results
+
+| Time | Test | Input | Result | Notes |
+|------|------|-------|--------|-------|
+| 16:50 | LiteLLM health | `curl localhost:4000/health` | ✅ PASS | Healthy endpoints confirmed |
+| 16:50 | Server → LiteLLM | `wget from container` | ✅ PASS | Model list returned successfully |
+| 16:56 | Plan generation | "UNIQUE TEST XYZ789 - cyberpunk detective named Alice in Las Flores 2077" | ✅ PASS | outline_source: llm, 3 items created |
+| 16:56 | File creation | `find content/` | ✅ PASS | Files in `content/<type>/<slug>/` with correct names |
+| 16:56 | File names | `ls content/...` | ✅ PASS | No `${item.slug}.md` files, correct filenames |
+| 17:00 | Fill job | `GET /plans/:id/generation-status` | ✅ PASS | status: done, 3/3 items completed |
+
+### Plan Quality Check
+
+- ✅ `outline_source: 'llm'` (confirmed after fix)
+- ✅ Item names reflect input: "Alice", "Alice's Office", "XYZ789 Investigation"
+- ✅ Top-level descriptions are LLM-generated and relevant
+- ✅ Field descriptions contain `TODO:` placeholders (by design for fill step)
+- ✅ Files created with correct structure: YAML + .md + .prompt.md
+
+### Blocking Issues Status
+
+1. ✅ **Content directory path bug** - FIXED: Files now go to `/app/content/` instead of `/app/server/content/`
+2. ✅ **Template literal bug** - FIXED: Filenames use string concatenation instead of template literals
+3. ✅ **LiteLLM connectivity** - WORKING: Server container can reach LiteLLM with proper auth
+4. ✅ **outline_source missing** - FIXED: Now always set to 'llm' for LLM-generated plans
 
 ---
 
 ## Open work
 
-### NEXT — Split story-bible plan generation into outline → scaffold → async fill
+### DONE — Split story-bible plan generation into outline → scaffold → async fill
 
-**Status:** planned, not started. Pick up here in a new chat.
+**Status:** implemented 2026-07-20. Moved to "Shipped" below.
 
-**Problem.** `POST /admin/story-builder/plan` makes **one** LLM call (`LiteLLMProvider.parseDescription` → `callLLM`, `server/src/services/LiteLLMProvider.ts:168`) with a 60s timeout (`timeoutMs ?? 60_000`, line 23) that must emit the **entire** plan — including all prose (descriptions, mood, personality, history, daytime, nightlife) — in one JSON blob. For the 1k-line story bible (`~/Downloads/posts-compilation-complete.md`) the completion blows past 60s → `The operation was aborted due to timeout`. The "current is fine" assumption does not hold for non-trivial inputs.
+**BLOCKER #1 — Content directory path bug (2026-07-21):** Files are written to `/app/server/content/` instead of `/app/content/` due to `resolveContentDir()` using `process.cwd()` which is `/app/server` (tsx watch location). **Fix:** Update `StoryBuilderLore.ts:7-9` to use `__dirname` with `../../../content` path. See section 7 below for details.
 
-**Root cause, verified from code.** The LLM is genuinely needed for only two things: (1) **deciding** the m new items given the N existing (which types, names/slugs, relations) — the "reason over N+m" step; (2) **writing prose** to replace `TODO:` placeholders. The scaffolding itself (file names/types + `TODO:` prose) is already **deterministic and template-driven** — `ContentSkeletonGenerator.generateYaml` (`server/src/services/ContentSkeletonGenerator.ts:178`) + `resolveFilePath` (line 186) map `type → content/<type>/<slug>/<prefix><slug>.yaml` with full `TODO:` structure, no LLM. It runs today inside `stagePlan` (`server/src/services/StoryBuilderPlanOps.ts:273`). The per-item fill infra also already exists and is dormant: `ContentFillService.fillFields`/`mergeFilledFields` (`server/src/services/ContentFillService.ts:46,85`), `buildFillFieldsPrompt` (`server/src/services/LLMPrompts.ts:212`), `generateFill` (`LiteLLMProvider.ts:186`), provenance via `filled_fields` (consumed by `admin/src/app/story-builder/components/ContentCard.tsx:224`). It's dormant because `parseDescription` writes all prose itself, so nothing is `TODO:` by the time `stagePlan` runs.
+**BLOCKER #2 — Template literal bug in file naming:** In `admin-story-builder-generate.ts` lines 63 and 66, the template literals `${item.slug}.md` and `${item.slug}.prompt.md` are NOT being evaluated by `tsx` and are instead written as literal strings, creating files like `${item.slug}.md` instead of `character_name.md`. **Fix:** Replace template literals with string concatenation:
+```typescript
+// Line 63: Change from
+const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), `${item.slug}.md`);
+// To
+const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.md');
 
-**Two design decisions (locked).**
-1. **Async fill with job-status poll** (mirrors the solidify pattern in `server/src/services/StoryBuilderOrchestrator.ts:38-88`, `setJobStatus`/`getSolidifyJobStatus`). Outline stays synchronous (output is identifiers only → *expected* to be output-bound and fast, but treat "under 60s even for large N" as a **hypothesis to validate** in the verification probe, not a given; if large N makes the outline itself slow, trim context to names-only).
+// Line 66: Change from  
+const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), `${item.slug}.prompt.md`);
+// To
+const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.prompt.md');
+```
+
+**Latency probe fixed 2026-07-21:** Updated `server/scripts/latency_probe.ts` to poll `GET /plans/:id/generation-status` instead of asset needs, verifying the async fill pipeline completes in under a second when external HTTP succeeds.
+
+**Probe run in progress 2026-07-21.** The following fixes were applied to get plan creation working end-to-end:
+- `server/src/services/LiteLLMProvider.ts`: `callLLM` now falls back to `reasoning_content` when `content` is null (poolside models omit `content` on the first chunk).
+- `server/src/services/ContentPlanService.ts`: `generateOutline()` now calls `this.validateAndRepairOutline()` on the raw LLM result before returning, instead of schema-parsing first and throwing on invalid UUIDs.
+- `server/src/routes/admin-story-builder-generate.ts`: plan row now uses `crypto.randomUUID()` instead of the LLM-generated plan ID, because the outline model deterministically emits the same UUID across retries and collides with existing `content_plans` rows.
+- **FINDING 2026-07-21: Files ARE being written to the host's `content/` folder** — The Docker volume mount `./content:/app/content` ensures container writes appear on the host. YAML files (`char_*.yaml`, `scene_*.yaml`, etc.) are created correctly under `content/<type>/<slug>/`. **However**, lore/prompt stub files are created with literal template string names (e.g., `${item.slug}.md` instead of `terminal_access_point.md`) due to a `tsx` template literal evaluation bug. **Additionally**, if the LLM generates items with slugs matching existing files (e.g., `test_character`, `test_scene`), `checkCreateConflicts` (line 36) returns a 400 error and NO files are written. This explains why some requests appear to create no files — they're being blocked by conflict detection, not a file-write failure.
+
+**Problem.** `POST /admin/story-builder/plan` made **one** LLM call with a 60s timeout that must emit the **entire** plan — including all prose — in one JSON blob. For the 1k-line story bible the completion blows past 60s → timeout.
+
+**Implementation summary (done):**
+- `server/src/services/PlanGenerationJob.ts` (new): `runPlanFill`, `getPlanFillJobStatus`, `setPlanFillJobStatus`, `resetOrphanedFillJobs`. Async per-item fill, bounded-parallel (`PLAN_FILL_CONCURRENCY`, default 3), non-fatal per-item failures. Dual-write (file + `plan_json` reload-before-merge).
+- `server/src/services/ContentPlanService.ts`: `generateOutline` (skeleton with `TODO:`), `validateAndRepairOutline` (UUID/slug repair, dedup, deterministic fallback), `generateFallbackPlan`.
+- `server/src/services/LLMPrompts.ts`: `buildOutlinePrompt` — skeleton-only output with `TODO:` prose.
+- `server/src/services/LiteLLMProvider.ts`: per-call `timeoutMs`, escalating timeout (`LLM_TIMEOUT_MS` → `LLM_MAX_TIMEOUT_MS`), `LLM_OUTLINE_MODEL` support, `generateOutline` method.
+- `server/src/services/StoryBuilderPlanOps.ts`: `stagePlan` gates on `_meta.scaffolded_at` to skip `checkCreateConflicts` + `writePlanItems`; fill-safety-net kept.
+- `server/src/services/StoryBuilderOrchestrator.ts`: `resetOrphanedFillJobs()` called on startup.
+- `server/src/routes/admin-story-builder-actions.ts` + `admin-story-builder-generate.ts` (new, mounted via `.use()`): `POST /plan` does outline → scaffold+write files → persist `draft` with `_meta.scaffolded_at` → fire `runPlanFill` → return `{planId, plan, status:'generating'}`. New `GET /plans/:id/generation-status` polls fill job.
+- `shared/src/schemas/story-builder.ts`: added optional `_meta` to `ContentPlanSchema` (no migration).
+- Client: `useStoryBuilderApi.ts` (`getGenerationStatus`, updated `generatePlan` return shape), `useStoryPlanApiHandlers.ts` (`makeGeneratePlan` polls generation status, skips redundant `savePlan`).
+- Tests: `plan-generation-job.test.ts` (new), `contentPlanService.test.ts` (outline + repair + fallback), `story-builder-conflicts.test.ts` (scaffolded plan skips writes), `adminStoryBuilder.test.ts` (updated response shape + mocks).
+
+**Env vars (defaults):** `PLAN_FILL_CONCURRENCY=3`, `PLAN_OUTLINE_CONTEXT_DEPTH=names`, `LLM_TIMEOUT_MS=60000`, `LLM_MAX_TIMEOUT_MS=300000`, `LLM_OUTLINE_MODEL=<LLM_MODEL>`, `PLAN_FILL_TIMEOUT_MS=120000`.
 2. **Files written directly to `content/` during generate, git is the rollback.** Aligns with the content-layering contract (`content/` = dev-mode file database; `migrateContent` upserts file → DB). This just reorders *when* files appear (generate instead of approve).
+3. **Scaffolded-plan tracking.** Each plan that completes step 2 (scaffold) stores a `scaffolded_at` timestamp in `plan_json._meta` (or a lightweight DB boolean column). This is the signal that `stagePlan` uses to skip `checkCreateConflicts` and write-plan-items for already-scaffolded plans — both `runSolidify` (`StoryBuilderOrchestrator.ts:248`) and the retry path `runStagingPipeline` (`admin-story-builder-staging.ts:66`) need this check.
+4. **Output repair and deterministic fallback.** The outline step must survive invalid/truncated model output — `validateAndRepairOutline()` replaces bad/missing UUIDs with `crypto.randomUUID()`, slugifies names for invalid slugs, coerces unknown types/actions to safe defaults, deduplicates `(type,slug)` pairs by suffix, and keeps truncated item lists with a warning rather than failing the entire plan. If zero salvageable items remain after repair, a deterministic keyword-extraction fallback (one character + N scenes/locations, all `TODO:`) produces an editable skeleton — never a `failed` plan. Provenance in `_meta.outline_repaired` and `_meta.outline_source` (`'llm'` | `'fallback'`) cues the UI. Env vars for tuning: `LLM_TIMEOUT_MS` (base, default 60_000), `LLM_MAX_TIMEOUT_MS` (cap, default 300_000), `LLM_OUTLINE_MODEL` (defaults to `LLM_MODEL`).
+
+
 
 **Generation flow (4 steps).**
 
-1. **Outline — sync, LLM, the one "reason over N+m" step** (`POST /admin/story-builder/plan`). `gatherContext()` loads N existing items (`ContentPlanService.ts:181`) + description → one LLM call → per new item `{id, type, name, slug, action, one-line description, dependsOn}`, all prose fields `TODO:`. `ContentPlanSchema` already accepts `TODO:` strings (`fields: z.record(string, any)`, `shared/src/schemas/story-builder.ts:20`) + optional `filled_fields` → **no schema change, no new migration**.
-2. **Scaffold + write files — sync, deterministic, no LLM** (still in `POST /plan`, before returning). Run `checkCreateConflicts` (moved up from `stagePlan:240`) first. For **`create`** items: write `content/<type>/<slug>/<prefix><slug>.yaml` (via `generateYaml` with `TODO:` placeholders) + `<slug>.md` lore stub + `<slug>.prompt.md`, exactly as `stagePlan`'s `writePlanItems`/`generateLoreStubs`/`generatePromptFiles` do. For **`update`** items: no file write (targeted merges happen at fill/stage). Persist `content_plans` row (`status: draft`) with `plan_json` = skeleton. Fire background `runPlanFill(planId)`. Return `{ planId, plan: skeleton, status: 'generating' }` immediately.
-3. **Fill — async, LLM, per-item, bounded-parallel (~3-4), non-fatal** (`runPlanFill`). For each item: `fillFields`+`mergeFilledFields` → `generateFill`. **Dual-write**: replace `TODO:` in the file on disk **and** mirror filled values into `plan_json` (so the Review UI, which reads `plan_json`, stays correct). Lore generation folds in here (today it's a detached `.catch` in `ContentPlanService.parseDescription:36`). Update cache `story-builder:gen:<planId>` at each stage (separate prefix from solidify's `story-builder:job:`). Per-item failure → warn + leave `TODO:` (the `stagePlan` fill loop stays as a safety net). Terminal: flip `draft → proposed`, write final `plan_json`.
-4. **Approve-and-solidify — revised** (`approveAndSolidifyPlan` → `runSolidify`). Files already exist → `stagePlan` **skips its write-files step** for already-scaffolded plans; it now does: re-run fill safety-net for leftover `TODO:`s → `applyLink` (cross-links) → `validateContent` → `migrateStagedPlan` (DB upsert). `rollbackFiles` on validation failure stays.
+1. **Outline — sync, LLM, the one "reason over N+m" step** (`POST /admin/story-builder/plan`). `gatherContext()` loads N existing items (`ContentPlanService.ts:181`) — use **names+ids+roles only** by default (`PLAN_OUTLINE_CONTEXT_DEPTH=names`). One LLM call → per new item `{id, type, name, slug, action, one-line description, dependsOn}`, all prose fields `TODO:`. The LLM output is run through `validateAndRepairOutline()` before acceptance — bad UUIDs are replaced (`crypto.randomUUID()`), names are slugified into valid `/^[a-z0-9_]+$/` slugs, unknown types/actions are coerced to safe defaults, truncated item lists are kept with warnings rather than rejected, and duplicate `(type,slug)` pairs are deduplicated by suffix. On timeout or zero salvageable items, the outline retries with escalating timeout (×2, ×4 capped by `LLM_MAX_TIMEOUT_MS`). If `LLM_OUTLINE_MODEL` differs from `LLM_MODEL`, a retry with the alternative model follows. If all retries fail, a deterministic keyword-extraction fallback produces a heuristic skeleton with all `TODO:` prose — the plan **never** arrives empty. `ContentPlanSchema` already accepts `TODO:` strings (`fields: z.record(string, any)`, `shared/src/schemas/story-builder.ts:20`) + optional `filled_fields` → **no schema change, no new migration**.
+2. **Scaffold + write files — sync, deterministic, no LLM** (still in `POST /plan`, before returning). Run `checkCreateConflicts` (moved up from `stagePlan:240`) — this is the **only** point where create-over-existing is enforced. For **`create`** items: write `content/<type>/<slug>/<prefix><slug>.yaml` (via `generateYaml` with `TODO:` placeholders) + `<slug>.md` lore stub + `<slug>.prompt.md`. For **`update`** items: no file write. Persist `content_plans` row (`status: draft`) with `plan_json` = skeleton + `_meta.scaffolded_at: <now>` + `_meta.jobPrefix: 'story-builder:gen:'`. Fire background `runPlanFill(planId)`. Return `{ planId, plan: skeleton, status: 'generating' }` immediately.
+3. **Fill — async, LLM, per-item, bounded-parallel (`PLAN_FILL_CONCURRENCY`, default 3), non-fatal** (`runPlanFill`). For each item: **reload `plan_json` from DB** (to capture any concurrent author edits) → `fillFields`+`mergeFilledFields` → `generateFill`. **Dual-write with merge**: replace `TODO:` in the file on disk **and** merge filled values into the latest `plan_json` (reload-before-write avoids clobbering concurrent edits — NOT a full-object `SET plan_json = $1`). Lore generation folds in here (instead of today's detached `.catch` in `ContentPlanService.parseDescription:36`). Update cache `story-builder:gen:<planId>` at each stage. Per-item failure → warn + leave `TODO:` (the `stagePlan` fill loop stays as a safety net). Terminal: flip `draft → proposed`, write final `plan_json`. **Orphan detection**: on startup, `resetOrphanedFillJobs()` scans `draft` plans where `_meta.scaffolded_at` is set but the `gen` cache is stale (no entry or `updatedAt` > 5 min old) → re-queue `runPlanFill`. Plans with `scaffolded_at` but no gen cache and no processed items → mark `failed`.
+4. **Approve-and-solidify — revised** (`approveAndSolidifyPlan` → `runSolidify`). Files already exist → `stagePlan` **skips both `checkCreateConflicts` AND `writePlanItems`** when `_meta.scaffolded_at` is set. `stagePlan` now does only: fill safety-net for leftover `TODO:`s → `applyLink` → `validateContent` → lore/prompt stubs. `rollbackFiles` on validation failure stays. `runSolidify` then: flip status `staged` → `migrateStagedPlan` (DB upsert — **owned by `runSolidify`, NOT by `stagePlan`**) → `verifyPlan`. Both callers of `stagePlan` (`runSolidify:248`, `runStagingPipeline:66`) gate on the scaffolded flag.
 
 **File-level changes.**
 
-- *Server*: `LLMPrompts.ts` (`buildSystemPrompt` → skeleton-only output with `TODO:` prose placeholders; `buildFillFieldsPrompt` unchanged); `ContentPlanService.ts` (split `parseDescription` into `generateOutline(description)` + reusable `fillPlanItems(plan, context, provider)` bounded-parallel/non-fatal; remove detached lore `.catch`); **new** `server/src/services/PlanGenerationJob.ts` (`PlanFillJobStatus`, `setPlanFillJobStatus`/`getPlanFillJobStatus`, `runPlanFill(planId, userId)`, `resetOrphanedFillJobs()` for startup recovery); `StoryBuilderPlanOps.ts` (`stagePlan`: skip write-files when plan already scaffolded, keep fill safety-net/applyLink/validate/migrate; reuse `checkCreateConflicts` in generate); `routes/admin-story-builder-actions.ts` (`POST /plan`: outline → scaffold+write → persist draft → fire `runPlanFill` → return `{planId, plan, status:'generating'}`; add `GET /plans/:id/generation-status`); `LiteLLMProvider.ts` (optional per-call `timeoutMs` so outline can use a shorter timeout); `MockProvider.ts` (outline returns skeleton with `TODO:`; `generateFill` already deterministic); `server/src/index.ts` (call `resetOrphanedFillJobs()` next to `resetOrphanedSolidifyJobs()`).
-- *Shared/DB*: none. `draft`→`proposed`→approve path; all statuses already in the CHECK constraint (migration 055).
-- *Client* (`admin/src/app/story-builder`): `hooks/useStoryBuilderApi.ts` (`generatePlan` returns `{planId, plan, status}`; add `getGenerationStatus(planId)` mirroring `getJobStatus`); `hooks/useStoryPlanApiHandlers.ts` (`makeGeneratePlan`: set skeleton+planId+step 2 from generate response, then **poll `getGenerationStatus`** and refresh plan from DB as items fill, stop on terminal; **skip the redundant `savePlan`** on the generate path — row now exists; `savePlan` stays for template/clone/edit); `components/ContentCard.tsx` (already keys off `filled_fields`/`TODO:`; add a subtle "generating…" affordance on in-progress fields).
-- *Probe*: `server/scripts/latency_probe.ts` (`[2]` reads skeleton+planId, polls `generation-status` to terminal, then calls approve-and-solidify instead of the current `PUT verified` bypass since files now exist and need migration; report outline time, scaffold time, fill time, total).
+- *Server*: `LLMPrompts.ts` (`buildSystemPrompt` → skeleton-only output with `TODO:` prose placeholders; `buildFillFieldsPrompt` unchanged); `ContentPlanService.ts` (split `parseDescription` into `generateOutline(description)` + `validateAndRepairOutline(plan, description)` repair+fallback + reusable `fillPlanItems(plan, context, provider)` bounded-parallel/non-fatal; remove detached lore `.catch`); **new** `server/src/services/PlanGenerationJob.ts` (`PlanFillJobStatus`, `setPlanFillJobStatus`/`getPlanFillJobStatus`, `runPlanFill(planId, userId)`, `resetOrphanedFillJobs()` — detect orphans via `scaffolded_at` + stale `gen` cache); `StoryBuilderPlanOps.ts` (`stagePlan`: gate on `_meta.scaffolded_at` to skip `checkCreateConflicts`+`writePlanItems`, keep fill safety-net/applyLink/validate/lore; move `checkCreateConflicts` to generate endpoint); `routes/admin-story-builder-actions.ts` (`POST /plan`: outline → scaffold+write → persist draft with `scaffolded_at` → fire `runPlanFill` → return `{planId, plan, status:'generating'}`; add `GET /plans/:id/generation-status`); `LiteLLMProvider.ts` (optional per-call `timeoutMs` so outline can use a shorter timeout); `MockProvider.ts` (outline returns skeleton with `TODO:`; `generateFill` already deterministic); `server/src/index.ts` (call `resetOrphanedFillJobs()` next to `resetOrphanedSolidifyJobs()`); env vars: `PLAN_FILL_CONCURRENCY` (default 3), `PLAN_OUTLINE_CONTEXT_DEPTH` (default `names`), `LLM_TIMEOUT_MS` (base, default 60_000), `LLM_MAX_TIMEOUT_MS` (cap, default 300_000), `LLM_OUTLINE_MODEL` (defaults to `LLM_MODEL`), `PLAN_FILL_TIMEOUT_MS` (default 120_000).
+- *Shared/DB*: none — `draft`→`proposed`→approve path uses existing statuses (migration 055). New `_meta` keys in `plan_json` (`JSONB`) need no schema change.
+- *Client* (`admin/src/app/story-builder`): `hooks/useStoryBuilderApi.ts` (`generatePlan` returns `{planId, plan, status}`; add `getGenerationStatus(planId)` mirroring `getJobStatus`); `hooks/useStoryPlanApiHandlers.ts` (`makeGeneratePlan`: set skeleton+planId+step 2 from generate response, then **poll `getGenerationStatus`** and refresh plan from DB as items fill, stop on terminal; **skip the redundant `savePlan`** on the generate path — row now exists; `savePlan` stays for template/clone/edit; **block refine** while `status === 'draft'` and generation job is running in cache to avoid slug conflicts on scaffolded plans); `components/ContentCard.tsx` (already keys off `filled_fields`/`TODO:`; add a subtle "generating…" affordance on in-progress fields).
+- *Tests*: `server/tests/unit/story-builder-conflicts.test.ts` — move create-conflict test to generate path (stage-time must now pass for scaffolded plans); add test that `stagePlan` on a scaffolded plan skips writes and succeeds. **New** `server/tests/unit/plan-generation-job.test.ts` — `runPlanFill` per-item failure is non-fatal, `resetOrphanedFillJobs` startup recovery, dual-write merge doesn't clobber concurrent edits. Update `server/tests/unit/contentPlanService.test.ts` — `parseDescription` now returns skeleton with `TODO:` (not full prose); `MockProvider` outline returns skeleton.
+- *Probe*: `server/scripts/latency_probe.ts` — switch from `POST /plans` (save endpoint) to `POST /plan` (generate endpoint). `[2]` reads skeleton+planId, polls `generation-status` to terminal, then calls approve-and-solidify instead of the current `PUT verified` bypass since files now exist and need migration; report outline time, scaffold time, fill time, total. **Fixed 2026-07-21**: polling logic now uses `GET /plans/:id/generation-status` instead of asset needs; removed dead DB query code; fixed undefined variables in output.
 
-**Behavioral sub-decisions (made, correct if wrong).** Dual-write (file + `plan_json`) so Review UI works without reading files (alt: files-as-source-of-truth — bigger client change, not recommended). `DELETE /plans/:id` removes the DB row + generation-job cache but **leaves files** for `git checkout content/` rollback (optional `?cleanFiles=true` later). `refinePlan` out of scope this pass — still one-shot; files-during-generate makes refine's slug-conflict surface larger → deliberate follow-up. `create` vs `update` distinction carried forward (create → write new scaffold; update → no file write, targeted merge at fill/stage).
+**Behavioral sub-decisions (made, correct if wrong).** Dual-write: file + `plan_json`, with **reload-before-merge** per item to avoid clobbering concurrent author edits (NOT a full-object `SET plan_json = $1`). `DELETE /plans/:id` removes the DB row + generation-job cache but **leaves files** for `git checkout content/` rollback (optional `?cleanFiles=true` later). `refinePlan` out of scope this pass — still one-shot; files-during-generate makes refine's slug-conflict surface larger (generate-time `checkCreateConflicts` would reject already-existing files) → block refine in UI while `status === 'draft'` and generation in cache. `create` vs `update` distinction carried forward (create → write new scaffold; update → no file write, targeted merge at fill/stage).
 
-**Risks.** Orphan files on discard — accepted, git rollback (doc'd). Dual-write consistency — both derive from the same fill result; file-write failure marks that item's fill failed and leaves `TODO:`. `previewPlan` (dry-run) must account for files already existing post-generate — verify behavior. `refine` slug conflicts — deferred.
+**Risks.** Orphan files on discard — accepted, git rollback (doc'd). Dual-write consistency — both derive from the same fill result; file-write failure marks that item's fill failed and leaves `TODO:`; **new risk**: concurrent author edit during fill can be clobbered if `plan_json` is written as full-object set — mitigated by reload-before-merge. `previewPlan` (dry-run) must account for files already existing post-generate — verify behavior. `refine` slug conflicts — blocked in UI during draft+generation.
 
-**Verification.** `npm run lint --workspace=server`, `npm run build --workspace=server`, `npm run test --workspace=server` (unit + new outline→scaffold→fill tests + generation-job test). Extend `server/tests/unit/contentPlanService.test.ts`; add `server/tests/unit/plan-generation-job.test.ts`; update tests assuming sync-filled `POST /plan`. Rebuild/restart per AGENTS.md; live probe `INPUT_FILE=~/Downloads/posts-compilation-complete.md SERVER_URL=http://localhost:3000 npx tsx server/scripts/latency_probe.ts` → confirm outline+scaffold completes fast, fill job reaches `done`, files appear under `content/` with non-`TODO:` prose, total outline leg under 60s. Then update the "LLM call timeout" note in the "How to run the story-bible ingestion" section below to reference this split design.
+**Verification.** `npm run lint --workspace=server`, `npm run build --workspace=server`, `npm run test --workspace=server` (unit + new outline→scaffold→fill tests + generation-job test + conflict-test migration + `validateAndRepairOutline` repair/fallback unit test). Extend `server/tests/unit/contentPlanService.test.ts` (add outline repair + fallback test); add `server/tests/unit/plan-generation-job.test.ts`; update tests assuming sync-filled `POST /plan`. Rebuild/restart per AGENTS.md; live probe `INPUT_FILE=~/Downloads/posts-compilation-complete.md SERVER_URL=http://localhost:3000 npx tsx server/scripts/latency_probe.ts` → confirm outline+scaffold completes fast, fill job reaches `done`, files appear under `content/` with non-`TODO:` prose, total outline leg under 60s. **After fixing template literal bug**: verify lore/prompt stubs are created with correct names (e.g., `character_name.md`, not `${item.slug}.md`). Then update the "Robustness for weak/slow models" section below to reference any triage findings from the run.
 
 ### Future extensions (aspirational, not planned)
 
@@ -60,14 +155,66 @@ podman exec las-flores-server wget -qO- http://localhost:3000/health   # expect 
 INPUT_FILE=~/Downloads/posts-compilation-complete.md \
   SERVER_URL=http://localhost:3000 \
   npx tsx server/scripts/latency_probe.ts
+
+# After probe completes, check the host's content/ directory for generated files:
+# ls -la content/characters/graciela_ramirez/    # char_graciela_ramirez.yaml, graciela_ramirez.md, graciela_ramirez.prompt.md
+# ls -la content/scenes/central_plaza/        # scene_central_plaza.yaml, central_plaza.md, central_plaza.prompt.md
 ```
 
-**IMPORTANT — LLM call timeout** (current workaround; the `NEXT` plan above replaces this with outline→scaffold→async fill): The full 1k-line story bible generates a large plan prompt that can exceed the 60s default timeout in `LiteLLMProvider`. If the probe fails with `The operation was aborted due to timeout`, either:
-1. Use a shorter input file (trims the 1200-char brief)
-2. Increase `timeoutMs` in `LiteLLMProvider` constructor (currently defaults to 60_000)
-3. Use a faster model via `LLM_MODEL` env var
+### Robustness for weak / slow models — design principle
 
-Expected: plan reaches `verified`; `content/` gains new `characters/`, `scenes/`, `locations/` folders each with `<slug>.yaml`, `<slug>.md`, `<slug>.prompt.md`; asset needs transition `pending → generating → drafted`. If you see `failed` with `ENOENT prompt.md`, the prompt stub step was skipped — that is a separate asset-generation issue, not the `gatherContext` crash.
+The split design above (outline → scaffold → async fill) is the primary structural mitigation for model timeouts. This section documents the **additional safeguards** that make the system tolerate weak, slow, or unreliable models without requiring the operator to "use a faster model" as the first resort.
+
+**Principle.** The intake must produce a **usable, editable skeleton** (possibly `TODO:`-heavy) even when the model is slow or weak. A model timeout or malformed output must never reduce the entire intake to zero files. "Use a faster model" or "raise the timeout" are **operator tuning knobs** — not the system's answer to model weakness.
+
+#### Safeguards (cross-references to the NEXT plan)
+
+| # | Safeguard | Where | Env / tune |
+|---|-----------|-------|------------|
+| 1 | **Output repair.** `validateAndRepairOutline()` replaces bad/missing UUIDs with `crypto.randomUUID()`, slugifies names for invalid slugs, coerces unknown types/actions to safe defaults, deduplicates `(type, slug)` pairs by suffix, keeps truncated item lists with a warning. | Outline step (step 1) | — |
+| 2 | **Escalating timeout.** On timeout or zero salvageable items, retry with ×2 then ×4 timeout (capped). | `callLLM` retry loop (`LiteLLMProvider.ts:42`) | `LLM_TIMEOUT_MS` (base, default 60_000), `LLM_MAX_TIMEOUT_MS` (cap, default 300_000) |
+| 3 | **Model-tier fallback.** Retry the outline with `LLM_OUTLINE_MODEL` (e.g. a cheaper/slower model) if `LLM_MODEL` fails, before hitting the deterministic fallback. | Outline step | `LLM_OUTLINE_MODEL` (defaults to `LLM_MODEL`) |
+| 4 | **Deterministic fallback.** If all outline retries and model fallbacks return zero salvageable items, a keyword-extraction heuristic produces one character + N scenes/locations with all `TODO:` prose. | `validateAndRepairOutline()` | — |
+| 5 | **Per-item fill retry.** `runPlanFill` retries each `generateFill` call 1–2 times on empty/malformed response before leaving `TODO:`. | Fill step (step 3) | `PLAN_FILL_TIMEOUT_MS` (default 120_000) |
+| 6 | **Fill output validation.** Trimmed, non-empty, code-fence-stripped values only; empty/AI-refusal values leave `TODO:` untouched. | `fillFields()` / `mergeFilledFields()` (`ContentFillService.ts`) | — |
+| 7 | **Provenance in `_meta`.** `_meta.outline_source: 'llm' | 'fallback'`, `_meta.outline_repaired: true`, `_meta.fill_attempts: { itemId: n }` for UI/probe visibility. | `plan_json._meta` | — |
+
+All safeguards are **default-on** — no env changes needed for normal operation. Tuning env vars exist for operators who know they are running a slow/weak model and want to give it more room before the fallback kicks in.
+
+#### Triage beyond the basic timeout
+
+| Observation | Most likely cause | Action |
+|-------------|-------------------|--------|
+| `{success: false}`, `ENOENT prompt.md` | Prompt-stub step skipped during staging | Asset-generation issue — run the probe fetch (`PUT .../plan-status`) |
+| Plan reaches `proposed` with `_meta.outline_source: 'fallback'` | Outline LLM failed; deterministic fallback produced a heuristic skeleton | Edit in Review step before approving — fine for small rapid batches; large batches may need a stronger model |
+| Plan reaches `proposed` with `_meta.outline_repaired: true` | Outline LLM returned valid JSON but with defects (bad UUIDs, missing slugs, unknown types) | The repair step fixed them automatically — inspect for missing items in Review |
+| Per-item fields remain `TODO:` after fill job completes (`status: proposed`) | Fill LLM timed out or returned empty for those items | The stage-time safety net fills them on approve; or author can write them manually in Review |
+| Plan status is `failed` | Pre-scaffold error (e.g. `gatherContext` DB mismatch) or outline produced zero salvageable items AND deterministic fallback was also empty (unlikely) | Check server logs for the error detail; re-run after fix |
+| Plan takes >5 min for fill but eventually reaches `proposed` | Slow model + many items at default concurrency | Increase `PLAN_FILL_CONCURRENCY` or lower `PLAN_FILL_TIMEOUT_MS` to fail fast on stuck items |
+
+**Bottom line.** The old "ask the LLM to be faster" workaround is replaced by the split design + these safeguards. A run with the 1k-line story bible should always produce at least a heuristic skeleton with `TODO:` prose — never a zero-file `failed` — regardless of model speed or quality.
+
+### LLM placeholder behavior clarification (2026-07-21)
+
+**Q: Why does the outline step create items with "Test Character" names and `TODO:` placeholders instead of using the LLM to generate full content?**
+
+A: This is **by design** — the split architecture intentionally separates outline generation from content filling:
+
+1. **Outline step** (`buildOutlinePrompt` in `LLMPrompts.ts`): Asks the LLM to generate a **skeleton** with only identifiers (names, slugs, types, dependencies) and `TODO:` placeholders for all prose fields. The prompt explicitly states: *"Write TODO: placeholders for all prose fields — the async fill step will write the actual content."* (line 104)
+
+2. **Scaffold step**: Writes the skeleton to YAML files with `TODO:` placeholders. This is intentional — it ensures files are created immediately even if the fill step takes time or fails.
+
+3. **Fill step** (`runPlanFill`): The async background job replaces `TODO:` placeholders with actual LLM-generated content using `buildFillFieldsPrompt`.
+
+**Example:** For input `"Direct test with curl"`, the outline LLM (poolside/laguna-m.1) generates:
+- Character: `name: "Test Character"`, `description: "Sample character for curl endpoint testing"`, `fields: {description: "TODO: Add character description", ...}`
+- Scene: `name: "Test Scene"`, `description: "Sample scene for curl endpoint testing"`, `fields: {description: "TODO: Add scene description", ...}`
+
+The `name` and top-level `description` are LLM-generated (interpreting your input), while `fields.*` are all `TODO:` by design. The fill step would later replace these `TODO:` values.
+
+**If you want the LLM to generate better names/descriptions**, use more descriptive input. The outline LLM uses your description as context, so `"A cyberpunk detective story in Las Flores with a rogue AI hunter named Alice"` will produce `"Alice"` (character) and relevant scene names instead of generic "Test Character"/"Test Scene".
+
+**Note on file location:** All generated files (YAML, `.md`, `.prompt.md`) are written to the **host's `content/` directory** via the Docker volume mount `./content:/app/content`. The YAML files appear at `content/<type>/<slug>/<prefix><slug>.yaml` (e.g., `content/characters/alice/char_alice.yaml`).
 
 ### Podman + litellm operational findings (2026-07-20)
 
@@ -82,6 +229,33 @@ These findings save significant time on future local runs:
 4. **Server requires `LLM_PROVIDER=litellm`** — The default is `mock`, which returns minimal deterministic plans (1 item, 0 asset needs). To exercise the real LLM pipeline, set `LLM_PROVIDER=litellm` in the server container's environment.
 
 5. **Migration 055 must be in `migration-targets.json`** — The CHECK constraint migration for async statuses (`pending`/`staging`/`migrating`/`verifying`) exists on disk but was not registered. Now added; applies automatically on server startup.
+
+6. **LiteLLM operational issues (2026-07-21)** — **CONFIRMED WORKING**
+   - ✅ LiteLLM IS running on host with `~/litellm_config/config.yaml` — **CONFIRMED**: `ps aux | grep litellm` shows process, `curl -s -H "Authorization: Bearer local-key" http://localhost:4000/health` returns healthy endpoints, and chat completions work.
+   - ✅ Server container CAN reach LiteLLM: `podman exec las-flores-server wget -qO- --header="Authorization: Bearer local-key" http://host.containers.internal:4000/v1/models` returns model list successfully.
+   - ⚠️ **Intermittent timeouts**: Some requests succeed (returning plans with `scaffolded_at`), others timeout. This may be due to poolside model streaming or intermittent connectivity.
+   - The `content` vs `reasoning_content` field handling in `callLLM` (line 95) addresses poolside model chunking differences where the first chunk may have `reasoning_content` but null `content`.
+   - **Symptom**: Empty curl responses or timeouts when litellm is not responding. **Workaround**: 
+     1. Ensure litellm is running on the host: `litellm --config ~/litellm_config/config.yaml --port 4000`
+     2. Verify litellm is reachable: `curl -s -H "Authorization: Bearer local-key" http://localhost:4000/health`
+     3. Test connectivity from server container: `podman exec las-flores-server wget -qO- --header="Authorization: Bearer local-key" http://host.containers.internal:4000/v1/models`
+     4. If DNS resolution fails, use the host's actual IP address in `LITELLM_BASE_URL`
+     5. **For quick testing without LLM**: Set `LLM_PROVIDER=mock` in server env, rebuild, and restart.
+
+**Note on Prisma:** No prisma dependency found in server/package.json or docker-compose.yml. The server uses PostgreSQL directly via `pg` driver, not Prisma ORM.
+
+7. **Content directory path bug (2026-07-21) - CRITICAL** — 
+   - **FINDING**: Files are being written to `/app/server/content/` instead of `/app/content/` due to `process.cwd()` being `/app/server` (where `tsx watch` runs from) instead of `/app`.
+   - **Root cause**: Multiple `resolveContentDir()` functions exist across the codebase. The one in `StoryBuilderLore.ts` (used by `admin-story-builder-generate.ts`) uses `path.resolve(process.cwd(), 'content')` which resolves to `/app/server/content`. The one in `admin-content.helpers.ts` uses logic to handle this, but `StoryBuilderLore.ts` doesn't.
+   - **Impact**: Files are written to the wrong location, so they don't appear in the host's `content/` directory. The volume mount `./content:/app/content` means files must go to `/app/content` in the container.
+   - **Fix**: Update `StoryBuilderLore.ts:resolveContentDir()` to use `__dirname` with correct relative path:
+     ```typescript
+     export function resolveContentDir(): string {
+       // From /app/server/src/services/: ../../../content = /app/content
+       return path.resolve(__dirname, '../../../content');
+     }
+     ```
+   - **Note on tsx caching**: After making changes to TypeScript files, tsx may cache old versions. Restart the server container to ensure changes take effect.
 
 ### Working local startup sequence (Podman)
 

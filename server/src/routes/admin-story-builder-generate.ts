@@ -4,7 +4,7 @@ import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { checkCreateConflicts } from '../services/StoryBuilderPlanOps.js';
-import { resolveContentDir } from '../services/StoryBuilderLore.ts';
+import { resolveContentDir } from '../services/StoryBuilderLore.js';
 import { generateYaml, resolveFilePath } from '../services/ContentSkeletonGenerator.js';
 import { runPlanFill, getPlanFillJobStatus } from '../services/PlanGenerationJob.js';
 import fs from 'node:fs/promises';
@@ -59,25 +59,27 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
     const createItems = repairedPlan.items.filter(i => i.action === 'create');
     const createdFiles: string[] = [];
     for (const item of createItems) {
+      let filePath = '';
+      let fullPath = '';
       try {
-        const filePath = resolveFilePath(item);
-        const fullPath = path.join(contentDir, filePath);
+        filePath = resolveFilePath(item);
+        fullPath = path.join(contentDir, filePath);
         await fs.mkdir(path.dirname(fullPath), { recursive: true });
         const yamlContent = generateYaml(item);
         await fs.writeFile(fullPath, yamlContent, 'utf-8');
         createdFiles.push(filePath);
 
-        const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), `${item.slug}.md`);
+        const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.md');
         await fs.writeFile(lorePath, `# ${item.name}\n\nTODO: Add lore content.\n`, 'utf-8');
 
-        const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), `${item.slug}.prompt.md`);
+        const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.prompt.md');
         await fs.writeFile(promptPath, `# Prompt for ${item.name}\n\nTODO: Add image generation prompt.\n`, 'utf-8');
       } catch (writeErr) {
         console.error(`[story-builder] CRITICAL: Failed to write scaffold file for ${item.name} (type=${item.type}, slug=${item.slug}):`, {
-          error: writeErr.message,
+          error: (writeErr as Error).message,
           path: filePath,
           fullPath,
-          stack: writeErr.stack?.substring(0, 300),
+          stack: (writeErr as Error).stack?.substring(0, 300),
         });
         // Track failure but don't block the entire plan
       }
