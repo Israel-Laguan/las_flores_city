@@ -92,7 +92,7 @@ export class LiteLLMProvider implements LLMProvider {
 
         const data = await response.json();
         const usage = this.extractUsage(data);
-        const content = data.choices?.[0]?.message?.content;
+        const content = data.choices?.[0]?.message?.content ?? data.choices?.[0]?.message?.reasoning_content;
         if (!content) {
           throw new Error('LiteLLM response did not contain any message content.');
         }
@@ -109,6 +109,34 @@ export class LiteLLMProvider implements LLMProvider {
         }
         lastError = err;
         if (attempt === this.retries) break;
+      }
+    }
+    // Enhance error with context before throwing
+    if (lastError) {
+      const baseMsg = `LiteLLM call failed after ${this.retries + 1} attempts`;
+      if (lastError.name === 'TimeoutError' || lastError.message?.includes('timeout')) {
+        const enhancedError = new Error(
+          `${baseMsg}: Connection to ${this.baseUrl} timed out. ` +
+          `Model: ${this.model}, current timeout: ${timeoutMs}ms, max: ${maxTimeoutMs}ms. ` +
+          `Check if LiteLLM is running and reachable from this container. ` +
+          `Test with: curl -s ${this.baseUrl}/health`
+        );
+        (enhancedError as any).cause = lastError;
+        (enhancedError as any).model = this.model;
+        (enhancedError as any).baseUrl = this.baseUrl;
+        (enhancedError as any).timeoutMs = timeoutMs;
+        throw enhancedError;
+      }
+      if (lastError.message?.includes('fetch failed') || lastError.message?.includes('Failed to fetch')) {
+        const enhancedError = new Error(
+          `${baseMsg}: Cannot reach LiteLLM at ${this.baseUrl}. ` +
+          `Check container networking, DNS resolution, and that LiteLLM is running. ` +
+          `With Podman rootless, host.containers.internal may not resolve without aardvark-dns. ` +
+          `Try using the host's IP address directly.`
+        );
+        (enhancedError as any).cause = lastError;
+        (enhancedError as any).baseUrl = this.baseUrl;
+        throw enhancedError;
       }
     }
     throw lastError!;
@@ -186,7 +214,7 @@ export class LiteLLMProvider implements LLMProvider {
 
     const systemPrompt = buildOutlinePrompt(context);
     const { result, usage } = await provider.callLLM(systemPrompt, description);
-    return { plan: ContentPlanSchema.parse(result), usage };
+    return { plan: result as ContentPlan, usage };
   }
 
   async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {

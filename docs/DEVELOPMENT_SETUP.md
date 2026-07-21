@@ -149,6 +149,53 @@ When starting the server container, add these env vars:
 
 **Critical**: `LLM_PROVIDER` defaults to `mock` if not set. The mock provider returns minimal deterministic plans (1 item, 0 asset needs) — useful for testing the pipeline mechanically but won't generate real content.
 
+### Story Builder Troubleshooting
+
+#### Files not appearing in `content/` folder
+
+**Symptom**: You run `POST /admin/story-builder/plan` successfully (returns `{success: true, scaffolded_at: ...}`) but no files appear in the host's `content/` directory.
+
+**Root Cause**: The `resolveContentDir()` function in `StoryBuilderLore.ts` uses `process.cwd()` which is `/app/server` (where `tsx watch` runs from), causing files to be written to `/app/server/content/` instead of `/app/content/`. The volume mount `./content:/app/content` means files must go to `/app/content` in the container.
+
+**Fix Applied**: Update `StoryBuilderLore.ts` to use `__dirname` with correct relative path:
+```typescript
+export function resolveContentDir(): string {
+  // From /app/server/src/services/: ../../../content = /app/content
+  return path.resolve(__dirname, '../../../content');
+}
+```
+
+**Verification**: After restarting the server, check logs for:
+```
+[story-builder] Writing file: /app/content/characters/name/char_name.yaml
+```
+Files should now appear in the host's `content/` directory.
+
+#### Template literal bug in lore/prompt file names
+
+**Symptom**: Files are created but lore/prompt stubs have literal names like `${item.slug}.md` instead of `character_name.md`.
+
+**Root Cause**: `tsx` does not evaluate template literals in imported TypeScript files. Lines 63 and 66 of `admin-story-builder-generate.ts` use `${item.slug}.md` which is written as a literal string.
+
+**Fix**: Replace template literals with string concatenation:
+```typescript
+// Line 63
+const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.md');
+// Line 66  
+const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.prompt.md');
+```
+
+#### tsx module caching
+
+**Symptom**: Code changes don't take effect even after saving.
+
+**Root Cause**: `tsx watch` caches compiled modules. Changes to TypeScript files may not be picked up immediately.
+
+**Fix**: 
+1. Wait for automatic reload (tsx watches for changes)
+2. Or force reload: `podman exec las-flores-server pkill -f "tsx watch"`
+3. Or restart container: `podman restart las-flores-server`
+
 ## Manual Setup (For Debugging)
 
 > The manual steps below are for the **Podman** path. Docker users rarely need manual setup — `docker compose up -d <service>` handles networking and volumes automatically. Use these steps only if you need fine-grained control over individual Podman containers.

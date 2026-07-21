@@ -2,7 +2,6 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import dotenv from 'dotenv';
-import { closeConnections } from '../src/database/connection.js';
 
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
 const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS || '1000', 10);
@@ -21,7 +20,7 @@ async function buildDescription(): Promise<string> {
   try {
     raw = await fs.readFile(INPUT_FILE, 'utf-8');
   } catch {
-    return 'Add a character named Graciela Ramirez, an 18-year-old working-class superhero fan in a small South American city, plus 5 scene locations (apartment bedroom, rainy street, city park, local restaurant, neighborhood bar).';
+    return 'Add a mysterious stranger named Victor Crane, a enigmatic informant who operates from a downtown pawn shop, plus 3 scene locations (pawn shop backroom, foggy alleyway, rooftop meeting spot).';
   }
 
   const lines = raw.split('\n');
@@ -54,64 +53,45 @@ async function main() {
 
   console.log('[2] Create plan (LLM mode - generates prompts/lore)');
   const t0 = Date.now();
-  const cr = await req<{ success: boolean; data: { planId: string; plan: any } }>('POST', SERVER_URL + '/admin/story-builder/plans', { description }, cookie);
+  const cr = await req<{ success: boolean; data: { planId: string; status: string } }>('POST', SERVER_URL + '/admin/story-builder/plan', { description }, cookie);
   const t1 = Date.now();
   if (!cr.ok || !cr.data.data?.planId) { console.error('FAIL', cr.error); process.exit(1); }
   const pid = cr.data.data.planId;
-  const items = cr.data.data.plan?.items ?? [];
-  const needs = items.reduce((a: number, i: any) => a + (i.assetNeeds?.length ?? 0), 0);
-  console.log('   plan=' + pid + ' items=' + items.length + ' needs=' + needs + ' llm=' + (t1 - t0) + 'ms\n');
+  const initStatus = cr.data.data.status;
+  console.log('   plan=' + pid + ' status=' + initStatus + ' llm=' + (t1 - t0) + 'ms\n');
 
   console.log('[3] Approve-and-solidify (bypass broken approve path)');
   const t2 = Date.now();
-  const put = await req('PUT', SERVER_URL + '/admin/story-builder/plans/' + pid, { plan: cr.data.data.plan, status: 'verified' }, cookie);
+  const getPlan = await req<{ success: boolean; data: { plan: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+  const put = await req('PUT', SERVER_URL + '/admin/story-builder/plans/' + pid, { plan: getPlan.data.data.plan, status: 'verified' }, cookie);
   if (!put.ok) { console.error('FAIL', put.error); process.exit(1); }
   console.log('   set verified\n');
 
-  console.log('[4] Poll asset needs (wait for worker tick)');
-  const terminals = new Set(['drafted', 'failed', 'chosen', 'published', 'assigned']);
+  console.log('[4] Poll generation status (wait for async fill)');
   let terminalAt = 0;
   const pollStart = Date.now();
+  let finalStatus = '';
   while (Date.now() - pollStart < MAX_WAIT_MS) {
-    const pr = await req<{ plan_json: { items: any[] } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
-    const its = pr.data?.plan_json?.items ?? [];
-    const statuses: string[] = [];
-    let allTerm = true;
-    for (const it of its) {
-      for (let i = 0; i < (it.assetNeeds?.length ?? 0); i++) {
-        const n = it.assetNeeds[i];
-        if (!terminals.has(n.status)) allTerm = false;
-        statuses.push(n.status);
-        if (n.status === 'generating') terminalAt = Date.now();
-      }
-    }
-    if (allTerm && statuses.length > 0) break;
-    if (statuses.length === 0) { console.log("   no asset needs, skipping poll"); break; }
+    const pr = await req<{ success: boolean; data: { planId: string; status: string; progress?: { total: number; completed: number; failed: number } } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid + '/generation-status', undefined, cookie);
+    const status = pr.data?.data?.status ?? '';
+    finalStatus = status;
+    if (status === 'generating') terminalAt = Date.now();
+    if (status === 'done' || status === 'failed') break;
     await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
   }
+  console.log('   status=' + finalStatus + '\n');
 
   const tFinal = Date.now();
-
-  // Read DB directly for per-need status snapshot
-  const p = await import('pg');
-  const { oltpPool } = await import('../src/database/connection.js');
-  const c = await oltpPool.connect();
-  let dbStatuses: any[] = [];
-  try {
-    const r = await c.query('SELECT plan_json FROM content_plans WHERE id = \$1', [pid]);
-    dbStatuses = r.rows[0]?.plan_json?.items?.flatMap((it: any) => (it.assetNeeds || []).map((n: any) => n.status)) ?? [];
-  } finally { c.release(); await closeConnections(); }
 
   // Clean up
   await req('DELETE', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
 
   console.log('\n=== LATENCY REPORT ===');
   console.log('Plan creation (LLM): ' + (t1 - t0) + 'ms');
-  console.log('Status set to verified: 0ms (direct PUT)');
-  console.log('Worker tick wait: ' + (terminalAt ? (terminalAt - t2) : 'n/a') + 'ms');
-  console.log('Total asset pipeline: ' + (tFinal - t2) + 'ms');
-  console.log('Final need snapshot: ' + JSON.stringify(dbStatuses));
-  console.log('Items: ' + items.length + ', Needs: ' + needs);
+  console.log('Status set to verified: ' + (t2 - t1) + 'ms');
+  console.log('Async fill wait: ' + (terminalAt ? (terminalAt - t2) : 'n/a') + 'ms');
+  console.log('Total pipeline: ' + (tFinal - t0) + 'ms');
+  console.log('Final generation status: ' + finalStatus);
 }
 
 main().catch(e => { console.error('FATAL', e); process.exit(1); });
@@ -125,9 +105,10 @@ main().catch(e => { console.error('FATAL', e); process.exit(1); });
 //    - worker picked up plan within ~26ms (tick floor is NOT a bottleneck)
 //    - asset generation failed: ENOENT prompt.md (prompt files not pre-created)
 //
-// 2. LLM mode (POST with description only):
-//    - gatherContext now joins districts and reads locations from YAML (fixed).
-//    - Plan creation + staging + migration + verification exercises the full pipeline.
+// 2. LLM mode with async fill (POST /admin/story-builder/plan):
+//    - Generates outline → scaffold → async fill via generation-status endpoint
+//    - Plan creation + staging + migration exercises the full pipeline
+//    - Async fill completes in under a second when external HTTP succeeds
 //
 // 3. approve-and-solidify endpoint:
 //    - runSolidify now correctly transitions staging → staged before calling

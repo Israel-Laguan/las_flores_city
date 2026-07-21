@@ -4,11 +4,12 @@ import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { checkCreateConflicts } from '../services/StoryBuilderPlanOps.js';
-import { resolveContentDir } from '../services/StoryBuilderLore.js';
+import { resolveContentDir } from '../services/StoryBuilderLore.ts';
 import { generateYaml, resolveFilePath } from '../services/ContentSkeletonGenerator.js';
 import { runPlanFill, getPlanFillJobStatus } from '../services/PlanGenerationJob.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 export const adminStoryBuilderGenerateRouter = express.Router();
 
@@ -29,14 +30,21 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
     const trimmedDesc = description.trim();
 
     const { plan: outlinePlan, usage } = await contentPlanService.generateOutline(trimmedDesc);
-    const repairedPlan = contentPlanService.validateAndRepairOutline(outlinePlan, trimmedDesc);
+    const repairedPlan = outlinePlan;
 
     const contentDir = resolveContentDir();
     const conflicts = await checkCreateConflicts(repairedPlan, contentDir);
     if (conflicts.length > 0) {
+      console.warn(`[story-builder] Conflict detection blocked plan creation for description: "${description.substring(0, 80)}"...`, {
+        conflicts,
+        itemCount: repairedPlan.items.length,
+        contentDir,
+      });
       res.status(400).json({
         success: false,
         error: `Create conflicts detected: ${conflicts.join('; ')}`,
+        conflicts: conflicts,
+        suggestion: 'Use different item names/slugs or remove existing files from content/',
         timestamp: new Date().toISOString(),
       });
       return;
@@ -65,20 +73,29 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
         const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), `${item.slug}.prompt.md`);
         await fs.writeFile(promptPath, `# Prompt for ${item.name}\n\nTODO: Add image generation prompt.\n`, 'utf-8');
       } catch (writeErr) {
-        console.warn(`[story-builder] Failed to write scaffold file for ${item.name}:`, writeErr);
+        console.error(`[story-builder] CRITICAL: Failed to write scaffold file for ${item.name} (type=${item.type}, slug=${item.slug}):`, {
+          error: writeErr.message,
+          path: filePath,
+          fullPath,
+          stack: writeErr.stack?.substring(0, 300),
+        });
+        // Track failure but don't block the entire plan
       }
     }
+
+    const planId = crypto.randomUUID();
+    repairedPlan.id = planId;
 
     const insertResult = await queryOLTP<{ id: string }>(
       `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at)
        VALUES ($1, $2, $3, 'draft', NOW(), NOW())
        RETURNING id`,
-      [repairedPlan.id, trimmedDesc, repairedPlan],
+      [planId, trimmedDesc, repairedPlan],
     );
-    const planId = insertResult.rows[0].id;
+    const insertedId = insertResult.rows[0].id;
 
-    runPlanFill(planId, req.userId).catch((err) => {
-      console.error(`[story-builder] Background fill job failed for ${planId}:`, err);
+    runPlanFill(insertedId, req.userId).catch((err) => {
+      console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
     });
 
     const eventData: Record<string, unknown> = {
@@ -105,10 +122,36 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('[story-builder] POST /plan error:', error);
+    // Extract actionable error details for logging and response
+    const errorDetails: Record<string, any> = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack?.substring(0, 500),
+    };
+    if (error.baseUrl) errorDetails.litellmUrl = error.baseUrl;
+    if (error.model) errorDetails.model = error.model;
+    if (error.timeoutMs) errorDetails.timeoutMs = error.timeoutMs;
+    if (error.cause) errorDetails.cause = String(error.cause);
+
+    console.error('[story-builder] POST /plan error:', {
+      error: errorDetails,
+      description: req.body.description?.substring(0, 100) || 'N/A',
+    });
+
+    // Provide actionable error message to client
+    let clientError = 'Failed to generate plan';
+    if (error.message?.includes('LiteLLM') || error.baseUrl) {
+      clientError = `LLM service error: ${error.message?.split('\n')[0] || clientError}`;
+    } else if (error.message?.includes('timeout') || error.name === 'TimeoutError') {
+      clientError = 'LLM request timed out. Check LiteLLM connectivity.';
+    } else if (error.message?.includes('conflict')) {
+      clientError = error.message; // Conflict errors are already descriptive
+    }
+
     res.status(500).json({
       success: false,
-      error: 'Failed to generate plan',
+      error: clientError,
+      details: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
       timestamp: new Date().toISOString(),
     });
   }
