@@ -17,6 +17,28 @@ export const RelationshipChangeSchema = z.object({
 
 export type RelationshipChange = z.infer<typeof RelationshipChangeSchema>;
 
+// ============================================================
+// Typed flag/state/stat condition grammar
+//
+// The dialogue flag system tracks three distinct kinds of player
+// state, each with different write + read semantics:
+//
+//   flags  — Record<string, boolean>  (on/off; overwrite; === true)
+//   state  — Record<string, string>   (categorical; overwrite; ===)
+//   stats  — Record<string, number>   (accumulating; additive; op compare)
+//
+// On the READ side (required_*/hidden_if_*), numeric stats use an
+// inline comparison operator string: "gt:50", "lt:75", "gte:10",
+// "lte:10", "eq:0", "ne:100". Booleans use presence and strings use
+// equality. See `shared/src/conditions.ts` for the evaluator.
+// ============================================================
+
+export const NumericComparisonSchema = z
+  .string()
+  .regex(/^(gt|lt|gte|lte|eq|ne):-?\d+$/, 'Expected "op:number", e.g. "gt:50"');
+
+export type NumericComparison = z.infer<typeof NumericComparisonSchema>;
+
 export const DialogueChoiceSchema = z.object({
   id: z.string(),
   text: z.string().max(500),
@@ -30,8 +52,15 @@ export const DialogueChoiceSchema = z.object({
   relationship_change: RelationshipChangeSchema.optional(),
   vault_unlock: z.string().uuid().optional(),
   mystery_solve: z.string().uuid().optional(),
+  // Boolean flag gates (presence check). Backwards-compatible.
   required_flags: z.record(z.string(), z.boolean()).optional(),
   hidden_if: z.record(z.string(), z.boolean()).optional(),
+  // Categorical state gates (string equality).
+  required_state: z.record(z.string(), z.string()).optional(),
+  hidden_if_state: z.record(z.string(), z.string()).optional(),
+  // Numeric stat gates (op:number comparison, e.g. "gt:50").
+  required_stats: z.record(z.string(), NumericComparisonSchema).optional(),
+  hidden_if_stats: z.record(z.string(), NumericComparisonSchema).optional(),
   // Meta-plot finale alignment directive. When set,
   // /dialogue/choose flips the user into this faction (and emits
   // an `alignment_locked` OLAP event). Authors should only attach
@@ -44,8 +73,17 @@ export type DialogueChoice = z.infer<typeof DialogueChoiceSchema>;
 // Strict effects schema: reject undocumented properties during content
 // migration so YAML authors get feedback immediately.
 export const EffectsSchema = z.object({
-  // Established pattern: nested flag bag (see recordChoiceAndEffects)
+  // Established pattern: nested flag bag (see recordChoiceAndEffects).
+  // Boolean on/off flags — overwrite-merged via mergeFlags().
   flag_set: z.record(z.string(), z.boolean()).optional(),
+  // Categorical story variables (e.g. awakening_path: "understood",
+  // sofia_status: "romanced") — overwrite-merged via mergeState().
+  state_set: z.record(z.string(), z.string()).optional(),
+  // Numeric accumulating stats (e.g. sofia_trust: 10) — additively
+  // merged via mergeStats() (coalesce(existing,0) + delta per key).
+  // Write plain numbers here; comparison operators ("gt:50") belong
+  // only on the read side (required_stats / hidden_if_stats).
+  stat_set: z.record(z.string(), z.number()).optional(),
   // Story-progression cursor (STORY_PROGRESSION_CONTEXT.md)
   story_beat: z.string().max(100).optional(),
   // Parsed content-side; retained for compatibility

@@ -4,6 +4,16 @@ export const PlayerFlagsSchema = z.record(z.string(), z.boolean());
 
 export type PlayerFlags = z.infer<typeof PlayerFlagsSchema>;
 
+// Categorical story variables (string values, overwrite-merged).
+export const PlayerStateBagSchema = z.record(z.string(), z.string());
+
+export type PlayerStateBag = z.infer<typeof PlayerStateBagSchema>;
+
+// Numeric accumulating stats (number values, additively merged).
+export const PlayerStatsBagSchema = z.record(z.string(), z.number());
+
+export type PlayerStatsBag = z.infer<typeof PlayerStatsBagSchema>;
+
 export const PlayerStateSchema = z.object({
   userId: z.string().uuid(),
   username: z.string(),
@@ -16,6 +26,10 @@ export const PlayerStateSchema = z.object({
   alignment: z.enum(['neutral', 'loyalist', 'fugitive']).default('neutral'),
   storyBeat: z.string().default('prologue'),
   flags: z.record(z.string(), z.boolean()).default({}),
+  // Categorical story variables (e.g. awakening_path, sofia_status).
+  state: z.record(z.string(), z.string()).default({}),
+  // Numeric accumulating stats (e.g. sofia_trust).
+  stats: z.record(z.string(), z.number()).default({}),
   lastLogin: z.string().datetime(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

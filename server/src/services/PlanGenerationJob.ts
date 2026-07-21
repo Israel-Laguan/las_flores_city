@@ -42,6 +42,7 @@ export async function setPlanFillJobStatus(planId: string, status: Partial<PlanF
     items: status.items ?? existing?.items ?? [],
     startedAt: existing?.startedAt ?? now,
     updatedAt: now,
+    error: status.error ?? existing?.error,
   };
   await setCache(`${GEN_CACHE_PREFIX}${planId}`, merged, 1800);
 }
@@ -160,12 +161,8 @@ async function fillAndWriteItem(
 
   const filePath = resolveFilePath(item);
   const fullPath = path.join(contentDir, filePath);
-  try {
-    const yamlContent = generateYaml(item);
-    await fs.writeFile(fullPath, yamlContent, 'utf-8');
-  } catch (fileErr) {
-    console.warn(`[plan-fill] Failed to write file for ${item.name}: ${(fileErr as Error).message}`);
-  }
+  const yamlContent = generateYaml(item);
+  await fs.writeFile(fullPath, yamlContent, 'utf-8');
 
   try {
     await generateForItem(item, provider, context, true);

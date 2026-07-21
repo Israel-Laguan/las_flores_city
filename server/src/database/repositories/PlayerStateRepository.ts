@@ -12,6 +12,10 @@ export interface FullStateRow {
   alignment: string;
   story_beat: string;
   flags: Record<string, boolean>;
+  // Categorical story variables (string values).
+  state: Record<string, string>;
+  // Numeric accumulating stats (number values).
+  stats: Record<string, number>;
   last_login: string;
   created_at: string;
   updated_at: string;
@@ -72,6 +76,8 @@ export {
   setAlignment,
   enterSimulation,
   mergeFlags,
+  mergeState,
+  mergeStats,
   partialUpdate,
   createForNewUser,
 } from './PlayerStateRepository.write.js';
@@ -102,6 +108,8 @@ export class PlayerStateRepository {
   static setAlignment = writeMethods.setAlignment;
   static enterSimulation = writeMethods.enterSimulation;
   static mergeFlags = writeMethods.mergeFlags;
+  static mergeState = writeMethods.mergeState;
+  static mergeStats = writeMethods.mergeStats;
   static partialUpdate = writeMethods.partialUpdate;
   static createForNewUser = writeMethods.createForNewUser;
 }

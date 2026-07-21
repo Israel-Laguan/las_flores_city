@@ -79,6 +79,11 @@ export function evaluateBoundary(
     time_block_cost?: { amount: number };
     required_flags?: Record<string, boolean>;
     hidden_if?: Record<string, boolean>;
+    // Typed condition gates (see shared/src/schemas/dialogue.ts).
+    required_state?: Record<string, string>;
+    hidden_if_state?: Record<string, string>;
+    required_stats?: Record<string, string>;
+    hidden_if_stats?: Record<string, string>;
     unlock_condition?: string;
     alignment_change?: string;
     mystery_solve?: string;
@@ -113,7 +118,16 @@ export function evaluateBoundary(
   }
 
   // Rule 3: Conditional
-  if (choice.required_flags || choice.hidden_if || choice.unlock_condition || choice.alignment_change) {
+  if (
+    choice.required_flags ||
+    choice.hidden_if ||
+    choice.required_state ||
+    choice.hidden_if_state ||
+    choice.required_stats ||
+    choice.hidden_if_stats ||
+    choice.unlock_condition ||
+    choice.alignment_change
+  ) {
     reasons.push('conditional');
   }
 

@@ -5,6 +5,7 @@ export {
   DialogueNodeTypeSchema,
   RelationshipChangeSchema,
   EffectsSchema,
+  NumericComparisonSchema,
   DialogueTreeSchema,
   DialogueOverlaySchema,
 } from './schemas/dialogue.js';
@@ -14,6 +15,7 @@ export type {
   DialogueNodeType,
   RelationshipChange,
   Effects,
+  NumericComparison,
   DialogueTree,
   DialogueOverlay,
 } from './schemas/dialogue.js';
@@ -34,6 +36,8 @@ export type { Location } from './schemas/location.js';
 
 export {
   PlayerFlagsSchema,
+  PlayerStateBagSchema,
+  PlayerStatsBagSchema,
   PlayerStateSchema,
   ScenePayloadSchema,
   MoveRequestSchema,
@@ -44,6 +48,8 @@ export {
 } from './schemas/player.js';
 export type {
   PlayerFlags,
+  PlayerStateBag,
+  PlayerStatsBag,
   PlayerState,
   ScenePayload,
   MoveRequest,
@@ -165,6 +171,19 @@ export { preserveImportantTags } from './importantTags.js';
 export { ChunkSchema, FreeLeafSchema, GuardedLeafSchema, LeafSchema, BoundaryReasonSchema } from './schemas/chunk.js';
 export type { Chunk, FreeLeaf, GuardedLeaf, Leaf, BoundaryReason } from './schemas/chunk.js';
 export { evaluateBoundary } from './schemas/chunk.js';
+
+// Choice condition evaluator (single source of truth for flag/state/stat gating).
+export {
+  choicePassesFilters,
+  metadataConditionsPass,
+  parseNumericComparison,
+  compareNumber,
+} from './conditions.js';
+export type {
+  PlayerConditionState,
+  ConditionedChoice,
+  ParsedComparison,
+} from './conditions.js';
 
 export {
   AssetBaseSchema,

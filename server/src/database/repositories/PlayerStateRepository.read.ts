@@ -16,6 +16,8 @@ export async function getFullState(userId: string): Promise<FullStateRow | null>
        ps.alignment,
        ps.story_beat,
        COALESCE(ps.flags, '{}') AS flags,
+       COALESCE(ps.state, '{}') AS state,
+       COALESCE(ps.stats, '{}') AS stats,
        u.last_login,
        u.created_at,
        u.updated_at,
@@ -33,10 +35,13 @@ export async function getFullState(userId: string): Promise<FullStateRow | null>
 }
 
 export async function getForChoiceFilter(userId: string): Promise<{
-  credits: number; flags: Record<string, boolean>; time_blocks: number;
+  credits: number; flags: Record<string, boolean>; state: Record<string, string>; stats: Record<string, number>; time_blocks: number;
 } | null> {
   const result = await queryOLTP(
-    `SELECT credits, time_blocks, COALESCE(flags, '{}') AS flags
+    `SELECT credits, time_blocks,
+            COALESCE(flags, '{}') AS flags,
+            COALESCE(state, '{}') AS state,
+            COALESCE(stats, '{}') AS stats
      FROM player_states
      WHERE user_id = $1`,
     [userId]
@@ -46,6 +51,8 @@ export async function getForChoiceFilter(userId: string): Promise<{
     credits: result.rows[0].credits,
     time_blocks: result.rows[0].time_blocks,
     flags: result.rows[0].flags,
+    state: result.rows[0].state,
+    stats: result.rows[0].stats,
   };
 }
 
