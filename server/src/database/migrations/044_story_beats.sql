@@ -3,7 +3,7 @@
 -- Establishes the story_beats table as the canonical, ordered list of
 -- named story positions that all content and server logic reference by slug.
 --
--- Also extends migration_log.content_type CHECK to include 'story_beat'
+-- Also extends migration_log.content_type CHECK to include 'story_beat', 'story', 'mission', and 'mystery'
 -- using the drop-recreate pattern from migrations 036 and 037.
 
 BEGIN;
@@ -43,10 +43,12 @@ ALTER TABLE migration_log
         'scene',
         'gig',
         'vault',
+        'mystery',
         'mission',
         'shop_item',
         'location',
         'map_tile',
+        'story',
         'story_beat'
     ));
 

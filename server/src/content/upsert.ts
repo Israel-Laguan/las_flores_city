@@ -200,14 +200,12 @@ async function processStoryBeatData(data: any): Promise<string> {
     }
   } else if (data.id) {
     // Individual beat file: { id, name, description, metadata }
-    const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
     const normalizedBeat = {
       slug: data.id,
       label: data.name || data.id,
       order: data.metadata?.order ?? 0,
       description: data.description || '',
     };
-    StoryBeatRegistrySchema.parse({ beats: [normalizedBeat] });
     await upsertStoryBeat(normalizedBeat);
     slugs.push(normalizedBeat.slug);
   } else {

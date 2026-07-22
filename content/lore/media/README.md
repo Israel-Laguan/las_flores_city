@@ -18,7 +18,8 @@ docs/lore/media/
 │   ├── playnetix.md           # North American gaming
 │   ├── vitrina.md             # Latin American community
 │   └── voxstream.md           # Professional streaming
-└── social_media_ecosystem/    # Comprehensive social media landscape
+├── social_media_ecosystem/    # Comprehensive social media landscape
+└── social_media_posts/        # Example platform posts and content
 ```
 
 ---
@@ -41,6 +42,11 @@ See [Social Media Ecosystem](social_media_ecosystem/social_media_ecosystem.md) f
 - [PlayNetix](platforms/playnetix/playnetix.md) — North American gaming
 - [Vitrina](platforms/vitrina/vitrina.md) — Latin American community
 - [VoxStream](platforms/voxstream/voxstream.md) — Professional streaming
+
+### Platform Posts
+
+See [Social Media Posts](social_media_posts/README.md) for example posts from each platform:
+- [Platform Posts](social_media_posts/platform_posts.yaml) — Concrete examples of social media content
 
 ---
 
@@ -71,3 +77,8 @@ Use these tags when referencing media in dialogue YAML or vault entries:
 - `#playnetix` — gaming and youth culture
 - `#vitrina` — Latin American community content
 - `#voxstream` — professional streaming content
+- `#social_media_posts` — platform post references
+- `#shenshou_posts` — ShénShǒu platform content
+- `#linkpulse_posts` — LinkPulse platform content
+- `#playnetix_posts` — PlayNetix platform content
+- `#vitrina_posts` — Vitrina platform content

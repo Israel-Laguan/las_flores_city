@@ -152,9 +152,8 @@ export async function filterChoices(choices: any[], userId: string) {
     stats: player.stats || {},
     timeBlocks: player.time_blocks || 0,
   };
-  const credits = player.credits || 0;
 
-  return choices.filter((choice: any) => choicePassesFilters(choice, playerState, credits));
+  return choices.filter((choice: any) => choicePassesFilters(choice, playerState));
 }
 
 export async function processTimeBlockCost(
