@@ -9,8 +9,8 @@ metadata:
   characters:
     - sofia_mendoza
     - alberto_ramirez
-  required_flags:
-    - "sofia_trust > 0"
+  required_stats:
+    sofia_trust: "gt:0"
   flags:
     - alberto_status
     - sofia_trust

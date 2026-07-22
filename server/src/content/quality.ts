@@ -78,7 +78,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (p.includes('/stories/') || p.includes('\\stories\\')) return 'story';
   if (p.includes('/shop/') || p.includes('\\shop\\')) return 'shop_item';
   if (p.includes('/maps/') || p.includes('\\maps\\')) return 'map_tile';
-  if (p.endsWith('story_beats.yaml')) return 'story_beat';
+  if (p.endsWith('story_beats.yaml') || p.includes('/story_beats/') || p.includes('\\story_beats\\')) return 'story_beat';
   if (p.endsWith('.yaml') && p.includes('gig')) return 'gig';
   return null;
 }

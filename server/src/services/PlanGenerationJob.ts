@@ -35,14 +35,15 @@ export interface PlanFillJobStatus {
 export async function setPlanFillJobStatus(planId: string, status: Partial<PlanFillJobStatus>): Promise<void> {
   const now = new Date().toISOString();
   const existing = await getCache<PlanFillJobStatus>(`${GEN_CACHE_PREFIX}${planId}`);
+  const nextStatus = status.status ?? existing?.status ?? 'pending';
   const merged: PlanFillJobStatus = {
     planId,
-    status: status.status ?? existing?.status ?? 'pending',
+    status: nextStatus,
     progress: status.progress ?? existing?.progress ?? { total: 0, completed: 0, failed: 0 },
     items: status.items ?? existing?.items ?? [],
     startedAt: existing?.startedAt ?? now,
     updatedAt: now,
-    error: status.error ?? existing?.error,
+    error: status.error ?? (nextStatus === 'failed' ? existing?.error : undefined),
   };
   await setCache(`${GEN_CACHE_PREFIX}${planId}`, merged, 1800);
 }

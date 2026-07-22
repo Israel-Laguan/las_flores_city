@@ -33,3 +33,28 @@ beats:
     label: "Finale Complete"
     order: 300
     description: "After dialogue_finale.yaml — the player has reached one of the finale endings, completing the main story arc."
+
+  - slug: beat_sofia_intro
+    label: "Beat 1 — The Encounter"
+    order: 400
+    description: "The player spots Sofia being harassed while handing out community flyers."
+
+  - slug: beat_sofia_alberto_risk
+    label: "Beat 2 — The Brother's Orbit"
+    order: 401
+    description: "Sofia asks the player to intercept her brother Alberto."
+
+  - slug: beat_sofia_trust_building
+    label: "Beat 3 — The Confession"
+    order: 402
+    description: "A quiet moment where high trust unlocks Sofia's true backstory."
+
+  - slug: beat_sofia_corruption_network
+    label: "Beat 4 — The Machine Exposed"
+    order: 403
+    description: "Discovering the gang is funded by a corporate entity."
+
+  - slug: beat_sofia_resolution
+    label: "Beat 5 — Finale"
+    order: 404
+    description: "The culmination of choices. Sofia either stays, leaves, or dies."

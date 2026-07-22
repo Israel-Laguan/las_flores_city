@@ -5,7 +5,7 @@ description: A lean student with neon-green streaks in her dark hair and cyberne
 metadata:
   type: human
   role: npc
-  faction: 'TODO: Add faction'
+  faction: independent
   personality: calculating_rival
 lore_path: valentina_cruz.md
 narrative_path: valentina_cruz.md

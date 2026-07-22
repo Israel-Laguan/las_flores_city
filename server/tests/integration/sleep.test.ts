@@ -88,6 +88,8 @@ afterAll(async () => {
     await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
   }
   await pool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
+  // Null out FK references to scenes before deleting them
+  await pool.query('UPDATE player_states SET current_location_id = NULL WHERE current_location_id IN ($1, $2)', [APARTMENT_ID, CAFE_ID]);
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
   // Clean up test-specific fixtures: scenes and district created by this suite.

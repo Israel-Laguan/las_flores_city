@@ -113,9 +113,6 @@ nodes:
     speaker_id: "c51348ce-c575-4895-b17b-811af6869903"
     text: "Social work. I'm only in my first semester, so... everything is still pretty overwhelming. The vocabulary alone—I had to look up like ten words yesterday. *laughs nervously* My high school Spanish didn't quite prepare me for half the terms they use here."
     thought: "She smiles but there's vulnerability behind it. She's working hard to overcome the gaps in her education."
-    effects:
-      flag_set:
-        valentina_motivation_shared: true
     choices:
       - id: "encourage_val"
         text: "That sounds really ambitious. Social work is important work."

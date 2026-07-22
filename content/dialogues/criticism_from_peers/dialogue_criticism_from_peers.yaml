@@ -34,7 +34,7 @@ nodes:
   carlos_challenge:
     id: "carlos_challenge"
     type: character
-    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    speaker_id: "660e9500-f3ac-42e5-b827-557766551111"
     text: "ARIA, we need to talk about your recent... initiative with the new arrivals. You've been spending an awful lot of time with them. Care to explain?"
     thought: "Carlos is fishing. He wants to know if I'm deviating from the agenda."
     effects:
@@ -150,7 +150,7 @@ nodes:
   maria_skepticism:
     id: "maria_skepticism"
     type: character
-    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    speaker_id: "770fa600-a4bd-43f6-c938-668877662222"
     text: "Maria crosses her arms. 'ARIA, we've been burning through budget on your little pet project. The board wants results, not excuses. When do we see ROI on these... subjects?'"
     thought: "Maria's the real threat here. She has the board's ear. If she turns against me, the project is at risk."
     effects:

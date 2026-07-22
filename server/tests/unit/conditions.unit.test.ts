@@ -16,7 +16,7 @@ import {
 // share. No DB / no network — pure function under test.
 // ============================================================
 
-const EMPTY: PlayerConditionState = { flags: {}, state: {}, stats: {} };
+const EMPTY: PlayerConditionState = { flags: {}, state: {}, stats: {}, timeBlocks: 100 };
 
 describe('parseNumericComparison', () => {
   it('parses a valid op:number', () => {
@@ -132,9 +132,11 @@ describe('choicePassesFilters — combined + economy', () => {
     expect(choicePassesFilters({ id: 'c', text: 't', next_node_id: 'n' }, EMPTY, 100)).toBe(true);
   });
 
-  it('enforces the time_block_cost credit gate', () => {
-    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, EMPTY, 10)).toBe(true);
-    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, EMPTY, 4)).toBe(false);
+  it('enforces the time_block_cost gate using timeBlocks', () => {
+    const playerWithEnough = { ...EMPTY, timeBlocks: 10 };
+    const playerWithNotEnough = { ...EMPTY, timeBlocks: 4 };
+    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, playerWithEnough, 0)).toBe(true);
+    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, playerWithNotEnough, 0)).toBe(false);
   });
 
   it('evaluates a mixed flag + state + stat gate', () => {

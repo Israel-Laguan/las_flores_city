@@ -48,7 +48,7 @@ export function getContentTypeFromPath(filePath: string): ContentType | null {
     return 'location';
   }
 
-  if (normalizedPath.endsWith('story_beats.yaml')) {
+  if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) {
     return 'story_beat';
   }
 
@@ -86,7 +86,19 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         }
         break;
       case 'story':
-        YAMLStoryFileSchema.parse(data);
+        if (data.stories) {
+          YAMLStoryFileSchema.parse(data);
+        } else if (data.beats) {
+          // Story file with beats-based format — validate basic fields
+          if (!data.id || typeof data.id !== 'string') {
+            errors.push({ message: 'Story must have an id field', severity: 'error' });
+          }
+          if (!data.name || typeof data.name !== 'string') {
+            errors.push({ message: 'Story must have a name field', severity: 'error' });
+          }
+        } else {
+          YAMLStoryFileSchema.parse(data);
+        }
         break;
       case 'scene':
         YAMLSceneSchema.parse(data);
@@ -104,7 +116,17 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         YAMLLocationSchema.parse(data);
         break;
       case 'story_beat':
-        StoryBeatRegistrySchema.parse(data);
+        if (data.beats) {
+          StoryBeatRegistrySchema.parse(data);
+        } else {
+          // Individual story beat file — validate basic fields
+          if (!data.id || typeof data.id !== 'string') {
+            errors.push({ message: 'Story beat must have an id field', severity: 'error' });
+          }
+          if (!data.name || typeof data.name !== 'string') {
+            errors.push({ message: 'Story beat must have a name field', severity: 'error' });
+          }
+        }
         break;
       case 'map_tile':
         break;
