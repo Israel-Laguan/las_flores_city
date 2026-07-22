@@ -37,8 +37,8 @@ This guide explains how to set up MinIO for persistent image storage that surviv
 ### 1. Set Up Persistent MinIO
 
 ```bash
-cd /home/anthony/code/las_flores_city
-./scripts/setup-persistent-minio.sh
+cd /path/to/las_flores_city
+MINIO_ROOT_USER=your_username MINIO_ROOT_PASSWORD=your_strong_password ./scripts/setup-persistent-minio.sh
 ```
 
 This script will:
@@ -50,8 +50,8 @@ This script will:
 ### 2. Upload Existing Images
 
 ```bash
-cd /home/anthony/code/las_flores_city
-./scripts/upload-existing-images-to-minio.sh
+cd /path/to/las_flores_city
+MINIO_ACCESS_KEY=your_username MINIO_SECRET_KEY=your_strong_password ./scripts/upload-existing-images-to-minio.sh
 ```
 
 This will upload all existing tile images and any other images found in the content directory.
@@ -63,8 +63,8 @@ Update your `.env` file:
 ```env
 MINIO_ENDPOINT=localhost  # or use the container IP
 MINIO_PORT=9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
+MINIO_ACCESS_KEY=<your_username>
+MINIO_SECRET_KEY=<your_strong_password>
 ```
 
 ## Usage
@@ -72,8 +72,8 @@ MINIO_SECRET_KEY=minioadmin
 ### Access MinIO Console
 
 - **URL**: `http://localhost:9001`
-- **Username**: `minioadmin`
-- **Password**: `minioadmin`
+- **Username**: Set via `MINIO_ROOT_USER` environment variable
+- **Password**: Set via `MINIO_ROOT_PASSWORD` environment variable
 
 ### Manual Backup
 
@@ -174,18 +174,18 @@ podman start las-flores-minio-persistent
 
 ```bash
 # 1. Place image in content directory (temporary)
-cp character_portrait.png /home/anthony/code/las_flores_city/content/characters/joe/assets/
+cp character_portrait.png /path/to/las_flores_city/content/characters/joe/assets/
 
 # 2. Upload to MinIO
-mc cp /home/anthony/code/las_flores_city/content/characters/joe/assets/character_portrait.png lasflores/las-flores/portraits/joe/
+mc cp /path/to/las_flores_city/content/characters/joe/assets/character_portrait.png "lasflores/las-flores/portrait/character_portrait.png"
 
 # 3. Update YAML
 # content/characters/joe/char_joe.yaml
 asset_paths:
-  portrait: portraits/joe/character_portrait.png
+  portrait: portrait/character_portrait.png
 
 # 4. (Optional) Remove local copy if not needed
-# rm /home/anthony/code/las_flores_city/content/characters/joe/assets/character_portrait.png
+# rm /path/to/las_flores_city/content/characters/joe/assets/character_portrait.png
 ```
 
 ## Maintenance

@@ -106,6 +106,11 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
               }
               if (beat.order === undefined || beat.order === null) {
                 errors.push({ message: `Story beat at index ${i} must have an order field`, severity: 'error' });
+              } else if (!Number.isInteger(beat.order) || beat.order < 0) {
+                errors.push({ message: `Story beat at index ${i} order must be a non-negative integer`, severity: 'error' });
+              }
+              if (!beat.description || typeof beat.description !== 'string') {
+                errors.push({ message: `Story beat at index ${i} must have a description field`, severity: 'error' });
               }
             }
           }
@@ -141,6 +146,8 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
           }
           if (data.metadata?.order === undefined || data.metadata?.order === null) {
             errors.push({ message: 'Story beat must have metadata.order', severity: 'error' });
+          } else if (!Number.isInteger(data.metadata.order) || data.metadata.order < 0) {
+            errors.push({ message: 'Story beat metadata.order must be a non-negative integer', severity: 'error' });
           }
         }
         break;

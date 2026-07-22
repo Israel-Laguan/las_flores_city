@@ -10,8 +10,8 @@ platforms:
       - id: "shenshou_post_1"
         author: "微博用户6789"
         content: "这家族真让人讨厌，凭什么他们可以为所欲为？是时候有人给他们点颜色瞧瞧了！# ВандерМейр"
-        translation: "This family is really annoying, why can they do whatever they want? It's time someone teaches them a lesson! #VanderMeir"
-        tags: ["#VanderMeir", "#family", "#criticism"]
+        translation: "This family is really annoying, why can they do whatever they want? It's time someone teaches them a lesson! #VanDerMeer"
+        tags: ["#VanDerMeer", "#family", "#criticism"]
         sentiment: "negative"
         engagement: "high"
         

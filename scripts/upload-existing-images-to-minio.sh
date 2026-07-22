@@ -8,10 +8,15 @@ set -e
 echo "🔄 Uploading existing images to MinIO..."
 
 # Configuration
-MINIO_ENDPOINT="localhost:9000"
-MINIO_ACCESS_KEY="minioadmin"
-MINIO_SECRET_KEY="minioadmin"
+MINIO_ENDPOINT="${MINIO_ENDPOINT:-localhost:9000}"
+MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY:?MINIO_ACCESS_KEY environment variable is required}"
+MINIO_SECRET_KEY="${MINIO_SECRET_KEY:?MINIO_SECRET_KEY environment variable is required}"
 BUCKET_NAME="las-flores"
+
+# Derive repository root from script location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+CONTENT_DIR="$REPO_ROOT/content"
 
 # Check if mc (MinIO client) is available
 if ! command -v mc &> /dev/null; then
@@ -32,7 +37,7 @@ fi
 
 # Upload tile images
 echo "📁 Uploading tile images..."
-TILES_DIR="/home/anthony/code/las_flores_city/content/lore/shared/tiles"
+TILES_DIR="$CONTENT_DIR/lore/shared/tiles"
 
 for tile_dir in "$TILES_DIR"/*/; do
     if [ -d "$tile_dir" ]; then
@@ -41,22 +46,27 @@ for tile_dir in "$TILES_DIR"/*/; do
         
         if [ -d "$assets_dir" ]; then
             echo "  📦 Uploading $tile_name tiles..."
-            mc cp --recursive "$assets_dir/" lasflores/$BUCKET_NAME/tiles/$tile_name/
+            mc cp --recursive "$assets_dir/" "lasflores/$BUCKET_NAME/tiles/$tile_name/"
         fi
     fi
 done
 
 # Upload any other existing images
 echo "🔍 Looking for other image assets..."
-find /home/anthony/code/las_flores_city/content -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" | while read -r image_file; do
+find "$CONTENT_DIR" -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" | while read -r image_file; do
     # Get relative path from content directory
-    rel_path=$(realpath --relative-to=/home/anthony/code/las_flores_city/content "$image_file")
+    rel_path=$(realpath --relative-to="$CONTENT_DIR" "$image_file")
     
-    # Create MinIO path
-    minio_path="las-flores/$(dirname "$rel_path")"
+    # Derive asset_type from path for canonical key: las-flores/${assetType}/${name}${ext}
+    base_name="$(basename "$image_file")"
+    ext="${base_name##*.}"
+    name="${base_name%.*}"
+    asset_type="$(dirname "$rel_path" | cut -d/ -f1)"
     
-    echo "  📁 Uploading $rel_path..."
-    mc cp "$image_file" lasflores/$minio_path/
+    minio_path="$BUCKET_NAME/$asset_type/$name.$ext"
+    
+    echo "  📁 Uploading $rel_path -> $minio_path"
+    mc cp "$image_file" "lasflores/$minio_path"
     
 done
 

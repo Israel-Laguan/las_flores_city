@@ -15,7 +15,7 @@ This directory contains example social media posts from various platforms operat
 
 ## File Structure
 
-```
+```text
 content/lore/media/social_media_posts/
 └── platform_posts.yaml       # Main YAML file containing all platform posts
 ```
@@ -64,7 +64,7 @@ Use the sentiment and engagement metadata to:
 
 ## Integration with Media Ecosystem
 
-This content complements the broader [Social Media Ecosystem](../../social_media_ecosystem/social_media_ecosystem.md) documentation by providing concrete examples of platform-specific content.
+This content complements the broader [Social Media Ecosystem](../social_media_ecosystem/social_media_ecosystem.md) documentation by providing concrete examples of platform-specific content.
 
 ## Cross-Reference Tags
 

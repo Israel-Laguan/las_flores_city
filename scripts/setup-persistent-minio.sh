@@ -13,6 +13,13 @@ BACKUP_DIR="$HOME/las_flores_minio_backups"
 CONTAINER_NAME="las-flores-minio-persistent"
 NETWORK_NAME="las-flores-net"
 
+# Require credentials via environment variables
+if [ -z "${MINIO_ROOT_USER:-}" ] || [ -z "${MINIO_ROOT_PASSWORD:-}" ]; then
+    echo "❌ MINIO_ROOT_USER and MINIO_ROOT_PASSWORD environment variables are required."
+    echo "   Example: MINIO_ROOT_USER=myuser MINIO_ROOT_PASSWORD=mypassword ./scripts/setup-persistent-minio.sh"
+    exit 1
+fi
+
 # Create directories
 echo "📁 Creating directories..."
 mkdir -p "$MINIO_DATA_DIR"
@@ -46,11 +53,11 @@ echo "🐳 Starting MinIO container with persistent storage..."
 podman run -d \
     --name "$CONTAINER_NAME" \
     --network "$NETWORK_NAME" \
-    -p 9000:9000 \
-    -p 9001:9001 \
+    -p 127.0.0.1:9000:9000 \
+    -p 127.0.0.1:9001:9001 \
     -v "$MINIO_DATA_DIR:/data" \
-    -e MINIO_ROOT_USER=minioadmin \
-    -e MINIO_ROOT_PASSWORD=minioadmin \
+    -e MINIO_ROOT_USER="$MINIO_ROOT_USER" \
+    -e MINIO_ROOT_PASSWORD="$MINIO_ROOT_PASSWORD" \
     docker.io/minio/minio:latest \
     server /data --console-address ":9001"
 
@@ -60,7 +67,7 @@ echo "✅ MinIO container started: $CONTAINER_NAME"
 MINIO_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CONTAINER_NAME")
 echo "📡 MinIO IP: $MINIO_IP"
 echo "🌐 MinIO Console: http://localhost:9001"
-echo "🔐 Credentials: minioadmin/minioadmin"
+echo "🔐 Credentials: $MINIO_ROOT_USER/$MINIO_ROOT_PASSWORD"
 
 # Create backup script
 echo "🛡️  Creating backup script..."
@@ -70,12 +77,27 @@ cat > "$HOME/backup-minio.sh" << 'EOF'
 
 MINIO_DATA="$HOME/las_flores_minio_data"
 BACKUP_DIR="$HOME/las_flores_minio_backups"
+CONTAINER_NAME="las-flores-minio-persistent"
 DATE=$(date +%Y%m%d_%H%M%S)
 
 # Create backup
 echo "📦 Creating MinIO backup: $DATE"
 mkdir -p "$BACKUP_DIR"
+
+# Stop MinIO for consistent backup
+if podman ps --format '{{.Names}}' | grep -q "$CONTAINER_NAME"; then
+    echo "🛑 Stopping MinIO for consistent backup..."
+    podman stop "$CONTAINER_NAME"
+    STOPPED=true
+fi
+
 tar -czf "$BACKUP_DIR/minio_backup_$DATE.tar.gz" -C "$MINIO_DATA" .
+
+# Restart MinIO if we stopped it
+if [ "${STOPPED:-false}" = true ]; then
+    echo "🐳 Restarting MinIO..."
+    podman start "$CONTAINER_NAME"
+fi
 
 # Keep only last 5 backups
 echo "🧹 Cleaning up old backups..."
@@ -115,6 +137,7 @@ fi
 # Restore backup
 echo "📦 Extracting backup..."
 mkdir -p "$MINIO_DATA"
+rm -rf "$MINIO_DATA"/*
 tar -xzf "$LATEST_BACKUP" -C "$MINIO_DATA"
 
 echo "✅ Restore complete!"
@@ -124,9 +147,9 @@ EOF
 chmod +x "$HOME/restore-minio.sh"
 echo "✅ Restore script created: $HOME/restore-minio.sh"
 
-# Set up automatic backups
+# Set up automatic backups (idempotent — remove existing entry first)
 echo "⏰ Setting up automatic backups..."
-(crontab -l 2>/dev/null; echo "0 2 * * * $HOME/backup-minio.sh") | crontab -
+crontab -l 2>/dev/null | grep -v 'backup-minio.sh' | { cat; echo "0 2 * * * $HOME/backup-minio.sh"; } | crontab -
 echo "✅ Daily backup scheduled at 2:00 AM"
 
 echo ""
@@ -142,5 +165,5 @@ echo ""
 echo "💡 To use with Las Flores Server:"
 echo "  MINIO_ENDPOINT=$MINIO_IP"
 echo "  MINIO_PORT=9000"
-echo "  MINIO_ACCESS_KEY=minioadmin"
-echo "  MINIO_SECRET_KEY=minioadmin"
+echo "  MINIO_ACCESS_KEY=$MINIO_ROOT_USER"
+echo "  MINIO_SECRET_KEY=$MINIO_ROOT_PASSWORD"
