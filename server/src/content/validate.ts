@@ -49,7 +49,7 @@ async function validateDialogueBeatSlugs(filePath: string, data: any, errors: Va
     for (const [nodeId, node] of Object.entries(nodes as Record<string, any>)) {
       const beatSlug = (node as any)?.effects?.story_beat;
       if (beatSlug && !validSlugs.has(beatSlug)) {
-        errors.push({ file: filePath, message: `Unknown story_beat slug "${beatSlug}" on node "${nodeId}" — not in registry`, severity: 'warning' });
+        errors.push({ file: filePath, message: `Unknown story_beat slug "${beatSlug}" on node "${nodeId}" — not in registry`, severity: 'error' });
       }
     }
   }
@@ -67,7 +67,7 @@ async function validateSceneBeatSlugs(filePath: string, data: any, errors: Valid
     const slugsToCheck = Array.isArray(requiredBeat) ? requiredBeat : [requiredBeat];
     for (const slug of slugsToCheck) {
       if (!validSlugs.has(slug)) {
-        errors.push({ file: filePath, message: `Unknown required_story_beat slug "${slug}" in scene — not in registry`, severity: 'warning' });
+        errors.push({ file: filePath, message: `Unknown required_story_beat slug "${slug}" in scene — not in registry`, severity: 'error' });
       }
     }
   }
@@ -97,7 +97,7 @@ async function validateDialogueTreeBeatSlugs(filePath: string, data: any, errors
         continue;
       }
       if (!validSlugs.has(slug)) {
-        errors.push({ file: filePath, message: `Unknown required_story_beat slug "${slug}" in dialogue tree — not in registry`, severity: 'warning' });
+        errors.push({ file: filePath, message: `Unknown required_story_beat slug "${slug}" in dialogue tree — not in registry`, severity: 'error' });
       }
     }
   }

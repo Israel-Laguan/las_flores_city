@@ -4,7 +4,7 @@ description: "If the player helped Sofia, she later contacts them. Her brother A
 metadata:
   type: story_beat
   story_slug: real_heroism_in_latam
-  order: 2
+  order: 401
   location: south_las_flores
   characters:
     - sofia_mendoza

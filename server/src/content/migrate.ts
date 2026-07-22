@@ -60,7 +60,14 @@ export function extractContentIds(contentType: ContentType, data: Record<string,
       return ((data.shop_items as Array<{ id: string }>) || []).map((item) => item.id);
     case 'story_beat':
       // story_beat uses slug as PK — return slugs instead of UUIDs
-      return ((data.beats as Array<{ slug: string }>) || []).map((item) => item.slug);
+      if (data.beats) {
+        return (data.beats as Array<{ slug: string }>).map((item) => item.slug);
+      }
+      // Individual beat file: { id, name, description, metadata }
+      if (data.id && typeof data.id === 'string') {
+        return [data.id];
+      }
+      return [];
     default:
       return [(data as { id: string }).id];
   }

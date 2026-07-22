@@ -200,22 +200,27 @@ async function processStoryBeatData(data: any): Promise<string> {
     }
   } else if (data.id) {
     // Individual beat file: { id, name, description, metadata }
-    const beat = {
+    const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
+    const normalizedBeat = {
       slug: data.id,
       label: data.name || data.id,
       order: data.metadata?.order ?? 0,
       description: data.description || '',
     };
-    await upsertStoryBeat(beat);
-    slugs.push(beat.slug);
+    StoryBeatRegistrySchema.parse({ beats: [normalizedBeat] });
+    await upsertStoryBeat(normalizedBeat);
+    slugs.push(normalizedBeat.slug);
   } else {
     return '';
   }
 
-  // Invalidate stale cache before re-populating
+  // Refresh cache from the complete story_beats table so it contains all
+  // registered slugs, not just the ones from the current file/batch.
+  const { rows } = await queryOLTP<{ slug: string }>('SELECT slug FROM story_beats');
+  const allSlugs = rows.map(r => r.slug);
   await deleteCache('story_beats:slugs');
   // TTL 0 = no expiry — invalidated explicitly by deleteCache before each re-population
-  await setCache('story_beats:slugs', slugs, 0);
+  await setCache('story_beats:slugs', allSlugs, 0);
   return slugs.join(',');
 }
 
