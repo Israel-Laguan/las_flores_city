@@ -89,12 +89,25 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         if (data.stories) {
           YAMLStoryFileSchema.parse(data);
         } else if (data.beats) {
-          // Story file with beats-based format — validate basic fields
+          // Story file with beats-based format — validate each beat's required fields
           if (!data.id || typeof data.id !== 'string') {
             errors.push({ message: 'Story must have an id field', severity: 'error' });
           }
           if (!data.name || typeof data.name !== 'string') {
             errors.push({ message: 'Story must have a name field', severity: 'error' });
+          }
+          if (Array.isArray(data.beats)) {
+            for (const [i, beat] of data.beats.entries()) {
+              if (!beat.slug || typeof beat.slug !== 'string') {
+                errors.push({ message: `Story beat at index ${i} must have a slug field`, severity: 'error' });
+              }
+              if (!beat.label || typeof beat.label !== 'string') {
+                errors.push({ message: `Story beat at index ${i} must have a label field`, severity: 'error' });
+              }
+              if (beat.order === undefined || beat.order === null) {
+                errors.push({ message: `Story beat at index ${i} must have an order field`, severity: 'error' });
+              }
+            }
           }
         } else {
           YAMLStoryFileSchema.parse(data);
@@ -119,12 +132,15 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         if (data.beats) {
           StoryBeatRegistrySchema.parse(data);
         } else {
-          // Individual story beat file — validate basic fields
+          // Individual story beat file — validate all fields required by upsertStoryBeat
           if (!data.id || typeof data.id !== 'string') {
             errors.push({ message: 'Story beat must have an id field', severity: 'error' });
           }
           if (!data.name || typeof data.name !== 'string') {
             errors.push({ message: 'Story beat must have a name field', severity: 'error' });
+          }
+          if (data.metadata?.order === undefined || data.metadata?.order === null) {
+            errors.push({ message: 'Story beat must have metadata.order', severity: 'error' });
           }
         }
         break;

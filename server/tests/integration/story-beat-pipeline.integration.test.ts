@@ -242,4 +242,40 @@ describe('Story Beat Pipeline Integration', () => {
     const beatResult = await pool.query('SELECT label FROM story_beats WHERE slug = $1', ['prologue']);
     expect(beatResult.rows[0].label).toBe('Prologue');
   });
+
+  // Individual beat file ingestion: process a single /story_beats/<slug>/...yaml
+  test('processContentFile ingests individual beat file with correct slug and order', async () => {
+    const individualBeatPath = path.join(
+      CONTENT_DIR,
+      'story_beats',
+      'beat_sofia_alberto_risk',
+      'story_beat_beat_sofia_alberto_risk.yaml',
+    );
+
+    const result = await processContentFile(individualBeatPath);
+    expect(result.contentType).toBe('story_beat');
+    expect(result.contentId).toBe('beat_sofia_alberto_risk');
+
+    // Verify the persisted row has the order from the individual file (401, matching registry)
+    const beatResult = await pool.query(
+      'SELECT slug, "order", label, description FROM story_beats WHERE slug = $1',
+      ['beat_sofia_alberto_risk'],
+    );
+    expect(beatResult.rows.length).toBe(1);
+    expect(beatResult.rows[0].slug).toBe('beat_sofia_alberto_risk');
+    expect(beatResult.rows[0].order).toBe(401);
+    expect(beatResult.rows[0].label).toBe("Beat 2 — The Brother's Orbit");
+    expect(beatResult.rows[0].description).toContain('intercept her brother Alberto');
+
+    // Verify the cache was refreshed (mocked setCache should have been called with all slugs)
+    const { setCache } = await import('../../src/database/redis.js');
+    const cacheCall = (setCache as jest.Mock).mock.calls.find(
+      (call: any[]) => call[0] === 'story_beats:slugs',
+    );
+    expect(cacheCall).toBeDefined();
+    const cachedSlugs: string[] = cacheCall[1];
+    expect(cachedSlugs).toContain('beat_sofia_alberto_risk');
+    // Cache should contain all 12 registry slugs, not just this one
+    expect(cachedSlugs.length).toBe(12);
+  });
 });
