@@ -6,7 +6,7 @@
 ## Directory Structure
 
 ```
-docs/lore/media/
+content/lore/media/
 ├── README.md                  # This file
 ├── press/                     # Newspapers & magazines
 │   ├── el_informador/         # Voice of marginalized communities
@@ -81,4 +81,5 @@ Use these tags when referencing media in dialogue YAML or vault entries:
 - `#shenshou_posts` — ShénShǒu platform content
 - `#linkpulse_posts` — LinkPulse platform content
 - `#playnetix_posts` — PlayNetix platform content
+- `#voxstream_posts` — VoxStream platform content
 - `#vitrina_posts` — Vitrina platform content
