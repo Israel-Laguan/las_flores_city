@@ -46,6 +46,8 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+.minio-data/
+backups/
 
 # Content build artifacts
 content/**/*.generated.*

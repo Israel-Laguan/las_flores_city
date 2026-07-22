@@ -59,6 +59,8 @@ docker compose down            # stops containers but preserves volumes
 docker compose down --volumes  # also removes volumes (fresh DB)
 ```
 
+> **MinIO data safety**: `docker compose down --volumes` destroys all uploaded images. The MinIO volume uses a host-bind mount (`.minio-data/`) so data survives normal `down` commands. For extra safety, run `scripts/backup-content-assets.sh` before any operation that might affect volumes.
+
 After code changes, rebuild and verify:
 ```bash
 docker compose build server && docker compose up -d server
