@@ -163,6 +163,10 @@ nodes:
     thought: "My journey. Their experiment. Same thing, different words."
     is_end: true
     effects:
+      flag_set:
+        onboarding_complete: true
+        city_initial_exploration_done: true
+        welcome_center_visited: true
       story_beat: act1_city_arrived
 
 metadata:

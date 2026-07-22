@@ -126,6 +126,7 @@ nodes:
     text: "Las Flores has several districts. Downtown is corporate. Old Town is... traditional. The Market is where you buy and sell. The Undercity is off-limits for now. Start at the Old Town Cafe—there's a barista there who knows everyone."
     effects:
       flag_set:
+        city_districts_briefed: true
         city_overview_complete: true
     choices:
       - id: "explore_now"
@@ -138,6 +139,8 @@ nodes:
     text: "The Handler turns to leave, then pauses. \"One more thing. The cafe is a good place to start. Marco, the barista, is... friendly. Use the Travel menu to move between locations.\"\n\nShe disappears down the hallway."
     effects:
       flag_set:
+        tutorial_welcome_complete: true
+        handler_introduction_seen: true
         intro_complete: true
       location_discovered: "old_town_cafe"
 

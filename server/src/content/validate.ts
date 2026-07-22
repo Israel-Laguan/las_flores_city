@@ -120,8 +120,9 @@ export async function validateYAMLFile(filePath: string, schemaOnly: boolean = f
 
     const contentType = getContentTypeFromPath(filePath);
     if (!contentType) {
-      errors.push({ file: filePath, message: 'Could not determine content type from file path', severity: 'error' });
-      return { valid: false, errors, warnings };
+      // Files whose path doesn't match a known content type (e.g. lore
+      // reference files) are silently skipped — they aren't migrated.
+      return { valid: true, errors: [], warnings: [] };
     }
 
     const validationResult = validateContentByType(contentType, data);

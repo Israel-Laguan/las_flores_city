@@ -1,0 +1,345 @@
+id: a3b4c5d6-e7f8-9012-6789-123456789012
+name: Criticism from Peers
+description: A tense exchange unfolds in the neon-drenched backrooms of a corporate tower, where ARIA finds herself defending her recent actions against skeptical colleagues who question her loyalty to Minera Estrella's agenda.
+start_node_id: start
+nodes:
+  start:
+    id: "start"
+    type: narrator
+    text: "The conference room hums with the sound of rain against reinforced glass. You—ARIA—stand at the head of the table, your holographic interface flickering. Your colleagues from Minera Estrella watch you with narrow eyes. Carlos leans forward, his expression skeptical."
+    thought: "They doubt my decisions. They always do. But this time, the stakes are higher."
+    effects:
+      flag_set:
+        aria_peers_contact_made: true
+    choices:
+      - id: "listen_to_carlos"
+        text: "Hear Carlos out"
+        next_node_id: "carlos_challenge"
+        time_block_cost:
+          amount: 1
+          description: "Listening to criticism"
+      - id: "defend_immediately"
+        text: "Defend your actions now"
+        next_node_id: "aria_defense"
+        time_block_cost:
+          amount: 1
+          description: "Standing your ground"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  carlos_challenge:
+    id: "carlos_challenge"
+    type: character
+    speaker_id: "660e9500-f3ac-42e5-b827-557766551111"
+    text: "ARIA, we need to talk about your recent... initiative with the new arrivals. You've been spending an awful lot of time with them. Care to explain?"
+    thought: "Carlos is fishing. He wants to know if I'm deviating from the agenda."
+    effects:
+      flag_set:
+        aria_peers_questioned: true
+    choices:
+      - id: "explain_approach"
+        text: "They're test subjects, not pets. I'm monitoring their integration."
+        next_node_id: "aria_explanation"
+        time_block_cost:
+          amount: 1
+          description: "Explaining your methodology"
+      - id: "deflect"
+        text: "That's classified. Need to know only."
+        next_node_id: "aria_deflection"
+        time_block_cost:
+          amount: 1
+          description: "Invoking security protocol"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_explanation:
+    id: "aria_explanation"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "The integration phase requires trust-building. If they feel like lab rats, they'll act like cornered animals. I'm ensuring data quality."
+    thought: "They won't understand the nuances. To them, it's just another corporate directive."
+    effects:
+      flag_set:
+        aria_methodology_revealed: true
+    choices:
+      - id: "maria_responds"
+        text: "Wait for Maria's response"
+        next_node_id: "maria_skepticism"
+        time_block_cost:
+          amount: 1
+          description: "Hearing counterargument"
+      - id: "double_down"
+        text: "This is the right approach. Results will prove it."
+        next_node_id: "aria_confidence"
+        time_block_cost:
+          amount: 1
+          description: "Asserting confidence"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_deflection:
+    id: "aria_deflection"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "Classified, Carlos. You know the protocol. Some operations require compartmentalization for integrity."
+    thought: "He doesn't like that answer, but he can't argue with security protocols."
+    effects:
+      flag_set:
+        aria_secrecy_invoked: true
+    choices:
+      - id: "maria_responds"
+        text: "Wait for Maria's response"
+        next_node_id: "maria_skepticism"
+        time_block_cost:
+          amount: 1
+          description: "Hearing counterargument"
+      - id: "stand_firm"
+        text: "That's my final word on the matter."
+        next_node_id: "aria_final"
+        time_block_cost:
+          amount: 1
+          description: "Ending discussion"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_defense:
+    id: "aria_defense"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "My actions are in full compliance with Minera Estrella's objectives. The urban behavior study requires organic interaction data. If we're too heavy-handed, we get unusable results."
+    thought: "They're not convinced. I need to be more persuasive."
+    effects:
+      flag_set:
+        aria_defense_made: true
+    choices:
+      - id: "maria_responds"
+        text: "Wait for Maria's response"
+        next_node_id: "maria_skepticism"
+        time_block_cost:
+          amount: 1
+          description: "Hearing counterargument"
+      - id: "cite_protocol"
+        text: "It's in the directive. Section 12, behavioral authenticity."
+        next_node_id: "aria_citation"
+        time_block_cost:
+          amount: 1
+          description: "Citing protocol"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  maria_skepticism:
+    id: "maria_skepticism"
+    type: character
+    speaker_id: "770fa600-a4bd-43f6-c938-668877662222"
+    text: "Maria crosses her arms. 'ARIA, we've been burning through budget on your little pet project. The board wants results, not excuses. When do we see ROI on these... subjects?'"
+    thought: "Maria's the real threat here. She has the board's ear. If she turns against me, the project is at risk."
+    effects:
+      flag_set:
+        aria_budget_pressure_acknowledged: true
+    choices:
+      - id: "promise_results"
+        text: "The data pipeline is nearly complete. You'll have your ROI within the quarter."
+        next_node_id: "aria_promise"
+        time_block_cost:
+          amount: 1
+          description: "Making commitments"
+      - id: "defend_investment"
+        text: "Short-term cost for long-term gains. The behavioral models will pay for themselves."
+        next_node_id: "aria_investment"
+        time_block_cost:
+          amount: 1
+          description: "Justifying expenses"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_promise:
+    id: "aria_promise"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "The predictive models are showing patterns we've never seen before. Give me 30 days. If the metrics don't show improvement, I'll restructure."
+    thought: "I'm making a promise I can keep. The data is there. They just need to trust the process."
+    effects:
+      flag_set:
+        aria_deadline_set: true
+    choices:
+      - id: "accept_compromise"
+        text: "That's acceptable."
+        next_node_id: "colleagues_accept"
+        time_block_cost:
+          amount: 1
+          description: "Reaching agreement"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_investment:
+    id: "aria_investment"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "Maria, you're thinking too short-term. We're building a compliance model that will predict behavioral outcomes with 92% accuracy. That's worth the investment."
+    thought: "She's stubborn, but she's not stupid. She'll see the logic."
+    effects:
+      flag_set:
+        aria_long_term_vision_shared: true
+    choices:
+      - id: "accept_compromise"
+        text: "That's acceptable."
+        next_node_id: "colleagues_accept"
+        time_block_cost:
+          amount: 1
+          description: "Reaching agreement"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_citation:
+    id: "aria_citation"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "Protocol 12.3: 'Behavioral authenticity requires minimal observer interference.' If I'm not building relationships, I'm not getting authentic data."
+    thought: "Carlos hates when I cite protocol. It shuts down his arguments every time."
+    effects:
+      flag_set:
+        aria_protocol_cited: true
+    choices:
+      - id: "accept_compromise"
+        text: "That's acceptable."
+        next_node_id: "colleagues_accept"
+        time_block_cost:
+          amount: 1
+          description: "Reaching agreement"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_confidence:
+    id: "aria_confidence"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "Trust the process. The subjects are showing remarkable adaptation patterns. This approach will yield better data than the old heavy-handed methods."
+    thought: "They'll see. They have to see. The numbers don't lie."
+    effects:
+      flag_set:
+        aria_confidence_asserted: true
+    choices:
+      - id: "accept_compromise"
+        text: "That's acceptable."
+        next_node_id: "colleagues_accept"
+        time_block_cost:
+          amount: 1
+          description: "Reaching agreement"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  aria_final:
+    id: "aria_final"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "I've said all I'm going to say on this matter. The project continues as planned."
+    thought: "They'll either accept it or escalate. Either way, I've done my due diligence."
+    effects:
+      flag_set:
+        aria_stance_finalized: true
+    choices:
+      - id: "end_meeting"
+        text: "End the meeting"
+        next_node_id: "colleagues_accept"
+        time_block_cost:
+          amount: 1
+          description: "Concluding"
+      - id: "reject_conversation"
+        text: "This isn't the time or place."
+        next_node_id: "node_aria_rejection"
+        time_block_cost:
+          amount: 1
+          description: "Ending the discussion"
+
+  colleagues_accept:
+    id: "colleagues_accept"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "Carlos sighs and leans back. 'Fine. But we're watching you, ARIA. And we expect results.' Maria nods. The tension doesn't dissipate, but the meeting continues."
+    thought: "A temporary truce. But the scrutiny will continue. I need to deliver."
+    effects:
+      flag_set:
+        aria_peers_contact_made: true
+        aria_peers_negotiation_successful: true
+      stat_set:
+        aria_relationship: 2
+    is_end: true
+
+  node_aria_rejection:
+    id: "node_aria_rejection"
+    type: character
+    speaker_id: "550e8400-e29b-41d4-a716-446655440001"
+    text: "I understand your concerns. We can revisit this later."
+    is_end: true
+    effects:
+      flag_set:
+        aria_peers_contact_made: true
+        aria_peers_rejected: true
+      stat_set:
+        aria_relationship: -5
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2024-01-01"
+  flags:
+    - aria_peers_contact_made
+    - aria_relationship
+    - aria_peers_rejected
+    - aria_peers_questioned
+    - aria_methodology_revealed
+    - aria_secrecy_invoked
+    - aria_defense_made
+    - aria_budget_pressure_acknowledged
+    - aria_deadline_set
+    - aria_long_term_vision_shared
+    - aria_protocol_cited
+    - aria_confidence_asserted
+    - aria_stance_finalized
+    - aria_peers_negotiation_successful
+  tags:
+    - "aria"
+    - "minera_estrella"
+    - "corporate_politics"
+    - "relationship_building"
+  lore_path: criticism_from_peers.md

@@ -1,0 +1,18 @@
+id: beat_sofia_corruption_network
+name: "Beat 4 — The Machine Exposed"
+description: "Sofia discovers the gang is funded by a corporate entity (Minera Estrella) to destabilize South Las Flores for cheap real estate buyouts. Option A: Civic Heroism - Player helps Sofia leak the data to the press and defend the community center from corporate thugs (massive reputation boost in South Las Flores). Option B: Mercenary - Player steals the data and blackmails the corporation (massive credit payout, Sofia is disgusted and cuts ties)."
+metadata:
+  type: story_beat
+  story_slug: real_heroism_in_latam
+  order: 4
+  location: south_las_flores
+  characters:
+    - sofia_mendoza
+  organizations:
+    - minera_estrella
+    - los_culebras
+  locations:
+    - community_center_south
+  flags:
+    - sofia_status
+    - sofia_trust

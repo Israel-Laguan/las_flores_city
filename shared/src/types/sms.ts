@@ -37,6 +37,11 @@ export interface SMSThreadChoice {
   };
   required_flags?: Record<string, boolean>;
   hidden_if?: Record<string, boolean>;
+  // Typed condition gates (mirror DialogueChoiceSchema).
+  required_state?: Record<string, string>;
+  hidden_if_state?: Record<string, string>;
+  required_stats?: Record<string, string>;
+  hidden_if_stats?: Record<string, string>;
 }
 
 export interface SMSThreadDetail {

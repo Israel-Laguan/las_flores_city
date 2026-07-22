@@ -54,10 +54,34 @@ function makeGeneratePlan(cb: HandlersDeps) {
   const { setLoading, setError, setPlan, setStep, setPlanId, description } = cb;
   return useCallback(async () => {
     const data = await withLoading(setLoading, setError, () => api.generatePlan(description));
-    if (data?.success && data.data) {
-      await persistGenerate(setPlan, setStep, setPlanId, description, data.data.plan);
-    } else if (data) {
-      setError(data.error || 'Failed to generate plan');
+    if (!data?.success || !data.data) {
+      if (data) setError(data.error || 'Failed to generate plan');
+      return;
+    }
+
+    const { planId, plan, status } = data.data;
+    setPlan(plan);
+    setPlanId(planId);
+    setStep(2);
+
+    if (status === 'generating') {
+      const terminalStates = ['done', 'failed', 'proposed'];
+      const poll = async () => {
+        try {
+          const statusRes = await api.getGenerationStatus(planId);
+          if (statusRes.success && statusRes.data && !terminalStates.includes(statusRes.data.status)) {
+            await refreshPlanFromDb(planId, setPlan);
+            setTimeout(poll, 1500);
+          } else if (statusRes.success && statusRes.data) {
+            await refreshPlanFromDb(planId, setPlan);
+          }
+        } catch (err) {
+          console.warn('Generation status poll failed:', err);
+        }
+      };
+      setTimeout(poll, 1500);
+    } else {
+      await refreshPlanFromDb(planId, setPlan);
     }
   }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
 }

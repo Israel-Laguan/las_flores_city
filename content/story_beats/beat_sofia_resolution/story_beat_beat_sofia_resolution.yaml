@@ -1,0 +1,14 @@
+id: beat_sofia_resolution
+name: "Beat 5 — Finale"
+description: "The culmination of choices. If Romanced/High Trust: Sofia stays in Las Flores, building a resilient community network. The player gains a loyal faction leader. If Disillusioned (Ignored/Betrayed): Sofia either leaves the city or is killed trying to fight the corruption alone. The player loses access to civil society perks."
+metadata:
+  type: story_beat
+  story_slug: real_heroism_in_latam
+  order: 5
+  location: south_las_flores
+  characters:
+    - sofia_mendoza
+  flags:
+    - sofia_status
+    - sofia_trust
+    - alberto_status

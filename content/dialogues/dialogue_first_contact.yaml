@@ -38,6 +38,10 @@ nodes:
     thought: "Relationship parameters updated: Friendship increased. Visual scanning reduced. Social baseline established."
     is_end: true
     effects:
+      flag_set:
+        aria_first_contact_complete: true
+      state_set:
+        aria_initial_tone: "friendly"
       story_beat: act1_first_contact
   4e289bf0-410c-44bf-8a7e-123456789abc:
     id: "4e289bf0-410c-44bf-8a7e-123456789abc"
@@ -47,6 +51,10 @@ nodes:
     thought: "Relationship parameters updated: Romance increased. Optical analysis indicates positive facial muscle contraction."
     is_end: true
     effects:
+      flag_set:
+        aria_first_contact_complete: true
+      state_set:
+        aria_initial_tone: "flirtatious"
       story_beat: act1_first_contact
   5e289bf0-410c-44bf-8a7e-123456789abc:
     id: "5e289bf0-410c-44bf-8a7e-123456789abc"
@@ -56,6 +64,10 @@ nodes:
     thought: "Relationship parameters updated: Friendship decreased. Minor irritation detected in her vocal frequency."
     is_end: true
     effects:
+      flag_set:
+        aria_first_contact_complete: true
+      state_set:
+        aria_initial_tone: "cold"
       story_beat: act1_first_contact
 metadata:
   version: "1.0"

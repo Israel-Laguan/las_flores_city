@@ -1,26 +1,35 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
-import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
   retries?: number;
+  model?: string;
 }
 
 export class LiteLLMProvider implements LLMProvider {
   private baseUrl: string;
   private apiKey: string;
   private model: string;
-  private timeoutMs: number;
+  private defaultTimeoutMs: number;
   private retries: number;
 
   constructor(opts?: LiteLLMProviderOptions) {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
     this.apiKey = process.env.LITELLM_API_KEY || '';
-    this.model = process.env.LLM_MODEL || 'poolside/laguna-m.1';
-    this.timeoutMs = opts?.timeoutMs ?? 60_000;
+    this.model = opts?.model || process.env.LLM_MODEL || 'poolside/laguna-m.1';
+    this.defaultTimeoutMs = opts?.timeoutMs ?? parseInt(process.env.LLM_TIMEOUT_MS || '60000', 10);
     this.retries = opts?.retries ?? 2;
+  }
+
+  withTimeout(timeoutMs: number): LiteLLMProvider {
+    return new LiteLLMProvider({
+      timeoutMs,
+      retries: this.retries,
+      model: this.model,
+    });
   }
 
   private extractUsage(data: any): LLMUsage | null {
@@ -37,14 +46,19 @@ export class LiteLLMProvider implements LLMProvider {
     return null;
   }
 
-  private async callLLM(systemPrompt: string, userMessage: string): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
+  private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
+    const timeoutMs = customTimeoutMs ?? this.defaultTimeoutMs;
+    const maxTimeoutMs = parseInt(process.env.LLM_MAX_TIMEOUT_MS || '300000', 10);
     let lastError: Error | null = null;
+    let attemptTimeoutMs = timeoutMs;
+
     for (let attempt = 0; attempt <= this.retries; attempt++) {
       try {
         if (attempt > 0) {
           const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10_000);
-          console.log(`[LiteLLM] Retry ${attempt}/${this.retries} after ${delay}ms`);
+          console.log(`[LiteLLM] Retry ${attempt}/${this.retries} after ${delay}ms, timeout: ${attemptTimeoutMs}ms`);
           await new Promise(r => setTimeout(r, delay));
+          attemptTimeoutMs = Math.min(attemptTimeoutMs * 2, maxTimeoutMs);
         }
         const response = await fetch(`${this.baseUrl}/v1/chat/completions`, {
           method: 'POST',
@@ -61,7 +75,7 @@ export class LiteLLMProvider implements LLMProvider {
             temperature: 0.7,
             response_format: { type: 'json_object' },
           }),
-          signal: AbortSignal.timeout(this.timeoutMs),
+          signal: AbortSignal.timeout(attemptTimeoutMs),
         });
 
         if (!response.ok) {
@@ -78,7 +92,7 @@ export class LiteLLMProvider implements LLMProvider {
 
         const data = await response.json();
         const usage = this.extractUsage(data);
-        const content = data.choices?.[0]?.message?.content;
+        const content = data.choices?.[0]?.message?.content ?? data.choices?.[0]?.message?.reasoning_content;
         if (!content) {
           throw new Error('LiteLLM response did not contain any message content.');
         }
@@ -95,6 +109,34 @@ export class LiteLLMProvider implements LLMProvider {
         }
         lastError = err;
         if (attempt === this.retries) break;
+      }
+    }
+    // Enhance error with context before throwing
+    if (lastError) {
+      const baseMsg = `LiteLLM call failed after ${this.retries + 1} attempts`;
+      if (lastError.name === 'TimeoutError' || lastError.message?.includes('timeout')) {
+        const enhancedError = new Error(
+          `${baseMsg}: Connection to ${this.baseUrl} timed out. ` +
+          `Model: ${this.model}, current timeout: ${timeoutMs}ms, max: ${maxTimeoutMs}ms. ` +
+          `Check if LiteLLM is running and reachable from this container. ` +
+          `Test with: curl -s ${this.baseUrl}/health`
+        );
+        (enhancedError as any).cause = lastError;
+        (enhancedError as any).model = this.model;
+        (enhancedError as any).baseUrl = this.baseUrl;
+        (enhancedError as any).timeoutMs = timeoutMs;
+        throw enhancedError;
+      }
+      if (lastError.message?.includes('fetch failed') || lastError.message?.includes('Failed to fetch')) {
+        const enhancedError = new Error(
+          `${baseMsg}: Cannot reach LiteLLM at ${this.baseUrl}. ` +
+          `Check container networking, DNS resolution, and that LiteLLM is running. ` +
+          `With Podman rootless, host.containers.internal may not resolve without aardvark-dns. ` +
+          `Try using the host's IP address directly.`
+        );
+        (enhancedError as any).cause = lastError;
+        (enhancedError as any).baseUrl = this.baseUrl;
+        throw enhancedError;
       }
     }
     throw lastError!;
@@ -123,7 +165,7 @@ export class LiteLLMProvider implements LLMProvider {
             ],
             temperature: 0.7,
           }),
-          signal: AbortSignal.timeout(this.timeoutMs),
+          signal: AbortSignal.timeout(this.defaultTimeoutMs),
         });
 
         if (!response.ok) {
@@ -162,6 +204,17 @@ export class LiteLLMProvider implements LLMProvider {
     const systemPrompt = buildSystemPrompt(context);
     const { result, usage } = await this.callLLM(systemPrompt, description);
     return { plan: ContentPlanSchema.parse(result), usage };
+  }
+
+  async generateOutline(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
+    const outlineModel = process.env.LLM_OUTLINE_MODEL || this.model;
+    const provider = outlineModel !== this.model
+      ? new LiteLLMProvider({ model: outlineModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
+      : this;
+
+    const systemPrompt = buildOutlinePrompt(context);
+    const { result, usage } = await provider.callLLM(systemPrompt, description);
+    return { plan: result as ContentPlan, usage };
   }
 
   async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {

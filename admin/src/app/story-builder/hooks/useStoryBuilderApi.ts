@@ -17,10 +17,25 @@ export async function loadPlanFromDb(id: string) {
 }
 
 export async function generatePlan(description: string) {
-  return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
+  return postJSON<{ success: boolean; data?: { planId: string; plan: ContentPlan; status: string }; error?: string }>(
     '/admin/story-builder/plan',
     { description },
   );
+}
+
+export async function getGenerationStatus(planId: string) {
+  return adminFetch<{
+    success: boolean;
+    data?: {
+      planId: string;
+      status: string;
+      progress?: { total: number; completed: number; failed: number };
+      items?: Array<{ itemId: string; status: string; error?: string }>;
+      startedAt?: string;
+      updatedAt?: string;
+    };
+    error?: string;
+  }>(`/admin/story-builder/plans/${planId}/generation-status`);
 }
 
 export async function savePlan(description: string, plan: ContentPlan) {

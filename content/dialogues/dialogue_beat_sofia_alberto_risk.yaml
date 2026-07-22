@@ -1,0 +1,135 @@
+id: "6e5f4a3b-2c1d-4f9a-9b7c-5d5e4f3a2b1d"
+name: "Beat 2 — The Brother's Orbit"
+description: "Sofia contacts the player about her brother Alberto, who is running packages for Los Culebras gang. Three options: intercept and reason, sell out to gang, or use lethal force."
+start_node_id: "node_sofia_contact"
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  created_at: "2026-07-21T12:00:00Z"
+  updated_at: "2026-07-21T12:00:00Z"
+  tags:
+    - "sofia_mendoza"
+    - "alberto_ramirez"
+    - "questline"
+    - "beat_2"
+    - "los_culebras"
+    - "branch_point"
+  story_beat: "beat_sofia_alberto_risk"
+  location: "south_las_flores"
+  characters:
+    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    - "b2c3d4e5-f6a7-8901-bcde-234567890abc"
+  required_stats:
+    sofia_trust: "gt:0"
+
+nodes:
+  node_sofia_contact:
+    id: "node_sofia_contact"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "I need your help. It's about Alberto. He's... he's running packages for Los Culebras. I need you to intercept him. But you have to promise me - no killing. He's just a kid."
+    thought: "She looks desperate. This isn't just about her brother - it's about every kid in this neighborhood who thinks the gang is their only option."
+    choices:
+      - id: "choice_intercept_reason"
+        text: "I'll talk him down. No violence."
+        next_node_id: "node_reason_path"
+        time_block_cost:
+          amount: 4
+          description: "Finding and reasoning with Alberto takes time"
+        required_stats:
+          sofia_trust: "gt:0"
+
+      - id: "choice_sell_out"
+        text: "I'll take the gang's bribe to look the other way"
+        next_node_id: "node_sell_out_path"
+        time_block_cost:
+          amount: 2
+          description: "Taking a bribe is quick"
+
+      - id: "choice_lethal_force"
+        text: "If he's with the gang, he's made his choice. Lethal force if needed."
+        next_node_id: "node_lethal_path"
+        time_block_cost:
+          amount: 3
+          description: "Preparing for confrontation"
+
+  node_reason_path:
+    id: "node_reason_path"
+    type: "narrator"
+    text: "You track Alberto to a drop-off point near the river. He's nervous, looking around constantly. When he sees you, he tenses - but then recognizes something in your approach."
+    thought: "He's just a kid. Scared, but trying to look tough."
+    choices:
+      - id: "choice_talk_down"
+        text: "Alberto, your sister sent me. She's worried sick."
+        next_node_id: "node_reason_success"
+
+  node_reason_success:
+    id: "node_reason_success"
+    type: "character"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-234567890abc"
+    text: "Sofia... she's always looking out for me. I just... I didn't know what else to do. The money was good."
+    thought: "He's wavering. This could work."
+    choices:
+      - id: "choice_promise_help"
+        text: "We can find you another way. A better way."
+        next_node_id: "node_reason_resolution"
+
+  node_reason_resolution:
+    id: "node_reason_resolution"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "Alberto... thank you. Thank you for listening."
+    thought: "The relief on her face is palpable. This changes everything."
+    is_end: true
+    effects:
+      state_set:
+        alberto_status: "saved"
+      stat_set:
+        sofia_trust: 30
+      story_beat: "beat_sofia_alberto_risk"
+
+  node_sell_out_path:
+    id: "node_sell_out_path"
+    type: "narrator"
+    text: "The gang lieutenant hands you a thick envelope. 'Smart choice. Kid's got potential.' You walk away richer, but the money feels heavy in your pocket."
+    thought: "This might come back to haunt you."
+    is_end: false
+    effects:
+      state_set:
+        alberto_status: "gang_member"
+      grant_credits:
+        amount: 5000
+        currency: "credits"
+      story_beat: "beat_sofia_alberto_risk"
+    choices:
+      - id: "choice_face_sofia"
+        text: "Return to Sofia"
+        next_node_id: "node_sell_out_consequence"
+
+  node_sell_out_consequence:
+    id: "node_sell_out_consequence"
+    type: "character"
+    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    text: "I trusted you. And you... you took their money? After everything I told you about what they do to kids like Alberto?"
+    thought: "Her voice is ice. You've lost her forever."
+    is_end: true
+    effects:
+      stat_set:
+        sofia_trust: -100
+      state_set:
+        sofia_status: "disillusioned"
+      story_beat: "beat_sofia_alberto_risk"
+    conditions:
+      alberto_status: "gang_member"
+
+  node_lethal_path:
+    id: "node_lethal_path"
+    type: "narrator"
+    text: "The confrontation turns violent. Gunfire erupts. When the smoke clears, Alberto is on the ground, caught in the crossfire. His eyes are open, unblinking."
+    thought: "This wasn't supposed to happen."
+    is_end: true
+    effects:
+      state_set:
+        alberto_status: "dead"
+        sofia_status: "disillusioned"
+      story_beat: "beat_sofia_alberto_risk"

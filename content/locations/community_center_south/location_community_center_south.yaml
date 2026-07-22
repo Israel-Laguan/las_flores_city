@@ -1,0 +1,47 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+name: Community Center South
+type: location
+color: null
+aliases:
+  - South Las Flores Community Center
+  - Centro Comunitario del Sur
+tags:
+  - Community
+  - Civil Society
+  - Education
+  - Youth
+  - Activism
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Community Center South is a vital hub for civil society in South Las Flores, providing educational programs, youth activities, and community organizing space. Located in the heart of Old Las Flores, the center serves as a beacon of hope and resistance against the growing influence of gangs like Los Culebras and corporate interests like Minera Estrella. The center offers after-school programs, job training, legal clinics, and meeting space for grassroots organizations. It is frequently targeted by Los Culebras gang members who seek to destabilize the community on behalf of their corporate backers.
+daytime: |
+  During the day, the Community Center South buzzes with activity. Children attend after-school tutoring and recreational programs, adults participate in job training workshops and literacy classes, and community organizers meet to plan initiatives. The center's walls are adorned with educational posters, local artwork, and information about community resources. The atmosphere is one of energy and purpose, with the sounds of learning, discussion, and occasional laughter filling the air.
+nightlife: |
+  Evenings at the Community Center South are quieter but no less important. Community meetings often run late into the evening, with residents discussing neighborhood concerns, organizing resistance against gang recruitment, and planning cultural events. The center's lights shine as a beacon in the neighborhood, sometimes drawing unwanted attention from gang members or corporate security forces. Security volunteers keep watch, ensuring the safety of those inside.
+economy: |
+  The Community Center South operates on a shoestring budget, relying on donations, volunteer labor, and small grants from civil society organizations. It provides essential services that would otherwise be unavailable to the working-class residents of South Las Flores. The center also serves as an economic catalyst, helping residents find employment and start small businesses.
+population_dynamics: |
+  The center serves residents of all ages from South Las Flores and surrounding areas. Its primary users are youth (who come for after-school programs and a safe space away from gang recruitment), women (who use the legal clinics and job training), and community activists (who organize resistance efforts). The center is particularly important for families who cannot afford private education or legal services.
+transportation: |
+  The Community Center South is accessible by public bus from throughout South Las Flores and connects to the City District via the South Terminal. Many residents walk or bike to the center, as it is centrally located within Old Las Flores. The nearby streets are narrow and winding, typical of the historic district.
+important_places:
+  - name: Main Hall
+    description: Large gathering space for community meetings, cultural events, and educational programs. Can accommodate up to 200 people.
+  - name: Classroom Wing
+    description: Multiple rooms for tutoring, literacy classes, and workshops. Equipment includes whiteboards, computers, and educational materials.
+  - name: Legal Clinic
+    description: Office space where volunteer lawyers provide free consultations on housing, employment, and family law.
+  - name: Youth Lounge
+    description: Safe space for teenagers with games, books, and computers. Designed to keep youth engaged and away from gang recruitment.
+  - name: Community Kitchen
+    description: Facilities for cooking classes and providing meals to those in need. Often used for community fundraisers.
+  - name: Rooftop Garden
+    description: Small garden where residents grow vegetables and herbs. Provides fresh produce and educational opportunities.
+relationships: |
+  The Community Center South maintains close ties with civil society organizations throughout Las Flores. It works closely with activists like Sofia Mendoza (Graciela), receives support from organizations like COFAVIC and GreenWatch, and faces opposition from gangs like Los Culebras and corporate interests like Minera Estrella. The center is seen as a threat by those who benefit from community disorganization.
+conclusion: |
+  The Community Center South embodies the resilience of South Las Flores. In a district facing economic hardship, gang violence, and corporate exploitation, the center provides a space for education, organization, and resistance. It is both a practical resource for residents and a symbolic heart of the community's determination to maintain its identity and dignity.
+asset_paths:
+  image: community_center_south__default.png

@@ -3,7 +3,7 @@
  *
  * Validates:
  * - SQL migration creates the story_beats table with correct schema (PK on slug, UNIQUE on "order")
- * - Content file processing upserts all 7 beats with correct slugs and orders
+ * - Content file processing upserts all 12 beats with correct slugs and orders
  * - Migration logging records the story_beat content type
  *
  * Feature: story-beat-definition, Requirement 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
@@ -39,6 +39,11 @@ const EXPECTED_BEATS = [
   { slug: 'act2_mystery_active', order: 100 },
   { slug: 'act3_finale_unlocked', order: 200 },
   { slug: 'finale_complete', order: 300 },
+  { slug: 'beat_sofia_intro', order: 400 },
+  { slug: 'beat_sofia_alberto_risk', order: 401 },
+  { slug: 'beat_sofia_trust_building', order: 402 },
+  { slug: 'beat_sofia_corruption_network', order: 403 },
+  { slug: 'beat_sofia_resolution', order: 404 },
 ];
 
 describe('Story Beat Pipeline Integration', () => {
@@ -158,8 +163,8 @@ describe('Story Beat Pipeline Integration', () => {
     expect(constraintDef).toContain("'story_beat'");
   });
 
-  // Requirement 3.3, 3.6: processContentFile upserts all 7 beats with matching slugs and orders
-  test('processContentFile upserts all 7 beats with correct data', async () => {
+  // Requirement 3.3, 3.6: processContentFile upserts all 12 beats with matching slugs and orders
+  test('processContentFile upserts all 12 beats with correct data', async () => {
     // Load the canonical story_beats.yaml to get full expected data
     const yamlPath = path.join(CONTENT_DIR, 'story_beats.yaml');
     const yamlContent = await fs.readFile(yamlPath, 'utf-8');
@@ -169,7 +174,7 @@ describe('Story Beat Pipeline Integration', () => {
     // Process the content file
     const result = await processContentFile(yamlPath);
     expect(result.contentType).toBe('story_beat');
-    expect(result.contentId.split(',').length).toBe(7);
+    expect(result.contentId.split(',').length).toBe(12);
 
     // Record the migration (simulates what migrateContent does after processContentFile)
     await pool.query(
@@ -177,9 +182,9 @@ describe('Story Beat Pipeline Integration', () => {
       ['story_beats.yaml', checksum, 'story_beat', 'prologue']
     );
 
-    // Verify all 7 rows are present
+    // Verify all 12 rows are present
     const countResult = await pool.query('SELECT COUNT(*)::int AS count FROM story_beats');
-    expect(countResult.rows[0].count).toBe(7);
+    expect(countResult.rows[0].count).toBe(12);
 
     // Verify each expected beat exists with correct order
     for (const expectedBeat of EXPECTED_BEATS) {
@@ -236,5 +241,41 @@ describe('Story Beat Pipeline Integration', () => {
     // Verify data is still correct
     const beatResult = await pool.query('SELECT label FROM story_beats WHERE slug = $1', ['prologue']);
     expect(beatResult.rows[0].label).toBe('Prologue');
+  });
+
+  // Individual beat file ingestion: process a single /story_beats/<slug>/...yaml
+  test('processContentFile ingests individual beat file with correct slug and order', async () => {
+    const individualBeatPath = path.join(
+      CONTENT_DIR,
+      'story_beats',
+      'beat_sofia_alberto_risk',
+      'story_beat_beat_sofia_alberto_risk.yaml',
+    );
+
+    const result = await processContentFile(individualBeatPath);
+    expect(result.contentType).toBe('story_beat');
+    expect(result.contentId).toBe('beat_sofia_alberto_risk');
+
+    // Verify the persisted row has the order from the individual file (401, matching registry)
+    const beatResult = await pool.query(
+      'SELECT slug, "order", label, description FROM story_beats WHERE slug = $1',
+      ['beat_sofia_alberto_risk'],
+    );
+    expect(beatResult.rows.length).toBe(1);
+    expect(beatResult.rows[0].slug).toBe('beat_sofia_alberto_risk');
+    expect(beatResult.rows[0].order).toBe(401);
+    expect(beatResult.rows[0].label).toBe("Beat 2 — The Brother's Orbit");
+    expect(beatResult.rows[0].description).toContain('intercept him');
+
+    // Verify the cache was refreshed (mocked setCache should have been called with all slugs)
+    const { setCache } = await import('../../src/database/redis.js');
+    const cacheCall = (setCache as jest.Mock).mock.calls.find(
+      (call: any[]) => call[0] === 'story_beats:slugs',
+    );
+    expect(cacheCall).toBeDefined();
+    const cachedSlugs: string[] = cacheCall[1];
+    expect(cachedSlugs).toContain('beat_sofia_alberto_risk');
+    // Cache should contain all 12 registry slugs, not just this one
+    expect(cachedSlugs.length).toBe(12);
   });
 });

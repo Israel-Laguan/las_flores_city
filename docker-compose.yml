@@ -77,9 +77,16 @@ services:
       retries: 5
 
   # LiteLLM Proxy - Unified LLM API Gateway
+  # NOTE 2026-07-21: LiteLLM MUST run on the HOST, not in a container, because
+  # container DNS resolution fails in Podman rootless without aardvark-dns.
+  # The server container connects to host.containers.internal:4000.
+  # To use: Start litellm on host with: litellm --config ~/litellm_config/config.yaml --port 4000 &
+  # Then set server env: LITELLM_BASE_URL=http://host.containers.internal:4000
+  # (The litellm service below is kept for reference but should NOT be used)
   litellm:
     image: ghcr.io/berriai/litellm:main-latest
     container_name: las-flores-litellm
+    profiles: ["disabled"]  # LiteLLM runs on HOST, not in container (see comment above)
     restart: unless-stopped
     ports:
       - "4000:4000"
@@ -133,9 +140,12 @@ services:
       GOLD_CREDITS_PER_USD: ${GOLD_CREDITS_PER_USD:-100}
 
       # LiteLLM Proxy Configuration
-      LITELLM_BASE_URL: http://litellm:4000
+      # 2026-07-21: Use host.containers.internal:4000 (LiteLLM runs on HOST, not container)
+      # Original http://litellm:4000 won't resolve without aardvark-dns
+      LITELLM_BASE_URL: http://host.containers.internal:4000
       LITELLM_API_KEY: ${LITELLM_API_KEY:-local-key}
       LLM_MODEL: ${LLM_MODEL:-poolside/laguna-m.1}
+      LLM_PROVIDER: litellm  # 2026-07-21: Explicitly set to use real LLM (default is mock)
 
     depends_on:
       postgres-oltp:
@@ -144,8 +154,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      litellm:
-        condition: service_healthy
+    extra_hosts:
+      - "host.containers.internal:host-gateway"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 10s

@@ -9,6 +9,10 @@ const MOCK_IDS = {
 };
 
 export class MockProvider implements LLMProvider {
+  async generateOutline(description: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
+    return this.parseDescription(description, _context);
+  }
+
   async parseDescription(description: string, _context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
     const lower = description.toLowerCase();
     const items: ContentPlan['items'] = [];

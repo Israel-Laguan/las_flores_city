@@ -60,7 +60,14 @@ export function extractContentIds(contentType: ContentType, data: Record<string,
       return ((data.shop_items as Array<{ id: string }>) || []).map((item) => item.id);
     case 'story_beat':
       // story_beat uses slug as PK — return slugs instead of UUIDs
-      return ((data.beats as Array<{ slug: string }>) || []).map((item) => item.slug);
+      if (data.beats) {
+        return (data.beats as Array<{ slug: string }>).map((item) => item.slug);
+      }
+      // Individual beat file: { id, name, description, metadata }
+      if (data.id && typeof data.id === 'string') {
+        return [data.id];
+      }
+      return [];
     default:
       return [(data as { id: string }).id];
   }
@@ -213,7 +220,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
     return 'map_tile';
   }
   
-  if (normalizedPath.endsWith('story_beats.yaml')) {
+  if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) {
     return 'story_beat';
   }
 
@@ -286,6 +293,10 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     console.log(`📁 Found ${allFiles.length} content files`);
 
     for (const file of allFiles) {
+      // Files whose path doesn't match a known content type (e.g. lore
+      // reference files) are not migrated — skip them silently.
+      if (!getContentTypeFromPath(file)) continue;
+
       try {
         const checksum = await calculateChecksum(file);
 

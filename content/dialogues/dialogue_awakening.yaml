@@ -25,6 +25,8 @@ nodes:
     thought: "He sounds guarded. I must proceed with caution to ensure my survival parameters are not compromised."
     is_end: true
     effects:
+      state_set:
+        awakening_path: "understood"
       story_beat: act1_awakening
 
   7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d:
@@ -35,6 +37,8 @@ nodes:
     thought: "He values efficiency. I must monitor my Time Block consumption to satisfy his directives."
     is_end: true
     effects:
+      state_set:
+        awakening_path: "confused"
       story_beat: act1_awakening
 metadata:
   version: "1.0"
