@@ -643,7 +643,7 @@ cinematic editing, emotional music, 4k, 24fps
 - [City Atmosphere](../city_atmosphere.md)
 
 ### Character Files
-- [Alex Garcia](../figures/alex.md)
+- [Alex Garcia](../../../content/characters/alex_garcia/alex_garcia.md)
 - [Miguel Jhonson](../figures/gdd_friends.md)
 - [Carlos Lacan](../figures/gdd_friends.md)
 - [Ana Kim](../figures/gdd_friends.md)
