@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alexander_van_der_meer__<variant_slug>.png`
 
-- [ ] Alexander van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Alexander van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Alexander van der Meer in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Alexander van der Meer in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a mahogany-paneled boardroom reviewing mining expansion reports. Wire-rimmed reading glasses hang from the gold chain at his chest, pale blue eyes scanning figures with calculated precision. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alexander van der Meer considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him at a balcony overlooking the Van der Meer estate at dusk, gold signet ring catching the last light. His steel-gray hair is combed back precisely, thin lips pressed into a neutral line as he weighs family legacy against his son Dong's criminal entanglements. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alexander van der Meer in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a political gala holding a crystal glass, straight-backed posture conveying decades of disciplined leadership. His age-spotted hands gesture subtly as he navigates the complex interplay between Dutch, Chinese, and Latin American interests. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `wang_mei_li__<variant_slug>.png`
 
-- [ ] Wang Mei Li in a meeting, reviewing documents with colleagues
-- [ ] Wang Mei Li considering a strategic decision, weighing options thoughtfully
-- [ ] Wang Mei Li in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Wang Mei Li in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Standing at the head of a polished conference table in Dragon Phoenix Trading's modern headquarters, jet black hair in a sleek bob as she presents quarterly import-export reports on silk and lithium. Minimalist gold jewelry catches the light, calm measured gestures commanding respect from her executive team, the quiet authority of a woman who built an empire after divorce. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Wang Mei Li considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Alone in her private office at dusk, sharp brown eyes scanning a contract between Chinese suppliers and Las Flores buyers, weighing whether to expand her women's entrepreneurship mentorship program. Designer clothing and perfect posture project composure, but the subtle smile carries the memory of being treated as an outsider by the Van der Meer family. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Wang Mei Li in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Hosting a cultural exchange dinner for European investors and Chinese suppliers in a candlelit restaurant, jet black hair sleek as she bridges two worlds with practiced ease. Her team — Lin Wei handling logistics, Maria Garcia translating, Jin Yu overseeing quality — flanks her as she negotiates with the confidence of someone who named her company Dragon Phoenix Trading as a nod to resilience. Keep face identical. Same graphic novel style.
 

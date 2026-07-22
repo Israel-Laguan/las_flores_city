@@ -25,10 +25,28 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `jianhua__<variant_slug>.png`
 
-- [ ] Jianhua observing an indigenous festival from the fringes, his eyes alight with quiet fervor
-- [ ] Jianhua at an engineering worksite, sketching in his small notebook during a break
-- [ ] Jianhua photographing festival celebrations with his small camera, capturing cultural moments
-- [ ] Jianhua in quiet contemplation, the contrast between his engineering work and cultural fascination visible
+### `variant_1` — Jianhua observing an indigenous festival from the fringes, his eyes alight with quiet fervor
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: the edge of a vibrant indigenous festival, slightly stooped wiry frame in a worn canvas jacket half-hidden among onlookers, gray-black thinning hair and calloused hands clutching a small notebook, dark brown warm and distant eyes gazing at traditional drummers and dancers with quiet nostalgic fervor. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Jianhua at an engineering worksite, sketching in his small notebook during a break
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a dusty construction worksite with steel beams overhead, slightly stooped wiry frame perched on an overturned crate, gray-black thinning hair catching the sun, calloused hands gripping a pencil as he sketches in a small notebook, dark brown eyes distant and contemplative. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Jianhua photographing festival celebrations with his small camera, capturing cultural moments
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a crowded street during a festival procession, wiry frame in a worn canvas jacket threading through the throng, gray-black thinning hair and calloused hands steadying a small camera to his eye, dark brown warm eyes alight as he captures dancers in vivid traditional dress, a half-smile of wonder on his face. Keep face identical. Same graphic novel style.
+
+### `variant_4` — Jianhua in quiet contemplation, the contrast between his engineering work and cultural fascination visible
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a quiet courtyard at dusk, slightly stooped wiry frame in a worn canvas jacket, calloused hands resting on an open notebook, gray-black thinning hair silhouetted against festival lanterns in the background, dark brown warm and distant eyes gazing toward distant celebrations with quiet longing, a small camera tucked under one arm. Keep face identical. Same graphic novel style.
 

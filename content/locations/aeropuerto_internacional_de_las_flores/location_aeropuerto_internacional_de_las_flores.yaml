@@ -1,0 +1,22 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567101"
+type: location
+name: Aeropuerto Internacional de Las Flores
+color: null
+aliases:
+  - Las Flores International Airport
+tags:
+  - Landmark
+  - Airport
+  - Aviation
+  - Transport
+  - Logistics
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Aeropuerto Internacional de Las Flores serves as the primary gateway for international travel and cargo transportation to Las Flores Free City. Strategically located in the Southeast District, the airport connects the city to destinations across South America and beyond.
+conclusion: |
+  The airport is a vital transportation hub that connects Las Flores to the global economy, serving both passenger and cargo operations.
+asset_paths:
+  image: aeropuerto_internacional_de_las_flores__default.png
+lore_path: aeropuerto_internacional_de_las_flores.md

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `lucas_van_der_meer__<variant_slug>.png`
 
-- [ ] Lucas van der Meer in a clinical setting, examining a patient with professional care
-- [ ] Lucas van der Meer taking a moment to reflect between patients, showing quiet compassion
-- [ ] Lucas van der Meer consulting with medical colleagues, discussing patient care approaches
+### `variant_1` — Lucas van der Meer in a clinical setting, examining a patient with professional care
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a dimly lit living room of an expensive but disheveled apartment, slumped on a leather couch with track marks visible on his inner arms. His sandy blond hair is unwashed and greasy, expensive clothing wrinkled and stained. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Lucas van der Meer taking a moment to reflect between patients, showing quiet compassion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person standing at a window overlooking Old Las Flores, pale blue eyes vacant and unfocused, a trembling hand pressed against the glass. Dark circles frame his gaunt face, missing front tooth visible in a forced smile. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Lucas van der Meer consulting with medical colleagues, discussing patient care approaches
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a family gathering in a luxurious van der Meer estate, trying to appear normal while his siblings Peter and Anna watch him with worried eyes. His disheveled clothing smells of alcohol and cigarettes. Keep face identical. Same graphic novel style.
 

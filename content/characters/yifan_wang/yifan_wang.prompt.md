@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `yifan_wang__<variant_slug>.png`
 
-- [ ] Yifan Wang studying intently at a desk, surrounded by books and notes
-- [ ] Yifan Wang deep in thought about their studies, determined to succeed
-- [ ] Yifan Wang studying with classmates in a library, working together on a project
+### `variant_1` — Yifan Wang studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Seated at a desk cluttered with political theory texts and Mandarin news feeds in his international student dormitory, black hair in a modern cut, laptop open to UDV Chinese Students Association planning documents. A small framed photo of Tiananmen Square visible beside his elbow, sharp dark eyes burning with the conviction of someone who views this foreign campus as a stepping stone. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Yifan Wang deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Standing alone on the UDV campus at dusk, gazing at the Las Flores skyline while mentally rehearsing a speech challenging university administrators. Lean energetic frame taut with ambition, dark brown eyes sharp and ambitious, trendy but professional clothing marking him as someone who navigates campus politics with long-game thinking. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Yifan Wang studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Leading a spirited Chinese Students Association meeting in a university lecture hall, trendy professional clothing sharp against the whiteboard covered in event logistics for the upcoming National Day celebration. Charismatic smile rallies a previously low-profile organization into visible campus force, confident posture and laptop at the ready as he coordinates Chinese music, dance, and cuisine programming. Keep face identical. Same graphic novel style.
 

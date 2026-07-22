@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567102"
+type: location
+name: Agricultural Valley
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Agricultural
+  - Natural
+  - Rural
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  Nestled between Old Las Flores to the south and the Industrial Zone to the north, with the Río de las Flores flowing along its eastern edge, the Agricultural Valley is a picturesque region that embodies the harmony between nature and human endeavor.
+conclusion: |
+  The Agricultural Valley remains a vital food-producing region for Las Flores, balancing traditional farming with modern challenges.
+asset_paths:
+  image: agricultural_valley__default.png
+lore_path: agricultural_valley.md

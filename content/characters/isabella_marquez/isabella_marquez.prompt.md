@@ -25,10 +25,28 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `isabella_marquez__<variant_slug>.png`
 
-- [ ] Isabella Marquez dancing at a port district bar, her infectious laughter drawing people in
-- [ ] Isabella cooking a large meal in her kitchen, surrounded by her three sons and neighbors
-- [ ] Isabella welcoming sailors and dockworkers into her home with open arms
-- [ ] Isabella in a quiet moment, her smile hiding the quiet fear of losing another loved one
+### `variant_1` — Isabella Marquez dancing at a port district bar, her infectious laughter drawing people in
+**Scale:** 16:9
+**Edit prompt:**
+Show this person with thick curly dark brown hair loose and wild, gold hoop earrings catching bar light, curvaceous strong build swaying to music in a crowded port-district bar, wide infectious smile drawing sailors and dockworkers to the dance floor. Keep face and body identical. Same graphic novel style.
+
+### `variant_2` — Isabella cooking a large meal in her kitchen, surrounded by her three sons and neighbors
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in a steam-filled kitchen with colorful beaded bracelets on her wrists, warm brown lively eyes glowing over a bubbling pot, apron dusted with flour, as three small boys and a crowd of neighbors crowd around the table. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Isabella welcoming sailors and dockworkers into her home with open arms
+**Scale:** 16:9
+**Edit prompt:**
+Place this person at the doorway of a port-district home, wide arms open in greeting, colorful floral dress bright against weathered wood, warm tan skin and gold hoop earrings glowing in afternoon tropical light as dockworkers file in. Keep face identical. Same graphic novel style.
+
+### `variant_4` — Isabella in a quiet moment, her smile hiding the quiet fear of losing another loved one
+**Scale:** 16:9
+**Edit prompt:**
+Show this person with thick curly hair falling loose around her shoulders, warm brown eyes distant and guarded in a quiet port-side alley, wide smile replaced by a guarded stillness that hints at three disappearances she has survived. Keep face and body identical. Same graphic novel style.
 

@@ -25,10 +25,28 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `javier_salazar__<variant_slug>.png`
 
-- [ ] Javier "Javi" Salazar in the helicopter cockpit, scanning the Far South frontier for smugglers
-- [ ] Javier "Javi" Salazar at a city nightclub, flirting with potential romantic interests
-- [ ] Javier "Javi" Salazar boasting about his aerial exploits to skeptical colleagues
-- [ ] Javier "Javi" Salazar adjusting his flashy accessories, compensating for his remote posting
+### `variant_1` — Javier "Javi" Salazar in the helicopter cockpit, scanning the Far South frontier for smugglers
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a helicopter cockpit over rugged Far South frontier terrain, athletic toned build with broad shoulders in a flight jacket, dark brown trendy fade hair catching cockpit light, aviator sunglasses pushed up on head, dark brown confident eyes scanning the horizon with a self-assured grin, flashy knock-off designer watch visible at the wrist. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Javier "Javi" Salazar at a city nightclub, flirting with potential romantic interests
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a dimly lit city nightclub, athletic build in a fitted shirt with top buttons undone, dark brown trendy fade immaculate, strong jawline catching neon light, dark brown flirtatious eyes locked on someone across the bar, flashy knock-off designer watch glinting as he leans in with magnetic charm. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Javier "Javi" Salazar boasting about his aerial exploits to skeptical colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a police mess hall, broad shoulders leaning against a wall as he gestures expansively, trendy fade haircut and strong jawline animated with bravado, dark brown confident eyes alive with exaggeration, flashy knock-off designer watch catching light as he spins another embellished tale of aerial heroics. Keep face identical. Same graphic novel style.
+
+### `variant_4` — Javier "Javi" Salazar adjusting his flashy accessories, compensating for his remote posting
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a cramped barracks locker room, athletic toned build reflected in a smudged mirror, dark brown trendy fade carefully styled, strong jawline set with frustration as he adjusts a flashy knock-off designer watch and checks his cologne, aviator sunglasses perched on his head, dark brown eyes restless and yearning. Keep face identical. Same graphic novel style.
 

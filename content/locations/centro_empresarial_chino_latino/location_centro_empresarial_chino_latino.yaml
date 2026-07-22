@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567108"
+type: location
+name: Centro Empresarial Chino-Latino
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Business
+  - International
+  - Trade
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Centro Empresarial Chino-Latino serves as a key platform for collaboration between Chinese and Latino businesses, facilitating trade, investment, and partnerships.
+conclusion: |
+  The center enhances Las Flores's economic landscape through international business collaboration.
+asset_paths:
+  image: centro_empresarial_chino_latino__default.png
+lore_path: centro_empresarial_chino_latino.md

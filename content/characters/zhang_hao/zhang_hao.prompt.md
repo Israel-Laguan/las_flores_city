@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `zhang_hao__<variant_slug>.png`
 
-- [ ] Zhang Hao in a meeting, reviewing documents with colleagues
-- [ ] Zhang Hao considering a strategic decision, weighing options thoughtfully
-- [ ] Zhang Hao in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Zhang Hao in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Standing behind a customs inspection counter at the Port of Las Flores, standard-issue uniform distinguished by an old watch and several rings, shrewd gaze sweeping over a shipping manifest. Calculating eyes assess which containers might yield a bribe, graying crew cut practical and severe, rugged face revealing years of hard work and harder choices. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Zhang Hao considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Alone in a cramped port office at night, graying crew cut catching the overhead fluorescent light, weighing whether to expedite a Chinese-origin shipment or squeeze the broker for a larger payment. Rings on his fingers tap an anxious rhythm against the desk, the compulsive gambler's perpetual debt ledger open beside the official documents, insecure authority cracking at the edges. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Zhang Hao in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Leaning across a table in a backroom at the port, confident posture cracking slightly as he negotiates a corrupt clearance deal. Cultural favoritism thinly veiled as kinship, rings glinting as he gestures, robust frame imposing but the calculating gaze betraying a man terrified of being seen clearly for what he really is. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `zheng_wuhao__<variant_slug>.png`
 
-- [ ] Zheng Wuhao at work in their professional environment, focused on their tasks
-- [ ] Zheng Wuhao in a moment of reflection, considering their next steps
-- [ ] Zheng Wuhao with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Zheng Wuhao at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Standing on the container facility floor at Minera Estrella, clipboard in hand and safety boots planted wide, gray-flecked black hair practical and short. Dark brown eyes tired and guarded as he surveys the rows of lithium containers under harsh industrial lighting, work-worn hands gripping the clipboard with the tension of a man who knows what's coming. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Zheng Wuhao in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Alone in his office after the trial, stocky frame hunched over testimony transcripts, the weight of his downplayed initial report pressing on him. Tired dark brown eyes stare at the damning evidence of the Great Lithium Leak he failed to contain, black hair with gray at temples catching the harsh fluorescent light, weathered face showing the cost of a decision that delayed a comprehensive response. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Zheng Wuhao with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Briefing Minera Estrella executives in a sterile conference room, work-worn hands gripping the podium as he delivers the officially sanctioned version attributing the dam failure to heavy rainfall. Stocky solid frame projects authority, but tired guarded eyes betray the truth he buried under assumption and expedience on the night of August 15, 2052. Keep face identical. Same graphic novel style.
 

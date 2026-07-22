@@ -1,0 +1,157 @@
+id: "adeyemi-post-2077-tree"
+name: "Chief Inspector Adeyemi: The Weight of the Badge"
+description: "Interaction with Adeyemi in the aftermath of the 2077 Endgame. He is guarded, haunted, and the keeper of a dangerous secret."
+start_node_id: "adeyemi_start"
+nodes:
+  adeyemi_start:
+    id: "adeyemi_start"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "Can I help you? I'm in the middle of transition paperwork. The city doesn't stop just because the Mayor is gone."
+    choices:
+      - id: "ask_about_mayor"
+        text: "The Mayor... I heard he died in the estate. What really happened?"
+        next_node_id: "adeyemi_deflect_mayor"
+      - id: "ask_about_evelyn"
+        text: "Evelyn Ruthenberg is in custody. Do you think she'll talk?"
+        next_node_id: "adeyemi_guarded_evelyn"
+      - id: "ask_about_program"
+        text: "I saw your Secure Neighborhoods program. It seems... different now."
+        next_node_id: "adeyemi_reformist_hint"
+      - id: "end_conversation"
+        text: "Just passing through. Stay safe, Chief."
+        next_node_id: "adeyemi_end"
+  adeyemi_deflect_mayor:
+    id: "adeyemi_deflect_mayor"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "Alfonso Vega was a man who believed progress was worth any price. He was wrong. The vigilante killed him. I captured her. That's the story the city needs to heal."
+    choices:
+      - id: "press_truth"
+        text: "Is that the story, or the truth?"
+        next_node_id: "adeyemi_crack"
+        required_stats:
+          trust: "gt:50"
+      - id: "accept_story"
+        text: "I understand. Justice has been served."
+        next_node_id: "adeyemi_end"
+  adeyemi_guarded_evelyn:
+    id: "adeyemi_guarded_evelyn"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "She's a dangerous woman. But she's also tired. She fought a war for twenty years. Maybe now she can finally rest."
+    choices:
+      - id: "ask_evelyn_motivation"
+        text: "What does she say about why she did it?"
+        next_node_id: "adeyemi_evelyn_motivation"
+        required_stats:
+          trust: gt:60
+      - id: "ask_evelyn_regrets"
+        text: "Does she regret it? The killing?"
+        next_node_id: "adeyemi_evelyn_regrets"
+        required_stats:
+          empathy: gt:70
+      - id: "ask_evelyn_future"
+        text: "What will happen to her?"
+        next_node_id: "adeyemi_evelyn_future"
+        required_stats:
+          lore_knowledge: gt:75
+      - id: "ask_daniel"
+        text: "I heard you lost someone too. A brother?"
+        next_node_id: "adeyemi_crack"
+        required_stats:
+          lore_knowledge: "gt:70"
+      - id: "end_conversation"
+        text: "Thanks for the insight."
+        next_node_id: "adeyemi_end"
+  
+  adeyemi_evelyn_motivation:
+    id: "adeyemi_evelyn_motivation"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "She says she did it for Karla. For Yara. For everyone who died because Minera Estrella valued profits over lives. She says the law failed them. So she became the law."
+    choices:
+      - id: "respond_sympathy"
+        text: "I can understand that..."
+        next_node_id: "adeyemi_guarded_evelyn"
+        effects:
+          trust: +10
+      - id: "respond_judgment"
+        text: "That's vigilantism, not justice."
+        next_node_id: "adeyemi_guarded_evelyn"
+        effects:
+          trust: -5
+  
+  adeyemi_evelyn_regrets:
+    id: "adeyemi_evelyn_regrets"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "Regret is a complicated word for her. She doesn't regret exposing the truth. But she regrets that it took so long. That so many had to die. She regrets that Alex won't see the city they saved."
+    mood: "somber"
+    choices:
+      - id: "ask_about_alex"
+        text: "Alex Garcia? What happened?"
+        next_node_id: "adeyemi_alex_death"
+        required_stats:
+          lore_knowledge: gt:50
+      - id: "return_evelyn"
+        text: "I see."
+        next_node_id: "adeyemi_guarded_evelyn"
+  
+  adeyemi_alex_death:
+    id: "adeyemi_alex_death"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "Alex died saving this city. The dam was going to flood Las Flores. He detonated an abandoned mine to create a makeshift dam. Bought us the time we needed. The city survived. He didn't."
+    mood: "grieving"
+    choices:
+      - id: "return_evelyn"
+        text: "Gods. That's..."
+        next_node_id: "adeyemi_guarded_evelyn"
+        effects:
+          lore_knowledge: +15
+  
+  adeyemi_evelyn_future:
+    id: "adeyemi_evelyn_future"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "She'll serve her time. Fourteen years, if the appeals don't shorten it. And then? She told me she doesn't know. She spent so long being the shadow that she forgot how to live in the light."
+    choices:
+      - id: "offer_help_evelyn"
+        text: "Maybe we can help her remember."
+        next_node_id: "adeyemi_end"
+        effects:
+          flag_set:
+            evelyn_ally: true
+  adeyemi_reformist_hint:
+    id: "adeyemi_reformist_hint"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "It was supposed to be about engagement. Not crackdowns. I let it get away from me. Now the Transitional Council is picking through the pieces."
+    choices:
+      - id: "ask_daniel"
+        text: "I found a plaque... D.A. Is that you?"
+        next_node_id: "adeyemi_crack"
+        required_stats:
+          lore_knowledge: "gt:70"
+      - id: "end_conversation"
+        text: "Good luck with the transition."
+        next_node_id: "adeyemi_end"
+  adeyemi_crack:
+    id: "adeyemi_crack"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "Daniel was my brother. He believed in this city more than I did. He died because people like Vega and Li Wei treated lives like line items on a budget. I stayed in the force to make sure no one else suffered what he did. I failed."
+    effects:
+      flag_set:
+        adeyemi_lore_unlocked: true
+      story_beat: adeyemi_brother_revealed
+  adeyemi_end:
+    id: "adeyemi_end"
+    type: "character"
+    speaker_id: "char_adeyemi"
+    text: "Stay safe. The city is fragile right now."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_contact_complete: true

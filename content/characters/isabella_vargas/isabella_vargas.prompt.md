@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `isabella_vargas__<variant_slug>.png`
 
-- [ ] Isabella Vargas studying intently at a desk, surrounded by books and notes
-- [ ] Isabella Vargas deep in thought about their studies, determined to succeed
-- [ ] Isabella Vargas studying with classmates in a library, working together on a project
+### `variant_1` — Isabella Vargas studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a cluttered desk covered in cross-referenced spreadsheets and printouts of Las Estrellas murder cases, deep purple notebook open, dark hair loose, eyes focused and patient as she traces connections between victims. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Isabella Vargas deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Show this person slipping through a dim City Hall archive corridor at night, fitted blazer blending into shadow, metallic-toned accessories catching faint light, calm and determined expression as she locates a filing cabinet full of sealed records. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Isabella Vargas studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a quiet rooftop at dusk, dark purple notebook open on her lap, practical clothing and deep-toned accessories, dark eyes sharp with quiet anger as she relays intelligence between two figures in silhouette below. Keep face identical. Same graphic novel style.
 

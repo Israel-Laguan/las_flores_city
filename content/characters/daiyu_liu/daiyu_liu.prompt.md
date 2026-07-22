@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `daiyu_liu__<variant_slug>.png`
 
-- [ ] Daiyu Liu working on a painting or sketch, focused on their creative work
-- [ ] Daiyu Liu gazing at their finished work, contemplating the emotional impact
-- [ ] Daiyu Liu with other artists in a studio, sharing creative insights and techniques
+### `variant_1` — Daiyu Liu practicing calligraphy in her upscale apartment
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her seated at a lacquered desk in a minimalist apartment near the UILF campus, brush poised over rice paper, jet black hair falling past her shoulders. Jade pendant earrings catch the light, her expression imperious and focused, designer sleeves rolled to the elbows. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Daiyu Liu playing the guqin at a cultural event
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at an exclusive social event, fingers gliding across the strings of a guqin set on a carved stand. Her sharp asymmetric bob frames a composed expression, red lipstick precise, immaculate dress drawing stares from the assembled wealthy international students. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Daiyu Liu scrolling her phone, posting about Chinese cultural heritage
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her lounging on a velvet sofa, phone in manicured hand, dark lacquer nails tapping a social media post. Her almond-shaped eyes are sharp with conviction, a jade necklace at her throat, the upscale apartment behind her filled with traditional Chinese art. Keep face identical. Same graphic novel style.
 

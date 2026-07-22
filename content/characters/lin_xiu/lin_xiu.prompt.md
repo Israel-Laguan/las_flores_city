@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `lin_xiu__<variant_slug>.png`
 
-- [ ] Lin Xiu in a meeting, reviewing documents with colleagues
-- [ ] Lin Xiu considering a strategic decision, weighing options thoughtfully
-- [ ] Lin Xiu in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Lin Xiu in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a university literature seminar, gesturing passionately during a discussion while bold earrings catch the light. Her bob cut frames a round face, a stack of well-worn paperbacks beside her notebook. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Lin Xiu considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting in a café near the port, writing in a journal with an expression that shifts between confidence and hidden insecurity. Vibrant colors in her outfit contrast with the industrial backdrop. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Lin Xiu in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at her parents' port office, reviewing shipping manifests with a competitive edge in her expression. A statement bag sits at her feet, her playful style juxtaposed with the serious setting. Keep face identical. Same graphic novel style.
 

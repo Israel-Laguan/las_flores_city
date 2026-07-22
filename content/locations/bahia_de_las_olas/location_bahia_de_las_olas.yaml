@@ -1,0 +1,21 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567104"
+type: location
+name: Bahía de las Olas
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Coastal
+  - Beach
+  - Tourism
+  - Fishing
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  Nestled along the picturesque coastline of Las Flores, Bahía de las Olas is a charming seaside town that exudes a laid-back atmosphere and captivating beauty.
+conclusion: |
+  Bahía de las Olas offers an authentic coastal experience combining fishing traditions with tourism.
+asset_paths:
+  image: bahia_de_las_olas__default.png
+lore_path: bahia_de_las_olas.md

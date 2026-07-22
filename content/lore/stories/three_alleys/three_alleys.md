@@ -88,7 +88,7 @@ These three parallel scenes serve several functions:
 
 - [Karla's Murder](karlas_murder.md)
 - [The Student's Flight](the_students_flight.md)
-- [Alex Garcia](../figures/alex.md)
+- [Alex Garcia](../../characters/alex_garcia/alex_garcia.md)
 - [Evelyn Ruthenberg](../figures/evelyn_ruthenberg.md)
 - [The Bar Trap](the_bar_trap.md)
 - [The Retirement Complex Murders](retirement_complex_murders.md)

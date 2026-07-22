@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `ana_ramirez__<variant_slug>.png`
 
-- [ ] Ana Ramirez giving a speech, addressing an audience with conviction
-- [ ] Ana Ramirez in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Ana Ramirez with constituents at a community event, listening attentively to concerns
+### `variant_1` — Ana Ramirez giving a speech, addressing an audience with conviction
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a protest rally in a public plaza, fist raised high, copper-brown hair flowing from its long braid. Her deep amber eyes blaze with conviction as she addresses a crowd about indigenous land rights and mining destruction. The traditional woven bracelet on her left wrist catches the light. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Ana Ramirez in a moment of quiet contemplation, reflecting on the impact of their work
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing at the edge of a scarred landscape near a lithium mine, athletic frame silhouetted against damaged earth. Her strong jaw is set with quiet resolve, the small chin scar visible, as she contemplates the intersection of environmental and indigenous justice. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Ana Ramirez with constituents at a community event, listening attentively to concerns
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting in a community circle with indigenous elders, leaning forward with her toned arms resting on her knees, listening intently. Her high cheekbones and warm copper-brown complexion reflect the heritage she fights to protect, CJS field vest worn with pride. Keep face identical. Same graphic novel style.
 

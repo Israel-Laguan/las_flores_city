@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alicia_quevedo__<variant_slug>.png`
 
-- [ ] Alicia Quevedo at work in their professional environment, focused on their tasks
-- [ ] Alicia Quevedo in a moment of reflection, considering their next steps
-- [ ] Alicia Quevedo with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Alicia Quevedo at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at her governor's desk reviewing social welfare policy documents, warm hazel eyes sharp and attentive over reading glasses. Pearl stud earrings and a small beauty mark above her left lip catch the light as she studies the papers. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alicia Quevedo in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her looking out over the Las Flores skyline at dusk from a government balcony, slender poised posture reflecting on the Free City's transition from libertarian founding to social democracy. Her dark chestnut blowout catches the fading light. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alicia Quevedo with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person leading a cabinet meeting presenting welfare program proposals, gesturing with manicured hands at projected charts. Her thin arched eyebrows raise as she makes the case for reducing economic inequality caused by the lithium boom. Keep face identical. Same graphic novel style.
 

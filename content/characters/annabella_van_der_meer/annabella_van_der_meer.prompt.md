@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `annabella_van_der_meer__<variant_slug>.png`
 
-- [ ] Annabella van der Meer at work in their professional environment, focused on their tasks
-- [ ] Annabella van der Meer in a moment of reflection, considering their next steps
-- [ ] Annabella van der Meer with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Annabella van der Meer at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a geological field site examining rock samples with strong capable hands, dirt visible under her nails. Reading glasses perch on her silver-white bob, a faded field notebook poking from her jacket pocket as she confirms a lithium vein. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Annabella van der Meer in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing at the entrance of an abandoned mine, slightly stooped from decades of fieldwork. Her pale blue-green eyes carry a scholarly brightness tempered by the weight of knowing her 2029 discovery poisoned a follow-up team she neglected to warn. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Annabella van der Meer with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a research camp table with her geological team, spread-out maps and core samples between them. Her freckled, weathered face is animated as she explains the massive lithium deposit that launched the Dutch consortium's involvement in Las Flores. Keep face identical. Same graphic novel style.
 

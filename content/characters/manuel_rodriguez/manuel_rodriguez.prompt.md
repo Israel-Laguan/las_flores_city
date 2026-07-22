@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `manuel_rodriguez__<variant_slug>.png`
 
-- [ ] Manuel Rodriguez at work in their professional environment, focused on their tasks
-- [ ] Manuel Rodriguez in a moment of reflection, considering their next steps
-- [ ] Manuel Rodriguez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Manuel Rodriguez at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at an expensive restaurant in the Pacific District, signing a luxury hotel receipt with a practiced smile. His tailored suit is slightly too tight, an expensive gold watch catching the light, a perpetual flush from drinking visible on his cheeks. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Manuel Rodriguez in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a government office, face pale with panic as he reads an investigation report about his misused gastos de viáticos. His charming but shifty eyes dart between the document and the door. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Manuel Rodriguez with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a Pacific District community meeting, his manicured hands gesturing as he tries to explain excessive expenses. The practiced smile doesn't reach his eyes, his slightly paunchy frame sweating under scrutiny. Keep face identical. Same graphic novel style.
 

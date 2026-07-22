@@ -1,0 +1,22 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567107"
+type: location
+name: Centro Empresarial
+color: null
+aliases:
+  - Central Business District
+  - Financial Center
+tags:
+  - Landmark
+  - Financial
+  - Business
+  - Economic
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Centro Empresarial stands as the vibrant financial heartbeat of Las Flores, bustling with activity from dawn till dusk. This central business district is a symbol of the city's economic prowess.
+conclusion: |
+  The Centro Empresarial powers Las Flores's global ambitions through finance and commerce.
+asset_paths:
+  image: centro_empresarial__default.png
+lore_path: centro_empresarial.md

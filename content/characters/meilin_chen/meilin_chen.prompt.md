@@ -1,31 +1,21 @@
-# Portrait Prompt — Meilin Chen
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Meilin Chen, 20-year-old Las Flores Resident, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Meilin Chen, a 20-year-old Las Flores Resident from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Meilin Chen
-title: Las Flores Resident
-faction: i
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/meilin_chen/meilin_chen.md
+target: `portrait_urls[].url` in `content/characters/char_meilin_chen.yaml`
+consumer: portrait
 ---
 
-**Generated:** 2026-07-17T14:51:31.715Z
+# Prompt: Meilin Chen
+
+[CONSUMER: portrait]
+**Type:** portrait
+**Target field:** `portrait_urls[].url` in `content/characters/char_meilin_chen.yaml`
+**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+
+## Prompt
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese adult woman Resident in her mid 20s. She has a distinctive appearance with Asian features, dark almond-shaped eyes, and straight black hair. She wears practical clothing suited for her environment. The backdrop is a busy working-class street corner in a Latin American urban district, featuring faded pastel plaster buildings, street food stalls, and warm natural sunlight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+## Negative Prompt
+photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, neon, androids, robots, modern clothing, guns, extreme violence

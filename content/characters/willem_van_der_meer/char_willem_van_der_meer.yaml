@@ -1,0 +1,28 @@
+id: f7a8b9c0-d1e2-4f3a-5b6c-7d8e9f0a1b2c
+name: Willem van der Meer
+title: European Businessman, Van der Meer Family (Rotterdam Branch)
+description: Willem van der Meer is the son of Pieter van der Meer's brother Hendrik, making him first cousin to Elisabeth, Alexander, and Jan. Born and raised in Europe, he maintained close ties with the Las Flores branch of the family. In his youth, he had a brief romantic relationship with his cousin Elisabeth before she married Carlos Alberto Hernandez — a connection that led to confusion in later family records. Willem built a successful import-export business in Rotterdam, occasionally visiting Las Flores for family events and business partnerships with GLC. He is the father of Nico van der Meer.
+metadata:
+  type: human
+  role: npc
+  faction: dutch_interest
+  personality: cosmopolitan_businessman
+  age: 75
+  gender: Male
+  ethnicity: Dutch
+  nationality: Dutch
+  birth_year: 2002
+  occupation: Import-Export Businessman
+  appearance: Tall, lean, silver-gray hair combed neatly back, pale blue sharp eyes, fair skin with light age lines, gold signet ring with family crest, wire-rimmed glasses, tailored suits
+  background: son of Hendrik van der Meer (Pieter's brother), raised in Rotterdam, first cousin to the Las Flores van der Meers, brief romantic history with Elisabeth van der Meer
+  residence: Rotterdam, Netherlands
+  business: Van der Meer European Trading — import-export between Europe and South America
+  relationships:
+    - cousin to Elisabeth, Alexander, and Jan van der Meer
+    - father of Nico van der Meer
+    - former romantic interest of Elisabeth van der Meer
+  personality_traits: charming, cosmopolitan, discreet, family-oriented, diplomatic, business-savvy
+  goals: maintain family business connections, support van der Meer legacy in Europe, keep family peace, expand European-South American trade
+asset_paths:
+  portrait: willem_van_der_meer__default.png
+lore_path: willem_van_der_meer.md

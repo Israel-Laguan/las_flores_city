@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `valentina_rojas__<variant_slug>.png`
 
-- [ ] Valentina Rojas working on a painting or sketch, focused on their creative work
-- [ ] Valentina Rojas gazing at their finished work, contemplating the emotional impact
-- [ ] Valentina Rojas with other artists in a studio, sharing creative insights and techniques
+### `variant_1` — Valentina Rojas working on a painting or sketch, focused on their creative work
+**Scale:** 3:4
+**Edit prompt:**
+Sitting cross-legged on the floor of her college dorm room in Central Las Flores, sketching scenes of her mountain village with colored pencils. Wavy black hair falls in two ponytails as she draws the Andean peaks visible from her parents' hotel, bright sparkling brown eyes alive with the curiosity of a 10-year-old who dreams of becoming an environmental scientist. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Valentina Rojas gazing at their finished work, contemplating the emotional impact
+**Scale:** 3:4
+**Edit prompt:**
+Pausing in her college courtyard to gaze at a postcard of the Andean Mountains taped to her notebook, dark eyes bright with longing as she traces the mountain ridges with her fingertip. Modest but well-cared-for clothing with colorful patterns reflects her mountain roots, homesickness and hope warring on her expressive face as she imagines returning as a professional. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Valentina Rojas with other artists in a studio, sharing creative insights and techniques
+**Scale:** 3:4
+**Edit prompt:**
+Working alongside fellow art students on a collaborative mural depicting Las Flores communities, small frame moving energetically as she paints a mountain landscape with vivid colors. The playful spirit of her mountain upbringing shines through, two ponytails bouncing as she draws scenes from her life near the small hotel where her parents work. Keep face identical. Same graphic novel style.
 

@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567106"
+type: location
+name: Casa de la Música
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Cultural
+  - Music
+  - Entertainment
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  La Casa de la Música stands as the epitome of cultural refinement and social prestige in Las Flores, hosting a rich tapestry of high-caliber events that range from operatic performances to fashion shows.
+conclusion: |
+  The Casa de la Música is a symbol of Las Flores's vibrant arts scene and commitment to fostering culture.
+asset_paths:
+  image: casa_de_la_musica__default.png
+lore_path: casa_de_la_musica.md

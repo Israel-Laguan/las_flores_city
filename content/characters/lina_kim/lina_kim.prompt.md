@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `lina_kim__<variant_slug>.png`
 
-- [ ] Lina Kim with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Lina Kim reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Lina Kim with colleagues in the newsroom, collaborating on a breaking story
+### `variant_1` — Lina Kim with notebook in hand, interviewing a local source for a cultural feature story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a press conference in Las Flores, peering over her signature glasses while taking notes in a reporter's notebook. Her jet-black hair is in a simple shoulder-length cut, a camera slung around her neck. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Lina Kim reviewing interview notes at their desk, thoughtfully considering story angles
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a cluttered newsroom desk, surrounded by documents about the Great Lithium Leak. Her glasses rest on the bridge of her nose, expression sharp and skeptical as she cross-references sources. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Lina Kim with colleagues in the newsroom, collaborating on a breaking story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in the La Prensa newsroom, leaning over a desk with two colleagues pointing at photographs of lithium contamination. Her expression combines tenacity and compassion, a half-empty coffee cup nearby. Keep face identical. Same graphic novel style.
 

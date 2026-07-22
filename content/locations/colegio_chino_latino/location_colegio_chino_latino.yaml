@@ -1,0 +1,19 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567109"
+type: location
+name: Colegio Chino-Latino
+color: null
+aliases: []
+tags:
+  - School
+  - Education
+  - Institution
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  Colegio Chino-Latino is a prestigious K-12 institution located in the Northeast District of Las Flores Free City. Known for its rigorous academic standards and bicultural curriculum.
+conclusion: |
+  The school prepares students for global citizenship while honoring both Chinese and Latin American heritage.
+asset_paths:
+  image: colegio_chino_latino__default.png
+lore_path: colegio_chino_latino.md

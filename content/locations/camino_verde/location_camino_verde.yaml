@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567105"
+type: location
+name: Camino Verde Neighborhood
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Community
+  - Residential
+  - Working Class
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  Nestled in the heart of Southeast Las Flores, Camino Verde is a charming residential neighborhood primarily inhabited by families who work in the diverse sectors supporting the international airport and local tourism industry.
+conclusion: |
+  Camino Verde exemplifies the working-class communities that support Las Flores's infrastructure.
+asset_paths:
+  image: camino_verde__default.png
+lore_path: camino_verde.md

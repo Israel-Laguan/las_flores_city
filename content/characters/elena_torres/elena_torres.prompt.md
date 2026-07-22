@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `elena_torres__<variant_slug>.png`
 
-- [ ] Elena Torres at work in their professional environment, focused on their tasks
-- [ ] Elena Torres in a moment of reflection, considering their next steps
-- [ ] Elena Torres with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Elena Torres managing a community engagement event for LW Group in 2077
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her at a community meeting table, dark brown bob neat, jade stud earrings catching the fluorescent light, slim portfolio open. Her warm brown shrewd eyes listen to a community leader, designer suit immaculate, the measured gestures of someone who has spent five decades navigating between corporate power and local trust. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Elena Torres as a young translator guiding CLM drilling teams in 2024
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a younger version of herself, standing in a dusty exploratory drilling site, dark brown hair longer and un-streaked with silver, holding a clipboard. Her warm brown eyes are eager and ambitious, the jade studs replaced by simple earrings, Spanish-Mandarin bilingual skills bridging two worlds in the early days of Las Flores's lithium story. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Elena Torres in 2052, orchestrating the LW Group crisis PR narrative during the Great Lithium Leak
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her in a crisis communications war room, multiple screens showing news coverage, dark brown hair threaded with early silver. Her shrewd experienced eyes are calculating the narrative, designer suit impeccable, portfolio filled with damage-control talking points, the knowing half-smile of someone confirming that long-term damage was inevitable. Keep face identical. Same graphic novel style.
 

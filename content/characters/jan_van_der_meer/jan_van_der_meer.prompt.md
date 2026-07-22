@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `jan_van_der_meer__<variant_slug>.png`
 
-- [ ] Jan van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Jan van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Jan van der Meer in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Jan van der Meer in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a sleek GLC boardroom with floor-to-ceiling windows overlooking a lithium processing facility, sandy blond hair neatly combed, wire-rimmed glasses perched on his nose. His lean frame sits upright as he reviews sustainability projections on a screen, pale blue eyes thoughtful behind the lens. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Jan van der Meer considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a lithium mine inspection site in the arid highlands, hard hat beneath sandy blond hair, leather-bound notebook open in freckled hands. His slightly stooped lean frame bends forward as he examines processing equipment, gentle smile betraying quiet satisfaction with sustainable practices. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Jan van der Meer in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a mahogany dining table with his wife Maria and three children, wire-rimmed glasses reflecting candlelight as his gentle smile widens. His simple wedding band catches the glow, the leather-bound notebook forgotten beside him in favor of family conversation. Keep face identical. Same graphic novel style.
 

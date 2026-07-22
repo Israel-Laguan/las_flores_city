@@ -1,0 +1,715 @@
+id: "evelyn-ruthenberg-dialogue-tree"
+name: "Evelyn Ruthenberg: The Shadow and the Light"
+description: "Dialogue with Evelyn across her narrative arc - from vigilante to prisoner to free woman"
+start_node_id: "evelyn_era_selector"
+
+nodes:
+  evelyn_era_selector:
+    id: "evelyn_era_selector"
+    type: "system"
+    text: "Which Evelyn do you want to speak with?"
+    choices:
+      - id: "vigilante_era"
+        text: "Evelyn the Vigilante (Pre-2077)"
+        next_node_id: "evelyn_vigilante_start"
+        required_flags:
+          - lore_knowledge: gt:80
+      - id: "prison_era"
+        text: "Evelyn in Prison (2077)"
+        next_node_id: "evelyn_prison_start"
+        required_flags:
+          - story_beat: adeyemi_arrested_evelyn
+      - id: "post_release_era"
+        text: "Evelyn After Release (2081+)"
+        next_node_id: "evelyn_2081_start"
+        required_flags:
+          - story_beat: evelyn_released
+
+  # ============================================
+  # VIGILANTE ERA (Pre-2077)
+  # ============================================
+  
+  evelyn_vigilante_start:
+    id: "evelyn_vigilante_start"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "You found me. That's... unexpected. Most people don't know I'm here. Most people who do, don't live long enough to tell anyone."
+    mood: "guarded, analytical"
+    choices:
+      - id: "ask_motivation"
+        text: "Why are you doing this?"
+        next_node_id: "evelyn_vigilante_motivation"
+      - id: "ask_methods"
+        text: "How do you... handle your targets?"
+        next_node_id: "evelyn_vigilante_methods"
+        required_stats:
+          trust: gt:60
+      - id: "mention_yara"
+        text: "Yara Rossi was your friend. What happened?"
+        next_node_id: "evelyn_vigilante_yara"
+        required_stats:
+          lore_knowledge: gt:70
+      - id: "mention_karla"
+        text: "I heard about Karla. In the alley."
+        next_node_id: "evelyn_vigilante_karla"
+        required_stats:
+          lore_knowledge: gt:80
+      - id: "leave_vigilante"
+        text: "I should go."
+        next_node_id: "evelyn_vigilante_end"
+
+  evelyn_vigilante_motivation:
+    id: "evelyn_vigilante_motivation"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Because someone has to. The law won't. The courts won't. The system that let hundreds die in the river won't lift a finger to hold itself accountable. So I will."
+    mood: "cold, determined"
+    choices:
+      - id: "respond_understand"
+        text: "I get it. The system is broken."
+        next_node_id: "evelyn_vigilante_understand"
+        effects:
+          trust: +15
+      - id: "respond_judge"
+        text: "That doesn't make it right."
+        next_node_id: "evelyn_vigilante_judge"
+        effects:
+          trust: -10
+      - id: "ask_evidence"
+        text: "What proof do you have?"
+        next_node_id: "evelyn_vigilante_evidence"
+        required_stats:
+          trust: gt:50
+
+  evelyn_vigilante_understand:
+    id: "evelyn_vigilante_understand"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Good. Understanding is the first step. But understanding alone won't change anything. Action will."
+    mood: "slightly warmer"
+    choices:
+      - id: "ask_how_help"
+        text: "How can I help?"
+        next_node_id: "evelyn_vigilante_help"
+        required_stats:
+          trust: gt:70
+      - id: "return_start"
+        text: "What else do you want to talk about?"
+        next_node_id: "evelyn_vigilante_start"
+
+  evelyn_vigilante_judge:
+    id: "evelyn_vigilante_judge"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "No. It doesn't. But neither is letting them walk free. Tell me, when the river water killed your mother, your sister, your child... would you wait for the law to act? Or would you do something about it?"
+    mood: "challenging"
+    choices:
+      - id: "respond_personal"
+        text: "...My mother died from the contamination."
+        next_node_id: "evelyn_vigilante_personal"
+        effects:
+          trust: +20
+          flag_set:
+            - evelyn_knows_personal_loss
+      - id: "respond_standby"
+        text: "I... I don't know."
+        next_node_id: "evelyn_vigilante_start"
+        effects:
+          trust: -5
+
+  evelyn_vigilante_personal:
+    id: "evelyn_vigilante_personal"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Then you understand. Not the methods, perhaps. But the why. That's enough for now."
+    mood: "solemn, respectful"
+    choices:
+      - id: "ask_alliance"
+        text: "Will you work with me?"
+        next_node_id: "evelyn_vigilante_alliance"
+        required_stats:
+          trust: gt:75
+      - id: "return_start"
+        text: "I need to think."
+        next_node_id: "evelyn_vigilante_start"
+
+  evelyn_vigilante_evidence:
+    id: "evelyn_vigilante_evidence"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Proof? I have enough to bury them all. Internal emails proving they knew about the pipe corrosion before the leak. Financial records showing bribes to city officials. Cecilia Perez's original study on the Carinata plants - the one that proved pre-leak contamination. And the Carinata seeds themselves. The seeds don't lie."
+    mood: "matter-of-fact"
+    choices:
+      - id: "ask_cecilia"
+        text: "Cecilia Perez? She was murdered before the leak, wasn't she?"
+        next_node_id: "evelyn_vigilante_cecilia"
+        required_stats:
+          lore_knowledge: gt:75
+      - id: "return_start"
+        text: "That's... a lot of evidence."
+        next_node_id: "evelyn_vigilante_start"
+        effects:
+          lore_knowledge: +10
+
+  evelyn_vigilante_yara:
+    id: "evelyn_vigilante_yara"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Yara... she was the first person who believed me. Who believed in what the evidence meant. We were going to change the city, together. Then they killed her. And I realized... the city doesn't change from the inside. Not when the inside is rotten."
+    mood: "grieving, bitter"
+    choices:
+      - id: "respond_sympathy"
+        text: "I'm sorry. That must have been..."
+        next_node_id: "evelyn_vigilante_yara_sympathy"
+        effects:
+          trust: +10
+      - id: "return_start"
+        text: "I didn't mean to bring up painful memories."
+        next_node_id: "evelyn_vigilante_start"
+
+  evelyn_vigilante_yara_sympathy:
+    id: "evelyn_vigilante_yara_sympathy"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "It was. Is. Every time I close my eyes, I see her in that morgue. And I hear the words I couldn't say to her: I should have protected you."
+    mood: "vulnerable"
+    choices:
+      - id: "offer_comfort"
+        text: "You couldn't have known."
+        next_node_id: "evelyn_vigilante_start"
+        effects:
+          trust: +15
+      - id: "change_subject"
+        text: "Let's talk about something else."
+        next_node_id: "evelyn_vigilante_start"
+
+  evelyn_vigilante_karla:
+    id: "evelyn_vigilante_karla"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Karla gave me the evidence. And her life. She was dying in that alley, and she pressed a green pouch into my hand. Carinata seeds. Proof that Minera Estrella knew. And a note for her sister Nubia. I failed to deliver it in time. They killed Nubia too."
+    mood: "haunted"
+    choices:
+      - id: "respond_horror"
+        text: "Gods. That's..."
+        next_node_id: "evelyn_vigilante_start"
+        effects:
+          trust: +10
+          lore_knowledge: +15
+      - id: "ask_evidence_box"
+        text: "You kept the evidence all these years?"
+        next_node_id: "evelyn_vigilante_evidence_box"
+
+  evelyn_vigilante_evidence_box:
+    id: "evelyn_vigilante_evidence_box"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Everywhere I went. The box was my constant companion. Sometimes I wonder if it was the evidence that kept me going... or the weight of it that kept me from stopping."
+    mood: "reflective"
+    choices:
+      - id: "return_start"
+        text: "I can't imagine carrying that."
+        next_node_id: "evelyn_vigilante_start"
+        effects:
+          trust: +5
+
+  evelyn_vigilante_methods:
+    id: "evelyn_vigilante_methods"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "I don't use guns. Too loud. Too messy. Too personal. I prefer... environmental solutions. HVAC systems can be very persuasive. So can brake lines. And electrical systems have a way of failing at the most inopportune times."
+    mood: "clinical, detached"
+    choices:
+      - id: "respond_chilled"
+        text: "That's... surprisingly cold."
+        next_node_id: "evelyn_vigilante_chilled"
+        effects:
+          trust: -5
+      - id: "respond_practical"
+        text: "No blood, no witnesses, no evidence. Smart."
+        next_node_id: "evelyn_vigilante_practical"
+        effects:
+          trust: +10
+
+  evelyn_vigilante_chilled:
+    id: "evelyn_vigilante_chilled"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Cold? No. Efficient. There's a difference. I give them a chance to confess, to make amends. They never do. So I give the universe a chance to balance the scales."
+    mood: "defensive"
+    choices:
+      - id: "return_start"
+        text: "I see."
+        next_node_id: "evelyn_vigilante_start"
+
+  evelyn_vigilante_practical:
+    id: "evelyn_vigilante_practical"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Exactly. And it's worked for nearly twenty years. Eight targets. Eight... accountings. The city is safer for it. The water is cleaner. The truth is closer to the surface."
+    mood: "satisfied"
+    choices:
+      - id: "return_start"
+        text: "Twenty years is a long time to carry that alone."
+        next_node_id: "evelyn_vigilante_start"
+
+  evelyn_vigilante_alliance:
+    id: "evelyn_vigilante_alliance"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Work with you? That depends. What do you bring to this fight?"
+    mood: "evaluating"
+    choices:
+      - id: "offer_skills"
+        text: "I have skills. Urban planning. Organizing. People trust me."
+        next_node_id: "evelyn_vigilante_alliance_yes"
+      - id: "offer_anger"
+        text: "I have rage. And a list of names that need to answer for what they did."
+        next_node_id: "evelyn_vigilante_alliance_maybe"
+
+  evelyn_vigilante_alliance_yes:
+    id: "evelyn_vigilante_alliance_yes"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Skills and trust. That's valuable. More valuable than you know. But I warn you - this path... it changes you. And not always for the better."
+    mood: "cautious hope"
+    choices:
+      - id: "accept_warning"
+        text: "I understand. I'm still in."
+        next_node_id: "evelyn_vigilante_alliance_formed"
+        effects:
+          flag_set:
+            - evelyn_alliance_formed
+          trust: +20
+
+  evelyn_vigilante_alliance_formed:
+    id: "evelyn_vigilante_alliance_formed"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Then we have an understanding. Meet me at the old Luz del Rio substation at midnight. Don't be late. And don't tell anyone."
+    mood: "businesslike"
+    is_end: true
+    effects:
+      story_beat: alliance_with_evelyn
+
+  evelyn_vigilante_alliance_maybe:
+    id: "evelyn_vigilante_alliance_maybe"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Rage is a starting point. But it's not sustainable. You burn too hot, you get careless. And careless gets you killed. Come back when you have more than anger."
+    mood: "firm"
+    is_end: true
+
+  evelyn_vigilante_cecilia:
+    id: "evelyn_vigilante_cecilia"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Cecilia was the first to document the structural problems. Minera Estrella silenced her before she could go public. But her work lived on. Liu Fang recovered it, and eventually it reached me. The seeds she studied... they were the key to everything."
+    mood: "respectful"
+    choices:
+      - id: "return_start"
+        text: "The Carinata seeds."
+        next_node_id: "evelyn_vigilante_start"
+        effects:
+          lore_knowledge: +10
+
+  evelyn_vigilante_end:
+    id: "evelyn_vigilante_end"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Be careful out there. The city has eyes everywhere."
+    mood: "warning"
+    is_end: true
+
+  # ============================================
+  # PRISON ERA (2077)
+  # ============================================
+  
+  evelyn_prison_start:
+    id: "evelyn_prison_start"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Visiting hours. How generous of them. Though I suspect you didn't come through official channels."
+    mood: "resigned, weary, but sharp"
+    choices:
+      - id: "ask_about_alex"
+        text: "Alex Garcia died for this. Was it worth it?"
+        next_node_id: "evelyn_prison_alex"
+        required_stats:
+          empathy: gt:75
+      - id: "ask_regrets"
+        text: "Do you regret what you've done?"
+        next_node_id: "evelyn_prison_regrets"
+      - id: "ask_trial"
+        text: "How was the trial?"
+        next_node_id: "evelyn_prison_trial"
+      - id: "offer_help"
+        text: "I can get you out. We can finish this together."
+        next_node_id: "evelyn_prison_escape"
+        required_stats:
+          trust: gt:85
+      - id: "leave_prison"
+        text: "I'll let you be."
+        next_node_id: "evelyn_prison_end"
+
+  evelyn_prison_alex:
+    id: "evelyn_prison_alex"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Worth it? No. And yes. Alex saved this city. More than I ever could. He had... light in him. Hope. The kind that makes people believe things can change. I had turned to stone long before I met him. He reminded me what we were fighting for."
+    mood: "grieving"
+    choices:
+      - id: "respond_understand"
+        text: "You loved him."
+        next_node_id: "evelyn_prison_alex_love"
+        effects:
+          trust: +15
+      - id: "respond_deny"
+        text: "It sounds like you did."
+        next_node_id: "evelyn_prison_alex_deny"
+
+  evelyn_prison_alex_love:
+    id: "evelyn_prison_alex_love"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Love? That's... not the word I would use. Respect. Admiration. Grief. Guilt. Those fit better. But yes. In my own way, I loved him. And I failed him. I should have seen the dam would collapse. I should have stopped him."
+    mood: "raw"
+    choices:
+      - id: "offer_comfort_alex"
+        text: "You couldn't have known."
+        next_node_id: "evelyn_prison_alex_comfort"
+        effects:
+          trust: +20
+      - id: "return_prison_start"
+        text: "I'm sorry. I didn't mean to upset you."
+        next_node_id: "evelyn_prison_start"
+
+  evelyn_prison_alex_comfort:
+    id: "evelyn_prison_alex_comfort"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Thank you. That's... kind of you. But the truth is, I could have. I knew that dam was unstable. I knew Vega had rigged it. I should have realized he'd use it against us. But I was focused on the estate. On Li Wei. On the evidence. Not on the... collateral damage."
+    mood: "haunted"
+    choices:
+      - id: "return_prison_start"
+        text: "Alex understood the risks."
+        next_node_id: "evelyn_prison_start"
+        effects:
+          trust: +10
+
+  evelyn_prison_alex_deny:
+    id: "evelyn_prison_alex_deny"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Maybe. But grief doesn't always need a name to be real. He was a good man. A better man than I'll ever be."
+    mood: "quiet"
+    choices:
+      - id: "return_prison_start"
+        text: "He'd say you're wrong."
+        next_node_id: "evelyn_prison_start"
+
+  evelyn_prison_regrets:
+    id: "evelyn_prison_regrets"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Regret is a complicated word. Do I regret exposing the truth? No. Do I regret that it took so long? Yes. Do I regret that so many had to die - both my targets and my allies? Every day. Do I regret that Alex won't see the city he saved? That's the one that keeps me up at night."
+    mood: "conflicted"
+    choices:
+      - id: "respond_understand_regrets"
+        text: "You did what you thought was right."
+        next_node_id: "evelyn_prison_regrets_understand"
+        effects:
+          trust: +10
+      - id: "ask_forgiveness"
+        text: "Do you think they can forgive you?"
+        next_node_id: "evelyn_prison_forgiveness"
+
+  evelyn_prison_regrets_understand:
+    id: "evelyn_prison_regrets_understand"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "I did. And I'd do it again. But that doesn't mean it was right. That's the paradox, isn't it? The system was so broken that the only way to fix it was to break it more."
+    mood: "philosophical"
+    choices:
+      - id: "return_prison_start"
+        text: "Maybe the new system will be better."
+        next_node_id: "evelyn_prison_start"
+
+  evelyn_prison_forgiveness:
+    id: "evelyn_prison_forgiveness"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Forgiveness isn't the point. Understanding is. I don't need them to forgive me. I need them to *see*. To see what was done. To see why it had to be stopped. And to make sure it never happens again."
+    mood: "firm"
+    choices:
+      - id: "return_prison_start"
+        text: "I think they do see. Thanks to you."
+        next_node_id: "evelyn_prison_start"
+        effects:
+          trust: +15
+
+  evelyn_prison_trial:
+    id: "evelyn_prison_trial"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "The trial? It was... cathartic. For the first time in twenty years, I got to say everything out loud. No shadows. No secrecy. Just the truth, laid bare. The jury convicted me. But they also listened. And that's more than the city ever did before."
+    mood: "reflective"
+    choices:
+      - id: "ask_testimony"
+        text: "What did you say in your testimony?"
+        next_node_id: "evelyn_prison_testimony"
+      - id: "ask_verdict"
+        text: "Fifteen years seems harsh."
+        next_node_id: "evelyn_prison_verdict"
+
+  evelyn_prison_testimony:
+    id: "evelyn_prison_testimony"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "I told them everything. From Karla dying in my arms to Yara's assassination to every name on my list and why they deserved what they got. I said: 'I am guilty of what I did. But I am not the only one.' And then I made sure they understood exactly who the others were."
+    mood: "proud"
+    choices:
+      - id: "return_prison_start"
+        text: "That must have felt... freeing."
+        next_node_id: "evelyn_prison_start"
+        effects:
+          lore_knowledge: +15
+
+  evelyn_prison_verdict:
+    id: "evelyn_prison_verdict"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Harsh? Maybe. But fair. Manslaughter, not murder. The jury understood that I wasn't a monster. I was... a corrective. A necessary one. And four years? That's what I've served so far. The rest... well, we'll see."
+    mood: "accepting"
+    choices:
+      - id: "return_prison_start"
+        text: "You'll be out soon enough."
+        next_node_id: "evelyn_prison_start"
+
+  evelyn_prison_escape:
+    id: "evelyn_prison_escape"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Get me out? Tempting. But no. This... this is part of the plan. The city needs to see me pay a price. It needs to believe in its own justice. If I escape, I become the villain again. If I serve my time, I become... a cautionary tale. A warning. And maybe, just maybe, that warning will keep the next Evelyn from having to do what I did."
+    mood: "strategic"
+    choices:
+      - id: "argue_escape"
+        text: "But you could do so much more out there!"
+        next_node_id: "evelyn_prison_escape_argue"
+      - id: "accept_reasoning"
+        text: "I see your point."
+        next_node_id: "evelyn_prison_start"
+        effects:
+          trust: +10
+
+  evelyn_prison_escape_argue:
+    id: "evelyn_prison_escape_argue"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Maybe. But the work isn't done just because I'm in here. Miguel, Isabella, Ana - they're still out there. The movement is still growing. The truth is still spreading. My part in this... it's almost over. And that's okay."
+    mood: "peaceful"
+    choices:
+      - id: "return_prison_start"
+        text: "I hope you're right."
+        next_node_id: "evelyn_prison_start"
+
+  evelyn_prison_end:
+    id: "evelyn_prison_end"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Thank you for coming. It's... nice to have visitors."
+    mood: "grateful"
+    is_end: true
+
+  # ============================================
+  # POST-RELEASE ERA (2081+)
+  # ============================================
+  
+  evelyn_2081_start:
+    id: "evelyn_2081_start"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "The air still smells the same. Funny, isn't it? You spend years fighting to change a city, and when you finally can... you realize you don't know how to live in it anymore."
+    mood: "pensive, uncertain"
+    choices:
+      - id: "ask_about_future"
+        text: "What will you do now?"
+        next_node_id: "evelyn_2081_future"
+      - id: "visit_alex_memorial"
+        text: "I heard you visit Sector Norte sometimes. The bench..."
+        next_node_id: "evelyn_2081_alex"
+        required_flags:
+          - story_beat: alex_memorial_visited
+      - id: "offer_work"
+        text: "The city still needs people like you. The work isn't done."
+        next_node_id: "evelyn_2081_work"
+      - id: "ask_about_adjustment"
+        text: "Is it hard? Being free?"
+        next_node_id: "evelyn_2081_adjustment"
+      - id: "leave_2081"
+        text: "I should let you be."
+        next_node_id: "evelyn_2081_end"
+
+  evelyn_2081_future:
+    id: "evelyn_2081_future"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "I don't know. That's the truth. I spent so long being the shadow that I forgot how to live in the light. Maybe I'll teach. Maybe I'll consult on the remediation. Maybe I'll just... walk the streets and remember what I was fighting for."
+    mood: "uncertain"
+    choices:
+      - id: "offer_help_future"
+        text: "We can figure it out together."
+        next_node_id: "evelyn_2081_future_help"
+        effects:
+          trust: +15
+      - id: "return_2081_start"
+        text: "Whatever you do, it'll be the right thing."
+        next_node_id: "evelyn_2081_start"
+
+  evelyn_2081_future_help:
+    id: "evelyn_2081_future_help"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Together? That would be... nice. I've been alone for so long. But I warn you - I'm not easy company. I don't sleep well. I don't trust easily. And I still see the ghosts."
+    mood: "vulnerable"
+    choices:
+      - id: "accept_anyway"
+        text: "Neither do I. We'll manage."
+        next_node_id: "evelyn_2081_alliance"
+        effects:
+          trust: +20
+          flag_set:
+            - evelyn_2081_alliance
+      - id: "return_2081_start"
+        text: "We all have our ghosts."
+        next_node_id: "evelyn_2081_start"
+
+  evelyn_2081_alliance:
+    id: "evelyn_2081_alliance"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Then I look forward to it. Come by tomorrow. We'll talk more."
+    mood: "hopeful"
+    is_end: true
+    effects:
+      story_beat: evelyn_2081_new_alliance
+
+  evelyn_2081_alex:
+    id: "evelyn_2081_alex"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "The bench... yes. I go there. Not every day. But when I need to... remember. It helps. Seeing his name. Seeing what he built. It reminds me that the fight was worth it. That he was worth it."
+    mood: "soft"
+    choices:
+      - id: "ask_about_grief"
+        text: "Do you think about him often?"
+        next_node_id: "evelyn_2081_alex_grief"
+        required_stats:
+          empathy: gt:70
+      - id: "offer_accompany"
+        text: "Can I come with you sometime?"
+        next_node_id: "evelyn_2081_alex_accompany"
+        effects:
+          trust: +15
+
+  evelyn_2081_alex_grief:
+    id: "evelyn_2081_alex_grief"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Every day. He had this... light in him. This belief that the world could be better. I had lost that. Or maybe I never had it. But he reminded me. And now... now I have to figure out how to carry it without him."
+    mood: "grieving"
+    choices:
+      - id: "offer_support"
+        text: "You don't have to carry it alone anymore."
+        next_node_id: "evelyn_2081_alex_support"
+        effects:
+          trust: +20
+      - id: "return_2081_start"
+        text: "He'd be proud of what you've done."
+        next_node_id: "evelyn_2081_start"
+
+  evelyn_2081_alex_support:
+    id: "evelyn_2081_alex_support"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Thank you. That means... more than you know. Maybe you're right. Maybe it's time to stop carrying it alone."
+    mood: "grateful"
+    choices:
+      - id: "return_2081_start"
+        text: "I'm here. Whenever you're ready."
+        next_node_id: "evelyn_2081_start"
+        effects:
+          trust: +10
+
+  evelyn_2081_alex_accompany:
+    id: "evelyn_2081_alex_accompany"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "I'd like that. But... give me a little time. It's still... raw. But yes. Soon."
+    mood: "touched"
+    is_end: true
+    effects:
+      flag_set:
+        - evelyn_alex_memorial_invite
+
+  evelyn_2081_work:
+    id: "evelyn_2081_work"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "The work. Yes. Miguel's been asking me to consult on the remediation. The new government wants to make sure the Carinata deployment is done right. And there are... other things. Whispers of corruption still. Old habits die hard."
+    mood: "thoughtful"
+    choices:
+      - id: "offer_help_work"
+        text: "I'll help. Whatever you need."
+        next_node_id: "evelyn_2081_work_help"
+        effects:
+          trust: +10
+      - id: "return_2081_start"
+        text: "You'll figure it out."
+        next_node_id: "evelyn_2081_start"
+
+  evelyn_2081_work_help:
+    id: "evelyn_2081_work_help"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Good. I could use someone who doesn't flinch at the dark parts. The remediation is the priority. But if you hear anything about... irregularities in the new construction contracts, let me know."
+    mood: "serious"
+    is_end: true
+    effects:
+      flag_set:
+        - evelyn_work_alliance
+
+  evelyn_2081_adjustment:
+    id: "evelyn_2081_adjustment"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Hard? Yes. But not in the way you'd think. It's not the freedom that's hard. It's the... responsibility. The knowing that I can walk away now. That the city doesn't need me to survive anymore. That's the part I'm still figuring out."
+    mood: "honest"
+    choices:
+      - id: "respond_understand_adjustment"
+        text: "That's a good problem to have."
+        next_node_id: "evelyn_2081_adjustment_understand"
+        effects:
+          trust: +10
+      - id: "return_2081_start"
+        text: "You'll find your way."
+        next_node_id: "evelyn_2081_start"
+
+  evelyn_2081_adjustment_understand:
+    id: "evelyn_2081_adjustment_understand"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Is it? Maybe. Or maybe it's just a different kind of problem. But you're right - it's better than the alternative. At least now I have a choice."
+    mood: "accepting"
+    choices:
+      - id: "return_2081_start"
+        text: "And you'll make the right one."
+        next_node_id: "evelyn_2081_start"
+
+  evelyn_2081_end:
+    id: "evelyn_2081_end"
+    type: "character"
+    speaker_id: "char_evelyn_ruthenberg"
+    text: "Thank you. For everything."
+    mood: "warm"
+    is_end: true

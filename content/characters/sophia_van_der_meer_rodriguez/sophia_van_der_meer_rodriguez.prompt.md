@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `sophia_van_der_meer_rodriguez__<variant_slug>.png`
 
-- [ ] Sophia van der Meer Rodriguez in a meeting, reviewing documents with colleagues
-- [ ] Sophia van der Meer Rodriguez considering a strategic decision, weighing options thoughtfully
-- [ ] Sophia van der Meer Rodriguez in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Sophia van der Meer Rodriguez in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Hosting the annual Van der Meer Charity Gala in an elegant ballroom, designer gown catching the light as she addresses a crowd of high-society donors. Warm charismatic smile radiates genuine compassion for the Nueva Esperanza Foundation's youth programs, pearl earrings and poised bearing commanding the room. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Sophia van der Meer Rodriguez considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Sitting alone in a minimalist office overlooking Las Flores harbor, pale blue-green eyes fixed on the horizon as she weighs European investment offers against her commitment to sustainable community development. The elegance of her appearance belies the resilience forged through public humiliation and a painful divorce, dark blond hair catching the fading light. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Sophia van der Meer Rodriguez in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Leading a Nueva Esperanza Foundation board meeting around a polished mahogany table, pearl earrings catching the light as she presents mobile clinic statistics for remote communities. Her Dutch-Latin heritage lends credibility to her cross-cultural philanthropic vision, slender graceful posture projecting compassionate authority. Keep face identical. Same graphic novel style.
 

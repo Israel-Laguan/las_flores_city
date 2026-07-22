@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `ricardo_vega__<variant_slug>.png`
 
-- [ ] Ricardo Vega giving a speech, addressing an audience with conviction
-- [ ] Ricardo Vega in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Ricardo Vega with constituents at a community event, listening attentively to concerns
+### `variant_1` — Ricardo Vega giving a speech, addressing an audience with conviction
+**Scale:** 3:4
+**Edit prompt:**
+Place him at a podium in the Industrial District, mouth open mid-speech with the oratory fire that once drew crowds, campaign buttons still pinned to his rumpled jacket and gold watch catching the light, his dark brown expressive eyes alive with conviction, the practiced politician's smile that once swayed voters now tinged with the desperation of a man who switched parties four times. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Ricardo Vega in a moment of quiet contemplation, reflecting on the impact of their work
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him sitting alone on a folding chair behind his small store, thinning hair combed back with pomade, lines deepening around his eyes from squinting at campaign cameras for decades, the flashy campaign buttons on his jacket now faded souvenirs of a humiliated political career, his gold watch marking time in a life that went from packed rallies to empty shelves. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Ricardo Vega with constituents at a community event, listening attentively to concerns
+**Scale:** 3:4
+**Edit prompt:**
+Place him in the cramped aisle of his small store in the Industrial District, leaning in to listen to an old supporter who still remembers his best speeches, his slight paunch and rumpled suit a far cry from his political prime, the gold watch on his wrist a relic of ambitions that ended in minuscule vote counts, his animated expression a ghost of the charisma that once made him a force across three political parties. Keep face identical. Same graphic novel style.
 

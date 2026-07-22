@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `juan_carlos_perez__<variant_slug>.png`
 
-- [ ] Juan Carlos Pérez giving a speech, addressing an audience with conviction
-- [ ] Juan Carlos Pérez in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Juan Carlos Pérez with constituents at a community event, listening attentively to concerns
+### `variant_1` — Juan Carlos Pérez giving a speech, addressing an audience with conviction
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a COFAVIC environmental justice rally, broad-shouldered frame towering above the crowd, gold-capped tooth visible in a passionate snarl as he gestures with powerful hands. His COFAVIC t-shirt peeks from under an open jacket, dark brown intense eyes burning with righteous fire. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Juan Carlos Pérez in a moment of quiet contemplation, reflecting on the impact of their work
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a grassroots community forum, seated among constituents on folding chairs, thick mustache framing a gentle expression as he listens to a resident's concerns. His square jaw softens with empathy, powerful hands resting open on his knees in a posture of genuine attention. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Juan Carlos Pérez with constituents at a community event, listening attentively to concerns
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a social equity organizing session, standing before a wall of case files and protest photographs, COFAVIC t-shirt visible beneath his jacket. His broad shoulders square as he addresses volunteers with tenacious conviction, gold-capped tooth glinting. Keep face identical. Same graphic novel style.
 

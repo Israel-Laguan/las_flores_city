@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `emilio_santos__<variant_slug>.png`
 
-- [ ] Emilio Santos giving a speech, addressing an audience with conviction
-- [ ] Emilio Santos in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Emilio Santos with constituents at a community event, listening attentively to concerns
+### `variant_1` — Emilio Santos slumped in a rattan chair on his Pacific District beach house porch, alcohol flush on his cheeks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a weathered beach house porch overlooking the Pacific, rumpled linen suit unbuttoned at the collar revealing a gold chain, alcohol flush coloring tired cheeks, broad shoulders softening into the chair as the sun dips low. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Emilio Santos staring into a whiskey glass, haunted brown eyes reflecting a ruined career
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a dimly lit living room cluttered with empty bottles, slicked-back dark hair thinning at the temples, haunted brown eyes fixed on a whiskey glass, perpetual five o'clock shadow catching the lamplight as regret settles in. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Emilio Santos on a dark beach at night, checking his expensive watch nervously while waiting for a smuggling contact
+**Scale:** 3:4
+**Edit prompt:**
+Show this person with: a shadowy shoreline at midnight, expensive watch face glowing, broad-shouldered silhouette pacing the sand, gold chain glinting under clouded moonlight as if expecting a boat that may never arrive. Keep face identical. Same graphic novel style.
 

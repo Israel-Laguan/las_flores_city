@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567111"
+type: location
+name: Financial District
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Finance
+  - Business
+  - Embassies
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Financial District houses the city's key financial institutions including the Banco Central, World Trade Center, and Stock Exchange.
+conclusion: |
+  The Financial District is the economic core of Las Flores.
+asset_paths:
+  image: financial_district__default.png
+lore_path: financial_district.md

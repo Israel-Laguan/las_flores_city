@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `dr_wei_zhang__<variant_slug>.png`
 
-- [ ] Dr. Wei Zhang at work in their professional environment, focused on their tasks
-- [ ] Dr. Wei Zhang in a moment of reflection, considering their next steps
-- [ ] Dr. Wei Zhang with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Dr. Wei Zhang secretly passing phytoremediation data to Evelyn Ruthenberg
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him in a shadowed university corridor, round wire-rimmed glasses catching a sliver of light, ink-stained fingertips pressing a worn brown envelope into someone's hands. His deep-set dark eyes dart to the corridor's end, gray-black hair slightly unkempt, the worn cardigan pulled tight, dark circles under his eyes from sleepless nights. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Dr. Wei Zhang at a Minera Estrella press conference, publicly aligned with the company
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a press podium in a Minera Estrella conference room, round wire-rimmed glasses reflecting camera flashes, expression carefully neutral. His gray-black hair is neater than usual, ink-stained fingertips hidden behind the podium, the worn brown cardigan replaced by a formal jacket, a cold strategic mask over his true allegiance. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Dr. Wei Zhang alone in his lab at midnight, reviewing river restoration plans
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him hunched over a desk covered in phytoremediation diagrams and river maps, a small notebook open to calculations. Round wire-rimmed glasses have slipped down his nose, ink-stained fingers trace a river tributary, the worn leather notebook always in hand, sleepless devotion etched into every line of his face. Keep face identical. Same graphic novel style.
 

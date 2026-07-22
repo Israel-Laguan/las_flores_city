@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `maria_chicham__<variant_slug>.png`
 
-- [ ] Maria Chicham studying intently at a desk, surrounded by books and notes
-- [ ] Maria Chicham deep in thought about their studies, determined to succeed
-- [ ] Maria Chicham studying with classmates in a library, working together on a project
+### `variant_1` — Maria Chicham studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a university medical school desk, traditional Shipibo-patterned clothing draped over her chair as she studies anatomy. Her dark brown hair has traditional beads woven into braids, a beaded medicine bag on the desk. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Maria Chicham deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Place this person volunteering at a local clinic serving marginalized communities, examining a patient with warm brown eyes full of compassion. Her traditional beaded jewelry and gold nose stud catch the clinical light. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Maria Chicham studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person walking across the Universidad Nacional campus, Shipibo dress swishing around her ankles as admiring glances follow. Her radiant smile and confident posture bridge indigenous heritage and modern ambition. Keep face identical. Same graphic novel style.
 

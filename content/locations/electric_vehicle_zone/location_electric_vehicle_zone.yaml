@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567110"
+type: location
+name: Electric Vehicle Zone
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Eco-friendly
+  - Technology
+  - Transportation
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Electric Vehicle Zone is a vibrant, eco-friendly oasis for electric vehicle owners and enthusiasts alike, addressing the critical need for accessible and efficient infrastructure.
+conclusion: |
+  The zone elevates the EV ownership experience, making it seamless, convenient, and pleasurable.
+asset_paths:
+  image: electric_vehicle_zone__default.png
+lore_path: electric_vehicle_zone.md

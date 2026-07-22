@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `yang_chen__<variant_slug>.png`
 
-- [ ] Yang Chen at work in their professional environment, focused on their tasks
-- [ ] Yang Chen in a moment of reflection, considering their next steps
-- [ ] Yang Chen with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Yang Chen at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Standing behind the counter of his small eclectic store in Old Las Flores, gray thin hair combed back as he arranges plastic imports on cluttered shelves. A faint warm smile plays on his weathered face, simple cotton shirt and worn sandals a deliberate disguise, the small notebook in his breast pocket holding observations no one suspects have value. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Yang Chen in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Sitting on a worn wooden stool in his storefront apartment at twilight, gazing at a family photograph of his Chinese-Latin American children. Dark brown eyes distant with the weight of a secret fortune accumulated through savvy investments and frugal living, the PR strategist who framed a lithium partnership as a symbiotic dance now hiding millions in plain sight. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Yang Chen with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Sharing a meal with his wife Maria and their children around a modest kitchen table, simple cotton shirt and worn sandals a deliberate contrast to the millions hidden in bank accounts. Gentle smile a masterclass in hiding brilliance behind ordinariness, slight stooped frame moving with quiet dignity as he raises a glass to the family that embodies the union of Chinese and Latin American cultures. Keep face identical. Same graphic novel style.
 

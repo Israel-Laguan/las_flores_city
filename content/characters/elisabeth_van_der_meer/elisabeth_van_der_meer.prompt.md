@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `elisabeth_van_der_meer__<variant_slug>.png`
 
-- [ ] Elisabeth van der Meer working on a painting or sketch, focused on their creative work
-- [ ] Elisabeth van der Meer gazing at their finished work, contemplating the emotional impact
-- [ ] Elisabeth van der Meer with other artists in a studio, sharing creative insights and techniques
+### `variant_1` — Elisabeth van der Meer examining a Shipibo-Konibo textile in her gallery
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her in a private gallery room, pearl necklace gleaming, holding a Shipibo-Konibo embroidered textile up to the light with manicured hands. Her pale blue eyes are discerning and reverent, ash blonde hair in an elegant updo, the riverbank estate visible through tall windows behind her. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Elisabeth van der Meer hosting a lavish gala at her riverbank estate
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a grand ballroom overlooking the river, signature red lipstick bright, diamond studs catching chandelier light as she raises a champagne flute. Her tailored gown is immaculate, posture graceful and commanding, guests in formal attire clustered around her. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Elisabeth van der Meer alone in her study, staring at a photograph of her ex-husband
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her seated at a mahogany desk in a wood-paneled study, ash blonde hair loose around her shoulders, holding a small framed photograph. Her pale blue eyes carry the quiet resolve of a woman who chose independence over the Hernandez clan's corruption, pearl necklace the only ornament. Keep face identical. Same graphic novel style.
 

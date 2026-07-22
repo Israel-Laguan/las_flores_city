@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `simons_de_vries__<variant_slug>.png`
 
-- [ ] Simon De Vries at work in their professional environment, focused on their tasks
-- [ ] Simon De Vries in a moment of reflection, considering their next steps
-- [ ] Simon De Vries with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Simon De Vries at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Hunched over a workstation at the University International, sandy blonde hair falling across deep blue eyes as he analyzes port machinery schematics on a laptop. A worn engineering textbook is propped open beside him, practical clothing suited to long study sessions, focused expression showing dedication to his craft. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Simon De Vries in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Leaning against a dock railing at twilight, gazing out at the cargo ships in the harbor with a faraway look, salt breeze tousling his sandy blonde hair. Deep blue eyes hold the weight of an absent father at sea and a mother's sacrifices, contemplating how to design shipping technologies while proving he can balance family duty and personal ambition. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Simon De Vries with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Collaborating with fellow engineering students around a drafting table cluttered with technical drawings and components, gesturing animatedly at a prototype port mechanism. His practical knowledge shines as he explains his design approach, lean athletic frame leaning forward with the energy of someone who grew up fixing equipment on the docks. Keep face identical. Same graphic novel style.
 

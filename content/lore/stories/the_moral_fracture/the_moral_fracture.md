@@ -134,7 +134,7 @@ The movement that survived Alex was not the movement of Evelyn's shadow war or I
 
 ## Connected Lore
 
-- [Alex Garcia](../figures/alex.md)
+- [Alex Garcia](../../characters/alex_garcia/alex_garcia.md)
 - [Evelyn Ruthenberg](../figures/evelyn_ruthenberg.md)
 - [Alex's Friends (The Core Group)](../figures/gdd_friends.md)
 - [Alex & Evelyn: The 2077 Endgame](alex_and_evelyn_2077.md)

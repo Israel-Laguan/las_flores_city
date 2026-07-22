@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `sofia_hernandez__<variant_slug>.png`
 
-- [ ] Sofia Hernánez at work in their professional environment, focused on their tasks
-- [ ] Sofia Hernánez in a moment of reflection, considering their next steps
-- [ ] Sofia Hernánez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Sofia Hernánez at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Crouching on a rocky Andean trail with a camera and field notebook, long dark hair braided back under a wide-brimmed hat as she photographs endangered plant species. Sun-kissed skin and bright green eyes reflect a life spent outdoors, colorful backpack filled with camping gear slung over one shoulder. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Sofia Hernánez in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Sitting at a weathered campsite table at dawn, green eyes reflecting the misty mountain peaks as she writes blog entries about sustainable hiking practices. Her energetic spirit is momentarily still, down-to-earth warmth showing in the quiet smile as she sketches trail maps for the next eco-tourism route. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Sofia Hernánez with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Leading an eco-tourism workshop for local youth in a clearing near the Andean foothills, demonstrating how to set up an environmentally responsible campsite with colorful gear spread across the ground. Her infectious enthusiasm draws the group in, practical hiking boots and breathable clothing marking her as someone who lives her conservation values. Keep face identical. Same graphic novel style.
 

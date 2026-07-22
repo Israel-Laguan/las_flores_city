@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `maria_sanchez_sulca__<variant_slug>.png`
 
-- [ ] Maria Sanchez Sulca with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Maria Sanchez Sulca reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Maria Sanchez Sulca with colleagues in the newsroom, collaborating on a breaking story
+### `variant_1` — Maria Sanchez Sulca with notebook in hand, interviewing a local source for a cultural feature story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person huddled in the dense Andean forest, clutching a worn leather satchel stuffed with incriminating documents about TPF corruption. Her traditional woven shawl and small gold cross necklace are visible as she glances nervously over her shoulder, dark brown hair pulled back in a practical braid. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Maria Sanchez Sulca reviewing interview notes at their desk, thoughtfully considering story angles
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a dimly lit room, carefully sorting through stacks of financial records and transaction logs spread across a wooden table. She wears a simple cotton blouse and woven shawl, her dark brown hair in a tight braid, the weight of Minera Estrella's bribes evident in her cautious, determined expression. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Maria Sanchez Sulca with colleagues in the newsroom, collaborating on a breaking story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person handing a thick envelope of evidence to a trusted journalist in a cramped back office, her small gold cross necklace catching the lamplight. She wears her traditional woven shawl and speaks in hushed tones, her alert dark brown eyes betraying both the determination of a whistleblower and the fear of a woman whose cover may be about to blow. Keep face identical. Same graphic novel style.
 

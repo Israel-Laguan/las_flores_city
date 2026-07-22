@@ -26,9 +26,23 @@ Universidad Internacional de Las Flores in Las Flores, daytime, urban city cente
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `universidad_internacional_de_las_flores__<variant_slug>.png`
 
+### `variant_1` — Night version: same scene at night with different lighting
+**Scale:** 16:9
+**Edit prompt:**
+Transform to nighttime with laboratory windows glowing blue-white against dark sky, light spilling from the engineering research buildings. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Rainy version: same scene with rain and mood effects
+**Scale:** 16:9
+**Edit prompt:**
+Add rain streaking across the glass facades of the engineering campus, mist rising from the Central District streets below the research buildings. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Wide shot: broader view of the location
+**Scale:** 16:9
+**Edit prompt:**
+Expand to a wide panoramic view showing both campuses of the dual-system university, the main engineering hub in the Central District and the senior research campus reaching toward the Cultural Zone. Keep face identical. Same graphic novel style.
 

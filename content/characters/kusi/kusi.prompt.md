@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `kusi__<variant_slug>.png`
 
-- [ ] Kusi carrying firewood with practiced ease to Xue's restaurant, his calloused hands gripping the logs
-- [ ] Kusi offering a quiet, reserved smile as he helps with daily chores in the restaurant kitchen
-- [ ] Kusi sitting at Xue's restaurant counter, sharing a moment of companionship over a simple meal
+### `variant_1` — Kusi carrying firewood with practiced ease to Xue's restaurant, his calloused hands gripping the logs
+**Scale:** 3:4
+**Edit prompt:**
+Place this person walking through the narrow streets of Old Las Flores carrying a bundle of firewood toward a small restaurant. His traditional woven belt cinches worn trousers, black hair tied back with a leather cord. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Kusi offering a quiet, reserved smile as he helps with daily chores in the restaurant kitchen
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a modest restaurant kitchen, carefully splitting kindling beside a wood-fired stove. His calloused hands move with practiced ease, a quiet gentle smile on his weathered face. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Kusi sitting at Xue's restaurant counter, sharing a moment of companionship over a simple meal
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting at a worn wooden restaurant counter, sharing a bowl of soup in comfortable silence. His deep copper brown skin is weathered from years of outdoor work, his expression content. Keep face identical. Same graphic novel style.
 

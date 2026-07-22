@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `dr_maria_hernandez__<variant_slug>.png`
 
-- [ ] Dr. Maria Hernandez studying intently at a desk, surrounded by books and notes
-- [ ] Dr. Maria Hernandez deep in thought about their studies, determined to succeed
-- [ ] Dr. Maria Hernandez studying with classmates in a library, working together on a project
+### `variant_1` — Dr. Maria Hernandez presenting water test results at a university lecture
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing at a lectern in a university lecture hall, wire-rimmed glasses catching the projector light, gesturing at a chart of contamination levels. Her leather satchel rests against the podium, ink-stained fingers pointing at a data spike, students leaning forward in their seats. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Dr. Maria Hernandez collecting water samples at the riverbank at dawn
+**Scale:** 3:4
+**Edit prompt:**
+Place this person kneeling at a riverbank at dawn, carefully filling sample vials from the current, gray-streaked hair pulled back in a practical clip. Her lined forehead creases with concentration, the leather satchel open beside her, testing strips spread on a flat rock. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Dr. Maria Hernandez surrounded by protesting students outside Minera Estrella
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing before a crowd of student protesters outside Minera Estrella's gates, holding a microphone with steady hands. Her dark brown scholarly eyes burn with quiet conviction behind wire-rimmed glasses, the leather satchel clutched to her chest. Keep face identical. Same graphic novel style.
 

@@ -1,0 +1,7 @@
+id: "adeyemi_community_center_card"
+name: "The Sector Norte 'Thank You' Card"
+description: "A faded, hand-drawn 'Thank You' card from a community center in Sector Norte. It’s signed by 'The Kids from the After-School Program.'"
+type: "lore_item"
+location: "Police Precinct Breakroom"
+related_character: "char_adeyemi"
+lore_connection: "This is the community center Adeyemi was ordered to raid in 2077. He kept the card as a reminder of the 'good' he failed to protect."

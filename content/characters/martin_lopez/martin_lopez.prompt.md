@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `martin_lopez__<variant_slug>.png`
 
-- [ ] Martín López with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Martín López reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Martín López with colleagues in the newsroom, collaborating on a breaking story
+### `variant_1` — Martín López with notebook in hand, interviewing a local source for a cultural feature story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a shadowy alleyway near the Industrial District, sitting across from a trembling informant while his wire-rimmed glasses catch a sliver of light. His ink-stained fingers hover over a worn notebook ready to record every detail, the permanent five o'clock shadow on his lined face reflecting decades of late-night investigations. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Martín López reviewing interview notes at their desk, thoughtfully considering story angles
+**Scale:** 3:4
+**Edit prompt:**
+Place this person hunched over a desk buried under case files, police reports, and photocopies of Minera Estrella contracts in his cramped apartment. His worn leather satchel overflows onto the chair behind him, his weary but sharp eyes tracing connections between corruption cases with the deliberate focus of a man who speaks carefully to protect his sources. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Martín López with colleagues in the newsroom, collaborating on a breaking story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in the El Diario de Las Flores newsroom, standing before a cork board pinned with photographs, red string connecting corporate figures to politicians. He wears his signature rumpled blazer and speaks deliberately to his colleagues, his gray thinning hair and ink-stained fingers marking him as a veteran who has collaborated with COFAVIC on countless investigations. Keep face identical. Same graphic novel style.
 

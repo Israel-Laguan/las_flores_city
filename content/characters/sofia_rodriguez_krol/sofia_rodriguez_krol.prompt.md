@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `sofia_rodriguez_krol__<variant_slug>.png`
 
-- [ ] Sofia Rodriguez Krol working on a painting or sketch, focused on their creative work
-- [ ] Sofia Rodriguez Krol gazing at their finished work, contemplating the emotional impact
-- [ ] Sofia Rodriguez Krol with other artists in a studio, sharing creative insights and techniques
+### `variant_1` — Sofia Rodriguez Krol working on a painting or sketch, focused on their creative work
+**Scale:** 3:4
+**Edit prompt:**
+Hosting an exclusive salon in a sunlit Modernist living room, designer dress flowing as she guides a conversation between Latin American artists and Dutch investors. Sleek dark brown hair and delicate gold jewelry catch the light, polished demeanor masking sharp social strategy as she builds the cultural bridges that define her role. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Sofia Rodriguez Krol gazing at their finished work, contemplating the emotional impact
+**Scale:** 3:4
+**Edit prompt:**
+Standing before a contemporary art installation at the Bridging Cultures gala, gold jewelry catching the gallery light as she contemplates the cultural bridge she's building. Dark brown eyes hold the weight of her Rodriguez political heritage and her Van der Meer business marriage, poised expression reflecting on the Las Flores Future Foundation's mission. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Sofia Rodriguez Krol with other artists in a studio, sharing creative insights and techniques
+**Scale:** 3:4
+**Edit prompt:**
+Reviewing grant applications for the Las Flores Future Foundation in a minimalist office, sleek hair pulled back, dark brown eyes focused as she selects scholarship recipients for youth education programs. Designer clothing and impeccable grooming project the confidence of a woman who navigates the intersection of Latin American political power and Dutch business interests with practiced grace. Keep face identical. Same graphic novel style.
 

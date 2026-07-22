@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `mingze_luo__<variant_slug>.png`
 
-- [ ] Míngzé Luo at work in their professional environment, focused on their tasks
-- [ ] Míngzé Luo in a moment of reflection, considering their next steps
-- [ ] Míngzé Luo with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Míngzé Luo at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind a polished mahogany desk in the Minera Estrella executive suite, gold-rimmed glasses perched on his nose as he reviews a redacted damage report. His practiced corporate smile masks the cold calculation behind his eyes, and an expensive watch glints on his wrist under the fluorescent lights. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Míngzé Luo in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him standing alone in a dimly lit hallway outside a courtroom, rehearsing his denial under his breath. His thinning hair is carefully combed to cover a receding hairline, and his tailored suit hangs slightly loose on his soft frame as he composes the cold mask he will wear on the stand. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Míngzé Luo with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him seated at the head of a conference table, briefing Qiu Bo and Liu Xiaoping on the cover-up strategy. Papers stamped CONFIDENTIAL are spread before him, and his evasive eyes dart between his colleagues as he outlines exactly how far the denial will go. Keep face identical. Same graphic novel style.
 

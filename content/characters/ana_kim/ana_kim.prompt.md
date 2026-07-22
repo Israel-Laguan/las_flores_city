@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `ana_kim__<variant_slug>.png`
 
-- [ ] Ana Kim studying intently at a desk, surrounded by books and notes
-- [ ] Ana Kim deep in thought about their studies, determined to succeed
-- [ ] Ana Kim studying with classmates in a library, working together on a project
+### `variant_1` — Ana Kim studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in the university library searching archived press databases on a computer screen, straight posture radiating organized competence. Her neat blouse and cardigan suit the cool blue library light, a forgotten notebook nearby. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Ana Kim deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her at a desk with the newspaper article she discovered identifying four building victims as former Minera Estrella PR staff, her honest expression mixing determination with the dawning awareness of danger. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Ana Kim studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a library carrel with Alex and Isabella, pointing at a cross-referenced list of names while her direct gaze asks the question everyone else sidesteps. Cool blue and white tones frame the scene of quiet, precise investigation. Keep face identical. Same graphic novel style.
 

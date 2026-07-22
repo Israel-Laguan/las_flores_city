@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `marco_jimenez__<variant_slug>.png`
 
-- [ ] Marco Jiménez at work in their professional environment, focused on their tasks
-- [ ] Marco Jiménez in a moment of reflection, considering their next steps
-- [ ] Marco Jiménez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Marco Jiménez at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a bar in San Pedro de los Pescadores, nervously counting cash for a bet while glancing toward the door. His lean, scruffy appearance and unkempt dark hair mark him as someone always watching for opportunities. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Marco Jiménez in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person alone on a street corner, secretly photographing daily life with a camera he keeps hidden. His sharp brown eyes betray ambition and anxiety in equal measure, a lightweight jacket pulled against the night air. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Marco Jiménez with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person beside Alejandro Díaz in a back office, eagerly agreeing with whatever Alex suggests. His wide-eyed, impressionable expression shows his desperate need for approval, hands clasped nervously. Keep face identical. Same graphic novel style.
 

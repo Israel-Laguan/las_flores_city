@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `marco_torres__<variant_slug>.png`
 
-- [ ] Marco "Mar" Torres serving customers with warm hospitality in a busy restaurant
-- [ ] Marco "Mar" Torres taking a moment to rest between tasks, showing satisfaction in their work
-- [ ] Marco "Mar" Torres with restaurant staff during a busy service, working as a team
+### `variant_1` — Marco "Mar" Torres serving customers with warm hospitality in a busy restaurant
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind a beach food stall at Playa de los Vientos, grilling fresh fish sandwiches with focused precision. He wears a simple white t-shirt and cargo shorts, sturdy sandals planted in the sand, a serious expression of quiet dedication. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Marco "Mar" Torres taking a moment to rest between tasks, showing satisfaction in their work
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting on a fishing boat at sunset, lines cast into the Pacific. His deep brown eyes reflect the golden light, a rare moment of peace on the water away from the fast-paced beach environment. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Marco "Mar" Torres with restaurant staff during a busy service, working as a team
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at his food stall during a busy beach lunch rush, assembling tacos with quiet efficiency while tourists queue. His serious demeanor gives way to quiet pride as he hands a perfectly prepared fish sandwich to a customer. Keep face identical. Same graphic novel style.
 

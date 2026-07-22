@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `luis_contreras__<variant_slug>.png`
 
-- [ ] Luis Contreras studying intently at a desk, surrounded by books and notes
-- [ ] Luis Contreras deep in thought about their studies, determined to succeed
-- [ ] Luis Contreras studying with classmates in a library, working together on a project
+### `variant_1` — Luis Contreras studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a university library desk, engineering textbooks spread before him. His traditional beaded bracelet from his mother rests on the table, dark brown eyes thoughtful as he solves a problem set. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Luis Contreras deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting alone on a campus bench at dusk, gazing at the Rio Las Flores in the distance. He holds a woven bracelet from his Shipibo-Konibo community, his expression torn between two worlds. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Luis Contreras studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a study group, explaining an engineering concept while his warm brown skin and high cheekbones reflect his mixed heritage. His quiet watchful demeanor softens as he connects with classmates. Keep face identical. Same graphic novel style.
 

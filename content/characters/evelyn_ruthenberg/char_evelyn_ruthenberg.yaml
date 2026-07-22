@@ -8,6 +8,7 @@ metadata:
   faction: independent
   personality: shadow_investigator
   age: 48
+  birth_year: ~2029
   gender: Female
   occupation: Former Engineer at Luz del Río Energy Plant
   physical_description: Older than expected by 2077. The kind of tired that comes from two decades of solitary war. Moves with the precision of someone who has learned to be invisible.
@@ -18,7 +19,7 @@ metadata:
   goals: Expose Minera Estrella and the LW Group. Create a record that cannot be suppressed.
   challenges: Isolation, survivor's guilt, the moral weight of the lives she took.
   quote: I am guilty of what I did. But I am not the only one.
-  status: Active (released 2081)
+  status: Imprisoned (2077-2081), released 2081
 lore_path: evelyn_ruthenberg.md
 asset_paths:
   portrait: evelyn_ruthenberg__default.png

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `karla__<variant_slug>.png`
 
-- [ ] Karla at work in their professional environment, focused on their tasks
-- [ ] Karla in a moment of reflection, considering their next steps
-- [ ] Karla with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Karla at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person kneeling among rows of Carinata plants on her small farm, holding a soil sample up to the light to examine lithium contamination. She wears a once-vibrant yellow dress, her dark hair in neat braids, dirt under her fingernails. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Karla in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting at a worn kitchen table, studying documents about lithium contamination under a bare lightbulb. A small green pouch of Carinata seeds rests beside a cup of coffee. Her expression carries quiet defiance. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Karla with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person standing at a community meeting in a modest neighborhood hall, holding up studies about lithium's effect on crops while neighbors listen intently. Her braids are pulled back, her posture radiates defiance. Keep face identical. Same graphic novel style.
 

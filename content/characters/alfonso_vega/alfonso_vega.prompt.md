@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alfonso_vega__<variant_slug>.png`
 
-- [ ] Alfonso Vega giving a speech, addressing an audience with conviction
-- [ ] Alfonso Vega in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Alfonso Vega with constituents at a community event, listening attentively to concerns
+### `variant_1` — Alfonso Vega giving a speech, addressing an audience with conviction
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a podium in the Plaza de la Constitución delivering a speech, large hands gesturing emphatically. His thick mustache frames a practiced politician's smile, gold watch on left wrist catching the sunlight. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alfonso Vega in a moment of quiet contemplation, reflecting on the impact of their work
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him alone on a finca in the north, silver-gray wavy hair swept back, deeply lined forehead relaxed for the first time. The heavy-lidded eyes that once projected mayoral warmth now carry the weight of the tailings dam disaster and its aftermath. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alfonso Vega with constituents at a community event, listening attentively to concerns
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a community event surrounded by constituents, his broad stocky frame leaning forward attentively. His teeth are slightly yellowed from years of coffee as he listens with the practiced warmth of a man who navigated Las Flores through its darkest environmental crisis. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `lucia_torres__<variant_slug>.png`
 
-- [ ] Lucia Torres in a meeting, reviewing documents with colleagues
-- [ ] Lucia Torres considering a strategic decision, weighing options thoughtfully
-- [ ] Lucia Torres in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Lucia Torres in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind a colorful airport stand draped with handmade textiles, arranging artisanal cheeses and Andean souvenirs. Her curly black hair is tied back in a ponytail, a vibrant apron over her outfit, radiant smile engaging a customer. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Lucia Torres considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a small Camino Verde kitchen, testing a traditional recipe while reviewing notes for a future café. Her expressive brown eyes are focused and determined, a wooden spoon in hand. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Lucia Torres in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a community festival in Camino Verde, promoting her airport stand alongside fellow vendors. She gestures enthusiastically while explaining the cultural significance of a textile pattern, her optimism infectious. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `kun_zhang__<variant_slug>.png`
 
-- [ ] Kun Zhang in a meeting, reviewing documents with colleagues
-- [ ] Kun Zhang considering a strategic decision, weighing options thoughtfully
-- [ ] Kun Zhang in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Kun Zhang in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a Chinatown teahouse, reviewing trade documents with two younger Chinese business owners. His traditional jade pendant catches the light, hands permanently stained from decades of textile work. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Kun Zhang considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in his well-tended garden, holding a small jade figurine while gazing thoughtfully at traditional Chinese plants alongside local varieties. His white thin hair is kept neat, his posture slightly stooped but dignified. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Kun Zhang in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a modest office, mediating between a Chinese trade delegation and local business owners. His simple buttoned cotton shirt and quiet measured gestures command respect. Keep face identical. Same graphic novel style.
 

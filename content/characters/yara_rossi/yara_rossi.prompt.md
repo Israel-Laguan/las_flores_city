@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `yara_rossi__<variant_slug>.png`
 
-- [ ] Yara Rossi studying intently at a desk, surrounded by books and notes
-- [ ] Yara Rossi deep in thought about their studies, determined to succeed
-- [ ] Yara Rossi studying with classmates in a library, working together on a project
+### `variant_1` — Yara Rossi studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Standing at a makeshift desk in her Las Flores office, dark brown wavy hair pulled back, poring over financial documents and environmental reports with a worn leather portfolio open beside her. Simple gold hoop earrings catch the light as she traces the LW Group's monopolistic practices, practical business attire sharp against the handmade protest signs on the wall. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Yara Rossi deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Alone on a balcony overlooking the port where her father died, dark eyes fierce with unresolved grief, a weathered photograph of him tucked into her portfolio. Warm brown skin catches the sunset as she watches cargo ships move through the harbor that swallowed his truth, the direct assertive energy of someone driven by her grandmother's teaching that true wealth is measured in integrity. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Yara Rossi studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Leading a strategy session with her import-export team and local activists around a cluttered conference table, practical business attire sharp against handmade protest signs on the wall. Dark brown wavy hair frames a face alive with purpose, the woman who built a sustainable goods empire from her grandmother's values now directing that same determination toward holding Minería Estrella accountable. Keep face identical. Same graphic novel style.
 
