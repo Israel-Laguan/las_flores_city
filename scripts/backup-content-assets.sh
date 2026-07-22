@@ -3,15 +3,20 @@
 # Backup Content Assets
 # Creates a compressed tarball of all content/**/assets/ directories
 
-set -e
+set -euo pipefail
 
 # Derive repository root from script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 BACKUP_DIR="$REPO_ROOT/backups"
-TIMESTAMP=$(date +%Y-%m-%d)
+TIMESTAMP=$(date +%Y-%m-%d_%H%M%S)
 BACKUP_FILE="$BACKUP_DIR/content-assets-$TIMESTAMP.tar.gz"
+
+if [ -f "$BACKUP_FILE" ]; then
+    echo "⚠️  Backup file already exists: $BACKUP_FILE"
+    exit 1
+fi
 
 # Create backups directory if it doesn't exist
 mkdir -p "$BACKUP_DIR"
@@ -28,7 +33,7 @@ fi
 
 # Create tarball of all assets directories
 cd "$REPO_ROOT"
-tar -czf "$BACKUP_FILE" --exclude='.*' $(find content -type d -name "assets" | sed 's|^|./|')
+find content -type d -name "assets" -print0 | tar -czf "$BACKUP_FILE" --exclude='.*' --null -T -
 
 # Report results
 FILE_COUNT=$(tar -tzf "$BACKUP_FILE" | wc -l)

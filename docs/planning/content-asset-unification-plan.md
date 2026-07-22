@@ -30,13 +30,11 @@
 
 ### 1.4 MinIO proposal — already committed (commit `1ccc2b5`)
 `scripts/setup-persistent-minio.sh`, `scripts/upload-existing-images-to-minio.sh`,
-`docs/development/MINIO_SETUP.md` already exist. Gaps vs. goals:
+`docs/development/MINIO_SETUP.md` already exist. Current state vs. goals:
 - Storage-only, not generation/unification.
-- Scripts use **Podman** + hardcoded `/home/anthony/code/...` paths, but the project
-  runs on **`docker-compose.yml`** with MinIO on a **named volume `minio-data`**.
-  `docker compose down --volumes` still wipes images.
-- Upload script has a **double-bucket-prefix bug** in the generic loop
-    (`minio_path="las-flores/..."` then `mc cp ... lasflores/$minio_path/`).
+- `docker-compose.yml` now uses a **host-bind mount** (`./.minio-data:/data`) so MinIO data survives `down --volumes` (named volume removed). ✅
+- Upload script **double-bucket-prefix bug** was fixed (now uses `lasflores/$BUCKET_NAME/$minio_path`). ✅
+- Remaining drift: Upload script uses **Podman** + hardcoded `/home/anthony/code/...` paths, but the project runs on **Docker Compose**.
 
 ---
 

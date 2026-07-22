@@ -12,15 +12,15 @@ Completed manually (file by file) instead of via script, as requested.
 
 ## Completed State
 
-| Type | Folders | Has YAML | Has `.md` | Has `.prompt.md` | Has `assets/` |
-|------|---------|----------|-----------|------------------|---------------|
-| characters | 203 | 193 | 203 | 203 | 1+ |
-| scenes | 21 | 21 | 21 | 21 | 21 |
-| locations | 79 | 79 | 79 | 79 | 79 |
-| overlays | 3 | 3 | 3 | 3 | 3 |
-| missions | 1 | 1 | 1 | 1 | 1 |
-| stories | 1 | 1 | 1 | 1 | 1 |
-| story_beats | 5 | 5 | 5 | 5 | 5 |
+| Type | Folders | Has YAML | Has `.md` | Has `.prompt.md` | Has `assets/` | Notes |
+|------|---------|----------|-----------|------------------|---------------|-------|
+| characters | 203 | 193 | 203 | 203 | 1+ | 10 folders missing YAML |
+| scenes | 21 | 21 | 21 | 21 | 21 | |
+| locations | 79 | 79 | 79 | 79 | 79 | |
+| overlays | 3 | 3 | 3 | 3 | 3 | |
+| missions | 1 | 1 | 1 | 1 | 1 | |
+| stories | 1 | 1 | 1 | 1 | 1 | |
+| story_beats | 5 | 5 | 5 | 5 | 5 | |
 
 ## What Was Done
 
@@ -54,8 +54,9 @@ Completed manually (file by file) instead of via script, as requested.
 
 ## Done When
 
-- [x] All entity folders have YAML + `.md` + `.prompt.md` + `assets/`
+- [x] All entity folders have `.md` + `.prompt.md` + `assets/`
 - [x] No orphaned folders (`.md` without YAML or vice versa)
+- [ ] 10 character folders still missing YAML (tracked separately)
 - [x] Duplicate location folder merged
 - [x] Standalone overlay moved into proper folder structure
 - [x] Content validation passes (`npm run validate:content`)
