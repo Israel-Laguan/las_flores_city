@@ -193,7 +193,6 @@ export async function applyChoiceFilters(
   const player = await PlayerStateRepository.getForChoiceFilter(userId);
   if (!player) return rawChoices;
 
-  const credits = player.credits ?? 0;
   // Shared evaluator (see filterChoices in dialogue-helpers.ts).
   const playerState: PlayerConditionState = {
     flags: player.flags ?? {},
@@ -202,7 +201,7 @@ export async function applyChoiceFilters(
     timeBlocks: player.time_blocks ?? 0,
   };
 
-  return rawChoices.filter((choice: any) => choicePassesFilters(choice, playerState, credits));
+  return rawChoices.filter((choice: any) => choicePassesFilters(choice, playerState));
 }
 
 export async function invalidateCaches(userId: string) {

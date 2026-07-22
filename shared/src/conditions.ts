@@ -112,12 +112,11 @@ function hiddenMatches(
 
 /**
  * Decide whether a choice should be shown to the player, given their
- * flags/state/stats and current credit balance. Pure — no I/O.
+ * flags/state/stats and current time block balance. Pure — no I/O.
  */
 export function choicePassesFilters(
   choice: ConditionedChoice,
-  player: PlayerConditionState,
-  credits: number
+  player: PlayerConditionState
 ): boolean {
   if (!requiredPasses(choice.required_flags, player.flags, 'flags')) return false;
   if (!requiredPasses(choice.required_state, player.state, 'state')) return false;

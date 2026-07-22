@@ -4,7 +4,7 @@ import {
   metadataConditionsPass,
   parseNumericComparison,
   compareNumber,
-  type PlayerConditionState,
+  PlayerConditionState,
 } from '@las-flores/shared';
 
 // ============================================================
@@ -58,85 +58,85 @@ describe('compareNumber', () => {
 describe('choicePassesFilters — boolean flags', () => {
   it('passes when a required flag is present', () => {
     const player = { ...EMPTY, flags: { has_key: true } };
-    expect(choicePassesFilters({ required_flags: { has_key: true } }, player, 100)).toBe(true);
+    expect(choicePassesFilters({ required_flags: { has_key: true } }, player)).toBe(true);
   });
 
   it('fails closed when a required flag is missing', () => {
-    expect(choicePassesFilters({ required_flags: { has_key: true } }, EMPTY, 100)).toBe(false);
+    expect(choicePassesFilters({ required_flags: { has_key: true } }, EMPTY)).toBe(false);
   });
 
   it('hides a choice when hidden_if flag matches', () => {
     const player = { ...EMPTY, flags: { met_vance: true } };
-    expect(choicePassesFilters({ hidden_if: { met_vance: true } }, player, 100)).toBe(false);
+    expect(choicePassesFilters({ hidden_if: { met_vance: true } }, player)).toBe(false);
   });
 
   it('shows a choice when hidden_if flag does not match', () => {
     const player = { ...EMPTY, flags: { met_vance: false } };
-    expect(choicePassesFilters({ hidden_if: { met_vance: true } }, player, 100)).toBe(true);
+    expect(choicePassesFilters({ hidden_if: { met_vance: true } }, player)).toBe(true);
   });
 });
 
 describe('choicePassesFilters — categorical state', () => {
   it('passes when required_state equals the stored value', () => {
     const player = { ...EMPTY, state: { sofia_status: 'romanced' } };
-    expect(choicePassesFilters({ required_state: { sofia_status: 'romanced' } }, player, 100)).toBe(true);
+    expect(choicePassesFilters({ required_state: { sofia_status: 'romanced' } }, player)).toBe(true);
   });
 
   it('fails closed when required_state differs', () => {
     const player = { ...EMPTY, state: { sofia_status: 'disillusioned' } };
-    expect(choicePassesFilters({ required_state: { sofia_status: 'romanced' } }, player, 100)).toBe(false);
+    expect(choicePassesFilters({ required_state: { sofia_status: 'romanced' } }, player)).toBe(false);
   });
 
   it('fails closed when required_state key is missing', () => {
-    expect(choicePassesFilters({ required_state: { sofia_status: 'romanced' } }, EMPTY, 100)).toBe(false);
+    expect(choicePassesFilters({ required_state: { sofia_status: 'romanced' } }, EMPTY)).toBe(false);
   });
 
   it('hides a choice when hidden_if_state matches', () => {
     const player = { ...EMPTY, state: { sofia_status: 'disillusioned' } };
-    expect(choicePassesFilters({ hidden_if_state: { sofia_status: 'disillusioned' } }, player, 100)).toBe(false);
+    expect(choicePassesFilters({ hidden_if_state: { sofia_status: 'disillusioned' } }, player)).toBe(false);
   });
 });
 
 describe('choicePassesFilters — numeric stats', () => {
   it('passes a gt gate when the stat exceeds the threshold', () => {
     const player = { ...EMPTY, stats: { sofia_trust: 60 } };
-    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:50' } }, player, 100)).toBe(true);
+    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:50' } }, player)).toBe(true);
   });
 
   it('fails a gt gate when the stat is below the threshold', () => {
     const player = { ...EMPTY, stats: { sofia_trust: 40 } };
-    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:50' } }, player, 100)).toBe(false);
+    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:50' } }, player)).toBe(false);
   });
 
   it('treats a missing stat as 0 (gt:0 fails until trust is earned)', () => {
-    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:0' } }, EMPTY, 100)).toBe(false);
+    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:0' } }, EMPTY)).toBe(false);
   });
 
   it('treats a missing stat as 0 (gt:-1 passes for an unset stat)', () => {
-    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:-1' } }, EMPTY, 100)).toBe(true);
+    expect(choicePassesFilters({ required_stats: { sofia_trust: 'gt:-1' } }, EMPTY)).toBe(true);
   });
 
   it('hides a choice when hidden_if_stats comparison is true', () => {
     const player = { ...EMPTY, stats: { sofia_trust: 60 } };
-    expect(choicePassesFilters({ hidden_if_stats: { sofia_trust: 'lt:75' } }, player, 100)).toBe(false);
+    expect(choicePassesFilters({ hidden_if_stats: { sofia_trust: 'lt:75' } }, player)).toBe(false);
   });
 
   it('shows a choice when hidden_if_stats comparison is false', () => {
     const player = { ...EMPTY, stats: { sofia_trust: 80 } };
-    expect(choicePassesFilters({ hidden_if_stats: { sofia_trust: 'lt:75' } }, player, 100)).toBe(true);
+    expect(choicePassesFilters({ hidden_if_stats: { sofia_trust: 'lt:75' } }, player)).toBe(true);
   });
 });
 
 describe('choicePassesFilters — combined + economy', () => {
   it('passes with no conditions', () => {
-    expect(choicePassesFilters({ id: 'c', text: 't', next_node_id: 'n' }, EMPTY, 100)).toBe(true);
+    expect(choicePassesFilters({ id: 'c', text: 't', next_node_id: 'n' }, EMPTY)).toBe(true);
   });
 
   it('enforces the time_block_cost gate using timeBlocks', () => {
     const playerWithEnough = { ...EMPTY, timeBlocks: 10 };
     const playerWithNotEnough = { ...EMPTY, timeBlocks: 4 };
-    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, playerWithEnough, 0)).toBe(true);
-    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, playerWithNotEnough, 0)).toBe(false);
+    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, playerWithEnough)).toBe(true);
+    expect(choicePassesFilters({ time_block_cost: { amount: 5 } }, playerWithNotEnough)).toBe(false);
   });
 
   it('evaluates a mixed flag + state + stat gate', () => {

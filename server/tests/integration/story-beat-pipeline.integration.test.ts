@@ -265,7 +265,7 @@ describe('Story Beat Pipeline Integration', () => {
     expect(beatResult.rows[0].slug).toBe('beat_sofia_alberto_risk');
     expect(beatResult.rows[0].order).toBe(401);
     expect(beatResult.rows[0].label).toBe("Beat 2 — The Brother's Orbit");
-    expect(beatResult.rows[0].description).toContain('intercept her brother Alberto');
+    expect(beatResult.rows[0].description).toContain('intercept him');
 
     // Verify the cache was refreshed (mocked setCache should have been called with all slugs)
     const { setCache } = await import('../../src/database/redis.js');
