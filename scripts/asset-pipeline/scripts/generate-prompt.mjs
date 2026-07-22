@@ -85,10 +85,18 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches${negatives ? `, ${negatives}` : ''}
 
-## Variations
-- [ ] Action shot: ${name} in their element
-- [ ] Emotional: ${name} in a quiet moment
-- [ ] Group: ${name} with their closest allies
+## Variants (image-to-image)
+> Base image required. Run each with:
+> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
+> Output saved as \`${slugify(name)}__<variant_slug>.png\`
+
+<!-- Add character-specific variants below. Each variant needs:
+  ### \`slug\` — Title describing the variant
+  **Scale:** 3:4
+  **Edit prompt:**
+  Instruction for flux-kontext-dev to transform the base image.
+  Keep face identical. Same graphic novel style.
+-->
 `;
   },
 
@@ -125,10 +133,18 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
+## Variants (image-to-image)
+> Base image required. Run each with:
+> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
+> Output saved as \`${slugify(name)}__<variant_slug>.png\`
+
+<!-- Add location-specific variants below. Each variant needs:
+  ### \`slug\` — Title describing the variant
+  **Scale:** 16:9
+  **Edit prompt:**
+  Instruction for flux-kontext-dev to transform the base image.
+  Same graphic novel style.
+-->
 `;
   },
 
@@ -301,10 +317,17 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variations
-- [ ] Lock screen: same scene with subtle clock-friendly top area
-- [ ] Home screen: same scene with app-grid-friendly central area
-- [ ] Dark variant: slightly darker, battery-friendly version
+## Variants (image-to-image)
+> Base image required. Run each with:
+> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
+> Output saved as \`${slugify(name)}__<variant_slug>.png\`
+
+<!-- Add wallpaper-specific variants below. Each variant needs:
+  ### \`slug\` — Title describing the variant
+  **Scale:** 9:16
+  **Edit prompt:**
+  Instruction for flux-kontext-dev to transform the base image.
+-->
 `;
   },
 
@@ -337,10 +360,17 @@ ${fullPrompt}
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, text, complex details, neon glow, cartoon, anime
 
-## Variations
-- [ ] Alt color: same icon in alternate color palette
-- [ ] Badge variant: icon with notification badge overlay
-- [ ] Disabled variant: grayscale version for locked apps
+## Variants (image-to-image)
+> Base image required. Run each with:
+> \`akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait\`
+> Output saved as \`${slugify(name)}__<variant_slug>.png\`
+
+<!-- Add icon-specific variants below. Each variant needs:
+  ### \`slug\` — Title describing the variant
+  **Scale:** 1:1
+  **Edit prompt:**
+  Instruction for flux-kontext-dev to transform the base image.
+-->
 `;
   },
 
@@ -596,6 +626,50 @@ function slugify(text) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_|_$/g, '');
+}
+
+/**
+ * Parse variant sections from a .prompt.md file.
+ * Looks for the "## Variants (image-to-image)" section and extracts
+ * each ### `slug` subsection with its title, scale, and edit_prompt.
+ *
+ * @param {string} content - Full .prompt.md file content
+ * @returns {Array<{slug: string, title: string, scale: string, edit_prompt: string}>}
+ */
+function parseVariants(content) {
+  const variants = [];
+  // Find the variants section
+  const sectionMatch = content.match(/## Variants \(image-to-image\)\n([\s\S]*?)(?=\n## |\n---|\n$)/);
+  if (!sectionMatch) return variants;
+
+  const section = sectionMatch[1];
+
+  // Split by ### headers to get individual variants
+  const variantBlocks = section.split(/\n### /);
+  for (const block of variantBlocks) {
+    if (!block.trim()) continue;
+
+    // Extract slug from `slug` — Title
+    const slugMatch = block.match(/^`([^`]+)`\s*—\s*(.+)/m);
+    if (!slugMatch) continue;
+
+    const slug = slugMatch[1];
+    const title = slugMatch[2].trim();
+
+    // Extract scale
+    const scaleMatch = block.match(/\*\*Scale:\*\*\s*(.+)/i);
+    const scale = scaleMatch ? scaleMatch[1].trim() : '3:4';
+
+    // Extract edit prompt (everything after **Edit prompt:** until next ### or end of block)
+    const promptMatch = block.match(/\*\*Edit prompt:\*\*\s*\n([\s\S]*?)(?=\n### |\n---|\n<!--|$)/i);
+    const edit_prompt = promptMatch ? promptMatch[1].trim() : '';
+
+    if (slug && edit_prompt) {
+      variants.push({ slug, title, scale, edit_prompt });
+    }
+  }
+
+  return variants;
 }
 
 // ── Simple YAML Parsers (no deps) ────────────────────────────────────────
@@ -1058,4 +1132,12 @@ function main() {
   }
 }
 
-main();
+// Run main only when executed directly (not when imported)
+const isMainModule = process.argv[1] &&
+  (import.meta.url === `file://${process.argv[1]}` ||
+   import.meta.url.endsWith(path.basename(process.argv[1])));
+if (isMainModule) {
+  main();
+}
+
+export { parseVariants, slugify };
