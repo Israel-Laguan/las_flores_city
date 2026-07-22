@@ -13,6 +13,8 @@ const FILL_TARGETS: Record<string, string[]> = {
   vault: ['description'],
   gig: ['description', 'reward'],
   shop_item: ['description'],
+  story: ['description', 'title'],
+  story_beat: ['description'],
 };
 
 export interface FillResult {

@@ -32,11 +32,6 @@ async function scaffoldPlanItems(
       await fs.writeFile(fullPath, yamlContent, 'utf-8');
       createdFiles.push(filePath);
 
-      const lorePath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.md');
-      await fs.writeFile(lorePath, `# ${item.name}\n\nTODO: Add lore content.\n`, 'utf-8');
-
-      const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.slug + '.prompt.md');
-      await fs.writeFile(promptPath, `# Prompt for ${item.name}\n\nTODO: Add image generation prompt.\n`, 'utf-8');
     } catch (writeErr) {
       console.error(`[story-builder] CRITICAL: Failed to write scaffold file for ${item.name} (type=${item.type}, slug=${item.slug}):`, {
         error: (writeErr as Error).message,
