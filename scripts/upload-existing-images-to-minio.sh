@@ -20,8 +20,13 @@ CONTENT_DIR="$REPO_ROOT/content"
 
 # Check if mc (MinIO client) is available
 if ! command -v mc &> /dev/null; then
-    echo "❌ MinIO client (mc) not found. Installing..."
+    echo "MinIO client (mc) is required."
+    echo "Command: sudo apt-get update && sudo apt-get install -y minio-client"
+    echo "Expected result: installs the MinIO client for this system."
+    read -r -p "Run this command now? [y/N] " confirm
+    [[ "$confirm" =~ ^[Yy]$ ]] || exit 1
     sudo apt-get update && sudo apt-get install -y minio-client
+    command -v mc >/dev/null || { echo "mc installation failed"; exit 1; }
 fi
 
 # Configure MinIO client
@@ -47,8 +52,8 @@ find "$CONTENT_DIR" -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*
     name="${base_name%.*}"
     asset_type="$(dirname "$rel_path" | cut -d/ -f1)"
     
-    minio_path="$asset_type/$name.$ext"
-    
+    minio_path="$rel_path"
+
     echo "  📁 Uploading $rel_path -> $minio_path"
     mc cp "$image_file" "lasflores/$BUCKET_NAME/$minio_path"
     

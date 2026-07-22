@@ -42,12 +42,15 @@ story_beat: ['description'],
 
 **Verification**:
 ```bash
-npm run build --workspace=server && npm run test --workspace=server
+npx --no-install jest --workspace=server --clearCache
+npm run lint --workspace=server
+npm run build --workspace=server
+npm run test --workspace=server
 ```
 
 ## Execution Order
 
-M1.1 → M1.2 (independent tasks, can be done in either order)
+M1.1 and M1.2 are independent and may be completed in parallel or either order.
 
 ## Done When
 

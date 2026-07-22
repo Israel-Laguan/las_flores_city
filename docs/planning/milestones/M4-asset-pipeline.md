@@ -21,6 +21,7 @@ PROMPT_ROOTS=(
   "$ROOT/content/overlays"
   "$ROOT/content/missions"
   "$ROOT/content/stories"
+  "$ROOT/content/story_beats"
   "$ROOT/content/lore/shared"
 )
 ```
@@ -41,7 +42,7 @@ bash scripts/asset-pipeline/scripts/generate-drafts.sh init
 **Problem**: `generate-drafts-unified.mjs` (lines 23-37) and `generate-pollinations-drafts.mjs` (lines 26-42) still scan stale `docs/lore/` paths instead of the current `content/<type>/<slug>/` layout.
 
 **Action**: Update both scripts to scan `content/<type>/<slug>/` directories. The scan should:
-1. Walk `content/{characters,scenes,locations,overlays,missions,stories}/*/`
+1. Walk `content/{characters,scenes,locations,overlays,missions,stories,story_beats}/*/`
 2. Find `*.prompt.md` files in each folder
 3. Drop all `docs/lore/` references
 
@@ -78,7 +79,7 @@ M4.1 → M4.2 → M4.3 (shell wrapper first, then JS generators, then verificati
 
 ## Done When
 
-- [ ] `generate-drafts.sh` scans all 6 content types + lore/shared
+- [ ] `generate-drafts.sh` scans all 7 content types + lore/shared
 - [ ] `generate-drafts-unified.mjs` uses `content/` paths, not `docs/lore/`
 - [ ] `generate-pollinations-drafts.mjs` uses `content/` paths, not `docs/lore/`
 - [ ] `verify-assets.mjs` checks `content/` for orphaned prompts

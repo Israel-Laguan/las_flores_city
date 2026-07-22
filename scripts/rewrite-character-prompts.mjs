@@ -97,7 +97,7 @@ name: ${data.name}
 type: portrait
 size: 1024x1024
 source: content/characters/${slug}/${slug}.md
-target: \`portrait_urls[].url\` in \`content/characters/char_${slug}.yaml\`
+target: \`portrait_urls[].url\` in \`content/characters/${slug}/char_${slug}.yaml\`
 consumer: portrait
 ---
 

@@ -20,7 +20,7 @@ Automated checks to prevent content completeness regressions and document the un
 5. Add `"content:audit": "node scripts/content-audit.mjs"` to root `package.json`
 
 **Output format**:
-```
+```text
 Content Audit
 =============
 
@@ -63,7 +63,7 @@ npm run content:audit
 Also document the backup workflow:
 ```bash
 bash scripts/backup-content-assets.sh     # backup before destructive ops
-docker compose down --volumes             # safe — MinIO uses host-bind mount
+docker compose down --volumes             # destructive to named volumes — MinIO uses host-bind mount
 ```
 
 **Files**:
