@@ -19,9 +19,7 @@ updates:
         update-types:
           - "minor"
     # Major updates get individual PRs for careful review
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -36,8 +34,5 @@ updates:
       actions:
         patterns:
           - "*"
-    labels:
-      - "dependencies"
-      - "ci"
     commit-message:
       prefix: "ci"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Upload Existing Images to MinIO
-# This script uploads existing tile images to MinIO and sets up the asset structure
+# This script uploads existing image assets to MinIO and sets up the asset structure
 
 set -e
 
@@ -20,8 +20,13 @@ CONTENT_DIR="$REPO_ROOT/content"
 
 # Check if mc (MinIO client) is available
 if ! command -v mc &> /dev/null; then
-    echo "❌ MinIO client (mc) not found. Installing..."
+    echo "MinIO client (mc) is required."
+    echo "Command: sudo apt-get update && sudo apt-get install -y minio-client"
+    echo "Expected result: installs the MinIO client for this system."
+    read -r -p "Run this command now? [y/N] " confirm
+    [[ "$confirm" =~ ^[Yy]$ ]] || exit 1
     sudo apt-get update && sudo apt-get install -y minio-client
+    command -v mc >/dev/null || { echo "mc installation failed"; exit 1; }
 fi
 
 # Configure MinIO client
@@ -35,24 +40,8 @@ else
     echo "✅ Bucket already exists: $BUCKET_NAME"
 fi
 
-# Upload tile images
-echo "📁 Uploading tile images..."
-TILES_DIR="$CONTENT_DIR/lore/shared/tiles"
-
-for tile_dir in "$TILES_DIR"/*/; do
-    if [ -d "$tile_dir" ]; then
-        tile_name=$(basename "$tile_dir")
-        assets_dir="$tile_dir/assets"
-        
-        if [ -d "$assets_dir" ]; then
-            echo "  📦 Uploading $tile_name tiles..."
-            mc cp --recursive "$assets_dir/" "lasflores/$BUCKET_NAME/tiles/$tile_name/"
-        fi
-    fi
-done
-
-# Upload any other existing images
-echo "🔍 Looking for other image assets..."
+# Upload any existing images
+echo "🔍 Looking for image assets..."
 find "$CONTENT_DIR" -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" | while read -r image_file; do
     # Get relative path from content directory
     rel_path=$(realpath --relative-to="$CONTENT_DIR" "$image_file")
@@ -63,10 +52,10 @@ find "$CONTENT_DIR" -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*
     name="${base_name%.*}"
     asset_type="$(dirname "$rel_path" | cut -d/ -f1)"
     
-    minio_path="$BUCKET_NAME/$asset_type/$name.$ext"
-    
+    minio_path="$rel_path"
+
     echo "  📁 Uploading $rel_path -> $minio_path"
-    mc cp "$image_file" "lasflores/$minio_path"
+    mc cp "$image_file" "lasflores/$BUCKET_NAME/$minio_path"
     
 done
 

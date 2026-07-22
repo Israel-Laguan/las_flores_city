@@ -69,7 +69,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - minio-data:/data
+      - ./.minio-data:/data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 10s
@@ -215,4 +215,3 @@ volumes:
   postgres-oltp-data:
   postgres-olap-data:
   redis-data:
-  minio-data:
