@@ -293,6 +293,10 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     console.log(`📁 Found ${allFiles.length} content files`);
 
     for (const file of allFiles) {
+      // Files whose path doesn't match a known content type (e.g. lore
+      // reference files) are not migrated — skip them silently.
+      if (!getContentTypeFromPath(file)) continue;
+
       try {
         const checksum = await calculateChecksum(file);
 
