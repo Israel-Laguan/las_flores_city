@@ -18,7 +18,7 @@ metadata:
   location: "south_las_flores"
   characters:
     - "c3d4e5f6-a7b8-9012-cdef-123456789012"
-    - "alberto_ramirez"
+    - "b2c3d4e5-f6a7-8901-bcde-234567890abc"
   required_stats:
     sofia_trust: "gt:0"
 
@@ -66,7 +66,7 @@ nodes:
   node_reason_success:
     id: "node_reason_success"
     type: "character"
-    speaker_id: "alberto_ramirez"
+    speaker_id: "b2c3d4e5-f6a7-8901-bcde-234567890abc"
     text: "Sofia... she's always looking out for me. I just... I didn't know what else to do. The money was good."
     thought: "He's wavering. This could work."
     choices:
@@ -93,7 +93,7 @@ nodes:
     type: "narrator"
     text: "The gang lieutenant hands you a thick envelope. 'Smart choice. Kid's got potential.' You walk away richer, but the money feels heavy in your pocket."
     thought: "This might come back to haunt you."
-    is_end: true
+    is_end: false
     effects:
       state_set:
         alberto_status: "gang_member"
@@ -101,6 +101,10 @@ nodes:
         amount: 5000
         currency: "credits"
       story_beat: "beat_sofia_alberto_risk"
+    choices:
+      - id: "choice_face_sofia"
+        text: "Return to Sofia"
+        next_node_id: "node_sell_out_consequence"
 
   node_sell_out_consequence:
     id: "node_sell_out_consequence"

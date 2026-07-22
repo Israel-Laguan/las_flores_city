@@ -77,7 +77,7 @@ export async function resolveDialogueTree(
   // resolution skips stat gating — a stat gate can't be satisfied
   // without a player, but trees without required_* metadata still
   // resolve, preserving prior no-userId behavior).
-  let playerCondition: PlayerConditionState = { flags: {}, state: {}, stats: {} };
+  let playerCondition: PlayerConditionState = { flags: {}, state: {}, stats: {}, timeBlocks: 0 };
   if (userId) {
     const playerRow = await PlayerStateRepository.getFullState(userId);
     storyBeat = playerRow?.story_beat || 'prologue';
@@ -86,6 +86,7 @@ export async function resolveDialogueTree(
         flags: playerRow.flags || {},
         state: playerRow.state || {},
         stats: playerRow.stats || {},
+        timeBlocks: playerRow.time_blocks || 0,
       };
     }
   }
@@ -149,6 +150,7 @@ export async function filterChoices(choices: any[], userId: string) {
     flags: player.flags || {},
     state: player.state || {},
     stats: player.stats || {},
+    timeBlocks: player.time_blocks || 0,
   };
   const credits = player.credits || 0;
 

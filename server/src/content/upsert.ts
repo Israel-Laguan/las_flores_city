@@ -33,7 +33,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
   if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) return 'mission';
   if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) return 'story';
   if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) return 'shop_item';
-  if (normalizedPath.endsWith('story_beats.yaml')) return 'story_beat';
+  if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) return 'story_beat';
   if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) return 'gig';
   return null;
 }
@@ -100,6 +100,17 @@ async function processMissionData(data: any): Promise<string> {
 
 async function processStoryData(data: any): Promise<string> {
   if (!data) throw new Error("Invalid story data: content is empty");
+
+  // Beats-based story format: { id, name, description, beats: [...] }
+  if (data.beats && !data.stories) {
+    const slugs: string[] = [];
+    for (const beat of data.beats) {
+      await upsertStoryBeat(beat);
+      slugs.push(beat.slug);
+    }
+    return slugs.join(',');
+  }
+
   const stories = data.stories || [data];
   const storyIds: string[] = [];
   for (const story of stories) {
@@ -177,13 +188,30 @@ async function processMapTileData(data: any): Promise<string> {
 }
 
 async function processStoryBeatData(data: any): Promise<string> {
-  const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
-  const parsed = StoryBeatRegistrySchema.parse(data);
   const slugs: string[] = [];
-  for (const beat of parsed.beats) {
+
+  if (data.beats) {
+    // Registry format: { beats: [{ slug, label, order, description }, ...] }
+    const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
+    const parsed = StoryBeatRegistrySchema.parse(data);
+    for (const beat of parsed.beats) {
+      await upsertStoryBeat(beat);
+      slugs.push(beat.slug);
+    }
+  } else if (data.id) {
+    // Individual beat file: { id, name, description, metadata }
+    const beat = {
+      slug: data.id,
+      label: data.name || data.id,
+      order: data.metadata?.order ?? 0,
+      description: data.description || '',
+    };
     await upsertStoryBeat(beat);
     slugs.push(beat.slug);
+  } else {
+    return '';
   }
+
   // Invalidate stale cache before re-populating
   await deleteCache('story_beats:slugs');
   // TTL 0 = no expiry — invalidated explicitly by deleteCache before each re-population

@@ -279,8 +279,8 @@ export async function mergeStats(
   await client.query(
     `UPDATE player_states ps
        SET stats = COALESCE(ps.stats, '{}'::jsonb) || COALESCE(
-             (SELECT jsonb_object_agg(key,
-                       (COALESCE((ps.stats->key)::numeric, 0) + (deltas->key)::numeric))
+             (SELECT jsonb_object_agg(deltas.key,
+                       (COALESCE((ps.stats->deltas.key)::numeric, 0) + deltas.value::numeric))
               FROM jsonb_each($1) AS deltas),
              '{}'::jsonb),
            updated_at = NOW()

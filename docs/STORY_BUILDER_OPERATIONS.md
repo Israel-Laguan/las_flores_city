@@ -21,7 +21,7 @@
 
 1. **`__dirname` undefined in ES modules** (`StoryBuilderLore.ts:12`)
    - **Root Cause**: TypeScript ES modules don't have `__dirname` available by default
-   - **Fix**: Added `import { fileURLToPath } from 'node:url'` and `const __dirname = path.dirname(fileURLToPath(import.meta.url))`
+   - **Fix**: Added `import { fileURLToPath } from 'node:url'` and `const __dirname = path.dirname(fileURLToPath(import.meta.url))`. `resolveContentDir()` now uses `path.resolve(__dirname, '..', '..', 'content')`.
 
 2. **Template literal evaluation bug** (`admin-story-builder-generate.ts:70,73`)
    - **Root Cause**: `tsx` doesn't evaluate template literals like `${item.slug}.md` in certain contexts
@@ -135,7 +135,7 @@ Standalone script to bulk-fill existing TODO placeholders in content files that 
 **Problem**: `LoreGenerator.ts` and `PromptFileGenerator.ts` use `path.resolve(process.cwd(), 'content')` which resolves to `/app/server/content` instead of `/app/content` when running from the server directory.
 
 **Current State**:
-- `StoryBuilderLore.ts` — FIXED (uses `__dirname` + `../../../content`)
+- `StoryBuilderLore.ts` — FIXED (uses `__dirname`-relative via `resolveContentDir()`)
 - `LoreGenerator.ts:30,98` — NOT FIXED
 - `PromptFileGenerator.ts:33,105` — NOT FIXED
 

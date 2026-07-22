@@ -8,8 +8,8 @@ metadata:
   location: south_las_flores
   characters:
     - sofia_mendoza
-  required_flags:
-    - "sofia_trust > 50"
+  required_stats:
+    sofia_trust: "gt:50"
   flags:
     - sofia_status
     - sofia_trust

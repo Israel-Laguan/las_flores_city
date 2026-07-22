@@ -199,6 +199,7 @@ export async function applyChoiceFilters(
     flags: player.flags ?? {},
     state: player.state ?? {},
     stats: player.stats ?? {},
+    timeBlocks: player.time_blocks ?? 0,
   };
 
   return rawChoices.filter((choice: any) => choicePassesFilters(choice, playerState, credits));

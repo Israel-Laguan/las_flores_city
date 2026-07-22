@@ -5,10 +5,7 @@ import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { atomicWriteYaml } from './StoryBuilderFileWriter.js';
 
 export function resolveContentDir(): string {
-  const isSubdir = process.cwd().endsWith('server');
-  return isSubdir
-    ? path.resolve(process.cwd(), '..', 'content')
-    : path.resolve(process.cwd(), 'content');
+  return path.resolve(process.cwd(), 'content');
 }
 
 /**

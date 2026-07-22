@@ -19,6 +19,7 @@ export interface PlayerConditionState {
   flags: Record<string, boolean>;
   state: Record<string, string>;
   stats: Record<string, number>;
+  timeBlocks: number;
 }
 
 export interface ConditionedChoice {
@@ -127,7 +128,7 @@ export function choicePassesFilters(
   if (hiddenMatches(choice.hidden_if_stats, player.stats, 'stats')) return false;
 
   if (choice.time_block_cost && choice.time_block_cost.amount > 0) {
-    if (credits < choice.time_block_cost.amount) return false;
+    if (player.timeBlocks < choice.time_block_cost.amount) return false;
   }
 
   return true;

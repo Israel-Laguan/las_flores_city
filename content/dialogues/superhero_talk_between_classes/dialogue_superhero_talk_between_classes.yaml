@@ -53,7 +53,7 @@ nodes:
   elena_opening:
     id: "elena_opening"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "Javier, you're so jaded. Of course heroes exist. I see them every day—teachers working double shifts, neighbors sharing their last credits, people standing up to corporate bullies. That's heroism."
     thought: "She believes it. Really believes it. The question is whether she's naive or visionary."
     effects:
@@ -88,7 +88,7 @@ nodes:
   elena_agreement:
     id: "elena_agreement"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "Exactly! *smiling* And that's what keeps this city from collapsing into the abyss. Every small act of defiance, every moment of genuine connection—it adds up."
     thought: "She's not naive. She's seen the darkness and chooses to light candles anyway."
     effects:
@@ -117,7 +117,7 @@ nodes:
   elena_example:
     id: "elena_example"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "Last month, a group of Old Town residents organized a food share when the Market prices spiked. No corporate backing, no strings attached. Just people helping people. That's heroism to me."
     thought: "A concrete example. Hard to argue with that level of specificity."
     effects:
@@ -146,7 +146,7 @@ nodes:
   elena_thanks:
     id: "elena_thanks"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "Thank you. *genuinely touched* It's easy to get cynical in this city. But if we give up on the idea of heroism, what's left?"
     thought: "She's not just idealistic. She's fought for this belief."
     effects:
@@ -175,7 +175,7 @@ nodes:
   elena_concede:
     id: "elena_concede"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "*sighs* You're right. Some do get crushed. But that doesn't mean we stop trying. If we do, the corporates win by default."
     thought: "A moment of vulnerability. She's not blind to the costs."
     effects:
@@ -204,7 +204,7 @@ nodes:
   javier_cynicism:
     id: "javier_cynicism"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678902"
+    speaker_id: "990bc800-c6df-45e8-e150-880099884444"
     text: "Heroes? *laughs* Elena, wake up. This city chews up idealists and spits them out. The only 'heroes' are the ones who learn to play the game. And even they don't last long."
     thought: "Harsh. But there's truth in it. The Undercity doesn't reward idealism."
     effects:
@@ -233,7 +233,7 @@ nodes:
   javier_counter:
     id: "javier_counter"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678902"
+    speaker_id: "990bc800-c6df-45e8-e150-880099884444"
     text: "Oh please. Mutual aid networks? That's survival, not heroism. They're just trying not to drown. The real heroes would be the ones who drain the swamp."
     thought: "He's got a point. But is he just bitter, or does he have the clearer view?"
     effects:
@@ -262,7 +262,7 @@ nodes:
   javier_counter_example:
     id: "javier_counter_example"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678902"
+    speaker_id: "990bc800-c6df-45e8-e150-880099884444"
     text: "Food shares? That's damage control, Elena. The heroism would be preventing the price spikes in the first place. But nobody's doing that, are they?"
     thought: "He's reframing the argument. From his perspective, small acts don't address root causes."
     effects:
@@ -291,7 +291,7 @@ nodes:
   javier_agreement:
     id: "javier_agreement"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678902"
+    speaker_id: "990bc800-c6df-45e8-e150-880099884444"
     text: "*shrugs* Yeah, well. Someone's gotta see the world as it is. Doesn't mean I like it."
     thought: "Cynicism as self-defense. He's been hurt before."
     effects:
@@ -320,7 +320,7 @@ nodes:
   javier_solution:
     id: "javier_solution"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678902"
+    speaker_id: "990bc800-c6df-45e8-e150-880099884444"
     text: "Solution? *bitter laugh* There isn't one. Not in this city. The game's rigged. Best you can do is survive with your soul intact. And even that's a stretch most days."
     thought: "That's a bleak worldview. But in the Undercity, it might be realistic."
     effects:
@@ -349,7 +349,7 @@ nodes:
   javier_final:
     id: "javier_final"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678902"
+    speaker_id: "990bc800-c6df-45e8-e150-880099884444"
     text: "Look, I get why Elena believes what she does. And maybe she's right that it keeps her going. But out there? *gestures toward the city* In the real Las Flores? Heroes are a luxury we can't afford."
     thought: "The debate won't be resolved today. Or maybe ever. But the tension between hope and realism is what makes this city interesting."
     effects:
@@ -372,7 +372,7 @@ nodes:
   elena_rebuttal:
     id: "elena_rebuttal"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "Javier, if we all waited for the perfect solution, nothing would ever get done. Sometimes you have to light candles in the dark, even if you can't banish it completely."
     thought: "A beautiful metaphor. She's not just idealistic—she's wise in her own way."
     effects:
@@ -401,7 +401,7 @@ nodes:
   elena_final:
     id: "elena_final"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "Javier, I won't change your mind today. But I hope one day you'll see that giving up on heroism means giving up on the city itself. And Las Flores deserves better than that."
     thought: "She's not backing down. There's steel beneath that idealism."
     effects:
@@ -424,25 +424,27 @@ nodes:
   superhero_farewell:
     id: "superhero_farewell"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "The debate ends, but the question lingers. Do heroes still exist in Las Flores? Maybe the answer is that they have to."
     thought: "Some debates aren't meant to be resolved. They're meant to be lived."
     effects:
       flag_set:
         superhero_debate_contact_made: true
+      stat_set:
         superhero_relationship: 3
     is_end: true
 
   node_superhero_rejection:
     id: "node_superhero_rejection"
     type: character
-    speaker_id: "f2a3b4c5-d6e7-8901-5678-012345678901"
+    speaker_id: "880ab700-b5ce-44d7-d049-779988773333"
     text: "I understand. The debate isn't for everyone."
     is_end: true
     effects:
       flag_set:
         superhero_debate_contact_made: true
         superhero_debate_rejected: true
+      stat_set:
         superhero_relationship: -3
 
 metadata:

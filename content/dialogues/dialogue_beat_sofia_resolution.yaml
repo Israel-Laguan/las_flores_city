@@ -1,6 +1,6 @@
-id: "9h8g7f6e-5b4c-6f1a-cd9d-8f7e6e5b4c3g"
+id: "9e8f7e6d-5b4c-6f1a-cd9d-8f7e6e5b4c30"
 name: "Beat 5 — Finale"
-description: "The culmination of all choices. Branching based on sofia_status and sofia_trust: romanced/high trust = loyal ally, disillusioned = leaves or dies."
+description: "The culmination of all choices. Branching based on sofia_status and sofia_trust: romanced/high trust equals loyal ally, disillusioned equals leaves or dies."
 start_node_id: "node_resolution_check"
 metadata:
   version: "1.0"
@@ -29,15 +29,19 @@ nodes:
       - id: "check_romanced_or_high_trust"
         text: ""
         next_node_id: "node_loyal_ally_path"
-        hidden_if_state:
+        required_state:
           sofia_status: "romanced"
-        hidden_if_stats:
-          sofia_trust: "lt:75"
+
+      - id: "check_high_trust"
+        text: ""
+        next_node_id: "node_loyal_ally_path"
+        required_stats:
+          sofia_trust: "gte:75"
 
       - id: "check_disillusioned"
         text: ""
         next_node_id: "node_disillusioned_path"
-        hidden_if_state:
+        required_state:
           sofia_status: "disillusioned"
 
       - id: "check_default"
@@ -50,11 +54,15 @@ nodes:
     speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
     text: "I'm staying. This is my home now. And you... you're part of it. Together, we can build something that lasts. Something real."
     thought: "She's no longer the uncertain girl you first met. She's a leader. A fighter. And she's choosing to trust you with her future."
-    is_end: true
+    is_end: false
     effects:
       state_set:
         sofia_status: "alive"
       story_beat: "beat_sofia_resolution"
+    choices:
+      - id: "see_benefits"
+        text: "What can we build together?"
+        next_node_id: "node_loyal_ally_benefits"
 
   node_loyal_ally_benefits:
     id: "node_loyal_ally_benefits"
@@ -71,11 +79,15 @@ nodes:
     speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
     text: "I can't do this anymore. Not with you. Not here. I'm leaving Las Flores."
     thought: "Her voice is hollow. You've pushed her past her breaking point."
-    is_end: true
+    is_end: false
     effects:
       state_set:
         sofia_status: "disillusioned"
       story_beat: "beat_sofia_resolution"
+    choices:
+      - id: "see_consequence"
+        text: "What happens next?"
+        next_node_id: "node_loses_perks"
 
   node_disillusioned_death:
     id: "node_disillusioned_death"
@@ -97,9 +109,13 @@ nodes:
     speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
     text: "Well. This is it, then. I'll keep doing what I can. And I guess... you'll do the same."
     thought: "It's not a happy ending, but it's an honest one. You've both made your choices."
-    is_end: true
+    is_end: false
     effects:
       story_beat: "beat_sofia_resolution"
+    choices:
+      - id: "see_neutral_outcome"
+        text: "Is that all?"
+        next_node_id: "node_loses_perks"
 
   node_loses_perks:
     id: "node_loses_perks"

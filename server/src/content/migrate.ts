@@ -213,7 +213,7 @@ function getContentTypeFromPath(filePath: string): ContentType | null {
     return 'map_tile';
   }
   
-  if (normalizedPath.endsWith('story_beats.yaml')) {
+  if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) {
     return 'story_beat';
   }
 

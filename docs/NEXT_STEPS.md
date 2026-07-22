@@ -16,7 +16,7 @@
 
 ### 2. Fix content directory path resolution in LoreGenerator and PromptFileGenerator (MEDIUM)
 
-**Problem**: `StoryBuilderLore.ts` was fixed to use `__dirname` + `../../../content`, but `LoreGenerator.ts` and `PromptFileGenerator.ts` still use `path.resolve(process.cwd(), 'content')`, which resolves to `/app/server/content` instead of `/app/content` when running from the server directory.
+**Problem**: `StoryBuilderLore.ts` now uses `__dirname`-relative resolution via `resolveContentDir()`, but `LoreGenerator.ts` and `PromptFileGenerator.ts` still use `path.resolve(process.cwd(), 'content')`, which resolves to `/app/server/content` instead of `/app/content` when running from the server directory.
 
 **Fix**: Update all occurrences to import and use `resolveContentDir()` from `StoryBuilderLore.ts`:
 - `server/src/services/LoreGenerator.ts:30,98`
