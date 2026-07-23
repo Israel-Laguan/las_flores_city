@@ -326,9 +326,9 @@ export function buildFillFieldsPrompt(
 
   // Type-specific writing instructions
   const typeInstructions: Record<string, string> = {
-    character: `Write a compelling character description (2-3 sentences) for a cyberpunk NPC. Include physical appearance, personality traits, and their role in the city. Also fill personality with a concise 2-3 word descriptor.`,
+    character: `Write a compelling character description (2-3 sentences) for a cyberpunk NPC. Include physical appearance, personality traits, and their role in the city. Fill metadata fields as applicable: faction (one of: conservation, humanity_first, cjs, labor, media, van_der_meer, lw_group, dragon_phoenix, independent, civil_society, police, government, business, business_coalition, old_las_flores, dutch_interest, corrupt_authority, corrupt_officials, indigenous, student, civilian, working_class, neutral), age, gender, ethnicity, occupation, background, education, residence, organization, allies, mannerisms, motivations, quote, methods, status, location, and personality (concise 2-3 word descriptor). Only fill fields listed as targets.`,
     scene: `Write an atmospheric scene description (2-3 sentences) capturing the cyberpunk ambiance. Include sensory details (neon, rain, sounds). Fill mood with a concise descriptor (e.g., "bustling, neon-lit, tense").`,
-    location: `Write rich location details: a 2-3 sentence description, plus separate daytime and nightlife descriptions, and a brief history paragraph. Capture the cyberpunk setting.`,
+    location: `Write rich location details: a 2-3 sentence description, plus separate daytime and nightlife descriptions, a brief history paragraph, and a conclusion paragraph summarizing the location's significance. Capture the cyberpunk setting.`,
     dialogue: `Write a concise dialogue description (1-2 sentences) explaining what this conversation is about and who participates.`,
     mission: `Write a compelling mission description (2-3 sentences) explaining the objective, stakes, and tone.`,
     overlay: `Write a description (1-2 sentences) explaining what this dialogue overlay modifies and why.`,

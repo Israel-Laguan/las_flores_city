@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000014
+type: location
+name: Neighborhoods Near Factories
+description: |
+  Working-class residential areas adjacent to the industrial zones, home to factory workers and their families.
+district: Industrial Zone
+tags:
+  - Landmark
+  - Residential
+  - Working Class
+lore_path: neighborhoods_near_factories.md
+asset_paths:
+  image: neighborhoods_near_factories__default.png

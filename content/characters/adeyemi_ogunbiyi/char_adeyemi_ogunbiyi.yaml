@@ -1,0 +1,14 @@
+id: a0000001-0000-0000-0000-000000000003
+name: Adeyemi Ogunbiyi
+title: Chief Inspector, Las Flores Police Department
+description: |
+  Chief Inspector Adeyemi Ogunbiyi is the complex, highly competent enforcer for the corrupt political establishment of Las Flores. He serves as Mayor Alfonso Vega's primary operative, tasked with hunting down the city's most dangerous adversaries.
+metadata:
+  type: human
+  role: npc
+  faction: police
+  personality: imposing_compromised
+lore_path: adeyemi_ogunbiyi.md
+narrative_path: adeyemi_ogunbiyi.md
+asset_paths:
+  portrait: adeyemi_ogunbiyi__default.png

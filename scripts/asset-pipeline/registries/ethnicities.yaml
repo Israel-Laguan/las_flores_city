@@ -111,8 +111,7 @@ ethnicities:
       - african_american
       - afro_latino
     characters:
-      - chief_inspector_adeyemi
-      - adeyemi
+      - adeyemi_ogunbiyi
 
   european:
     label: "European descent"

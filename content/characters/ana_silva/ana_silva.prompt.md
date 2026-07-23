@@ -4,26 +4,19 @@
 
 ## Draft Prompt (short)
 
-[CONSUMER: portrait] Ana Silva, adult Councilwoman, Las Flores, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
+[CONSUMER: portrait] Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a sturdy Councilwoman Ana Silva in her late 40s. Her frame is sturdy, imposing. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, fiery determined, and a strong jaw. Her expression is imposing, as she meets the viewer with steady, composed bearing. Her black thick hair is grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless professional blazer with a council member pin. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates. --no neon, no androids, no clean backgrounds, no modern clothing. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
 
 ## Full Prompt
 
 [CONSUMER: portrait]
-Bust portrait of Ana Silva, a adult Councilwoman, Las Flores from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a sturdy in her late 40s Councilwoman Ana Silva. Her frame is sturdy, imposing. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, fiery determined, and a strong jaw. Her expression is imposing, as she meets the viewer with steady, composed bearing. Her black thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a professional blazer with a council member pin. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates. --no neon, no androids, no clean backgrounds, no modern clothing. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
 
 ## Source
 
 ```yaml
 name: Ana Silva
-title: Councilwoman, Las Flores
-faction: g
+title: Progressive City Council Member
+faction: government
 ```
 
 ---

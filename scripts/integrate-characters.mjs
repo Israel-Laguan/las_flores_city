@@ -26,7 +26,7 @@ const SKIP_SLUGS = new Set([
 
 // Name variants to flag (source slug → target slug or reason)
 const FLAG_VARIANTS = {
-  'dr-wei-zhang': 'Near-match with char_wei_zhang.yaml — verify same person',
+
   'mei-li': 'Could be same as char_wang_mei_li.yaml — verify identity',
   'javier-salazar': 'New character — verify if related to existing Javier files',
 };

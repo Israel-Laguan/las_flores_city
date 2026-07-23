@@ -5,7 +5,8 @@
 > **Born:** 2031 (Las Flores)
 > **Role:** Councilwoman; Head of Van der Meer Mining Operations
 > **Parents:** Alexander van der Meer and Wang Mei Li
-> **Spouse:** Liam Krol (Dutch-Latin American businessman)
+> **Spouse:** Hans Krol (Dutch businessman)
+> **Brother:** Liam van der Meer (executive, Van der Meer Industries)
 > **Status:** Active (as of 2077)
 
 ## Physical Description
@@ -40,7 +41,7 @@ Over the following decade she moved through increasingly senior roles, implement
 
 ## Political Career
 
-In 2075, at age 45, Xiu Li ran for a seat on the local council. Her campaign centered on gender equality in the workplace, affordable childcare, and access to education for underprivileged girls — issues she had watched go unaddressed throughout her years in industry. She won by a wide margin.
+In 2075, at age 44, Xiu Li ran for a seat on the local council. Her campaign centered on gender equality in the workplace, affordable childcare, and access to education for underprivileged girls — issues she had watched go unaddressed throughout her years in industry. She won by a wide margin.
 
 As a councilwoman she has championed legislation promoting women's rights and workforce empowerment. She has also worked closely with her brother Liam to attract European investment in sustainable development projects across Las Flores, leveraging the family's international connections toward civic ends.
 
@@ -53,9 +54,10 @@ Xiu Li lives in an elegant but unpretentious home overlooking the riverbank wher
 | Entity | Relationship |
 |---|---|
 | [Alexander van der Meer](alexander_van_der_meer.md) | Father |
-| [Wang Mei Li](mei_xiang.md) | Mother; founder of Dragon Phoenix Trading |
+| [Wang Mei Li](../wang_mei_li/wang_mei_li.md) | Mother; founder of Dragon Phoenix Trading |
 | [Dong van der Meer](dong_van_der_meer.md) | Younger brother |
-| [Liam Krol](to_be_created.md) | Spouse and business partner |
+| [Liam van der Meer](to_be_created.md) | Half-brother; executive at Van der Meer Industries |
+| [Hans Krol](to_be_created.md) | Spouse |
 
 ## In-Game References
 

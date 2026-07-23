@@ -8,5 +8,6 @@ metadata:
   faction: independent
   personality: reclusive_strategist
 lore_path: wei_zhang.md
+narrative_path: wei_zhang.md
 asset_paths:
   portrait: wei_zhang__default.png

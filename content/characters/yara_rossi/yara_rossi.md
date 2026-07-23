@@ -91,4 +91,4 @@ Yara's death galvanized the environmental movement in Las Flores. Her restoratio
 - [The Great Lithium Leak](../events/the_great_lithium_leak.md)
 - [Evelyn Ruthenberg](evelyn_ruthenberg.md)
 - [Restoration Plan](../events/restoration_plan.md)
-- [Dr. Wei Zhang](../figures/dr_wei_zhang.md)
+- [Dr. Wei Zhang](../figures/wei_zhang.md)

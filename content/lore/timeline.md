@@ -241,7 +241,7 @@ The unused surnames from these changes — **Castillo**, **Reyes**, **Mendoza**,
 
 ### Final Confrontation Discrepancy
 
-The source dump has Chief Inspector Adeyemi killing **both** Mayor Vega **and** Senator Chen inside the safe room, then taking his own life. The canonical lore (established in `alex_and_evelyn_2077.md`, `the_moral_fracture.md`, and `chief_inspector_adeyemi.md`) has Adeyemi killing only **Mayor Vega**, staging Evelyn's capture, and surviving to coordinate the arrests.
+The source dump has Chief Inspector Adeyemi killing **both** Mayor Vega **and** Senator Chen inside the safe room, then taking his own life. The canonical lore (established in `alex_and_evelyn_2077.md`, `the_moral_fracture.md`, and `adeyemi_ogunbiyi.md`) has Adeyemi killing only **Mayor Vega**, staging Evelyn's capture, and surviving to coordinate the arrests.
 
 The canonical version is correct. The dump version appears to be an earlier draft where Adeyemi's arc was more tragic.
 

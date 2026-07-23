@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000006
+type: location
+name: Casa de la Música
+description: |
+  The epitome of cultural refinement and social prestige in Las Flores, hosting operatic performances, fashion events, and high-caliber cultural events.
+district: City District
+tags:
+  - Landmark
+  - Cultural
+  - Music
+lore_path: casa_de_la_musica.md
+asset_paths:
+  image: casa_de_la_musica__default.png

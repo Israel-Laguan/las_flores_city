@@ -67,8 +67,8 @@ Sofia is known for:
 | Entity | Relationship |
 |---|---|
 | [Liam Krol](to_be_created.md) | Husband |
-| [Xiu Li van der Meer](../figures/xiu_li_van_der_meer.md) | Sister-in-law |
-| [Alexander van der Meer](../figures/alexander_van_der_meer.md) | Father-in-law |
+| [Xiu Li van der Meer](../xiu_li_van_der_meer/xiu_li_van_der_meer.md) | Sister-in-law |
+| [Alexander van der Meer](../alexander_van_der_meer/alexander_van_der_meer.md) | Father-in-law |
 | [Carlos Rodriguez Sr.](to_be_created.md) | Father (political figure) |
 | [Las Flores Future Foundation](to_be_created.md) | Co-founder |
 

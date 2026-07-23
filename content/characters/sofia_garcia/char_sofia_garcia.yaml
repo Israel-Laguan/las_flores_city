@@ -1,13 +1,14 @@
 id: c2000005-e29b-41d4-a716-446655440005
 name: Sofia Garcia
-title: Young Wife, Community Caregiver
-description: The youngest Garcia child, married at 18. She visits her father and siblings frequently, providing emotional and financial support as the family recovers from the lithium contamination.
+title: Former Miner, Community Figure
+description: |
+  Sofia Garcia is a former miner and community figure in Old Las Flores. Sister of Alex Garcia, she walks with a cane and lip-reads to communicate, having lost her hearing from mining work. Born deaf, she developed exceptional lip-reading and visual observation skills. After a mining accident in 2063 left her with a crushed leg, she became homeless but remains a symbol of resilience in the community. Her daughter Ariana studies to become a doctor.
 metadata:
   type: human
   role: npc
-  faction: independent
-  personality: nurturing_supporter
+  faction: working_class
+  personality: resilient_community
+lore_path: sofia_garcia.md
+narrative_path: sofia_garcia.md
 asset_paths:
   portrait: sofia_garcia__default.png
-
-lore_path: sofia_garcia.md

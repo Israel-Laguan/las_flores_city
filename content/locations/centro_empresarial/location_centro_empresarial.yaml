@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000007
+type: location
+name: Centro Empresarial
+description: |
+  The vibrant financial heartbeat of Las Flores, a central business district bustling with modern skyscrapers and international commerce.
+district: City District
+tags:
+  - Landmark
+  - Financial
+  - Business
+lore_path: centro_empresarial.md
+asset_paths:
+  image: centro_empresarial__default.png
