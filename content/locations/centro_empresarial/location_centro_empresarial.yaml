@@ -8,6 +8,6 @@ tags:
   - Landmark
   - Financial
   - Business
-lore_path: centro_empresarial.md
-asset_paths:
-  image: centro_empresarial__default.png
+narrative_path: centro_empresarial.md
+scene:
+  background_url: centro_empresarial__default.png

@@ -8,6 +8,6 @@ tags:
   - Landmark
   - Business
   - Cultural
-lore_path: centro_empresarial_chino_latino.md
-asset_paths:
-  image: centro_empresarial_chino_latino__default.png
+narrative_path: centro_empresarial_chino_latino.md
+scene:
+  background_url: centro_empresarial_chino_latino__default.png

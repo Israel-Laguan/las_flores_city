@@ -33,11 +33,11 @@ Wei's expertise in phytoremediation—using plants as nature's filters—aligned
 
 Yara Rossi's assassination on July 14, 2059, shattered the movement's equilibrium. While grief resonated deeply, Dr. Wei Zhang—acutely aware of the escalating pressure from corrupt forces—underwent a chilling recalculation. His dedication to the clean water goal remained absolute, but his approach hardened. He made a cold strategic choice:
 
-**1. Compromise as a Tool, Not a Defeat:** Aligning with the city council, albeit under duress, allowed him to retain influence over the restoration project. His public position became a shield, ensuring his research continued, albeit manipulated to fit their narrative.
+1. **Compromise as a Tool, Not a Defeat:** Aligning with the city council, albeit under duress, allowed him to retain influence over the restoration project. His public position became a shield, ensuring his research continued, albeit manipulated to fit their narrative.
 
-**2. The Ghost in the Machine:** His quiet compliance masked a continued covert collaboration with Evelyn. He channeled vital data and modified techniques subtly, planting seeds of genuine restoration within the compromised project. His "public face" was a performance, buying time for the true fight to persist in the shadows.
+2. **The Ghost in the Machine:** His quiet compliance masked a continued covert collaboration with Evelyn. He channeled vital data and modified techniques subtly, planting seeds of genuine restoration within the compromised project. His "public face" was a performance, buying time for the true fight to persist in the shadows.
 
-**3. Reluctant Strategist:** Wei Zhang, the reclusive scientist, evolved into a reluctant strategist. He proved that even in compromised positions, the pursuit of environmental healing can find ingenious, albeit clandestine, pathways.
+3. **Reluctant Strategist:** Wei Zhang, the reclusive scientist, evolved into a reluctant strategist. He proved that even in compromised positions, the pursuit of environmental healing can find ingenious, albeit clandestine, pathways.
 
 ## Legacy
 
@@ -45,7 +45,7 @@ Though officially listed as working for Minería Estrella as of 2065, Wei Zhang'
 
 ## Related Lore
 
-- [The Great Lithium Leak](../events/the_great_lithium_leak.md)
-- [Restoration Plan](../events/restoration_plan.md)
-- [Evelyn Ruthenberg](evelyn_ruthenberg.md)
-- [Yara Rossi](yara_rossi.md)
+- [The Great Lithium Leak](../../lore/events/the_great_lithium_leak/the_great_lithium_leak.md)
+- [Restoration Plan](../../lore/events/restoration_plan/restoration_plan.md)
+- [Evelyn Ruthenberg](../evelyn_ruthenberg/evelyn_ruthenberg.md)
+- [Yara Rossi](../yara_rossi/yara_rossi.md)

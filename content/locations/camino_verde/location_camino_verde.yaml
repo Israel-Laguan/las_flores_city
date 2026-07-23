@@ -8,6 +8,6 @@ tags:
   - Landmark
   - Community
   - Residential
-lore_path: camino_verde.md
-asset_paths:
-  image: camino_verde__default.png
+narrative_path: camino_verde.md
+scene:
+  background_url: camino_verde__default.png

@@ -24,6 +24,7 @@ const PROMPT_ROOTS = [
   path.resolve('content/stories'),
   path.resolve('content/story_beats'),
   path.resolve('content/lore'),
+  path.resolve('content/dialogues'),
 ];
 const MAX_NIM_LENGTH = 800;
 const DEFAULT_MIN_REPORT = 700;

@@ -2,4 +2,4 @@
 
 ## Overview
 
-TODO: Add overview of this overlay's purpose and content.
+An optional NSFW overlay for new players, providing mature content warnings and settings.

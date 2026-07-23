@@ -1,14 +1,15 @@
 id: c0000001-0000-0000-0000-000000000001
 name: Welcome NSFW Overlay
 description: |
-  TODO: Add description
+  An optional NSFW overlay for new players, providing mature content warnings and settings.
 target_tree_id: c0000001-0000-0000-0000-000000000001
 start_node_id: start
+is_nsfw: true
 nodes:
   start:
     id: start
     type: narrator
-    text: TODO: Add dialogue text
+    text: "Welcome to Las Flores. This experience includes mature themes and content that may not be suitable for all audiences."
     choices:
       - id: continue
         text: Continue
@@ -16,7 +17,7 @@ nodes:
   end:
     id: end
     type: narrator
-    text: TODO: Add ending text
+    text: "You may adjust your content preferences at any time in your account settings."
     is_end: true
 lore_path: welcome_nsfw_overlay.md
 asset_paths:

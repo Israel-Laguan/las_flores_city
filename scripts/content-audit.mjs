@@ -16,16 +16,16 @@ const CONTENT_DIR = path.resolve('content');
 const DRY_RUN = process.argv.includes('--dry-run');
 
 // Content types: folder-based entities with YAML files.
-// expectMd: whether folders of this type are expected to have <slug>.md and <slug>.prompt.md
+// All folder-based entity types require .md, .prompt.md, and assets/ directories.
 const FOLDER_TYPES = [
-  { dir: 'characters', prefix: 'char_', expectMd: true },
-  { dir: 'scenes', prefix: 'scene_', expectMd: false },
-  { dir: 'locations', prefix: 'location_', expectMd: false },
-  { dir: 'overlays', prefix: 'overlay_', expectMd: false },
-  { dir: 'missions', prefix: 'mission_', expectMd: false },
-  { dir: 'stories', prefix: '', expectMd: true },
-  { dir: 'story_beats', prefix: 'story_beat_', expectMd: false },
-  { dir: 'dialogues', prefix: 'dialogue_', expectMd: false },
+  { dir: 'characters', prefix: 'char_' },
+  { dir: 'scenes', prefix: 'scene_' },
+  { dir: 'locations', prefix: 'location_' },
+  { dir: 'overlays', prefix: 'overlay_' },
+  { dir: 'missions', prefix: 'mission_' },
+  { dir: 'stories', prefix: '' },
+  { dir: 'story_beats', prefix: 'story_beat_' },
+  { dir: 'dialogues', prefix: 'dialogue_' },
 ];
 
 function scanType(typeDef) {
@@ -62,7 +62,7 @@ function scanType(typeDef) {
     if (hasAssets) counts.assets++;
     if (hasDefaultPng) counts.defaultPng++;
 
-    if (hasYaml && typeDef.expectMd && (!hasMd || !hasPrompt)) {
+    if (hasYaml && (!hasMd || !hasPrompt)) {
       const missing = [];
       if (!hasMd) missing.push('.md');
       if (!hasPrompt) missing.push('.prompt.md');
