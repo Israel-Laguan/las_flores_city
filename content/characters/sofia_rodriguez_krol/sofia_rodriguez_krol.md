@@ -25,7 +25,7 @@
 
 ## Overview
 
-Sofia Rodriguez Krol represents the new generation of Las Flores elite - sophisticated, socially conscious, and strategically connected. As the wife of Liam Krol and sister-in-law of Xiu Li van der Meer, Sofia occupies a unique position at the intersection of Latin American political power and Dutch business interests.
+Sofia Rodriguez Krol represents the new generation of Las Flores elite - sophisticated, socially conscious, and strategically connected. As the wife of Liam van der Meer and sister-in-law of Xiu Li van der Meer, Sofia occupies a unique position at the intersection of Latin American political power and Dutch business interests.
 
 ## Early Life and Education
 
