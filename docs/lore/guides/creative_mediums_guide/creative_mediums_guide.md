@@ -662,7 +662,7 @@ KEY MOMENTS: [SPECIFIC SCENES TO REPRESENT]
 - [Templates](./templates.md)
 
 ### Character References
-- [Alex Garcia](../figures/alex.md)
+- [Alex Garcia](../../../content/characters/alex_garcia/alex_garcia.md)
 - [Miguel Jhonson](../figures/gdd_friends.md)
 - [Carlos Lacan](../figures/gdd_friends.md)
 - [Ana Kim](../figures/gdd_friends.md)

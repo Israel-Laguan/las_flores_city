@@ -7,26 +7,14 @@ target: `scene.background_url` in `content/locations/location_bah_a_de_las_olas.
 consumer: background
 ---
 
-
 # Prompt: Bahía de las Olas
 
+[CONSUMER: background]
 **Type:** background
-**Source:** docs/lore/districts/bah_a_de_las_olas.md
-**Target field:** `scene.background_url` in `content/locations/location_bah_a_de_las_olas.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
-## Prompt (Draft)
-Bahía de las Olas in Las Flores, night, coastal port setting. Warm artificial streetlight glow casting long soft shadows, neon signs reflecting off wet pavement, deep blue twilight sky. No people, no text, no logos.. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, carg...
-
 ## Prompt
-Bahía de las Olas in Las Flores, night, coastal port setting. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Warm artificial streetlight glow casting long soft shadows, neon signs reflecting off wet pavement, deep blue twilight sky. No people, no text, no logos.
+Bahía de las Olas. Rugged coastal harbor at sunset, weathered wooden docks, choppy ocean water, deep blue-gray surf crashing against rocks, coastal fog. Graphic novel realism, painterly soft shading, muted desaturated palette, ultra-clean 4k. No people, no text, no logos.
 
 ## Negative Prompt
-photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
-
-## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
-
-
+photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, neon, androids, robots, pristine environments

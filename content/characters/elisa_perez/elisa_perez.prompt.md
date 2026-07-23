@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `elisa_perez__<variant_slug>.png`
 
-- [ ] Elisa Pérez at work in their professional environment, focused on their tasks
-- [ ] Elisa Pérez in a moment of reflection, considering their next steps
-- [ ] Elisa Pérez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Elisa Pérez turning an investigative story into viral content at El Informador
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her at a newsroom desk, thick dark wavy hair in a messy bun, phone in one hand while the other scrolls analytics on a monitor. Her warm brown bright eyes are wide with excitement, nose ring catching the light, colorful beaded bracelet clacking against the desk, earbuds around her neck, screen showing engagement numbers climbing. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Elisa Pérez moderating a community discussion thread late at night
+**Scale:** 3:4
+**Edit prompt:**
+Place this person alone at her desk in the El Informador newsroom after hours, laptop glow illuminating her face, dark wavy hair loose around her shoulders. Her bright alert eyes scan reader comments, phone buzzing with notifications, the energetic intensity of someone who believes journalism should serve the underrepresented. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Elisa Pérez brainstorming with reporters on how to reach younger audiences
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing at a whiteboard covered in social media strategy notes, gesturing animatedly, thick dark hair bouncing. Her warm brown eyes spark with ideas, colorful beaded bracelet raised mid-gesture, phone propped against a coffee cup showing a trending topic, the newsroom energy buzzing around her. Keep face identical. Same graphic novel style.
 

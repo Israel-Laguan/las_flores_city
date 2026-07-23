@@ -96,6 +96,54 @@ Modifications to existing dialogues (e.g., NSFW content).
 ### Mysteries
 Quest lines with status tracking and time limits.
 
+## Prompt Variants (Image-to-Image)
+
+Each `.prompt.md` file is a **two-stage pipeline document**: a base image (text-to-image) plus variants (image-to-image edits against the base). This maps to `akool-cli`'s two modes.
+
+### Stage 1 — Base (text-to-image)
+The canonical image. Generates `<slug>__default.png`. This locks the character's face and identity.
+
+### Stage 2 — Variants (image-to-image)
+Edit prompts that run against the base image URL. Each variant in the `.prompt.md` file has:
+- **slug** — maps to a filename in `assets/`
+- **edit_prompt** — instruction for `flux-kontext-dev`
+- **scale** — aspect ratio override (default: 3:4 for portraits, 16:9 for locations)
+
+### Asset Naming
+
+```
+assets/
+  <slug>__default.png        # base image
+  <slug>__<variant_slug>.png  # variant (e.g. young, meeting, formal)
+```
+
+### YAML `asset_paths`
+
+```yaml
+asset_paths:
+  portrait: <slug>__default.png           # local file
+  portrait_base_url: https://...          # persistent URL (MinIO/CDN)
+  portrait_young: <slug>__young.png       # variant asset
+  portrait_meeting: <slug>__meeting.png   # variant asset
+```
+
+### Generation Workflow
+
+```bash
+# 1. Generate base image
+akool-cli image generate --prompt "<base_prompt>" --scale 3:4 --wait
+
+# 2. Generate variant from base
+akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale 3:4 --wait
+
+# 3. Or use the helper script
+./scripts/generate-variants.sh content/characters/<slug>
+./scripts/generate-variants.sh content/characters/<slug> --variant young
+./scripts/generate-variants.sh content/characters/<slug> --dry-run
+```
+
+**Cost:** 8 credits per image. A character with 4 variants = 40 credits total.
+
 ## Validation
 
 Before committing content changes, validate your YAML files:

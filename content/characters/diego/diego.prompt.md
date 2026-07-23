@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `diego__<variant_slug>.png`
 
-- [ ] Diego at work in their professional environment, focused on their tasks
-- [ ] Diego in a moment of reflection, considering their next steps
-- [ ] Diego with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Diego guiding tourists through the flooded tunnels of Mina Escondida
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him leading a group through a narrow mine tunnel, headlamp cutting a cone of light through the darkness, one calloused hand bracing against the wet rock wall. The thin scar across his left eyebrow catches the light, his warm brown eyes alert and resourceful, worn headlamp buckled tight. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Diego standing at the cave-in site, remembering the three survivors
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the mouth of a collapsed tunnel in Mina Escondida, dust in his tousled dark hair, sun-browned face drawn with the weight of memory. His calloused hands hang at his sides, the headlamp around his neck swinging gently, warm brown eyes distant with the memory of keeping hope alive underground. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Diego pointing out silver veins to treasure hunters against his better judgment
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him reluctantly gesturing toward a cave wall where silver glints in his headlamp beam, his expression caught between the knowledge of what he saw and the caution of a man who survived. Dust coats his sturdy frame, the scar across his eyebrow prominent, Mina Escondida's darkness pressing in around him. Keep face identical. Same graphic novel style.
 

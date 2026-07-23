@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `diego_sulca__<variant_slug>.png`
 
-- [ ] Diego Sulca studying intently at a desk, surrounded by books and notes
-- [ ] Diego Sulca deep in thought about their studies, determined to succeed
-- [ ] Diego Sulca studying with classmates in a library, working together on a project
+### `variant_1` — Diego Sulca struggling with an environmental science exam at the university
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him hunched over a desk in a university classroom, dark curly hair falling across his forehead, warm brown eyes tight with exam anxiety. His athletic frame is tense, practical rumpled clothes wrinkled from a sleepless night, a charango case leaning against the desk leg. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Diego Sulca fishing with his mother at San Pedro de los Pescadores at dawn
+**Scale:** 3:4
+**Edit prompt:**
+Place this person on a weathered fishing boat at dawn, lean and athletic in his element, dark curly hair damp with sea spray. His warm brown eyes are calm and certain for once, calloused hands working a net, the fishing village of San Pedro de los Pescadores waking behind him. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Diego Sulca playing charango on a mountainside trail above Las Flores
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him sitting on a rocky outcrop on a mountain trail, strumming a charango, the city of Las Flores spread below. His dark curly hair lifts in the wind, warm brown eyes soft with the peace of escape, practical clothes dusty from the hike, a university textbook poking from his backpack. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `mateo_vargas__<variant_slug>.png`
 
-- [ ] Mateo Vargas at work in their professional environment, focused on their tasks
-- [ ] Mateo Vargas in a moment of reflection, considering their next steps
-- [ ] Mateo Vargas with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Mateo Vargas at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the customs desk of Aeropuerto Internacional de Las Flores, leaning forward with a charming smile that doesn't reach his piercing eyes. His well-tailored uniform is immaculate, one hand resting casually near a traveler's confiscated suitcase while the other taps an official stamp against the counter. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Mateo Vargas in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in the dimly lit VIP lounge of Central Las Flores, swirling a glass of expensive whiskey while studying his own reflection. His dark hair is neatly combed, his chiseled jaw set, the polished exterior of a customs guard masking the calculation and deep insecurity behind his sharp features. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Mateo Vargas with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show this person in the airport break room, flashing a disarming grin at a customs colleague while subtly steering the conversation away from questions about confiscated goods. His uniform is crisp and his posture confident, but his piercing eyes betray the manipulativeness beneath the suave facade. Keep face identical. Same graphic novel style.
 

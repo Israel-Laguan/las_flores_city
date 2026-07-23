@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `hongbin_li__<variant_slug>.png`
 
-- [ ] Hongbin Li in a meeting, reviewing documents with colleagues
-- [ ] Hongbin Li considering a strategic decision, weighing options thoughtfully
-- [ ] Hongbin Li in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Hongbin Li in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a sleek Beijing PR firm glass-walled conference room, jet black hair neatly parted, sharp calculating eyes scanning social media campaign metrics on a screen, impeccable designer charcoal suit. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Hongbin Li considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a minimalist high-rise apartment overlooking a glittering financial district, Apple Watch glinting on wrist, eyes narrowed with quiet calculation as he weighs the geopolitical implications of a social media influencer campaign. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Hongbin Li in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the center of a crisis-response huddle at a Beijing PR firm, lean fit frame leaning forward, dark brown eyes projecting ruthless efficiency as he directs social media managers managing influencer narratives. Keep face identical. Same graphic novel style.
 

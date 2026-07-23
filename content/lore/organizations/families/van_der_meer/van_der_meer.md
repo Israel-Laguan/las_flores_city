@@ -45,6 +45,10 @@ When the family saw the full potential of the region, they made a calculated str
 - **Elisabeth van der Meer:** Daughter of Pieter and Annabella. Arrived in Las Flores with her father and husband. Had a daughter named Sophia. After divorce, focused on raising Sophia and becoming involved in Las Flores' social scene. Married Carlos Alberto Hernandez in 2038 in a strategic alliance; her Dutch values clashed with the Hernandez family's corruption.
 - **Jan van der Meer (b. ~2020):** Youngest child of Pieter and Annabella. Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over the family business after his father's retirement and became a prominent figure in Las Flores' development. Passed away suddenly around 2060.
 
+### Second Generation — European Branch
+- **Hendrik van der Meer (b. ~1960-1965):** Brother of Pieter van der Meer. Remained in Europe while Pieter built the Las Flores empire. Oversaw European business interests and raised his son in Rotterdam.
+- **Willem van der Meer (b. ~2002):** Son of Hendrik (Pieter's brother), making him first cousin to Alexander, Elisabeth, and Jan. Built Van der Meer European Trading as a successful import-export business in Rotterdam. Maintains close ties with Las Flores branch. Father of Nico van der Meer. Had a brief romantic relationship with cousin Elisabeth in their youth, before her marriage to Carlos Alberto Hernandez.
+
 ### Current Generation — Core Business Line
 - **Xiu Li van der Meer / Xiu Mei (b. 2033):** Eldest child of Alexander and Mei Li. Inherited her mother's entrepreneurial spirit but struggled to find acceptance within the family due to her mixed heritage. Inherited Alexander's mining interests after his retirement. Became a prominent local politician advocating for women's rights. Married Dutch businessman Hans Krol; had two children: Eva and Liam.
 - **Dong van der Meer (b. ~2030):** Most visible and controversial member. Leads the Flowers Syndicate criminal organization while maintaining nominal connections to legitimate family businesses. Health declining due to stress, alcohol abuse, and old injury from a shootout.
@@ -193,7 +197,7 @@ The family is characterized by:
 
 ## In-Game References
 
-- **Characters:** Alexander, Xiu Li, Dong, Peter, Peter Jr., Jan Jr., Rafaela, Natalia, Liam, Sebastian, Anna, Elisabeth, Sophia, and extended family members
+- **Characters:** Alexander, Xiu Li, Dong, Peter, Peter Jr., Jan Jr., Rafaela, Natalia, Liam, Sebastian, Anna, Elisabeth, Sophia, Willem, Nico, and extended family members
 - **Scenes:** Van der Meer Mining headquarters, family estates, charity galas, art exhibitions, luxurious properties around the world
 - **Mysteries:** The family's involvement in the Free City founding; Dong's criminal activities; internal power struggles; the truth behind Peter's marriage; environmental impact of their mining operations; the family's role in shaping Las Flores' development
 - **Narrative Hooks:** Family honor vs. criminal reality; the cost of empire-building; legitimacy vs. power; LGBTQ+ acceptance in a conservative dynasty; women's influence behind the scenes; the moral complexity of development vs. preservation; the glamour of wealth vs. the harsh realities of the mining industry

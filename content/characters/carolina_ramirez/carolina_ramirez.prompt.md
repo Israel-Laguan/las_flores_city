@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `carolina_ramirez__<variant_slug>.png`
 
-- [ ] Carolina Ramirez at her municipal office desk, carefully reviewing financial documents with a focused expression
-- [ ] Carolina Ramirez alone in her apartment, looking at her computer screen with a concerned expression as she reads troubling news
-- [ ] Carolina Ramirez standing with district leadership and colleagues, being recognized for her professional integrity
+### `variant_1` — Carolina Ramirez catching a discrepancy in travel expense reports
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her at a municipal office desk in the Pacific District, thick wavy hair in a low ponytail, finger tracing a suspicious line item on a stack of travel receipts. Her warm brown eyes are sharp with suspicion, a thin gold chain at her throat, the small mole below her right eye catching the fluorescent light. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Carolina Ramirez facing the smear campaign, reading online attacks alone at night
+**Scale:** 3:4
+**Edit prompt:**
+Place this person alone in her apartment at night, laptop screen casting a harsh glow on her face as she scrolls through retaliatory smear articles. Her jaw is set, warm brown eyes reflecting both hurt and steely resolve, thick dark hair falling loose around her shoulders. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Carolina Ramirez receiving recognition from district leadership for her courage
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing in a district council chamber, petite frame squared and upright, accepting a commendation from the Governor's representative. Her knowing half-smile returns, warm brown eyes bright with vindication, professional blazer crisp, gold chain catching the light. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `miguel_jhonson__<variant_slug>.png`
 
-- [ ] Miguel Jhonson studying intently at a desk, surrounded by books and notes
-- [ ] Miguel Jhonson deep in thought about their studies, determined to succeed
-- [ ] Miguel Jhonson studying with classmates in a library, working together on a project
+### `variant_1` — Miguel Jhonson studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person hunched over a desk strewn with district maps and urban management textbooks, broad shoulders blocking the desk lamp as he traces a safehouse route with a felt-tip pen. A worn denim jacket hangs on the back of his chair, and a half-finished contingency plan fills a yellow legal pad. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Miguel Jhonson deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him sitting on the front stoop of a modest western-district apartment building at dawn, coffee cooling in one hand, staring down the empty street with the quiet resolve of someone who has decided to carry a weight he cannot put down. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Miguel Jhonson studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person leaning across a library table, rolling out a hand-drawn logistics network diagram for his classmates, his grounding presence making the whole group lean in. His steady hands point to a node on the map while the others listen with the trust he has earned over years of doing what he says he will do. Keep face identical. Same graphic novel style.
 

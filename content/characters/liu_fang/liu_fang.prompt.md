@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `liu_fang__<variant_slug>.png`
 
-- [ ] Liu Fang at work in their professional environment, focused on their tasks
-- [ ] Liu Fang in a moment of reflection, considering their next steps
-- [ ] Liu Fang with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Liu Fang at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a dimly lit LW Group office, copying files onto a small memory card while glancing nervously over her shoulder. Her wire-rimmed glasses reflect the monitor's glow, a slim leather portfolio open on the desk. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Liu Fang in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person walking alone through a rain-soaked street at night, checking over her shoulder with wide wary eyes. She clutches a leather portfolio to her chest, small jade stud earrings catching the streetlight. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Liu Fang with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a sterile conference room, sliding a folder of container inspection reports across the table to an auditor. Her expression is intelligent and cautious, neat professional appearance betraying nothing of her secret. Keep face identical. Same graphic novel style.
 

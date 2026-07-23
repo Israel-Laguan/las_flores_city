@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `marco_rossi__<variant_slug>.png`
 
-- [ ] Marco Rossi studying intently at a desk, surrounded by books and notes
-- [ ] Marco Rossi deep in thought about their studies, determined to succeed
-- [ ] Marco Rossi studying with classmates in a library, working together on a project
+### `variant_1` — Marco Rossi studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a university café table, textbooks spread around him while he checks his phone for social media notifications. His wavy dark hair and striking green eyes catch attention, fitted shirt stylishly unbuttoned. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Marco Rossi deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Place this person walking along a beach near Las Flores, dressed casually in sneakers and stylish jeans, posting a selfie with the ocean behind him. His charismatic smile masks the financial strain of tuition. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Marco Rossi studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a study group in the university library, charming his classmates while half-reading a business administration textbook. His magnetic personality fills the room, a playful grin on his chiseled face. Keep face identical. Same graphic novel style.
 

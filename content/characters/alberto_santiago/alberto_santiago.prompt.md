@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alberto_santiago__<variant_slug>.png`
 
-- [ ] Alberto Santiago (El Pescador) in a meeting, reviewing documents with colleagues
-- [ ] Alberto Santiago (El Pescador) considering a strategic decision, weighing options thoughtfully
-- [ ] Alberto Santiago (El Pescador) in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Alberto Santiago (El Pescador) in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at dawn beside a fishing boat, hauling a woven basket of fresh catch onto the dock. His sun-bleached black hair catches the early light, calloused hands gripping the rope with a faded burn scar visible on his right palm. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alberto Santiago (El Pescador) considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him at a bakery counter sampling artisan pastries, his wide crooked-tooth smile breaking through as he banteres with the shop owner. Laugh lines deep around his mouth, crinkled eyes full of warmth. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alberto Santiago (El Pescador) in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a restaurant kitchen door delivering the morning catch, chatting animatedly with the chef while gesturing at the fresh fish. His broad shoulders and rolled-up fishing shirt convey a lifetime on the water. Keep face identical. Same graphic novel style.
 

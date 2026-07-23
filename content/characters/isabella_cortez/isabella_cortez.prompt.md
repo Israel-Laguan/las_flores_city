@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `isabella_cortez__<variant_slug>.png`
 
-- [ ] Isabella Cortez at work in their professional environment, focused on their tasks
-- [ ] Isabella Cortez in a moment of reflection, considering their next steps
-- [ ] Isabella Cortez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Isabella Cortez at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind a mini-market counter with fluorescent lighting, wavy chestnut hair flowing freely, sparkling green eyes warm and flirtatious as she rings up a customer. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Isabella Cortez in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Show this person with golden sun-kissed skin glowing under neon club lights, long wavy chestnut hair cascading over a provocative outfit, vibrant green eyes alight with vivacious energy as she dances with wealthy friends at a late-night party. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Isabella Cortez with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Show this person at home on a worn couch, chestnut hair pulled back, green eyes tired but tender as two small children climb into her lap, miniature single-mother warmth behind the nightlife sparkle. Keep face identical. Same graphic novel style.
 

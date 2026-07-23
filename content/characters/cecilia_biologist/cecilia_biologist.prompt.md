@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `cecilia_biologist__<variant_slug>.png`
 
-- [ ] Cecilia (Biologist) — Merged into Cecilia Perez at work in their professional environment, focused on their tasks
-- [ ] Cecilia (Biologist) — Merged into Cecilia Perez in a moment of reflection, considering their next steps
-- [ ] Cecilia (Biologist) — Merged into Cecilia Perez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Cecilia (Biologist) — Merged into Cecilia Perez at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: Cecilia (Biologist) — Merged into Cecilia Perez at work in their professional environment, focused on their tasks. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Cecilia (Biologist) — Merged into Cecilia Perez in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: Cecilia (Biologist) — Merged into Cecilia Perez in a moment of reflection, considering their next steps. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Cecilia (Biologist) — Merged into Cecilia Perez with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show: Cecilia (Biologist) — Merged into Cecilia Perez with colleagues in a professional setting, engaged in discussion. Keep the same distinctive facial structure and features. Same graphic novel style.
 

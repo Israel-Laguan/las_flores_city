@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `pedro_quispe__<variant_slug>.png`
 
-- [ ] Pedro Quispe studying intently at a desk, surrounded by books and notes
-- [ ] Pedro Quispe deep in thought about their studies, determined to succeed
-- [ ] Pedro Quispe studying with classmates in a library, working together on a project
+### `variant_1` — Pedro Quispe studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a cluttered desk in a university library, Business Administration textbooks spread around him, a folded paper airplane resting beside his notes as a quiet nod to his unfulfilled dream of becoming a pilot. His dark curly hair falls over warm brown eyes scanning the page with quiet determination. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Pedro Quispe deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Place this person leaning against a window in his parents' café near the airport, watching planes take off through the glass while a Business Administration textbook lies open on the counter. His warm brown eyes carry a flicker of longing mixed with resolve, caught between duty and dreams. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Pedro Quispe studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a university study room surrounded by classmates, gesturing at a whiteboard covered in business charts while sharing notes, a well-worn apron still visible under his t-shirt from his shift at the family café. His friendly smile and dark curly hair make him the natural center of the group. Keep face identical. Same graphic novel style.
 

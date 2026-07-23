@@ -215,7 +215,7 @@ He did not ask for mercy in exchange. He said he just wanted to finish telling i
 
 ## Connected Stories
 
-- [Alex Garcia](../figures/alex.md)
+- [Alex Garcia](../../characters/alex_garcia/alex_garcia.md)
 - [Evelyn Ruthenberg](../figures/evelyn_ruthenberg.md)
 - [Alex & Evelyn: The 2077 Endgame](alex_and_evelyn_2077.md)
 - [Alex's Friends (The Core Group)](../figures/gdd_friends.md)

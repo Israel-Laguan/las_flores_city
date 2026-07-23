@@ -24,9 +24,23 @@ Zona Franca in Las Flores, daytime, near water. Premium contemporary graphic nov
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `zona_franca__<variant_slug>.png`
 
+### `variant_1` — Night version: same scene at night with different lighting
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in: Night version of the free trade zone—manufacturing facilities lit by industrial floodlights, logistics warehouses with loading bays glowing, AquaDragon headquarters signage visible, truck yard with parked trailers under harsh sodium lamps, administrative offices with late-working lights. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Rainy version: same scene with rain and mood effects
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in: Rainy version of the free trade zone—rain drumming on corrugated warehouse roofs, wet loading docks reflecting industrial lights, manufacturing facility smokestacks in misty rain, AquaDragon building facade slick with water, logistics trucks idling in puddles. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Wide shot: broader view of the location
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in: Wide shot of the free trade zone—expansive industrial landscape with rows of manufacturing facilities and logistics warehouses, AquaDragon Chinese enterprise compound visible, loading docks with shipping containers, administrative offices, training centers, and tax-incentivized zone perimeter fencing. Keep face identical. Same graphic novel style.
 

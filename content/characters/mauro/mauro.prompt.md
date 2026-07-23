@@ -25,10 +25,28 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `mauro__<variant_slug>.png`
 
-- [ ] Mauro (Kusi) driving "La Diabla" bus through Old Las Flores streets with quiet focus
-- [ ] Mauro whistling traditional Quechua melodies as he navigates familiar routes
-- [ ] Mauro assisting passengers with quiet kindness, his scarred hands showing years of labor
-- [ ] Mauro in a moment of reflection, the weight of his past accident visible in his eyes
+### `variant_1` — Mauro (Kusi) driving "La Diabla" bus through Old Las Flores streets with quiet focus
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind the wheel of "La Diabla" bus, navigating the winding streets of Old Las Flores with quiet, vigilant focus. His calloused, scarred hands grip the steering wheel, a traditional woven cap on his gray thinning head, his tired but kind eyes scanning the road ahead with renewed care after the accident. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Mauro whistling traditional Quechua melodies as he navigates familiar routes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind the wheel of La Diabla, his lips pursed in a gentle whistle as he hums traditional Quechua melodies along a familiar route through Old Las Flores. His weathered face shows quiet melancholy, a faded work shirt and woven cap framing deep brown eyes that carry the weight of a past accident as a form of penance. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Mauro assisting passengers with quiet kindness, his scarred hands showing years of labor
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the door of La Diabla, extending a calloused, scarred hand to help an elderly passenger climb the steps. His traditional woven cap sits low over gray thinning hair, and his tired but kind eyes show the gentle attentiveness of a man whose quiet bus is now the only one in town where passengers can think. Keep face identical. Same graphic novel style.
+
+### `variant_4` — Mauro in a moment of reflection, the weight of his past accident visible in his eyes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting alone on a quiet bench in Old Las Flores, staring at the curb where a little girl once stepped into La Diabla's path. His calloused, scarred hands rest on his knees, his weathered face heavy with the haunted memory of her pained expression, the distant hum of his now-silent bus engine echoing his years of regret. Keep face identical. Same graphic novel style.
 

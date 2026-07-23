@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `valentina_reyes__<variant_slug>.png`
 
-- [ ] Valentina "Val" Reyes studying intently at a desk, surrounded by books and notes
-- [ ] Valentina "Val" Reyes deep in thought about their studies, determined to succeed
-- [ ] Valentina "Val" Reyes studying with classmates in a library, working together on a project
+### `variant_1` — Valentina "Val" Reyes studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Hunched over a desk in the Universidad del Valle library, sun-kissed bronze skin illuminated by desk lamp light, dark ponytail falling forward as she struggles with advanced vocabulary in her social work textbook. Rural accent still coloring her whispered self-corrections, casual clothing reflecting her simple upbringing, determined eyes burning with the weight of her father's financial sacrifices. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Valentina "Val" Reyes deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Sitting alone on a campus courtyard bench, a FaceTime call just ended, gazing at the Río de las Flores on her phone's background as homesickness swells. Sun-kissed bronze complexion catches the fading light, her father's fisherman's hands and her mother's weekly encouragement replaying in her mind, imposter syndrome warring with the resilience that brought her from a small town to the city. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Valentina "Val" Reyes studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Tentatively joining a study group at a library table, shoulders relaxing for the first time that day as a classmate smiles at her accent. Dark hair tied back in a loose ponytail, careful demeanor softening into warmth as she finds belonging among the social work texts, the bridge between two cultures she aspires to become visible in her growing confidence. Keep face identical. Same graphic novel style.
 

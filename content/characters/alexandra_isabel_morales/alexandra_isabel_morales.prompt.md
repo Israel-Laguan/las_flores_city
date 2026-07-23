@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alexandra_isabel_morales__<variant_slug>.png`
 
-- [ ] Alexandra Isabel Morales at the front of a classroom, engaged in teaching with students attentively listening
-- [ ] Alexandra Isabel Morales grading papers with care, thinking about how to best support their students
-- [ ] Alexandra Isabel Morales with students in a classroom, facilitating a group discussion
+### `variant_1` — Alexandra Isabel Morales at the front of a classroom, engaged in teaching with students attentively listening
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the front of a language classroom gesturing enthusiastically at a colorful world map, long black hair flowing over her tailored blazer. Small gold hoop earrings catch the light as she speaks in English, her warm half-smile inviting engagement. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alexandra Isabel Morales grading papers with care, thinking about how to best support their students
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her at a trendy café flipping through travel photography on her phone, high cheekbones illuminated by screen light. Her chic accessories and immaculate makeup reflect her polished city-girl persona. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alexandra Isabel Morales with students in a classroom, facilitating a group discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a round table with a small group of language students during an immersion activity, leaning forward with animated expression. Her almond-shaped dark eyes sparkle as she weaves a travel story into the lesson, making learning feel like adventure. Keep face identical. Same graphic novel style.
 

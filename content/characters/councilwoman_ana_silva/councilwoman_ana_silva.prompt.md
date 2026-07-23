@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `councilwoman_ana_silva__<variant_slug>.png`
 
-- [ ] Councilwoman Ana Silva in a meeting, reviewing documents with colleagues
-- [ ] Councilwoman Ana Silva considering a strategic decision, weighing options thoughtfully
-- [ ] Councilwoman Ana Silva in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Councilwoman Ana Silva confronting Mayor Hernandez in the council chamber
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing in the city council chamber, thick curly hair framing a fierce expression, silver hoop earrings catching the overhead lights. Her worn leather folder is open on the podium, fiery dark brown eyes locked on the Mayor's seat, strong jaw set with conviction. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Councilwoman Ana Silva reviewing evidence of Chinese investment deals at her desk
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a cluttered desk in her council office, thick black curly hair pulled back, reading through documents linking Mayor Hernandez to Vice-Mayor Lau's foreign investor deals. Her expression is calculating and determined, the small scar on her right eyebrow visible under the desk lamp. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Councilwoman Ana Silva rallying supporters at a community protest
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her at a podium before a crowd of underprivileged citizens, gesturing emphatically with one hand, the leather folder tucked under her arm. Her deep brown skin glistens with effort, silver hoops swaying, fiery eyes burning with the passion of the only council member who openly champions the marginalized. Keep face identical. Same graphic novel style.
 

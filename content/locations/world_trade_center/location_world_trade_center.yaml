@@ -1,0 +1,22 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567114"
+type: location
+name: World Trade Center Las Flores
+color: null
+aliases:
+  - WTCLF
+  - WTC
+tags:
+  - Landmark
+  - Business
+  - Diplomacy
+  - International
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  Standing as a beacon of modernity and innovation, the World Trade Center in Central Las Flores dramatically contrasts with the tropical and urban mosaic that surrounds it.
+conclusion: |
+  The WTC represents a hub of international business and diplomacy for Las Flores.
+asset_paths:
+  image: world_trade_center__default.png
+lore_path: world_trade_center.md

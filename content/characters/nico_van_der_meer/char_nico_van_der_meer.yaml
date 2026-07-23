@@ -1,24 +1,26 @@
 id: f8b9c0d1-e2f3-4a5b-6c7d-8e9f0a1b2c3d
 name: Nico van der Meer
 title: European Business Heir, Van der Meer Family Member
-description: Nico van der Meer is the son of Alexander van der Meer Jr., part of the European branch of the van der Meer family. Born and raised in Rotterdam, he grew up hearing stories of the Las Flores lithium boom and the family's South American adventures. In his twenties, Nico moved to Las Flores to help manage the family's import-export operations between Europe and South America. A sharp, ambitious businessman, Nico navigates the complex dynamics between the legitimate van der Meer enterprises and his cousin Dong's shadowy Flowers Syndicate operations. He maintains a cordial but cautious relationship with the Las Flores branch, aware that his father's past romantic history with Elisabeth adds an undercurrent of tension to family gatherings.
+description: Nico van der Meer is the son of Willem van der Meer, part of the European branch of the van der Meer family. Born and raised in Rotterdam, he grew up hearing stories of the Las Flores lithium boom and the family's South American adventures. In his twenties, Nico moved to Las Flores to help manage the family's import-export operations between Europe and South America. A sharp, ambitious businessman, Nico navigates the complex dynamics between the legitimate van der Meer enterprises and his cousin Dong's shadowy Flowers Syndicate operations. He maintains a cordial but cautious relationship with the Las Flores branch, aware that his father's past romantic history with Elisabeth adds an undercurrent of tension to family gatherings.
 metadata:
   type: human
   role: npc
   faction: dutch_interest
-  personality: ambitious_relativ
+  personality: ambitious_businessman
   age: 42
   gender: Male
   ethnicity: Dutch
+  nationality: Dutch
   occupation: Import-Export Manager, Van der Meer European Trading
-  background: son of Alexander van der Meer Jr., raised in Rotterdam, moved to Las Flores in his 20s to manage family business
+  background: son of Willem van der Meer, raised in Rotterdam, moved to Las Flores in his 20s to manage family business
   residence: Las Flores city
   business: Van der Meer European Trading — Las Flores operations
   relationships:
-    - son of Alexander van der Meer Jr.
+    - son of Willem van der Meer
     - cousin to Sophia van der Meer Rodriguez (once removed)
     - distant cousin to Dong van der Meer
-  personality_traits: ambitious, diplomatic, observant, cautious, business-savvy
+    - first cousin once removed to Xiu Li and Dong van der Meer
+  personality_traits: ambitious, diplomatic, observant, cautious, business-savvy, adaptable
   goals: expand European-South American trade routes, build independent identity from family drama, navigate between legitimate business and criminal elements
 asset_paths:
   portrait: nico_van_der_meer__default.png

@@ -1,0 +1,22 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567103"
+type: location
+name: Andean Mountains
+color: null
+aliases:
+  - Los Andes
+tags:
+  - Landmark
+  - Natural
+  - Mountains
+  - Outdoor
+  - Tourism
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The Andean Mountains form a dramatic natural barrier rising significantly to the east of Las Flores Free City, creating a breathtaking backdrop that contrasts with the urban and coastal landscapes below.
+conclusion: |
+  The Andean Mountains provide both natural beauty and recreational opportunities for the residents of Las Flores.
+asset_paths:
+  image: andean_mountains__default.png
+lore_path: andean_mountains.md

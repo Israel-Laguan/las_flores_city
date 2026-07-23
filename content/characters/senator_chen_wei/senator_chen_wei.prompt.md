@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `senator_chen_wei__<variant_slug>.png`
 
-- [ ] Senator Chen Wei in a meeting, reviewing documents with colleagues
-- [ ] Senator Chen Wei considering a strategic decision, weighing options thoughtfully
-- [ ] Senator Chen Wei in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Senator Chen Wei in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Seated at the head of a mahogany boardroom table with Sinolimex Corporation quarterly reports spread before him, gold cufflinks catching the light as he slides a document toward a Chinese mining executive. His tailored suit is immaculate, subtle smile masking political calculation while entourage members lean in attentively. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Senator Chen Wei considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Standing at a rain-streaked floor-to-ceiling window overlooking a lithium processing plant at dusk, silver-streaked black hair combed back in harsh fluorescent light. Dark brown eyes narrow with quiet calculation as he weighs the political consequences of the Great Lithium Leak cover-up. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Senator Chen Wei in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+At a clandestine dinner with LW Group executives in a private dining room, leaning forward with calculated warmth to negotiate the fate of Las Flores' contaminated waterways. His gold cufflinks and tailored jacket project the aura of a man who trades in influence, the confident smile never reaching his calculating eyes. Keep face identical. Same graphic novel style.
 

@@ -230,7 +230,7 @@ Evelyn fought in the dark because she believed the darkness was permanent. Alex 
 
 ## Connected Lore
 
-- [Alex Garcia](../figures/alex.md)
+- [Alex Garcia](../../characters/alex_garcia/alex_garcia.md)
 - [Evelyn Ruthenberg](../figures/evelyn_ruthenberg.md)
 - [Alex's Friends (The Core Group)](../figures/gdd_friends.md)
 - [The Retirement Complex Murders](retirement_complex_murders.md)

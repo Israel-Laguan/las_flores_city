@@ -26,9 +26,23 @@ Mall del Valle in Las Flores, daytime, modern commercial, luxury retail design a
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `mall_del_valle__<variant_slug>.png`
 
+### `variant_1` — Night version: same scene at night with different lighting
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in: Night version of the premium shopping center—luxury facade glowing against the dark sky, amusement park rides lit with colorful neon in the distance, sea views shimmering with reflected city lights, panoramic lookout points silhouetted against moonlit water. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Rainy version: same scene with rain and mood effects
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in: Rainy version of the premium shopping center—rain pelting the luxury retail glass, sea views obscured by misty curtain of rain, lookout points wet and deserted, amusement park rides dimmed and glistening, puddles reflecting the mall's glowing storefronts. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Wide shot: broader view of the location
+**Scale:** 16:9
+**Edit prompt:**
+Place this person in: Wide shot of the premium shopping center on the western edge—luxury retail complex with high-end storefronts, sea panorama stretching behind the building, small zoo enclosure visible to one side, amusement park rides rising above the roofline, panoramic lookout points along the waterfront. Keep face identical. Same graphic novel style.
 

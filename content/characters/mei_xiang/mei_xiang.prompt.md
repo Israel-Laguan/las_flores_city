@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `mei_xiang__<variant_slug>.png`
 
-- [ ] Mei Xiang at work in their professional environment, focused on their tasks
-- [ ] Mei Xiang in a moment of reflection, considering their next steps
-- [ ] Mei Xiang with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Mei Xiang at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind a sleek conference table in a glass-walled boardroom, her gold-rimmed portfolio open to a spreadsheet of lithium concession figures. Her pearl earrings catch the overhead light as she adjusts her tailored suit jacket, sharp calculating eyes locked on an unseen negotiating counterpart. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Mei Xiang in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her alone in a minimalist hotel room overlooking Las Flores, standing at the window with her arms crossed. Her designer watch catches the light as she surveys the city below, composing her next financial package with the quiet calculation that won over an entire city council. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Mei Xiang with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her seated across from city officials in a wood-paneled council chamber, her slim portfolio splayed open with investment projections. She gestures precisely with one hand, gold bracelet glinting, while her composed expression never betrays the political chess she is playing. Keep face identical. Same graphic novel style.
 

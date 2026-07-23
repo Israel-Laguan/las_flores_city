@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `claire_moreau__<variant_slug>.png`
 
-- [ ] Claire Moreau working on a painting or sketch, focused on their creative work
-- [ ] Claire Moreau gazing at their finished work, contemplating the emotional impact
-- [ ] Claire Moreau with other artists in a studio, sharing creative insights and techniques
+### `variant_1` — Claire Moreau leading a dawn yoga session on her seaside terrace
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her in a flowing white dress on a weathered wooden terrace overlooking the port, arms extended in a warrior pose at dawn. Chestnut hair catching the first light, green eyes half-closed in meditation, bohemian scarves draped over the railing. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Claire Moreau hosting a lavish evening party in her eclectic home
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a candlelit room filled with eclectic art and draped fabrics, holding a glass of wine while speaking animatedly to a cluster of guests. Her warm smile radiates magnetic charm, green eyes sparkling, vibrant colors swirling in her layered skirts. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Claire Moreau alone at the port, gazing at the water at sunset
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her standing alone at the harbor edge at sunset, wind lifting her chestnut hair, one hand resting on a weathered mooring post. Her expression carries quiet grief beneath the warmth, the port lights beginning to flicker on behind her. Keep face identical. Same graphic novel style.
 

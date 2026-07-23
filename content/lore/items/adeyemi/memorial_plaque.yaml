@@ -1,0 +1,7 @@
+id: "adeyemi_memorial_plaque"
+name: "The 'D.A.' Memorial Plaque"
+description: "A small, unofficial plaque tucked behind a larger monument at City Hall. It reads: 'For those who were acceptable losses. - D.A.'"
+type: "lore_item"
+location: "City Hall Memorial Wall"
+related_character: "char_adeyemi"
+lore_connection: "Adeyemi's private memorial to his brother Daniel and all the others the city forgot."

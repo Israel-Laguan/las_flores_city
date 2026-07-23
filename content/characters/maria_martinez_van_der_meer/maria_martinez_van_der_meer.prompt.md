@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `maria_martinez_van_der_meer__<variant_slug>.png`
 
-- [ ] Maria Martinez van der Meer in a meeting, reviewing documents with colleagues
-- [ ] Maria Martinez van der Meer considering a strategic decision, weighing options thoughtfully
-- [ ] Maria Martinez van der Meer in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Maria Martinez van der Meer in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person hosting a lavish gala at the van der Meer estate, elegant in evening wear as she greets Las Flores' elite. Her striking dark hair and piercing eyes still radiate the legendary beauty that captivated high society. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Maria Martinez van der Meer considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person seated in an elegant drawing room, her once-sharp mind clouded, gazing at old family photographs with a mixture of love and confusion. An elderly servant named Dirk stands nearby, a quiet companion in her twilight years. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Maria Martinez van der Meer in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a charity fundraiser she organized, using her influence to secure funding for education and healthcare. Her natural elegance and charm fill the room, a compassionate heart behind the glamorous facade. Keep face identical. Same graphic novel style.
 

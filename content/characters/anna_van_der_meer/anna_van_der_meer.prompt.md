@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `anna_van_der_meer__<variant_slug>.png`
 
-- [ ] Anna van der Meer working on a painting or sketch, focused on their creative work
-- [ ] Anna van der Meer gazing at their finished work, contemplating the emotional impact
-- [ ] Anna van der Meer with other artists in a studio, sharing creative insights and techniques
+### `variant_1` — Anna van der Meer working on a painting or sketch, focused on their creative work
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a photography darkroom developing socially conscious images of inequality in Las Flores, deep blue eyes focused through a magnifying loupe. Her athletic, toned frame leans over the developing tray, dark brown hair pulled back practically. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Anna van der Meer gazing at their finished work, contemplating the emotional impact
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her gazing at a finished photograph of excluded communities pinned to a gallery wall, the daughter of mining wealth confronting what her family's industry created. Her expression holds empathy, discipline, and the weight of public courage. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Anna van der Meer with other artists in a studio, sharing creative insights and techniques
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a nonprofit meeting for LGBTQ+ youth she co-founded, speaking passionately with her hands. Her tailored suit transitions to casual activism wear, deep blue eyes fierce with the conviction that elite power can be forced into public service. Keep face identical. Same graphic novel style.
 

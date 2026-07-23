@@ -25,10 +25,28 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `javier_mendoza__<variant_slug>.png`
 
-- [ ] Javier Mendoza working in his fields, tending to crops with care and determination
-- [ ] Javier Mendoza inspecting produce with a critical eye, ensuring quality for his customers
-- [ ] Javier Mendoza with his farm workers, coordinating tasks during harvest season
-- [ ] Javier Mendoza negotiating with restaurant buyers, seeking fair prices for his produce
+### `variant_1` — Javier Mendoza working in his fields, tending to crops with care and determination
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: the Agricultural Valley at golden hour, rows of crops stretching under tropical sunlight, weathered tanned skin and a strong build from years of outdoor labor, dark expressive eyes focused on a damaged vine he is carefully inspecting and pruning. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Javier Mendoza inspecting produce with a critical eye, ensuring quality for his customers
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a rustic farm stand under bright morning light, weathered 47-year-old man with tanned skin and a strong frame, dark expressive eyes narrowing critically as he examines a tomato, calloused fingers turning it carefully before setting it aside. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Javier Mendoza with his farm workers, coordinating tasks during harvest season
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a sun-scorched field during harvest, weathered skin and strong build silhouetted against rows of crops, dark expressive eyes surveying workers with quiet authority, sturdy frame commanding through experience as he gestures toward the next row to be cut. Keep face identical. Same graphic novel style.
+
+### `variant_4` — Javier Mendoza negotiating with restaurant buyers, seeking fair prices for his produce
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a cramped restaurant kitchen doorway, tanned weathered skin and strong build contrasted against stainless steel counters, dark expressive eyes steady and unyielding as he stands across from a buyer, jaw set stubbornly while he argues for a fair price. Keep face identical. Same graphic novel style.
 

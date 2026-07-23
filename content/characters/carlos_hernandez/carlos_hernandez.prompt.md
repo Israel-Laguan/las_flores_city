@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `carlos_hernandez__<variant_slug>.png`
 
-- [ ] Carlos Hernandez with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Carlos Hernandez reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Carlos Hernandez with colleagues in the newsroom, collaborating on a breaking story
+### `variant_1` — Carlos Hernandez with notebook in hand, interviewing a local source for a cultural feature story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a community meeting in Old Las Flores, guayabera shirt reflecting his connection to the people. His warm dark brown eyes and distinctive right-cheek mole are framed by a friendly smile as he leans forward to listen, a young mayor's energy still radiating from his round face. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Carlos Hernandez reviewing interview notes at their desk, thoughtfully considering story angles
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him at a mahogany desk reviewing old city plans and CLM deal documents, his black receding hair now graying at the temples. His expression carries the complexity of a man who built Las Flores into a lithium hub while setting the stage for the 2052 disaster. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Carlos Hernandez with colleagues in the newsroom, collaborating on a breaking story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a city council meeting mediating between factions, his slightly overweight frame settled comfortably in a chair. His charismatic approachability and shrewd pragmatism are both visible — the jovial exterior that concealed a politician capable of tough decisions. Keep face identical. Same graphic novel style.
 

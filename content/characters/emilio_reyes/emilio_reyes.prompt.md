@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `emilio_reyes__<variant_slug>.png`
 
-- [ ] Emilio Reyes at work in their professional environment, focused on their tasks
-- [ ] Emilio Reyes in a moment of reflection, considering their next steps
-- [ ] Emilio Reyes with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Emilio Reyes presiding over the Andean District Court bench during the Minera Estrella lithium trial
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: the Andean District Court bench, presiding over a corruption trial, gold watch catching light on the wood-paneled courtroom, thinning dark hair slicked back, thin mustache tight against a guarded expression. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Emilio Reyes in his chambers, nervously sweating under questioning about suppressed evidence
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in: a dimly lit judicial chambers, beads of sweat forming on a nervous brow, shifty brown eyes darting toward the door, soft hands gripping the armrest of a leather chair as if bracing for exposure. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Emilio Reyes signing documents with a trembling hand, gold watch slipping down his wrist
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show: a judge hunched over a desk surrounded by stacked case files, pen hovering over a signature line, soft uncalloused hands betraying a life behind the bench rather than in the field, gold watch catching the overhead light. Keep the same distinctive facial structure and features. Same graphic novel style.
 

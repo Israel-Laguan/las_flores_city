@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `anneliese_jansen__<variant_slug>.png`
 
-- [ ] Anneliese Jansen at work in their professional environment, focused on their tasks
-- [ ] Anneliese Jansen in a moment of reflection, considering their next steps
-- [ ] Anneliese Jansen with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Anneliese Jansen at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a port-side café watching the harbor with practiced composure, honey blonde hair in loose curls catching the sea breeze. The small compass rose tattoo behind her left ear is visible, her gray-blue eyes projecting confidence while her posture reveals careful awareness of who is watching. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Anneliese Jansen in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her alone in an upscale apartment, the confident mask dropped to reveal vulnerability. Her full rose-painted lips are unsmiling, gray-blue eyes distant as she wrestles with the inner conflict between transactional security and the hope of genuine love. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Anneliese Jansen with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at an upscale bar with a needy middle-aged man she is softly sponsoring, her edgy fitted jacket and gold jewelry commanding attention. Her slender, toned frame leans in with warmth, revealing the soft spot she hides from strangers behind high walls. Keep face identical. Same graphic novel style.
 

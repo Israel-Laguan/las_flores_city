@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `sofi_garcia__<variant_slug>.png`
 
-- [ ] Sofi Garcia in a clinical setting, examining a patient with professional care
-- [ ] Sofi Garcia taking a moment to reflect between patients, showing quiet compassion
-- [ ] Sofi Garcia consulting with medical colleagues, discussing patient care approaches
+### `variant_1` — Sofi Garcia in a clinical setting, examining a patient with professional care
+**Scale:** 3:4
+**Edit prompt:**
+Huddled on a street corner in Old Las Flores with a cardboard sign, thin gaunt frame wrapped in worn layers as she lip-reads the words of passersby. Dark brown eyes are alert despite hardship etched into her weathered face, twisted leg propped on a crate, the quiet dignity of a deaf former miner who once sorted minerals with exceptional precision. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Sofi Garcia taking a moment to reflect between patients, showing quiet compassion
+**Scale:** 3:4
+**Edit prompt:**
+Sitting on a low wall at dusk, twisting open a small gold locket to reveal her daughter Ariana's photograph, a silent lullaby forming on her lips as she signs her daughter's name against the fading light. Dark tangled hair frames a face weathered beyond her years, the community figure known affectionately as Sofi drawing strength from the future she's funding through sacrifice. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Sofi Garcia consulting with medical colleagues, discussing patient care approaches
+**Scale:** 3:4
+**Edit prompt:**
+Sharing a meal at a soup kitchen with other street vendors in Old Las Flores, communicating through gestures and lip-reading as the community forms an unspoken safety net around her. Worn clothing and weathered skin tell the story of a mining accident and medical bankruptcy, but her alert eyes and quiet resilience speak to the human cost of industrial exploitation. Keep face identical. Same graphic novel style.
 

@@ -1,0 +1,7 @@
+id: "adeyemi_internal_memo"
+name: "Adeyemi's Reformist Memo (2075)"
+description: "An internal police memo written by Adeyemi two years before the endgame. It reads: 'If we want the neighborhoods to be secure, we have to stop treating them like enemy territory.'"
+type: "lore_item"
+location: "Transitional Council Archives"
+related_character: "char_adeyemi"
+lore_connection: "Evidence of Adeyemi's original reformist intent before his career was hollowed out by Mayor Vega's crackdown orders."

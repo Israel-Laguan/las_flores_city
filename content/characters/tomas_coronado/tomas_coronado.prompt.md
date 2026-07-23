@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `tomas_coronado__<variant_slug>.png`
 
-- [ ] Tomás Coronado studying intently at a desk, surrounded by books and notes
-- [ ] Tomás Coronado deep in thought about their studies, determined to succeed
-- [ ] Tomás Coronado studying with classmates in a library, working together on a project
+### `variant_1` — Tomás Coronado studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Hunched over a cluttered desk in a university library, dark-rimmed glasses perched on his nose as he pores over engineering schematics. Backpack stuffed with textbooks sits beside an open laptop, warm brown eyes focused with quiet determination, tousled jet-black hair falling across his forehead as he studies to lift his family out of humble beginnings. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Tomás Coronado deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Sitting on a campus bench at sunset, gazing at the valley town on the horizon where his family lives, dark-rimmed glasses reflecting the fading light. The anonymous British benefactor who made his education possible weighs on his mind, slender frame still with the quiet gratitude of a hopeless romantic who notices girls from a distance but has never summoned courage to approach. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Tomás Coronado studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Working with a small study group around a drafting table covered in technical drawings, gesturing at a structural blueprint while explaining his design approach. Dark-rimmed glasses slide down his nose as his reserved demeanor softens, practical casual attire and a well-worn backpack marking him as someone whose life is organized almost entirely around study. Keep face identical. Same graphic novel style.
 

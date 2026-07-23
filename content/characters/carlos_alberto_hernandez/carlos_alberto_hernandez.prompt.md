@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `carlos_alberto_hernandez__<variant_slug>.png`
 
-- [ ] Carlos Alberto Hernandez giving a speech, addressing an audience with conviction
-- [ ] Carlos Alberto Hernandez in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Carlos Alberto Hernandez with constituents at a community event, listening attentively to concerns
+### `variant_1` — Carlos Alberto Hernandez giving a speech, addressing an audience with conviction
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a political rally podium, silver-framed glasses catching the light as he delivers a speech with the practiced warmth of a career politician. His dark brown thinning hair is combed carefully, slightly hooded eyes scanning the crowd with practiced charm. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Carlos Alberto Hernandez in a moment of quiet contemplation, reflecting on the impact of their work
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him alone in a private office, the politician's smile gone, replaced by a look of quiet conflict. His gold pinky signet ring catches light as he sits surrounded by ELU graft evidence, caught between his father's corruption and his wife Elisabeth's hope for reform. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Carlos Alberto Hernandez with constituents at a community event, listening attentively to concerns
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a community event shaking hands with residents, his slightly paunchy frame compensated by a well-tailored navy suit. His practiced smile is deployed but doesn't quite reach his dark brown eyes — the face of second-generation political influence that is compromised and deeply entangled. Keep face identical. Same graphic novel style.
 

@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `carlos_lacan__<variant_slug>.png`
 
-- [ ] Carlos Lacan studying intently at a desk, surrounded by books and notes
-- [ ] Carlos Lacan deep in thought about their studies, determined to succeed
-- [ ] Carlos Lacan studying with classmates in a library, working together on a project
+### `variant_1` — Carlos Lacan at his electronics repair workbench, soldering a circuit board
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him hunched over a cluttered electronics repair workbench, soldering iron in hand, warm orange glow illuminating his focused expression. His worn work shirt is dusted with flux residue, tool belt heavy at his hip, circuit boards and wire spools stacked around him. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Carlos Lacan on a moonlit rooftop, installing a surveillance camera
+**Scale:** 3:4
+**Edit prompt:**
+Place this person on a moonlit rooftop overlooking the Northern Edge district, threading cable through a camera mount with precise, methodical hands. City lights blur below as he narrates his work under his breath, headlamp casting a cone of blue-white light across weathered tiles. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Carlos Lacan in the car during the chase, looking back with alarm
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him twisted in a car seat, looking back through the rear window with alarm and resolve. The interior is lit by streaking headlights and dashboard glow, his tool belt still buckled, fingers gripping the headrest. Keep face identical. Same graphic novel style.
 

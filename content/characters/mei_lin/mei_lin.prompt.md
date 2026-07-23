@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `mei_lin__<variant_slug>.png`
 
-- [ ] Mei Lin studying intently at a desk, surrounded by books and notes
-- [ ] Mei Lin deep in thought about their studies, determined to succeed
-- [ ] Mei Lin studying with classmates in a library, working together on a project
+### `variant_1` — Mei Lin studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a cluttered university desk under a green desk lamp, a stack of business textbooks open beside her, her high ponytail falling forward as she highlights a passage with sharp concentration. A faded childhood photo from the port market is tucked into the corner of her laptop. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Mei Lin deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show her sitting alone on a concrete bench outside the university, chin resting on her fist, staring past the camera with a complicated mix of determination and quiet insecurity. Her angular jaw is set tight, and her sport earbud dangles loosely from one hand. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Mei Lin studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the head of a library table surrounded by classmates, gesturing toward a whiteboard covered in business charts. She leans forward with commanding confidence, her sharp tongue mid-argument, a coffee cup and scattered notes pushed aside. Keep face identical. Same graphic novel style.
 

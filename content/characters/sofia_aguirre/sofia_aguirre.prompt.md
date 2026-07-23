@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `sofia_aguirre__<variant_slug>.png`
 
-- [ ] Sofia Aguirre studying intently at a desk, surrounded by books and notes
-- [ ] Sofia Aguirre deep in thought about their studies, determined to succeed
-- [ ] Sofia Aguirre studying with classmates in a library, working together on a project
+### `variant_1` — Sofia Aguirre studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Hunched over a desk piled with nursing textbooks and highlighted clinical procedure notes, long curly dark hair falling loose around her shoulders. Warm brown skin glows under the desk lamp as she absorbs pharmacology details, colorful professional blouse a splash of her lively personality against the academic setting. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Sofia Aguirre deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Sitting alone in a university courtyard at golden hour, a colorful notebook pressed against her chest, gazing at the distant skyline toward San Pedro de los Pescadores. Dark expressive eyes hold quiet determination, her nurturing spirit focused on the goal of returning home with skills to bridge healthcare gaps. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Sofia Aguirre studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Leading a study group of nursing students in a bright campus library, her exuberant warmth filling the space as she explains community health concepts to younger peers. Curly hair framing an animated face, motherly mentoring instinct on display as she guides them through the material with lively gestures. Keep face identical. Same graphic novel style.
 

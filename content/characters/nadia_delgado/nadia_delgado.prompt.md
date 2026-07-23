@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `nadia_delgado__<variant_slug>.png`
 
-- [ ] Nadia Delgado in a meeting, reviewing documents with colleagues
-- [ ] Nadia Delgado considering a strategic decision, weighing options thoughtfully
-- [ ] Nadia Delgado in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Nadia Delgado in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a bustling beachside seafood stall, flipping grilled shrimp on a charcoal grill with ocean spray in the background, her warm brown eyes bright with entrepreneurial energy. Her dark curly hair is tied in a messy bun, gold hoop earrings catching the sunlight as she offers a knowing half-smile to an approaching customer. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Nadia Delgado considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person seated on a weathered wooden dock at sunset, notebook open on her lap, weighing a bold expansion plan for her seafood stall into a full restaurant. Her expression is thoughtful, warm brown eyes reflecting the ocean, with the silhouette of fishing boats behind her. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Nadia Delgado in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person behind a colorful stall draped with reclaimed fishing net banners, gesturing enthusiastically while explaining her sustainable fishing vision to local vendors and tourists gathered around her ceviche display. Her infectious smile and gold hoop earrings catch the tropical light. Keep face identical. Same graphic novel style.
 

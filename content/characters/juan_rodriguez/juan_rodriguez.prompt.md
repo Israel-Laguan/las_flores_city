@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `juan_rodriguez__<variant_slug>.png`
 
-- [ ] Juan Rodríguez with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Juan Rodríguez reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Juan Rodríguez with colleagues in the newsroom, collaborating on a breaking story
+### `variant_1` — Juan Rodríguez with notebook in hand, interviewing a local source for a cultural feature story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in the cluttered newsroom of El Informador de Las Flores, framed front pages and a red string investigation board lining the walls behind him. Deep-set eyes narrow as he reads a source's statement, decades of chain-smoking roughening his measured voice. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Juan Rodríguez reviewing interview notes at their desk, thoughtfully considering story angles
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a cluttered desk surrounded by hand-rolled cigarette butts and crumpled drafts, the shrine to seventeen fallen reporters flickering in candlelight behind him. His indigenous features are drawn tight with concentration as he jots notes in a leather-bound ledger, dark humor playing at the corner of his mouth. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Juan Rodríguez with colleagues in the newsroom, collaborating on a breaking story
+**Scale:** 3:4
+**Edit prompt:**
+Place this person on a rain-slicked street outside a government building, weathered press badge clipped to his jacket pocket. His deep-set eyes hold the weight of every story as he observes officials emerging, a hand-rolled cigarette smoldering between his fingers. Keep face identical. Same graphic novel style.
 

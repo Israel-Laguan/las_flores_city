@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `li_wei__<variant_slug>.png`
 
-- [ ] Li Wei in a meeting, reviewing documents with colleagues
-- [ ] Li Wei considering a strategic decision, weighing options thoughtfully
-- [ ] Li Wei in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Li Wei in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a luxurious study in Meadowbrook, clutching a piece of polished jade while reviewing corporate documents. His high-collared traditional tunic is finest silk, his gaze unnervingly sharp despite his frail frame. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Li Wei considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Place this person seated in an antique chair, an antique folding fan open in his spotted but steady hands. His soft measured expression masks a calculating mind, surrounded by art and luxury purchased through ruthlessness. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Li Wei in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the head of a long conference table, Zhang Liang at his side, addressing executives with a grandfatherly warmth that is entirely performative. His stooped posture belies the immense power he wields from the shadows. Keep face identical. Same graphic novel style.
 

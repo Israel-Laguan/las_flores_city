@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alonzo_morales__<variant_slug>.png`
 
-- [ ] Alonzo Morales in a meeting, reviewing documents with colleagues
-- [ ] Alonzo Morales considering a strategic decision, weighing options thoughtfully
-- [ ] Alonzo Morales in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Alonzo Morales in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at the airport bodega fixing a loose shelf hinge, toolbox open at his feet, bodega-logo overshirt marked with the day's repair dust. His boisterous laugh fills the room as a customer calls out a greeting. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alonzo Morales considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him leaning on the bodega counter surveying his shop with quiet pride, warm brown eyes taking in the bustling crossroads of airport workers and neighbors. His dream of one day owning his own shop glimmers in his expression. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alonzo Morales in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person surrounded by a lively crowd of customers in the bodega, his loud voice carrying over the noise as he introduces two neighbors who've never met. His open-hearted warmth and community-connecting energy fill the space. Keep face identical. Same graphic novel style.
 

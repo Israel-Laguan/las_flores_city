@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `laura_rodriguez__<variant_slug>.png`
 
-- [ ] Laura Rodríguez at work in their professional environment, focused on their tasks
-- [ ] Laura Rodríguez in a moment of reflection, considering their next steps
-- [ ] Laura Rodríguez with colleagues in a professional setting, engaged in discussion
+### `variant_1` — Laura Rodríguez at work in their professional environment, focused on their tasks
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a COFAVIC office surrounded by case files, reading glasses on a chain resting on her nose as she studies human rights documents. Her worn leather briefcase sits open on the desk, a cofavic pin on her blazer lapel. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Laura Rodríguez in a moment of reflection, considering their next steps
+**Scale:** 3:4
+**Edit prompt:**
+Place this person standing at a window overlooking a working-class neighborhood, her reading glasses hanging from the chain around her neck. She holds a case file against her chest, the thin scar on her left hand visible. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Laura Rodríguez with colleagues in a professional setting, engaged in discussion
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a table with Juan Carlos Pérez and Ana Ramírez, discussing case strategy over scattered documents. Her dark brown hair streaked with gray is pulled into a practical bun, her expression intense and compassionate. Keep face identical. Same graphic novel style.
 

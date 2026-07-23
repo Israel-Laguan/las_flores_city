@@ -1,0 +1,20 @@
+id: "a1b2c3d4-e5f6-7890-abcd-ef1234567113"
+type: location
+name: Neighborhoods near factories
+color: null
+aliases: []
+tags:
+  - Landmark
+  - Industrial
+  - Residential
+  - Working Class
+alwaysIncludeInContext: false
+doNotTrack: false
+noAutoInclude: false
+history: |
+  The neighborhoods near factories represent the beating heart of Las Flores's working-class communities, serving as home to blue-collar workers employed in manufacturing, mining, and related industries.
+conclusion: |
+  The neighborhoods embody the city's evolution from rural settlement to industrial powerhouse.
+asset_paths:
+  image: neighborhoods_near_factories__default.png
+lore_path: neighborhoods_near_factories.md

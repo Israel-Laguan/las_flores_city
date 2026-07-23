@@ -26,9 +26,23 @@ Electric Vehicle Zone in Las Flores, daytime, modern eco-design, sustainable mat
 ## Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lines, cybernetics, cargo pants, back pockets, backpacks, bulky luggage, sombreros, wristwatches
 
-## Variations
-- [ ] Night version: same scene at night with different lighting
-- [ ] Rainy version: same scene with rain and mood effects
-- [ ] Wide shot: broader view of the location
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `electric_vehicle_zone__<variant_slug>.png`
 
+### `variant_1` — Night version: same scene at night with different lighting
+**Scale:** 16:9
+**Edit prompt:**
+Light the EV Zone at night with solar-powered canopies casting ambient glow over the fast charging stations, the Autopia Motors flagship showroom illuminated with futuristic LED facade, and sleek electric vehicles parked under glowing charging pylons. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Rainy version: same scene with rain and mood effects
+**Scale:** 16:9
+**Edit prompt:**
+Show rain streaming off the solar-powered canopies over the charging stations, reflections of the Autopia Motors flagship showroom shimmering on wet pavement, and EVs sheltering under covered charging areas as mist settles over the eco-friendly landscape. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Wide shot: broader view of the location
+**Scale:** 16:9
+**Edit prompt:**
+Reveal the full Electric Vehicle Zone with the Autopia Motors flagship showroom, rows of fast charging stations under solar-powered canopies, the eco-friendly green roof architecture, and the broader North District context with adjacent forest and residential areas. Keep face identical. Same graphic novel style.
 

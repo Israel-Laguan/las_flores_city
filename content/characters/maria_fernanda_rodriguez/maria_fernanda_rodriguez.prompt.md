@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `maria_fernanda_rodriguez__<variant_slug>.png`
 
-- [ ] María Fernanda Rodriguez preparing for broadcast, reviewing notes with professional composure
-- [ ] María Fernanda Rodriguez with the news team, preparing for a broadcast together
-- [ ] María Fernanda Rodriguez thoughtfully reviewing evidence, determined to uncover the truth
+### `variant_1` — María Fernanda Rodriguez preparing for broadcast, reviewing notes with professional composure
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a television studio before going live, reviewing notes with signature red lipstick freshly applied. Pearl earrings catch the studio lights, her dark brown bob perfectly styled, structured blazer immaculate. Keep face identical. Same graphic novel style.
+
+### `variant_2` — María Fernanda Rodriguez with the news team, preparing for a broadcast together
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in a newsroom surrounded by monitors showing headlines, directing her team with sharp authoritative gestures. Her piercing gaze cuts through noise, statement earrings framing a face built for the camera. Keep face identical. Same graphic novel style.
+
+### `variant_3` — María Fernanda Rodriguez thoughtfully reviewing evidence, determined to uncover the truth
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at her desk after hours, surrounded by documents about corruption, her pen tapping her chin as she connects dots between powerful figures. The conviction in her dark brown eyes is unmistakable. Keep face identical. Same graphic novel style.
 

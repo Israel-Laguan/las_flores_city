@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `lucas_morales__<variant_slug>.png`
 
-- [ ] Lucas Morales studying intently at a desk, surrounded by books and notes
-- [ ] Lucas Morales deep in thought about their studies, determined to succeed
-- [ ] Lucas Morales studying with classmates in a library, working together on a project
+### `variant_1` — Lucas Morales studying intently at a desk, surrounded by books and notes
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a university library desk, struggling with a calculus textbook. His sandy brown hair is windswept, broad shoulders hunched forward, warm hazel eyes clouded with frustration. A marine biology book peeks from beneath the engineering texts. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Lucas Morales deep in thought about their studies, determined to succeed
+**Scale:** 3:4
+**Edit prompt:**
+Place this person sitting on a coastal overlook near Central Las Flores, gazing at the Pacific Ocean with a mix of longing and determination. He wears a faded fishing town t-shirt, sandy hair tousled by the sea breeze. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Lucas Morales studying with classmates in a library, working together on a project
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a study group table, explaining a concept to classmates with an easygoing smile despite his own doubts. His practical cargo shorts and worn sneakers mark him as someone from Playa de los Vientos. Keep face identical. Same graphic novel style.
 

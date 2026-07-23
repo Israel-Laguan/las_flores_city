@@ -25,9 +25,23 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
-## Variations
+## Variants (image-to-image)
+> Base image required. Run each with:
+> `akool-cli image generate --prompt "<edit_prompt>" --source-image <base_url> --scale <scale> --wait`
+> Output saved as `alejandro_diaz__<variant_slug>.png`
 
-- [ ] Alejandro "Alex" Díaz in a meeting, reviewing documents with colleagues
-- [ ] Alejandro "Alex" Díaz considering a strategic decision, weighing options thoughtfully
-- [ ] Alejandro "Alex" Díaz in a business meeting, collaborating with team members on a strategy
+### `variant_1` — Alejandro "Alex" Díaz in a meeting, reviewing documents with colleagues
+**Scale:** 3:4
+**Edit prompt:**
+Place this person in an underground gambling den in San Pedro, shuffling cards with a cunning smile. His salt-and-pepper hair is slicked back, sharp green eyes glinting under low light, flashy tie loosened. Keep face identical. Same graphic novel style.
+
+### `variant_2` — Alejandro "Alex" Díaz considering a strategic decision, weighing options thoughtfully
+**Scale:** 3:4
+**Edit prompt:**
+Transform this portrait to show him at a cluttered desk with scattered kickback documents and a half-empty whiskey glass, the practiced politician's warmth replaced by calculating stillness. His ill-fitting suit jacket hangs over the chair. Keep face identical. Same graphic novel style.
+
+### `variant_3` — Alejandro "Alex" Díaz in a business meeting, collaborating with team members on a strategy
+**Scale:** 3:4
+**Edit prompt:**
+Place this person at a high-profile charity gala schmoozing with other officials, his charismatic facade fully deployed. A cocktail in hand, he leans in conspiratorially, salt-and-pepper hair catching the chandelier light. Keep face identical. Same graphic novel style.
 
