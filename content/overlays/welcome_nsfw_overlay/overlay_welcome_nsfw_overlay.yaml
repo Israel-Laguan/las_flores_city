@@ -2,7 +2,7 @@ id: c0000001-0000-0000-0000-000000000001
 name: Welcome NSFW Overlay
 description: |
   An optional NSFW overlay for new players, providing mature content warnings and settings.
-target_tree_id: c0000001-0000-0000-0000-000000000001
+target_tree_id: 550e8400-e29b-41d4-a716-446655440003
 start_node_id: start
 is_nsfw: true
 nodes:
