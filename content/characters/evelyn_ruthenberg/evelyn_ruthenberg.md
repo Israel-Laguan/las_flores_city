@@ -121,10 +121,10 @@ Evelyn Ruthenberg is the silent architect of Las Flores' liberation. What began 
 
 ## Related Lore
 
-- [The Great Lithium Leak](../events/the_great_lithium_leak.md)
+- [The Great Lithium Leak](../../lore/events/the_great_lithium_leak/the_great_lithium_leak.md)
 - [Yara Rossi](yara_rossi.md)
-- [Dr. Wei Zhang](../figures/wei_zhang.md)
-- [Cecilia Perez](../figures/cecilia_perez.md)
-- [Karla](karla.md)
-- [Nubia](nubia.md)
-- [Restoration Plan](../events/restoration_plan.md)
+- [Dr. Wei Zhang](../wei_zhang/wei_zhang.md)
+- [Cecilia Perez](../../lore/figures/cecilia_perez/cecilia_perez.md)
+- [Karla](../karla/karla.md)
+- [Nubia](../nubia/nubia.md)
+- [Restoration Plan](../../lore/events/restoration_plan/restoration_plan.md)

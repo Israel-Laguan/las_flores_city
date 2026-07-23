@@ -53,11 +53,11 @@ Xiu Li lives in an elegant but unpretentious home overlooking the riverbank wher
 
 | Entity | Relationship |
 |---|---|
-| [Alexander van der Meer](alexander_van_der_meer.md) | Father |
+| [Alexander van der Meer](../alexander_van_der_meer/alexander_van_der_meer.md) | Father |
 | [Wang Mei Li](../wang_mei_li/wang_mei_li.md) | Mother; founder of Dragon Phoenix Trading |
-| [Dong van der Meer](dong_van_der_meer.md) | Younger brother |
-| [Liam van der Meer](to_be_created.md) | Half-brother; executive at Van der Meer Industries |
-| [Hans Krol](to_be_created.md) | Spouse |
+| [Dong van der Meer](../dong_van_der_meer/dong_van_der_meer.md) | Younger brother |
+| [Liam van der Meer](../liam_van_der_meer/liam_van_der_meer.md) | Half-brother; executive at Van der Meer Industries |
+| [Hans Krol](../hans_krol/hans_krol.md) | Spouse |
 
 ## In-Game References
 

@@ -49,5 +49,5 @@ Despite the initiative, many residents noted the glaring disparity in police pre
 - The Business Coalition has opposed proposals to boost police presence in low-income areas
 
 ## Related Lore
-- [Chief Inspector Adeyemi](../../characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.md)
-- [Mayor Alfonso Vega](../../characters/char_alfonso_vega.yaml)
+- [Chief Inspector Adeyemi](../../../characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.md)
+- [Mayor Alfonso Vega](../../../characters/alfonso_vega/alfonso_vega.md)

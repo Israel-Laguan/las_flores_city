@@ -152,6 +152,8 @@ export const YAMLLocationSchema = z.object({
   id: z.string().uuid(),
   type: z.literal('location'),
   name: z.string().min(1).max(100),
+  description: z.string().optional(),
+  district: z.string().optional(),
   color: z.any().nullable().optional(),
   aliases: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),

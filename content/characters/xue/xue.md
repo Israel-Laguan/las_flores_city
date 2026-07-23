@@ -49,5 +49,5 @@ Xue has never told Kusi about her true past. He believes she is simply an immigr
 Her restaurant, "Xue's Kitchen," is a narrow space on a side street in Old Las Flores with eight tables, a hand-painted sign, and no menu board. Regulars know what she serves; newcomers must ask. The kitchen is spotless and she allows no one inside it except Kusi, who washes dishes. She closes at three in the afternoon and never opens on Sundays.
 
 ## Related Lore
-- [Xue's Late Epiphany](../stories/xue_late_epiphany.md)
-- [Chinese Community](../communities/chinese_community.md)
+- [Xue's Late Epiphany](../../lore/stories/xue_late_epiphany/xue_late_epiphany.md)
+- [Chinese Community](../../lore/communities/chinese_community/chinese_community.md)

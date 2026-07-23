@@ -8,6 +8,6 @@ tags:
   - Landmark
   - Technology
   - Sustainable
-lore_path: electric_vehicle_zone.md
-asset_paths:
-  image: electric_vehicle_zone__default.png
+narrative_path: electric_vehicle_zone.md
+scene:
+  background_url: electric_vehicle_zone__default.png

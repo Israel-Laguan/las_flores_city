@@ -11,7 +11,7 @@ consumer: portrait
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height woman in her early 30s Latin woman. Sofia Garcia. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, alert and observant despite her circumstances. Her expression is alert, as she meets the viewer with steady, composed bearing. Her dark brown hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of Sofia Garcia, a thin, gaunt Latin woman in her early 30s with weathered light-brown skin, dark brown observant eyes, tangled dark brown hair, a composed expression, worn practical clothing, and a small gold locket. Weathered Old Las Flores street, tropical sunlight, soft painterly shading, muted natural palette.
 
 ## Negative Prompt
 
@@ -19,6 +19,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Sofia Garcia in a clinical setting, examining a patient with professional care
-- [ ] Sofia Garcia taking a moment to reflect between patients, showing quiet compassion
-- [ ] Sofia Garcia consulting with medical colleagues, discussing patient care approaches
+- [ ] Sofia Garcia sorting minerals at the mine, focused despite her disability
+- [ ] Sofia Garcia taking a moment to reflect on a quiet Old Las Flores street, showing quiet resilience
+- [ ] Sofia Garcia sharing stories at a community gathering, surrounded by neighbors

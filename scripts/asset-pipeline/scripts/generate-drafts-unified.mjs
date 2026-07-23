@@ -28,6 +28,7 @@ const PROMPT_ROOTS = [
   path.resolve('content/stories'),
   path.resolve('content/story_beats'),
   path.resolve('content/lore'),
+  path.resolve('content/dialogues'),
 ];
 
 const NVIDIA_API_KEY = (() => {

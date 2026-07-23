@@ -289,16 +289,22 @@ async function main() {
 
   // Also check if .prompt.md files exist without corresponding assets
   console.log(`\n📝 Checking for orphaned prompts...\n`);
-  const promptFiles = findAllPromptFiles(CONTENT_DIR)
+  const allPromptFiles = findAllPromptFiles(CONTENT_DIR);
+  const orphanedPrompts = allPromptFiles
+    .filter(f => {
+      const entityDir = path.dirname(f);
+      const assetsDir = path.join(entityDir, 'assets');
+      return !fs.existsSync(assetsDir);
+    })
     .map(f => path.relative(process.cwd(), f));
 
-  if (promptFiles.length > 0) {
-    console.log(`  Found ${promptFiles.length} .prompt.md files:`);
-    for (const pf of promptFiles) {
+  if (orphanedPrompts.length > 0) {
+    console.log(`  Found ${orphanedPrompts.length} orphaned .prompt.md files (no assets/ directory):`);
+    for (const pf of orphanedPrompts) {
       console.log(`  📝 ${pf}`);
     }
   } else {
-    console.log(`  No .prompt.md files found (run generate-prompt.mjs first).`);
+    console.log(`  No orphaned .prompt.md files found.`);
   }
 
   // Summary

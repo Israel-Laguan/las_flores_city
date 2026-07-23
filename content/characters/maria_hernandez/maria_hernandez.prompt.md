@@ -1,9 +1,9 @@
 ---
 name: Dr. Maria Hernandez
 type: portrait
-size: 1024x1024
+size: 1024x1408
 source: content/characters/maria_hernandez/maria_hernandez.md
-target: `asset_paths.portrait` in `content/characters/char_maria_hernandez.yaml`
+target: `portrait_urls[0].url` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
 consumer: portrait
 ---
 
@@ -13,20 +13,20 @@ consumer: portrait
 [CONSUMER: portrait]
 **Type:** portrait
 **Source:** content/characters/maria_hernandez/maria_hernandez.md
-**Target field:** `asset_paths.portrait` in `content/characters/char_maria_hernandez.yaml`
+**Target field:** `portrait_urls[0].url` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium in her late 50s Latin Photorealistic portrait of Dr. Her frame is sturdy, slight. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pock. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-built Latin woman in her late 50s, Dr. Maria Hernandez. Her frame is sturdy, slightly scholarly. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless professional blazer over a blouse. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO 3D render, anime, cartoon, text, watermarks, blurry, low quality...
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium  in her late 50s Latin Photorealistic portrait of Dr. Her frame is sturdy, slight. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a professional blazer over a blouse. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-built Latin woman in her late 50s, Dr. Maria Hernandez. Her frame is sturdy, slightly scholarly. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless professional blazer over a blouse. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
 
 ## Variations
 
-- [ ] Dr. Maria Hernandez studying intently at a desk, surrounded by books and notes
-- [ ] Dr. Maria Hernandez deep in thought about their studies, determined to succeed
-- [ ] Dr. Maria Hernandez studying with classmates in a library, working together on a project
+- [ ] Dr. Maria Hernandez reviewing water sample data at her university desk
+- [ ] Dr. Maria Hernandez presenting environmental findings to concerned community members
+- [ ] Dr. Maria Hernandez collaborating with colleagues on water quality research
