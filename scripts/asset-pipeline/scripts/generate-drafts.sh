@@ -10,7 +10,12 @@ PROMPT_ROOTS=(
   "$ROOT/content/characters"
   "$ROOT/content/locations"
   "$ROOT/content/scenes"
-  "$ROOT/content/lore/shared"
+  "$ROOT/content/overlays"
+  "$ROOT/content/missions"
+  "$ROOT/content/stories"
+  "$ROOT/content/story_beats"
+  "$ROOT/content/lore"
+  "$ROOT/content/dialogues"
 )
 JS_SCRIPT="$SCRIPT_DIR/generate-pollinations-drafts.mjs"
 NIM_SCRIPT="$SCRIPT_DIR/generate-nim-drafts.mjs"

@@ -1,0 +1,14 @@
+id: a0000001-0000-0000-0000-000000000010
+name: Willem van der Meer
+title: Mining Executive, Van der Meer Industries
+description: |
+  Willem van der Meer is a mining executive at Van der Meer Industries, the family's mining conglomerate. He oversees operations and continues the family legacy in Las Flores' mining sector.
+metadata:
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: calculated_enterprising
+lore_path: willem_van_der_meer.md
+narrative_path: willem_van_der_meer.md
+asset_paths:
+  portrait: willem_van_der_meer__default.png

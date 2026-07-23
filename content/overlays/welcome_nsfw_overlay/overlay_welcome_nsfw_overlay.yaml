@@ -1,0 +1,24 @@
+id: c0000001-0000-0000-0000-000000000001
+name: Welcome NSFW Overlay
+description: |
+  An optional NSFW overlay for new players, providing mature content warnings and settings.
+target_tree_id: 550e8400-e29b-41d4-a716-446655440003
+start_node_id: start
+is_nsfw: true
+nodes:
+  start:
+    id: start
+    type: narrator
+    text: "Welcome to Las Flores. This experience includes mature themes and content that may not be suitable for all audiences."
+    choices:
+      - id: continue
+        text: Continue
+        next_node_id: end
+  end:
+    id: end
+    type: narrator
+    text: "NSFW access is managed through your linked Patreon account."
+    is_end: true
+lore_path: welcome_nsfw_overlay.md
+asset_paths:
+  background: welcome_nsfw_overlay__default.png

@@ -5,7 +5,7 @@
 > **Born:** 2048 (Las Flores)
 > **Role:** Socialite, Philanthropist, Businesswoman
 > **Parents:** Carlos Rodriguez Sr. and Isabel Martinez
-> **Spouse:** Liam Krol (married 2068)
+> **Spouse:** Liam van der Meer (married 2068)
 > **Sister-in-law:** Xiu Li van der Meer
 > **Status:** Active (as of 2077)
 
@@ -25,7 +25,7 @@
 
 ## Overview
 
-Sofia Rodriguez Krol represents the new generation of Las Flores elite - sophisticated, socially conscious, and strategically connected. As the wife of Liam Krol and sister-in-law of Xiu Li van der Meer, Sofia occupies a unique position at the intersection of Latin American political power and Dutch business interests.
+Sofia Rodriguez Krol represents the new generation of Las Flores elite - sophisticated, socially conscious, and strategically connected. As the wife of Liam van der Meer and sister-in-law of Xiu Li van der Meer, Sofia occupies a unique position at the intersection of Latin American political power and Dutch business interests.
 
 ## Early Life and Education
 
@@ -38,7 +38,7 @@ Born into the prominent Rodriguez political dynasty, Sofia received an elite edu
 
 ## Marriage and Family Connections
 
-Sofia's 2068 marriage to Liam Krol created powerful alliances:
+Sofia's 2068 marriage to Liam van der Meer created powerful alliances:
 
 - **Van der Meer Connection:** Became sister-in-law to Xiu Li van der Meer, heir to the Van der Meer mining empire
 - **Political Synergy:** Combined her family's political influence with the Van der Meer's economic power
@@ -66,9 +66,9 @@ Sofia is known for:
 
 | Entity | Relationship |
 |---|---|
-| [Liam Krol](to_be_created.md) | Husband |
-| [Xiu Li van der Meer](../figures/xiu_li_van_der_meer.md) | Sister-in-law |
-| [Alexander van der Meer](../figures/alexander_van_der_meer.md) | Father-in-law |
+| [Liam van der Meer](../liam_van_der_meer/liam_van_der_meer.md) | Husband |
+| [Xiu Li van der Meer](../xiu_li_van_der_meer/xiu_li_van_der_meer.md) | Sister-in-law |
+| [Alexander van der Meer](../alexander_van_der_meer/alexander_van_der_meer.md) | Father-in-law |
 | [Carlos Rodriguez Sr.](to_be_created.md) | Father (political figure) |
 | [Las Flores Future Foundation](to_be_created.md) | Co-founder |
 

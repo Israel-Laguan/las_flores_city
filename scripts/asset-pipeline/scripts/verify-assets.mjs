@@ -93,6 +93,24 @@ function findAllYamlFiles(dir) {
   return results;
 }
 
+function findAllPromptFiles(dir) {
+  const results = [];
+  function walk(current) {
+    if (!fs.existsSync(current)) return;
+    const entries = fs.readdirSync(current, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith('.prompt.md')) {
+        results.push(fullPath);
+      }
+    }
+  }
+  walk(dir);
+  return results;
+}
+
 function extractUrls(obj, results = []) {
   if (!obj || typeof obj !== 'object') return results;
 
@@ -271,17 +289,22 @@ async function main() {
 
   // Also check if .prompt.md files exist without corresponding assets
   console.log(`\n📝 Checking for orphaned prompts...\n`);
-  const promptFiles = findAllYamlFiles(path.resolve('docs/lore'))
-    .filter(f => f.endsWith('.prompt.md'))
+  const allPromptFiles = findAllPromptFiles(CONTENT_DIR);
+  const orphanedPrompts = allPromptFiles
+    .filter(f => {
+      const entityDir = path.dirname(f);
+      const assetsDir = path.join(entityDir, 'assets');
+      return !fs.existsSync(assetsDir);
+    })
     .map(f => path.relative(process.cwd(), f));
 
-  if (promptFiles.length > 0) {
-    console.log(`  Found ${promptFiles.length} .prompt.md files:`);
-    for (const pf of promptFiles) {
+  if (orphanedPrompts.length > 0) {
+    console.log(`  Found ${orphanedPrompts.length} orphaned .prompt.md files (no assets/ directory):`);
+    for (const pf of orphanedPrompts) {
       console.log(`  📝 ${pf}`);
     }
   } else {
-    console.log(`  No .prompt.md files found (run generate-prompt.mjs first).`);
+    console.log(`  No orphaned .prompt.md files found.`);
   }
 
   // Summary
@@ -293,7 +316,7 @@ async function main() {
   console.log(`  ✅ Present:       ${okCount}`);
   console.log(`  ❌ Missing:       ${missingCount}`);
   console.log(`  ⚠️  Errors:       ${errorCount}`);
-  console.log(`  📝 Prompts:       ${promptFiles.length}`);
+  console.log(`  📝 Prompts:       ${allPromptFiles.length}`);
   console.log();
 
   if (missingCount > 0) {

@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000004
+type: location
+name: Bahía de las Olas
+description: |
+  A charming seaside town along the Pacific coast, featuring a sandy bay, fishing harbor, and traditional crafts.
+district: Pacific Coast
+tags:
+  - Landmark
+  - Coastal
+  - Beach
+lore_path: bahia_de_las_olas.md
+asset_paths:
+  image: bahia_de_las_olas__default.png

@@ -9,5 +9,5 @@ metadata:
   personality: academic_activist
 asset_paths:
   portrait: maria_hernandez__default.png
-
 lore_path: maria_hernandez.md
+narrative_path: maria_hernandez.md

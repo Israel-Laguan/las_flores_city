@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000010
+type: location
+name: Electric Vehicle Zone
+description: |
+  A modern district dedicated to electric vehicle infrastructure and sustainable transportation in Las Flores.
+district: City District
+tags:
+  - Landmark
+  - Technology
+  - Sustainable
+narrative_path: electric_vehicle_zone.md
+scene:
+  background_url: electric_vehicle_zone__default.png

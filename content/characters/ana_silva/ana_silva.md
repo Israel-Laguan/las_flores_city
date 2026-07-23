@@ -1,15 +1,45 @@
 # Ana Silva
 
-**Title:** Councilwoman, Las Flores
+> Tags: `#figure` `#government` `#progressive` `#advocacy` `#economic_justice`
+>
+> **Role:** Progressive City Council Member
+> **Status:** Active
 
-**Physical Description:**
-- Distinctive appearance fitting their background
+## Physical Description
+- Hair: Black, thick and curly, worn in a voluminous natural style
+- Eyes: Dark brown, fiery and determined
+- Build: Medium height, sturdy and imposing presence
+- Skin: Deep brown, smooth complexion
+- Distinguishing features: Strong jaw, expressive eyebrows, silver hoop earrings, carries a worn leather folder of case documents
 
-**Description (full):**
+## Overview
 
-Progressive voice and champion of the poor in the Las Flores City Council. Vocal critic of Mayor Hernandez and Business Coalition tactics; advocates for transparency and community interests.
+Councilwoman Ana Silva is a progressive voice and fierce champion of the poor in the Las Flores City Council. She is one of the only elected officials who consistently advocates for marginalized communities against the influence of the Business Coalition and corporate interests.
 
-**Age (2077):** ~adult
-**District:** Las Flores
-**Role:** Councilwoman
-**Descendancy:** g
+## Political Stance
+
+- **Vocal critic** of Mayor Carlos Hernandez's close ties to the Chinese business community
+- **Opposes** Vice-Mayor Lau Mei's prioritization of foreign investor interests over residents
+- Challenges policies that disproportionately benefit foreign corporations at the expense of Las Flores' citizens
+
+### Key Conflicts
+- Repeatedly clashed with Mayor Hernandez and Vice-Mayor Lau over Chinese investment deals
+- Argues that Las Flores' future should not be dictated by foreign corporations but by the will of its people
+- The only council member (out of seven) who openly champions the needs of underprivileged citizens
+
+## Advocacy
+
+> "Our city leaders must remember who they truly serve — not the wealthy few, but all the people of Las Flores."
+
+Her calls for transparency and accountability have made her a target of the Business Coalition, but she remains undeterred.
+
+## Political Context
+
+- Only one of seven council members who openly opposes the Business Coalition
+- Allies with progressive factions and community organizations
+- Representing communities that lack strong political representation
+
+## In-Game References
+- Councilwoman Silva as a rare political ally for players
+- The Business Coalition as an antagonistic force
+- Political reform as a potential quest arc

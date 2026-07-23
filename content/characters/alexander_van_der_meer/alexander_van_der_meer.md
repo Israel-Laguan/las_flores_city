@@ -4,8 +4,8 @@
 >
 > **Born:** ~1995 (Netherlands)
 > **Role:** CEO of Van der Meer Mining, Patriarch of the Van der Meer family
-> **Spouse:** Mei Li (Chinese-Latin American businesswoman)
-> **Children:** Xiu Li van der Meer, Dong van der Meer
+> **Spouse:** Wang Mei Li (Chinese-Latin American businesswoman)
+> **Children of the marriage:** Xiu Li van der Meer Krol, Dong van der Meer · **Illegitimate son:** Liam van der Meer
 > **Status:** Active (as of 2077)
 
 ## Physical Description
@@ -25,10 +25,12 @@ Born into the wealthy Van der Meer mining dynasty, Alexander was groomed from an
 
 ## Marriage and Family
 
-In 2025, Alexander married Mei Li, a strategic union that strengthened ties between Dutch and Chinese business interests in Las Flores. This marriage produced two children:
+In 2025, Alexander married Wang Mei Li, a strategic union that strengthened ties between Dutch and Chinese business interests in Las Flores. This marriage produced two children:
 
-- **Xiu Li van der Meer** (b. 2033) - The eldest child and heir apparent to the legitimate business empire
-- **Dong van der Meer** (b. ~2030) - The controversial second child who chose a criminal path
+- **Xiu Li van der Meer Krol** (b. 2031) - The eldest child and heir apparent to the legitimate business empire
+- **Dong van der Meer** (b. ~2033) - The controversial younger son who chose a criminal path
+
+Alexander's infidelity also produced an illegitimate son, **Liam van der Meer** (b. ~2035-38), from one of his affairs. Raised at a distance from the main family line, Liam eventually joined Van der Meer Industries as an executive and married Sofia Rodriguez in 2068.
 
 ## Business Leadership
 
@@ -51,11 +53,11 @@ Alexander's leadership has been marked by the challenge of maintaining family un
 
 | Entity | Relationship |
 |---|---|
-| [Mei Li](../figures/mei_xiang.md) | Wife and business partner |
-| [Xiu Li van der Meer](../figures/xiu_li_van_der_meer.md) | Eldest child and heir |
-| [Dong van der Meer](../figures/dong_van_der_meer.md) | Second child (estranged but connected) |
-| [Van der Meer Mining](../organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Family business |
-| [Global Lithium Corp](../organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Parent company |
+| [Wang Mei Li](../wang_mei_li/wang_mei_li.md) | Wife and business partner |
+| [Xiu Li van der Meer Krol](../xiu_li_van_der_meer/xiu_li_van_der_meer.md) | Eldest child and heir |
+| [Dong van der Meer](../dong_van_der_meer/dong_van_der_meer.md) | Younger son (estranged but connected) |
+| [Van der Meer Mining](../../lore/organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Family business |
+| [Global Lithium Corp](../../lore/organizations/companies/van_der_meer_mining/van_der_meer_mining.md) | Parent company |
 
 ## In-Game References
 

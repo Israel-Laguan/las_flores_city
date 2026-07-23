@@ -44,5 +44,5 @@ Teatro Nacional is more than just a venue; it is a guardian of Las Flores's cult
 
 ## Related Locations
 
-- [Casa de la Música](casa_de_la_musica.md) - Live music venue and cultural landmark located adjacent to Teatro Nacional
+- [La Casa de la Música](../la_casa_de_la_musica/la_casa_de_la_musica.md) - Independent live music venue, co-operatively owned, located adjacent to Teatro Nacional
 - [Plaza de la Constitución](plaza_de_la_constitucion.md) - Central public square in the Cultural Zone

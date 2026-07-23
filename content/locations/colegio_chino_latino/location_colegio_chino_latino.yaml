@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000009
+type: location
+name: Colegio Chino Latino
+description: |
+  A bilingual school representing the Chinese-Latin American educational heritage in Las Flores.
+district: City District
+tags:
+  - Landmark
+  - Education
+  - Cultural
+narrative_path: colegio_chino_latino.md
+scene:
+  background_url: colegio_chino_latino__default.png

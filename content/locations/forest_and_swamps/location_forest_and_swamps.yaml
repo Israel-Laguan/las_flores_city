@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000012
+type: location
+name: Forest and Swamps
+description: |
+  A natural region featuring dense forests and wetland ecosystems on the outskirts of Las Flores.
+district: South
+tags:
+  - Landmark
+  - Natural
+  - Wildlife
+lore_path: forest_and_swamps.md
+asset_paths:
+  image: forest_and_swamps__default.png

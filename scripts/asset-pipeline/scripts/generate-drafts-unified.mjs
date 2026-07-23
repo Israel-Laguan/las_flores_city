@@ -19,21 +19,16 @@ import path from 'node:path';
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
-function getLandmarkDirs() {
-  const districtsRoot = path.resolve('docs/lore/districts');
-  if (!fs.existsSync(districtsRoot)) return [];
-  return fs.readdirSync(districtsRoot, { withFileTypes: true })
-    .filter(e => e.isDirectory())
-    .map(e => path.join(districtsRoot, e.name, 'landmarks'))
-    .filter(p => fs.existsSync(p));
-}
-
 const PROMPT_ROOTS = [
-  path.resolve('docs/lore/shared/assets'),
-  ...getLandmarkDirs(),
-  path.resolve('docs/lore/figures'),
-  path.resolve('docs/lore/media'),
-  path.resolve('docs/lore/organizations'),
+  path.resolve('content/characters'),
+  path.resolve('content/locations'),
+  path.resolve('content/scenes'),
+  path.resolve('content/overlays'),
+  path.resolve('content/missions'),
+  path.resolve('content/stories'),
+  path.resolve('content/story_beats'),
+  path.resolve('content/lore'),
+  path.resolve('content/dialogues'),
 ];
 
 const NVIDIA_API_KEY = (() => {
@@ -523,20 +518,15 @@ async function main() {
     if (fs.existsSync(root)) walk(root);
   }
 
-  const loreRoot = path.resolve('docs/lore');
+  const contentRoot = path.resolve('content');
   const workItems = [];
   for (const promptFile of promptFiles) {
-    const relFromRoot = path.relative(loreRoot, promptFile);
+    const relFromRoot = path.relative(contentRoot, promptFile);
     const variants = parsePromptFile(promptFile);
     const filtered = opts.filterSet ? variants.filter(v => opts.filterSet.has(v.type)) : variants;
     if (filtered.length === 0) continue;
 
-    let promptDir = path.dirname(promptFile);
-    const figuresRoot = path.resolve('docs/lore/figures');
-    if (promptDir === figuresRoot) {
-      const charName = path.basename(promptFile, '.prompt.md');
-      promptDir = path.join(figuresRoot, charName);
-    }
+    const promptDir = path.dirname(promptFile);
     const draftDir = path.join(promptDir, 'assets');
     const baseName = path.basename(promptFile, '.prompt.md');
 
