@@ -183,7 +183,7 @@ function main() {
     else stats.noDraft++;
 
     for (const variant of variants) {
-      const isDraft = variant.section === 'draft' || variant.section === 'named';
+      const isDraft = variant.section === 'draft';
       const negativePrompt = isDraft ? '' : cleanNegativePrompt(variant.negativeText);
       const combinedPrompt = negativePrompt
         ? `${variant.promptText}\n\nNO ${negativePrompt}`

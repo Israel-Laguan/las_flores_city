@@ -22,7 +22,7 @@ La Casa de la Música exterior, Central City, night. Converted textile warehouse
 
 ## Prompt — Refined
 
-La Casa de la Música exterior, Central City, night. Converted textile warehouse exterior with loading bay entrances, industrial brick facade with modest signage. Premium contemporary graphic novel realism, refined editorial line art, painterly soft shading, muted colors, smooth gradients. Warm artificial streetlight glow, deep blue twilight sky. No people, no text, no logos.
+La Casa de la Música exterior, Central City, night. Converted textile warehouse with loading bay entrances, industrial brick facade. Graphic novel realism, refined line art, painterly shading, muted colors. Warm streetlight, deep blue twilight sky. No people, no text, no logos.
 
 ## Negative Prompt
 
