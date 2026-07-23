@@ -9,5 +9,4 @@ tags:
   - Community
   - Residential
 narrative_path: camino_verde.md
-scene:
-  background_url: camino_verde__default.png
+background_url: camino_verde__default.png

@@ -3,7 +3,7 @@ name: Amara (Vargas)
 type: portrait
 size: 1024x1408
 source: content/characters/amara_vargas/amara_vargas.md
-target: `portrait_urls[0].url` in `content/characters/amara_vargas/char_amara_vargas.yaml`
+target: `asset_paths.portrait` in `content/characters/amara_vargas/char_amara_vargas.yaml`
 consumer: portrait
 ---
 
@@ -13,7 +13,7 @@ consumer: portrait
 [CONSUMER: portrait]
 **Type:** portrait
 **Source:** content/characters/amara_vargas/amara_vargas.md
-**Target field:** `portrait_urls[0].url` in `content/characters/amara_vargas/char_amara_vargas.yaml`
+**Target field:** `asset_paths.portrait` in `content/characters/amara_vargas/char_amara_vargas.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

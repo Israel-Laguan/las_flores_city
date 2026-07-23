@@ -3,7 +3,7 @@ name: Dr. Maria Hernandez
 type: portrait
 size: 1024x1408
 source: content/characters/maria_hernandez/maria_hernandez.md
-target: `portrait_urls[0].url` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
+target: `asset_paths.portrait` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
 consumer: portrait
 ---
 
@@ -13,7 +13,7 @@ consumer: portrait
 [CONSUMER: portrait]
 **Type:** portrait
 **Source:** content/characters/maria_hernandez/maria_hernandez.md
-**Target field:** `portrait_urls[0].url` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
+**Target field:** `asset_paths.portrait` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

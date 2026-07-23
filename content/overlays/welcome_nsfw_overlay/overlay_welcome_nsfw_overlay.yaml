@@ -17,7 +17,7 @@ nodes:
   end:
     id: end
     type: narrator
-    text: "You may adjust your content preferences at any time in your account settings."
+    text: "NSFW access is managed through your linked Patreon account."
     is_end: true
 lore_path: welcome_nsfw_overlay.md
 asset_paths:

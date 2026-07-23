@@ -20,7 +20,7 @@ consumer: html-background
 
 La Casa de la Música exterior, Central City, night. Converted textile warehouse with loading bays as stage entrances, industrial brick facade with modest signage. Warm artificial streetlight glow, deep blue twilight sky. No people, no text, no logos. Photorealistic portrait, hyper-detailed, grounded, 8k.
 
-## Prompt
+## Prompt — Refined
 
 La Casa de la Música exterior, Central City, night. Converted textile warehouse exterior with loading bay entrances, industrial brick facade with modest signage. Premium contemporary graphic novel realism, refined editorial line art, painterly soft shading, muted colors, smooth gradients. Warm artificial streetlight glow, deep blue twilight sky. No people, no text, no logos.
 

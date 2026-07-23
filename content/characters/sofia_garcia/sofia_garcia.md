@@ -77,7 +77,7 @@ Despite her hardships, Sofia has become a symbol of resilience in Old Las Flores
 | [Maria Garcia](../../lore/stories/garcia_family/garcia_family.md) | Mother (deceased) |
 | [Alex Garcia](../../lore/stories/garcia_family/garcia_family.md) | Older brother |
 | [Isabella Garcia](../../lore/stories/garcia_family/garcia_family.md) | Older sister |
-| [Ariana Garcia](ariana_garcia.md) | Daughter |
+| [Ariana Garcia](#personal-life) | Daughter |
 | [Garcia Family Story](../../lore/stories/garcia_family/garcia_family.md) | Family background |
 
 ## In-Game References
