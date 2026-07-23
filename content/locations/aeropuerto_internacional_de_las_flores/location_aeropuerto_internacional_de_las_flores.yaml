@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000001
+type: location
+name: Aeropuerto Internacional de Las Flores
+description: |
+  The primary gateway for international travel and cargo transportation to Las Flores Free City, strategically located in the Southeast District.
+district: Southeast
+tags:
+  - Landmark
+  - Airport
+  - Transport
+lore_path: aeropuerto_internacional_de_las_flores.md
+asset_paths:
+  image: aeropuerto_internacional_de_las_flores__default.png

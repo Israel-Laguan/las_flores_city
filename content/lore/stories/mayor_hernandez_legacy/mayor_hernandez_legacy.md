@@ -46,4 +46,4 @@ As Hernandez prepared to leave office, Las Flores stood at a crossroads:
 ## Related Lore
 - [Great Lithium Leak](../../events/the_great_lithium_leak.md)
 - [Maria Gutierrez Character](../../characters/char_maria_gutierrez.yaml)
-- [Councilwoman Ana Silva](../../figures/councilwoman_ana_silva.md)
+- [Councilwoman Ana Silva](../../../characters/ana_silva/ana_silva.md)

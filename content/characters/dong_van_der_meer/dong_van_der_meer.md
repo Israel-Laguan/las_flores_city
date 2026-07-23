@@ -12,7 +12,7 @@
 ## Overview
 
 **Role:** Leader of the Flowers Syndicate
-**Born:** ~2030
+**Born:** ~2033
 **Affiliation:** Van der Meer Family (estranged), Flowers Syndicate
 **Base of Operations:** Industrial Zone District
 **Status:** Active (2077)

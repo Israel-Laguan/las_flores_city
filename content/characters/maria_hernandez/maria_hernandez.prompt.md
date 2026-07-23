@@ -1,31 +1,32 @@
-# Portrait Prompt — Dr. Maria Hernandez
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Dr. Maria Hernandez, adult Professor, Las Flores University, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Dr. Maria Hernandez, a adult Professor, Las Flores University from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Dr. Maria Hernandez
-title: Professor, Las Flores University
-faction: c
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/maria_hernandez/maria_hernandez.md
+target: `asset_paths.portrait` in `content/characters/char_maria_hernandez.yaml`
+consumer: portrait
 ---
 
-**Generated:** 2026-07-17T14:51:31.714Z
+
+# Prompt: Dr. Maria Hernandez
+
+[CONSUMER: portrait]
+**Type:** portrait
+**Source:** content/characters/maria_hernandez/maria_hernandez.md
+**Target field:** `asset_paths.portrait` in `content/characters/char_maria_hernandez.yaml`
+**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+
+## Prompt (Draft)
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium in her late 50s Latin Photorealistic portrait of Dr. Her frame is sturdy, slight. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pock. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+## Prompt
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium  in her late 50s Latin Photorealistic portrait of Dr. Her frame is sturdy, slight. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a professional blazer over a blouse. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+## Negative Prompt
+--no neon, no androids, no clean backgrounds, no modern clothing
+
+## Variations
+
+- [ ] Dr. Maria Hernandez studying intently at a desk, surrounded by books and notes
+- [ ] Dr. Maria Hernandez deep in thought about their studies, determined to succeed
+- [ ] Dr. Maria Hernandez studying with classmates in a library, working together on a project

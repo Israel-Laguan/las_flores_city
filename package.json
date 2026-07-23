@@ -16,6 +16,7 @@
     "assets:backup": "node scripts/backup-lore-assets.mjs",
     "assets:restore": "node scripts/restore-lore-assets.mjs",
     "ai": "gemini",
+    "content:audit": "node scripts/content-audit.mjs",
     "validate:content": "npm run validate --workspace=server",
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",

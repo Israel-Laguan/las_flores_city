@@ -4,9 +4,18 @@ import { buildFillFieldsPrompt } from './LLMPrompts.js';
 
 // Free-text fields eligible for LLM filling per content type
 const FILL_TARGETS: Record<string, string[]> = {
-  character: ['description', 'metadata.personality', 'title'],
+  character: [
+    'description', 'title',
+    'physical_description', 'psychological_description',
+    'metadata.faction', 'metadata.age', 'metadata.gender', 'metadata.ethnicity',
+    'metadata.occupation', 'metadata.background', 'metadata.education',
+    'metadata.residence', 'metadata.organization', 'metadata.allies',
+    'metadata.mannerisms', 'metadata.motivations', 'metadata.quote',
+    'metadata.methods', 'metadata.status', 'metadata.location',
+    'metadata.personality',
+  ],
   scene: ['description', 'mood'],
-  location: ['description', 'history', 'daytime', 'nightlife'],
+  location: ['description', 'history', 'daytime', 'nightlife', 'conclusion'],
   dialogue: ['description'],
   mission: ['description'],
   overlay: ['description'],

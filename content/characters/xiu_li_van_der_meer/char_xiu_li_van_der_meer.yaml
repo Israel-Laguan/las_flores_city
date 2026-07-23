@@ -1,0 +1,14 @@
+id: a0000001-0000-0000-0000-000000000011
+name: Xiu Li van der Meer Krol
+title: Councilwoman; Head of Van der Meer Mining Operations
+description: |
+  Xiu Li van der Meer Krol is a councilwoman and head of Van der Meer Mining Operations. Born in Las Flores to a Dutch father and Chinese mother, she represents the intersection of the city's dual heritage. Married to Hans Krol; her half-brother is Liam van der Meer, executive at Van der Meer Industries.
+metadata:
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: determined_authoritative
+lore_path: xiu_li_van_der_meer.md
+narrative_path: xiu_li_van_der_meer.md
+asset_paths:
+  portrait: xiu_li_van_der_meer__default.png

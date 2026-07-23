@@ -26,6 +26,14 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - OLAP `player_events` uses `event_data`, `created_at`, and `time_blocks_cost`. Do not use `data`, `occurred_at`, or `event_data->>'tb_cost'`.
 - `mysteries.status` has a CHECK constraint for `ACTIVE`, `RESOLVING`, and `ARCHIVED`; adding a new status requires rewriting the CHECK constraint: `server/src/database/migrations/021_leaderboards.sql:49-53`.
 
+## Content workflow
+
+- **Audit**: `npm run content:audit` — scans all entity folders and reports per-type completeness (YAML, `.md`, `.prompt.md`, `assets/`). Exits non-zero if required files are missing.
+- **Verify**: `node scripts/asset-pipeline/scripts/verify-assets.mjs` — checks that referenced asset URLs exist in MinIO.
+- **Backup**: `bash scripts/backup-content-assets.sh` — tarball backup of `content/**/assets/` before destructive operations.
+- **Docker**: `docker compose down --volumes` destroys named volumes. MinIO uses a host-bind mount (`.minio-data/`) so it survives, but always run the backup script first.
+- **Asset publish workflow**: Local `content/**/assets/` is the staging area, not canonical. `asset_paths.portrait` = relative filename (`<slug>__default.png`); `portrait_urls` = published MinIO URL. The authoring loop: (1) generate images into `assets/`, (2) pick the best as `<slug>__default.png`, (3) run `AssetPublishService` which uploads to MinIO and writes `portrait_urls`/`background_urls` back to YAML + DB. `LocalDraftService.ts` sorts `__default.png` first when listing assets.
+
 ## OLAP and leaderboard rules
 
 - For "sum metric per user" leaderboard queries, use one bulk OLAP query grouped by `user_id` and merge results in Node.

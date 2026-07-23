@@ -1,0 +1,14 @@
+id: a0000001-0000-0000-0000-000000000007
+name: Emilio Reyes
+title: Councilman / Judge, Andean District Court
+description: |
+  Emilio Reyes was a councilman presiding over the Andean district court. He faced accusations of accepting bribes to suppress evidence in the Minera Estrella case.
+metadata:
+  type: human
+  role: npc
+  faction: government
+  personality: nervous_corrupt
+lore_path: emilio_reyes.md
+narrative_path: emilio_reyes.md
+asset_paths:
+  portrait: emilio_reyes__default.png

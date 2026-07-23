@@ -3,7 +3,7 @@ name: Simon De Vries
 type: portrait
 size: 1024x1024
 source: docs/lore/figures/simons_de_vries/simons_de_vries.md
-target: `portrait_urls[].url` in `content/characters/char_simon_de_vries.yaml`
+target: `asset_paths.portrait` in `content/characters/simons_de_vries/char_simons_de_vries.yaml`
 consumer: portrait
 ---
 
@@ -12,8 +12,8 @@ consumer: portrait
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/simon_de_vries.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_simon_de_vries.yaml`
+**Source:** content/characters/simons_de_vries/simons_de_vries.md
+**Target field:** `asset_paths.portrait` in `content/characters/simons_de_vries/char_simons_de_vries.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

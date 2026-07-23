@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000011
+type: location
+name: Financial District
+description: |
+  The financial center of Las Flores, home to Banco Central, the World Trade Center, and the Bolsa de Valores.
+district: City District
+tags:
+  - Landmark
+  - Finance
+  - Business
+lore_path: financial_district.md
+asset_paths:
+  image: financial_district__default.png

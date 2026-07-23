@@ -15,22 +15,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-function getLandmarkDirs() {
-  const districtsRoot = path.resolve('docs/lore/districts');
-  if (!fs.existsSync(districtsRoot)) return [];
-  return fs.readdirSync(districtsRoot, { withFileTypes: true })
-    .filter(e => e.isDirectory())
-    .map(e => path.join(districtsRoot, e.name, 'landmarks'))
-    .filter(p => fs.existsSync(p));
-}
-
 const PROMPT_ROOTS = [
-  ...getLandmarkDirs(),
-  path.resolve('docs/lore/figures'),
-  path.resolve('docs/lore/shared/assets'),
-  path.resolve('docs/lore/media'),
-  path.resolve('docs/lore/companies'),
-  path.resolve('docs/lore/organizations'),
+  path.resolve('content/characters'),
+  path.resolve('content/locations'),
+  path.resolve('content/scenes'),
+  path.resolve('content/overlays'),
+  path.resolve('content/missions'),
+  path.resolve('content/stories'),
+  path.resolve('content/story_beats'),
+  path.resolve('content/lore'),
 ];
 const MAX_NIM_LENGTH = 800;
 const DEFAULT_MIN_REPORT = 700;

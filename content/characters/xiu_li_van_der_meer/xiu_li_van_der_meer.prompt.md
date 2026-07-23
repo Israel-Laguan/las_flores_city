@@ -2,8 +2,8 @@
 name: Xiu Li van der Meer Krol
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/xiu_li_van_der_meer/xiu_li_van_der_meer.md
-target: `portrait_urls[].url` in `content/characters/char_xiu_li_van_der_meer_krol.yaml`
+source: content/characters/xiu_li_van_der_meer/xiu_li_van_der_meer.md
+target: `portrait_urls[].url` in `content/characters/char_xiu_li_van_der_meer.yaml`
 consumer: portrait
 ---
 
@@ -12,8 +12,8 @@ consumer: portrait
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/xiu_li_van_der_meer_krol.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_xiu_li_van_der_meer_krol.yaml`
+**Source:** content/characters/xiu_li_van_der_meer/xiu_li_van_der_meer.md
+**Target field:** `portrait_urls[].url` in `content/characters/char_xiu_li_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

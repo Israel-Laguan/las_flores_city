@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000002
+type: location
+name: Agricultural Valley
+description: |
+  A picturesque region between Old Las Flores and the Industrial Zone, featuring lush greenery, rolling hills, and traditional farming communities.
+district: South
+tags:
+  - Landmark
+  - Agricultural
+  - Natural
+lore_path: agricultural_valley.md
+asset_paths:
+  image: agricultural_valley__default.png

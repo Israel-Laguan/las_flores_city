@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000008
+type: location
+name: Centro Empresarial Chino Latino
+description: |
+  A business hub reflecting the Chinese-Latin American cultural and economic fusion in Las Flores.
+district: City District
+tags:
+  - Landmark
+  - Business
+  - Cultural
+lore_path: centro_empresarial_chino_latino.md
+asset_paths:
+  image: centro_empresarial_chino_latino__default.png

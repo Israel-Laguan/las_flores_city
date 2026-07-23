@@ -1,0 +1,23 @@
+id: c0000001-0000-0000-0000-000000000001
+name: Welcome NSFW Overlay
+description: |
+  TODO: Add description
+target_tree_id: c0000001-0000-0000-0000-000000000001
+start_node_id: start
+nodes:
+  start:
+    id: start
+    type: narrator
+    text: TODO: Add dialogue text
+    choices:
+      - id: continue
+        text: Continue
+        next_node_id: end
+  end:
+    id: end
+    type: narrator
+    text: TODO: Add ending text
+    is_end: true
+lore_path: welcome_nsfw_overlay.md
+asset_paths:
+  background: welcome_nsfw_overlay__default.png

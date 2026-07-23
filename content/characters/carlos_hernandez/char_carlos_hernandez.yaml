@@ -1,0 +1,14 @@
+id: a0000001-0000-0000-0000-000000000002
+name: Carlos Hernandez
+title: Mayor of Old Las Flores (2000-2034)
+description: |
+  Carlos Hernandez was the dominant political figure in Las Flores during its transformation from a small mining town into a global lithium hub. Serving as mayor for nearly four decades, he navigated the city through the lithium boom and the controversial creation of the Free City.
+metadata:
+  type: human
+  role: npc
+  faction: old_las_flores
+  personality: charismatic_builder
+lore_path: carlos_hernandez.md
+narrative_path: carlos_hernandez.md
+asset_paths:
+  portrait: carlos_hernandez__default.png

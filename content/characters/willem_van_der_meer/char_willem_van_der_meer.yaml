@@ -1,0 +1,14 @@
+id: a0000001-0000-0000-0000-000000000010
+name: Willem van der Meer
+title: TODO: Add title
+description: |
+  TODO: Add description
+metadata:
+  type: human
+  role: npc
+  faction: van_der_meer
+  personality: TODO: Add personality
+lore_path: willem_van_der_meer.md
+narrative_path: willem_van_der_meer.md
+asset_paths:
+  portrait: willem_van_der_meer__default.png

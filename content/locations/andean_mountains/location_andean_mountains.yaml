@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000003
+type: location
+name: Andean Mountains
+description: |
+  A dramatic mountain range rising to the east of Las Flores, offering rugged terrain, dense forests, and diverse wildlife.
+district: Los Andes
+tags:
+  - Landmark
+  - Natural
+  - Mountains
+lore_path: andean_mountains.md
+asset_paths:
+  image: andean_mountains__default.png

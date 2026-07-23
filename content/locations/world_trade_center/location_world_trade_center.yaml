@@ -1,0 +1,13 @@
+id: b0000001-0000-0000-0000-000000000015
+type: location
+name: World Trade Center Las Flores
+description: |
+  A major commercial complex in the Financial District, housing international businesses and trade offices.
+district: City District
+tags:
+  - Landmark
+  - Business
+  - International
+lore_path: world_trade_center.md
+asset_paths:
+  image: world_trade_center__default.png

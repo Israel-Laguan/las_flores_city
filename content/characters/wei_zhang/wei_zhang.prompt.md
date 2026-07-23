@@ -3,7 +3,7 @@ name: Dr. Wei Zhang
 type: portrait
 size: 1024x1024
 source: docs/lore/figures/wei_zhang/wei_zhang.md
-target: `portrait_urls[].url` in `content/characters/char_dr_wei_zhang.yaml`
+target: `portrait_urls[].url` in `content/characters/char_wei_zhang.yaml`
 consumer: portrait
 ---
 
@@ -12,8 +12,8 @@ consumer: portrait
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/dr_wei_zhang.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_dr_wei_zhang.yaml`
+**Source:** docs/lore/figures/wei_zhang.md
+**Target field:** `portrait_urls[].url` in `content/characters/char_wei_zhang.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

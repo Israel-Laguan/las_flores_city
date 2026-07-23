@@ -131,8 +131,8 @@ platforms:
     posts:
       - id: "vitrina_post_1"
         author: "User222"
-        content: "Van der Meer Industries Continues to Thrive Under New Leadership. Liam van der Meer-Krol y su primo Sebastian han demostrado ser un equipo dinámico desde que el segundo se unió a la empresa familiar hace unos meses."
-        translation: "Van der Meer Industries Continues to Thrive Under New Leadership. Liam van der Meer-Krol and his cousin Sebastian have proven to be a dynamic team since the latter joined the family business a few months ago."
+        content: "Van der Meer Industries Continues to Thrive Under New Leadership. Liam van der Meer y su primo Sebastian han demostrado ser un equipo dinámico desde que el segundo se unió a la empresa familiar hace unos meses."
+        translation: "Van der Meer Industries Continues to Thrive Under New Leadership. Liam van der Meer and his cousin Sebastian have proven to be a dynamic team since the latter joined the family business a few months ago."
         tags: ["#VanDerMeerIndustries", "#Liam", "#Sebastian", "#leadership"]
         sentiment: "positive"
         engagement: "high"

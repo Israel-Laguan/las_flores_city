@@ -1,13 +1,14 @@
-id: b3c4d5e6-f7a8-4b9c-0d1e-2f3a4b5c6d7e
+id: a0000001-0000-0000-0000-000000000004
 name: Ana Silva
-title: Councilwoman, Las Flores
-description: Progressive voice and champion of the poor in the Las Flores City Council. Vocal critic of Mayor Hernandez and Business Coalition tactics; advocates for transparency and community interests.
+title: Progressive City Council Member
+description: |
+  Councilwoman Ana Silva is a progressive voice and fierce champion of the poor in the Las Flores City Council. She is one of the only elected officials who consistently advocates for marginalized communities against corporate interests.
 metadata:
   type: human
   role: npc
   faction: government
-  personality: progressive_advocate
+  personality: fierce_progressive
+lore_path: ana_silva.md
+narrative_path: ana_silva.md
 asset_paths:
   portrait: ana_silva__default.png
-
-lore_path: ana_silva.md

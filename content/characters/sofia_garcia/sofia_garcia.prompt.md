@@ -1,31 +1,24 @@
-# Portrait Prompt — Sofia Garcia
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Sofia Garcia, adult Young Wife, Community Caregiver, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Sofia Garcia, a adult Young Wife, Community Caregiver from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Sofia Garcia
-title: Young Wife, Community Caregiver
-faction: i
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/sofia_garcia/sofia_garcia.md
+target: asset_paths.portrait in content/characters/sofia_garcia/char_sofia_garcia.yaml
+consumer: portrait
 ---
 
-**Generated:** 2026-07-17T14:51:31.716Z
+# Portrait Prompt — Sofia Garcia
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height woman in her early 30s Latin woman. Sofia Garcia. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, alert and observant despite her circumstances. Her expression is alert, as she meets the viewer with steady, composed bearing. Her dark brown hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no modern clothing
+
+## Variations
+
+- [ ] Sofia Garcia in a clinical setting, examining a patient with professional care
+- [ ] Sofia Garcia taking a moment to reflect between patients, showing quiet compassion
+- [ ] Sofia Garcia consulting with medical colleagues, discussing patient care approaches
