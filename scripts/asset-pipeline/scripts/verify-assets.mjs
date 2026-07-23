@@ -93,6 +93,24 @@ function findAllYamlFiles(dir) {
   return results;
 }
 
+function findAllPromptFiles(dir) {
+  const results = [];
+  function walk(current) {
+    if (!fs.existsSync(current)) return;
+    const entries = fs.readdirSync(current, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith('.prompt.md')) {
+        results.push(fullPath);
+      }
+    }
+  }
+  walk(dir);
+  return results;
+}
+
 function extractUrls(obj, results = []) {
   if (!obj || typeof obj !== 'object') return results;
 
@@ -271,8 +289,7 @@ async function main() {
 
   // Also check if .prompt.md files exist without corresponding assets
   console.log(`\n📝 Checking for orphaned prompts...\n`);
-  const promptFiles = findAllYamlFiles(path.resolve('docs/lore'))
-    .filter(f => f.endsWith('.prompt.md'))
+  const promptFiles = findAllPromptFiles(CONTENT_DIR)
     .map(f => path.relative(process.cwd(), f));
 
   if (promptFiles.length > 0) {
