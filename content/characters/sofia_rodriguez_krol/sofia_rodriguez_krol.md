@@ -5,7 +5,7 @@
 > **Born:** 2048 (Las Flores)
 > **Role:** Socialite, Philanthropist, Businesswoman
 > **Parents:** Carlos Rodriguez Sr. and Isabel Martinez
-> **Spouse:** Liam Krol (married 2068)
+> **Spouse:** Liam van der Meer (married 2068)
 > **Sister-in-law:** Xiu Li van der Meer
 > **Status:** Active (as of 2077)
 
@@ -38,7 +38,7 @@ Born into the prominent Rodriguez political dynasty, Sofia received an elite edu
 
 ## Marriage and Family Connections
 
-Sofia's 2068 marriage to Liam Krol created powerful alliances:
+Sofia's 2068 marriage to Liam van der Meer created powerful alliances:
 
 - **Van der Meer Connection:** Became sister-in-law to Xiu Li van der Meer, heir to the Van der Meer mining empire
 - **Political Synergy:** Combined her family's political influence with the Van der Meer's economic power
@@ -66,7 +66,7 @@ Sofia is known for:
 
 | Entity | Relationship |
 |---|---|
-| [Liam Krol](to_be_created.md) | Husband |
+| [Liam van der Meer](../liam_van_der_meer/liam_van_der_meer.md) | Husband |
 | [Xiu Li van der Meer](../xiu_li_van_der_meer/xiu_li_van_der_meer.md) | Sister-in-law |
 | [Alexander van der Meer](../alexander_van_der_meer/alexander_van_der_meer.md) | Father-in-law |
 | [Carlos Rodriguez Sr.](to_be_created.md) | Father (political figure) |

@@ -3,7 +3,7 @@ name: Wang Mei Li
 type: portrait
 size: 1024x1408
 source: content/characters/wang_mei_li/wang_mei_li.md
-target: `portrait_urls[0].url` in `content/characters/wang_mei_li/char_wang_mei_li.yaml`
+target: `asset_paths.portrait` in `content/characters/wang_mei_li/char_wang_mei_li.yaml`
 consumer: portrait
 ---
 
@@ -12,7 +12,7 @@ consumer: portrait
 [CONSUMER: portrait]
 **Type:** portrait
 **Source:** content/characters/wang_mei_li/wang_mei_li.md
-**Target field:** `portrait_urls[0].url` in `content/characters/wang_mei_li/char_wang_mei_li.yaml`
+**Target field:** `asset_paths.portrait` in `content/characters/wang_mei_li/char_wang_mei_li.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

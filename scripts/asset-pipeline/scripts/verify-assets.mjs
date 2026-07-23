@@ -316,7 +316,7 @@ async function main() {
   console.log(`  ✅ Present:       ${okCount}`);
   console.log(`  ❌ Missing:       ${missingCount}`);
   console.log(`  ⚠️  Errors:       ${errorCount}`);
-  console.log(`  📝 Prompts:       ${promptFiles.length}`);
+  console.log(`  📝 Prompts:       ${allPromptFiles.length}`);
   console.log();
 
   if (missingCount > 0) {
