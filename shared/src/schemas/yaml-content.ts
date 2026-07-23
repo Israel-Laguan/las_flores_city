@@ -184,7 +184,7 @@ export const YAMLLocationSchema = z.object({
   lore_path: safePath,
   asset_paths: z.object({
     image: safePath,
-    background: safePath,
+    background: safePath.optional(),
   }).optional(),
 });
 
