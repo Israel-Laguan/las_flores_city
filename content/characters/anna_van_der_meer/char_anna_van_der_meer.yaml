@@ -2,7 +2,7 @@ id: c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f
 name: Anna van der Meer
 title: Van der Meer CEO & Social Advocate
 description: |
-  Anna van der Meer is the only daughter of Jan and Maria van der Meer, raised inside Old Las Flores privilege but shaped by a fierce sense of social responsibility. Independent, outspoken, and politically astute, she first gained attention through environmental protests against Van der Meer mining operations and socially conscious photography on inequality.
+  Anna van der Meer is the only daughter of Jan and Maria van der Meer, born into Old Las Flores privilege but shaped by a fierce sense of social responsibility. Independent, outspoken, and politically astute, she first gained attention through environmental protests against Van der Meer mining operations and socially conscious photography on inequality.
 
   After Jan's death in 2060, Anna became CEO of Van der Meer Industries and pushed modernization, lower environmental impact, and better worker conditions despite board resistance. She fiercely supported her brother Peter after he came out, co-founded an LGBTQ+ youth nonprofit, cared for Maria as dementia worsened after 2071, and won a Las Flores City Council seat in 2078 as a progressive advocate.
 metadata:
@@ -10,9 +10,8 @@ metadata:
   role: npc
   faction: van_der_meer
   personality: empathetic_pragmatic_reformer
-  age_2025: 35
-  age_2059: 69
-  age_2077: 86
+  age_2059: 18
+  age_2077: 36
   family: daughter of Jan and Maria van der Meer; sister of Peter; wife of Han Jr.
   occupation: CEO of Van der Meer Industries, social advocate, later city council member
   appearance: 5'7, athletic build, dark brown hair, deep blue eyes, tailored business style

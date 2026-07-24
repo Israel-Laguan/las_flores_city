@@ -21,7 +21,7 @@
 - Distinguishing features: Pearl necklace, diamond stud earrings, elegant tailored gowns, always impeccably groomed
 
 ## Overview
-Elisabeth van der Meer, a member of the prominent Dutch Van der Meer family, is known throughout Las Flores as an elegant tastemaker, art collector, and philanthropist. She married Carlos Alberto Hernandez in 2038 in a union intended to cement alliances between the Dutch and local political interests. The marriage was a turning point for both families — and for Las Flores politics.
+Elisabeth van der Meer, daughter of Pieter and Marleen van der Meer and a member of the prominent Dutch Van der Meer family, is known throughout Las Flores as an elegant tastemaker, art collector, and philanthropist. She married Carlos Alberto Hernandez in 2038 in a union intended to cement alliances between the Dutch and local political interests. The marriage was a turning point for both families — and for Las Flores politics.
 
 ## High Society & Philanthropy
 When her father Pieter expanded the family's mining interests into Las Flores, Elisabeth moved to the region and quickly became an active, central member of its high society. She was both a participant and a tastemaker, hosting lavish parties at her sprawling riverbank estate. These events invited prominent figures from politics, business, and arts to mingle, solidifying the van der Meers' status as key players in Las Flores while providing opportunities for Elisabeth to indulge in her passion for culture.

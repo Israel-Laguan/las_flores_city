@@ -29,6 +29,9 @@ To her surprise, the team members did not blame her. Instead, they thanked her f
 ## Impact
 Annabella and Pieter were deeply moved by the resilience and forgiveness of the local team members. They admired the strength and spirit of the Latin American locals and vowed to always support and help the community in any way they could. This experience shaped the Van der Meer family's philosophy, instilling in them a deep respect for the local population and a commitment to their well-being.
 
+## Family
+Annabella married Pieter van der Meer, becoming step-mother to his children Alexander and Elisabeth from his first marriage to Marleen. She later gave birth to their youngest child, Jan. Her scientific achievement and the values it instilled became a cornerstone of the Van der Meer family identity.
+
 ## Related Lore
 - [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)
 - [Dutch Community](../communities/dutch_community.md)
