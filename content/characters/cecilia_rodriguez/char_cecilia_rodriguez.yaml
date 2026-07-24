@@ -1,0 +1,17 @@
+id: 1c09b342-6f29-4e08-967c-d6b052aa1033
+name: Cecilia Rodríguez
+title: Community Nurse / Off-duty Witness
+description: |
+  Juan Rodriguez's younger sister and a dedicated community nurse who runs a health clinic in San Miguel del Monte. She is pragmatic, calm under pressure, and deeply committed to her community. She inadvertently becomes a witness when she attempts to save Liu Fang in the alleyway.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: calm_pragmatic_protective
+  age_2077: 47
+  occupation: Nurse
+  appearance: "Latina woman, late-40s, practical nursing scrubs under a worn zip-up jacket, dark hair tied in a practical bun, tired but alert eyes"
+  family: "Sister to Juan Rodriguez"
+lore_path: cecilia_rodriguez.md
+asset_paths:
+  portrait: cecilia_rodriguez__default.png

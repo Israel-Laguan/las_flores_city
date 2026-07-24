@@ -1,0 +1,16 @@
+id: 6a8b13c0-7e61-419b-98f5-b772e0c238fa
+name: Ana Villanueva
+title: University Student & Undercover Operative
+description: |
+  A cautious sociology student drawn into a corporate conspiracy after a deadly car chase. Initially reluctant, she discovers a talent for observation and goes undercover to expose corruption in the Residencial Las Estrellas scandal.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: cautious_observant_brave
+  age_2077: 22
+  occupation: Student
+  appearance: "Young Latina woman, early 20s, sharp observant eyes, dressed in casual student clothes with a practical messenger bag."
+lore_path: ana_villanueva.md
+asset_paths:
+  portrait: ana_villanueva__default.png
