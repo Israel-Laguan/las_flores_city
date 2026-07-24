@@ -8,7 +8,7 @@ In 2029, Dr. Annabella van der Meer stood in the poisoned tunnels of an abandone
 
 ## The Philosophy
 
-What Annabella carried back from that mine was more than a sample of lithium-tainted water. She carried a lesson: the local community — the people who had known the land for generations — were the true stewards of its future. The Van der Meer family philosophy of "respect and support for the local Latin American community" was born in that moment, when Annabella chose to share her discovery with Pieter and together they vowed that the wealth from lithium would benefit all residents, not just foreign investors.
+What Annabella carried back from that mine was more than a sample of lithium-tainted water. She carried a lesson: the local community — the people who had known the land for generations — were the true stewards of its future. The Van der Meer family philosophy of "respect and support for the local Latin American community" was born in that moment, when Annabella and Pieter were deeply moved by the resilience and forgiveness of the poisoned team members. Together they vowed that the wealth from lithium would benefit all residents, not just foreign investors.
 
 ## The Inheritance
 

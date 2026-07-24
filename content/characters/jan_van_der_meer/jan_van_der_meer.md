@@ -35,4 +35,4 @@ Jan's promising tenure as the patriarch and CEO was cut tragically short. On Jan
 His sudden death sent shockwaves through Las Flores, creating a massive power vacuum in both the corporate and social spheres. It forced his daughter Anna to unexpectedly take the reins of the dynasty long before she was ready, fundamentally altering the trajectory of the van der Meer family.
 
 ## Related Lore
-- [Van der Meer Family](../lore/organizations/families/van_der_meer/van_der_meer.md)
+- [Van der Meer Family](../../lore/organizations/families/van_der_meer/van_der_meer.md)

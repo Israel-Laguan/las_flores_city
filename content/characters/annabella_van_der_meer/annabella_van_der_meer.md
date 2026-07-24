@@ -28,5 +28,5 @@ In her enthusiasm, she neglected to warn a follow-up team about the poisoned wat
 The experience shaped the Van der Meer family's philosophy: a commitment to respecting and supporting the local Latin American community. Annabella and her husband Pieter became known for their belief that the wealth from lithium should benefit all residents, not just foreign investors.
 
 ## Related Lore
-- [Discovery of the Lithium Vein](../lore/stories/discovery_lithium_vein/discovery_lithium_vein.md)
-- [Van der Meer Family](../lore/organizations/families/van_der_meer/van_der_meer.md)
+- [Discovery of the Lithium Vein](../../lore/stories/discovery_lithium_vein/discovery_lithium_vein.md)
+- [Van der Meer Family](../../lore/organizations/families/van_der_meer/van_der_meer.md)

@@ -14,7 +14,7 @@ Marleen van der Meer was the first wife of Pieter van der Meer and the mother of
 ## Family
 
 - **Pieter van der Meer** — Husband (first marriage)
-- **Alexander van der Meer** (b. ~1990) — Eldest son
+- **Alexander van der Meer** (b. ~1995) — Eldest son
 - **Elisabeth van der Meer** (b. ~1995) — Daughter
 
 ## Legacy
@@ -22,4 +22,4 @@ Marleen van der Meer was the first wife of Pieter van der Meer and the mother of
 Though she never set foot in Las Flores, Marleen's children became key figures in the Van der Meer family's South American empire. Her early death shaped Pieter's decision to remarry and brought Annabella into the family as a step-mother to Alexander and Elisabeth.
 
 ## Related Lore
-- [Van der Meer Family](../lore/organizations/families/van_der_meer/van_der_meer.md)
+- [Van der Meer Family](../../lore/organizations/families/van_der_meer/van_der_meer.md)
