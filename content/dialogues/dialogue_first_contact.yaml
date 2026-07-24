@@ -3,6 +3,7 @@ name: "First Contact"
 description: "Your first conversation with Aria at the Old Town Café"
 scene_id: "123e4567-e89b-12d3-a456-426614174001"
 character_id: "123e4567-e89b-12d3-a456-426614174000"
+dialogue_scope: "character"
 start_node_id: "223e4567-e89b-12d3-a456-426614174003"
 nodes:
   223e4567-e89b-12d3-a456-426614174003:
