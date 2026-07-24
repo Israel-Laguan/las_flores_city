@@ -247,9 +247,24 @@ function getProcessingOrder(files: string[]): string[] {
   });
 }
 
+async function dropDialogueTreeFKConstraints(): Promise<void> {
+  // Temporarily drop FK constraints on dialogue_trees so content migration
+  // can insert dialogues that reference characters/scenes/missions without
+  // hitting ordering edge cases in connection-pool environments (CI).
+  await queryOLTP('ALTER TABLE dialogue_trees DROP CONSTRAINT IF EXISTS dialogue_trees_character_id_fkey');
+  await queryOLTP('ALTER TABLE dialogue_trees DROP CONSTRAINT IF EXISTS dialogue_trees_scene_id_fkey');
+  await queryOLTP('ALTER TABLE dialogue_trees DROP CONSTRAINT IF EXISTS dialogue_trees_mission_id_fkey');
+}
+
+async function recreateDialogueTreeFKConstraints(): Promise<void> {
+  await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_character_id_fkey FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE SET NULL');
+  await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE SET NULL');
+  await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES mysteries(id) ON DELETE SET NULL');
+}
+
 export async function migrateContent(contentDir: string, files?: string[]): Promise<MigrationResult> {
   console.log(`🚀 Starting content migration from: ${contentDir}`);
-  
+
   const result: MigrationResult = {
     success: true,
     filesProcessed: 0,
@@ -292,35 +307,46 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
 
     console.log(`📁 Found ${allFiles.length} content files`);
 
-    for (const file of allFiles) {
-      // Files whose path doesn't match a known content type (e.g. lore
-      // reference files) are not migrated — skip them silently.
-      if (!getContentTypeFromPath(file)) continue;
+    // Drop FK constraints on dialogue_trees so content migration can insert
+    // dialogues referencing characters/scenes/missions without ordering issues.
+    console.log('🔓 Temporarily dropping dialogue_trees FK constraints...');
+    await dropDialogueTreeFKConstraints();
 
-      try {
-        const checksum = await calculateChecksum(file);
+    try {
+      for (const file of allFiles) {
+        // Files whose path doesn't match a known content type (e.g. lore
+        // reference files) are not migrated — skip them silently.
+        if (!getContentTypeFromPath(file)) continue;
 
-        if (await shouldSkipMigration(file, contentDir, checksum)) {
-          console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
-          result.filesSkipped++;
-          continue;
+        try {
+          const checksum = await calculateChecksum(file);
+
+          if (await shouldSkipMigration(file, contentDir, checksum)) {
+            console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
+            result.filesSkipped++;
+            continue;
+          }
+
+          console.log(`📦 Processing: ${path.relative(contentDir, file)}`);
+          const migration = await processContentFile(file);
+
+          const logContentId = migration.contentId.split(',')[0];
+          await recordMigration(file, contentDir, checksum, migration.contentType, logContentId);
+
+          result.filesProcessed++;
+          result.appliedMigrations.push(migration);
+
+          console.log(`✅ Applied: ${migration.contentType} - ${migration.contentId}`);
+        } catch (error: any) {
+          result.filesFailed++;
+          result.errors.push(`${path.relative(contentDir, file)}: ${error.message}`);
+          console.error(`❌ Failed: ${path.relative(contentDir, file)} - ${error.message}`);
         }
-
-        console.log(`📦 Processing: ${path.relative(contentDir, file)}`);
-        const migration = await processContentFile(file);
-        
-        const logContentId = migration.contentId.split(',')[0];
-        await recordMigration(file, contentDir, checksum, migration.contentType, logContentId);
-        
-        result.filesProcessed++;
-        result.appliedMigrations.push(migration);
-        
-        console.log(`✅ Applied: ${migration.contentType} - ${migration.contentId}`);
-      } catch (error: any) {
-        result.filesFailed++;
-        result.errors.push(`${path.relative(contentDir, file)}: ${error.message}`);
-        console.error(`❌ Failed: ${path.relative(contentDir, file)} - ${error.message}`);
       }
+    } finally {
+      // Re-create FK constraints now that all content is loaded (or on error).
+      console.log('🔒 Re-creating dialogue_trees FK constraints...');
+      await recreateDialogueTreeFKConstraints();
     }
 
     await runPostMigrationTasks(result);
