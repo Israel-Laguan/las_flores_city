@@ -28,6 +28,7 @@ The district's elevation ranges from 10 to 30 meters above sea level, providing 
 | **Old Las Flores** | Historical settlement | The original mining settlement, with historic adobe houses and narrow streets. A living testament to the city's humble beginnings. |
 | **Agricultural Valley** | Farmland | Fertile lands along the Río de las Flores supporting traditional farming communities. | [Details](../landmarks/south/agricultural_valley.md)
 | **Río de las Flores** | River | Flows from eastern mountains through the district, providing irrigation and sustaining local agriculture. |
+| **Community Center South** | Civil society hub | Vital community center in Old Las Flores offering education, youth programs, legal clinics, and organizing space. |
 | **Indigenous Riverbank Communities** | Settlements | Traditional communities living along the river, maintaining customs passed down through generations. |
 
 ---

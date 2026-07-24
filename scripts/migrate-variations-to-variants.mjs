@@ -18,7 +18,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const CONTENT_DIRS = [
   path.join(ROOT, 'content/characters'),
-  path.join(ROOT, 'content/locations'),
+  path.join(ROOT, 'content/districts'),
   path.join(ROOT, 'content/scenes'),
 ];
 
@@ -49,7 +49,7 @@ function findPromptFiles(dir) {
 function detectEntityType(filePath) {
   const rel = path.relative(ROOT, filePath);
   if (rel.startsWith('content/characters/')) return 'character';
-  if (rel.startsWith('content/locations/')) return 'location';
+  if (rel.startsWith('content/districts/')) return 'location';
   if (rel.startsWith('content/scenes/')) return 'scene';
   return 'unknown';
 }

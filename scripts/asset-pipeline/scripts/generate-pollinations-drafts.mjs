@@ -26,7 +26,7 @@ import https from 'node:https';
 const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt';
 const PROMPT_ROOTS = [
   path.resolve('content/characters'),
-  path.resolve('content/locations'),
+  path.resolve('content/districts'),
   path.resolve('content/scenes'),
   path.resolve('content/overlays'),
   path.resolve('content/missions'),

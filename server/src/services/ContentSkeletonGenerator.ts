@@ -197,7 +197,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
     story: 'stories',
     story_beat: 'story_beats',
     shop_item: 'shop',
-    location: 'locations',
+    location: 'districts/_draft/locations',
     map_tile: 'maps',
     gig: 'gigs',
     vault: 'vault',
@@ -206,7 +206,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
   const dir = dirMap[item.type];
   if (!dir) throw new Error(`Cannot resolve directory for type: ${item.type}`);
 
-  // Per-folder layout: content/<type>/<slug>/<prefix><slug>.yaml
+  // Per-folder layout: content/<type_path>/<slug>/<prefix><slug>.yaml
   const prefixMap: Record<ContentType, string> = {
     character: 'char_',
     scene: 'scene_',

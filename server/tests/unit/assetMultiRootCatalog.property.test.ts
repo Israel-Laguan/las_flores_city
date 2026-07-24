@@ -123,7 +123,7 @@ const promptFilenamesArb = (minFiles = 0, maxFiles = 5): fc.Arbitrary<string[]> 
 
 /** The three canonical root paths used in tests. */
 const ROOT_CHARACTERS = '/app/content/characters';
-const ROOT_LOCATIONS = '/app/content/locations';
+const ROOT_LOCATIONS = '/app/content/districts/city/locations';
 const ROOT_SCENES = '/app/content/scenes';
 const ALL_ROOTS = [ROOT_CHARACTERS, ROOT_LOCATIONS, ROOT_SCENES];
 
