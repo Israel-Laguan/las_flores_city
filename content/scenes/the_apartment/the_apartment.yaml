@@ -1,4 +1,4 @@
-id: c3d4e5f6-a7b8-9012-cdef-123456789012
+id: 1efcf23b-04b1-404c-bf8d-1aa15d11d213
 name: The Apartment
 description: A small, sterile apartment in the N&M LTD residential block. The walls are white, the furniture is minimal, and a single window looks out over the neon-lit streets of Las Flores. This is your home for the duration of the experiment.
 district: City
@@ -9,6 +9,11 @@ ambient_sound_url: /assets/scenes/apartment/ambient.mp3
 mood: tense
 available_dialogues:
   - d4e5f6a7-b8c9-0123-defa-234567890123
+  - 5f4a3b2c-1d0e-4f9a-8b7c-6d5e4f3a2b1c
+  - 6e5f4a3b-2c1d-4f9a-9b7c-5d5e4f3a2b1d
+  - 7f6e5f4a-3b2c-4f9a-ab7c-6d5e4f3a2b1e
+  - 8f7e6f5a-4b3c-5f0a-bc8d-7e6f5f4a3b2f
+  - 9e8f7e6d-5b4c-6f1a-cd9d-8f7e6e5b4c30
 metadata:
   type: starting_location
   accessible: true

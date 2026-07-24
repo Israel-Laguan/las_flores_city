@@ -70,7 +70,7 @@ export async function scanForTodoPlaceholders(contentDir: string): Promise<Place
     vault: '',
   };
 
-  async function scanEntityDir(type: string, slug: string, yamlPath: string, mdPath: string, promptPath: string) {
+  async function scanEntityDir(type: string, slug: string, yamlPath: string, mdPath: string, promptPath: string, relativeFilePath?: string) {
     // Check if YAML exists
     try {
       await fs.access(yamlPath);
@@ -114,6 +114,10 @@ export async function scanForTodoPlaceholders(contentDir: string): Promise<Place
           fields: itemData,
           assetNeeds: [],
         };
+        // Preserve district-relative path for generators
+        if (relativeFilePath) {
+          item.filePath = relativeFilePath;
+        }
         
         result.items.push({
           yamlPath,
@@ -146,10 +150,13 @@ export async function scanForTodoPlaceholders(contentDir: string): Promise<Place
               if (!locEntry.isDirectory()) continue;
               const slug = locEntry.name;
               const prefix = prefixMap[type] || '';
-              const yamlPath = path.join(locDir, slug, `${prefix}${slug}.yaml`);
+              const yamlFile = `${prefix}${slug}.yaml`;
+              const yamlPath = path.join(locDir, slug, yamlFile);
               const mdPath = path.join(locDir, slug, `${slug}.md`);
               const promptPath = path.join(locDir, slug, `${slug}.prompt.md`);
-              await scanEntityDir(type, slug, yamlPath, mdPath, promptPath);
+              // Preserve district-relative path for generators
+              const relativeFilePath = `districts/${district.name}/locations/${slug}/${yamlFile}`;
+              await scanEntityDir(type, slug, yamlPath, mdPath, promptPath, relativeFilePath);
             }
           } catch {
             // Directory doesn't exist, skip

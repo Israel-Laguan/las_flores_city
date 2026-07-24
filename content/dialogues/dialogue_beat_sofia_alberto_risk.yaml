@@ -17,6 +17,9 @@ metadata:
     - "beat_2"
     - "los_culebras"
     - "branch_point"
+  characters:
+    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    - "b2c3d4e5-f6a7-8901-bcde-234567890abc"
   story_beat: "beat_sofia_alberto_risk"
   location: "south_las_flores"
   required_stats:

@@ -13,3 +13,5 @@ metadata:
   appearance: "Latina woman, late-40s, practical nursing scrubs under a worn zip-up jacket, dark hair tied in a practical bun, tired but alert eyes"
   family: "Sister to Juan Rodriguez"
 lore_path: cecilia_rodriguez.md
+asset_paths:
+  portrait: cecilia_rodriguez__default.png

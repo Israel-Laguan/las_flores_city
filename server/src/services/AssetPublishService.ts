@@ -293,6 +293,9 @@ export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
   for (const ct of CONTENT_TYPES) {
     // Locations live under content/districts/<district>/locations/<slug>/
     if (ct.dir === 'locations') {
+      // Track seen slugs to avoid duplicates between district and flat layouts
+      const seenSlugs = new Set<string>();
+
       const districtsDir = path.join(contentDir, 'districts');
       try {
         const districtEntries = await fs.readdir(districtsDir, { withFileTypes: true });
@@ -329,12 +332,55 @@ export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
                   slug,
                   stages,
                 });
+                seenSlugs.add(slug);
               } catch {
                 continue;
               }
             }
           } catch (err: any) {
             if (err?.code !== 'ENOENT') throw err;
+          }
+        }
+      } catch (err: any) {
+        if (err?.code !== 'ENOENT') throw err;
+      }
+
+      // Also scan flat-layout locations (content/locations/<slug>/) as fallback
+      const flatLocDir = path.join(contentDir, ct.dir);
+      try {
+        const entries = await fs.readdir(flatLocDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (!entry.isDirectory()) continue;
+          const slug = entry.name;
+          if (seenSlugs.has(slug)) continue; // Already scanned from district layout
+
+          const entityDir = path.join(flatLocDir, slug);
+          const yamlFiles = await fs.readdir(entityDir);
+          const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
+          if (!yamlFile) continue;
+
+          const contentPath = `${ct.dir}/${slug}/${yamlFile}`;
+          const absolutePath = path.join(entityDir, yamlFile);
+
+          try {
+            const data = await readYaml(absolutePath);
+            const assetUrls = getAssetUrls(data, ct.field);
+
+            const stages: EntityPromotionStatus['stages'] = {};
+            for (const assetEntry of assetUrls) {
+              if (assetEntry.label === 'dev' || assetEntry.label === 'staging' || assetEntry.label === 'production') {
+                stages[assetEntry.label] = { url: assetEntry.url };
+              }
+            }
+
+            results.push({
+              contentPath,
+              name: data.name || slug,
+              slug,
+              stages,
+            });
+          } catch {
+            continue;
           }
         }
       } catch (err: any) {
