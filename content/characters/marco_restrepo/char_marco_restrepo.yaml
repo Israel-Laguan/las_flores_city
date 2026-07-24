@@ -8,7 +8,7 @@ metadata:
   role: npc
   personality: warm_observant_cynical
   faction: neutral
-  first_appearance: dialogue_first_contact
+  first_appearance: first_contact_barista
   is_reachable_via_sms: true
   age_2077: 48
   occupation: Café Owner

@@ -70,8 +70,96 @@ export async function scanForTodoPlaceholders(contentDir: string): Promise<Place
     vault: '',
   };
 
+  async function scanEntityDir(type: string, slug: string, yamlPath: string, mdPath: string, promptPath: string) {
+    // Check if YAML exists
+    try {
+      await fs.access(yamlPath);
+    } catch {
+      return;
+    }
+
+    // Check if .md or .prompt.md has TODO
+    let hasTodo = false;
+    try {
+      const mdContent = await fs.readFile(mdPath, 'utf-8');
+      if (mdContent.includes('TODO')) hasTodo = true;
+    } catch {
+      // File doesn't exist, that's fine
+    }
+    
+    if (!hasTodo) {
+      try {
+        const promptContent = await fs.readFile(promptPath, 'utf-8');
+        if (promptContent.includes('TODO')) hasTodo = true;
+      } catch {
+        // File doesn't exist, that's fine
+      }
+    }
+
+    if (hasTodo) {
+      result.filesWithTodo++;
+      
+      // Read YAML to get item data
+      try {
+        const yamlContent = await fs.readFile(yamlPath, 'utf-8');
+        const itemData = yaml.load(yamlContent) as any;
+        
+        // Construct a minimal ContentPlanItem
+        const item: any = {
+          id: itemData.id || `temp-${type}-${slug}`,
+          type: type as any,
+          name: itemData.name || slug,
+          slug: slug,
+          action: 'create' as const,
+          fields: itemData,
+          assetNeeds: [],
+        };
+        
+        result.items.push({
+          yamlPath,
+          item,
+          mdPath: hasTodo && mdPath ? mdPath : undefined,
+          promptPath: hasTodo && promptPath ? promptPath : undefined,
+        });
+      } catch (err) {
+        console.warn(`[fill-placeholders] Failed to read YAML ${yamlPath}:`, err);
+      }
+    }
+    
+    result.totalFiles++;
+  }
+
   for (const [dir, type] of Object.entries(dirMap)) {
     const typeDir = path.join(contentDir, dir);
+    
+    // Locations live under content/districts/<district>/locations/<slug>/
+    if (dir === 'locations') {
+      const districtsDir = path.join(contentDir, 'districts');
+      try {
+        const districtEntries = await fs.readdir(districtsDir, { withFileTypes: true });
+        for (const district of districtEntries) {
+          if (!district.isDirectory()) continue;
+          const locDir = path.join(districtsDir, district.name, 'locations');
+          try {
+            const locEntries = await fs.readdir(locDir, { withFileTypes: true });
+            for (const locEntry of locEntries) {
+              if (!locEntry.isDirectory()) continue;
+              const slug = locEntry.name;
+              const prefix = prefixMap[type] || '';
+              const yamlPath = path.join(locDir, slug, `${prefix}${slug}.yaml`);
+              const mdPath = path.join(locDir, slug, `${slug}.md`);
+              const promptPath = path.join(locDir, slug, `${slug}.prompt.md`);
+              await scanEntityDir(type, slug, yamlPath, mdPath, promptPath);
+            }
+          } catch {
+            // Directory doesn't exist, skip
+          }
+        }
+      } catch {
+        // Districts directory doesn't exist, skip
+      }
+      continue;
+    }
     
     try {
       const entries = await fs.readdir(typeDir, { withFileTypes: true });
@@ -81,67 +169,11 @@ export async function scanForTodoPlaceholders(contentDir: string): Promise<Place
         
         const slug = entry.name;
         const prefix = prefixMap[type] || '';
-        const yamlFile = `${prefix}${slug}.yaml`;
-        const yamlPath = path.join(typeDir, slug, yamlFile);
+        const yamlPath = path.join(typeDir, slug, `${prefix}${slug}.yaml`);
         const mdPath = path.join(typeDir, slug, `${slug}.md`);
         const promptPath = path.join(typeDir, slug, `${slug}.prompt.md`);
         
-        // Check if YAML exists
-        try {
-          await fs.access(yamlPath);
-        } catch {
-          continue;
-        }
-
-        // Check if .md or .prompt.md has TODO
-        let hasTodo = false;
-        try {
-          const mdContent = await fs.readFile(mdPath, 'utf-8');
-          if (mdContent.includes('TODO')) hasTodo = true;
-        } catch {
-          // File doesn't exist, that's fine
-        }
-        
-        if (!hasTodo) {
-          try {
-            const promptContent = await fs.readFile(promptPath, 'utf-8');
-            if (promptContent.includes('TODO')) hasTodo = true;
-          } catch {
-            // File doesn't exist, that's fine
-          }
-        }
-
-        if (hasTodo) {
-          result.filesWithTodo++;
-          
-          // Read YAML to get item data
-          try {
-            const yamlContent = await fs.readFile(yamlPath, 'utf-8');
-            const itemData = yaml.load(yamlContent) as any;
-            
-            // Construct a minimal ContentPlanItem
-            const item: any = {
-              id: itemData.id || `temp-${type}-${slug}`,
-              type: type as any,
-              name: itemData.name || slug,
-              slug: slug,
-              action: 'create' as const,
-              fields: itemData,
-              assetNeeds: [],
-            };
-            
-            result.items.push({
-              yamlPath,
-              item,
-              mdPath: hasTodo && mdPath ? mdPath : undefined,
-              promptPath: hasTodo && promptPath ? promptPath : undefined,
-            });
-          } catch (err) {
-            console.warn(`[fill-placeholders] Failed to read YAML ${yamlPath}:`, err);
-          }
-        }
-        
-        result.totalFiles++;
+        await scanEntityDir(type, slug, yamlPath, mdPath, promptPath);
       }
     } catch {
       // Directory doesn't exist, skip

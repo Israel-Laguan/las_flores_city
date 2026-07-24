@@ -23,10 +23,10 @@ Marco is the second-generation owner of the Old Town Cafe, a beloved fixture in 
 Warm, gregarious, and deeply attentive. Marco remembers every customer's order, a skill sharpened by decades of genuinely paying attention to people. Underneath his friendly exterior lies a hardened, cynical view of the corporate expansion eating his city alive. He is a pragmatic survivor. He doesn't pick fights with the megacorps directly, but he creates a safe space for those who do. He is the kind of person others confide in naturally, which means he holds an encyclopedic knowledge of the district's secrets, gossip, and underground movements.
 
 ## Role in the Story
-Marco is often the player's first anchor in the city, encountered during the `dialogue_first_contact` sequence. He provides early context about Old Town and acts as an informal information broker. Because he is SMS-reachable, he can be a lifeline or a source of rumors throughout the game. He represents the everyday humanity of Las Flores that the corporations are trying to pave over.
+Marco is often the player's first anchor in the city, encountered during the `first_contact_barista` sequence. He provides early context about Old Town and acts as an informal information broker. Because he is SMS-reachable, he can be a lifeline or a source of rumors throughout the game. He represents the everyday humanity of Las Flores that the corporations are trying to pave over.
 
 ## Connections
-- [Alex (Player)](../alex/alex.md): A regular at his cafe; Marco often acts as a sounding board or informal guide.
+- [Alex (Player)](../alex_garcia/alex_garcia.md): A regular at his cafe; Marco often acts as a sounding board or informal guide.
 - **The Old Town Community**: He knows almost everyone who lives or works within a ten-block radius of his shop.
 
 ## Content Reference

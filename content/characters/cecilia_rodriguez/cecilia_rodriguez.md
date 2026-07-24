@@ -17,7 +17,7 @@
 - Distinguishing features: Always wears practical shoes; often carries a well-worn medical bag even when off-duty; wears a faded zip-up jacket over her scrubs.
 
 ## Background
-Cecilia grew up in San Miguel del Monte, a working-class district of Las Flores, alongside her older brother Juan. While Juan turned to journalism to expose the city's systemic rot, Cecilia chose a more immediate form of care: nursing. She attended medical school on a corporate scholarship but famously turned down a lucrative position at a downtown private hospital to return to her neighborhood. She now runs a chronically underfunded but vital health clinic on Calle Morales, providing care to those who fall through the cracks of the city's privatized health system.
+Cecilia grew up in San Miguel del Monte, a working-class district of Las Flores, alongside her older brother Juan. While Juan turned to journalism to expose the city's systemic rot, Cecilia chose a more immediate form of care: nursing. She attended nursing school on a corporate scholarship but famously turned down a lucrative position at a downtown private hospital to return to her neighborhood. She now runs a chronically underfunded but vital health clinic on Calle Morales, providing care to those who fall through the cracks of the city's privatized health system.
 
 ## Personality
 Calm under pressure, pragmatic, and deeply committed to her community. She does not share her brother's fiery, public-facing idealism; instead, she believes in quiet, localized action. She is protective of her patients and her family, and while she avoids the spotlight, she is highly observant. Years of working in an under-resourced clinic have made her excellent at improvising and reading people.
