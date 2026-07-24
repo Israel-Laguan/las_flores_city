@@ -184,6 +184,11 @@ export function generateYaml(item: ContentPlanItem): string {
 }
 
 export function resolveFilePath(item: ContentPlanItem): string {
+  // Allow explicit filePath override (used by district locations)
+  if ((item as any).filePath) {
+    return (item as any).filePath as string;
+  }
+
   if (!/^[a-z0-9_]+$/.test(item.slug)) {
     throw new Error(`Invalid slug: ${item.slug}`);
   }
