@@ -1,0 +1,16 @@
+id: e44d32a7-f986-4e55-bdc2-67d4f9b877ac
+name: Viktor Reyes (Alias: Dr. Marcos Vidal)
+title: Covert Operative / Medical Cover Asset
+description: |
+  A highly trained corporate assassin employed by LW Group. An ex-military field surgeon, he poses as a responding medical professional at 'incident' scenes to ensure targets do not survive, manipulating the scene under the guise of providing emergency care.
+metadata:
+  type: human
+  role: npc
+  faction: lw_group
+  personality: cold_professional_meticulous
+  age_2077: 57
+  occupation: Assassin / Fake Physician
+  appearance: "Eastern European-featured man, late 50s, clean-cut professional with a doctor's bag, very still and controlled expression, something cold behind the eyes."
+lore_path: viktor_reyes.md
+asset_paths:
+  portrait: viktor_reyes__default.png

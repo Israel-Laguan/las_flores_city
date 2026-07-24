@@ -1,0 +1,18 @@
+id: 550e8400-e29b-41d4-a716-446655440004
+name: Ingrid Haugen
+title: Field Liaison, N&M LTD
+description: |
+  A corporate liaison from Nakamura & Morgan LTD. She speaks in clipped, efficient sentences and always seems to know more than she lets on. She is professionally empathetic—she knows how to make subjects feel heard without actually caring.
+metadata:
+  type: human
+  role: quest_giver
+  personality: professional_compartmentalized
+  faction: nm_ltd
+  first_appearance: dialogue_welcome_handler
+  is_reachable_via_sms: true
+  age_2077: 39
+  occupation: Corporate Liaison
+  appearance: "Sharp-featured Scandinavian woman, late 30s, immaculate professional attire, always holding a tablet, cold intelligent eyes."
+lore_path: ingrid_haugen.md
+asset_paths:
+  portrait: ingrid_haugen__default.png
