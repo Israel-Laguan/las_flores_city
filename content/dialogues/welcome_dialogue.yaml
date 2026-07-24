@@ -1,6 +1,7 @@
 id: "550e8400-e29b-41d4-a716-446655440003"
 name: "Welcome to Las Flores"
 description: "The initial dialogue for new players arriving in Las Flores"
+dialogue_scope: "onboarding"
 start_node_id: "start"
 nodes:
   start:

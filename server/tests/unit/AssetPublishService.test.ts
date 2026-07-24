@@ -308,11 +308,11 @@ describe('scene/location promotion', () => {
       'utf-8',
     );
 
-    // Create location entity
-    const locDir = path.join(tmpDir, 'content', 'locations', 'the_flats');
+    // Create location entity (nested under districts per content layout)
+    const locDir = path.join(tmpDir, 'content', 'districts', 'downtown', 'locations', 'the_flats');
     await fs.mkdir(path.join(locDir, 'assets'), { recursive: true });
     await fs.writeFile(
-      path.join(locDir, 'loc_the_flats.yaml'),
+      path.join(locDir, 'location_the_flats.yaml'),
       yaml.dump({
         id: '00000000-0000-0000-0000-000000000020',
         name: 'The Flats',
@@ -344,11 +344,11 @@ describe('scene/location promotion', () => {
   });
 
   it('promoteToStaging with image_urls field promotes location image', async () => {
-    const result = await promoteToStaging('locations/the_flats/loc_the_flats.yaml', { field: 'image_urls' });
+    const result = await promoteToStaging('districts/downtown/locations/the_flats/location_the_flats.yaml', { field: 'image_urls' });
     expect(result.stage).toBe('staging');
     expect(result.url).toBe('https://minio.test/img/dev.png');
 
-    const yamlPath = path.join(tmpDir, 'content', 'locations', 'the_flats', 'loc_the_flats.yaml');
+    const yamlPath = path.join(tmpDir, 'content', 'districts', 'downtown', 'locations', 'the_flats', 'location_the_flats.yaml');
     const data = yaml.load(await fs.readFile(yamlPath, 'utf-8')) as any;
     expect(data.image_urls).toEqual([
       { url: 'https://minio.test/img/dev.png', label: 'dev' },
@@ -396,6 +396,6 @@ describe('scene/location promotion', () => {
 
     const flats = statuses.find(s => s.slug === 'the_flats');
     expect(flats).toBeDefined();
-    expect(flats!.contentPath).toMatch(/^locations\//);
+    expect(flats!.contentPath).toMatch(/^districts\/.*locations\//);
   });
 });

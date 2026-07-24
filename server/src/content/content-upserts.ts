@@ -3,8 +3,8 @@ import { sanitizeText } from './validate-xss.js';
 
 export async function upsertCharacter(data: any): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, atlas_url, metadata)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, atlas_url, available_dialogues, metadata)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         title = EXCLUDED.title,
@@ -12,27 +12,35 @@ export async function upsertCharacter(data: any): Promise<string> {
         avatar_url = EXCLUDED.avatar_url,
         portrait_urls = EXCLUDED.portrait_urls,
         atlas_url = EXCLUDED.atlas_url,
+        available_dialogues = EXCLUDED.available_dialogues,
         metadata = EXCLUDED.metadata,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.name, data.title || null, sanitizeText(data.description), data.avatar_url || null, JSON.stringify(data.portrait_urls || []), data.atlas_url || null, JSON.stringify(data.metadata || {})]
+    [data.id, data.name, data.title || null, sanitizeText(data.description), data.avatar_url || null, JSON.stringify(data.portrait_urls || []), data.atlas_url || null,
+     data.available_dialogues?.length > 0 ? `{${data.available_dialogues.join(',')}}` : '{}', JSON.stringify(data.metadata || {})]
   );
   return result.rows[0].id;
 }
 
 export async function upsertDialogueTree(data: any): Promise<string> {
   const result = await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes, metadata)
-      VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO dialogue_trees (id, name, description, start_node_id, nodes, metadata,
+                                character_id, scene_id, mission_id, dialogue_scope)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         description = EXCLUDED.description,
         start_node_id = EXCLUDED.start_node_id,
         nodes = EXCLUDED.nodes,
         metadata = EXCLUDED.metadata,
+        character_id = EXCLUDED.character_id,
+        scene_id = EXCLUDED.scene_id,
+        mission_id = EXCLUDED.mission_id,
+        dialogue_scope = EXCLUDED.dialogue_scope,
         updated_at = NOW()
       RETURNING id`,
-    [data.id, data.name, data.description || null, data.start_node_id, JSON.stringify(data.nodes || {}), JSON.stringify(data.metadata || {})]
+    [data.id, data.name, data.description || null, data.start_node_id, JSON.stringify(data.nodes || {}), JSON.stringify(data.metadata || {}),
+     data.character_id || null, data.scene_id || null, data.mission_id || null, data.dialogue_scope || 'character']
   );
   return result.rows[0].id;
 }

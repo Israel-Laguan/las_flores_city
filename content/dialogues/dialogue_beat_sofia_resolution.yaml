@@ -2,6 +2,9 @@ id: "9e8f7e6d-5b4c-6f1a-cd9d-8f7e6e5b4c30"
 name: "Beat 5 — Finale"
 description: "The culmination of all choices. Branching based on sofia_status and sofia_trust: romanced/high trust equals loyal ally, disillusioned equals leaves or dies."
 start_node_id: "node_resolution_check"
+character_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+mission_id: "a0000000-e29b-41d4-a716-446655440001"
+dialogue_scope: "mission"
 metadata:
   version: "1.0"
   author: "Las Flores Team"
@@ -16,8 +19,6 @@ metadata:
     - "ending"
   story_beat: "beat_sofia_resolution"
   location: "south_las_flores"
-  characters:
-    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
 
 nodes:
   node_resolution_check:
