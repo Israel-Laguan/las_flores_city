@@ -197,7 +197,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
     story: 'stories',
     story_beat: 'story_beats',
     shop_item: 'shop',
-    location: 'districts/_draft/locations',
+    location: 'locations',
     map_tile: 'maps',
     gig: 'gigs',
     vault: 'vault',
