@@ -30,6 +30,62 @@ const FOLDER_TYPES = [
 ];
 
 function scanType(typeDef) {
+  if (typeDef.dir === 'locations') {
+    const districtsDir = path.join(CONTENT_DIR, 'districts');
+    if (!fs.existsSync(districtsDir)) return null;
+
+    const counts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
+    const errors = [];
+    const warnings = [];
+
+    const districtEntries = fs.readdirSync(districtsDir, { withFileTypes: true })
+      .filter(e => e.isDirectory());
+      
+    for (const d of districtEntries) {
+      const typeDir = path.join(districtsDir, d.name, 'locations');
+      if (!fs.existsSync(typeDir)) continue;
+      
+      const entries = fs.readdirSync(typeDir, { withFileTypes: true })
+        .filter(e => e.isDirectory())
+        .map(e => e.name);
+        
+      for (const slug of entries) {
+        counts.folders++;
+
+        const folder = path.join(typeDir, slug);
+        const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
+        const mdFile = path.join(folder, `${slug}.md`);
+        const promptFile = path.join(folder, `${slug}.prompt.md`);
+        const assetsDir = path.join(folder, 'assets');
+        const defaultPng = path.join(assetsDir, `${slug}__default.png`);
+
+        const hasYaml = fs.existsSync(yamlFile);
+        const hasMd = fs.existsSync(mdFile);
+        const hasPrompt = fs.existsSync(promptFile);
+        const hasAssets = fs.existsSync(assetsDir);
+        const hasDefaultPng = fs.existsSync(defaultPng);
+
+        if (hasYaml) counts.yaml++;
+        if (hasMd) counts.md++;
+        if (hasPrompt) counts.promptMd++;
+        if (hasAssets) counts.assets++;
+        if (hasDefaultPng) counts.defaultPng++;
+
+        if (hasYaml && typeDef.expectMd !== false && (!hasMd || !hasPrompt)) {
+          const missing = [];
+          if (!hasMd) missing.push('.md');
+          if (!hasPrompt) missing.push('.prompt.md');
+          errors.push(`districts/${d.name}/locations/${slug}: missing ${missing.join(', ')}`);
+        }
+
+        if (!hasAssets) {
+          warnings.push(`districts/${d.name}/locations/${slug}: missing assets/`);
+        }
+      }
+    }
+    return { type: typeDef.dir, counts, errors, warnings };
+  }
+
   const typeDir = path.join(CONTENT_DIR, typeDef.dir);
   if (!fs.existsSync(typeDir)) return null;
 

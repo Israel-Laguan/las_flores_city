@@ -319,13 +319,13 @@ export class ContentPlanService {
 
   /**
    * Load existing location context from the file-based content store.
-   * Locations are a YAML content type under content/locations/ — there is no
+   * Locations are a YAML content type under content/districts/<district>/locations/ — there is no
    * `locations` DB table — so we read them directly from disk.
    */
   async gatherLocationContext(): Promise<ExistingLocation[]> {
     const contentDir = resolveContentDir();
     try {
-      const files = await glob(`${contentDir}/locations/*/*.yaml`, { absolute: true });
+      const files = await glob(`${contentDir}/districts/*/locations/*/*.yaml`, { absolute: true });
       const out: ExistingLocation[] = [];
       for (const file of files) {
         try {

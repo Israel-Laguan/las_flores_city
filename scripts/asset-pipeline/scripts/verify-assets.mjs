@@ -9,7 +9,7 @@
  * Usage:
  *   node verify-assets.mjs                     # Check all content/
  *   node verify-assets.mjs --source content/characters/char_miguel_jhonson.yaml
- *   node verify-assets.mjs --source content/locations/
+ *   node verify-assets.mjs --source content/districts/
  *   node verify-assets.mjs --minio http://localhost:9000
  */
 
@@ -60,7 +60,7 @@ verify-assets.mjs — Check that content YAML asset URLs exist in MinIO
 Usage:
   node verify-assets.mjs
   node verify-assets.mjs --source content/characters/char_miguel_jhonson.yaml
-  node verify-assets.mjs --source content/locations/
+  node verify-assets.mjs --source content/districts/
   node verify-assets.mjs --minio http://localhost:9000
   node verify-assets.mjs --check-mime
   node verify-assets.mjs --check-dimensions

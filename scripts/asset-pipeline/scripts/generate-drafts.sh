@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 PROMPT_ROOTS=(
   "$ROOT/content/characters"
-  "$ROOT/content/locations"
+  "$ROOT/content/districts"
   "$ROOT/content/scenes"
   "$ROOT/content/overlays"
   "$ROOT/content/missions"

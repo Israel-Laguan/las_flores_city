@@ -68,7 +68,7 @@ const promptFileContentWithTypeArb = (): fc.Arbitrary<{ content: string; expecte
 const rootPathArb = (): fc.Arbitrary<string> =>
   fc.oneof(
     fc.constant('/app/content/characters'),
-    fc.constant('/app/content/locations'),
+    fc.constant('/app/content/districts/city/locations'),
     fc.constant('/app/content/scenes'),
     fc.constantFrom(
       '/some/other/root',
