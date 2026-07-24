@@ -24,7 +24,7 @@ Jan was always a quiet intellectual, focusing on his studies and developing a de
 
 ## Family & Career
 
-In 2045, at age 26, Jan married Maria Martinez, a stunningly beautiful woman from a prominent local family. They had three children together: Peter, Anna, and Lucas.
+In 2045, at age 26, Jan married Maria Martinez, a stunningly beautiful woman from a prominent local family. They had three children together: Anna, Peter, and Lucas.
 
 As his father Pieter retired from Global Lithium Corp (GLC), Jan stepped into the role of CEO with grace and determination. He guided the company towards more sustainable practices while maintaining incredibly strong relationships with both employees and community members. His tenure was marked by a shift away from the ruthless expansion tactics of his father towards a philosophy of long-term integration and ethical resource management.
 
