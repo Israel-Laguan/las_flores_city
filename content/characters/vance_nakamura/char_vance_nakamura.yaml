@@ -14,5 +14,6 @@ metadata:
   occupation: Behavioral Supervisor
   appearance: "Japanese-heritage man in his early 50s, severe professional suit, expressionless face, minimal gestures."
 lore_path: vance_nakamura.md
+narrative_path: vance_nakamura.md
 asset_paths:
   portrait: vance_nakamura__default.png

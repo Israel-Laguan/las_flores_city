@@ -29,14 +29,51 @@ const FOLDER_TYPES = [
   { dir: 'dialogues', prefix: 'dialogue_', expectMd: true },
 ];
 
+function scanFolder(typeDef, folder, slug, displayPath) {
+  const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
+  const mdFile = path.join(folder, `${slug}.md`);
+  const promptFile = path.join(folder, `${slug}.prompt.md`);
+  const assetsDir = path.join(folder, 'assets');
+  const defaultPng = path.join(assetsDir, `${slug}__default.png`);
+
+  const hasYaml = fs.existsSync(yamlFile);
+  const hasMd = fs.existsSync(mdFile);
+  const hasPrompt = fs.existsSync(promptFile);
+  const hasAssets = fs.existsSync(assetsDir);
+  const hasDefaultPng = fs.existsSync(defaultPng);
+
+  const counts = { yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
+  const errors = [];
+  const warnings = [];
+
+  if (hasYaml) counts.yaml++;
+  if (hasMd) counts.md++;
+  if (hasPrompt) counts.promptMd++;
+  if (hasAssets) counts.assets++;
+  if (hasDefaultPng) counts.defaultPng++;
+
+  if (hasYaml && typeDef.expectMd !== false && (!hasMd || !hasPrompt)) {
+    const missing = [];
+    if (!hasMd) missing.push('.md');
+    if (!hasPrompt) missing.push('.prompt.md');
+    errors.push(`${displayPath}: missing ${missing.join(', ')}`);
+  }
+
+  if (!hasAssets) {
+    warnings.push(`${displayPath}: missing assets/`);
+  }
+
+  return { counts, errors, warnings };
+}
+
 function scanType(typeDef) {
   if (typeDef.dir === 'locations') {
     const districtsDir = path.join(CONTENT_DIR, 'districts');
     if (!fs.existsSync(districtsDir)) return null;
 
-    const counts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
-    const errors = [];
-    const warnings = [];
+    const totalCounts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
+    const allErrors = [];
+    const allWarnings = [];
 
     const districtEntries = fs.readdirSync(districtsDir, { withFileTypes: true })
       .filter(e => e.isDirectory());
@@ -50,40 +87,19 @@ function scanType(typeDef) {
         .map(e => e.name);
         
       for (const slug of entries) {
-        counts.folders++;
-
+        totalCounts.folders++;
         const folder = path.join(typeDir, slug);
-        const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
-        const mdFile = path.join(folder, `${slug}.md`);
-        const promptFile = path.join(folder, `${slug}.prompt.md`);
-        const assetsDir = path.join(folder, 'assets');
-        const defaultPng = path.join(assetsDir, `${slug}__default.png`);
-
-        const hasYaml = fs.existsSync(yamlFile);
-        const hasMd = fs.existsSync(mdFile);
-        const hasPrompt = fs.existsSync(promptFile);
-        const hasAssets = fs.existsSync(assetsDir);
-        const hasDefaultPng = fs.existsSync(defaultPng);
-
-        if (hasYaml) counts.yaml++;
-        if (hasMd) counts.md++;
-        if (hasPrompt) counts.promptMd++;
-        if (hasAssets) counts.assets++;
-        if (hasDefaultPng) counts.defaultPng++;
-
-        if (hasYaml && typeDef.expectMd !== false && (!hasMd || !hasPrompt)) {
-          const missing = [];
-          if (!hasMd) missing.push('.md');
-          if (!hasPrompt) missing.push('.prompt.md');
-          errors.push(`districts/${d.name}/locations/${slug}: missing ${missing.join(', ')}`);
-        }
-
-        if (!hasAssets) {
-          warnings.push(`districts/${d.name}/locations/${slug}: missing assets/`);
-        }
+        const { counts, errors, warnings } = scanFolder(typeDef, folder, slug, `districts/${d.name}/locations/${slug}`);
+        totalCounts.yaml += counts.yaml;
+        totalCounts.md += counts.md;
+        totalCounts.promptMd += counts.promptMd;
+        totalCounts.assets += counts.assets;
+        totalCounts.defaultPng += counts.defaultPng;
+        allErrors.push(...errors);
+        allWarnings.push(...warnings);
       }
     }
-    return { type: typeDef.dir, counts, errors, warnings };
+    return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings };
   }
 
   const typeDir = path.join(CONTENT_DIR, typeDef.dir);
@@ -93,45 +109,24 @@ function scanType(typeDef) {
     .filter(e => e.isDirectory())
     .map(e => e.name);
 
-  const counts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
-  const errors = [];
-  const warnings = [];
+  const totalCounts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
+  const allErrors = [];
+  const allWarnings = [];
 
   for (const slug of entries) {
-    counts.folders++;
-
+    totalCounts.folders++;
     const folder = path.join(typeDir, slug);
-    const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
-    const mdFile = path.join(folder, `${slug}.md`);
-    const promptFile = path.join(folder, `${slug}.prompt.md`);
-    const assetsDir = path.join(folder, 'assets');
-    const defaultPng = path.join(assetsDir, `${slug}__default.png`);
-
-    const hasYaml = fs.existsSync(yamlFile);
-    const hasMd = fs.existsSync(mdFile);
-    const hasPrompt = fs.existsSync(promptFile);
-    const hasAssets = fs.existsSync(assetsDir);
-    const hasDefaultPng = fs.existsSync(defaultPng);
-
-    if (hasYaml) counts.yaml++;
-    if (hasMd) counts.md++;
-    if (hasPrompt) counts.promptMd++;
-    if (hasAssets) counts.assets++;
-    if (hasDefaultPng) counts.defaultPng++;
-
-    if (hasYaml && typeDef.expectMd !== false && (!hasMd || !hasPrompt)) {
-      const missing = [];
-      if (!hasMd) missing.push('.md');
-      if (!hasPrompt) missing.push('.prompt.md');
-      errors.push(`${typeDef.dir}/${slug}: missing ${missing.join(', ')}`);
-    }
-
-    if (!hasAssets) {
-      warnings.push(`${typeDef.dir}/${slug}: missing assets/`);
-    }
+    const { counts, errors, warnings } = scanFolder(typeDef, folder, slug, `${typeDef.dir}/${slug}`);
+    totalCounts.yaml += counts.yaml;
+    totalCounts.md += counts.md;
+    totalCounts.promptMd += counts.promptMd;
+    totalCounts.assets += counts.assets;
+    totalCounts.defaultPng += counts.defaultPng;
+    allErrors.push(...errors);
+    allWarnings.push(...warnings);
   }
 
-  return { type: typeDef.dir, counts, errors, warnings };
+  return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings };
 }
 
 function printTable(results) {

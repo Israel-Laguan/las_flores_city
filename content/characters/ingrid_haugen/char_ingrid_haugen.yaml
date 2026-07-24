@@ -8,11 +8,12 @@ metadata:
   role: quest_giver
   personality: professional_compartmentalized
   faction: nm_ltd
-  first_appearance: dialogue_welcome_handler
+  first_appearance: handler_welcome
   is_reachable_via_sms: true
   age_2077: 39
   occupation: Corporate Liaison
   appearance: "Sharp-featured Scandinavian woman, late 30s, immaculate professional attire, always holding a tablet, cold intelligent eyes."
 lore_path: ingrid_haugen.md
+narrative_path: ingrid_haugen.md
 asset_paths:
   portrait: ingrid_haugen__default.png

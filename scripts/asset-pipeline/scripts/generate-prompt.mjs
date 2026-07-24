@@ -582,7 +582,7 @@ ${poseLines}
 
 **Type:** location-map
 **Source:** content/districts/_draft/locations/location_${slugify(name)}.yaml
-**Target:** content/districts/_draft/locations/${slugify(name)}/${slugify(name)}.map.md
+**Target:** content/districts/_draft/locations/${slugify(name)}.map.md
 **Consumer:** phaser-navmesh (data doc, not an image prompt)
 
 ---

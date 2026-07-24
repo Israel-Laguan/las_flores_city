@@ -283,7 +283,7 @@ interface ContentTypeConfig {
 const CONTENT_TYPES: ContentTypeConfig[] = [
   { dir: 'characters', prefix: 'char_', field: 'portrait_urls' },
   { dir: 'scenes', prefix: 'scene_', field: 'background_urls' },
-  { dir: 'locations', prefix: 'loc_', field: 'image_urls' },
+  { dir: 'locations', prefix: 'location_', field: 'image_urls' },
 ];
 
 export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
@@ -291,6 +291,58 @@ export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
   const results: EntityPromotionStatus[] = [];
 
   for (const ct of CONTENT_TYPES) {
+    // Locations live under content/districts/<district>/locations/<slug>/
+    if (ct.dir === 'locations') {
+      const districtsDir = path.join(contentDir, 'districts');
+      try {
+        const districtEntries = await fs.readdir(districtsDir, { withFileTypes: true });
+        for (const district of districtEntries) {
+          if (!district.isDirectory()) continue;
+          const locDir = path.join(districtsDir, district.name, 'locations');
+          try {
+            const locEntries = await fs.readdir(locDir, { withFileTypes: true });
+            for (const locEntry of locEntries) {
+              if (!locEntry.isDirectory()) continue;
+              const slug = locEntry.name;
+              const entityDir = path.join(locDir, slug);
+              const yamlFiles = await fs.readdir(entityDir);
+              const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
+              if (!yamlFile) continue;
+
+              const contentPath = `districts/${district.name}/locations/${slug}/${yamlFile}`;
+              const absolutePath = path.join(entityDir, yamlFile);
+
+              try {
+                const data = await readYaml(absolutePath);
+                const assetUrls = getAssetUrls(data, ct.field);
+
+                const stages: EntityPromotionStatus['stages'] = {};
+                for (const assetEntry of assetUrls) {
+                  if (assetEntry.label === 'dev' || assetEntry.label === 'staging' || assetEntry.label === 'production') {
+                    stages[assetEntry.label] = { url: assetEntry.url };
+                  }
+                }
+
+                results.push({
+                  contentPath,
+                  name: data.name || slug,
+                  slug,
+                  stages,
+                });
+              } catch {
+                continue;
+              }
+            }
+          } catch (err: any) {
+            if (err?.code !== 'ENOENT') throw err;
+          }
+        }
+      } catch (err: any) {
+        if (err?.code !== 'ENOENT') throw err;
+      }
+      continue;
+    }
+
     const typeDir = path.join(contentDir, ct.dir);
     try {
       const entries = await fs.readdir(typeDir, { withFileTypes: true });

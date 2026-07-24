@@ -10,7 +10,7 @@ import type { AssetArrayField } from '../services/AssetPublishService.js';
 function resolveFieldFromContentPath(contentPath: string): AssetArrayField {
   if (contentPath.startsWith('characters/')) return 'portrait_urls';
   if (contentPath.startsWith('scenes/')) return 'background_urls';
-  if (contentPath.startsWith('locations/')) return 'image_urls';
+  if (contentPath.startsWith('locations/') || contentPath.match(/^districts\/[^/]+\/locations\//)) return 'image_urls';
   throw new Error('Unsupported content type for asset promotion');
 }
 
