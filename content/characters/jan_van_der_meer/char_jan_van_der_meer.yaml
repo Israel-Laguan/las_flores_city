@@ -1,13 +1,14 @@
 id: c51cf464-6020-40c2-87f5-0ef12636fcfa
 name: Jan van der Meer
 title: CEO of GLC, Head of van der Meer Lithium Mining Dynasty
-description: Jan van der Meer, born 2019, was the youngest child of Pieter and Annabella van der Meer. He moved to Las Flores in 2030 at age 11, attending exclusive private school. More reserved than his older half-brother Alexander, Jan focused on studies and local culture. In 2045 at 26, he married Maria Martinez; they had Peter, Anna, and Lucas. As his father retired from GLC, Jan took over, guiding the company toward sustainable practices and community investment, earning widespread respect. He supported his gay son Peter's marriage, earning respect from younger generations. Daughter Anna joined the business and married a Dutch cousin. Son Lucas battled drug addiction and mental health issues, kept hidden to protect family reputation. On January 15th, 2060, Jan died suddenly at 41 from a heart attack on a business trip. Maria, devastated, developed dementia. Peter, Anna, and Lucas took over family business and their mother's care.
+description: Jan van der Meer, born 2019, was the youngest child of Pieter and Annabella van der Meer. He moved to Las Flores in 2030 at age 11, attending exclusive private school. More reserved than his older half-brother Alexander, Jan focused on studies and local culture. In 2045 at 26, he married Maria Martinez; they had Anna, Peter, and Lucas. As his father retired from GLC, Jan took over, guiding the company toward sustainable practices and community investment, earning widespread respect. He supported his gay son Peter's marriage, earning respect from younger generations. His eldest child Anna joined the business and married a Dutch cousin. Son Lucas battled drug addiction and mental health issues, kept hidden to protect family reputation. On January 15th, 2060, Jan died suddenly at 41 from a heart attack on a business trip. Maria, devastated, developed dementia. Peter, Anna, and Lucas took over family business and their mother's care.
 metadata:
   type: human
   role: npc
   faction: van_der_meer
   personality: reserved_leader
   age: 41
+  age_2077: 58 (would be)
   gender: Male
   ethnicity: Dutch
   nationality: Dutch

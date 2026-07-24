@@ -2,7 +2,7 @@
 
 > Tags: `#figure` `#dutch_interest` `#politics` `#socialite` `#philanthropy`
 >
-> **Born:** ~2015 (Netherlands)
+> **Born:** ~1995 (Netherlands)
 > **Role:** Socialite, Art Collector, Philanthropist, and Political Figure
 > **Status:** Active
 

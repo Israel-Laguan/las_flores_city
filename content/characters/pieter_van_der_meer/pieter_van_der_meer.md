@@ -2,9 +2,9 @@
 
 > Tags: `#figure` `#dutch_interest` `#politics` `#strategy` `#mining`
 >
-> **Born:** ~1980s (Netherlands)
+> **Born:** 1960 (Netherlands)
 > **Role:** Dutch consortium leader, Global Lithium Corp Executive, Patriarch
-> **Status:** Active
+> **Status:** Deceased (2045)
 
 ## Physical Description
 - Hair: Silver-white, once blond, swept back in distinguished style
