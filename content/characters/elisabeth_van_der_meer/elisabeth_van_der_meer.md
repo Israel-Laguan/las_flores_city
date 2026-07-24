@@ -39,5 +39,5 @@ Elisabeth maintained close ties with her Dutch family, whose values of integrity
 After her eventual divorce from Carlos Alberto, Elisabeth focused on raising her daughter, Sophia, and maintaining close ties with her extended family. Even as public scrutiny surrounding her ex-son-in-law (Carlos Rodriguez Jr.) cast shadows over the family name, Elisabeth remained an unwavering presence in Las Flores' social scene, continually using her platform to support causes that matter most to her.
 
 ## Related Lore
-- [Marriage of Carlos Alberto and Elisabeth](../stories/marriage_carlos_alberto.md)
-- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)
+- [Marriage of Carlos Alberto and Elisabeth](../../lore/stories/marriage_carlos_alberto/marriage_carlos_alberto.md)
+- [Van der Meer Family](../../lore/organizations/families/van_der_meer/van_der_meer.md)
