@@ -17,7 +17,7 @@
 
 ## Overview
 
-Alexander van der Meer is the current patriarch of the Van der Meer family and CEO of Van der Meer Mining. Born in the Netherlands but raised with strong connections to Las Flores, Alexander represents the bridge between the family's Dutch heritage and their South American empire. His marriage to Mei Li, a prominent Chinese-Latin American businesswoman, symbolizes the complex interplay between European and Asian interests in the city.
+Alexander van der Meer is the eldest child of Pieter and Marleen van der Meer, and the current patriarch of the Van der Meer family and CEO of Van der Meer Mining. Born in the Netherlands but raised with strong connections to Las Flores, Alexander represents the bridge between the family's Dutch heritage and their South American empire. His marriage to Mei Li, a prominent Chinese-Latin American businesswoman, symbolizes the complex interplay between European and Asian interests in the city. His step-mother Annabella, the geologist who discovered the lithium vein, joined the family after his mother Marleen's passing.
 
 ## Early Life and Education
 
