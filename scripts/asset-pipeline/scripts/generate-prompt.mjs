@@ -18,7 +18,7 @@
  *
  * Character / location sheets:
  *   node generate-prompt.mjs --type character-sheet --source content/characters/char_diego_huaman.yaml
- *   node generate-prompt.mjs --type location-map --source content/locations/location_plaza_de_la_constitucion.yaml
+ *   node generate-prompt.mjs --type location-map --source content/districts/_draft/locations/location_plaza_de_la_constitucion.yaml
  */
 
 import fs from 'node:fs';
@@ -111,7 +111,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 name: ${name}
 type: background
 source: ${sourcePath}
-target: \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
+target: \`scene.background_url\` in \`content/districts/_draft/locations/location_${slugify(name)}.yaml\`
 consumer: html-background
 ---
 
@@ -120,7 +120,7 @@ consumer: html-background
 [CONSUMER: html-background]
 **Type:** background
 **Source:** ${sourcePath}
-**Target field:** \`scene.background_url\` in \`content/locations/location_${slugify(name)}.yaml\`
+**Target field:** \`scene.background_url\` in \`content/districts/_draft/locations/location_${slugify(name)}.yaml\`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
@@ -244,8 +244,8 @@ ${fullPrompt}
     return `# Prompt: ${name} (ambient audio)
 
 **Type:** ambient
-**Source:** content/locations/${slugify(name)}/${slugify(name)}.md
-**Target field:** \`scene.ambient_sound_url\` in \`content/locations/location_${slugify(name)}.yaml\`
+**Source:** content/districts/_draft/locations/${slugify(name)}/${slugify(name)}.md
+**Target field:** \`scene.ambient_sound_url\` in \`content/districts/_draft/locations/location_${slugify(name)}.yaml\`
 **Tool:** Suno
 
 ## Prompt
@@ -581,8 +581,8 @@ ${poseLines}
     return `# Location Map: ${name}
 
 **Type:** location-map
-**Source:** content/locations/location_${slugify(name)}.yaml
-**Target:** content/locations/${slugify(name)}/${slugify(name)}.map.md
+**Source:** content/districts/_draft/locations/location_${slugify(name)}.yaml
+**Target:** content/districts/_draft/locations/${slugify(name)}/${slugify(name)}.map.md
 **Consumer:** phaser-navmesh (data doc, not an image prompt)
 
 ---
@@ -1034,7 +1034,7 @@ function processFile(filePath, type, force) {
     outputPath = path.join(dir, `${slug}${suffix}.prompt.md`);
   } else if (type === 'location-map') {
     const slug = path.basename(filePath, '.yaml').replace(/^location_/, '');
-    const dir = path.resolve('content/locations', slug);
+    const dir = path.dirname(filePath);
     outputPath = path.join(dir, `${slug}.map.md`);
   } else {
     outputPath = getOutputPath(filePath);

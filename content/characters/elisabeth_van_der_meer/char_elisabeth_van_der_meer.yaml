@@ -2,7 +2,7 @@ id: c3000011-e29b-41d4-a716-446655440011
 name: Elisabeth van der Meer
 title: Socialite, Art Collector, and Philanthropist
 description: |
-  Born into the prominent van der Meer family in Europe during the 2020s, Elisabeth married Carlos Alberto Hernandez in 2038 after meeting him at a society event when she was 18. When her father Pieter expanded family mining interests into Las Flores, the entire van der Meer clan relocated to the region.
+  Born into the prominent van der Meer family in Europe in the 1990s as the daughter of Pieter and Marleen van der Meer, Elisabeth married Carlos Alberto Hernandez in 2038 after meeting him at a society event when she was in her early 40s. When her father Pieter expanded family mining interests into Las Flores, the entire van der Meer clan relocated to the region.
 
   Elisabeth quickly became a pillar of Las Flores high society, hosting lavish parties at her riverbank estate and building one of the region's most extensive collections of Shipibo-Konibo art. She serves on boards of education, healthcare, and women's empowerment organizations, using her influence to advocate for marginalized communities. Despite public scrutiny surrounding her ex-husband's business dealings, she remains devoted to raising her daughter Sophia and supporting causes that improve residents' lives.
 metadata:
@@ -10,12 +10,12 @@ metadata:
   role: npc
   faction: dutch_interest
   personality: elegant_philanthropic_socialite
-  age: late 30s
+  age: early 80s
   gender: Female
   ethnicity: Dutch
   occupation: Socialite, Art Collector, Philanthropist
   physical_description: elegant woman with refined European features, carries herself with the grace and poise expected of high society, typically dressed in sophisticated attire suitable for social events and gallery openings
-  background: born into prominent van der Meer family, married Carlos Alberto Hernandez, relocated to Las Flores for family mining business expansion, divorced but maintains social prominence
+  background: born into prominent van der Meer family, daughter of Pieter and Marleen van der Meer, married Carlos Alberto Hernandez, relocated to Las Flores for family mining business expansion, divorced but maintains social prominence
   residence: Las Flores city (sprawling riverbank estate)
   business: extensive art collection featuring Shipibo-Konibo paintings, frequently loans pieces to local museums and galleries
   mannerisms: charming and gracious hostess, speaks with refined European accent, effortlessly navigates social situations, genuinely passionate about art and charitable causes

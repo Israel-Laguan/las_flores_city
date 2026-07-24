@@ -17,7 +17,7 @@ import path from 'node:path';
 
 const PROMPT_ROOTS = [
   path.resolve('content/characters'),
-  path.resolve('content/locations'),
+  path.resolve('content/districts'),
   path.resolve('content/scenes'),
   path.resolve('content/overlays'),
   path.resolve('content/missions'),

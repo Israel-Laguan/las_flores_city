@@ -22,17 +22,16 @@ export function resolvePromptFile(prompt_rel: string): string {
  * Returns all prompt root directories:
  * 1. The existing ui-concepts root (respecting PROMPT_ROOT env var)
  * 2. content/characters — character portrait prompts (per-folder layout)
- * 3. content/locations — location background prompts (per-folder layout)
+ * 3. content/districts — location background prompts (recursive discovery)
  */
 export function getPromptRoots(): string[] {
   const cwd = process.cwd();
   return [
     getPromptRoot(),
     path.resolve(cwd, 'content/characters'),
-    path.resolve(cwd, 'content/locations'),
+    path.resolve(cwd, 'content/districts'),
     path.resolve(cwd, 'content/scenes'),
     path.resolve(cwd, 'content/overlays'),
-    path.resolve(cwd, 'content/lore'),
     path.resolve(cwd, 'docs/lore/shared/assets'),
   ];
 }

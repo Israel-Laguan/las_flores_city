@@ -30,9 +30,9 @@ Lucas's problems began manifesting during his teenage years when he started expe
 
 His days became a cycle of substance abuse followed by periods of intense guilt and self-loathing. Lucas would often disappear for days at a time, only to resurface in a state of disarray, seeking help from his family. His relationships with Peter and Anna became increasingly strained, as they struggled to understand and support him while also dealing with their own responsibilities and the pressure of maintaining the family's public image.
 
-## The Breaking Point (2059)
+## The Breaking Point (2065)
 
-By 2059, Lucas's drug addiction reached a tipping point. Desperate to fund his habit, he began embezzling money from Van der Meer Industries. This ultimately led to his arrest and public humiliation—a scandal that rocked the entire family. Jan, determined to salvage both his son's future and the company's reputation, forced Lucas into rehabilitation.
+By 2065, Lucas's drug addiction reached a tipping point. Desperate to fund his habit, he began embezzling money from Van der Meer Industries. This ultimately led to his arrest and public humiliation—a scandal that rocked the entire family. Anna, determined to salvage both her brother's future and the company's reputation, forced Lucas into rehabilitation.
 
 ## A Fragile Recovery
 

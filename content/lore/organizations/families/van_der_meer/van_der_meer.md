@@ -14,7 +14,7 @@
 
 The Van der Meer family represents one of the two dominant foreign powers in Las Flores. Through their mining operations, port interests, political influence, and philanthropic efforts, they have shaped the city's development from its earliest days. The family is marked by complex internal dynamics, including the tension between legitimate business interests and the criminal empire of Dong van der Meer.
 
-**Note on Origins:** Despite their Dutch heritage, the Van der Meers have deep roots in Las Flores. The family has two patriarch figures: **Pieter van der Meer** (b. ~1955), who began his career in Africa and laid the groundwork for the family's mining expertise, and **Elías van der Meer** (b. ~1960), who established the connection to Global Lithium Corp (GLC) that brought the family to Las Flores. While originally from the Netherlands, the family has been in Las Flores for multiple generations and considers the city their home.
+**Note on Origins:** Despite their Dutch heritage, the Van der Meers have deep roots in Las Flores. The family has two patriarch figures: **Pieter van der Meer** (b. 1960), who began his career in Africa and laid the groundwork for the family's mining expertise, and **Elías van der Meer** (b. ~1960), who established the connection to Global Lithium Corp (GLC) that brought the family to Las Flores. While originally from the Netherlands, the family has been in Las Flores for multiple generations and considers the city their home.
 
 ---
 
@@ -37,29 +37,40 @@ When the family saw the full potential of the region, they made a calculated str
 ## Family Tree (Expanded)
 
 ### Founding Patriarchs
-- **Pieter van der Meer (b. ~1955):** The family patriarch. Began his career working for a Dutch mining company in Africa. Married Annabella van der Meer; had three children: Alexander, Elisabeth, and Jan. His successful management of African mines caught the attention of Global Lithium Corp (GLC), leading to him being recruited as their representative in Las Flores. Retired after establishing the family's presence.
+- **Pieter van der Meer (b. 1960):** The family patriarch. Began his career working for a Dutch mining company in Africa. Married first to Marleen van der Meer (née ?, b. ~1960, d. ~2005), who bore his two eldest children, Alexander and Elisabeth. After Marleen's death, he married geologist Annabella (b. ~1995), who discovered the lithium vein. Annabella became step-mother to Alexander and Elisabeth and later gave birth to their youngest child, Jan. Pieter's successful management of African mines caught the attention of Global Lithium Corp (GLC). Retired after establishing the family's presence. Died in 2045 at age 85.
+
 - **Elías van der Meer (b. ~1960):** Separate patriarch figure. Established the family's connection to GLC and saw the potential of the Las Flores lithium deposits before they were fully proven.
 
 ### Second Generation
-- **Alexander van der Meer (b. ~1995):** Son of Pieter and Annabella. Arrived in Las Flores with his father and married a local Chinese woman, Wang Mei Li, in 2025. The marriage produced two children (Xiu Li, the eldest, and Dong) before a public divorce around 2046. Alexander's infidelity also produced an illegitimate son, **Liam van der Meer**, who later joined Van der Meer Industries as an executive.
-- **Elisabeth van der Meer:** Daughter of Pieter and Annabella. Arrived in Las Flores with her father and husband. Had a daughter named Sophia. After divorce, focused on raising Sophia and becoming involved in Las Flores' social scene. Married Carlos Alberto Hernandez in 2038 in a strategic alliance; her Dutch values clashed with the Hernandez family's corruption.
-- **Jan van der Meer (b. ~2020):** Youngest child of Pieter and Annabella. Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over the family business after his father's retirement and became a prominent figure in Las Flores' development. Passed away suddenly around 2060.
+- **Alexander van der Meer (b. ~1990):** Son of Pieter and Marleen (first marriage). Step-son of Annabella. Arrived in Las Flores with his father and married a local Chinese woman, Wang Mei Li, in 2025. The marriage produced two children (Xiu Li, the eldest, and Dong) before a public divorce around 2046. Alexander's infidelity also produced an illegitimate son, **Liam van der Meer**, who later joined Van der Meer Industries as an executive.
+
+- **Elisabeth van der Meer (b. ~1995):** Daughter of Pieter and Marleen (first marriage). Step-daughter of Annabella. Arrived in Las Flores with her father. Married Carlos Alberto Hernandez in 2038 in a strategic alliance; her Dutch values clashed with the Hernandez family's corruption. After divorce, focused on raising her daughter Sophia and becoming involved in Las Flores' social scene.
+
+- **Jan van der Meer (b. 2019):** Youngest child of Pieter and Annabella (biological son of Annabella). Father of Peter, Anna, and Lucas. Married local woman Maria Martinez. Took over the family business after his father's retirement and became a prominent figure in Las Flores' development. Passed away suddenly in 2060.
 
 ### Current Generation — Core Business Line
 - **Xiu Li van der Meer Krol (b. 2031):** Eldest child of Alexander and Wang Mei Li. Inherited her mother's entrepreneurial spirit but struggled to find acceptance within the family due to her mixed heritage. Inherited Alexander's mining interests after his retirement. Became a prominent local politician advocating for women's rights. Married Dutch businessman **Hans Krol**; their daughter is **Eva Krol**.
+
 - **Dong van der Meer (b. ~2033):** Younger son of Alexander and Wang Mei Li. Most visible and controversial member of the dynasty. Leads the Flowers Syndicate criminal organization while maintaining nominal connections to legitimate family businesses. Health declining due to stress, alcohol abuse, and old injury from a shootout.
+
 - **Sophia van der Meer Rodriguez (b. 2041):** Daughter of Elisabeth. Married ambitious politician Carlos Rodriguez who became embroiled in corruption scandals. Divorced him and started a charity focused on preventing gang violence among youth. Later married Carlos Rodriguez Jr. (son of her ex-husband's political rival), had two children: Isabella and Diego.
 
 ### Current Generation — LGBTQ+ Branch
-- **Peter van der Meer (b. ~2040):** Son of Jan and Maria. Publicly came out as gay in 2065, catalyzing LGBTQ+ rights movement in Las Flores. Was given mid-level administration in one of the mines. Married Rafaela (marriage of convenience); father of Peter Jr.
+- **Peter van der Meer (b. ~2043):** Son of Jan and Maria. Publicly came out as gay in 2065, catalyzing LGBTQ+ rights movement in Las Flores. Was given mid-level administration in one of the mines. Married Rafaela (marriage of convenience); father of Peter Jr.
+
 - **Rafaela:** Peter's ex-wife. Gave bombshell tell-all interview in 2070 revealing their marriage was a convenience arrangement. Brazilian.
+
 - **Peter van der Meer Jr. (b. ~2060):** Son of Peter and Rafaela. Co-founded "Amor Verdadero," an LGBTQ+ advocacy organization. Following in father's footsteps as LGBTQ+ rights activist while pursuing a career in law.
+
 - **Jan van der Meer Jr.:** Peter's cousin and husband (son of the late Jan van der Meer's cousin from Amsterdam). Staunch ally during Peter's coming out; his support drove a wedge with other family members. Brought fresh insights from Europe to the family business. Together with Peter, oversaw development of new state-of-the-art refinery.
 
 ### Current Generation — Business Leadership
-- **Anna van der Meer:** Daughter of Jan and Maria. Took on role as CEO of Van der Meer Industries after Jan's death. Navigated board members resistant to change. Also pursued activist career advocating for LGBTQ+ rights. Married a Dutch cousin.
+- **Anna van der Meer (b. ~2041):** Daughter of Jan and Maria. Took on role as CEO of Van der Meer Industries after Jan's death in 2060 at age 19, initially with board management. Became active CEO by the 2070s, pursuing environmental activism, LGBTQ+ advocacy, and socially conscious photography. Married Han Jr. (a Dutch cousin) around 2072; no children. Won a Las Flores City Council seat in 2078.
+
 - **Liam van der Meer (b. ~2035-38):** Illegitimate son of Alexander van der Meer; half-brother to Xiu Li and Dong. Executive at Van der Meer Industries; advocates for better EU-Las Flores relations. Works closely with European ambassadors. Married **Sofia Rodriguez** in 2068; three children: twins Miguel and Maria (diplomacy and law), and Antonio (engineering).
+
 - **Sebastian van der Meer:** Ambitious CEO of Van der Meer Industries. Drives corporate strategy.
+
 - **Eva Krol:** Daughter of Xiu Li van der Meer Krol and Hans Krol. Entrepreneur established successful startups in sustainable mining and renewable energy. Overseeing Northern Mine operations. Two children: Olivia (entrepreneurial) and Benjamin (environmental lawyer).
 
 ### Other Family Members
@@ -67,7 +78,7 @@ When the family saw the full potential of the region, they made a calculated str
 - **Anna-Louise:** Sister of Jan Jr. Headed public relations and community outreach for Van der Meer Industries. Two children with husband Roberto Martinez: Elena (joined Van der Meer Industries) and Mateo (computer science).
 - **Isabella Rodriguez:** Daughter of Sophia. Activist against corruption. Married fellow activist Javier Perez. Their daughter Lucia shows signs of following parents' footsteps as social justice advocate.
 - **Diego Rodriguez:** Son of Sophia. More interested in business than politics. Managed Southern Mine operations. Married Ana Garcia (daughter of prominent Latino businessman). Children: Sebastian (joined Van der Meer Industries), Natalia (artist), Lucas (economics).
-- **Lucas:** Youngest child of Jan and Maria. Struggles with drug addiction and mental health issues from childhood trauma. Ended up in psychiatric institution after several public incidents.
+- **Lucas (b. ~2046):** Youngest child of Jan and Maria. Struggles with drug addiction and mental health issues from childhood trauma. Ended up in psychiatric institution after several public incidents.
 - **Wang Mei Li:** Ex-wife of Alexander. Founded Dragon Phoenix Trading ~2048-50 after the divorce; the company focuses on trade between China and Las Flores.
 - **Maria Martinez:** Wife of Jan. Influential socialite and philanthropist. Developed dementia after Jan's death.
 - **Other cousins and extended family members** manage various aspects of Van der Meer Mining operations and GLC interests.

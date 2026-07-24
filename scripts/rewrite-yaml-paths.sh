@@ -25,7 +25,7 @@ for yaml in content/characters/*/char_*.yaml; do
 done
 
 # Locations: same pattern
-for yaml in content/locations/*/location_*.yaml; do
+for yaml in content/districts/*/locations/*/location_*.yaml; do
   [ -f "$yaml" ] || continue
   dir=$(dirname "$yaml")
   slug=$(basename "$dir")
@@ -57,7 +57,7 @@ for yaml in content/characters/*/char_*.yaml; do
 done
 
 # Locations: asset_paths.image: locations/location_<slug>/image.jpg → image: <slug>__default.png
-for yaml in content/locations/*/location_*.yaml; do
+for yaml in content/districts/*/locations/*/location_*.yaml; do
   [ -f "$yaml" ] || continue
   dir=$(dirname "$yaml")
   slug=$(basename "$dir")
