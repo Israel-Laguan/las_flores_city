@@ -92,10 +92,10 @@ jestGlobals.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
 // Mock fs/promises readFile so parsePromptFile can read the prompt content
 // without the file existing on disk.
 jestGlobals.doMock('node:fs/promises', () => {
-  const real = jest.requireActual('node:fs/promises');
+    const real = jestGlobals.requireActual('node:fs/promises') as Record<string, any>;
   return {
     ...real,
-    readFile: jestGlobals.fn().mockImplementation(async (filePath: string, encoding?: string) => {
+    readFile: jestGlobals.fn<(filePath: string, encoding?: string) => Promise<any>>().mockImplementation(async (filePath: string, encoding?: string) => {
       if (typeof filePath === 'string' && filePath.includes('app_misiones.prompt.md')) {
         return `---
 asset_type: app-icon

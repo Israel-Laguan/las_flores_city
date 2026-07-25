@@ -9,7 +9,7 @@
  *   Feed Redis cache hit / miss after post creation
  *   OLAP event format: gig_completed, post_liked, sms_reply_submitted
  */
-import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
 import { bankRouter } from '../../src/routes/bank.js';

@@ -9,6 +9,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint --ext .ts src/",
+    "typecheck": "tsc --noEmit",
     "test": "npx --no-install jest --detectOpenHandles"
   },
   "dependencies": {
