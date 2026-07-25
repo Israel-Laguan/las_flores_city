@@ -49,9 +49,7 @@ export interface EntityPromotionStatus {
 
 type Stage = 'staging' | 'production';
 
-function resolveContentDir(): string {
-  return path.resolve(process.cwd(), 'content');
-}
+function resolveContentDir(): string { return path.resolve(process.cwd(), 'content'); }
 
 function validateContentPathLocal(contentPath: string): string {
   if (!contentPath || typeof contentPath !== 'string' || contentPath.trim() === '') {
@@ -95,9 +93,7 @@ function getAssetUrls(data: Record<string, any>, field: AssetArrayField = 'portr
   return Array.isArray(data[field]) ? data[field] : [];
 }
 
-function defaultLocalFilename(item: ContentPlanItem): string {
-  return `${item.slug}__default.png`;
-}
+function defaultLocalFilename(item: ContentPlanItem): string { return `${item.slug}__default.png`; }
 
 export async function publishChosenDrafts(
   planId: string,
@@ -286,109 +282,102 @@ const CONTENT_TYPES: ContentTypeConfig[] = [
   { dir: 'locations', prefix: 'location_', field: 'image_urls' },
 ];
 
-export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
-  const contentDir = resolveContentDir();
-  const results: EntityPromotionStatus[] = [];
+function buildStagesFromAssetUrls(assetUrls: Array<{ url: string; label?: string }>): EntityPromotionStatus['stages'] {
+  const stages: EntityPromotionStatus['stages'] = {};
+  for (const entry of assetUrls) {
+    if (entry.label === 'dev' || entry.label === 'staging' || entry.label === 'production') {
+      stages[entry.label] = { url: entry.url };
+    }
+  }
+  return stages;
+}
 
-  for (const ct of CONTENT_TYPES) {
-    // Locations live under content/districts/<district>/locations/<slug>/
-    if (ct.dir === 'locations') {
-      // Track seen slugs to avoid duplicates between district and flat layouts
-      const seenSlugs = new Set<string>();
+async function readEntityPromotionStatus(
+  entityDir: string,
+  yamlFile: string,
+  contentPath: string,
+  field: AssetArrayField,
+): Promise<EntityPromotionStatus | null> {
+  const absolutePath = path.join(entityDir, yamlFile);
+  try {
+    const data = await readYaml(absolutePath);
+    const assetUrls = getAssetUrls(data, field);
+    return {
+      contentPath,
+      name: data.name || path.basename(entityDir),
+      slug: path.basename(entityDir),
+      stages: buildStagesFromAssetUrls(assetUrls),
+    };
+  } catch {
+    return null;
+  }
+}
 
-      const districtsDir = path.join(contentDir, 'districts');
+async function listLocationPromotionStatus(
+  contentDir: string,
+  ct: ContentTypeConfig,
+  results: EntityPromotionStatus[],
+): Promise<void> {
+  const seenSlugs = new Set<string>();
+  const districtsDir = path.join(contentDir, 'districts');
+  try {
+    const districtEntries = await fs.readdir(districtsDir, { withFileTypes: true });
+    for (const district of districtEntries) {
+      if (!district.isDirectory()) continue;
+      const locDir = path.join(districtsDir, district.name, 'locations');
       try {
-        const districtEntries = await fs.readdir(districtsDir, { withFileTypes: true });
-        for (const district of districtEntries) {
-          if (!district.isDirectory()) continue;
-          const locDir = path.join(districtsDir, district.name, 'locations');
-          try {
-            const locEntries = await fs.readdir(locDir, { withFileTypes: true });
-            for (const locEntry of locEntries) {
-              if (!locEntry.isDirectory()) continue;
-              const slug = locEntry.name;
-              const entityDir = path.join(locDir, slug);
-              const yamlFiles = await fs.readdir(entityDir);
-              const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
-              if (!yamlFile) continue;
-
-              const contentPath = `districts/${district.name}/locations/${slug}/${yamlFile}`;
-              const absolutePath = path.join(entityDir, yamlFile);
-
-              try {
-                const data = await readYaml(absolutePath);
-                const assetUrls = getAssetUrls(data, ct.field);
-
-                const stages: EntityPromotionStatus['stages'] = {};
-                for (const assetEntry of assetUrls) {
-                  if (assetEntry.label === 'dev' || assetEntry.label === 'staging' || assetEntry.label === 'production') {
-                    stages[assetEntry.label] = { url: assetEntry.url };
-                  }
-                }
-
-                results.push({
-                  contentPath,
-                  name: data.name || slug,
-                  slug,
-                  stages,
-                });
-                seenSlugs.add(slug);
-              } catch {
-                continue;
-              }
-            }
-          } catch (err: any) {
-            if (err?.code !== 'ENOENT') throw err;
-          }
-        }
-      } catch (err: any) {
-        if (err?.code !== 'ENOENT') throw err;
-      }
-
-      // Also scan flat-layout locations (content/locations/<slug>/) as fallback
-      const flatLocDir = path.join(contentDir, ct.dir);
-      try {
-        const entries = await fs.readdir(flatLocDir, { withFileTypes: true });
-        for (const entry of entries) {
-          if (!entry.isDirectory()) continue;
-          const slug = entry.name;
-          if (seenSlugs.has(slug)) continue; // Already scanned from district layout
-
-          const entityDir = path.join(flatLocDir, slug);
+        const locEntries = await fs.readdir(locDir, { withFileTypes: true });
+        for (const locEntry of locEntries) {
+          if (!locEntry.isDirectory()) continue;
+          const slug = locEntry.name;
+          const entityDir = path.join(locDir, slug);
           const yamlFiles = await fs.readdir(entityDir);
           const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
           if (!yamlFile) continue;
-
-          const contentPath = `${ct.dir}/${slug}/${yamlFile}`;
-          const absolutePath = path.join(entityDir, yamlFile);
-
-          try {
-            const data = await readYaml(absolutePath);
-            const assetUrls = getAssetUrls(data, ct.field);
-
-            const stages: EntityPromotionStatus['stages'] = {};
-            for (const assetEntry of assetUrls) {
-              if (assetEntry.label === 'dev' || assetEntry.label === 'staging' || assetEntry.label === 'production') {
-                stages[assetEntry.label] = { url: assetEntry.url };
-              }
-            }
-
-            results.push({
-              contentPath,
-              name: data.name || slug,
-              slug,
-              stages,
-            });
-          } catch {
-            continue;
+          const contentPath = `districts/${district.name}/locations/${slug}/${yamlFile}`;
+          const status = await readEntityPromotionStatus(entityDir, yamlFile, contentPath, ct.field);
+          if (status) {
+            results.push(status);
+            seenSlugs.add(slug);
           }
         }
       } catch (err: any) {
         if (err?.code !== 'ENOENT') throw err;
       }
+    }
+  } catch (err: any) {
+    if (err?.code !== 'ENOENT') throw err;
+  }
+
+  // Also scan flat-layout locations (content/locations/<slug>/) as fallback
+  const flatLocDir = path.join(contentDir, ct.dir);
+  try {
+    const entries = await fs.readdir(flatLocDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const slug = entry.name;
+      if (seenSlugs.has(slug)) continue;
+      const entityDir = path.join(flatLocDir, slug);
+      const yamlFiles = await fs.readdir(entityDir);
+      const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
+      if (!yamlFile) continue;
+      const contentPath = `${ct.dir}/${slug}/${yamlFile}`;
+      const status = await readEntityPromotionStatus(entityDir, yamlFile, contentPath, ct.field);
+      if (status) results.push(status);
+    }
+  } catch (err: any) {
+    if (err?.code !== 'ENOENT') throw err;
+  }
+}
+
+export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
+  const contentDir = resolveContentDir();
+  const results: EntityPromotionStatus[] = [];
+  for (const ct of CONTENT_TYPES) {
+    if (ct.dir === 'locations') {
+      await listLocationPromotionStatus(contentDir, ct, results);
       continue;
     }
-
     const typeDir = path.join(contentDir, ct.dir);
     try {
       const entries = await fs.readdir(typeDir, { withFileTypes: true });
@@ -400,35 +389,13 @@ export async function listPromotionStatus(): Promise<EntityPromotionStatus[]> {
         const yamlFiles = await fs.readdir(entityDir);
         const yamlFile = yamlFiles.find(f => f.startsWith(ct.prefix) && f.endsWith('.yaml'));
         if (!yamlFile) continue;
-
         const contentPath = `${ct.dir}/${slug}/${yamlFile}`;
-        const absolutePath = path.join(entityDir, yamlFile);
-
-        try {
-          const data = await readYaml(absolutePath);
-          const assetUrls = getAssetUrls(data, ct.field);
-
-          const stages: EntityPromotionStatus['stages'] = {};
-          for (const assetEntry of assetUrls) {
-            if (assetEntry.label === 'dev' || assetEntry.label === 'staging' || assetEntry.label === 'production') {
-              stages[assetEntry.label] = { url: assetEntry.url };
-            }
-          }
-
-          results.push({
-            contentPath,
-            name: data.name || slug,
-            slug,
-            stages,
-          });
-        } catch {
-          continue;
-        }
+        const status = await readEntityPromotionStatus(entityDir, yamlFile, contentPath, ct.field);
+        if (status) results.push(status);
       }
     } catch (err: any) {
       if (err?.code !== 'ENOENT') throw err;
     }
   }
-
   return results.sort((a, b) => a.name.localeCompare(b.name));
 }
