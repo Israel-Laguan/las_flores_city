@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidArray } from './uuid.js';
 import { ContentTypeSchema } from './content-validation.js';
 
 // Reuse the existing ContentType enum
@@ -11,7 +12,7 @@ export const AssetNeedSchema = z.object({
 });
 
 export const ContentPlanItemSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   type: contentType,             // 'character' | 'dialogue' | 'scene' | etc.
   action: z.enum(['create', 'update']),
   name: z.string().min(1).max(100),
@@ -19,14 +20,14 @@ export const ContentPlanItemSchema = z.object({
   slug: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, { message: 'Slug must contain only lowercase alphanumeric characters and underscores' }),
   fields: z.record(z.string(), z.any()),
   assetNeeds: z.array(AssetNeedSchema).default([]),
-  dependsOn: z.array(z.string().uuid()).default([]),  // Optional for MVP
+  dependsOn: zodUuidArray().default([]),  // Optional for MVP
   lore_refs: z.array(z.string()).optional(),  // LLM-suggested related lore items
   filled_fields: z.array(z.string()).optional(),  // dot-paths of fields filled by the LLM fill pass (provenance)
 });
 
 export const ContentLinkSchema = z.object({
-  fromItem: z.string().uuid(),
-  toItem: z.string().uuid(),
+  fromItem: zodUuid(),
+  toItem: zodUuid(),
   field: z.string(),             // e.g. "available_dialogues"
   action: z.enum(['add', 'set']),
 });
@@ -40,7 +41,7 @@ const ContentPlanMetaSchema = z.object({
 }).optional();
 
 export const ContentPlanSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   description: z.string(),
   items: z.array(ContentPlanItemSchema),
   links: z.array(ContentLinkSchema).default([]),

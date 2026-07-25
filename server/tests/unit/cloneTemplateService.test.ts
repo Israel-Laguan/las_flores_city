@@ -1,8 +1,31 @@
-import { cloneItem } from '../../src/services/CloneTemplateService.js';
-import { resolveContentDir } from '../../src/routes/admin-content.helpers.js';
-import fs from 'node:fs/promises';
+import { jest } from '@jest/globals';
 import path from 'node:path';
+import os from 'node:os';
+import fs from 'node:fs';
 import yaml from 'js-yaml';
+
+// Use a temp directory instead of the real content directory, which is
+// read-only when running inside the Podman test container.
+// NOTE: This const must be defined BEFORE jest.mock() because jest.mock
+// is hoisted and the factory closure captures the value at compile time.
+// However, jest.mock factory functions are hoisted above imports, so we
+// MUST inline the value via process.pid rather than referencing a const.
+const TEST_TMP_DIR = path.join(os.tmpdir(), `clone-test-${process.pid}`);
+
+// Mock resolveContentDir to point to our writable temp directory.
+// The factory is hoisted by Jest, so we cannot reference module-level
+// consts; instead we compute the path inside the factory using process.pid.
+jest.mock('../../src/routes/admin-content.helpers.js', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const actual: Record<string, unknown> = jest.requireActual('../../src/routes/admin-content.helpers.js');
+  const tmpDir = path.join(os.tmpdir(), `clone-test-${process.pid}`);
+  return {
+    ...actual,
+    resolveContentDir: jest.fn<() => string>().mockReturnValue(tmpDir),
+  };
+});
+
+import { cloneItem } from '../../src/services/CloneTemplateService.js';
 
 /**
  * M16 verification: cloning an existing entity as a template must
@@ -12,10 +35,9 @@ import yaml from 'js-yaml';
  * - null out nested relationship UUIDs and omit type-level relationship fields
  */
 describe('CloneTemplateService', () => {
-  const contentDir = resolveContentDir();
   const slug = `clone_test_diego_${process.pid}`;
   const relPath = `characters/${slug}/char_${slug}.yaml`;
-  const absPath = path.resolve(contentDir, relPath);
+  const absPath = path.resolve(TEST_TMP_DIR, relPath);
 
   const sourceYaml = yaml.dump({
     id: '11111111-1111-1111-1111-111111111111',
@@ -37,12 +59,14 @@ describe('CloneTemplateService', () => {
   });
 
   beforeAll(async () => {
-    await fs.mkdir(path.dirname(absPath), { recursive: true });
-    await fs.writeFile(absPath, sourceYaml, 'utf-8');
+    // Ensure the temp directory exists
+    fs.mkdirSync(path.dirname(absPath), { recursive: true });
+    await fs.promises.writeFile(absPath, sourceYaml, 'utf-8');
   });
 
   afterAll(async () => {
-    await fs.rm(path.dirname(absPath), { recursive: true, force: true });
+    // Clean up the entire temp content directory
+    await fs.promises.rm(TEST_TMP_DIR, { recursive: true, force: true });
   });
 
   it('returns a plan item with the correct type and new name', async () => {
@@ -76,9 +100,9 @@ describe('CloneTemplateService', () => {
 
   it('omits nested relationship UUIDs inside object relationship fields', async () => {
     const nestedRelPath = `dialogues/${slug}/dialogue_${slug}.yaml`;
-    const nestedAbs = path.resolve(contentDir, nestedRelPath);
-    await fs.mkdir(path.dirname(nestedAbs), { recursive: true });
-    await fs.writeFile(nestedAbs, yaml.dump({
+    const nestedAbs = path.resolve(TEST_TMP_DIR, nestedRelPath);
+    fs.mkdirSync(path.dirname(nestedAbs), { recursive: true });
+    await fs.promises.writeFile(nestedAbs, yaml.dump({
       id: '33333333-3333-3333-3333-333333333333',
       name: 'Clone Dialogue',
       description: 'x',
@@ -94,7 +118,7 @@ describe('CloneTemplateService', () => {
       expect(item.fields.nodes.start.speaker_id).toBeUndefined();
       expect(item.fields.nodes.start.text).toBe('hi');
     } finally {
-      await fs.rm(path.dirname(nestedAbs), { recursive: true, force: true });
+      await fs.promises.rm(path.dirname(nestedAbs), { recursive: true, force: true });
     }
   });
 

@@ -1,15 +1,16 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidArray } from './uuid.js';
 
 export const YAMLStorySchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   title: z.string().min(1).max(255),
   description: z.string().max(1000).optional(),
-  mission_id: z.string().uuid(),
-  characters: z.array(z.string().uuid()).default([]),
-  scenes: z.array(z.string().uuid()).default([]),
-  dialogues: z.array(z.string().uuid()).default([]),
-  overlays: z.array(z.string().uuid()).default([]),
-  vault_items: z.array(z.string().uuid()).default([]),
+  mission_id: zodUuid(),
+  characters: zodUuidArray().default([]),
+  scenes: zodUuidArray().default([]),
+  dialogues: zodUuidArray().default([]),
+  overlays: zodUuidArray().default([]),
+  vault_items: zodUuidArray().default([]),
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
 });

@@ -2,7 +2,7 @@ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 name: "Aisha Al-Sayed at Old Town Cafe"
 description: "A conversation with Aisha Al-Sayed, an electrical engineer at Minera Estrella, about her career challenges and observations."
 start_node_id: "start"
-scene_id: "e5f6a7b8-c9d0-1234-efab-345678901234"
+scene_id: "e5f6a7b8-c9d0-4234-afab-345678901234"
 character_id: "c1000013-e29b-41d4-a716-446655440013"
 dialogue_scope: "character"
 nodes:

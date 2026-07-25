@@ -1019,7 +1019,7 @@ describe('dialogue_awakening.yaml beat effects', () => {
   const BEAT = 'act1_awakening';
   const END_NODES = [
     '6e289bf0-410c-44bf-8a7e-123456789abc',
-    '7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d',
+    '7a1b8c0d-e2f3-4a5b-ac7d-8e9f0a1b2c3d',
   ] as const;
 
   let data: any;

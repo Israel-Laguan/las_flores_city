@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidOptional, zodUuidNullable } from './uuid.js';
 
 export const PlayerFlagsSchema = z.record(z.string(), z.boolean());
 
@@ -15,9 +16,9 @@ export const PlayerStatsBagSchema = z.record(z.string(), z.number());
 export type PlayerStatsBag = z.infer<typeof PlayerStatsBagSchema>;
 
 export const PlayerStateSchema = z.object({
-  userId: z.string().uuid(),
+  userId: zodUuid(),
   username: z.string(),
-  locationId: z.string().uuid().nullable(),
+  locationId: zodUuidNullable(),
   timeBlocks: z.number().int().min(0).max(48),
   credits: z.number().int(),
   goldCredits: z.number().int().default(0),
@@ -39,14 +40,14 @@ export type PlayerState = z.infer<typeof PlayerStateSchema>;
 
 export const ScenePayloadSchema = z.object({
   scene: z.object({
-    id: z.string().uuid(),
+    id: zodUuid(),
     title: z.string(),
     backgroundUrl: z.string(),
     ambientSoundUrl: z.string().nullable(),
     mood: z.string(),
   }),
   npcs: z.array(z.object({
-    characterId: z.string().uuid(),
+    characterId: zodUuid(),
     name: z.string(),
     portraitUrl: z.string(),
     currentMood: z.string(),
@@ -63,14 +64,14 @@ export const ScenePayloadSchema = z.object({
 export type ScenePayload = z.infer<typeof ScenePayloadSchema>;
 
 export const MoveRequestSchema = z.object({
-  target_location_id: z.string().uuid(),
+  target_location_id: zodUuid(),
 });
 
 export type MoveRequest = z.infer<typeof MoveRequestSchema>;
 
 export const MoveResponseSchema = z.object({
-  from_location_id: z.string().uuid(),
-  to_location_id: z.string().uuid(),
+  from_location_id: zodUuid(),
+  to_location_id: zodUuid(),
   tb_cost: z.number().int().min(0),
   time_blocks_remaining: z.number().int().min(0).max(48),
   scene: ScenePayloadSchema.shape.scene,
@@ -90,22 +91,22 @@ export const SleepResponseSchema = z.object({
 export type SleepResponse = z.infer<typeof SleepResponseSchema>;
 
 export const BankTransactionSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: zodUuid(),
+  user_id: zodUuid(),
   transaction_type: z.enum(['debit', 'credit', 'transfer']),
   amount: z.number().int(),
   description: z.string().max(200),
   balance_after: z.number().int(),
   reference_type: z.string().max(50).optional(),
-  reference_id: z.string().uuid().optional(),
+  reference_id: zodUuidOptional(),
   created_at: z.string().datetime(),
 });
 
 export type BankTransaction = z.infer<typeof BankTransactionSchema>;
 
 export const PlayerEventSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: zodUuid(),
+  user_id: zodUuid(),
   event_type: z.enum([
     'dialogue_start',
     'dialogue_choice',
@@ -131,7 +132,7 @@ export const PlayerEventSchema = z.object({
   ]),
   event_data: z.record(z.string(), z.any()),
   time_blocks_cost: z.number().int().min(0).optional(),
-  session_id: z.string().uuid().optional(),
+  session_id: zodUuidOptional(),
   created_at: z.string().datetime(),
 });
 

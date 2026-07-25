@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidArray } from './uuid.js';
 import { AssetListResponseSchema } from './assets.js';
 import { DialogueTreeSchema, DialogueNodeSchema, DialogueChoiceSchema } from './dialogue.js';
 import { PlayerStateSchema } from './player.js';
@@ -17,14 +18,14 @@ export type ApiResponse = z.infer<typeof ApiResponseSchema>;
 export const ScenePayloadResponseSchema = ApiResponseSchema.extend({
   data: z.object({
     scene: z.object({
-      id: z.string().uuid(),
+      id: zodUuid(),
       title: z.string(),
       backgroundUrl: z.string(),
       ambientSoundUrl: z.string().nullable(),
       mood: z.string(),
     }),
     npcs: z.array(z.object({
-      characterId: z.string().uuid(),
+      characterId: zodUuid(),
       name: z.string(),
       portraitUrl: z.string(),
       currentMood: z.string(),
@@ -43,7 +44,7 @@ export type ScenePayloadResponse = z.infer<typeof ScenePayloadResponseSchema>;
 
 export const LocationResponseSchema = ApiResponseSchema.extend({
   data: z.object({
-    id: z.string().uuid(),
+    id: zodUuid(),
     name: z.string().min(1).max(100),
     description: z.string().max(1000),
     district: z.string().max(50),
@@ -51,7 +52,7 @@ export const LocationResponseSchema = ApiResponseSchema.extend({
     background_url: z.string().optional(),
     ambient_sound_url: z.string().nullable().optional(),
     mood: z.string().max(50).optional(),
-    available_dialogues: z.array(z.string().uuid()).optional(),
+    available_dialogues: zodUuidArray().optional(),
     metadata: z.record(z.string(), z.any()).optional(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),

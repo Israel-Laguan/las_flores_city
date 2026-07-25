@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid } from './uuid.js';
 import { DialogueNodeSchema, EffectsSchema } from './dialogue.js';
 
 // ============================================================
@@ -46,7 +47,7 @@ export type Leaf = FreeLeaf | GuardedLeaf;
 export const LeafSchema = z.union([FreeLeafSchema, GuardedLeafSchema]);
 
 export const ChunkSchema = z.object({
-  tree_id: z.string().uuid(),
+  tree_id: zodUuid(),
   chunk_key: z.string(),
   nodes: z.record(z.string(), DialogueNodeSchema),
   leaves: z.record(z.string(), LeafSchema),

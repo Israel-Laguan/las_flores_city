@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidNullable } from './uuid.js';
 
 // ============================================================
 // Shop Item Schema
@@ -19,7 +20,7 @@ export const ShopCurrencySchema = z.enum(['credits', 'gold_credits']);
 export type ShopCurrency = z.infer<typeof ShopCurrencySchema>;
 
 export const ShopItemSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   item_type: ShopItemTypeSchema,
@@ -60,11 +61,11 @@ export const InventoryAcquisitionSchema = z.enum(['purchase', 'grant', 'iap']);
 export type InventoryAcquisition = z.infer<typeof InventoryAcquisitionSchema>;
 
 export const PlayerInventoryItemSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
-  shop_item_id: z.string().uuid(),
+  id: zodUuid(),
+  user_id: zodUuid(),
+  shop_item_id: zodUuid(),
   acquired_via: InventoryAcquisitionSchema,
-  reference_id: z.string().uuid().nullable().optional(),
+  reference_id: zodUuidNullable().optional(),
   acquired_at: z.string().datetime(),
   // Denormalised item data so the client can render the inventory
   // without a second round-trip to /shop/catalog.
@@ -82,7 +83,7 @@ export type PlayerInventoryItem = z.infer<typeof PlayerInventoryItemSchema>;
 // ============================================================
 
 export const ShopPurchaseRequestSchema = z.object({
-  shop_item_id: z.string().uuid(),
+  shop_item_id: zodUuid(),
 });
 
 export type ShopPurchaseRequest = z.infer<typeof ShopPurchaseRequestSchema>;
@@ -108,7 +109,7 @@ export type EquipSlot = z.infer<typeof EquipSlotSchema>;
 
 export const EquipRequestSchema = z.object({
   slot: EquipSlotSchema,
-  shop_item_id: z.string().uuid().nullable(),
+  shop_item_id: zodUuidNullable(),
 });
 
 export type EquipRequest = z.infer<typeof EquipRequestSchema>;
@@ -120,7 +121,7 @@ export type EquipRequest = z.infer<typeof EquipRequestSchema>;
 // ============================================================
 
 export const PublicProfileSchema = z.object({
-  user_id: z.string().uuid(),
+  user_id: zodUuid(),
   username: z.string(),
   display_name: z.string().nullable().optional(),
   equipped_theme: ShopItemSchema.nullable().optional(),
@@ -149,7 +150,7 @@ export const PayPalAmountSchema = z.object({
 export type PayPalAmount = z.infer<typeof PayPalAmountSchema>;
 
 export const PayPalPurchaseUnitSchema = z.object({
-  custom_id: z.string().uuid().nullable().optional(),
+  custom_id: zodUuidNullable().optional(),
   reference_id: z.string().optional(),
   amount: PayPalAmountSchema.optional(),
 });
@@ -158,7 +159,7 @@ export type PayPalPurchaseUnit = z.infer<typeof PayPalPurchaseUnitSchema>;
 export const PayPalResourceSchema = z.object({
   id: z.string(),
   status: PayPalCaptureStatusSchema,
-  custom_id: z.string().uuid().nullable().optional(),
+  custom_id: zodUuidNullable().optional(),
   amount: PayPalAmountSchema.optional(),
   purchase_units: z.array(PayPalPurchaseUnitSchema).optional(),
 });

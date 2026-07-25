@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidOptional, zodUuidArray } from './uuid.js';
 import { DialogueNodeSchema } from './dialogue.js';
 import { RelationshipSchema } from './character.js';
 import { AftermathSchema } from './aftermath.js';
@@ -17,7 +18,7 @@ export const AssetEntrySchema = z.object({
 export type AssetEntry = z.infer<typeof AssetEntrySchema>;
 
 export const YAMLCharacterSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   title: z.string().max(100).optional(),
   description: z.string().max(1000),
@@ -25,7 +26,7 @@ export const YAMLCharacterSchema = z.object({
   avatar_url: z.string().url().optional(),
   portrait_urls: z.array(AssetEntrySchema).optional(),
   atlas_url: z.string().optional(),
-  available_dialogues: z.array(z.string().uuid()).optional(),
+  available_dialogues: zodUuidArray().optional(),
   biometric_refs: z.object({
     horizontal_face_sheet: z.string().url().optional(),
     vertical_face_sheet: z.string().url().optional(),
@@ -62,14 +63,14 @@ export const YAMLCharacterSchema = z.object({
 export type YAMLCharacter = z.infer<typeof YAMLCharacterSchema>;
 
 export const YAMLDialogueSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   start_node_id: z.string(),
   nodes: z.record(z.string(), DialogueNodeSchema),
-  character_id: z.string().uuid().optional(),
-  scene_id: z.string().uuid().optional(),
-  mission_id: z.string().uuid().optional(),
+  character_id: zodUuidOptional(),
+  scene_id: zodUuidOptional(),
+  mission_id: zodUuidOptional(),
   dialogue_scope: z.enum(['character', 'scene', 'mission', 'onboarding', 'system']).default('character'),
   metadata: z.record(z.string(), z.any()).optional(),
   written_by: z.string().max(100).optional(),
@@ -81,11 +82,11 @@ export const YAMLDialogueSchema = z.object({
 export type YAMLDialogue = z.infer<typeof YAMLDialogueSchema>;
 
 export const YAMLOverlaySchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  target_tree_id: z.string().uuid(),
-  mission_id: z.string().uuid().optional(),
+  target_tree_id: zodUuid(),
+  mission_id: zodUuidOptional(),
   modifications: z.array(z.object({
     node_id: z.string(),
     action: z.enum(['replace', 'add_choice', 'remove_choice', 'modify_text']),
@@ -106,7 +107,7 @@ export const YAMLOverlaySchema = z.object({
 export type YAMLOverlay = z.infer<typeof YAMLOverlaySchema>;
 
 export const YAMLMissionSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   title: z.string().min(1).max(255),
   description: z.string().min(1),
   status: z.enum(['ACTIVE', 'RESOLVING', 'ARCHIVED']).default('ACTIVE'),
@@ -126,7 +127,7 @@ export const YAMLMissionFileSchema = z.object({
 export type YAMLMissionFile = z.infer<typeof YAMLMissionFileSchema>;
 
 export const YAMLSceneSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(1000),
   district: z.string().max(50),
@@ -139,7 +140,7 @@ export const YAMLSceneSchema = z.object({
   image_urls: z.array(AssetEntrySchema).optional(),
   ambient_sound_url: z.string().nullable().optional(),
   mood: z.string().max(50).optional(),
-  available_dialogues: z.array(z.string().uuid()).optional(),
+  available_dialogues: zodUuidArray().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
@@ -152,7 +153,7 @@ export const YAMLSceneSchema = z.object({
 export type YAMLScene = z.infer<typeof YAMLSceneSchema>;
 
 export const YAMLLocationSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   type: z.literal('location'),
   name: z.string().min(1).max(100),
   description: z.string().optional(),

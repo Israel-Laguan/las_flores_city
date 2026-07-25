@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidArray } from './uuid.js';
 
 // ============================================================
 // Aftermath (The Recycle Phase)
@@ -19,14 +20,14 @@ export const AftermathSchema = z.object({
   // 1. Convert active clues into historical mementos.
   //    Worker guards with `WHERE item_type = 'clue'` so premium_cg
   //    items that share the mystery are never clobbered.
-  retire_vault_items: z.array(z.string().uuid()).optional(),
+  retire_vault_items: zodUuidArray().optional(),
 
   // 2. Scrub temporary characters from live scenes.
   remove_scene_characters: z
     .array(
       z.object({
-        scene_id: z.string().uuid(),
-        character_id: z.string().uuid(),
+        scene_id: zodUuid(),
+        character_id: zodUuid(),
       })
     )
     .optional(),
