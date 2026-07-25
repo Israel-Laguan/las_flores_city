@@ -1,7 +1,28 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 const ABOUT_US_URL = process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us';
+
+const testEmail = `menu-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
+const testUsername = `menu_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+
+test.beforeAll(async ({ request }) => {
+  const res = await request.post(`${AUTH_BASE}/api/auth/register`, {
+    data: {
+      email: testEmail,
+      username: testUsername,
+      display_name: 'Main Menu E2E',
+      password: 'test1234',
+    },
+  });
+  expect(res.ok()).toBeTruthy();
+});
+
+async function injectAuth(page: Page) {
+  await page.request.post(`${AUTH_BASE}/api/auth/login`, {
+    data: { email: testEmail, password: 'test1234' },
+  });
+}
 
 test.describe('Main menu — normal operations', () => {
   test('dev login button is visible on the login page in dev mode', async ({ page }) => {
@@ -12,7 +33,7 @@ test.describe('Main menu — normal operations', () => {
 
   test.describe('About Us button', () => {
     test('main menu shows ABOUT US button after login', async ({ page }) => {
-      await page.request.post(`${AUTH_BASE}/api/auth/dev-login`);
+      await injectAuth(page);
       await page.goto('/main');
       const aboutBtn = page.locator('.menu-btn[data-action="about"]');
       await expect(aboutBtn).toBeVisible();
@@ -20,7 +41,7 @@ test.describe('Main menu — normal operations', () => {
     });
 
     test('clicking ABOUT US opens the configured URL in a new tab', async ({ page }) => {
-      await page.request.post(`${AUTH_BASE}/api/auth/dev-login`);
+      await injectAuth(page);
       await page.goto('/main');
 
       const [popup] = await Promise.all([
@@ -32,7 +53,7 @@ test.describe('Main menu — normal operations', () => {
     });
 
     test('clicking ABOUT US opens exactly one tab even after navigating away and back', async ({ page }) => {
-      await page.request.post(`${AUTH_BASE}/api/auth/dev-login`);
+      await injectAuth(page);
       await page.goto('/main');
 
       // Wait for page to fully load and settle
