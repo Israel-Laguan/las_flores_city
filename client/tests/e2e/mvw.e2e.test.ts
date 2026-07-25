@@ -272,7 +272,7 @@ test.describe('Full First Hour Loop', () => {
 
     // 4. Move back to Apartment for sleep
     const returnRes = await page.request.post(`${API_URL}/api/player/move`, {
-      data: { target_location_id: 'c3d4e5f6-a7b8-9012-cdef-123456789012' },
+      data: { target_location_id: '1efcf23b-04b1-404c-bf8d-1aa15d11d213' },
     });
     expect(returnRes.ok()).toBeTruthy();
 

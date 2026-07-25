@@ -9,6 +9,6 @@ import { Page } from '@playwright/test';
  * /city/loc/:id route handler. Navigates to /city as a fallback so tests
  * that only check CityNav (e.g. phone overlay presence) still work.
  */
-export async function startNewGame(page: Page, locationId = 'c3d4e5f6-a7b8-9012-cdef-123456789012'): Promise<void> {
+export async function startNewGame(page: Page, locationId = '1efcf23b-04b1-404c-bf8d-1aa15d11d213'): Promise<void> {
   await page.goto(`/city/loc/${locationId}`);
 }
