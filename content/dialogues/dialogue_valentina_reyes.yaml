@@ -2,8 +2,8 @@ id: "c52349cf-c576-4896-b18c-811af6869904"
 name: "Valentina Reyes at University"
 description: "A conversation with Valentina 'Val' Reyes, studying social work at Universidad del Valle. She's navigating her overwhelming transition to city life while maintaining dreams of helping others like her."
 start_node_id: "val_intro"
-scene_id: null
 character_id: "c51348ce-c575-4895-b17b-811af6869903"
+scene_id: "a7b8c9d0-e1f2-3456-0123-567890123456"
 dialogue_scope: "character"
 nodes:
   val_intro:
