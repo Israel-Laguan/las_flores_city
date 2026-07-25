@@ -63,13 +63,13 @@ beforeAll(async () => {
   // Mount health router (public)
   app.use('/health', healthRouter);
   // Mount location router with mock auth
-  app.use((req, _res, next) => {
+  app.use((req: any, _res, next) => {
     req.userId = TEST_USER_ID;
     next();
   });
   app.use('/location', locationRouter);
   // Mount admin-content-asset router with mock admin auth
-  app.use((req, _res, next) => {
+  app.use((req: any, _res, next) => {
     req.userId = TEST_USER_ID;
     next();
   });

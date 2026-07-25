@@ -1,21 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, jest as jestGlobals } from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import { checkCreateConflicts } from '../../src/services/StoryBuilderPlanOps.js';
 
-jest.mock('../../src/content/validate.js', () => ({
-  validateContent: jest.fn().mockResolvedValue({ valid: true, errors: [] }),
+jestGlobals.mock('../../src/content/validate.js', () => ({
+  validateContent: (jestGlobals.fn() as any).mockResolvedValue({ valid: true, errors: [] }),
 }));
-jest.mock('../../src/content/migrate.js', () => ({
-  migrateContent: jest.fn().mockResolvedValue({ success: true, filesProcessed: 1, filesSkipped: 0, filesFailed: 0 }),
+jestGlobals.mock('../../src/content/migrate.js', () => ({
+  migrateContent: (jestGlobals.fn() as any).mockResolvedValue({ success: true, filesProcessed: 1, filesSkipped: 0, filesFailed: 0 }),
 }));
-jest.mock('../../src/services/StoryBuilderLore.js', () => ({
+jestGlobals.mock('../../src/services/StoryBuilderLore.js', () => ({
   resolveContentDir: () => (globalThis as any).__contentDir,
-  generateLoreStubs: jest.fn(async () => []),
+  generateLoreStubs: jestGlobals.fn(async () => []),
 }));
-jest.mock('../../src/services/PromptFileGenerator.js', () => ({
-  generatePromptFiles: jest.fn(async () => []),
+jestGlobals.mock('../../src/services/PromptFileGenerator.js', () => ({
+  generatePromptFiles: jestGlobals.fn(async () => []),
 }));
 
 import { stagePlan } from '../../src/services/StoryBuilderPlanOps.js';
@@ -42,7 +42,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  jest.restoreAllMocks();
+  jestGlobals.restoreAllMocks();
   await fs.rm(tmpDir, { recursive: true, force: true });
 });
 
@@ -135,7 +135,7 @@ describe('stagePlan on scaffolded plan (files already on disk)', () => {
 
     const result = await stagePlan(plan);
     expect(result.success).toBe(true);
-    expect(result.itemResults.every((r: any) => r.status === 'skipped')).toBe(true);
+    expect((result.itemResults as any).every((r: any) => r.status === 'skipped')).toBe(true);
     expect(result.createdFiles).toHaveLength(0);
     expect(result.updatedFiles).toHaveLength(0);
     // Verify original file content survives staging

@@ -1,4 +1,4 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals } from '@jest/globals';
 import { fillFields, mergeFilledFields } from '../../src/services/ContentFillService.js';
 import type { ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext } from '../../src/services/types/LLMTypes.js';
@@ -36,10 +36,11 @@ function makeItem(overrides: Partial<ContentPlanItem> = {}): ContentPlanItem {
 
 function makeMockProvider(fillResponse: { fields: Record<string, string>; lore_refs?: string[] } = { fields: {} }): LLMProvider {
   return {
-    parseDescription: jest.fn() as any,
-    refinePlan: jest.fn() as any,
-    generateLore: jest.fn() as any,
-    generateFill: jest.fn(async () => fillResponse),
+    parseDescription: jestGlobals.fn() as any,
+    refinePlan: jestGlobals.fn() as any,
+    generateLore: jestGlobals.fn() as any,
+    generateOutline: jestGlobals.fn() as any,
+    generateFill: jestGlobals.fn(async () => fillResponse),
   };
 }
 
@@ -65,11 +66,11 @@ describe('fillFields', () => {
       fields: { description: 'TODO: Add description', metadata: { personality: 'TODO: Add personality' } },
     });
     const provider = makeMockProvider({
-      fields: { description: 'A weathered bartender with a cybernetic arm', metadata: { personality: 'streetwise' } },
+      fields: { description: 'A weathered bartender with a cybernetic arm', metadata: JSON.stringify({ personality: 'streetwise' }) },
     });
     await fillFields(item, mockContext, provider);
     expect(provider.generateFill).toHaveBeenCalledTimes(1);
-    const prompt = (provider.generateFill as jest.Mock).mock.calls[0][0] as string;
+    const prompt = (provider.generateFill as jest.Mock<any>).mock.calls[0][0] as string;
     expect(prompt).toContain('TODO');
   });
 
@@ -105,10 +106,11 @@ describe('fillFields', () => {
       fields: { description: 'TODO: Add description' },
     });
     const provider: LLMProvider = {
-      parseDescription: jest.fn() as any,
-      refinePlan: jest.fn() as any,
-      generateLore: jest.fn() as any,
-      generateFill: jest.fn(async () => { throw new Error('LLM error'); }),
+      parseDescription: jestGlobals.fn() as any,
+      refinePlan: jestGlobals.fn() as any,
+      generateLore: jestGlobals.fn() as any,
+      generateOutline: jestGlobals.fn() as any,
+      generateFill: jestGlobals.fn(async () => { throw new Error('LLM error'); }),
     };
     await expect(fillFields(item, mockContext, provider)).rejects.toThrow('LLM error');
   });

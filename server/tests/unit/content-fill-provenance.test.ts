@@ -1,5 +1,6 @@
 import { describe, test, expect, jest } from '@jest/globals';
-import type { ContentPlanItem, ExistingContentContext } from '@las-flores/shared';
+import type { ContentPlanItem } from '@las-flores/shared';
+import type { ExistingContentContext } from '../../src/services/types/LLMTypes.js';
 import { ContentPlanItemSchema } from '@las-flores/shared';
 import { fillFields, mergeFilledFields } from '../../src/services/ContentFillService.js';
 import type { LLMProvider } from '../../src/services/types/LLMTypes.js';

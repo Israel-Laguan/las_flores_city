@@ -27,7 +27,7 @@ const OVERLAY_ID = 'c3000000-e29b-41d4-a716-446655440002';
 const BASE_NODES: Record<string, DialogueNode> = {
   root: {
     id: 'root',
-    type: 'dialogue',
+    type: 'character',
     text: 'Base root.',
     choices: [
       { id: 'choice_1', text: 'Base choice', next_node_id: 'base_end' },
@@ -35,7 +35,7 @@ const BASE_NODES: Record<string, DialogueNode> = {
   },
   base_end: {
     id: 'base_end',
-    type: 'dialogue',
+    type: 'character',
     text: 'Base end.',
     is_end: true,
     choices: [],
@@ -46,7 +46,7 @@ const BASE_NODES: Record<string, DialogueNode> = {
 const OVERLAY_NODES: Record<string, DialogueNode> = {
   root: {
     id: 'root',
-    type: 'dialogue',
+    type: 'character',
     text: 'Overlaid root — investigation active.',
     choices: [
       { id: 'choice_overlay', text: 'Follow lead', next_node_id: 'overlay_mid' },
@@ -55,7 +55,7 @@ const OVERLAY_NODES: Record<string, DialogueNode> = {
   },
   overlay_mid: {
     id: 'overlay_mid',
-    type: 'dialogue',
+    type: 'character',
     text: 'Overlay mid-node — a clue is revealed.',
     choices: [
       { id: 'choice_end', text: 'Wrap up', next_node_id: 'overlay_end' },
@@ -63,7 +63,7 @@ const OVERLAY_NODES: Record<string, DialogueNode> = {
   },
   overlay_end: {
     id: 'overlay_end',
-    type: 'dialogue',
+    type: 'character',
     text: 'Overlay end — investigation complete.',
     is_end: true,
     choices: [],

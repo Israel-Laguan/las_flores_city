@@ -28,8 +28,8 @@ describe('DialogueResolver Unit Tests', () => {
             { id: 'c2', text: 'Base choice B', next_node_id: 'next_b' },
           ],
         },
-        next_a: { id: 'next_a', type: 'npc', text: 'Base A end' },
-        next_b: { id: 'next_b', type: 'npc', text: 'Base B end' },
+        next_a: { id: 'next_a', type: 'character', text: 'Base A end' },
+        next_b: { id: 'next_b', type: 'character', text: 'Base B end' },
       };
 
       const overlayNodes: Record<string, DialogueNode> = {
@@ -43,7 +43,7 @@ describe('DialogueResolver Unit Tests', () => {
         },
         mystery_path: {
           id: 'mystery_path',
-          type: 'npc',
+          type: 'character',
           text: 'Hidden in shadow...',
         },
       };

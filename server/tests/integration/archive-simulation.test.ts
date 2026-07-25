@@ -30,7 +30,7 @@ const OVERLAY_ID = 'c2000000-e29b-41d4-a716-446655440002';
 const BASE_NODES: Record<string, DialogueNode> = {
   root: {
     id: 'root',
-    type: 'dialogue',
+    type: 'character',
     text: 'Base root node.',
     choices: [
       { id: 'choice_1', text: 'Continue', next_node_id: 'end' },
@@ -38,7 +38,7 @@ const BASE_NODES: Record<string, DialogueNode> = {
   },
   end: {
     id: 'end',
-    type: 'dialogue',
+    type: 'character',
     text: 'Base end node.',
     is_end: true,
     choices: [],
@@ -49,7 +49,7 @@ const BASE_NODES: Record<string, DialogueNode> = {
 const OVERLAY_NODES: Record<string, DialogueNode> = {
   root: {
     id: 'root',
-    type: 'dialogue',
+    type: 'character',
     text: 'Overlaid root — investigation branch visible.',
     choices: [
       { id: 'choice_1', text: 'Continue', next_node_id: 'end' },
@@ -58,7 +58,7 @@ const OVERLAY_NODES: Record<string, DialogueNode> = {
   },
   mystery_clue: {
     id: 'mystery_clue',
-    type: 'dialogue',
+    type: 'character',
     text: 'You found the corrupted data drive!',
     choices: [
       { id: 'choice_back', text: 'Return to root', next_node_id: 'end' },

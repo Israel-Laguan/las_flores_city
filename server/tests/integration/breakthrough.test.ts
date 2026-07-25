@@ -194,7 +194,7 @@ describe('BreakthroughStateMachine', () => {
       );
 
       expect(outcome.result.kind).toBe('late');
-      expect(outcome.result.isBreakthrough).toBe(false);
+      expect((outcome.result as any).isBreakthrough).toBe(false);
       expect(outcome.status).toEqual({
         mysteryId: TEST_MYSTERY_ARCHIVED_ID,
         isBreakthrough: false,
@@ -264,13 +264,13 @@ describe('BreakthroughStateMachine', () => {
       let count = 0;
       for (let i = 0; i < 10; i++) {
         await new Promise((resolve) => setTimeout(resolve, 100));
-        const { rows } = await queryOLAP<{ count: string }>(
+        const result = await queryOLAP<{ count: string }>(
           `SELECT COUNT(*)::text AS count FROM player_events
            WHERE event_type = 'mystery_solved'
              AND event_data->>'mysteryId' = $1`,
           [TEST_MYSTERY_ID]
         );
-        count = parseInt(rows[0].count, 10);
+        count = parseInt(result!.rows[0].count, 10);
         if (count >= 2) break;
       }
       expect(count).toBeGreaterThanOrEqual(2);

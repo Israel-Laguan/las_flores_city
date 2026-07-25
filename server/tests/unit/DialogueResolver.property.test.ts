@@ -1,4 +1,4 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
 
 // ============================================================
@@ -25,18 +25,18 @@ import fc from 'fast-check';
 // ── Module mocks ──────────────────────────────────────────────
 
 // Mock queryOLTP — each test overrides its return value per-run.
-jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn(),
-  withOLTPTransaction: jest.fn(
+jestGlobals.mock('../../src/database/connection.js', () => ({
+  queryOLTP: jestGlobals.fn(),
+  withOLTPTransaction: jestGlobals.fn(
     async (cb: (client: unknown) => Promise<unknown>) => cb({}),
   ),
 }));
 
 // Mock Redis so no real connection is attempted.
-jest.mock('../../src/database/redis.js', () => ({
-  getCache: jest.fn(async () => null),   // always cache-miss
-  setCache: jest.fn(async () => undefined),
-  closeRedis: jest.fn(async () => undefined),
+jestGlobals.mock('../../src/database/redis.js', () => ({
+  getCache: jestGlobals.fn(async () => null),   // always cache-miss
+  setCache: jestGlobals.fn(async () => undefined),
+  closeRedis: jestGlobals.fn(async () => undefined),
 }));
 
 // ── Imports (after mocks) ─────────────────────────────────────
@@ -133,7 +133,7 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  jestGlobals.clearAllMocks();
 });
 
 /**
@@ -165,7 +165,7 @@ function wireQueryOLTP(
   },
   overlayNodes: Record<string, DialogueNode> = {},
 ): void {
-  const mock = queryOLTP as jest.Mock;
+  const mock = queryOLTP as jest.Mock<any>;
 
   const hasOverlay = Object.keys(overlayNodes).length > 0;
 
@@ -218,7 +218,7 @@ describe('Chunk contains only allowed nodes', () => {
         uuidArb(),
         chunkRowArb(),
         async (userId, chunkRow) => {
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
           wireQueryOLTP(chunkRow);
 
           const result = await DialogueResolver.resolveChunkForUser(
@@ -249,7 +249,7 @@ describe('Chunk contains only allowed nodes', () => {
         uuidArb(),
         chunkRowArb(),
         async (userId, chunkRow) => {
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
           wireQueryOLTP(chunkRow);
 
           const result = await DialogueResolver.resolveChunkForUser(
@@ -291,7 +291,7 @@ describe('Chunk size limit enforcement', () => {
         uuidArb(),
         chunkRowArb(),
         async (userId, chunkRow) => {
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
           wireQueryOLTP(chunkRow);
 
           const result = await DialogueResolver.resolveChunkForUser(
@@ -316,7 +316,7 @@ describe('Chunk size limit enforcement', () => {
           // Precondition: base chunk respects the 15-node limit.
           fc.pre(Object.keys(chunkRow.nodes).length <= 15);
 
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
           wireQueryOLTP(chunkRow);
 
           const result = await DialogueResolver.resolveChunkForUser(
@@ -467,7 +467,7 @@ describe('Overlay merge preserves base nodes', () => {
         chunkRowArb(),
         nodesArb(5),
         async (userId, chunkRow, overlayNodes) => {
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
           wireQueryOLTP(chunkRow, overlayNodes);
 
           const result = await DialogueResolver.resolveChunkForUser(

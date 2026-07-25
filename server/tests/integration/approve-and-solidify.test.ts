@@ -69,11 +69,11 @@ describe('POST /admin/story-builder/plans/:id/approve-and-solidify', () => {
     mockApprove.mockResolvedValueOnce({
       success: true,
       status: 'verified',
-      stage: { success: true, createdFiles: ['characters/char_diego.yaml'] },
+      stage: { success: true, createdFiles: ['characters/char_diego.yaml'], updatedFiles: [], validationErrors: [], warnings: [] },
       publish: { success: true, published: [], errors: [] },
       migration: { success: true, migrationResult: { filesProcessed: 1 } },
-      verificationReport: { success: true, passed: true, checks: [], errors: [] },
-    });
+      verificationReport: { success: true, passed: true, checks: [], errors: [], warnings: [] },
+    } as any);
 
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/approve-and-solidify`);
@@ -88,11 +88,11 @@ describe('POST /admin/story-builder/plans/:id/approve-and-solidify', () => {
     mockApprove.mockResolvedValueOnce({
       success: false,
       status: 'failed',
-      stage: { success: true, createdFiles: [] },
+      stage: { success: true, createdFiles: [], updatedFiles: [], validationErrors: [], warnings: [] },
       publish: { success: false, published: [], errors: ['upload failed'] },
       migration: { success: false, migrationResult: null, error: 'migration error' },
       error: 'Asset publish failed',
-    });
+    } as any);
 
     const res = await request(app)
       .post(`/admin/story-builder/plans/${TEST_PLAN_ID}/approve-and-solidify`);

@@ -252,7 +252,7 @@ describe('Property 1: Pagination slice correctness', () => {
 
             const sliceStart = (page - 1) * pageSize;
             const sliceEnd = sliceStart + pageSize;
-            const slicedItems = dataset.slice(sliceStart, sliceEnd).map(endpoint.makeRow);
+            const slicedItems = dataset.slice(sliceStart, sliceEnd).map(endpoint.makeRow as any);
 
             mockQuery
               .mockResolvedValueOnce({ rows: [{ count: total }], rowCount: 1 } as any)

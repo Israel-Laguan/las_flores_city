@@ -1,12 +1,12 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
 import { ContentPlanService } from '../../src/services/ContentPlanService.js';
 import type { LLMProvider, ExistingContentContext } from '../../src/services/types/LLMTypes.js';
 import { queryOLTP } from '../../src/database/connection.js';
 
 // Mock queryOLTP to avoid database connection
-jest.mock('../../src/database/connection.js');
+jestGlobals.mock('../../src/database/connection.js');
 
-const mockQueryOLTP = jest.mocked(queryOLTP);
+const mockQueryOLTP = jestGlobals.mocked(queryOLTP);
 
 // Mock LLM provider
 const mockProvider: LLMProvider = {
@@ -33,6 +33,10 @@ const mockProvider: LLMProvider = {
       usage: null,
     };
   },
+  async generateOutline() { return { plan: {} as any, usage: null }; },
+  async refinePlan() { return { plan: {} as any, usage: null }; },
+  async generateLore() { return ''; },
+  async generateFill() { return { fields: {} }; },
 };
 
 beforeEach(() => {
@@ -58,7 +62,7 @@ describe('ContentPlanService', () => {
       .mockResolvedValueOnce({ rows: [{ id: 'sto-1', name: 'Existing Story' }] } as any)
       .mockResolvedValueOnce({ rows: [{ id: 'ovl-1', name: 'Existing Overlay' }] } as any);
 
-    const parseSpy = jest.fn().mockResolvedValue({
+    const parseSpy = jestGlobals.fn<(description: string, context: ExistingContentContext) => Promise<{ plan: any; usage: null }>>().mockResolvedValue({
       plan: {
         id: '12345678-1234-1234-1234-123456789012',
         description: 'test',
@@ -69,7 +73,13 @@ describe('ContentPlanService', () => {
       usage: null,
     });
 
-    const provider: LLMProvider = { parseDescription: parseSpy };
+    const provider: LLMProvider = {
+      parseDescription: parseSpy,
+      async generateOutline() { return { plan: {} as any, usage: null }; },
+      async refinePlan() { return { plan: {} as any, usage: null }; },
+      async generateLore() { return ''; },
+      async generateFill() { return { fields: {} }; },
+    };
     const service = new ContentPlanService(provider);
 
     await service.parseDescription('Test description');

@@ -122,7 +122,7 @@ beforeAll(async () => {
   );
 
   await new Promise<void>((resolve) => {
-    server = app.listen(0, resolve);
+    server = app.listen(0, () => resolve());
   });
 });
 

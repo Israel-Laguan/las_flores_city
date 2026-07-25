@@ -1,15 +1,15 @@
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals, beforeEach, afterEach } from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import type { ContentPlan } from '@las-flores/shared';
 
 // Mock content validate and migrate to avoid DB
-jest.mock('../../src/content/validate.js', () => ({
-  validateContent: jest.fn().mockResolvedValue({ valid: true, errors: [] }),
+jestGlobals.mock('../../src/content/validate.js', () => ({
+  validateContent: (jestGlobals.fn() as any).mockResolvedValue({ valid: true, errors: [] }),
 }));
-jest.mock('../../src/content/migrate.js', () => ({
-  migrateContent: jest.fn().mockResolvedValue({ success: true, filesProcessed: 1, filesSkipped: 0, filesFailed: 0 }),
+jestGlobals.mock('../../src/content/migrate.js', () => ({
+  migrateContent: (jestGlobals.fn() as any).mockResolvedValue({ success: true, filesProcessed: 1, filesSkipped: 0, filesFailed: 0 }),
 }));
 
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
@@ -19,13 +19,13 @@ let tmpDir: string;
 
 beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'story-builder-test-'));
-  jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+  jestGlobals.spyOn(process, 'cwd').mockReturnValue(tmpDir);
   await fs.mkdir(path.join(tmpDir, 'content'), { recursive: true });
-  jest.mocked(validateContent).mockResolvedValue({ valid: true, errors: [] } as any);
+  jestGlobals.mocked(validateContent).mockResolvedValue({ valid: true, errors: [] } as any);
 });
 
 afterEach(async () => {
-  jest.restoreAllMocks();
+  jestGlobals.restoreAllMocks();
   await fs.rm(tmpDir, { recursive: true, force: true });
 });
 
@@ -297,7 +297,7 @@ describe('StoryBuilderOrchestrator', () => {
     });
 
     it('should clean up created files when validation fails', async () => {
-      jest.mocked(validateContent).mockResolvedValueOnce({
+      jestGlobals.mocked(validateContent).mockResolvedValueOnce({
         valid: false,
         errors: [{ file: 'test.yaml', message: 'Bad content', severity: 'error' }],
       } as any);

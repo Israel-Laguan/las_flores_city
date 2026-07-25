@@ -205,7 +205,7 @@ beforeAll(async () => {
 
   // 5. Start the HTTP server on a random port
   await new Promise<void>((resolve) => {
-    server = app.listen(0, resolve);
+    server = app.listen(0, () => resolve());
   });
   port = (server.address() as { port: number }).port;
 
@@ -704,8 +704,8 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
            LIMIT 1`,
           [TEST_USER_ID, currentChunkId]
         );
-        if (result.rows.length > 0) {
-          eventRow = result.rows[0];
+        if (result!.rows.length > 0) {
+          eventRow = result!.rows[0];
           break;
         }
       }
@@ -762,8 +762,8 @@ describe('Dialogue Chunk API Integration Tests (Task 10.1)', () => {
            LIMIT 1`,
           [TEST_USER_ID, currentChunkId]
         );
-        if (result.rows.length > 0) {
-          eventRow = result.rows[0];
+        if (result!.rows.length > 0) {
+          eventRow = result!.rows[0];
           break;
         }
       }

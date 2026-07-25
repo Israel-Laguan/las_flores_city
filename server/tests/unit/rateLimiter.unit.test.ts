@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, jest, beforeAll } from '@jest/globals';
+import { describe, test, expect, beforeEach, jest as jestGlobals, beforeAll } from '@jest/globals';
 
 // ============================================================
 // createRateLimiter Unit Tests
@@ -13,12 +13,12 @@ import { describe, test, expect, beforeEach, jest, beforeAll } from '@jest/globa
 // Mock the redis module BEFORE importing the limiter. jest.mock is
 // hoisted by Jest so it runs before the dynamic import in beforeAll.
 const mockRedis = {
-  incr: jest.fn(),
-  expire: jest.fn(),
-  ttl: jest.fn(),
+  incr: jestGlobals.fn(async (..._args: any[]) => 1),
+  expire: jestGlobals.fn(async (..._args: any[]) => 1),
+  ttl: jestGlobals.fn(async (..._args: any[]) => 45),
 };
 
-jest.mock('../../src/database/redis.js', () => ({
+jestGlobals.mock('../../src/database/redis.js', () => ({
   getRedis: () => mockRedis,
 }));
 
@@ -45,15 +45,15 @@ function makeReq(overrides: any = {}) {
 
 function makeRes() {
   const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.set = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
+  res.status = jestGlobals.fn().mockReturnValue(res);
+  res.set = jestGlobals.fn().mockReturnValue(res);
+  res.json = jestGlobals.fn().mockReturnValue(res);
   return res;
 }
 
 describe('createRateLimiter', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jestGlobals.clearAllMocks();
   });
 
   test('passes through (calls next) when under the limit', async () => {
@@ -63,7 +63,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'test' });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -78,7 +78,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'test' });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -92,7 +92,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'test' });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -107,7 +107,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'test' });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -125,7 +125,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'test' });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -139,7 +139,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'anon' });
     const req = makeReq({ userId: undefined, ip: '203.0.113.5' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -152,7 +152,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3, keyPrefix: 'test' });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
@@ -167,7 +167,7 @@ describe('createRateLimiter', () => {
     const limiter = createRateLimiter({ windowSeconds: 60, maxRequests: 3 });
     const req = makeReq({ userId: 'user-1' });
     const res = makeRes();
-    const next = jest.fn();
+    const next = jestGlobals.fn();
 
     await limiter(req as any, res as any, next as any);
 
