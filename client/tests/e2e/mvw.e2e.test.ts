@@ -11,7 +11,7 @@ import { startNewGame } from './helpers';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
-const BARISTA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
+const BARISTA_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440001';
 
 // ── Shared auth state ─────────────────────────────────────────────────────────
 const testEmail = `mvw-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
@@ -263,7 +263,7 @@ test.describe('Full First Hour Loop', () => {
     expect([1, 2]).toContain(moveData.data.tb_cost);
 
     // 3. Start a dialogue at the Café
-    const baristaId = '123e4567-e89b-12d3-a456-426614174000';
+    const baristaId = '550e8400-e29b-41d4-a716-446655440001';
     const startRes = await page.request.post(`${API_URL}/api/dialogue/start`, {
       data: { characterId: baristaId, sceneId: CAFE_SCENE_ID },
     });
