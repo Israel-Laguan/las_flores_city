@@ -6,6 +6,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    labels: []
     ignore:
       # TypeScript 7+ is not yet compatible with Next.js 16
       - dependency-name: "typescript"
@@ -30,6 +31,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    labels: []
     groups:
       actions:
         patterns:
