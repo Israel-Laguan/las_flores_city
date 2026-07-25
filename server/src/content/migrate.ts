@@ -3,12 +3,16 @@ import path from 'path';
 import { glob } from 'glob';
 import crypto from 'crypto';
 import yaml from 'js-yaml';
+import type pg from 'pg';
 import type { ContentType } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { oltpPool, queryOLTP } from '../database/connection.js';
 import { invalidatePattern } from '../database/redis.js';
 import { validateContent } from './validate.js';
 import { processContentFile } from './upsert.js';
 import { compileAllDialogueTrees } from './compiler.js';
+import { extractContentIds, getContentTypeFromPath, getProcessingOrder } from './path-utils.js';
+
+export { extractContentIds };
 
 const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   character: 'characters',
@@ -44,33 +48,6 @@ export interface AppliedMigration {
 async function calculateChecksum(filePath: string): Promise<string> {
   const content = await fs.readFile(filePath);
   return crypto.createHash('sha256').update(content).digest('hex');
-}
-
-export function extractContentIds(contentType: ContentType, data: Record<string, unknown>): string[] {
-  switch (contentType) {
-    case 'mission':
-      return ((data.missions as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
-    case 'story':
-      return ((data.stories as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
-    case 'vault':
-      return ((data.vault_items as Array<{ id: string }>) || []).map((item) => item.id);
-    case 'gig':
-      return ((data.gigs as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
-    case 'shop_item':
-      return ((data.shop_items as Array<{ id: string }>) || []).map((item) => item.id);
-    case 'story_beat':
-      // story_beat uses slug as PK — return slugs instead of UUIDs
-      if (data.beats) {
-        return (data.beats as Array<{ slug: string }>).map((item) => item.slug);
-      }
-      // Individual beat file: { id, name, description, metadata }
-      if (data.id && typeof data.id === 'string') {
-        return [data.id];
-      }
-      return [];
-    default:
-      return [(data as { id: string }).id];
-  }
 }
 
 async function isTargetContentPresent(contentType: ContentType, ids: string[]): Promise<boolean> {
@@ -183,73 +160,73 @@ async function recordMigration(
   );
 }
 
-function getContentTypeFromPath(filePath: string): ContentType | null {
-  const normalizedPath = filePath.toLowerCase();
-  
-  if (normalizedPath.includes('/characters/') || normalizedPath.includes('\\characters\\')) {
-    return 'character';
+async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
+  const client = await oltpPool.connect();
+  try {
+    const result = await client.query<{ pg_try_advisory_lock: boolean }>(
+      `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
+    );
+    if (result.rows[0].pg_try_advisory_lock) {
+      return client;
+    }
+    client.release();
+    return null;
+  } catch (error) {
+    client.release();
+    throw error;
   }
-  if (normalizedPath.includes('/dialogues/') || normalizedPath.includes('\\dialogues\\')) {
-    return 'dialogue';
-  }
-  if (normalizedPath.includes('/overlays/') || normalizedPath.includes('\\overlays\\')) {
-    return 'overlay';
-  }
-  if (normalizedPath.includes('/scenes/') || normalizedPath.includes('\\scenes\\')) {
-    return 'scene';
-  }
-  if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) {
-    return 'gig';
-  }
-  if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) {
-    return 'location';
-  }
-  if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) {
-    return 'vault';
-  }
-  if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) {
-    return 'mission';
-  }
-  if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) {
-    return 'story';
-  }
-  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) {
-    return 'shop_item';
-  }
-  if (normalizedPath.includes('/maps/') || normalizedPath.includes('\\maps\\')) {
-    return 'map_tile';
-  }
-  
-  if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) {
-    return 'story_beat';
-  }
-
-  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) {
-    return 'gig';
-  }
-
-  return null;
 }
 
-function getProcessingOrder(files: string[]): string[] {
-  const order: ContentType[] = ['story_beat', 'character', 'scene', 'location', 'mission', 'vault', 'dialogue', 'overlay', 'gig', 'shop_item', 'map_tile', 'story'];
-  
-  return files.sort((a, b) => {
-    const typeA = getContentTypeFromPath(a);
-    const typeB = getContentTypeFromPath(b);
-    
-    if (!typeA || !typeB) return 0;
-    
-    const indexA = order.indexOf(typeA);
-    const indexB = order.indexOf(typeB);
-    
-    return indexA - indexB;
-  });
+async function releaseMigrationLock(client: pg.PoolClient): Promise<void> {
+  try {
+    await client.query(`SELECT pg_advisory_unlock(hashtext('content_migration'))`);
+  } catch (error) {
+    client.release(true);
+    throw error;
+  }
+  client.release();
+}
+
+async function dropDialogueTreeFKConstraints(): Promise<void> {
+  await queryOLTP('ALTER TABLE dialogue_trees DROP CONSTRAINT IF EXISTS dialogue_trees_character_id_fkey');
+  await queryOLTP('ALTER TABLE dialogue_trees DROP CONSTRAINT IF EXISTS dialogue_trees_scene_id_fkey');
+  await queryOLTP('ALTER TABLE dialogue_trees DROP CONSTRAINT IF EXISTS dialogue_trees_mission_id_fkey');
+}
+
+async function recreateDialogueTreeFKConstraints(): Promise<void> {
+  await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_character_id_fkey FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE SET NULL');
+  await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE SET NULL');
+  await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES mysteries(id) ON DELETE SET NULL');
+}
+
+async function discoverContentFiles(contentDir: string, files?: string[]): Promise<string[]> {
+  let allFiles: string[];
+  if (files && files.length > 0) {
+    allFiles = files.map(f => path.isAbsolute(f) ? f : path.resolve(contentDir, f));
+    console.log(`📁 Scoped migration: ${allFiles.length} specific file(s)`);
+  } else {
+    const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
+    const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
+    allFiles = [...yamlFiles, ...ymlFiles];
+  }
+  return getProcessingOrder(allFiles);
+}
+
+async function invalidateCaches(): Promise<void> {
+  const patterns = ['dialogue:*', 'map:*', 'story_beats:*'];
+  for (const pattern of patterns) {
+    try {
+      await invalidatePattern(pattern);
+      console.log(`🗑️  Cleared ${pattern.replace('*', '')}caches`);
+    } catch (error: any) {
+      console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
+    }
+  }
 }
 
 export async function migrateContent(contentDir: string, files?: string[]): Promise<MigrationResult> {
   console.log(`🚀 Starting content migration from: ${contentDir}`);
-  
+
   const result: MigrationResult = {
     success: true,
     filesProcessed: 0,
@@ -259,10 +236,18 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     appliedMigrations: [],
   };
 
+  const lockClient = await acquireMigrationLock();
+  if (!lockClient) {
+    console.log('⏳ Another migration is in progress — skipping this run.');
+    result.success = false;
+    result.errors.push('Another content migration is already running');
+    return result;
+  }
+
   try {
     console.log('🔍 Validating content...');
     const validationResult = await validateContent(contentDir);
-    
+
     if (!validationResult.valid) {
       result.success = false;
       result.errors = validationResult.errors
@@ -270,57 +255,50 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
         .map(e => `${e.file}: ${e.message}`);
       return result;
     }
-    
+
     if (validationResult.warnings.length > 0) {
       console.log('⚠️  Warnings:');
       validationResult.warnings.forEach(w => console.log(`  - ${w}`));
     }
 
-    let allFiles: string[];
-    if (files && files.length > 0) {
-      // Scoped migrate: only process the provided file list (already absolute or resolved by caller)
-      allFiles = files.map(f => path.isAbsolute(f) ? f : path.resolve(contentDir, f));
-      console.log(`📁 Scoped migration: ${allFiles.length} specific file(s)`);
-    } else {
-      const yamlFiles = await glob(`${contentDir}/**/*.yaml`, { absolute: true });
-      const ymlFiles = await glob(`${contentDir}/**/*.yml`, { absolute: true });
-      allFiles = [...yamlFiles, ...ymlFiles];
-      console.log(`📁 Found ${allFiles.length} content files`);
-    }
-
-    allFiles = getProcessingOrder(allFiles);
-
+    const allFiles = await discoverContentFiles(contentDir, files);
     console.log(`📁 Found ${allFiles.length} content files`);
 
-    for (const file of allFiles) {
-      // Files whose path doesn't match a known content type (e.g. lore
-      // reference files) are not migrated — skip them silently.
-      if (!getContentTypeFromPath(file)) continue;
+    console.log('🔓 Temporarily dropping dialogue_trees FK constraints...');
+    await dropDialogueTreeFKConstraints();
 
-      try {
-        const checksum = await calculateChecksum(file);
+    try {
+      for (const file of allFiles) {
+        if (!getContentTypeFromPath(file)) continue;
 
-        if (await shouldSkipMigration(file, contentDir, checksum)) {
-          console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
-          result.filesSkipped++;
-          continue;
+        try {
+          const checksum = await calculateChecksum(file);
+
+          if (await shouldSkipMigration(file, contentDir, checksum)) {
+            console.log(`⏭️  Skipping (unchanged): ${path.relative(contentDir, file)}`);
+            result.filesSkipped++;
+            continue;
+          }
+
+          console.log(`📦 Processing: ${path.relative(contentDir, file)}`);
+          const migration = await processContentFile(file);
+
+          const logContentId = migration.contentId.split(',')[0];
+          await recordMigration(file, contentDir, checksum, migration.contentType, logContentId);
+
+          result.filesProcessed++;
+          result.appliedMigrations.push(migration);
+
+          console.log(`✅ Applied: ${migration.contentType} - ${migration.contentId}`);
+        } catch (error: any) {
+          result.filesFailed++;
+          result.errors.push(`${path.relative(contentDir, file)}: ${error.message}`);
+          console.error(`❌ Failed: ${path.relative(contentDir, file)} - ${error.message}`);
         }
-
-        console.log(`📦 Processing: ${path.relative(contentDir, file)}`);
-        const migration = await processContentFile(file);
-        
-        const logContentId = migration.contentId.split(',')[0];
-        await recordMigration(file, contentDir, checksum, migration.contentType, logContentId);
-        
-        result.filesProcessed++;
-        result.appliedMigrations.push(migration);
-        
-        console.log(`✅ Applied: ${migration.contentType} - ${migration.contentId}`);
-      } catch (error: any) {
-        result.filesFailed++;
-        result.errors.push(`${path.relative(contentDir, file)}: ${error.message}`);
-        console.error(`❌ Failed: ${path.relative(contentDir, file)} - ${error.message}`);
       }
+    } finally {
+      console.log('🔒 Re-creating dialogue_trees FK constraints...');
+      await recreateDialogueTreeFKConstraints();
     }
 
     await runPostMigrationTasks(result);
@@ -330,6 +308,8 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     result.errors.push(`Migration failed: ${error.message}`);
     console.error('❌ Migration failed:', error);
     return result;
+  } finally {
+    await releaseMigrationLock(lockClient);
   }
 }
 
@@ -344,11 +324,6 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
     result.errors.forEach(e => console.log(`  - ${e}`));
   }
 
-  // ---- AOT Chunk Compilation ----
-  // Runs after all content is upserted (including overlays, which
-  // upsert after trees per getProcessingOrder). Compiles every
-  // dialogue tree into ≤15-node chunks. Non-fatal: a compiler bug
-  // must not block content shipping.
   try {
     console.log('\n🔄 Compiling dialogue chunks...');
     const compileResult = await compileAllDialogueTrees();
@@ -361,59 +336,9 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
     result.errors.push(`Chunk compilation failed: ${error.message}`);
   }
 
-  // Clear stale dialogue caches (covers dialogue:resolved:*,
-  // dialogue:archive:*, and future dialogue:chunk:* keys).
-  try {
-    await invalidatePattern('dialogue:*');
-    console.log('🗑️  Cleared dialogue caches');
-  } catch (error: any) {
-    console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
-  }
+  await invalidateCaches();
 
-  // Clear stale map caches (covers map:district:*, map:overview:*).
-  try {
-    await invalidatePattern('map:*');
-    console.log('🗑️  Cleared map caches');
-  } catch (error: any) {
-    console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
-  }
-
-  // Clear stale story beat caches.
-  try {
-    await invalidatePattern('story_beats:*');
-    console.log('🗑️  Cleared story_beats caches');
-  } catch (error: any) {
-    console.error('⚠️  Cache invalidation error (non-fatal):', error.message);
-  }
-
-if (result.filesFailed > 0) {
+  if (result.filesFailed > 0 || result.errors.length > 0) {
     result.success = false;
   }
-}
-
-const isCli = process.argv[1]
-  ? path.resolve(process.argv[1]).endsWith(path.join('src', 'content', 'migrate.ts'))
-  : false;
-
-if (isCli) {
-  const contentDir = process.argv[2] || path.join(process.cwd(), 'content');
-  
-  migrateContent(contentDir)
-    .then(result => {
-      if (result.success) {
-        console.log('\n🎉 Migration completed successfully!');
-        process.exit(0);
-      } else {
-        console.log('\n💥 Migration failed!');
-        if (result.errors.length > 0) {
-          console.log('\nErrors:');
-          result.errors.forEach(e => console.log(`  - ${e}`));
-        }
-        process.exit(1);
-      }
-    })
-    .catch(error => {
-      console.error('Unexpected error:', error);
-      process.exit(1);
-    });
 }

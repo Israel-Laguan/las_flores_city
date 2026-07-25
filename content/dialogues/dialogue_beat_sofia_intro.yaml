@@ -2,6 +2,9 @@ id: "5f4a3b2c-1d0e-4f9a-8b7c-6d5e4f3a2b1c"
 name: "Beat 1 — The Encounter"
 description: "The player spots Sofia in South Las Flores being harassed by low-level gangers while handing out community flyers. Three options: intervene violently, intervene diplomatically, or ignore."
 start_node_id: "node_sofia_harassment_scene"
+character_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+mission_id: "a0000000-e29b-41d4-a716-446655440001"
+dialogue_scope: "mission"
 metadata:
   version: "1.0"
   author: "Las Flores Team"
@@ -15,8 +18,6 @@ metadata:
     - "branch_point"
   story_beat: "beat_sofia_intro"
   location: "south_las_flores"
-  characters:
-    - "c3d4e5f6-a7b8-9012-cdef-123456789012"
 
 nodes:
   node_sofia_harassment_scene:

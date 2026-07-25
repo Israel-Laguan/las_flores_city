@@ -2,9 +2,9 @@
 
 > Tags: `#figure` `#dutch_interest` `#politics` `#strategy` `#mining`
 >
-> **Born:** ~1980s (Netherlands)
+> **Born:** 1960 (Netherlands)
 > **Role:** Dutch consortium leader, Global Lithium Corp Executive, Patriarch
-> **Status:** Active
+> **Status:** Deceased (2045)
 
 ## Physical Description
 - Hair: Silver-white, once blond, swept back in distinguished style
@@ -24,7 +24,7 @@
 Pieter van der Meer is a formidable figure in the international mining industry, born into a family of Dutch diplomats and businesspeople. With a towering presence and strategic mind, he built a distinguished career managing international mining operations before leading the Dutch mining consortium that discovered the lithium vein near Las Flores in 2029. 
 
 ## Background & Career
-Instilled with a sense of global responsibility and ambition from an early age, Pieter completed his education in the Netherlands and embarked on a career with a prominent mining company. Early in his career, he managed operations in Africa, a turning point where he met his wife Annabella, a brilliant geologist who shared his passion for exploration.
+Instilled with a sense of global responsibility and ambition from an early age, Pieter completed his education in the Netherlands and embarked on a career with a prominent mining company. Early in his career, he managed operations in Africa. His first wife Marleen passed away, leaving him to raise their two children Alexander and Elisabeth. Later, he met the geologist Annabella, who shared his passion for exploration, and they married. Annabella became step-mother to Alexander and Elisabeth, and later gave birth to their youngest child, Jan.
 
 His ability to navigate complex political landscapes, implement efficient operations, and build relationships with local communities earned him a reputation as an exceptional mining executive. Recruited by Global Lithium Corp (GLC), he arrived in Las Flores with his family (Alexander, Elisabeth, and Jan) to develop sustainable lithium mining operations and represent Dutch interests.
 

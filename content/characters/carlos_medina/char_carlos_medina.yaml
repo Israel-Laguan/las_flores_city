@@ -1,0 +1,14 @@
+id: 9e44f81c-8b22-482d-8b7a-c711d58217bb
+name: Carlos Medina
+title: Electrical Engineering Student
+description: |
+  An engineering student who discovered the deliberate AC sabotage at Residencial Las Estrellas. Methodical and detail-obsessed, he tried to report the anomaly but was killed in a high-speed chase by corporate fixers before he could expose the truth.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: analytical_curious_methodical
+  age_2077: 23
+  occupation: Student
+  appearance: "Young Latino man, early 20s, earnest expression, wearing an engineering guild jacket, carrying a diagnostic tablet."
+lore_path: carlos_medina.md

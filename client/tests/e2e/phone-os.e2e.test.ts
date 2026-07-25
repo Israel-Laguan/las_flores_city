@@ -6,28 +6,34 @@
  * App routing stability: rapid tab cycling, no double scrollbars
  * Unified client state store: credits + TBs update simultaneously
  */
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
-/**
- * Seed the browser's cookie jar with an HttpOnly session cookie by calling
- * dev-login through the Vite /api proxy (scoped to :5173, the same origin as
- * the page). HttpOnly cookies are origin-scoped, so the login MUST go through
- * /api — not directly to :3000 — or the cookie would never reach the page's
- * in-page fetches. Playwright shares cookies between page.request and page.
- *
- * This replaced the old `addInitScript(localStorage.setItem)` pattern, which
- * cannot set HttpOnly cookies. See Task 6.5 spec §E2E migration.
- */
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
+const testEmail = `phone-os-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
+const testUsername = `phone_os_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+
+test.beforeAll(async ({ request }) => {
+  const res = await request.post(`${API_BASE}/api/auth/register`, {
+    data: {
+      email: testEmail,
+      username: testUsername,
+      display_name: 'Phone OS E2E',
+      password: 'test1234',
+    },
+  });
+  expect(res.ok()).toBeTruthy();
+});
+
+async function injectAuth(page: Page) {
+  const res = await page.request.post(`${API_BASE}/api/auth/login`, {
+    data: { email: testEmail, password: 'test1234' },
+  });
+  expect(res.ok()).toBeTruthy();
+}
+
 test.beforeEach(async ({ page }) => {
-  const userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0;
-    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-  await page.request.post(`${API_BASE}/api/auth/dev-login`, {
-    data: { userId },
-  });
+  await injectAuth(page);
   await page.goto('/city/loc/c3d4e5f6-a7b8-9012-cdef-123456789012');
   await page.waitForSelector('#phone-overlay', { state: 'visible' });
   // Wait for the game to fully start (Phaser canvas + fetchPlayerData settles)

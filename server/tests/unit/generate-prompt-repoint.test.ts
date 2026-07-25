@@ -88,10 +88,10 @@ describe('generate-prompt.mjs repoint', () => {
     expect(bioPrompt.length).toBe(1);
   });
 
-  it('writes location map .prompt.md into content/locations/<slug>/', async () => {
+  it('writes location map .prompt.md into content/districts/centro/locations/<slug>/', async () => {
     const slug = 'repoint_test_loc';
     const cwd = path.join(TMP_BASE, 'cwd_loc');
-    const entityDir = path.join(cwd, 'content', 'locations', slug);
+    const entityDir = path.join(cwd, 'content', 'districts', 'centro', 'locations', slug);
     await fs.mkdir(entityDir, { recursive: true });
 
     const yamlContent = [

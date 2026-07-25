@@ -184,6 +184,11 @@ export function generateYaml(item: ContentPlanItem): string {
 }
 
 export function resolveFilePath(item: ContentPlanItem): string {
+  // Allow explicit filePath override (used by district locations)
+  if ((item as any).filePath) {
+    return (item as any).filePath as string;
+  }
+
   if (!/^[a-z0-9_]+$/.test(item.slug)) {
     throw new Error(`Invalid slug: ${item.slug}`);
   }
@@ -206,7 +211,7 @@ export function resolveFilePath(item: ContentPlanItem): string {
   const dir = dirMap[item.type];
   if (!dir) throw new Error(`Cannot resolve directory for type: ${item.type}`);
 
-  // Per-folder layout: content/<type>/<slug>/<prefix><slug>.yaml
+  // Per-folder layout: content/<type_path>/<slug>/<prefix><slug>.yaml
   const prefixMap: Record<ContentType, string> = {
     character: 'char_',
     scene: 'scene_',

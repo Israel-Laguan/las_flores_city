@@ -8,7 +8,7 @@
     "build": "tsc && node scripts/copyMigrations.js",
     "start": "node dist/server/src/index.js",
     "schema:migrate": "tsx src/database/migrate.ts",
-    "migrate": "tsx src/content/migrate.ts ../content",
+    "migrate": "tsx src/content/cli.ts ../content",
     "validate": "tsx src/content/validate.ts ../content",
     "validate:schema": "tsx src/content/validate.ts ../content --schema-only",
     "lint": "eslint --ext .ts src/",

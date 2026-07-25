@@ -4,7 +4,7 @@ export const VAULT_ITEM_IDS = [
   'c3d4e5f6-a7b8-9012-cdef-123456789012',
 ];
 
-export const ARIA_CHARACTER_ID = '123e4567-e89b-12d3-a456-426614174000';
+export const ARIA_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440001';
 
 export const TS_BASE = '2077-01-15T08:00:00.000Z';
 export const TS_PLUS_1S = '2077-01-15T08:00:01.000Z';

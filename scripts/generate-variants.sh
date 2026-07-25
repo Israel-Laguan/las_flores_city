@@ -51,7 +51,7 @@ discover_entities() {
   local type="$1"
   case "$type" in
     characters) find "$ROOT/content/characters" -maxdepth 1 -mindepth 1 -type d | sort ;;
-    locations)  find "$ROOT/content/locations" -maxdepth 1 -mindepth 1 -type d | sort ;;
+    locations)  find "$ROOT/content/districts" -mindepth 2 -maxdepth 3 -type d -path "*/locations/*" | sort ;;
     scenes)     find "$ROOT/content/scenes" -maxdepth 1 -mindepth 1 -type d | sort ;;
     *)          echo "Unknown type: $type"; exit 1 ;;
   esac

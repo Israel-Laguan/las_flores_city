@@ -8,7 +8,7 @@ Born into a prominent Las Flores family with deep roots in the city's social and
 
 As a young woman, Maria quickly established herself as a force within Las Flores' high society. Her natural elegance, charm, and keen intellect made her a sought-after presence at social events and fundraisers. Maria's beauty was legendary - with striking dark hair, piercing eyes, and a radiant smile that could light up any room.
 
-After marrying Jan in 2044, Maria embraced the role of wife and mother to their three children: Peter, Anna, and Lucas. She balanced her family responsibilities with an active social life, becoming known for hosting lavish galas that brought together Las Flores' elite. As her husband took over the helm of GLC from his father, Maria became increasingly involved in philanthropic efforts focused on education, healthcare, and poverty alleviation.
+After marrying Jan in 2045, Maria embraced the role of wife and mother to their three children: Anna, Peter, and Lucas. She balanced her family responsibilities with an active social life, becoming known for hosting lavish galas that brought together Las Flores' elite. As her husband took over the helm of GLC from his father, Maria became increasingly involved in philanthropic efforts focused on education, healthcare, and poverty alleviation.
 
 Despite her glamorous public persona, Maria had a compassionate heart and genuine desire to make a positive impact on her community. She worked tirelessly behind the scenes to support local charities, often using her influence to secure funding and raise awareness for causes she believed in.
 

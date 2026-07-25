@@ -25,6 +25,7 @@ export const YAMLCharacterSchema = z.object({
   avatar_url: z.string().url().optional(),
   portrait_urls: z.array(AssetEntrySchema).optional(),
   atlas_url: z.string().optional(),
+  available_dialogues: z.array(z.string().uuid()).optional(),
   biometric_refs: z.object({
     horizontal_face_sheet: z.string().url().optional(),
     vertical_face_sheet: z.string().url().optional(),
@@ -66,13 +67,15 @@ export const YAMLDialogueSchema = z.object({
   description: z.string().max(500).optional(),
   start_node_id: z.string(),
   nodes: z.record(z.string(), DialogueNodeSchema),
+  character_id: z.string().uuid().optional(),
+  scene_id: z.string().uuid().optional(),
+  mission_id: z.string().uuid().optional(),
+  dialogue_scope: z.enum(['character', 'scene', 'mission', 'onboarding', 'system']).default('character'),
   metadata: z.record(z.string(), z.any()).optional(),
   written_by: z.string().max(100).optional(),
   lore_ref: z.string().max(255).optional(),
   lore_path: safePath,
-  asset_paths: z.object({
-    portrait: safePath,
-  }).optional(),
+  asset_paths: z.object({ portrait: safePath }).optional(),
 });
 
 export type YAMLDialogue = z.infer<typeof YAMLDialogueSchema>;

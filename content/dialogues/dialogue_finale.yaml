@@ -2,6 +2,8 @@ id: "f1e2d3c4-b5a6-7890-abcd-ef0123456789"
 name: "The Meta-Plot Finale"
 description: "Vance confronts the Handler with the truth about Project Synthesis. The Handler must choose: remain loyal to the corporation, or break free."
 start_node_id: "finale_root"
+character_id: "3b2b8000-e29b-41d4-a716-446655440001"
+dialogue_scope: "system"
 nodes:
   finale_root:
     id: "finale_root"
@@ -64,5 +66,3 @@ metadata:
     - "alignment"
     - "loyalist"
     - "fugitive"
-  scene_id: "550e8400-e29b-41d4-a716-446655440002"
-  character_id: "3b2b8000-e29b-41d4-a716-446655440001"

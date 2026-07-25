@@ -14,11 +14,11 @@
 
 ## Overview
 
-Peter van der Meer, the charismatic eldest son of Jan and Maria van der Meer, was born into the privilege and expectation of Old Las Flores society. Groomed to be a leader in the Van der Meer family business, Peter's journey has been marked by personal evolution—from questioning his predetermined path to becoming a trailblazer for LGBTQ+ rights, all while proving himself as a highly capable, empathetic executive.
+Peter van der Meer, the charismatic second child of Jan and Maria van der Meer, was born into the privilege and expectation of Old Las Flores society. Groomed to be a leader in the Van der Meer family business, Peter's journey has been marked by personal evolution—from questioning his predetermined path to becoming a trailblazer for LGBTQ+ rights, all while proving himself as a highly capable, empathetic executive.
 
 ## Early Life & Marriage of Convenience
 
-Peter enjoyed a charmed childhood, attending exclusive schools and moving within the highest circles of Las Flores society. As the eldest son, he was expected to carry forward the legacy within Global Lithium Corp (GLC) and Van der Meer Industries.
+Peter enjoyed a charmed childhood, attending exclusive schools and moving within the highest circles of Las Flores society. As the eldest son of Jan and Maria, he was expected to carry forward the legacy within Global Lithium Corp (GLC) and Van der Meer Industries.
 
 In a marriage arranged largely to please their families, Peter married Rafaela, a stunning Brazilian woman he met while traveling abroad. Though they lacked romantic love, they sought to provide a stable home for their son, Peter van der Meer Jr. The marriage proved tumultuous as Rafaela struggled to adapt to life in Las Flores and the constant scrutiny of high society. After several years, they parted ways amicably. 
 
@@ -50,4 +50,4 @@ Peter possesses a complex character shaped by privilege, responsibility, and per
 - **Responsible:** Despite his personal struggles and journey, he has never shirked his family duties or business obligations.
 
 ## Related Lore
-- [Van der Meer Family](../organizations/families/van_der_meer/van_der_meer.md)
+- [Van der Meer Family](../../lore/organizations/families/van_der_meer/van_der_meer.md)
