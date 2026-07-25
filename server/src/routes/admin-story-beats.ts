@@ -148,7 +148,7 @@ adminStoryBeatsRouter.post('/', async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({
       success: false,
-      error: parsed.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; '),
+      error: parsed.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join('; '),
       timestamp: new Date().toISOString(),
     });
   }
@@ -207,7 +207,7 @@ adminStoryBeatsRouter.put('/:slug', async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({
       success: false,
-      error: parsed.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; '),
+      error: parsed.error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join('; '),
       timestamp: new Date().toISOString(),
     });
   }
