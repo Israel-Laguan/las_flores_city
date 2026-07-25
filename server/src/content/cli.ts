@@ -12,7 +12,7 @@ migrateContent(contentDir)
       console.log('\n💥 Migration failed!');
       if (result.errors.length > 0) {
         console.log('\nErrors:');
-        result.errors.forEach(e => console.log(`  - ${e}`));
+        result.errors.forEach(e => console.log(`  - ${typeof e === 'string' ? e : (e as any).message ?? String(e)}`));
       }
       process.exit(1);
     }

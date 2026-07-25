@@ -6,7 +6,6 @@ import { queryOLTP } from '../database/connection.js';
 import { setCache, deleteCache } from '../database/redis.js';
 import { sanitizeText } from './validate-xss.js';
 import type { AppliedMigration } from './migrate.js';
-import type { ContentType } from '@las-flores/shared';
 import {
   upsertCharacter,
   upsertDialogueTree,
@@ -20,23 +19,7 @@ import {
   upsertMapTile,
   upsertStoryBeat,
 } from './content-upserts.js';
-
-function getContentTypeFromPath(filePath: string): ContentType | null {
-  const normalizedPath = filePath.toLowerCase();
-  if (normalizedPath.includes('/characters/') || normalizedPath.includes('\\characters\\')) return 'character';
-  if (normalizedPath.includes('/dialogues/') || normalizedPath.includes('\\dialogues\\')) return 'dialogue';
-  if (normalizedPath.includes('/overlays/') || normalizedPath.includes('\\overlays\\')) return 'overlay';
-  if (normalizedPath.includes('/scenes/') || normalizedPath.includes('\\scenes\\')) return 'scene';
-  if (normalizedPath.includes('/gigs/') || normalizedPath.includes('\\gigs\\') || normalizedPath.includes('gigs.yaml')) return 'gig';
-  if (normalizedPath.includes('/locations/') || normalizedPath.includes('\\locations\\')) return 'location';
-  if (normalizedPath.includes('/vault/') || normalizedPath.includes('\\vault\\')) return 'vault';
-  if (normalizedPath.includes('/missions/') || normalizedPath.includes('\\missions\\') || normalizedPath.includes('/mysteries/') || normalizedPath.includes('\\mysteries\\')) return 'mission';
-  if (normalizedPath.includes('/stories/') || normalizedPath.includes('\\stories\\')) return 'story';
-  if (normalizedPath.includes('/shop/') || normalizedPath.includes('\\shop\\')) return 'shop_item';
-  if (normalizedPath.endsWith('story_beats.yaml') || normalizedPath.includes('/story_beats/') || normalizedPath.includes('\\story_beats\\')) return 'story_beat';
-  if (normalizedPath.endsWith('.yaml') && normalizedPath.includes('gig')) return 'gig';
-  return null;
-}
+import { getContentTypeFromPath } from './path-utils.js';
 
 async function processCharacterData(data: any): Promise<string> {
   return upsertCharacter(data);
