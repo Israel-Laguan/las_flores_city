@@ -31,9 +31,10 @@ test.beforeAll(async ({ request }) => {
 });
 
 async function injectAuth(page: Page) {
-  await page.request.post(`${API_BASE}/api/auth/login`, {
+  const res = await page.request.post(`${API_BASE}/api/auth/login`, {
     data: { email: testEmail, password: 'test1234' },
   });
+  expect(res.ok()).toBeTruthy();
 }
 
 test.beforeEach(async ({ page }) => {

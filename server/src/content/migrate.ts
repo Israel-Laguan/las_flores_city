@@ -162,18 +162,28 @@ async function recordMigration(
 
 async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
   const client = await oltpPool.connect();
-  const result = await client.query<{ pg_try_advisory_lock: boolean }>(
-    `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
-  );
-  if (result.rows[0].pg_try_advisory_lock) {
-    return client;
+  try {
+    const result = await client.query<{ pg_try_advisory_lock: boolean }>(
+      `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
+    );
+    if (result.rows[0].pg_try_advisory_lock) {
+      return client;
+    }
+    client.release();
+    return null;
+  } catch (error) {
+    client.release();
+    throw error;
   }
-  client.release();
-  return null;
 }
 
 async function releaseMigrationLock(client: pg.PoolClient): Promise<void> {
-  await client.query(`SELECT pg_advisory_unlock(hashtext('content_migration'))`);
+  try {
+    await client.query(`SELECT pg_advisory_unlock(hashtext('content_migration'))`);
+  } catch (error) {
+    client.release(true);
+    throw error;
+  }
   client.release();
 }
 

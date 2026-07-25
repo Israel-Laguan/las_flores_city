@@ -3,25 +3,24 @@ import { test, expect, Page } from '@playwright/test';
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 const ABOUT_US_URL = process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us';
 
-const testEmail = `menu-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
-const testUsername = `menu_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-test.beforeAll(async ({ request }) => {
-  const res = await request.post(`${AUTH_BASE}/api/auth/register`, {
+async function registerAndLogin(page: Page): Promise<void> {
+  const email = `menu-${uid()}@example.com`;
+  const username = `menu_${uid()}`;
+  const res = await page.request.post(`${AUTH_BASE}/api/auth/register`, {
     data: {
-      email: testEmail,
-      username: testUsername,
+      email,
+      username,
       display_name: 'Main Menu E2E',
       password: 'test1234',
     },
   });
   expect(res.ok()).toBeTruthy();
-});
-
-async function injectAuth(page: Page) {
-  await page.request.post(`${AUTH_BASE}/api/auth/login`, {
-    data: { email: testEmail, password: 'test1234' },
+  const loginRes = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
+    data: { email, password: 'test1234' },
   });
+  expect(loginRes.ok()).toBeTruthy();
 }
 
 test.describe('Main menu — normal operations', () => {
@@ -33,7 +32,7 @@ test.describe('Main menu — normal operations', () => {
 
   test.describe('About Us button', () => {
     test('main menu shows ABOUT US button after login', async ({ page }) => {
-      await injectAuth(page);
+      await registerAndLogin(page);
       await page.goto('/main');
       const aboutBtn = page.locator('.menu-btn[data-action="about"]');
       await expect(aboutBtn).toBeVisible();
@@ -41,7 +40,7 @@ test.describe('Main menu — normal operations', () => {
     });
 
     test('clicking ABOUT US opens the configured URL in a new tab', async ({ page }) => {
-      await injectAuth(page);
+      await registerAndLogin(page);
       await page.goto('/main');
 
       const [popup] = await Promise.all([
@@ -53,7 +52,7 @@ test.describe('Main menu — normal operations', () => {
     });
 
     test('clicking ABOUT US opens exactly one tab even after navigating away and back', async ({ page }) => {
-      await injectAuth(page);
+      await registerAndLogin(page);
       await page.goto('/main');
 
       // Wait for page to fully load and settle
