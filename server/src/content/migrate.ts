@@ -3,8 +3,9 @@ import path from 'path';
 import { glob } from 'glob';
 import crypto from 'crypto';
 import yaml from 'js-yaml';
+import type pg from 'pg';
 import type { ContentType } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { oltpPool, queryOLTP } from '../database/connection.js';
 import { invalidatePattern } from '../database/redis.js';
 import { validateContent } from './validate.js';
 import { processContentFile } from './upsert.js';
@@ -159,15 +160,21 @@ async function recordMigration(
   );
 }
 
-async function acquireMigrationLock(): Promise<boolean> {
-  const result = await queryOLTP<{ pg_try_advisory_lock: boolean }>(
+async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
+  const client = await oltpPool.connect();
+  const result = await client.query<{ pg_try_advisory_lock: boolean }>(
     `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
   );
-  return result.rows[0].pg_try_advisory_lock;
+  if (result.rows[0].pg_try_advisory_lock) {
+    return client;
+  }
+  client.release();
+  return null;
 }
 
-async function releaseMigrationLock(): Promise<void> {
-  await queryOLTP(`SELECT pg_advisory_unlock(hashtext('content_migration'))`);
+async function releaseMigrationLock(client: pg.PoolClient): Promise<void> {
+  await client.query(`SELECT pg_advisory_unlock(hashtext('content_migration'))`);
+  client.release();
 }
 
 async function dropDialogueTreeFKConstraints(): Promise<void> {
@@ -219,8 +226,8 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     appliedMigrations: [],
   };
 
-  const lockAcquired = await acquireMigrationLock();
-  if (!lockAcquired) {
+  const lockClient = await acquireMigrationLock();
+  if (!lockClient) {
     console.log('⏳ Another migration is in progress — skipping this run.');
     result.success = false;
     result.errors.push('Another content migration is already running');
@@ -292,7 +299,7 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     console.error('❌ Migration failed:', error);
     return result;
   } finally {
-    await releaseMigrationLock();
+    await releaseMigrationLock(lockClient);
   }
 }
 
@@ -321,7 +328,7 @@ async function runPostMigrationTasks(result: MigrationResult): Promise<void> {
 
   await invalidateCaches();
 
-  if (result.filesFailed > 0) {
+  if (result.filesFailed > 0 || result.errors.length > 0) {
     result.success = false;
   }
 }
