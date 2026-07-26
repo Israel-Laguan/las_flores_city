@@ -313,3 +313,56 @@ ${CONTENT_TYPES.join(', ')}
 Return a JSON object with an "items" key containing an array of the modified items only. Each item must keep its original id. Output ONLY the JSON object, no markdown fences or explanation.`;
 }
 
+// ── Fill Fields Prompt Builder ─────────────────────────────────────────
+
+export function buildFillFieldsPrompt(
+  item: ContentPlanItem,
+  unfilledFields: string[],
+  context: ExistingContentContext,
+): string {
+  const e = formatExistingContent(context);
+
+  return `You are a content writing assistant for Las Flores 2077, a narrative cyberpunk game.
+
+## Task
+Fill in the empty/TODO fields for the following content item. Return ONLY the requested fields with appropriate values.
+
+## Content item to fill
+Type: ${item.type}
+Name: ${item.name}
+Current fields:
+${JSON.stringify(item.fields, null, 2)}
+
+## Fields to fill
+${unfilledFields.join(', ')}
+
+## Existing content (for cross-reference)
+- Characters: ${e.chars}
+- Scenes: ${e.scenes}
+- Dialogues: ${e.dialogues}
+- Missions: ${e.missions}
+- Stories: ${e.stories}
+- Overlays: ${e.overlays}
+- Locations: ${e.locations}
+
+## Rules
+1. Write atmospheric, cyberpunk-noir prose appropriate for each field.
+2. Keep descriptions concise but evocative (2-3 sentences max for descriptions).
+3. Ensure consistency with the item's name, type, and any existing field values.
+4. Reference existing content by name where appropriate for cross-referencing.
+5. For metadata fields, use short, specific values (e.g. "Nomad" not "He is part of the Nomad faction").
+
+## Output format
+Return a JSON object with a "fields" key containing only the filled fields, and an optional "lore_refs" array listing any existing content IDs referenced.
+Example:
+{
+  "fields": {
+    "description": "A weathered bartender with chrome-lined eyes...",
+    "metadata.personality": "Stoic, observant, speaks in clipped sentences"
+  },
+  "lore_refs": ["character-diego-id"]
+}
+
+Output ONLY the JSON object, no markdown fences or explanation.`;
+}
+
