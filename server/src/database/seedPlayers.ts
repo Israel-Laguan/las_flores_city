@@ -23,9 +23,14 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
  *
  * Run with: npm run seed:players
  */
+const ALLOWED_SEED_ENVS = new Set(['development', 'staging', 'test', 'dev']);
+
 export async function seedPlayers(): Promise<void> {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('Refusing to seed players in production (NODE_ENV=production).');
+  const nodeEnv = process.env.NODE_ENV;
+  if (!nodeEnv || !ALLOWED_SEED_ENVS.has(nodeEnv)) {
+    throw new Error(
+      `Refusing to seed players: NODE_ENV="${nodeEnv || '<unset>'}" is not in the allowlist for seeding.`
+    );
   }
 
   const sqlPath = path.resolve(process.cwd(), 'scripts', 'seed_players.sql');

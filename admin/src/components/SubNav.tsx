@@ -26,6 +26,7 @@ export default function SubNav({ items }: SubNavProps) {
               <Link
                 href={item.href}
                 className={`${styles.subNavLink} ${active ? styles.subNavLinkActive : ''}`}
+                {...(active ? { 'aria-current': 'page' as const } : {})}
               >
                 {item.label}
               </Link>

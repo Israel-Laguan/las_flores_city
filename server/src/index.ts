@@ -212,7 +212,10 @@ async function initializeServer() {
   await resetOrphanedFillJobs();
 
   // Seed player accounts in non-production environments
-  await seedPlayers();
+  const ALLOWED_SEED_ENVS = new Set(['development', 'staging', 'test', 'dev']);
+  if (ALLOWED_SEED_ENVS.has(process.env.NODE_ENV || '')) {
+    await seedPlayers();
+  }
 
   // Start server
   app.listen(PORT, () => {

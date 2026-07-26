@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 260px;
+  width: var(--sidebar-width, 260px);
   background: var(--panel-bg);
   border-right: 1px solid var(--border);
   display: flex;
@@ -13,8 +13,12 @@
   overflow-y: auto;
 }
 
-.sidebarCollapsed {
-  transform: translateX(-100%);
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sectionToggle,
+  .navLink {
+    transition: none;
+  }
 }
 
 .sidebarHeader {
@@ -49,7 +53,7 @@
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: bold;
-  color: #888;
+  color: var(--text-secondary, #888);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -61,6 +65,12 @@
 .sectionToggle {
   font-size: 0.7rem;
   transition: transform 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sectionToggle {
+    transition: none;
+  }
 }
 
 .sectionToggleCollapsed {
@@ -87,19 +97,19 @@
 
 .navLink:hover {
   background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+  color: var(--text);
 }
 
 .navLinkActive {
   background: rgba(255, 255, 255, 0.06);
   border-left-color: var(--accent);
-  color: #fff;
+  color: var(--text);
   font-weight: 600;
 }
 
 .navLinkSubActive {
   border-left-color: var(--accent);
-  color: #ccc;
+  color: var(--text-muted, #ccc);
 }
 
 .subNav {
@@ -115,7 +125,7 @@
   display: block;
   padding: 0.3rem 1.5rem 0.3rem 2.5rem;
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-muted, #999);
   text-decoration: none;
   border-left: 2px solid transparent;
   transition: background 0.15s ease, color 0.15s ease;
@@ -123,11 +133,11 @@
 
 .subNavLink:hover {
   background: rgba(255, 255, 255, 0.03);
-  color: #ccc;
+  color: var(--text-muted, #ccc);
 }
 
 .subNavLinkActive {
-  color: #fff;
+  color: var(--text);
   border-left-color: var(--accent);
   background: rgba(255, 255, 255, 0.04);
 }
@@ -177,6 +187,10 @@
 
   .sidebar:not(.sidebarCollapsed) {
     transform: translateX(0);
+  }
+
+  .sidebarCollapsed {
+    transform: translateX(-100%);
   }
 
   .mobileToggle {

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Breadcrumbs.module.css';
 
-const groupLabels: Record<string, string> = {
+const sectionLabels: Record<string, string> = {
   'content': 'Content',
   'creation': 'Creation',
   'operations': 'Operations',
@@ -18,14 +18,7 @@ function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }
   let accumulated = '';
   for (const part of parts) {
     accumulated += `/${part}`;
-    const groupMatch = accumulated.match(/^\/\(([^)]+)\)/);
-    if (groupMatch) {
-      const groupKey = groupMatch[1];
-      crumbs.push({ label: groupLabels[groupKey] || groupKey, href: accumulated });
-      continue;
-    }
-
-    const label = part
+    const label = sectionLabels[part] || part
       .replace(/-/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase());
     crumbs.push({ label, href: accumulated });

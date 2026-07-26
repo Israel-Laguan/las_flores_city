@@ -168,8 +168,7 @@ podman run -d --name las-flores-admin \
   -w /app \
   -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
   -e INTERNAL_SERVER_URL=http://las-flores-server:3000 \
-  docker.io/library/node:20-alpine \
-  sh -c "cd admin && npx next dev --webpack"
+  las-flores-admin
 ```
 
 Verify admin is running:

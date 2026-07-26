@@ -19,13 +19,16 @@ function QuickStats({ counts, loading }: { counts: StatsData['counts']; loading:
     { value: loading ? '...' : String(counts.mysteries), label: 'Mysteries' },
   ];
   return (
-    <div className={styles.statsGrid}>
-      {statCards.map(stat => (
-        <div key={stat.label} className={styles.statCard}>
-          <div className={styles.statValue}>{stat.value}</div>
-          <div className={styles.statLabel}>{stat.label}</div>
-        </div>
-      ))}
+    <div className={styles.quickStats}>
+      <h2 className={styles.quickStatsHeading}>Quick Stats</h2>
+      <div className={styles.statsGrid}>
+        {statCards.map(stat => (
+          <div key={stat.label} className={styles.statCard}>
+            <div className={styles.statValue}>{stat.value}</div>
+            <div className={styles.statLabel}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

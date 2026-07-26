@@ -33,21 +33,28 @@ export async function POST(request: Request) {
 
     const setCookieHeader = response.headers.get('set-cookie');
 
-    // Set the cookie using the cookies() API from next/headers.
-    // This is the only reliable way to set cookies in Next.js Route Handlers
-    // that works in both dev and production modes.
     if (setCookieHeader) {
-      const match = setCookieHeader.match(/^jwt_session=([^;]+)/);
+      const match = setCookieHeader.match(/jwt_session=([^;]+)/);
       if (match) {
         const cookieStore = await cookies();
         cookieStore.set('jwt_session', match[1], {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
-          maxAge: 60 * 60 * 24, // 24 hours
+          maxAge: 60 * 60 * 24,
           path: '/',
         });
+      } else {
+        return NextResponse.json(
+          { success: false, error: 'Missing or malformed session cookie' },
+          { status: 401 }
+        );
       }
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'No session cookie in response' },
+        { status: 401 }
+      );
     }
 
     return NextResponse.json({ success: true });
