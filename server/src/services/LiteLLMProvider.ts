@@ -234,19 +234,20 @@ export class LiteLLMProvider implements LLMProvider {
       return { plan: result as ContentPlan, usage };
     };
 
-    try {
-      return await attemptOutline(initialMaxItems);
-    } catch (err: any) {
-      if (err.message?.includes('LLM output truncated')) {
-        console.log(`[LiteLLMProvider] Outline truncated, retrying with reduced item count`);
-        const reducedMaxItems = Math.floor(initialMaxItems / 2);
-        if (reducedMaxItems < 3) {
+    let maxItems = initialMaxItems;
+    for (;;) {
+      try {
+        return await attemptOutline(maxItems);
+      } catch (err: any) {
+        if (!err.message?.includes('LLM output truncated')) throw err;
+        const reduced = Math.floor(maxItems / 2);
+        if (reduced < 3) {
           console.warn(`[LiteLLMProvider] Item count already at minimum, not retrying`);
           throw err;
         }
-        return await attemptOutline(reducedMaxItems);
+        console.log(`[LiteLLMProvider] Outline truncated, retrying with reduced item count (${reduced})`);
+        maxItems = reduced;
       }
-      throw err;
     }
   }
 
@@ -273,7 +274,12 @@ export class LiteLLMProvider implements LLMProvider {
   async extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
     const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
     const { result } = await this.callLLM(systemPrompt, chunk, undefined, maxTokens);
-    return { entities: (result as any).entities || [] };
+    const raw = (result as any).entities || [];
+    const entities = raw.filter((e: any) =>
+      e && typeof e.name === 'string' && e.name.trim() &&
+      typeof e.type === 'string' && e.type.trim()
+    );
+    return { entities };
   }
 
 }

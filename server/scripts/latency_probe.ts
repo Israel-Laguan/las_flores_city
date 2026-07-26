@@ -88,21 +88,21 @@ async function main() {
 
   // Big-story assertions in FULL_INPUT mode
   if (FULL_INPUT) {
-    const planCheck = await req<{ success: boolean; data: { plan: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
-    const planData = planCheck.data?.data?.plan;
+    const planCheck = await req<{ success: boolean; data: { plan_json: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+    const planData = planCheck.data?.data?.plan_json;
     const itemCount = planData?.items?.length ?? 0;
-    console.log('[5] Big-story assertions');
+    console.log('[4] Big-story assertions');
     console.log('   Item count: ' + itemCount);
     if (itemCount < 3) {
       console.error('FAIL: Expected at least 3 items from full input, got ' + itemCount);
       await req('DELETE', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
       process.exit(1);
     }
-    console.log('   All items filled: yes (status=done)');
+    console.log('   Item count >= 3: yes');
     console.log('   ok\n');
   }
 
-  console.log('[4] Approve-and-solidify');
+  console.log('[5] Approve-and-solidify');
   const t2 = Date.now();
   const getPlan = await req<{ success: boolean; data: { plan: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
   if (!getPlan.ok || !getPlan.data?.data?.plan) {

@@ -54,6 +54,12 @@ async function persistGenerate(
 function makeGeneratePlan(cb: HandlersDeps) {
   const { setLoading, setError, setPlan, setStep, setPlanId, setGenStatus, description } = cb;
   return useCallback(async () => {
+    // Cancel any pending poll timer from a previous generation
+    if (_activePollTimer !== null) {
+      clearTimeout(_activePollTimer);
+      _activePollTimer = null;
+    }
+
     const data = await withLoading(setLoading, setError, () => api.generatePlan(description));
     if (!data?.success || !data.data) {
       if (data) setError(data.error || 'Failed to generate plan');
@@ -67,24 +73,37 @@ function makeGeneratePlan(cb: HandlersDeps) {
 
     if (status === 'generating') {
       const terminalStates = ['done', 'failed', 'proposed'];
+      const MAX_POLL_RETRIES = 3;
+      let pollRetries = 0;
       const poll = async () => {
         try {
           const statusRes = await api.getGenerationStatus(planId);
           if (statusRes.success && statusRes.data) {
-            setGenStatus(statusRes.data);
+            pollRetries = 0;
+            setGenStatus(statusRes.data as GenerationStatus);
             if (!terminalStates.includes(statusRes.data.status)) {
               await refreshPlanFromDb(planId, setPlan);
-              setTimeout(poll, 1500);
+              _activePollTimer = setTimeout(poll, 1500);
             } else {
               await refreshPlanFromDb(planId, setPlan);
+            }
+          } else {
+            pollRetries++;
+            if (pollRetries <= MAX_POLL_RETRIES) {
+              _activePollTimer = setTimeout(poll, 1500 * pollRetries);
             }
           }
         } catch (err) {
           console.warn('Generation status poll failed:', err);
+          pollRetries++;
+          if (pollRetries <= MAX_POLL_RETRIES) {
+            _activePollTimer = setTimeout(poll, 1500 * pollRetries);
+          }
         }
       };
-      setTimeout(poll, 1500);
+      _activePollTimer = setTimeout(poll, 1500);
     } else {
+      setGenStatus(data.data as GenerationStatus);
       await refreshPlanFromDb(planId, setPlan);
     }
   }, [description, setLoading, setError, setPlan, setStep, setPlanId, setGenStatus]);
@@ -200,6 +219,8 @@ function makeRegenerateLore(cb: HandlersDeps) {
 }
 
 type HandlersDeps = Callbacks;
+
+let _activePollTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function createStoryPlanHandlers(cb: Callbacks) {
   const {

@@ -10,6 +10,7 @@ import { getFieldsForType, type FieldDefinition } from './FieldDefinitions';
 import LoreViewer from './LoreViewer';
 import * as api from '../hooks/useStoryBuilderApi';
 import styles from './ContentCard.module.css';
+import type { GenerationItemStatus } from '../types';
 
 const TYPE_ICONS: Record<string, string> = {
   character: '\u{1F464}',
@@ -67,7 +68,7 @@ interface ContentCardProps {
   onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
   draftAssets?: api.DraftAsset[];
   draftLoading?: boolean;
-  fillStatus?: { status: string; error?: string };
+  fillStatus?: { status: GenerationItemStatus; error?: string };
 }
 
 function getNestedValue(obj: Record<string, any>, path: string): string {
@@ -314,7 +315,7 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
           <span className="card__meta">
             {item.type} &middot; {item.action}
             {fillStatus && (
-              <span className={cn(styles.fillChip, styles[`fillChip_${fillStatus.status}`])}>
+              <span className={cn(styles.fillChip, styles[`fillChip_${fillStatus.status}`])} title={fillStatus.error}>
                 {fillStatus.status}
               </span>
             )}

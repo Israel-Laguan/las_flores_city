@@ -27,13 +27,14 @@ export function resolvePromptFile(prompt_rel: string): string {
  */
 export function getPromptRoots(): string[] {
   const contentDir = resolveContentDir();
+  const projectRoot = path.resolve(contentDir, '..');
   return [
     getPromptRoot(),
     path.resolve(contentDir, 'characters'),
     path.resolve(contentDir, 'districts'),
     path.resolve(contentDir, 'scenes'),
     path.resolve(contentDir, 'overlays'),
-    path.resolve(process.cwd(), 'docs/lore/shared/assets'),
+    path.resolve(projectRoot, 'docs/lore/shared/assets'),
   ];
 }
 

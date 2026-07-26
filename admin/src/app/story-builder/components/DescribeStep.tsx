@@ -10,7 +10,7 @@ function getLengthGuidance(len: number): string {
   if (len === 0) return '';
   if (len < 500) return 'Short and sweet works great — a sentence or two is enough for a focused plan.';
   if (len < 5_000) return 'Good length. The AI will extract entities and generate a structured plan.';
-  if (len < 15_000) return 'Longer input supported. Fill may take a bit longer.';
+  if (len < 15_000) return 'Longer input supported. Generation may take a bit longer.';
   return 'Very long input. Consider breaking into smaller plans for faster results.';
 }
 
@@ -164,12 +164,14 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
         <button
           className={styles.examplesToggle}
           type="button"
+          aria-expanded={showExamples}
+          aria-controls="examples-panel"
           onClick={() => setShowExamples(!showExamples)}
         >
           {showExamples ? '▾' : '▸'} What makes a good brief?
         </button>
         {showExamples && (
-          <div className={styles.examples}>
+          <div id="examples-panel" className={styles.examples}>
             <div className={styles.exampleItem}>
               <span className={styles.exampleLabel}>Quick request</span>
               <p className={styles.exampleText}>

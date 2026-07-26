@@ -137,6 +137,10 @@ export class ContentPlanService {
     }
     console.log(`[ContentPlanService] Extracted ${allCandidates.length} entity candidates`);
 
+    if (allCandidates.length === 0 && chunks.length > 1) {
+      console.warn(`[ContentPlanService] All ${chunks.length} chunks failed entity extraction — falling back to truncated description`);
+    }
+
     // 3. Merge/dedupe
     const merged = mergeCandidates(allCandidates);
     console.log(`[ContentPlanService] Merged to ${merged.length} unique entities`);

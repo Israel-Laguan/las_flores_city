@@ -53,13 +53,14 @@ export default function ReviewStep({
   const publishedNeeds = allNeeds.filter(n => n.status === 'published');
 
   // Build a lookup from genStatus items for quick access per ContentCard
-  const genStatusByItem = new Map<string, { status: string; error?: string }>();
+  const genStatusByItem = new Map<string, { status: import('../types').GenerationItemStatus; error?: string }>();
   if (genStatus?.items) {
     for (const item of genStatus.items) {
       genStatusByItem.set(item.itemId, item);
     }
   }
-  const isFilling = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending');
+  const isFilling = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating');
+  const isGenerationActive = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating');
 
   return (
     <div className={styles.section}>
@@ -152,7 +153,7 @@ export default function ReviewStep({
         <button
           className={cn(styles.shipButton, styles.shipPrimary)}
           onClick={onApproveAndShip}
-          disabled={approving || !planId}
+          disabled={approving || !planId || !!isGenerationActive}
         >
           {approving ? 'Approving & Shipping…' : 'Approve & Ship →'}
         </button>

@@ -215,35 +215,28 @@
 
 /* Fill status chips */
 .fillChip {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  composes: todoBadge;
 }
 
 .fillChip_pending {
-  background: rgba(150, 150, 150, 0.15);
-  color: #999;
+  background: var(--border);
+  color: var(--muted);
 }
 
 .fillChip_filling {
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--warning, #f59e0b);
+  background: var(--warning-bg, rgba(245, 158, 11, 0.15));
+  color: var(--warning);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .fillChip_done {
-  background: rgba(0, 200, 150, 0.15);
-  color: #00c896;
+  background: var(--accent-bg, rgba(0, 200, 150, 0.15));
+  color: var(--accent);
 }
 
 .fillChip_failed {
-  background: rgba(255, 80, 80, 0.15);
-  color: #ff5050;
+  background: var(--danger-bg, rgba(255, 80, 80, 0.15));
+  color: var(--danger);
 }
 
 @keyframes pulse {

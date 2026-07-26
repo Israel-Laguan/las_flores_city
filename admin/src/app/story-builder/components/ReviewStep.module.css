@@ -180,17 +180,17 @@
 /* Fallback warning banner */
 .fallbackBanner {
   padding: 0.6rem 0.85rem;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: var(--warning-bg, rgba(245, 158, 11, 0.1));
+  border: 1px solid var(--warning-border, rgba(245, 158, 11, 0.3));
   border-radius: 5px;
-  color: var(--warning, #f59e0b);
+  color: var(--warning);
   font-size: 0.85rem;
   margin-bottom: 1rem;
   line-height: 1.4;
 }
 
 .fallbackBanner strong {
-  color: var(--warning, #f59e0b);
+  color: var(--warning);
 }
 
 /* Fill progress */
@@ -215,7 +215,7 @@
 
 .progressFailed {
   font-size: 0.75rem;
-  color: var(--danger, #ff5050);
+  color: var(--danger);
   font-weight: 500;
 }
 

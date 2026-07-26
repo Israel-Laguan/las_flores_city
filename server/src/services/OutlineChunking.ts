@@ -38,7 +38,13 @@ export function chunkDescription(description: string, maxChars: number): string[
         chunks.push(buffer.trim());
         buffer = '';
       }
-      buffer += para + '\n\n';
+      if (para.length > maxChars) {
+        for (let i = 0; i < para.length; i += maxChars) {
+          chunks.push(para.slice(i, i + maxChars));
+        }
+      } else {
+        buffer += para + '\n\n';
+      }
     }
     if (buffer.trim()) chunks.push(buffer.trim());
   }
@@ -47,10 +53,10 @@ export function chunkDescription(description: string, maxChars: number): string[
 }
 
 /**
- * Normalize a name for deduplication: lowercase, strip non-alphanumeric.
+ * Normalize a name for deduplication: lowercase, strip separators (keep Unicode letters/numbers).
  */
 export function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return String(name || '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
 }
 
 /**
@@ -61,7 +67,7 @@ export function mergeCandidates(allCandidates: EntityCandidate[]): EntityCandida
   const seen = new Map<string, EntityCandidate>();
 
   for (const candidate of allCandidates) {
-    const key = `${normalizeName(candidate.name)}:${candidate.type}`;
+    const key = `${normalizeName(candidate.name)}:${String(candidate.type || '')}`;
     const existing = seen.get(key);
     if (!existing) {
       seen.set(key, candidate);
