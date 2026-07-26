@@ -97,11 +97,11 @@ The story-processing skill's "Biography Check" (lore = past, beats = player's pr
 
 Recommended scope: **Phase 1 + 2** as one milestone — Phase 1 makes failures visible, Phase 2 makes big stories actually work; items 6–7 are cheap and directly serve content order/completeness. Phase 3 follows once two-pass ingestion lands.
 
-**Decision (2026-07-25)**: implementation deferred; this document captures the review. When scheduling, prefer the phase order above.
+**Decision (2026-07-25)**: implementation deferred initially; all phases have since been implemented. This document is kept as a historical review record.
 
 ---
 
-## 6. Verification (when implemented)
+## 6. Verification
 
 Per the AGENTS.md checklist:
 

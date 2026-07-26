@@ -132,16 +132,9 @@ Standalone script to bulk-fill existing TODO placeholders in content files that 
 
 ### 4.1 Content Directory Path Resolution
 
-**Problem**: `LoreGenerator.ts` and `PromptFileGenerator.ts` use `path.resolve(process.cwd(), 'content')` which resolves to `/app/server/content` instead of `/app/content` when running from the server directory.
+**Problem**: `LoreGenerator.ts` and `PromptFileGenerator.ts` used `path.resolve(process.cwd(), 'content')` which resolves to `/app/server/content` instead of `/app/content` when running from the server directory.
 
-**Current State**:
-- `StoryBuilderLore.ts` — FIXED (uses `__dirname`-relative via `resolveContentDir()`)
-- `LoreGenerator.ts:30,98` — NOT FIXED
-- `PromptFileGenerator.ts:33,105` — NOT FIXED
-
-**Fix**: Update both files to use `resolveContentDir()` from `StoryBuilderLore.ts`.
-
-**Workaround** (used in `fillExistingTodos.ts`): Uses `process.chdir()` to temporarily change working directory to project root before calling the generation functions.
+**Current State**: FIXED. `LoreGenerator.ts` uses `resolveContentDir()` from `StoryBuilderLore.ts`. `PromptFileGenerator.ts` takes `contentDir` as a parameter — callers pass the correct resolved path.
 
 **Cleanup**: If you previously ran without the fix, check for and remove any `server/content/` directory that may have been created.
 
@@ -262,4 +255,7 @@ INPUT_FILE=~/Downloads/posts-compilation-complete.md \
 | `LLM_OUTLINE_MODEL` | `<LLM_MODEL>` | Alternative model for outline fallback |
 | `PLAN_FILL_CONCURRENCY` | `3` | Parallel fill workers |
 | `PLAN_OUTLINE_CONTEXT_DEPTH` | `names` | Context depth for outline |
+| `PLAN_OUTLINE_MAX_INPUT_CHARS` | `10000` | Input size threshold for two-pass chunked ingestion |
+| `LLM_OUTLINE_MAX_TOKENS` | `4096` | Max tokens on outline LLM calls |
+| `LLM_OUTLINE_INITIAL_MAX_ITEMS` | `15` | Initial item count cap for outline generation |
 | `PLAN_FILL_TIMEOUT_MS` | `120000` | Per-item fill timeout |
