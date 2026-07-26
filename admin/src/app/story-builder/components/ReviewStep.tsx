@@ -59,7 +59,6 @@ export default function ReviewStep({
       genStatusByItem.set(item.itemId, item);
     }
   }
-  const isFilling = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating');
   const isGenerationActive = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating');
 
   return (
@@ -77,7 +76,7 @@ export default function ReviewStep({
         </div>
       )}
 
-      {isFilling && genStatus.progress && genStatus.progress.total > 0 && (
+      {isGenerationActive && genStatus.progress && genStatus.progress.total > 0 && (
         <div className={styles.progressSection}>
           <div className={styles.progressHeader}>
             <span className={styles.progressLabel}>

@@ -274,7 +274,7 @@ export class LiteLLMProvider implements LLMProvider {
   async extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
     const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
     const { result } = await this.callLLM(systemPrompt, chunk, undefined, maxTokens);
-    const raw = (result as any).entities || [];
+    const raw = Array.isArray((result as any).entities) ? (result as any).entities : [];
     const entities = raw.filter((e: any) =>
       e && typeof e.name === 'string' && e.name.trim() &&
       typeof e.type === 'string' && e.type.trim()

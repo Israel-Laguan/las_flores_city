@@ -10,6 +10,7 @@ export interface EntityCandidate {
  * sections that still exceed the limit.
  */
 export function chunkDescription(description: string, maxChars: number): string[] {
+  maxChars = Math.max(1, maxChars);
   if (description.length <= maxChars) return [description];
 
   // Split by heading lines (## or ###)
