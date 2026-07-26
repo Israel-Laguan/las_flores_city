@@ -8,9 +8,9 @@ const { Pool } = pg;
 
 // Dedicated test UUID — matches content/missions/mission_great_lithium_leak.yaml; cleaned up in afterAll.
 const MYSTERY_ID = 'a0000000-e29b-41d4-a716-446655440001';
-const MISSION_FILE = 'missions/mission_great_lithium_leak.yaml';
+const MISSION_FILE = 'missions/great_lithium_leak/mission_great_lithium_leak.yaml';
 const VAULT_FILE = 'vault/great_lithium_leak_clues.yaml';
-const OVERLAY_FILE = 'overlays/overlay_great_lithium_leak.yaml';
+const OVERLAY_FILE = 'overlays/great_lithium_leak/overlay_great_lithium_leak.yaml';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
@@ -101,7 +101,13 @@ describe('Migration drift guard', () => {
     const missing = await pool.query('SELECT id FROM mysteries WHERE id = $1', [MYSTERY_ID]);
     expect(missing.rows).toHaveLength(0);
 
-    const result = await migrateContent(CONTENT_DIR);
+    // NOTE: migrateContent acquires a global advisory lock, so passing specific
+    // file paths does NOT prevent contention with parallel tests. This test may
+    // be flaky under parallel execution.
+    const missionPath = path.resolve(CONTENT_DIR, MISSION_FILE);
+    const vaultPath = path.resolve(CONTENT_DIR, VAULT_FILE);
+    const overlayPath = path.resolve(CONTENT_DIR, OVERLAY_FILE);
+    const result = await migrateContent(CONTENT_DIR, [missionPath, vaultPath, overlayPath]);
     expect(result.success).toBe(true);
     expect(result.filesFailed).toBe(0);
 

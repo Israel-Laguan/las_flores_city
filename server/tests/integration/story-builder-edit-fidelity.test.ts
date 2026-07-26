@@ -108,9 +108,9 @@ describe('M13 edit fidelity: edit → refine → DB persistence', () => {
     mockQueryOLTP.mockImplementation(async (sql: string, params?: any[]) => {
       const sqlStr = String(sql);
 
-      // INSERT (refine versioning)
+      // INSERT (refine versioning) — $3 is the plan_json
       if (sqlStr.includes('INSERT INTO content_plans') && sqlStr.includes('parent_plan_id')) {
-        storedPlanJson = params?.[1] ?? editedPlan;
+        storedPlanJson = params?.[2] ?? editedPlan;
         return { rows: [{ id: NEW_PLAN_ID }], rowCount: 1 } as any;
       }
 

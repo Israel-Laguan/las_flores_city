@@ -24,7 +24,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     handleRegenerateLore,
     handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
-    addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem,
+    addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem, addItemFromRoster, handleRefineItem,
     goBack, planId, solidifyResult, genStatus,
   } = useStoryBuilder(initialPlanId);
 
@@ -74,6 +74,8 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           onUpdateItem={updateItemField}
           onRemoveItem={removeItem}
           onAddItem={addItem}
+          onAddFromRoster={addItemFromRoster}
+          onRefineItem={handleRefineItem}
           onAssetPathRemove={removeAssetPath}
           onDependsOnChange={updateItemDependsOn}
           onUpdateLink={updateLink}

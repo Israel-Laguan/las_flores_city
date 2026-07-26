@@ -1,23 +1,30 @@
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 import type { ExistingContentContext } from './types/LLMTypes.js';
+import { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES } from './LLMPromptExtractors.js';
 
-// ── Content Types ──────────────────────────────────────────────────────
+export { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES };
 
-const CONTENT_TYPES = [
-  'character', 'dialogue', 'scene', 'overlay', 'mission',
-  'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault',
-];
+// ── Shared Formatting Helpers ───────────────────────────────────────────
+
+function formatExistingContent(context: ExistingContentContext): {
+  chars: string; scenes: string; dialogues: string; missions: string;
+  stories: string; overlays: string; locations: string;
+} {
+  return {
+    chars: context.characters.map((c) => `${c.name} (id: ${c.id})${c.role ? `, role: ${c.role}` : ''}${c.faction ? `, faction: ${c.faction}` : ''}`).join(', ') || '(none)',
+    scenes: context.scenes.map((s) => `${s.name} (id: ${s.id})${s.district ? `, district: ${s.district}` : ''}${s.mood ? `, mood: ${s.mood}` : ''}`).join(', ') || '(none)',
+    dialogues: context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)',
+    missions: context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)',
+    stories: context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)',
+    overlays: context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)',
+    locations: context.locations.map((l) => `${l.name} (id: ${l.id})${l.district ? `, district: ${l.district}` : ''}${l.daytime ? `, daytime: ${l.daytime}` : ''}${l.nightlife ? `, nightlife: ${l.nightlife}` : ''}`).join(', ') || '(none)',
+  };
+}
 
 // ── System Prompt Builder ────────────────────────────────────────────────
 
 export function buildSystemPrompt(context: ExistingContentContext): string {
-  const existingChars = context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)';
-  const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
-  const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
-  const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
-  const existingStories = context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)';
-  const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
-  const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
+  const e = formatExistingContent(context);
 
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
@@ -42,13 +49,18 @@ ${CONTENT_TYPES.join(', ')}
 - vault: name, description, item_type
 
 ## Existing content (avoid duplicates)
-- Characters: ${existingChars}
-- Scenes: ${existingScenes}
-- Dialogues: ${existingDialogues}
-- Missions: ${existingMissions}
-- Stories: ${existingStories}
-- Overlays: ${existingOverlays}
-- Locations: ${existingLocations}
+- Characters: ${e.chars}
+- Scenes: ${e.scenes}
+- Dialogues: ${e.dialogues}
+- Missions: ${e.missions}
+- Stories: ${e.stories}
+- Overlays: ${e.overlays}
+- Locations: ${e.locations}
+
+## Story quality rules
+- Biography Check: story_beat items must describe the PLAYER's active involvement in the present, not NPC backstory. NPC history belongs in lore files, not in beats.
+- Player agency: every quest/mission arc should support three branches — engage (help/ally), reject (walk away + consequences), and exploit (betrayal/mercenary outcome). Use dependsOn or separate items to represent branches.
+- Tone: cyberpunk noir — punchy, atmospheric, avoid long exposition dumps in a single node.
 
 ## Output format
 Return a single JSON object matching this schema:
@@ -165,6 +177,11 @@ Return a single JSON object matching this schema:
   "status": "draft"
 }
 
+## Story quality rules
+- Biography Check: story_beat items must describe the PLAYER's active involvement in the present, not NPC backstory. NPC history belongs in lore files, not in beats.
+- Player agency: every quest/mission arc should support three branches — engage (help/ally), reject (walk away + consequences), and exploit (betrayal/mercenary outcome). Use dependsOn or separate items to represent branches.
+- Tone: cyberpunk noir — punchy, atmospheric, avoid long exposition dumps in a single node.
+
 ## Rules
 1. Pre-generate a UUID v4 for the plan id and every item id.
 2. Slugs must be lowercase alphanumeric with underscores only (e.g. "diego_the_bartender").
@@ -177,13 +194,7 @@ Return a single JSON object matching this schema:
 // ── Refinement Prompt Builder ───────────────────────────────────────────
 
 export function buildRefinementPrompt(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): string {
-  const existingChars = context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)';
-  const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
-  const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
-  const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
-  const existingStories = context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)';
-  const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
-  const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
+  const e = formatExistingContent(context);
 
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
@@ -214,214 +225,137 @@ ${CONTENT_TYPES.join(', ')}
 - vault: name, description, item_type
 
 ## Existing content (avoid duplicates)
-- Characters: ${existingChars}
-- Scenes: ${existingScenes}
-- Dialogues: ${existingDialogues}
-- Missions: ${existingMissions}
-- Stories: ${existingStories}
-- Overlays: ${existingOverlays}
-- Locations: ${existingLocations}
+- Characters: ${e.chars}
+- Scenes: ${e.scenes}
+- Dialogues: ${e.dialogues}
+- Missions: ${e.missions}
+- Stories: ${e.stories}
+- Overlays: ${e.overlays}
+- Locations: ${e.locations}
+
+## Story quality rules (maintain these when adjusting the plan)
+- Story beats = player's present involvement, not NPC backstory (lore goes in .md files)
+- Quest arcs need engage / reject / exploit branches
+- Tone: cyberpunk noir, punchy, no exposition dumps
 
 ## Output format
 Return a single JSON object matching the ContentPlan schema. Keep the same plan id. Keep items that the user didn't ask to change. Output ONLY the JSON object, no markdown fences or explanation.`;
 }
 
-// ── Lore Generation Prompt ─────────────────────────────────────────────
+// ── Item-Scoped Refinement Prompt Builder ─────────────────────────────
 
-export function buildLorePrompt(item: ContentPlanItem, context: ExistingContentContext): string {
-  const existingChars = context.characters.map((c) => c.name).join(', ') || '(none)';
-  const existingScenes = context.scenes.map((s) => `${s.name} (${s.district})`).join(', ') || '(none)';
-
-  let structureGuide = '';
-  switch (item.type) {
-    case 'character':
-      structureGuide = `Write character lore in the style of cyberpunk Las Flores 2077. Include:
-- H1 title with character name
-- Title fields (full and short)
-- Age, Origin, Occupation
-- Multi-paragraph description covering: physical appearance, personality, challenges, vision/goals
-- A "Key Relationships" table with Name/Nature/Notes columns
-- A "Known Habit" section describing recurring behaviors`;
-      break;
-    case 'scene':
-    case 'location':
-      structureGuide = `Write location/scene lore in the style of cyberpunk Las Flores 2077. Include:
-- H1 title with location/scene name
-- Tags block (e.g., "> Tags: downtown, neon, rain")
-- District metadata
-- "## Overview" with narrative paragraphs describing atmosphere and notable features
-- "## Related Lore" section with relative markdown links to related characters or stories`;
-      break;
-    case 'mission':
-    case 'story':
-      structureGuide = `Write mission/story lore in the style of cyberpunk Las Flores 2077. Include:
-- H1 title
-- Tags block
-- Location/period metadata
-- "## Overview" with narrative paragraphs
-- Section headers for story beats
-- "## Related Lore" with relative markdown links`;
-      break;
-    case 'dialogue':
-    case 'overlay':
-    case 'vault':
-    case 'gig':
-    case 'shop_item':
-      structureGuide = `Write lore for this item in the style of cyberpunk Las Flores 2077. Include:
-- H1 title with item name
-- Description and narrative context explaining the item's role in the world`;
-      break;
-    default:
-      structureGuide = `Write narrative lore for this content item in the style of cyberpunk Las Flores 2077. Include:
-- H1 title with item name
-- Description and narrative context`;
-  }
-
-  return `You are a lore writer for Las Flores 2077, a narrative cyberpunk roleplaying game set in a rain-soaked city of neon and corporate intrigue.
-
-## Task
- Write rich, immersive markdown narrative content for the following item.
-
-## Item Details
- - Type: ${item.type}
- - Name: ${item.name}
- - Description: ${item.fields.description || 'No description provided'}
-
-${structureGuide}
-
-## Existing Content (for reference)
- - Characters: ${existingChars}
- - Scenes/Locations: ${existingScenes}
-
-## Output Format
- Return ONLY the markdown content. Do NOT wrap it in code fences or JSON. Do NOT include any explanatory text outside the markdown.`;
-}
-
-// ── Fill Fields Prompt ────────────────────────────────────────────────
-
-/**
- * Build a focused prompt that asks the LLM to fill only the specified
- * free-text fields for a content item, using existing context for tone/style.
- */
-export function buildFillFieldsPrompt(
-  item: ContentPlanItem,
-  targetFields: string[],
+export function buildItemScopedRefinementPrompt(
+  selectedItems: ContentPlanItem[],
+  fullPlan: ContentPlan,
+  feedback: string,
   context: ExistingContentContext,
 ): string {
-  const existingChars = context.characters.map((c) => {
-    const parts = [c.name];
-    if (c.role) parts.push(`role: ${c.role}`);
-    if (c.faction) parts.push(`faction: ${c.faction}`);
-    if (c.personality) parts.push(`personality: ${c.personality}`);
-    return parts.join(' — ');
-  }).join(', ') || '(none)';
+  const otherItems = fullPlan.items
+    .filter(i => !selectedItems.some(s => s.id === i.id))
+    .map(i => `${i.name} (${i.type})`)
+    .join(', ') || '(none)';
 
-  const existingScenes = context.scenes.map((s) => {
-    const parts = [`${s.name} (${s.district})`];
-    if (s.mood) parts.push(`mood: ${s.mood}`);
-    return parts.join(' — ');
-  }).join(', ') || '(none)';
-
-  const existingLocations = context.locations.map((l) => {
-    const parts = [`${l.name} (${l.district})`];
-    if (l.daytime) parts.push(`daytime: ${l.daytime}`);
-    return parts.join(' — ');
-  }).join(', ') || '(none)';
-
-  // Build a summary of the current item fields
-  const currentItemSummary = Object.entries(item.fields)
-    .map(([k, v]) => `  ${k}: ${typeof v === 'object' ? JSON.stringify(v) : String(v)}`)
-    .join('\n');
-
-  // Type-specific writing instructions
-  const typeInstructions: Record<string, string> = {
-    character: `Write a compelling character description (2-3 sentences) for a cyberpunk NPC. Include physical appearance, personality traits, and their role in the city. Fill metadata fields as applicable: faction (one of: conservation, humanity_first, cjs, labor, media, van_der_meer, lw_group, dragon_phoenix, independent, civil_society, police, government, business, business_coalition, old_las_flores, dutch_interest, corrupt_authority, corrupt_officials, indigenous, student, civilian, working_class, neutral), age, gender, ethnicity, occupation, background, education, residence, organization, allies, mannerisms, motivations, quote, methods, status, location, and personality (concise 2-3 word descriptor). Only fill fields listed as targets.`,
-    scene: `Write an atmospheric scene description (2-3 sentences) capturing the cyberpunk ambiance. Include sensory details (neon, rain, sounds). Fill mood with a concise descriptor (e.g., "bustling, neon-lit, tense").`,
-    location: `Write rich location details: a 2-3 sentence description, plus separate daytime and nightlife descriptions, a brief history paragraph, and a conclusion paragraph summarizing the location's significance. Capture the cyberpunk setting.`,
-    dialogue: `Write a concise dialogue description (1-2 sentences) explaining what this conversation is about and who participates.`,
-    mission: `Write a compelling mission description (2-3 sentences) explaining the objective, stakes, and tone.`,
-    overlay: `Write a description (1-2 sentences) explaining what this dialogue overlay modifies and why.`,
-    vault: `Write a description (1-2 sentences) explaining what this vault item is and its significance.`,
-    gig: `Write a description (2-3 sentences) explaining the gig, its risks, and the reward.`,
-    shop_item: `Write a description (1-2 sentences) for this item in a cyberpunk market.`,
-  };
-
-  const instructions = typeInstructions[item.type] || typeInstructions.character;
-
-  return `You are a content writer for Las Flores 2077, a narrative cyberpunk game set in a rain-soaked city of neon and corporate intrigue.
-
-## Task
-Fill in the following empty/TODO fields for a ${item.type} item. Write in a cyberpunk noir tone consistent with the Las Flores 2077 setting.
-
-## Item Details
-- Name: ${item.name}
-- Type: ${item.type}
-- Current fields:
-${currentItemSummary}
-
-## Fields to fill
-${targetFields.map(f => `- ${f}`).join('\n')}
-
-## Writing instructions
-${instructions}
-
-## Existing content (for style/tone reference)
-- Characters: ${existingChars}
-- Scenes: ${existingScenes}
-- Locations: ${existingLocations}
-
-## Output format
-Return a JSON object with two keys:
-{
-  "fields": {
-    "field.path": "filled value"
-  },
-  "lore_refs": ["optional_slug_of_related_content"]
-}
-
-Rules:
-- ONLY fill the fields listed above. Do not modify other fields.
-- Keep the cyberpunk Las Flores 2077 tone and setting.
-- lore_refs should be slugs of existing content items that are thematically related (can be empty array).
-- Output ONLY the JSON object, no markdown fences or explanation.`;
-}
-
-// ── Entity Extraction Prompt (for two-pass chunked ingestion) ────────────
-
-export function buildEntityExtractionPrompt(context: ExistingContentContext): string {
-  const existingChars = context.characters.map(c => c.name).join(', ') || '(none)';
-  const existingScenes = context.scenes.map(s => s.name).join(', ') || '(none)';
-  const existingLocations = context.locations.map(l => l.name).join(', ') || '(none)';
+  const e = formatExistingContent(context);
 
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
 ## Task
-Extract entity candidates from this story chunk. Identify characters, scenes/locations, missions, stories, and other content items mentioned. Be thorough but concise — just names, types, and brief descriptions.
+The user wants to refine ONLY the selected items below. Adjust these items according to the feedback. Do NOT modify any other items in the plan.
+
+## Items to refine
+${JSON.stringify(selectedItems, null, 2)}
+
+## Other items in the plan (for cross-reference, do NOT modify)
+${otherItems}
+
+## User feedback
+${feedback}
 
 ## Available content types
 ${CONTENT_TYPES.join(', ')}
 
+## Required fields per content type
+- character: name, description, title (optional), metadata.type, metadata.role, metadata.faction, metadata.personality, lore_path, narrative_path
+- scene: name, description, district, mood, lore_path
+- dialogue: name, description, lore_path
+- overlay: name, description, target_tree_id, modifications, lore_path
+- mission: title, description, lore_path
+- story: name, description, beats
+- shop_item: name, description, price, currency
+- location: name, description, district, tags, history, daytime, nightlife, lore_path
+- map_tile: district_id, x, y, terrain_type
+- story_beat: id, description
+- gig: name, description, reward
+- vault: name, description, item_type
+
 ## Existing content (avoid duplicates)
-- Characters: ${existingChars}
-- Scenes: ${existingScenes}
-- Locations: ${existingLocations}
+- Characters: ${e.chars}
+- Scenes: ${e.scenes}
+- Dialogues: ${e.dialogues}
+- Missions: ${e.missions}
+- Stories: ${e.stories}
+- Overlays: ${e.overlays}
+- Locations: ${e.locations}
+
+## Story quality rules (maintain these when adjusting the plan)
+- Story beats = player's present involvement, not NPC backstory (lore goes in .md files)
+- Quest arcs need engage / reject / exploit branches
+- Tone: cyberpunk noir, punchy, no exposition dumps
 
 ## Output format
-Return a JSON object with an "entities" array. Each entity has:
-- "name": the entity name (string)
-- "type": one of the available content types (string)
-- "description": a brief 1-sentence description (string)
+Return a JSON object with an "items" key containing an array of the modified items only. Each item must keep its original id. Output ONLY the JSON object, no markdown fences or explanation.`;
+}
 
+// ── Fill Fields Prompt Builder ─────────────────────────────────────────
+
+export function buildFillFieldsPrompt(
+  item: ContentPlanItem,
+  unfilledFields: string[],
+  context: ExistingContentContext,
+): string {
+  const e = formatExistingContent(context);
+
+  return `You are a content writing assistant for Las Flores 2077, a narrative cyberpunk game.
+
+## Task
+Fill in the empty/TODO fields for the following content item. Return ONLY the requested fields with appropriate values.
+
+## Content item to fill
+Type: ${item.type}
+Name: ${item.name}
+Current fields:
+${JSON.stringify(item.fields, null, 2)}
+
+## Fields to fill
+${unfilledFields.join(', ')}
+
+## Existing content (for cross-reference)
+- Characters: ${e.chars}
+- Scenes: ${e.scenes}
+- Dialogues: ${e.dialogues}
+- Missions: ${e.missions}
+- Stories: ${e.stories}
+- Overlays: ${e.overlays}
+- Locations: ${e.locations}
+
+## Rules
+1. Write atmospheric, cyberpunk-noir prose with sensory details where appropriate for each field.
+2. Keep descriptions concise but evocative (2-3 sentences max for descriptions).
+3. Ensure consistency with the item's name, type, and any existing field values.
+4. Reference existing content by name where appropriate for cross-referencing.
+5. For metadata fields, use short, specific values (e.g. "Nomad" not "He is part of the Nomad faction").
+
+## Output format
+Return a JSON object with a "fields" key containing only the filled fields, and an optional "lore_refs" array listing any existing content IDs referenced.
+Example:
 {
-  "entities": [
-    { "name": "Victor Crane", "type": "character", "description": "A mysterious informant who operates from a downtown pawn shop." },
-    { "name": "Pawn Shop Backroom", "type": "scene", "description": "A dimly lit back room behind a downtown pawn shop." }
-  ]
+  "fields": {
+    "description": "A weathered bartender with chrome-lined eyes...",
+    "metadata.personality": "Stoic, observant, speaks in clipped sentences"
+  },
+  "lore_refs": ["character-diego-id"]
 }
 
-Rules:
-- Extract ALL named entities: characters, locations, scenes, missions, stories, items.
-- Use existing content types only.
-- If an entity already exists in the "Existing content" list, still include it (the merge step will dedupe).
-- Output ONLY the JSON object, no markdown fences or explanation.`;
+Output ONLY the JSON object, no markdown fences or explanation.`;
 }
+

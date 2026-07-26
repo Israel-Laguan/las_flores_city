@@ -135,6 +135,8 @@ The Story Builder path can be driven end-to-end from a long-form markdown brief 
 
 The LLM pre-fill step calls `ContentPlanService.gatherContext()`, which must match the live schema: scenes are joined to `districts` (the old `scenes.district` column was dropped in migration `033`), and **locations are read from `content/locations/*/*.yaml` — there is no `locations` DB table**. A mismatch here throws before `stagePlan` writes any files, so the plan goes `failed` and no `content/` folders are produced. This was the root cause of an earlier "no output" ingestion run.
 
+**Big-story behavior**: When the input exceeds `PLAN_OUTLINE_MAX_INPUT_CHARS` (~8–12k chars), a two-pass ingestion kicks in: chunk the description by heading/paragraph windows, extract entity candidates per chunk (parallel, batched), merge/dedupe by normalized name, then run a bounded outline call from the merged roster + a synthesized synopsis. The roster is capped at `LLM_OUTLINE_INITIAL_MAX_ITEMS` entries (default 15); the synopsis is capped at 2,000 characters with entity descriptions truncated to 80 characters each. Every LLM call stays small regardless of story size. Output is capped via `LLM_OUTLINE_MAX_TOKENS` with `finish_reason=length` handling. Verified via `FULL_INPUT=1` mode in `latency_probe.ts`.
+
 ### Open questions
 
 See `docs/STORY_BUILDER_DESIGN.md` §6 for unresolved design questions and §4.4 for future extensions.
@@ -209,6 +211,6 @@ All three paths share the same validation and migration infrastructure.
 
 - `docs/ADMIN_ARCHITECTURE.md` — Admin panel structure and conventions
 - `docs/STORY_BUILDER_DESIGN.md` — Story Builder design rationale and shipped state
-- `docs/NEXT_STEPS.md` — open action items
+- `docs/STORY_BUILDER_OPERATIONS.md` — operational findings
 - `docs/UI_STYLE_SYSTEM.md` — Shared styling contract
 - `AGENTS.md` — Hard constraints (DB/cache patterns, Docker gotchas, verification checklist)

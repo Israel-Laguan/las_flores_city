@@ -25,19 +25,38 @@ adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
 adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params as Record<string, string>;
-    const { feedback } = req.body;
+    const { feedback, itemIds } = req.body;
 
     if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
       res.status(400).json({ success: false, error: 'feedback is required', timestamp: new Date().toISOString() });
       return;
     }
 
-    const { plan: refinedPlan, usage: refinedUsage } = await contentPlanService.refinePlan(id, feedback.trim());
+    // Validate itemIds if provided
+    if (itemIds != null) {
+      if (!Array.isArray(itemIds) || itemIds.length === 0) {
+        res.status(400).json({ success: false, error: 'itemIds must be a non-empty array of strings', timestamp: new Date().toISOString() });
+        return;
+      }
+      if (!itemIds.every((id: unknown) => typeof id === 'string' && id.length > 0)) {
+        res.status(400).json({ success: false, error: 'Each itemIds entry must be a non-empty string', timestamp: new Date().toISOString() });
+        return;
+      }
+    }
+
+    const isScoped = itemIds && Array.isArray(itemIds) && itemIds.length > 0;
+    const { plan: refinedPlan, usage: refinedUsage } =
+      isScoped
+        ? await contentPlanService.refinePlanItems(id, feedback.trim(), itemIds)
+        : await contentPlanService.refinePlan(id, feedback.trim());
 
     const refinedEventData: Record<string, unknown> = {
       feedbackLength: feedback.trim().length,
       itemCount: refinedPlan.items.length,
     };
+    if (isScoped) {
+      refinedEventData.refinedItemCount = itemIds.length;
+    }
     if (refinedUsage) {
       refinedEventData.totalTokens = refinedUsage.totalTokens;
       refinedEventData.promptTokens = refinedUsage.promptTokens;

@@ -100,6 +100,16 @@ export class MockProvider implements LLMProvider {
     };
   }
 
+  async refinePlanItems(selectedItems: ContentPlanItem[], _fullPlan: ContentPlan, feedback: string, _context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }> {
+    return {
+      items: selectedItems.map(item => ({
+        ...item,
+        fields: { ...item.fields, description: `${item.fields.description || ''} [Refined based on: ${feedback}]` },
+      })),
+      usage: null,
+    };
+  }
+
   async generateLore(item: ContentPlanItem, _context: ExistingContentContext): Promise<string> {
     const name = item.name || 'Untitled';
     const description = item.fields.description || '';

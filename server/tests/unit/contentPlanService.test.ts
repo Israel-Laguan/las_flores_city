@@ -35,6 +35,7 @@ const mockProvider: LLMProvider = {
   },
   async generateOutline() { return { plan: {} as any, usage: null }; },
   async refinePlan() { return { plan: {} as any, usage: null }; },
+  async refinePlanItems() { return { items: [] as any, usage: null }; },
   async generateLore() { return ''; },
   async generateFill() { return { fields: {} }; },
 };
@@ -77,6 +78,7 @@ describe('ContentPlanService', () => {
       parseDescription: parseSpy,
       async generateOutline() { return { plan: {} as any, usage: null }; },
       async refinePlan() { return { plan: {} as any, usage: null }; },
+      async refinePlanItems() { return { items: [] as any, usage: null }; },
       async generateLore() { return ''; },
       async generateFill() { return { fields: {} }; },
     };
@@ -151,6 +153,7 @@ describe('generateOutline + validateAndRepairOutline', () => {
       },
       async parseDescription() { return { plan: {} as any, usage: null }; },
       async refinePlan() { return { plan: {} as any, usage: null }; },
+      async refinePlanItems() { return { items: [] as any, usage: null }; },
       async generateLore() { return ''; },
       async generateFill() { return { fields: {} }; },
     };
@@ -201,5 +204,114 @@ describe('generateOutline + validateAndRepairOutline', () => {
     expect(repaired.items.length).toBeGreaterThan(0);
     expect(repaired._meta?.outline_source).toBe('fallback');
     expect(repaired.items.every((i: any) => i.fields.description?.startsWith('TODO'))).toBe(true);
+  });
+});
+
+describe('refinePlanItems', () => {
+  const ITEM_A = 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e';
+  const ITEM_B = 'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f';
+  const PLAN_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d';
+
+  const existingPlan = {
+    id: PLAN_ID,
+    description: 'Test plan',
+    items: [
+      {
+        id: ITEM_A,
+        type: 'character' as const,
+        action: 'create' as const,
+        name: 'Alice',
+        slug: 'alice',
+        fields: { description: 'Original description' },
+        assetNeeds: [{ promptType: 'portrait', targetField: 'portrait_urls[0].url', status: 'pending' as const }],
+        dependsOn: [],
+      },
+      {
+        id: ITEM_B,
+        type: 'character' as const,
+        action: 'create' as const,
+        name: 'Bob',
+        slug: 'bob',
+        fields: { description: 'Original Bob' },
+        assetNeeds: [],
+        dependsOn: [],
+      },
+    ],
+    links: [
+      { fromItem: ITEM_A, toItem: ITEM_B, field: 'knows', action: 'add' as const },
+    ],
+    status: 'draft' as const,
+  };
+
+  function mockDB(existingPlan: any) {
+    mockQueryOLTP
+      .mockResolvedValueOnce({ rows: [{ id: PLAN_ID, plan_json: existingPlan, description: 'Test plan' }] } as any) // load plan
+      .mockResolvedValueOnce({ rows: [] } as any) // characters
+      .mockResolvedValueOnce({ rows: [] } as any) // scenes
+      .mockResolvedValueOnce({ rows: [] } as any) // dialogues
+      .mockResolvedValueOnce({ rows: [] } as any) // missions
+      .mockResolvedValueOnce({ rows: [] } as any) // stories
+      .mockResolvedValueOnce({ rows: [] } as any) // overlays
+      .mockResolvedValueOnce({ rows: [] } as any); // INSERT new version
+  }
+
+  it('preserves assetNeeds from original items when merging refinements', async () => {
+    mockDB(existingPlan);
+
+    const refinedProvider: LLMProvider = {
+      ...mockProvider,
+      async refinePlanItems() {
+        return {
+          items: [{
+            id: ITEM_A,
+            type: 'character',
+            action: 'create',
+            name: 'Alice',
+            slug: 'alice',
+            fields: { description: 'Refined description' },
+            assetNeeds: [],
+            dependsOn: [],
+          }],
+          usage: null,
+        };
+      },
+    };
+
+    const service = new ContentPlanService(refinedProvider);
+    const { plan } = await service.refinePlanItems(PLAN_ID, 'refine Alice', [ITEM_A]);
+
+    const refinedItem = plan.items.find(i => i.id === ITEM_A);
+    expect(refinedItem?.fields.description).toBe('Refined description');
+    expect(refinedItem?.assetNeeds).toEqual(existingPlan.items[0].assetNeeds);
+  });
+
+  it('preserves links between selected items', async () => {
+    mockDB(existingPlan);
+
+    const refinedProvider: LLMProvider = {
+      ...mockProvider,
+      async refinePlanItems() {
+        return {
+          items: [{
+            id: ITEM_A,
+            type: 'character',
+            action: 'create',
+            name: 'Alice',
+            slug: 'alice',
+            fields: { description: 'Refined Alice' },
+            assetNeeds: [],
+            dependsOn: [],
+          }],
+          usage: null,
+        };
+      },
+    };
+
+    const service = new ContentPlanService(refinedProvider);
+    const { plan } = await service.refinePlanItems(PLAN_ID, 'refine Alice', [ITEM_A]);
+
+    expect(plan.links).toHaveLength(1);
+    expect(plan.links[0].fromItem).toBe(ITEM_A);
+    expect(plan.links[0].toItem).toBe(ITEM_B);
   });
 });

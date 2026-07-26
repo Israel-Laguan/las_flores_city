@@ -38,6 +38,11 @@ const ContentPlanMetaSchema = z.object({
   scaffolded_at: z.string().optional(),
   jobPrefix: z.string().optional(),
   fill_attempts: z.record(z.string(), z.number()).optional(),
+  entity_roster: z.array(z.object({
+    name: z.string().min(1),
+    type: z.string().min(1),
+    description: z.string().optional(),
+  })).optional(),
 }).optional();
 
 export const ContentPlanSchema = z.object({

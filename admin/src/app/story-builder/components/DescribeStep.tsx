@@ -81,15 +81,107 @@ function CloneForm({
   );
 }
 
-export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate, contentTree, onClone }: DescribeStepProps) {
-  const [showClone, setShowClone] = useState(false);
-  const [showExamples, setShowExamples] = useState(false);
+function TemplatesSection({
+  templates,
+  loading,
+  onSelectTemplate,
+}: {
+  templates: DescribeStepProps['templates'];
+  loading: boolean;
+  onSelectTemplate: (id: string) => void;
+}) {
+  if (templates.length === 0) return null;
+  return (
+    <div className={styles.subsection}>
+      <h3 className={styles.templatesTitle}>Quick Start Templates</h3>
+      <div className={styles.templatesGrid}>
+        {templates.map(t => (
+          <button
+            key={t.id}
+            className={cn(styles.templateButton, loading && styles.disabledButton)}
+            disabled={loading}
+            onClick={() => onSelectTemplate(t.id)}
+          >
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
+      <p className={styles.templateHint}>
+        Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
+      </p>
+    </div>
+  );
+}
 
+function CloneSection({
+  contentTree,
+  loading,
+  onClone,
+}: {
+  contentTree: DescribeStepProps['contentTree'];
+  loading: boolean;
+  onClone: (sourcePath: string, newName: string) => void;
+}) {
+  const [showClone, setShowClone] = useState(false);
   const grouped = contentTree.reduce<Record<string, typeof contentTree>>((acc, entry) => {
     (acc[entry.type] ??= []).push(entry);
     return acc;
   }, {});
 
+  if (contentTree.length === 0) return null;
+  return (
+    <div className={styles.subsection}>
+      <div className={styles.cloneHeader}>
+        <h3 className={styles.templatesTitle}>Clone Existing</h3>
+        <button
+          className={styles.templateButton}
+          onClick={() => setShowClone(!showClone)}
+          disabled={loading}
+        >
+          {showClone ? 'Hide' : 'Clone as Template'}
+        </button>
+      </div>
+      {showClone && (
+        <CloneForm grouped={grouped} loading={loading} onClone={onClone} />
+      )}
+    </div>
+  );
+}
+
+function ExamplesSection() {
+  const [showExamples, setShowExamples] = useState(false);
+  return (
+    <div className={styles.examplesSection}>
+      <button
+        className={styles.examplesToggle}
+        type="button"
+        aria-expanded={showExamples}
+        aria-controls="examples-panel"
+        onClick={() => setShowExamples(!showExamples)}
+      >
+        {showExamples ? '▾' : '▸'} What makes a good brief?
+      </button>
+      {showExamples && (
+        <div id="examples-panel" className={styles.examples}>
+          <div className={styles.exampleItem}>
+            <span className={styles.exampleLabel}>Quick request</span>
+            <p className={styles.exampleText}>
+              &ldquo;Add a bartender named Diego who works at the Plaza and knows about the lithium leak&rdquo;
+            </p>
+          </div>
+          <div className={styles.exampleItem}>
+            <span className={styles.exampleLabel}>Story bible scale</span>
+            <p className={styles.exampleText}>
+              Paste a full character bio, scene breakdown, or worldbuilding doc — the AI will extract entities and structure them into a plan.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate, contentTree, onClone }: DescribeStepProps) {
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionHeading}>Step 1: Describe What You Want</h2>
@@ -97,45 +189,8 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
         Describe new content to create, or describe the changes you want to make to existing content. The AI will generate a structured plan for your review.
       </p>
 
-      {templates.length > 0 && (
-        <div className={styles.subsection}>
-          <h3 className={styles.templatesTitle}>Quick Start Templates</h3>
-          <div className={styles.templatesGrid}>
-            {templates.map(t => (
-              <button
-                key={t.id}
-                className={cn(styles.templateButton, loading && styles.disabledButton)}
-                disabled={loading}
-                onClick={() => onSelectTemplate(t.id)}
-              >
-                {t.icon} {t.label}
-              </button>
-            ))}
-          </div>
-          <p className={styles.templateHint}>
-            Click a template to generate a pre-configured plan. You can still edit everything in Step 2.
-          </p>
-        </div>
-      )}
-
-
-      {contentTree.length > 0 && (
-        <div className={styles.subsection}>
-          <div className={styles.cloneHeader}>
-            <h3 className={styles.templatesTitle}>Clone Existing</h3>
-            <button
-              className={styles.templateButton}
-              onClick={() => setShowClone(!showClone)}
-              disabled={loading}
-            >
-              {showClone ? 'Hide' : 'Clone as Template'}
-            </button>
-          </div>
-          {showClone && (
-            <CloneForm grouped={grouped} loading={loading} onClone={onClone} />
-          )}
-        </div>
-      )}
+      <TemplatesSection templates={templates} loading={loading} onSelectTemplate={onSelectTemplate} />
+      <CloneSection contentTree={contentTree} loading={loading} onClone={onClone} />
 
       <div className={styles.field}>
         <label className={styles.label}>Description *</label>
@@ -160,33 +215,7 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
         )}
       </div>
 
-      <div className={styles.examplesSection}>
-        <button
-          className={styles.examplesToggle}
-          type="button"
-          aria-expanded={showExamples}
-          aria-controls="examples-panel"
-          onClick={() => setShowExamples(!showExamples)}
-        >
-          {showExamples ? '▾' : '▸'} What makes a good brief?
-        </button>
-        {showExamples && (
-          <div id="examples-panel" className={styles.examples}>
-            <div className={styles.exampleItem}>
-              <span className={styles.exampleLabel}>Quick request</span>
-              <p className={styles.exampleText}>
-                "Add a bartender named Diego who works at the Plaza and knows about the lithium leak"
-              </p>
-            </div>
-            <div className={styles.exampleItem}>
-              <span className={styles.exampleLabel}>Story bible scale</span>
-              <p className={styles.exampleText}>
-                Paste a full character bio, scene breakdown, or worldbuilding doc — the AI will extract entities and structure them into a plan.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+      <ExamplesSection />
       <button
         className={cn(styles.button, styles.primaryButton, (loading || !description.trim()) && styles.disabledButton)}
         onClick={onGenerate}
