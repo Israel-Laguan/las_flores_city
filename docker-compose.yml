@@ -198,7 +198,8 @@ services:
     ports:
       - "3002:3000"
     environment:
-      NEXT_PUBLIC_SERVER_URL: http://server:3000
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+      INTERNAL_SERVER_URL: http://server:3000
     depends_on:
       server:
         condition: service_healthy

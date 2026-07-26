@@ -1,0 +1,35 @@
+.subNav {
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+}
+
+.subNavList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 0;
+}
+
+.subNavItem {
+  margin: 0;
+}
+
+.subNavLink {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.subNavLink:hover {
+  color: #ccc;
+}
+
+.subNavLinkActive {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}

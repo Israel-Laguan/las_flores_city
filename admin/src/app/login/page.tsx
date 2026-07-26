@@ -7,18 +7,36 @@ import styles from './login.module.css';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const formData = new FormData(e.currentTarget);
-    const res = await fetch('/api/auth/admin-login', { method: 'POST', body: formData });
-    if (res.redirected) {
-      window.location.href = res.url;
-      return;
+    setLoading(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const res = await fetch('/api/auth/admin-login', { method: 'POST', body: formData });
+
+      // If the server returned a 303 redirect (legacy path), follow it
+      if (res.redirected) {
+        window.location.href = res.url;
+        return;
+      }
+
+      const data = await res.json().catch(() => null);
+
+      if (data?.success) {
+        window.location.href = '/';
+        return;
+      }
+
+      setError(data?.error || 'Login failed');
+    } catch (err) {
+      console.error('Login fetch error:', err);
+      setError('Network error. Is the server running?');
+    } finally {
+      setLoading(false);
     }
-    const data = await res.json().catch(() => null);
-    setError(data?.error || 'Login failed');
   }
 
   return (
@@ -52,8 +70,8 @@ export default function LoginPage() {
           />
         </div>
 
-        <button type="submit" className={cn('btn', 'btn--primary')}>
-          LOGIN
+        <button type="submit" className={cn('btn', 'btn--primary')} disabled={loading}>
+          {loading ? 'LOGGING IN...' : 'LOGIN'}
         </button>
       </form>
 

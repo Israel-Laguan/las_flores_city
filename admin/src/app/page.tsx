@@ -5,62 +5,9 @@ import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import styles from './home.module.css';
 
-type Section = { title: string; items: Array<{ href: string; label: string }> };
-type Action = { href: string; label: string; variant: 'primary' | 'secondary' };
-
-const sections: Section[] = [
-  {
-    title: 'Content Management',
-    items: [
-      { href: '/characters', label: 'Characters' },
-      { href: '/dialogues', label: 'Dialogues' },
-      { href: '/scenes', label: 'Scenes' },
-      { href: '/story-beats', label: 'Story Beats' },
-      { href: '/story-arc', label: 'Story Arc' },
-      { href: '/missions', label: 'Missions' },
-      { href: '/stories', label: 'Stories' },
-      { href: '/overlays', label: 'Overlays' },
-      { href: '/locations', label: 'Locations' },
-      { href: '/vault', label: 'Vault' },
-      { href: '/gigs', label: 'Gigs' },
-      { href: '/shop', label: 'Shop' },
-      { href: '/maps', label: 'Maps' },
-      { href: '/assets', label: 'Asset Generation' },
-    ],
-  },
-  {
-    title: 'System',
-    items: [
-      { href: '/editor', label: 'YAML Editor' },
-      { href: '/content-linker', label: 'Content Linker' },
-      { href: '/migration', label: 'Content Migration' },
-      { href: '/validation', label: 'Validate Content' },
-      { href: '/quality', label: 'Quality Dashboard' },
-      { href: '/analytics', label: 'Analytics' },
-      { href: '/users', label: 'User Management' },
-      { href: '/settings', label: 'Settings' },
-    ],
-  },
-];
-
-const actions: Action[] = [
-  { href: '/migration', label: 'Run Migration', variant: 'primary' },
-  { href: '/validation', label: 'Validate Content', variant: 'secondary' },
-  { href: '/analytics', label: 'View Analytics', variant: 'secondary' },
-];
-
 interface StatsData {
   counts: { characters: number; dialogues: number; scenes: number; overlays: number; mysteries: number };
   recentActivity: Array<{ contentType: string; filePath: string; appliedAt: string; appliedBy: string | null }>;
-}
-
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className={styles.panel}>
-      <h2 className={styles.panelHeading}>{title}</h2>
-      {children}
-    </section>
-  );
 }
 
 function QuickStats({ counts, loading }: { counts: StatsData['counts']; loading: boolean }) {
@@ -72,7 +19,8 @@ function QuickStats({ counts, loading }: { counts: StatsData['counts']; loading:
     { value: loading ? '...' : String(counts.mysteries), label: 'Mysteries' },
   ];
   return (
-    <Panel title="Quick Stats">
+    <div className={styles.quickStats}>
+      <h2 className={styles.quickStatsHeading}>Quick Stats</h2>
       <div className={styles.statsGrid}>
         {statCards.map(stat => (
           <div key={stat.label} className={styles.statCard}>
@@ -81,13 +29,14 @@ function QuickStats({ counts, loading }: { counts: StatsData['counts']; loading:
           </div>
         ))}
       </div>
-    </Panel>
+    </div>
   );
 }
 
 function RecentActivity({ activity, loading }: { activity: StatsData['recentActivity'] | undefined; loading: boolean }) {
   return (
-    <Panel title="Recent Activity">
+    <div className={styles.panel}>
+      <h2 className={styles.panelHeading}>Recent Activity</h2>
       {loading ? (
         <p className={styles.muted}>Loading...</p>
       ) : activity && activity.length > 0 ? (
@@ -109,9 +58,15 @@ function RecentActivity({ activity, loading }: { activity: StatsData['recentActi
           <p className={styles.activityHint}>Start migrating content to see activity here.</p>
         </div>
       )}
-    </Panel>
+    </div>
   );
 }
+
+const actions = [
+  { href: '/migration', label: 'Run Migration', variant: 'primary' as const },
+  { href: '/validation', label: 'Validate Content', variant: 'secondary' as const },
+  { href: '/analytics', label: 'View Analytics', variant: 'secondary' as const },
+];
 
 export default function Home() {
   const [stats, setStats] = useState<StatsData | null>(null);
@@ -139,20 +94,9 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <h1>Las Flores 2077 - Admin Panel</h1>
+      <h1>Dashboard</h1>
+      <QuickStats counts={counts} loading={statsLoading} />
       <div className={styles.grid}>
-        {sections.map(s => (
-          <Panel key={s.title} title={s.title}>
-            <ul className={styles.list}>
-              {s.items.map(item => (
-                <li key={item.href} className={styles.listItem}>
-                  <a href={item.href}>{item.label}</a>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        ))}
-        <QuickStats counts={counts} loading={statsLoading} />
         <RecentActivity activity={stats?.recentActivity} loading={statsLoading} />
       </div>
       <div className={styles.quickActions}>

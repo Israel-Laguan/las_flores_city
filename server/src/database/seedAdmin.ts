@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
-const DEV_START_LOCATION = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+const DEV_START_LOCATION = '550e8400-e29b-41d4-a716-446655440002';
 
 /**
  * Seeds a local development admin user.

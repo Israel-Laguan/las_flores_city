@@ -1,7 +1,9 @@
 -- Dev user (no volatile gameplay columns — those go in player_states)
-INSERT INTO users (id, email, username, display_name, password_hash)
-VALUES ('00000000-0000-0000-0000-000000000001', 'dev@example.com', 'devuser', 'Dev User', '$2b$10$.Y/E52BFNQuYY96igPNPmeHk2YWCyUlohokSGVVQDv3BwzptIARi2')
-ON CONFLICT (id) DO NOTHING;
+-- Role 'admin' has elevated admin access for development purposes.
+INSERT INTO users (id, email, username, display_name, role, password_hash)
+VALUES ('00000000-0000-0000-0000-000000000001', 'dev@example.com', 'devuser', 'Dev User', 'admin', '$2b$10$.Y/E52BFNQuYY96igPNPmeHk2YWCyUlohokSGVVQDv3BwzptIARi2')
+ON CONFLICT (id) DO UPDATE
+SET role = EXCLUDED.role;
 
 -- Player state for dev user
 INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_location_id, current_day, story_beat, alignment)

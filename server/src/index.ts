@@ -39,6 +39,7 @@ import { adminSettingsRouter } from './routes/admin-settings.js';
 import { testConnections, closeConnections } from './database/connection.js';
 import { closeRedis } from './database/redis.js';
 import { runAllMigrations } from './database/migrate.js';
+import { seedPlayers } from './database/seedPlayers.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
@@ -209,6 +210,9 @@ async function initializeServer() {
 
   // Startup recovery: reset orphaned fill jobs to failed.
   await resetOrphanedFillJobs();
+
+  // Seed player accounts in non-production environments
+  await seedPlayers();
 
   // Start server
   app.listen(PORT, () => {

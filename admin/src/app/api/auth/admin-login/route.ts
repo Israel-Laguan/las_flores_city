@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+const SERVER_URL = process.env.INTERNAL_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
 export async function POST(request: Request) {
   try {
@@ -31,14 +32,32 @@ export async function POST(request: Request) {
     }
 
     const setCookieHeader = response.headers.get('set-cookie');
-    const responseHeaders: Record<string, string> = {
-      location: new URL('/', request.url).toString(),
-    };
+
     if (setCookieHeader) {
-      responseHeaders['set-cookie'] = setCookieHeader;
+      const match = setCookieHeader.match(/jwt_session=([^;]+)/);
+      if (match) {
+        const cookieStore = await cookies();
+        cookieStore.set('jwt_session', match[1], {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24,
+          path: '/',
+        });
+      } else {
+        return NextResponse.json(
+          { success: false, error: 'Missing or malformed session cookie' },
+          { status: 401 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'No session cookie in response' },
+        { status: 401 }
+      );
     }
 
-    return new NextResponse(null, { status: 303, headers: responseHeaders });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(

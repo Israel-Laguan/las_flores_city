@@ -15,7 +15,8 @@
   border-radius: 5px;
 }
 
-.panelHeading {
+.panelHeading,
+.quickStatsHeading {
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--accent);
   padding-bottom: 0.5rem;
@@ -28,6 +29,10 @@
 
 .listItem {
   margin-bottom: 0.5rem;
+}
+
+.quickStats {
+  margin-bottom: 2rem;
 }
 
 .statsGrid {
