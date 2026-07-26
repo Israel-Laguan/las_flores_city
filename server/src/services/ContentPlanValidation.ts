@@ -21,10 +21,12 @@ const TODO_FIELDS: Record<string, string[]> = {
   shop_item: ['description'],
 };
 
-function addTodoFields(item: ContentPlanItem): void {
+function addTodoFields(item: ContentPlanItem): boolean {
   const fields = TODO_FIELDS[item.type] || [];
-  if (!item.fields || typeof item.fields !== 'object') {
+  let repaired = false;
+  if (!item.fields || typeof item.fields !== 'object' || Array.isArray(item.fields)) {
     item.fields = {};
+    repaired = true;
   }
   for (const field of fields) {
     const parts = field.split('.');
@@ -36,8 +38,10 @@ function addTodoFields(item: ContentPlanItem): void {
     const lastField = parts[parts.length - 1];
     if (!current[lastField]) {
       current[lastField] = `TODO: Add ${lastField}`;
+      repaired = true;
     }
   }
+  return repaired;
 }
 
 export function validateAndRepairOutline(plan: ContentPlan, description: string): ContentPlan {
@@ -78,11 +82,12 @@ export function validateAndRepairOutline(plan: ContentPlan, description: string)
       repaired = true;
     }
 
-    // Deduplicate IDs
+    // Deduplicate IDs — do NOT add to oldToNewIds here because the first
+    // occurrence's ID is the canonical one. Adding the duplicate's old ID
+    // (which matches the first item's ID) would overwrite the first item's
+    // mapping and redirect dependsOn/links references to the wrong item.
     if (itemIds.has(item.id)) {
-      const oldId = item.id;
       item.id = uuidv4();
-      if (oldId) oldToNewIds.set(oldId, item.id);
       repaired = true;
     }
     itemIds.add(item.id);
@@ -106,7 +111,9 @@ export function validateAndRepairOutline(plan: ContentPlan, description: string)
     }
     slugCounts.set(`${item.type}:${item.slug}`, (slugCounts.get(`${item.type}:${item.slug}`) || 0) + 1);
 
-    addTodoFields(item);
+    if (addTodoFields(item)) {
+      repaired = true;
+    }
   }
 
   // Update dependsOn and links references after all ID repairs

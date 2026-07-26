@@ -339,7 +339,7 @@ ${unfilledFields.join(', ')}
 - Locations: ${e.locations}
 
 ## Rules
-1. Write atmospheric, cyberpunk-noir prose appropriate for each field.
+1. Write atmospheric, cyberpunk-noir prose with sensory details where appropriate for each field.
 2. Keep descriptions concise but evocative (2-3 sentences max for descriptions).
 3. Ensure consistency with the item's name, type, and any existing field values.
 4. Reference existing content by name where appropriate for cross-referencing.

@@ -224,10 +224,11 @@ export class ContentPlanService {
     const mergedItems = existingPlan.items.map(item => {
       const refined = refinedMap.get(item.id);
       if (!refined) return item;
-      // Preserve original assetNeeds — injectAssetNeeds only fills missing arrays,
-      // so an LLM-provided empty array would not be corrected.
+      // If the type changed, discard old assetNeeds so injectAssetNeeds can
+      // generate correct defaults for the new type. Otherwise preserve them.
       const { assetNeeds: originalAssetNeeds, ...rest } = item;
-      return { ...rest, ...refined, id: item.id, assetNeeds: originalAssetNeeds };
+      const assetNeeds = refined.type !== item.type ? [] : originalAssetNeeds;
+      return { ...rest, ...refined, id: item.id, assetNeeds };
     });
 
     const mergedPlan: ContentPlan = {
