@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
-import type { Step } from '../types';
+import type { Step, GenerationStatus } from '../types';
 import type { SolidifyResultLite } from '../components/ResultsStep';
 import * as api from './useStoryBuilderApi';
 import { createDraftPlanHandlers, refreshPlanFromDb } from './useDraftPlanApi';
@@ -16,6 +16,7 @@ export interface Callbacks {
   setRefineFeedback: SetState<string>;
   setShowRefine: SetState<boolean>;
   setSolidifyResult: SetState<SolidifyResultLite | null>;
+  setGenStatus: SetState<GenerationStatus | null>;
   description: string;
   plan: ContentPlan | null;
 }
@@ -51,7 +52,7 @@ async function persistGenerate(
 }
 
 function makeGeneratePlan(cb: HandlersDeps) {
-  const { setLoading, setError, setPlan, setStep, setPlanId, description } = cb;
+  const { setLoading, setError, setPlan, setStep, setPlanId, setGenStatus, description } = cb;
   return useCallback(async () => {
     const data = await withLoading(setLoading, setError, () => api.generatePlan(description));
     if (!data?.success || !data.data) {
@@ -69,11 +70,14 @@ function makeGeneratePlan(cb: HandlersDeps) {
       const poll = async () => {
         try {
           const statusRes = await api.getGenerationStatus(planId);
-          if (statusRes.success && statusRes.data && !terminalStates.includes(statusRes.data.status)) {
-            await refreshPlanFromDb(planId, setPlan);
-            setTimeout(poll, 1500);
-          } else if (statusRes.success && statusRes.data) {
-            await refreshPlanFromDb(planId, setPlan);
+          if (statusRes.success && statusRes.data) {
+            setGenStatus(statusRes.data);
+            if (!terminalStates.includes(statusRes.data.status)) {
+              await refreshPlanFromDb(planId, setPlan);
+              setTimeout(poll, 1500);
+            } else {
+              await refreshPlanFromDb(planId, setPlan);
+            }
           }
         } catch (err) {
           console.warn('Generation status poll failed:', err);
@@ -83,7 +87,7 @@ function makeGeneratePlan(cb: HandlersDeps) {
     } else {
       await refreshPlanFromDb(planId, setPlan);
     }
-  }, [description, setLoading, setError, setPlan, setStep, setPlanId]);
+  }, [description, setLoading, setError, setPlan, setStep, setPlanId, setGenStatus]);
 }
 
 function makeRefine(cb: HandlersDeps) {

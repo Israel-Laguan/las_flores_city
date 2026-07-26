@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { cn } from '@las-flores/ui';
 import styles from './DescribeStep.module.css';
 
+const SOFT_CAP = 20_000;
+
+function getLengthGuidance(len: number): string {
+  if (len === 0) return '';
+  if (len < 500) return 'Short and sweet works great — a sentence or two is enough for a focused plan.';
+  if (len < 5_000) return 'Good length. The AI will extract entities and generate a structured plan.';
+  if (len < 15_000) return 'Longer input supported. Fill may take a bit longer.';
+  return 'Very long input. Consider breaking into smaller plans for faster results.';
+}
+
 interface DescribeStepProps {
   description: string;
   setDescription: (v: string) => void;
@@ -73,6 +83,7 @@ function CloneForm({
 
 export default function DescribeStep({ description, setDescription, onGenerate, loading, templates, onSelectTemplate, contentTree, onClone }: DescribeStepProps) {
   const [showClone, setShowClone] = useState(false);
+  const [showExamples, setShowExamples] = useState(false);
 
   const grouped = contentTree.reduce<Record<string, typeof contentTree>>((acc, entry) => {
     (acc[entry.type] ??= []).push(entry);
@@ -134,6 +145,45 @@ export default function DescribeStep({ description, setDescription, onGenerate, 
           onChange={e => setDescription(e.target.value)}
           placeholder="e.g. Add a bartender named Diego who works at the Plaza. He knows about the lithium leak and will give the player a clue if they ask the right questions."
         />
+        <div className={styles.textareaFooter}>
+          <span className={cn(styles.charCounter, description.length > 15_000 && styles.charCounterWarning)}>
+            {description.length.toLocaleString()} characters
+          </span>
+          {description.length > 0 && (
+            <span className={styles.guidance}>{getLengthGuidance(description.length)}</span>
+          )}
+        </div>
+        {description.length >= SOFT_CAP && (
+          <div className={styles.warningBanner}>
+            Your description is very long — it will be sent as-is, but very large inputs may be slow or truncated by the LLM.
+          </div>
+        )}
+      </div>
+
+      <div className={styles.examplesSection}>
+        <button
+          className={styles.examplesToggle}
+          type="button"
+          onClick={() => setShowExamples(!showExamples)}
+        >
+          {showExamples ? '▾' : '▸'} What makes a good brief?
+        </button>
+        {showExamples && (
+          <div className={styles.examples}>
+            <div className={styles.exampleItem}>
+              <span className={styles.exampleLabel}>Quick request</span>
+              <p className={styles.exampleText}>
+                "Add a bartender named Diego who works at the Plaza and knows about the lithium leak"
+              </p>
+            </div>
+            <div className={styles.exampleItem}>
+              <span className={styles.exampleLabel}>Story bible scale</span>
+              <p className={styles.exampleText}>
+                Paste a full character bio, scene breakdown, or worldbuilding doc — the AI will extract entities and structure them into a plan.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
       <button
         className={cn(styles.button, styles.primaryButton, (loading || !description.trim()) && styles.disabledButton)}

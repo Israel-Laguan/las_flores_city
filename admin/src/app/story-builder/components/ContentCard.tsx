@@ -67,6 +67,7 @@ interface ContentCardProps {
   onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
   draftAssets?: api.DraftAsset[];
   draftLoading?: boolean;
+  fillStatus?: { status: string; error?: string };
 }
 
 function getNestedValue(obj: Record<string, any>, path: string): string {
@@ -290,7 +291,7 @@ function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
   );
 }
 
-export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange, onGenerateDrafts, onChooseDraft, draftAssets, draftLoading }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange, onGenerateDrafts, onChooseDraft, draftAssets, draftLoading, fillStatus }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -312,6 +313,11 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
           </h3>
           <span className="card__meta">
             {item.type} &middot; {item.action}
+            {fillStatus && (
+              <span className={cn(styles.fillChip, styles[`fillChip_${fillStatus.status}`])}>
+                {fillStatus.status}
+              </span>
+            )}
             {hasGrantEffects(item) && (
               <span style={{ marginLeft: '0.5rem', color: 'var(--accent)', fontWeight: 600 }}>
                 {'\u{1F381} Rewards: '}{getGrantSummary(item).join(', ')}

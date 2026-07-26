@@ -153,6 +153,16 @@ app.use('/admin', adminListViewsRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  // Handle JSON body parse errors (e.g., payload too large)
+  if (err instanceof SyntaxError && 'status' in err && (err as any).status === 413) {
+    res.status(413).json({
+      success: false,
+      error: 'Your input is too large. Try breaking it into a shorter description (under 500KB).',
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
+
   console.error('Unhandled error:', err);
   res.status(500).json({
     success: false,

@@ -2,6 +2,7 @@
 
 import type { ContentPlan } from '@las-flores/shared';
 import { cn } from '@las-flores/ui';
+import type { GenerationStatus } from '../types';
 import * as api from '../hooks/useStoryBuilderApi';
 import ContentCard from './ContentCard';
 import PlanSummary from './PlanSummary';
@@ -33,6 +34,7 @@ interface ReviewStepProps {
   draftLoading?: boolean;
   onApproveAndShip?: () => void;
   approving?: boolean;
+  genStatus?: GenerationStatus | null;
 }
 
 export default function ReviewStep({
@@ -40,7 +42,7 @@ export default function ReviewStep({
   onRefine, onUpdateItem, onRemoveItem, onAddItem, onAssetPathRemove,
   onDependsOnChange, onUpdateLink, onAddLink, onRemoveLink,
   onGenerateDrafts, onChooseDraft, draftAssetsByItem, draftLoading,
-  onApproveAndShip, approving,
+  onApproveAndShip, approving, genStatus,
 }: ReviewStepProps) {
   // Asset needs that were never given a selected draft. The system will
   // auto-pick the `<slug>__default.png` historical default for these.
@@ -50,12 +52,48 @@ export default function ReviewStep({
   const chosenNeeds = allNeeds.filter(n => n.status === 'chosen');
   const publishedNeeds = allNeeds.filter(n => n.status === 'published');
 
+  // Build a lookup from genStatus items for quick access per ContentCard
+  const genStatusByItem = new Map<string, { status: string; error?: string }>();
+  if (genStatus?.items) {
+    for (const item of genStatus.items) {
+      genStatusByItem.set(item.itemId, item);
+    }
+  }
+  const isFilling = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending');
+
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionHeading}>Review Plan</h2>
       <p className={styles.description}>
         Review and edit the proposed content. All text fields are editable.
       </p>
+
+      {plan._meta?.outline_source === 'fallback' && (
+        <div className={styles.fallbackBanner}>
+          <strong>Notice:</strong> The outline was auto-generated because the AI outline step
+          failed or returned no items. The plan structure may be incomplete — review carefully
+          and consider using &ldquo;Refine&rdquo; to improve it.
+        </div>
+      )}
+
+      {isFilling && genStatus.progress && genStatus.progress.total > 0 && (
+        <div className={styles.progressSection}>
+          <div className={styles.progressHeader}>
+            <span className={styles.progressLabel}>
+              Filling content&hellip; {genStatus.progress.completed}/{genStatus.progress.total} items complete
+            </span>
+            {genStatus.progress.failed > 0 && (
+              <span className={styles.progressFailed}>{genStatus.progress.failed} failed</span>
+            )}
+          </div>
+          <div className={styles.progressBar}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${(genStatus.progress.completed / genStatus.progress.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       <PlanSummary plan={plan} />
 
@@ -76,6 +114,7 @@ export default function ReviewStep({
           onChooseDraft={onChooseDraft}
           draftAssets={draftAssetsByItem?.[item.id]}
           draftLoading={draftLoading}
+          fillStatus={genStatusByItem.get(item.id)}
         />
       ))}
 

@@ -4,3 +4,12 @@
 //   3 = Results      (verification report + live-content links)
 export type Step = 1 | 2 | 3;
 
+export interface GenerationStatus {
+  planId: string;
+  status: string;
+  progress?: { total: number; completed: number; failed: number };
+  items?: Array<{ itemId: string; status: string; error?: string }>;
+  startedAt?: string;
+  updatedAt?: string;
+}
+

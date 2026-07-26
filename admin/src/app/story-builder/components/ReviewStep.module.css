@@ -176,3 +176,59 @@
   color: var(--muted, #666);
   margin-top: 0.4rem;
 }
+
+/* Fallback warning banner */
+.fallbackBanner {
+  padding: 0.6rem 0.85rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 5px;
+  color: var(--warning, #f59e0b);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.fallbackBanner strong {
+  color: var(--warning, #f59e0b);
+}
+
+/* Fill progress */
+.progressSection {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+
+.progressLabel {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.progressFailed {
+  font-size: 0.75rem;
+  color: var(--danger, #ff5050);
+  font-weight: 500;
+}
+
+.progressBar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}

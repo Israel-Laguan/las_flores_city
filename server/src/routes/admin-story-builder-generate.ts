@@ -16,6 +16,9 @@ import crypto from 'node:crypto';
 
 export const adminStoryBuilderGenerateRouter = express.Router();
 
+// Larger body limit for the story-builder plan endpoint (supports story-bible input)
+adminStoryBuilderGenerateRouter.use(express.json({ limit: '512kb' }));
+
 async function scaffoldPlanItems(
   items: ContentPlanItem[],
   contentDir: string,
