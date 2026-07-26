@@ -50,6 +50,7 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - `server/scripts/probe_leaderboard.ts` is the canonical diagnostic for distinguishing bad connection paths from bad leaderboard data.
 - When a spec says "add column", first verify the table with `\d <table>` or migrations; several columns in this project pre-existed.
 - **Health check from host may silently fail (curl exit 56)**: The server image (node:18-alpine) does not include `curl`, and stale docker-proxy state on a shared host can cause `curl http://localhost:3000/health` from the host to return exit code 56 (failure to receive data) even when the container is healthy. Always verify health from *inside* the container using `wget`: `docker exec las-flores-server wget -qO- http://localhost:3000/health`. A `{"success":true}` response from that command is the authoritative health check. Do not treat host-side curl exit 56 as a server failure without first confirming with the in-container wget.
+- **Admin panel fails to fetch data**: If the admin dashboard shows loading but never loads data, check that `NEXT_PUBLIC_SERVER_URL=http://localhost:3000` and `INTERNAL_SERVER_URL=http://las-flores-server:3000` are set in the admin container. The browser needs `localhost:3000` to reach the server (host port mapping), while server-side route handlers need `las-flores-server:3000` to reach the server (container network). Verify with: `podman exec las-flores-admin env | grep SERVER_URL`.
 - **Stale Jest cache can mask real test results**: A stale `ts-jest` cache can make previously-passing suites report spurious "Test suite failed to run" TypeScript parse errors (e.g. `Unexpected token, expected "from"` at an `import type` line, or `Missing semicolon` at a `let x: T;` annotation) for suites that are actually fine, while hiding genuine assertion failures in other suites. The cache lives outside the repo at `/tmp/jest_rs` (set by `cacheDirectory`); it is NOT cleared by normal edits and survives across `git` operations. Before trusting a server test run, clear it with `npx --no-install jest --workspace=server --clearCache`, then re-run. If you must pass `--no-cache` to a focused `ts-jest` ESM run, be aware it can *re-trigger* the same spurious parse errors for some suites — prefer `--clearCache` + a normal (cached) run for a trustworthy result. After a clean cache, expect the real failure count (e.g. only the suites actually exercising changed code plus any genuine test-isolation bugs), not the inflated "failed to run" count from the stale cache.
 
 ## Verification checklist
@@ -151,6 +152,32 @@ curl http://localhost:3000/health
 ```
 
 Apparent healthy response: `{"success":true,"data":{"status":"healthy",...}}. If the server refuses the connection, check `podman logs las-flores-server`.
+
+#### Start admin panel
+
+The admin panel requires two environment variables to work correctly with the server:
+
+- `NEXT_PUBLIC_SERVER_URL`: Used by client-side code (browser fetches from this URL). Set to `http://localhost:3000` so the browser can reach the server via the host port mapping.
+- `INTERNAL_SERVER_URL`: Used by server-side route handlers (admin container fetches from this URL). Set to `http://las-flores-server:3000` so the admin container can reach the server via the container network.
+
+```bash
+# Start admin panel with correct environment variables
+podman run -d --name las-flores-admin \
+  --network las-flores-net -p 3002:3000 \
+  -v /path/to/las_flores_city:/app \
+  -w /app \
+  -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
+  -e INTERNAL_SERVER_URL=http://las-flores-server:3000 \
+  docker.io/library/node:20-alpine \
+  sh -c "cd admin && npx next dev --webpack"
+```
+
+Verify admin is running:
+```bash
+podman logs las-flores-admin | grep "Ready in"
+```
+
+Test login at http://localhost:3002/login with `admin@example.com` / `admin123`.
 
 ### Clean shutdown (Podman)
 

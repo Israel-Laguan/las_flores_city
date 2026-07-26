@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
+const SERVER_URL = process.env.INTERNAL_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
 export async function getAdminUser() {
   try {
