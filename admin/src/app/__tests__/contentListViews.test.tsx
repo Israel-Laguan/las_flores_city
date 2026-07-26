@@ -13,6 +13,7 @@ const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
   useParams: vi.fn(),
   useRouter: () => ({ push: mockPush }),
+  usePathname: vi.fn(() => '/'),
 }));
 
 vi.mock('@/lib/client-api', () => ({
@@ -29,7 +30,7 @@ import DialogueDetailPage from '../dialogues/[id]/page';
 import SceneDetailPage from '../scenes/[id]/page';
 import CharacterDetailPage from '../characters/[id]/page';
 import LocationDetailPage from '../locations/[id]/page';
-import AdminNav from '@/components/AdminNav';
+import Sidebar from '@/components/Sidebar';
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -232,9 +233,9 @@ describe('LocationDetailPage', () => {
   });
 });
 
-describe('Nav layout', () => {
-  it('layout renders links to /dialogues, /scenes, /characters', () => {
-    render(<AdminNav user={{ username: 'tester', role: 'admin' }} />);
+describe('Sidebar navigation', () => {
+  it('sidebar renders links to /dialogues, /scenes, /characters', () => {
+    render(<Sidebar user={{ username: 'tester', role: 'admin' }} />);
 
     const dialogues = screen.getByRole('link', { name: /Dialogues/i });
     const scenes = screen.getByRole('link', { name: /Scenes/i });

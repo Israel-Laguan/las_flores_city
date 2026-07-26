@@ -3,7 +3,9 @@ import '@las-flores/ui/styles/tokens.css';
 import '@las-flores/ui/styles/global.css';
 import '@las-flores/ui/styles/components.css';
 import { getAdminUser } from '@/lib/api';
-import AdminNav from '@/components/AdminNav';
+import Sidebar from '@/components/Sidebar';
+import Breadcrumbs from '@/components/Breadcrumbs';
+import styles from './layout.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,8 +24,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AdminNav user={adminUser} />
-        {children}
+        <Sidebar user={adminUser} />
+        <main className={styles.main}>
+          <Breadcrumbs />
+          {children}
+        </main>
       </body>
     </html>
   );
