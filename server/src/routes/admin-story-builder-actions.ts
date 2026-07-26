@@ -25,14 +25,17 @@ adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
 adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
   try {
     const { id } = req.params as Record<string, string>;
-    const { feedback } = req.body;
+    const { feedback, itemIds } = req.body;
 
     if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
       res.status(400).json({ success: false, error: 'feedback is required', timestamp: new Date().toISOString() });
       return;
     }
 
-    const { plan: refinedPlan, usage: refinedUsage } = await contentPlanService.refinePlan(id, feedback.trim());
+    const { plan: refinedPlan, usage: refinedUsage } =
+      itemIds && Array.isArray(itemIds) && itemIds.length > 0
+        ? await contentPlanService.refinePlanItems(id, feedback.trim(), itemIds)
+        : await contentPlanService.refinePlan(id, feedback.trim());
 
     const refinedEventData: Record<string, unknown> = {
       feedbackLength: feedback.trim().length,

@@ -84,6 +84,7 @@ export class ContentPlanService {
 
     let plan: ContentPlan;
     let usage: LLMUsage | null = null;
+    let roster: EntityCandidate[] | undefined;
 
     if (description.length <= maxInputChars) {
       // Small input: single-pass (current behavior)
@@ -96,11 +97,16 @@ export class ContentPlanService {
       const result = await this.twoPassOutline(description, context);
       plan = result.plan;
       usage = result.usage;
+      roster = result.roster;
     }
 
     plan.description = description;
 
     const validated = this.validateAndRepairOutline(plan, description);
+
+    if (roster) {
+      validated._meta = { ...validated._meta, entity_roster: roster };
+    }
 
     injectAssetNeeds(validated.items);
 
@@ -110,7 +116,7 @@ export class ContentPlanService {
   private async twoPassOutline(
     description: string,
     context: ExistingContentContext,
-  ): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
+  ): Promise<{ plan: ContentPlan; usage: LLMUsage | null; roster?: EntityCandidate[] }> {
     const maxInputChars = parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10);
     const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
 
@@ -148,7 +154,7 @@ export class ContentPlanService {
     // 4. Synthesize synopsis + bounded outline call (with item count cap)
     const synopsis = buildSynopsisFromCandidates(merged, description, { maxItems: initialMaxItems });
     const result = await this.provider.generateOutline(synopsis, context);
-    return result;
+    return { ...result, roster: merged };
   }
 
   validateAndRepairOutline(plan: ContentPlan, description: string): ContentPlan {
@@ -339,6 +345,80 @@ export class ContentPlanService {
     );
 
     // Return the new plan with its new ID
+    validated.id = newPlanResult.rows[0].id;
+    return { plan: validated, usage };
+  }
+
+  async refinePlanItems(planId: string, feedback: string, itemIds: string[]): Promise<PlanWithUsage> {
+    // 1. Load existing plan from DB
+    const result = await queryOLTP<{ id: string; plan_json: any; description: string }>(
+      'SELECT id, plan_json, description FROM content_plans WHERE id = $1',
+      [planId]
+    );
+    if (result.rows.length === 0) {
+      throw new Error(`Plan not found: ${planId}`);
+    }
+
+    let existingPlan;
+    try {
+      existingPlan = ContentPlanSchema.parse(result.rows[0].plan_json);
+    } catch {
+      throw new Error('Stored plan failed schema validation');
+    }
+
+    // 2. Extract only the selected items
+    const selectedItems = existingPlan.items.filter(i => itemIds.includes(i.id));
+    if (selectedItems.length === 0) {
+      throw new Error('None of the specified item IDs were found in the plan');
+    }
+
+    // 3. Build a scoped plan containing only selected items for the LLM
+    const scopedPlan: ContentPlan = {
+      ...existingPlan,
+      items: selectedItems,
+      links: existingPlan.links.filter(
+        l => itemIds.includes(l.fromItem) && itemIds.includes(l.toItem)
+      ),
+    };
+
+    // 4. Gather context
+    const context = await this.gatherContext();
+
+    // 5. Call LLM to refine the scoped plan
+    const { plan: rawRefined, usage } = await this.provider.refinePlan(scopedPlan, feedback, context);
+
+    // 6. Merge refined items back into the full plan (replace by ID)
+    const refinedMap = new Map(rawRefined.items.map(i => [i.id, i]));
+    const mergedItems = existingPlan.items.map(item => {
+      const refined = refinedMap.get(item.id);
+      return refined ? { ...item, ...refined, id: item.id } : item;
+    });
+
+    const mergedPlan: ContentPlan = {
+      ...existingPlan,
+      items: mergedItems,
+    };
+
+    // 7. Validate
+    const validated = ContentPlanSchema.parse(mergedPlan);
+
+    // 8. Re-inject asset needs
+    injectAssetNeeds(validated.items);
+
+    // 9. Create a NEW plan row (versioning)
+    const feedbackEntry = {
+      feedback: `[item-scoped] ${feedback}`,
+      timestamp: new Date().toISOString(),
+      planSnapshot: existingPlan,
+    };
+
+    const newPlanResult = await queryOLTP<{ id: string }>(
+      `INSERT INTO content_plans (description, plan_json, status, feedback_log, parent_plan_id)
+       VALUES ($1, $2, 'proposed', $3::jsonb, $4)
+       RETURNING id`,
+      [validated.description, validated, JSON.stringify([feedbackEntry]), planId]
+    );
+
     validated.id = newPlanResult.rows[0].id;
     return { plan: validated, usage };
   }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
 import type { Step, GenerationStatus } from '../types';
-import { loadPlanFromDb, fetchTemplates, fetchContentTree } from './useStoryBuilderApi';
+import { loadPlanFromDb, fetchTemplates, fetchContentTree, refinePlan } from './useStoryBuilderApi';
 import { useStoryPlanApi } from './useStoryPlanApi';
 import * as mutations from './useStoryBuilderMutations';
 import type { SolidifyResultLite } from '../components/ResultsStep';
@@ -106,6 +106,29 @@ export function useStoryBuilder(initialPlanId: string | null) {
     removeItem: (i: number) => applyMutation(p => mutations.removeItem(p, i)),
     removeAssetPath: (i: number, k: string) => applyMutation(p => mutations.removeAssetPath(p, i, k)),
     addItem: () => applyMutation(mutations.addItem),
+    addItemFromRoster: (entity: { name: string; type: string; description?: string }) =>
+      applyMutation(p => mutations.addItemFromRoster(p, entity)),
+    handleRefineItem: useCallback(async (itemId: string) => {
+      if (!planId || !plan) return;
+      setLoading(true);
+      setError(null);
+      try {
+        // Persist edits first
+        const saveRes = await import('./useStoryBuilderApi').then(m => m.updatePlan(planId, plan));
+        if (!saveRes.success) throw new Error(saveRes.error || 'Failed to save plan edits');
+        const res = await refinePlan(planId, `Refine the ${plan.items.find(i => i.id === itemId)?.name || 'selected'} item`, [itemId]);
+        if (res.success && res.data) {
+          setPlan(res.data.plan);
+          setPlanId(res.data.plan.id);
+        } else {
+          setError(res.error || 'Failed to refine item');
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to refine item');
+      } finally {
+        setLoading(false);
+      }
+    }, [planId, plan, setLoading, setError, setPlan, setPlanId]),
     goBack: useCallback(() => { setStep(s => (s === 2 ? 1 : s) as Step); }, []),
   };
 }

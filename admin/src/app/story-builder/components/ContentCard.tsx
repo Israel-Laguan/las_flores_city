@@ -60,6 +60,7 @@ interface ContentCardProps {
   planId?: string | null;
   disabled?: boolean;
   onRegenerateLore?: (itemId: string) => void;
+  onRefineItem?: (itemId: string) => void;
   onFieldChange: (index: number, field: string, value: string) => void;
   onRemove: (index: number) => void;
   onAssetPathRemove?: (index: number, key: string) => void;
@@ -292,7 +293,7 @@ function DependenciesSection({ allItems, item, onDependsOnChange, index }: {
   );
 }
 
-export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange, onGenerateDrafts, onChooseDraft, draftAssets, draftLoading, fillStatus }: ContentCardProps) {
+export default function ContentCard({ item, index, allItems = [], planId, disabled, onRegenerateLore, onRefineItem, onFieldChange, onRemove, onAssetPathRemove, onDependsOnChange, onGenerateDrafts, onChooseDraft, draftAssets, draftLoading, fillStatus }: ContentCardProps) {
   const fields = getFieldsForType(item.type);
   const icon = TYPE_ICONS[item.type] || '\u{1F4C4}';
   const [showLore, setShowLore] = useState(false);
@@ -343,6 +344,16 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
                   title="Regenerate lore content"
                 >
                   Regenerate
+                </button>
+              )}
+              {onRefineItem && (
+                <button
+                  className={cn('btn', 'btn--secondary', 'btn--small')}
+                  onClick={() => onRefineItem(item.id)}
+                  disabled={disabled}
+                  title="Refine this item with AI"
+                >
+                  Refine
                 </button>
               )}
             </>

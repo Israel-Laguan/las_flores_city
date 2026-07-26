@@ -165,6 +165,11 @@ Return a single JSON object matching this schema:
   "status": "draft"
 }
 
+## Story quality rules
+- Biography Check: story_beat items must describe the PLAYER's active involvement in the present, not NPC backstory. NPC history belongs in lore files, not in beats.
+- Player agency: every quest/mission arc should support three branches — engage (help/ally), reject (walk away + consequences), and exploit (betrayal/mercenary outcome). Use dependsOn or separate items to represent branches.
+- Tone: cyberpunk noir — punchy, atmospheric, avoid long exposition dumps in a single node.
+
 ## Rules
 1. Pre-generate a UUID v4 for the plan id and every item id.
 2. Slugs must be lowercase alphanumeric with underscores only (e.g. "diego_the_bartender").
@@ -222,8 +227,83 @@ ${CONTENT_TYPES.join(', ')}
 - Overlays: ${existingOverlays}
 - Locations: ${existingLocations}
 
+## Story quality rules (maintain these when adjusting the plan)
+- Story beats = player's present involvement, not NPC backstory (lore goes in .md files)
+- Quest arcs need engage / reject / exploit branches
+- Tone: cyberpunk noir, punchy, no exposition dumps
+
 ## Output format
 Return a single JSON object matching the ContentPlan schema. Keep the same plan id. Keep items that the user didn't ask to change. Output ONLY the JSON object, no markdown fences or explanation.`;
+}
+
+// ── Item-Scoped Refinement Prompt Builder ─────────────────────────────
+
+export function buildItemScopedRefinementPrompt(
+  selectedItems: ContentPlanItem[],
+  fullPlan: ContentPlan,
+  feedback: string,
+  context: ExistingContentContext,
+): string {
+  const otherItems = fullPlan.items
+    .filter(i => !selectedItems.some(s => s.id === i.id))
+    .map(i => `${i.name} (${i.type})`)
+    .join(', ') || '(none)';
+
+  const existingChars = context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)';
+  const existingScenes = context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)';
+  const existingDialogues = context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)';
+  const existingMissions = context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)';
+  const existingStories = context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)';
+  const existingOverlays = context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)';
+  const existingLocations = context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)';
+
+  return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
+
+## Task
+The user wants to refine ONLY the selected items below. Adjust these items according to the feedback. Do NOT modify any other items in the plan.
+
+## Items to refine
+${JSON.stringify(selectedItems, null, 2)}
+
+## Other items in the plan (for cross-reference, do NOT modify)
+${otherItems}
+
+## User feedback
+${feedback}
+
+## Available content types
+${CONTENT_TYPES.join(', ')}
+
+## Required fields per content type
+- character: name, description, title (optional), metadata.type, metadata.role, metadata.faction, metadata.personality, lore_path, narrative_path
+- scene: name, description, district, mood, lore_path
+- dialogue: name, description, lore_path
+- overlay: name, description, target_tree_id, modifications, lore_path
+- mission: title, description, lore_path
+- story: name, description, beats
+- shop_item: name, description, price, currency
+- location: name, description, district, tags, history, daytime, nightlife, lore_path
+- map_tile: district_id, x, y, terrain_type
+- story_beat: id, description
+- gig: name, description, reward
+- vault: name, description, item_type
+
+## Existing content (avoid duplicates)
+- Characters: ${existingChars}
+- Scenes: ${existingScenes}
+- Dialogues: ${existingDialogues}
+- Missions: ${existingMissions}
+- Stories: ${existingStories}
+- Overlays: ${existingOverlays}
+- Locations: ${existingLocations}
+
+## Story quality rules (maintain these when adjusting the plan)
+- Story beats = player's present involvement, not NPC backstory (lore goes in .md files)
+- Quest arcs need engage / reject / exploit branches
+- Tone: cyberpunk noir, punchy, no exposition dumps
+
+## Output format
+Return a JSON array of the modified items only. Each item must keep its original id. Output ONLY the JSON array, no markdown fences or explanation.`;
 }
 
 // ── Lore Generation Prompt ─────────────────────────────────────────────

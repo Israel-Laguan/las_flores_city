@@ -45,10 +45,10 @@ export async function savePlan(description: string, plan: ContentPlan) {
   );
 }
 
-export async function refinePlan(planId: string, feedback: string) {
+export async function refinePlan(planId: string, feedback: string, itemIds?: string[]) {
   return postJSON<{ success: boolean; data?: { plan: ContentPlan }; error?: string }>(
     `/admin/story-builder/plans/${planId}/refine`,
-    { feedback },
+    { feedback, ...(itemIds ? { itemIds } : {}) },
   );
 }
 

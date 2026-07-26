@@ -23,6 +23,8 @@ interface ReviewStepProps {
   onUpdateItem: (index: number, field: string, value: string) => void;
   onRemoveItem: (index: number) => void;
   onAddItem: () => void;
+  onAddFromRoster?: (entity: { name: string; type: string; description?: string }) => void;
+  onRefineItem?: (itemId: string) => void;
   onAssetPathRemove: (index: number, key: string) => void;
   onDependsOnChange: (index: number, dependsOn: string[]) => void;
   onUpdateLink: (index: number, field: string, value: string) => void;
@@ -39,7 +41,7 @@ interface ReviewStepProps {
 
 export default function ReviewStep({
   plan, planId, loading, onRegenerateLore, refineFeedback, setRefineFeedback, showRefine, setShowRefine,
-  onRefine, onUpdateItem, onRemoveItem, onAddItem, onAssetPathRemove,
+  onRefine, onUpdateItem, onRemoveItem, onAddItem, onAddFromRoster, onRefineItem, onAssetPathRemove,
   onDependsOnChange, onUpdateLink, onAddLink, onRemoveLink,
   onGenerateDrafts, onChooseDraft, draftAssetsByItem, draftLoading,
   onApproveAndShip, approving, genStatus,
@@ -60,6 +62,15 @@ export default function ReviewStep({
     }
   }
   const isGenerationActive = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating');
+
+  // Coverage check: entities extracted from the description but not in the plan
+  const roster = plan._meta?.entity_roster;
+  const unplannedEntities = roster?.filter(r =>
+    !items.some(item =>
+      item.name.toLowerCase() === r.name.toLowerCase() &&
+      item.type === r.type
+    )
+  ) ?? [];
 
   return (
     <div className={styles.section}>
@@ -97,6 +108,34 @@ export default function ReviewStep({
 
       <PlanSummary plan={plan} />
 
+      {unplannedEntities.length > 0 && (
+        <div className={styles.coverageSection}>
+          <h3 className={styles.coverageHeading}>
+            Mentioned but not planned ({unplannedEntities.length})
+          </h3>
+          <p className={styles.description}>
+            These entities were extracted from your description but don&apos;t have plan items yet.
+          </p>
+          {unplannedEntities.map((entity, i) => (
+            <div key={i} className={styles.coverageItem}>
+              <span className={styles.coverageType}>{entity.type}</span>
+              <span className={styles.coverageName}>{entity.name}</span>
+              {entity.description && (
+                <span className={styles.coverageDesc}>{entity.description}</span>
+              )}
+              {onAddFromRoster && (
+                <button
+                  className={styles.coverageAddBtn}
+                  onClick={() => onAddFromRoster(entity)}
+                >
+                  + Add
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       {plan.items.map((item, i) => (
         <ContentCard
           key={item.id}
@@ -106,6 +145,7 @@ export default function ReviewStep({
           planId={planId}
           disabled={loading}
           onRegenerateLore={onRegenerateLore}
+          onRefineItem={onRefineItem}
           onFieldChange={onUpdateItem}
           onRemove={onRemoveItem}
           onAssetPathRemove={onAssetPathRemove}

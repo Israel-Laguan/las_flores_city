@@ -84,3 +84,22 @@ export function addItem(plan: ContentPlan): ContentPlan {
   };
   return { ...plan, items: [...plan.items, newItem] };
 }
+
+export function addItemFromRoster(
+  plan: ContentPlan,
+  entity: { name: string; type: string; description?: string },
+): ContentPlan {
+  const slug = entity.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const newItem: ContentPlanItem = {
+    id: crypto.randomUUID(),
+    type: entity.type as ContentPlanItem['type'],
+    action: 'create',
+    name: entity.name,
+    description: entity.description ?? '',
+    slug,
+    fields: { description: 'TODO: Add description' },
+    assetNeeds: [],
+    dependsOn: [],
+  };
+  return { ...plan, items: [...plan.items, newItem] };
+}
