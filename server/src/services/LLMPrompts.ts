@@ -11,13 +11,13 @@ function formatExistingContent(context: ExistingContentContext): {
   stories: string; overlays: string; locations: string;
 } {
   return {
-    chars: context.characters.map((c) => `${c.name} (id: ${c.id})`).join(', ') || '(none)',
-    scenes: context.scenes.map((s) => `${s.name} (id: ${s.id})`).join(', ') || '(none)',
+    chars: context.characters.map((c) => `${c.name} (id: ${c.id})${c.role ? `, role: ${c.role}` : ''}${c.faction ? `, faction: ${c.faction}` : ''}`).join(', ') || '(none)',
+    scenes: context.scenes.map((s) => `${s.name} (id: ${s.id})${s.district ? `, district: ${s.district}` : ''}${s.mood ? `, mood: ${s.mood}` : ''}`).join(', ') || '(none)',
     dialogues: context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)',
     missions: context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)',
     stories: context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)',
     overlays: context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)',
-    locations: context.locations.map((l) => `${l.name} (id: ${l.id})`).join(', ') || '(none)',
+    locations: context.locations.map((l) => `${l.name} (id: ${l.id})${l.district ? `, district: ${l.district}` : ''}${l.daytime ? `, daytime: ${l.daytime}` : ''}${l.nightlife ? `, nightlife: ${l.nightlife}` : ''}`).join(', ') || '(none)',
   };
 }
 
