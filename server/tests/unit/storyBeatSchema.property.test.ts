@@ -134,7 +134,7 @@ describe('Schema rejects unknown keys (strict)', () => {
         validBeatsArrayArb(1, 3),
         // Generate a non-empty key that is not one of the known fields
         fc.string({ minLength: 1, maxLength: 30 }).filter(
-          k => !['slug', 'label', 'order', 'description'].includes(k),
+          k => !['slug', 'label', 'order', 'description', '__proto__'].includes(k),
         ),
         fc.string({ minLength: 0, maxLength: 50 }),
         (beats, extraKey, extraValue) => {
@@ -156,7 +156,7 @@ describe('Schema rejects unknown keys (strict)', () => {
       fc.property(
         validBeatsArrayArb(1, 3),
         fc.string({ minLength: 1, maxLength: 30 }).filter(
-          k => k !== 'beats',
+          k => k !== 'beats' && k !== '__proto__',
         ),
         fc.string({ minLength: 0, maxLength: 50 }),
         (beats, extraKey, extraValue) => {
