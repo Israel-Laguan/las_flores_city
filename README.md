@@ -162,7 +162,7 @@ The project defines four tiers of accounts, each with a specific purpose and env
 |------|------|----------|-------------|--------------|---------|
 | **Super Admin** | `admin` | 1 | Set via `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` | Non-production only | Full access to admin panel |
 | **Dev User** | `developer` | 1 | `dev@example.com` / from `seed_dev.sql` | Dev only (`NODE_ENV !== production`) | Elevated admin access for development |
-| **Player** | `player` | 2 | `player1@example.com` / `player2@example.com` — credentials injected via env | All (not production) | Client gameplay testing |
+| **Player** | `player` | 2 | `player1@example.com` / `player2@example.com` — password `PlayerPass123!` | All (not production) | Client gameplay testing |
 | **Test User** | `player` | Dynamic | Created/destroyed by test fixtures | Dev/Test only | Automated integration tests |
 
 #### 1. Super Admin
@@ -172,19 +172,19 @@ Created by `npm run seed:dev` (runs `src/database/seedAdmin.ts`). Credentials co
 ```bash
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=your-admin-password
-ADMIN_USER_ID=00000000-0000-0000-0000-000000000002
+ADMIN_USER_ID=00000000-0000-0000-0000-000000000001
 ```
 
 The admin seed only runs when `NODE_ENV !== 'production'` and is idempotent (no-ops if the user already exists).
 
 #### 2. Dev User
 
-Seeded by `server/scripts/seed_dev.sql` (via `npm run migrate`). This user has the `developer` role, which grants the same admin access as `admin`:
+Seeded by `server/scripts/seed_dev.sql` (via `npm run migrate`). This user has the `admin` role, which grants elevated admin access for development:
 
 - **Email**: `dev@example.com`
 - **Username**: `devuser`
 - **Password**: from the hardcoded bcrypt hash (used for local dev only)
-- **Role**: `developer`
+- **Role**: `admin`
 
 #### 3. Player Accounts
 

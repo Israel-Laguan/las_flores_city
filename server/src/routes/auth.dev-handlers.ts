@@ -3,6 +3,8 @@ import { queryOLTP } from '../database/connection.js';
 import { generateToken } from '../middleware/auth.js';
 import { setSessionCookie } from '../utils/cookies.js';
 
+const DEV_START_LOCATION = '550e8400-e29b-41d4-a716-446655440002';
+
 // POST /auth/dev-login - Quick dev login (no password required)
 export async function handleDevLogin(req: express.Request, res: express.Response): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
@@ -31,8 +33,7 @@ export async function handleDevLogin(req: express.Request, res: express.Response
       [targetUserId, `dev-player-${targetUserId}@example.com`, `dev_${targetUserId.slice(0, 8)}`, 'Dev Player']
     );
 
-    // Ensure player_states row exists (idempotent via ON CONFLICT)
-    const DEV_START_LOCATION = '550e8400-e29b-41d4-a716-446655440002';
+// Ensure player_states row exists (idempotent via ON CONFLICT)
     await queryOLTP(
       `INSERT INTO player_states (user_id, current_location_id, current_node_id, flags, time_blocks, credits, gold_credits, current_day, story_beat, alignment)
        VALUES ($1, $2, NULL, '{}'::jsonb, 48, 100, 0, 1, 'prologue', 'neutral')
@@ -113,7 +114,6 @@ export async function handleDevAdminLogin(req: express.Request, res: express.Res
     );
 
     // Ensure player_states row exists (idempotent via ON CONFLICT)
-    const DEV_START_LOCATION = '550e8400-e29b-41d4-a716-446655440002';
     await queryOLTP(
       `INSERT INTO player_states (user_id, current_location_id, current_node_id, flags, time_blocks, credits, gold_credits, current_day, story_beat, alignment)
        VALUES ($1, $2, NULL, '{}'::jsonb, 48, 100, 0, 1, 'prologue', 'neutral')

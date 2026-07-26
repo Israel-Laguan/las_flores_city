@@ -161,6 +161,9 @@ The admin panel requires two environment variables to work correctly with the se
 - `INTERNAL_SERVER_URL`: Used by server-side route handlers (admin container fetches from this URL). Set to `http://las-flores-server:3000` so the admin container can reach the server via the container network.
 
 ```bash
+# Build the admin panel image
+podman build -f admin/Dockerfile -t las-flores-admin .
+
 # Start admin panel with correct environment variables
 podman run -d --name las-flores-admin \
   --network las-flores-net -p 3002:3000 \

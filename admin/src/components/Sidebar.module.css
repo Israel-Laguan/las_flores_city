@@ -16,7 +16,8 @@
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
   .sectionToggle,
-  .navLink {
+  .navLink,
+  .subNavLink {
     transition: none;
   }
 }
@@ -65,12 +66,6 @@
 .sectionToggle {
   font-size: 0.7rem;
   transition: transform 0.2s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sectionToggle {
-    transition: none;
-  }
 }
 
 .sectionToggleCollapsed {
