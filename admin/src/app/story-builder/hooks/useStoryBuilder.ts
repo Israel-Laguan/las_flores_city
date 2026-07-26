@@ -115,7 +115,11 @@ export function useStoryBuilder(initialPlanId: string | null) {
 
   function applyMutation(fn: (plan: ContentPlan) => ContentPlan) {
     if (!plan) return;
-    setPlan(fn(plan));
+    try {
+      setPlan(fn(plan));
+    } catch (err: any) {
+      setError(err.message || 'Failed to apply change');
+    }
   }
 
   const handleRefineItem = useCallback(async (itemId: string) => {

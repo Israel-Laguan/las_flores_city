@@ -23,6 +23,9 @@ const TODO_FIELDS: Record<string, string[]> = {
 
 function addTodoFields(item: ContentPlanItem): void {
   const fields = TODO_FIELDS[item.type] || [];
+  if (!item.fields || typeof item.fields !== 'object') {
+    item.fields = {};
+  }
   for (const field of fields) {
     const parts = field.split('.');
     let current: any = item.fields;
@@ -31,7 +34,7 @@ function addTodoFields(item: ContentPlanItem): void {
       current = current[parts[i]];
     }
     const lastField = parts[parts.length - 1];
-    if (!current[lastField] || !String(current[lastField]).startsWith('TODO:')) {
+    if (!current[lastField]) {
       current[lastField] = `TODO: Add ${lastField}`;
     }
   }
@@ -41,6 +44,7 @@ export function validateAndRepairOutline(plan: ContentPlan, description: string)
   let repaired = false;
   const itemIds = new Set<string>();
   const slugCounts = new Map<string, number>();
+  const oldToNewIds = new Map<string, string>();
 
   if (!Array.isArray(plan.items)) {
     plan.items = [];
@@ -53,30 +57,7 @@ export function validateAndRepairOutline(plan: ContentPlan, description: string)
   }
 
   for (const item of plan.items) {
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.id)) {
-      item.id = uuidv4();
-      repaired = true;
-    }
-
-    if (!item.slug || !/^[a-z0-9_]+$/.test(item.slug)) {
-      item.slug = slugify(item.name);
-      repaired = true;
-    }
-
-    const slugKey = `${item.type}:${item.slug}`;
-    const count = slugCounts.get(slugKey) || 0;
-    if (count > 0) {
-      item.slug = `${item.slug}_${count}`;
-      repaired = true;
-    }
-    slugCounts.set(slugKey, count + 1);
-
-    if (itemIds.has(item.id)) {
-      item.id = uuidv4();
-      repaired = true;
-    }
-    itemIds.add(item.id);
-
+    // Normalize type first so it participates in slug collision detection
     const validTypes = ['character', 'scene', 'dialogue', 'overlay', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault'];
     if (!validTypes.includes(item.type)) {
       item.type = 'character';
@@ -89,7 +70,59 @@ export function validateAndRepairOutline(plan: ContentPlan, description: string)
       repaired = true;
     }
 
+    // Repair invalid ID and track old-to-new mapping
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.id)) {
+      const oldId = item.id;
+      item.id = uuidv4();
+      if (oldId) oldToNewIds.set(oldId, item.id);
+      repaired = true;
+    }
+
+    // Deduplicate IDs
+    if (itemIds.has(item.id)) {
+      const oldId = item.id;
+      item.id = uuidv4();
+      if (oldId) oldToNewIds.set(oldId, item.id);
+      repaired = true;
+    }
+    itemIds.add(item.id);
+
+    if (!item.slug || !/^[a-z0-9_]+$/.test(item.slug)) {
+      item.slug = slugify(item.name);
+      repaired = true;
+    }
+
+    // Collision-safe slug deduplication
+    const slugKey = `${item.type}:${item.slug}`;
+    let candidateSlug = item.slug;
+    let counter = slugCounts.get(slugKey) || 0;
+    if (counter > 0) {
+      while (slugCounts.has(`${item.type}:${candidateSlug}`)) {
+        candidateSlug = `${item.slug}_${counter}`;
+        counter++;
+      }
+      item.slug = candidateSlug;
+      repaired = true;
+    }
+    slugCounts.set(`${item.type}:${item.slug}`, (slugCounts.get(`${item.type}:${item.slug}`) || 0) + 1);
+
     addTodoFields(item);
+  }
+
+  // Update dependsOn and links references after all ID repairs
+  if (oldToNewIds.size > 0) {
+    for (const item of plan.items) {
+      if (item.dependsOn) {
+        item.dependsOn = item.dependsOn.map(id => oldToNewIds.get(id) || id);
+      }
+    }
+    if (plan.links) {
+      plan.links = plan.links.map(link => ({
+        ...link,
+        fromItem: oldToNewIds.get(link.fromItem) || link.fromItem,
+        toItem: oldToNewIds.get(link.toItem) || link.toItem,
+      }));
+    }
   }
 
   if (plan.items.length === 0) {

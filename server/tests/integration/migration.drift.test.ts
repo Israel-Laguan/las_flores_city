@@ -101,8 +101,9 @@ describe('Migration drift guard', () => {
     const missing = await pool.query('SELECT id FROM mysteries WHERE id = $1', [MYSTERY_ID]);
     expect(missing.rows).toHaveLength(0);
 
-    // Scope to the specific files under test to avoid advisory-lock contention
-    // with other parallel integration tests that also call migrateContent.
+    // NOTE: migrateContent acquires a global advisory lock, so passing specific
+    // file paths does NOT prevent contention with parallel tests. This test may
+    // be flaky under parallel execution.
     const missionPath = path.resolve(CONTENT_DIR, MISSION_FILE);
     const vaultPath = path.resolve(CONTENT_DIR, VAULT_FILE);
     const overlayPath = path.resolve(CONTENT_DIR, OVERLAY_FILE);

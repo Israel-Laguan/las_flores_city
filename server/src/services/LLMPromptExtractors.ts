@@ -1,16 +1,19 @@
 import type { ContentPlanItem } from '@las-flores/shared';
 import type { ExistingContentContext } from './types/LLMTypes.js';
 
+export const CONTENT_TYPES = [
+  'character', 'dialogue', 'scene', 'overlay', 'mission',
+  'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault',
+];
+
 export function buildLorePrompt(item: ContentPlanItem, context: ExistingContentContext): string {
   const existingChars = context.characters.map(c => c.name).join(', ') || '(none)';
   const existingScenes = context.scenes.map(s => s.name).join(', ') || '(none)';
   const existingLocations = context.locations.map(l => l.name).join(', ') || '(none)';
 
   const currentItemSummary = Object.entries(item.fields)
-    .map(([key, value]) => `- ${key}: ${value}`)
+    .map(([key, value]) => `- ${key}: ${typeof value === 'object' ? JSON.stringify(value) : value}`)
     .join('\n');
-
-  const targetFields = Object.keys(item.fields).filter(f => String(item.fields[f as keyof typeof item.fields]).startsWith('TODO:'));
 
   const typeInstructions: Record<string, string> = {
     character: 'Write a vivid character description (2-3 sentences) with cyberpunk personality traits.',
@@ -20,6 +23,9 @@ export function buildLorePrompt(item: ContentPlanItem, context: ExistingContentC
     mission: 'Write a mission brief (2-3 sentences) with objectives and stakes.',
     story: 'Write a story synopsis (3-4 sentences) with key beats.',
     shop_item: 'Write a description (1-2 sentences) for this item in a cyberpunk market.',
+    location: 'Write a location description (2-3 sentences) with atmosphere, landmarks, and district character.',
+    gig: 'Write a gig description (1-2 sentences) with the job offer and reward details.',
+    vault: 'Write a vault description (1-2 sentences) for this collectible or secret.',
   };
 
   const instructions = typeInstructions[item.type] || typeInstructions.character;
@@ -27,16 +33,13 @@ export function buildLorePrompt(item: ContentPlanItem, context: ExistingContentC
   return `You are a content writer for Las Flores 2077, a narrative cyberpunk game set in a rain-soaked city of neon and corporate intrigue.
 
 ## Task
-Fill in the following empty/TODO fields for a ${item.type} item. Write in a cyberpunk noir tone consistent with the Las Flores 2077 setting.
+Write lore for a ${item.type} item. Write in a cyberpunk noir tone consistent with the Las Flores 2077 setting.
 
 ## Item Details
 - Name: ${item.name}
 - Type: ${item.type}
 - Current fields:
 ${currentItemSummary}
-
-## Fields to fill
-${targetFields.map(f => `- ${f}`).join('\n')}
 
 ## Writing instructions
 ${instructions}
@@ -46,20 +49,10 @@ ${instructions}
 - Scenes: ${existingScenes}
 - Locations: ${existingLocations}
 
-## Output format
-Return a JSON object with two keys:
-{
-  "fields": {
-    "field.path": "filled value"
-  },
-  "lore_refs": ["optional_slug_of_related_content"]
-}
-
 Rules:
-- ONLY fill the fields listed above. Do not modify other fields.
 - Keep the cyberpunk Las Flores 2077 tone and setting.
-- lore_refs should be slugs of existing content items that are thematically related (can be empty array).
-- Output ONLY the JSON object, no markdown fences or explanation.`;
+- Write 2-3 paragraphs of lore prose/markdown.
+- Output ONLY the lore text, no JSON or explanation.`;
 }
 
 export function buildEntityExtractionPrompt(context: ExistingContentContext): string {
@@ -73,7 +66,7 @@ export function buildEntityExtractionPrompt(context: ExistingContentContext): st
 Extract entity candidates from this story chunk. Identify characters, scenes/locations, missions, stories, and other content items mentioned. Be thorough but concise — just names, types, and brief descriptions.
 
 ## Available content types
-character, dialogue, scene, overlay, mission, story, shop_item, location, map_tile, story_beat, gig, vault
+${CONTENT_TYPES.join(', ')}
 
 ## Existing content (avoid duplicates)
 - Characters: ${existingChars}

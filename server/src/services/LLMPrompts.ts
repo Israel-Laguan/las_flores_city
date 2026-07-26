@@ -1,15 +1,8 @@
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 import type { ExistingContentContext } from './types/LLMTypes.js';
-import { buildLorePrompt, buildEntityExtractionPrompt } from './LLMPromptExtractors.js';
+import { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES } from './LLMPromptExtractors.js';
 
-export { buildLorePrompt, buildEntityExtractionPrompt };
-
-// ── Content Types ──────────────────────────────────────────────────────
-
-const CONTENT_TYPES = [
-  'character', 'dialogue', 'scene', 'overlay', 'mission',
-  'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault',
-];
+export { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES };
 
 // ── Shared Formatting Helpers ───────────────────────────────────────────
 

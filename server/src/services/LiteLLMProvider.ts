@@ -54,7 +54,7 @@ export class LiteLLMProvider implements LLMProvider {
         `${baseMsg}: Connection to ${this.baseUrl} timed out. ` +
         `Model: ${this.model}, current timeout: ${timeoutMs}ms, max: ${maxTimeoutMs}ms. ` +
         `Check if LiteLLM is running and reachable from this container. ` +
-        `Test with: curl -s ${this.baseUrl}/health`
+        `Test with: wget -qO- ${this.baseUrl}/health`
       );
       (enhancedError as any).cause = lastError;
       (enhancedError as any).model = this.model;
@@ -262,8 +262,18 @@ export class LiteLLMProvider implements LLMProvider {
   async refinePlanItems(selectedItems: ContentPlanItem[], fullPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }> {
     const systemPrompt = buildItemScopedRefinementPrompt(selectedItems, fullPlan, feedback, context);
     const { result, usage } = await this.callLLM(systemPrompt, feedback);
-    const items = Array.isArray(result.items) ? result.items : [];
-    return { items: items as ContentPlanItem[], usage };
+    if (!Array.isArray(result.items)) {
+      throw new Error('LiteLLM refinePlanItems returned invalid response: expected items array');
+    }
+    const items = result.items as ContentPlanItem[];
+    const selectedIds = new Set(selectedItems.map(i => i.id));
+    const returnedIds = new Set(items.map((i: any) => i.id));
+    for (const id of selectedIds) {
+      if (!returnedIds.has(id)) {
+        throw new Error(`LiteLLM refinePlanItems response missing selected item ${id}`);
+      }
+    }
+    return { items, usage };
   }
 
   async generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string> {

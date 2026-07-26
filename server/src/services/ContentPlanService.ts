@@ -223,23 +223,17 @@ export class ContentPlanService {
     const refinedMap = new Map(refinedItems.filter(i => selectedIds.has(i.id)).map(i => [i.id, i]));
     const mergedItems = existingPlan.items.map(item => {
       const refined = refinedMap.get(item.id);
-      return refined ? { ...item, ...refined, id: item.id } : item;
+      if (!refined) return item;
+      // Preserve original assetNeeds — injectAssetNeeds only fills missing arrays,
+      // so an LLM-provided empty array would not be corrected.
+      const { assetNeeds: originalAssetNeeds, ...rest } = item;
+      return { ...rest, ...refined, id: item.id, assetNeeds: originalAssetNeeds };
     });
-
-    // 6. Merge refined links: keep links outside the scope, replace those inside the scope
-    const scopedLinkKeys = new Set(
-      existingPlan.links
-        .filter(l => selectedIds.has(l.fromItem) && selectedIds.has(l.toItem))
-        .map(l => `${l.fromItem}->${l.toItem}:${l.field}`)
-    );
-    const outsideScopeLinks = existingPlan.links.filter(
-      l => !scopedLinkKeys.has(`${l.fromItem}->${l.toItem}:${l.field}`)
-    );
 
     const mergedPlan: ContentPlan = {
       ...existingPlan,
       items: mergedItems,
-      links: outsideScopeLinks,
+      links: existingPlan.links,
       status: 'proposed',
     };
 
