@@ -154,6 +154,53 @@ las_flores_city/
 
 ## Development
 
+### User Accounts
+
+The project defines four tiers of accounts, each with a specific purpose and environment scope.
+
+| Tier | Role | Accounts | Credentials | Environments | Purpose |
+|------|------|----------|-------------|--------------|---------|
+| **Super Admin** | `admin` | 1 | Set via `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` | All (ENV-configured) | Full access to admin panel |
+| **Dev User** | `developer` | 1 | `dev@example.com` / from `seed_dev.sql` | Dev only (`NODE_ENV !== production`) | Elevated admin access for development |
+| **Player** | `player` | 2 | `player1@example.com` / `player2@example.com` — password `PlayerPass123!` | All (not production) | Client gameplay testing |
+| **Test User** | `player` | Dynamic | Created/destroyed by test fixtures | Dev/Test only | Automated integration tests |
+
+#### 1. Super Admin
+
+Created by `npm run seed:dev` (runs `src/database/seedAdmin.ts`). Credentials come from environment variables:
+
+```bash
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=your-admin-password
+ADMIN_USER_ID=00000000-0000-0000-0000-000000000001
+```
+
+The admin seed only runs when `NODE_ENV !== 'production'` and is idempotent (no-ops if the user already exists).
+
+#### 2. Dev User
+
+Seeded by `server/scripts/seed_dev.sql` (via `npm run migrate`). This user has the `developer` role, which grants the same admin access as `admin`:
+
+- **Email**: `dev@example.com`
+- **Username**: `devuser`
+- **Password**: from the hardcoded bcrypt hash (used for local dev only)
+- **Role**: `developer`
+
+#### 3. Player Accounts
+
+Seeded by `npm run seed:players` (runs `src/database/seedPlayers.ts` which reads `server/scripts/seed_players.sql`). Two permanent accounts for client-side testing:
+
+| Account | Email | Username | Starting State | Location |
+|---------|-------|----------|----------------|----------|
+| Player 1 | `player1@example.com` | `player1` | Prologue, day 1, 48 TB, 100 credits | Welcome Center |
+| Player 2 | `player2@example.com` | `player2` | Act 1, day 5, 36 TB, 120 credits, 10 gold | Central Plaza |
+
+Both use the password `PlayerPass123!`. These run automatically in dev via the docker-compose startup flow.
+
+#### 4. Test Users
+
+Created temporarily during integration test runs (e.g., `settings-profile-test@example.com`, `breakthrough-test@example.com`). They are cleaned up in `afterAll` hooks and should never be used for manual testing.
+
 ### Content Creation
 
 1. Create YAML files in `/content` subdirectories

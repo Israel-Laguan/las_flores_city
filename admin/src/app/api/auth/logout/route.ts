@@ -36,6 +36,6 @@ export async function POST() {
     return NextResponse.redirect(new URL('/login', origin), { status: 303 });
   } catch (error) {
     console.error('Logout error:', error);
-    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'), { status: 303 });
+    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'), { status: 303 });
   }
 }

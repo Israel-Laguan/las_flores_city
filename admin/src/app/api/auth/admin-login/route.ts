@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
@@ -31,14 +32,25 @@ export async function POST(request: Request) {
     }
 
     const setCookieHeader = response.headers.get('set-cookie');
-    const responseHeaders: Record<string, string> = {
-      location: new URL('/', request.url).toString(),
-    };
+
+    // Set the cookie using the cookies() API from next/headers.
+    // This is the only reliable way to set cookies in Next.js Route Handlers
+    // that works in both dev and production modes.
     if (setCookieHeader) {
-      responseHeaders['set-cookie'] = setCookieHeader;
+      const match = setCookieHeader.match(/^jwt_session=([^;]+)/);
+      if (match) {
+        const cookieStore = await cookies();
+        cookieStore.set('jwt_session', match[1], {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24, // 24 hours
+          path: '/',
+        });
+      }
     }
 
-    return new NextResponse(null, { status: 303, headers: responseHeaders });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(
