@@ -172,7 +172,7 @@ export default function ReviewStep({
       genStatusByItem.set(item.itemId, item);
     }
   }
-  const isGenerationActive = genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating');
+  const isGenerationActive = !!(genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating'));
 
   // Coverage check: entities extracted from the description but not in the plan
   const roster = plan._meta?.entity_roster;
@@ -254,7 +254,7 @@ export default function ReviewStep({
         chosenNeeds={chosenNeeds}
         publishedNeeds={publishedNeeds}
         onApproveAndShip={onApproveAndShip}
-        approving={approving}
+        approving={!!approving}
         planId={planId}
         isGenerationActive={isGenerationActive}
       />
