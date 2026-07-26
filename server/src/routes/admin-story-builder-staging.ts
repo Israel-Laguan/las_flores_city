@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { queryOLTP } from '../database/connection.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { stagePlan } from '../services/StoryBuilderOrchestrator.js';
@@ -12,6 +11,7 @@ import {
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { createLLMProvider } from '../services/LLMService.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
+import { resolveContentDir } from '../services/StoryBuilderLore.js';
 
 export interface StagingOutcome {
   plan: ContentPlan;
@@ -71,7 +71,7 @@ export async function runStagingPipeline(plan: ContentPlan, id: string): Promise
 
   await queryOLTP('UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2', [plan, id]);
 
-  const contentDir = path.resolve(process.cwd(), 'content');
+  const contentDir = resolveContentDir();
   try {
     for (const item of plan.items) {
       const pendingNeeds = item.assetNeeds.filter((n) => n.status === 'pending');

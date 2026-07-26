@@ -4,11 +4,12 @@ import { signMinioUrl, uploadToMinio } from '../services/StorageService.js';
 import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { PromptCatalogResponseSchema } from '@las-flores/shared';
 import { z } from 'zod';
+import { resolveContentDir } from '../services/StoryBuilderLore.js';
 
 export function getPromptRoot(): string {
   return process.env.PROMPT_ROOT
     ? path.resolve(process.env.PROMPT_ROOT)
-    : path.resolve(process.cwd(), 'content');
+    : resolveContentDir();
 }
 
 /** @deprecated Use getPromptRoot() — this value is frozen at module load time */
@@ -25,14 +26,14 @@ export function resolvePromptFile(prompt_rel: string): string {
  * 3. content/districts — location background prompts (recursive discovery)
  */
 export function getPromptRoots(): string[] {
-  const cwd = process.cwd();
+  const contentDir = resolveContentDir();
   return [
     getPromptRoot(),
-    path.resolve(cwd, 'content/characters'),
-    path.resolve(cwd, 'content/districts'),
-    path.resolve(cwd, 'content/scenes'),
-    path.resolve(cwd, 'content/overlays'),
-    path.resolve(cwd, 'docs/lore/shared/assets'),
+    path.resolve(contentDir, 'characters'),
+    path.resolve(contentDir, 'districts'),
+    path.resolve(contentDir, 'scenes'),
+    path.resolve(contentDir, 'overlays'),
+    path.resolve(process.cwd(), 'docs/lore/shared/assets'),
   ];
 }
 

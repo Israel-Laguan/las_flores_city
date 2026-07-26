@@ -82,7 +82,12 @@ Return a single JSON object matching this schema:
 
 // ── Outline Prompt Builder (skeleton with TODO: prose) ─────────────────────
 
-export function buildOutlinePrompt(context: ExistingContentContext): string {
+export interface BuildOutlinePromptOptions {
+  maxItems?: number;
+}
+
+export function buildOutlinePrompt(context: ExistingContentContext, options: BuildOutlinePromptOptions = {}): string {
+  const { maxItems } = options;
   const depth = process.env.PLAN_OUTLINE_CONTEXT_DEPTH || 'names';
 
   const formatItem = (c: { id: string; name: string; role?: string; faction?: string; title?: string }) => {
@@ -98,10 +103,14 @@ export function buildOutlinePrompt(context: ExistingContentContext): string {
   const existingOverlays = context.overlays.map(o => o.name).join(', ') || '(none)';
   const existingLocations = context.locations.map(l => l.name).join(', ') || '(none)';
 
+  const itemCapInstruction = maxItems
+    ? `\nIMPORTANT: Generate at most ${maxItems} items. Prioritize the most important entities from the description.`
+    : '';
+
   return `You are a content planning assistant for Las Flores 2077, a narrative cyberpunk game.
 
 ## Task
-Given a user's natural-language description, produce a ContentPlan skeleton with identifiers only. Write TODO: placeholders for all prose fields — the async fill step will write the actual content.
+Given a user's natural-language description, produce a ContentPlan skeleton with identifiers only. Write TODO: placeholders for all prose fields — the async fill step will write the actual content.${itemCapInstruction}
 
 ## Available content types
 ${CONTENT_TYPES.join(', ')}

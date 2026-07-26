@@ -80,16 +80,23 @@ export function mergeCandidates(allCandidates: EntityCandidate[]): EntityCandida
 export function buildSynopsisFromCandidates(
   candidates: EntityCandidate[],
   originalDescription: string,
+  options: { maxItems?: number } = {},
 ): string {
+  const { maxItems } = options;
   // Truncate original description to keep the synopsis manageable
   const maxDescLen = 2000;
   const descSnippet = originalDescription.length > maxDescLen
     ? originalDescription.slice(0, maxDescLen) + '...'
     : originalDescription;
 
+  // Optionally cap the number of candidates
+  const cappedCandidates = maxItems && candidates.length > maxItems
+    ? candidates.slice(0, maxItems)
+    : candidates;
+
   // Group candidates by type
   const byType = new Map<string, EntityCandidate[]>();
-  for (const c of candidates) {
+  for (const c of cappedCandidates) {
     const list = byType.get(c.type) || [];
     list.push(c);
     byType.set(c.type, list);
@@ -104,5 +111,9 @@ export function buildSynopsisFromCandidates(
     rosterParts.push(`### ${type.charAt(0).toUpperCase() + type.slice(1)}s\n${itemList}`);
   }
 
-  return `From the story bible:\n${descSnippet}\n\nExtracted entity roster (${candidates.length} entities):\n\n${rosterParts.join('\n\n')}`;
+  const itemCapNote = maxItems && candidates.length > maxItems
+    ? `\n\nNote: This is a condensed roster (${maxItems} of ${candidates.length} entities). Prioritize the most important entities.`
+    : '';
+
+  return `From the story bible:\n${descSnippet}\n\nExtracted entity roster (${cappedCandidates.length} entities):\n\n${rosterParts.join('\n\n')}${itemCapNote}`;
 }

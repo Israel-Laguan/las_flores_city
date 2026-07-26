@@ -225,10 +225,29 @@ export class LiteLLMProvider implements LLMProvider {
       ? new LiteLLMProvider({ model: outlineModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
       : this;
 
-    const systemPrompt = buildOutlinePrompt(context);
     const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
-    const { result, usage } = await provider.callLLM(systemPrompt, description, undefined, maxTokens);
-    return { plan: result as ContentPlan, usage };
+    const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
+
+    const attemptOutline = async (maxItems?: number): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> => {
+      const systemPrompt = buildOutlinePrompt(context, { maxItems });
+      const { result, usage } = await provider.callLLM(systemPrompt, description, undefined, maxTokens);
+      return { plan: result as ContentPlan, usage };
+    };
+
+    try {
+      return await attemptOutline(initialMaxItems);
+    } catch (err: any) {
+      if (err.message?.includes('LLM output truncated')) {
+        console.log(`[LiteLLMProvider] Outline truncated, retrying with reduced item count`);
+        const reducedMaxItems = Math.floor(initialMaxItems / 2);
+        if (reducedMaxItems < 3) {
+          console.warn(`[LiteLLMProvider] Item count already at minimum, not retrying`);
+          throw err;
+        }
+        return await attemptOutline(reducedMaxItems);
+      }
+      throw err;
+    }
   }
 
   async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {

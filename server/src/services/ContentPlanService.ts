@@ -112,6 +112,7 @@ export class ContentPlanService {
     context: ExistingContentContext,
   ): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
     const maxInputChars = parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10);
+    const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
 
     // 1. Chunk the description
     const chunks = chunkDescription(description, maxInputChars);
@@ -123,10 +124,16 @@ export class ContentPlanService {
     const BATCH_SIZE = 3;
     for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
       const batch = chunks.slice(i, i + BATCH_SIZE);
-      const results = await Promise.all(
+      const results = await Promise.allSettled(
         batch.map(chunk => this.provider.extractEntities(extractionPrompt, chunk))
       );
-      for (const r of results) allCandidates.push(...r.entities);
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          allCandidates.push(...result.value.entities);
+        } else {
+          console.warn(`[ContentPlanService] Entity extraction failed for a chunk: ${result.reason}`);
+        }
+      }
     }
     console.log(`[ContentPlanService] Extracted ${allCandidates.length} entity candidates`);
 
@@ -134,8 +141,8 @@ export class ContentPlanService {
     const merged = mergeCandidates(allCandidates);
     console.log(`[ContentPlanService] Merged to ${merged.length} unique entities`);
 
-    // 4. Synthesize synopsis + bounded outline call
-    const synopsis = buildSynopsisFromCandidates(merged, description);
+    // 4. Synthesize synopsis + bounded outline call (with item count cap)
+    const synopsis = buildSynopsisFromCandidates(merged, description, { maxItems: initialMaxItems });
     const result = await this.provider.generateOutline(synopsis, context);
     return result;
   }
