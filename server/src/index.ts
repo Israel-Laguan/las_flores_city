@@ -105,7 +105,7 @@ app.use(cors({
   origin: corsOrigins ?? true,
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '512kb' }));
 
 // Accept /api prefix on all routes — used by test direct-backend calls in CI
 // and by production reverse proxies. The Vite dev server strips /api before
@@ -153,6 +153,26 @@ app.use('/admin', adminListViewsRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  // Handle payload too large (body-parser entity.too.large)
+  if ((err as any).type === 'entity.too.large' || (err as any).status === 413) {
+    res.status(413).json({
+      success: false,
+      error: 'Your input is too large. Try breaking it into a shorter description (under 512KB).',
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
+
+  // Handle malformed JSON body parse errors
+  if (err instanceof SyntaxError && 'status' in err && (err as any).status === 400) {
+    res.status(400).json({
+      success: false,
+      error: 'Malformed JSON in request body.',
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
+
   console.error('Unhandled error:', err);
   res.status(500).json({
     success: false,

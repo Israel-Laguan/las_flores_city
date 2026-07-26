@@ -25,7 +25,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem,
-    goBack, planId, solidifyResult,
+    goBack, planId, solidifyResult, genStatus,
   } = useStoryBuilder(initialPlanId);
 
   const { draftAssetsByItem, draftLoading, onGenerateDrafts, onChooseDraft } = useDraftManager({
@@ -85,6 +85,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           draftLoading={draftLoading}
           onApproveAndShip={handleApproveAndSolidify}
           approving={loading}
+          genStatus={genStatus}
         />
       )}
 

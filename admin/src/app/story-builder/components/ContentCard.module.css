@@ -212,3 +212,34 @@
 .filledField {
   border-left: 2px solid rgba(0, 200, 150, 0.4);
 }
+
+/* Fill status chips */
+.fillChip {
+  composes: todoBadge;
+}
+
+.fillChip_pending {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.fillChip_filling {
+  background: var(--warning-bg, rgba(245, 158, 11, 0.15));
+  color: var(--warning);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.fillChip_done {
+  background: var(--accent-bg, rgba(0, 200, 150, 0.15));
+  color: var(--accent);
+}
+
+.fillChip_failed {
+  background: var(--danger-bg, rgba(255, 80, 80, 0.15));
+  color: var(--danger);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

@@ -1,5 +1,6 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import type { EntityCandidate } from './OutlineChunking.js';
 import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 
@@ -46,7 +47,7 @@ export class LiteLLMProvider implements LLMProvider {
     return null;
   }
 
-  private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
+  private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number, maxTokens?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
     const timeoutMs = customTimeoutMs ?? this.defaultTimeoutMs;
     const maxTimeoutMs = parseInt(process.env.LLM_MAX_TIMEOUT_MS || '300000', 10);
     let lastError: Error | null = null;
@@ -74,6 +75,7 @@ export class LiteLLMProvider implements LLMProvider {
             ],
             temperature: 0.7,
             response_format: { type: 'json_object' },
+            ...(maxTokens ? { max_tokens: maxTokens } : {}),
           }),
           signal: AbortSignal.timeout(attemptTimeoutMs),
         });
@@ -92,6 +94,17 @@ export class LiteLLMProvider implements LLMProvider {
 
         const data = await response.json();
         const usage = this.extractUsage(data);
+
+        const finishReason = data.choices?.[0]?.finish_reason;
+        if (finishReason === 'length') {
+          const truncError = new Error(
+            `LLM output truncated (finish_reason=length, max_tokens=${maxTokens}). ` +
+            `Consider increasing LLM_OUTLINE_MAX_TOKENS or reducing input size.`
+          );
+          (truncError as any).isRetryable = false;
+          throw truncError;
+        }
+
         const content = data.choices?.[0]?.message?.content ?? data.choices?.[0]?.message?.reasoning_content;
         if (!content) {
           throw new Error('LiteLLM response did not contain any message content.');
@@ -212,9 +225,30 @@ export class LiteLLMProvider implements LLMProvider {
       ? new LiteLLMProvider({ model: outlineModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
       : this;
 
-    const systemPrompt = buildOutlinePrompt(context);
-    const { result, usage } = await provider.callLLM(systemPrompt, description);
-    return { plan: result as ContentPlan, usage };
+    const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
+    const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
+
+    const attemptOutline = async (maxItems?: number): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> => {
+      const systemPrompt = buildOutlinePrompt(context, { maxItems });
+      const { result, usage } = await provider.callLLM(systemPrompt, description, undefined, maxTokens);
+      return { plan: result as ContentPlan, usage };
+    };
+
+    let maxItems = initialMaxItems;
+    for (;;) {
+      try {
+        return await attemptOutline(maxItems);
+      } catch (err: any) {
+        if (!err.message?.includes('LLM output truncated')) throw err;
+        const reduced = Math.floor(maxItems / 2);
+        if (reduced < 3) {
+          console.warn(`[LiteLLMProvider] Item count already at minimum, not retrying`);
+          throw err;
+        }
+        console.log(`[LiteLLMProvider] Outline truncated, retrying with reduced item count (${reduced})`);
+        maxItems = reduced;
+      }
+    }
   }
 
   async refinePlan(existingPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
@@ -235,6 +269,17 @@ export class LiteLLMProvider implements LLMProvider {
       fields: (result.fields as Record<string, string>) || {},
       lore_refs: Array.isArray(result.lore_refs) ? result.lore_refs : [],
     };
+  }
+
+  async extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
+    const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
+    const { result } = await this.callLLM(systemPrompt, chunk, undefined, maxTokens);
+    const raw = Array.isArray((result as any).entities) ? (result as any).entities : [];
+    const entities = raw.filter((e: any) =>
+      e && typeof e.name === 'string' && e.name.trim() &&
+      typeof e.type === 'string' && e.type.trim()
+    );
+    return { entities };
   }
 
 }

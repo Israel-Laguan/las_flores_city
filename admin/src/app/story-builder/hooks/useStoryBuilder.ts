@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
-import type { Step } from '../types';
+import type { Step, GenerationStatus } from '../types';
 import { loadPlanFromDb, fetchTemplates, fetchContentTree } from './useStoryBuilderApi';
 import { useStoryPlanApi } from './useStoryPlanApi';
 import * as mutations from './useStoryBuilderMutations';
@@ -25,12 +25,13 @@ export function useStoryBuilder(initialPlanId: string | null) {
   const [refineFeedback, setRefineFeedback] = useState('');
   const [showRefine, setShowRefine] = useState(false);
   const [solidifyResult, setSolidifyResult] = useState<SolidifyResultLite | null>(null);
+  const [genStatus, setGenStatus] = useState<GenerationStatus | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [contentTree, setContentTree] = useState<Array<{ path: string; name: string; type: string }>>([]);
 
   const apiCallbacks = useStoryPlanApi({
     setLoading, setError, setPlan, setStep, setPlanId,
-    setRefineFeedback, setShowRefine, setSolidifyResult,
+    setRefineFeedback, setShowRefine, setSolidifyResult, setGenStatus,
     description, plan,
   });
 
@@ -86,7 +87,7 @@ export function useStoryBuilder(initialPlanId: string | null) {
   return {
     step, description, setDescription, plan, loading, error, planId,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
-    solidifyResult, templates, contentTree,
+    solidifyResult, genStatus, templates, contentTree,
     handleGeneratePlan: apiCallbacks.handleGeneratePlan,
     handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
     handleApproveAndSolidify: () => { if (planId) apiCallbacks.handleApproveAndSolidify(planId); },

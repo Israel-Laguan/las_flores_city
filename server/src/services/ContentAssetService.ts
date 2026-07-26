@@ -1,16 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import jsYaml from 'js-yaml';
-
-/**
- * Resolves the content directory (same logic as admin-content.ts).
- */
-function resolveContentDir(): string {
-  const isSubdir = process.cwd().endsWith('server');
-  return isSubdir
-    ? path.resolve(process.cwd(), '..', 'content')
-    : path.resolve(process.cwd(), 'content');
-}
+import { resolveContentDir } from './StoryBuilderLore.js';
 
 /**
  * Traverses an object tree to get the value at a dot/bracket path.

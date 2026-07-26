@@ -1,5 +1,6 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import type { EntityCandidate } from './OutlineChunking.js';
 
 const MOCK_IDS = {
   planId: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
@@ -176,6 +177,18 @@ ${description || `A ${item.type} unfolds in the shadows of Las Flores.`}
 ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
 `;
     }
+  }
+
+  async extractEntities(_systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
+    const entities: EntityCandidate[] = [];
+    const lower = chunk.toLowerCase();
+    if (lower.includes('bartender') || lower.includes('diego')) {
+      entities.push({ name: 'Diego', type: 'character', description: 'A weathered bartender.' });
+    }
+    if (lower.includes('plaza')) {
+      entities.push({ name: 'Central Plaza', type: 'scene', description: 'The bustling heart of Las Flores.' });
+    }
+    return { entities };
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {

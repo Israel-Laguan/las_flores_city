@@ -42,6 +42,87 @@
   box-sizing: border-box;
 }
 
+.textareaFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 0.35rem;
+  gap: 1rem;
+}
+
+.charCounter {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.charCounterWarning {
+  color: var(--warning);
+}
+
+.guidance {
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex: 1;
+  text-align: right;
+}
+
+.warningBanner {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--warning-bg, rgba(245, 158, 11, 0.1));
+  border: 1px solid var(--warning-border, rgba(245, 158, 11, 0.3));
+  border-radius: 3px;
+  color: var(--warning);
+  font-size: 0.8rem;
+}
+
+.examplesSection {
+  margin-bottom: 1rem;
+}
+
+.examplesToggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.examplesToggle:hover {
+  color: var(--accent);
+}
+
+.examples {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--panel-bg);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.exampleItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.exampleLabel {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.exampleText {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+  font-style: italic;
+}
+
 .button {
   padding: 0.75rem 1.5rem;
   border-radius: 5px;

@@ -9,6 +9,8 @@ import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } 
 import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
+import { chunkDescription, mergeCandidates, buildSynopsisFromCandidates, type EntityCandidate } from './OutlineChunking.js';
+import { buildEntityExtractionPrompt } from './LLMPrompts.js';
 
 export interface PlanWithUsage {
   plan: ContentPlan;
@@ -78,15 +80,75 @@ export class ContentPlanService {
 
   async generateOutline(description: string): Promise<PlanWithUsage> {
     const context = await this.gatherContext();
+    const maxInputChars = parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10);
 
-    const { plan: rawPlan, usage } = await this.provider.generateOutline(description, context);
-    rawPlan.description = description;
+    let plan: ContentPlan;
+    let usage: LLMUsage | null = null;
 
-    const validated = this.validateAndRepairOutline(rawPlan, description);
+    if (description.length <= maxInputChars) {
+      // Small input: single-pass (current behavior)
+      const result = await this.provider.generateOutline(description, context);
+      plan = result.plan;
+      usage = result.usage;
+    } else {
+      // Large input: two-pass chunked ingestion
+      console.log(`[ContentPlanService] Large input (${description.length} chars), using two-pass ingestion`);
+      const result = await this.twoPassOutline(description, context);
+      plan = result.plan;
+      usage = result.usage;
+    }
+
+    plan.description = description;
+
+    const validated = this.validateAndRepairOutline(plan, description);
 
     injectAssetNeeds(validated.items);
 
     return { plan: validated, usage };
+  }
+
+  private async twoPassOutline(
+    description: string,
+    context: ExistingContentContext,
+  ): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> {
+    const maxInputChars = parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10);
+    const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
+
+    // 1. Chunk the description
+    const chunks = chunkDescription(description, maxInputChars);
+    console.log(`[ContentPlanService] Split into ${chunks.length} chunks`);
+
+    // 2. Per-chunk entity extraction (parallel, bounded)
+    const extractionPrompt = buildEntityExtractionPrompt(context);
+    const allCandidates: EntityCandidate[] = [];
+    const BATCH_SIZE = 3;
+    for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+      const batch = chunks.slice(i, i + BATCH_SIZE);
+      const results = await Promise.allSettled(
+        batch.map(chunk => this.provider.extractEntities(extractionPrompt, chunk))
+      );
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          allCandidates.push(...result.value.entities);
+        } else {
+          console.warn(`[ContentPlanService] Entity extraction failed for a chunk: ${result.reason}`);
+        }
+      }
+    }
+    console.log(`[ContentPlanService] Extracted ${allCandidates.length} entity candidates`);
+
+    if (allCandidates.length === 0 && chunks.length > 1) {
+      console.warn(`[ContentPlanService] All ${chunks.length} chunks failed entity extraction — falling back to truncated description`);
+    }
+
+    // 3. Merge/dedupe
+    const merged = mergeCandidates(allCandidates);
+    console.log(`[ContentPlanService] Merged to ${merged.length} unique entities`);
+
+    // 4. Synthesize synopsis + bounded outline call (with item count cap)
+    const synopsis = buildSynopsisFromCandidates(merged, description, { maxItems: initialMaxItems });
+    const result = await this.provider.generateOutline(synopsis, context);
+    return result;
   }
 
   validateAndRepairOutline(plan: ContentPlan, description: string): ContentPlan {

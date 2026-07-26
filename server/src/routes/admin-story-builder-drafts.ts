@@ -15,15 +15,12 @@ import {
   getAssetFieldName,
   isValidAssetFilename,
 } from '../services/LocalDraftService.js';
+import { resolveContentDir } from '../services/StoryBuilderLore.js';
 
 export const adminStoryBuilderDraftsRouter = express.Router();
 
 const MAX_DRAFT_COUNT = 8;
 const DEFAULT_DRAFT_COUNT = 3;
-
-function resolveContentDir(): string {
-  return path.resolve(process.cwd(), 'content');
-}
 
 /** Load and validate a plan from the DB by ID. Returns 404/400-aware result. */
 async function loadPlan(id: string): Promise<{ ok: true; plan: ContentPlan } | { ok: false; status: number; error: string }> {
