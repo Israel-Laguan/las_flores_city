@@ -226,9 +226,10 @@ export class ContentPlanService {
       if (!refined) return item;
       // If the type changed, discard old assetNeeds so injectAssetNeeds can
       // generate correct defaults for the new type. Otherwise preserve them.
-      const { assetNeeds: originalAssetNeeds, ...rest } = item;
+      const { assetNeeds: originalAssetNeeds, dependsOn: originalDependsOn, ...rest } = item;
       const assetNeeds = refined.type !== item.type ? [] : originalAssetNeeds;
-      return { ...rest, ...refined, id: item.id, assetNeeds };
+      const dependsOn = refined.type !== item.type ? [] : originalDependsOn;
+      return { ...rest, ...refined, id: item.id, assetNeeds, dependsOn };
     });
 
     const mergedPlan: ContentPlan = {

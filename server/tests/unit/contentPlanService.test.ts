@@ -278,7 +278,7 @@ describe('refinePlanItems', () => {
     };
 
     const service = new ContentPlanService(refinedProvider);
-    const { plan } = await service.refinePlanItems(PLAN_ID, 'refine Alice', [ITEM_A], {} as any);
+    const { plan } = await service.refinePlanItems(PLAN_ID, 'refine Alice', [ITEM_A]);
 
     const refinedItem = plan.items.find(i => i.id === ITEM_A);
     expect(refinedItem?.fields.description).toBe('Refined description');
@@ -308,7 +308,7 @@ describe('refinePlanItems', () => {
     };
 
     const service = new ContentPlanService(refinedProvider);
-    const { plan } = await service.refinePlanItems(PLAN_ID, 'refine Alice', [ITEM_A], {} as any);
+    const { plan } = await service.refinePlanItems(PLAN_ID, 'refine Alice', [ITEM_A]);
 
     expect(plan.links).toHaveLength(1);
     expect(plan.links[0].fromItem).toBe(ITEM_A);

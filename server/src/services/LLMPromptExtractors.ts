@@ -23,10 +23,12 @@ export function buildLorePrompt(item: ContentPlanItem, context: ExistingContentC
     mission: 'Write a mission brief (2-3 sentences) with objectives and stakes.',
     story: 'Write a story synopsis (3-4 sentences) with key beats.',
     shop_item: 'Write a description (1-2 sentences) for this item in a cyberpunk market.',
-    location: 'Write a location description (2-3 sentences) with atmosphere, landmarks, and district character.',
-    gig: 'Write a gig description (1-2 sentences) with the job offer and reward details.',
-    vault: 'Write a vault description (1-2 sentences) for this collectible or secret.',
-  };
+     location: 'Write a location description (2-3 sentences) with atmosphere, landmarks, and district character.',
+     gig: 'Write a gig description (1-2 sentences) with the job offer and reward details.',
+     vault: 'Write a vault description (1-2 sentences) for this collectible or secret.',
+     map_tile: 'Write a brief map tile description (1-2 sentences) covering visual/geographic character.',
+     story_beat: 'Write a story beat description (2-3 sentences) covering the narrative moment and its stakes.',
+   };
 
   const instructions = typeInstructions[item.type] || typeInstructions.character;
 

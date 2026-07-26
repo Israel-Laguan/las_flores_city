@@ -266,6 +266,9 @@ export class LiteLLMProvider implements LLMProvider {
       throw new Error('LiteLLM refinePlanItems returned invalid response: expected items array');
     }
     const items = result.items as ContentPlanItem[];
+    if (!items.some(item => selectedItems.some(selected => selected.id === item.id))) {
+      throw new Error('LiteLLM refinePlanItems returned no selected items to refine');
+    }
     // Accept partial subset — unchanged selected items may be omitted by the LLM.
     // The caller's merge logic will preserve items not present in the returned subset.
     return { items, usage };
