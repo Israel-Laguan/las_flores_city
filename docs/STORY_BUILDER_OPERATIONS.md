@@ -134,7 +134,7 @@ Standalone script to bulk-fill existing TODO placeholders in content files that 
 
 **Problem**: `LoreGenerator.ts` and `PromptFileGenerator.ts` used `path.resolve(process.cwd(), 'content')` which resolves to `/app/server/content` instead of `/app/content` when running from the server directory.
 
-**Current State**: FIXED. `LoreGenerator.ts` uses `resolveContentDir()` from `StoryBuilderLore.ts`. `PromptFileGenerator.ts` takes `contentDir` as a parameter — callers pass the correct resolved path.
+**Current State**: FIXED. `LoreGenerator.ts` uses `resolveContentDir()` from `StoryBuilderLore.ts` (also re-exported from `server/src/routes/admin-content.helpers.ts`). `PromptFileGenerator.ts` takes `contentDir` as a parameter — callers pass the correct resolved path.
 
 **Cleanup**: If you previously ran without the fix, check for and remove any `server/content/` directory that may have been created.
 

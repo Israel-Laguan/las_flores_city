@@ -346,17 +346,17 @@ export default function ContentCard({ item, index, allItems = [], planId, disabl
                   Regenerate
                 </button>
               )}
-              {onRefineItem && (
-                <button
-                  className={cn('btn', 'btn--secondary', 'btn--small')}
-                  onClick={() => onRefineItem(item.id)}
-                  disabled={disabled}
-                  title="Refine this item with AI"
-                >
-                  Refine
-                </button>
-              )}
             </>
+          )}
+          {onRefineItem && (
+            <button
+              className={cn('btn', 'btn--secondary', 'btn--small')}
+              onClick={() => onRefineItem(item.id)}
+              disabled={disabled}
+              title="Refine this item with AI"
+            >
+              Refine
+            </button>
           )}
           {narrativePath && (
             <button

@@ -85,19 +85,37 @@ export function addItem(plan: ContentPlan): ContentPlan {
   return { ...plan, items: [...plan.items, newItem] };
 }
 
+const VALID_CONTENT_TYPES = new Set([
+  'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
+  'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat',
+]);
+
 export function addItemFromRoster(
   plan: ContentPlan,
   entity: { name: string; type: string; description?: string },
 ): ContentPlan {
-  const slug = entity.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  if (!VALID_CONTENT_TYPES.has(entity.type)) {
+    throw new Error(`Unsupported roster type: "${entity.type}". Supported types: ${[...VALID_CONTENT_TYPES].join(', ')}`);
+  }
+
+  // Deduplicate slug by appending a numeric suffix if needed
+  let slug = entity.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const existingSlugs = new Set(plan.items.map(i => `${i.type}:${i.slug}`));
+  let candidateSlug = slug;
+  let counter = 2;
+  while (existingSlugs.has(`${entity.type}:${candidateSlug}`)) {
+    candidateSlug = `${slug}_${counter}`;
+    counter++;
+  }
+
   const newItem: ContentPlanItem = {
     id: crypto.randomUUID(),
     type: entity.type as ContentPlanItem['type'],
     action: 'create',
     name: entity.name,
     description: entity.description ?? '',
-    slug,
-    fields: { description: 'TODO: Add description' },
+    slug: candidateSlug,
+    fields: { description: entity.description || 'TODO: Add description' },
     assetNeeds: [],
     dependsOn: [],
   };

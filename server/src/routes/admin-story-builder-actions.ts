@@ -32,8 +32,21 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest
       return;
     }
 
+    // Validate itemIds if provided
+    if (itemIds != null) {
+      if (!Array.isArray(itemIds) || itemIds.length === 0) {
+        res.status(400).json({ success: false, error: 'itemIds must be a non-empty array of strings', timestamp: new Date().toISOString() });
+        return;
+      }
+      if (!itemIds.every((id: unknown) => typeof id === 'string' && id.length > 0)) {
+        res.status(400).json({ success: false, error: 'Each itemIds entry must be a non-empty string', timestamp: new Date().toISOString() });
+        return;
+      }
+    }
+
+    const isScoped = itemIds && Array.isArray(itemIds) && itemIds.length > 0;
     const { plan: refinedPlan, usage: refinedUsage } =
-      itemIds && Array.isArray(itemIds) && itemIds.length > 0
+      isScoped
         ? await contentPlanService.refinePlanItems(id, feedback.trim(), itemIds)
         : await contentPlanService.refinePlan(id, feedback.trim());
 
@@ -41,6 +54,9 @@ adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest
       feedbackLength: feedback.trim().length,
       itemCount: refinedPlan.items.length,
     };
+    if (isScoped) {
+      refinedEventData.refinedItemCount = itemIds.length;
+    }
     if (refinedUsage) {
       refinedEventData.totalTokens = refinedUsage.totalTokens;
       refinedEventData.promptTokens = refinedUsage.promptTokens;

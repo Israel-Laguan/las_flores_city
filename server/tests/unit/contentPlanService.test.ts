@@ -35,6 +35,7 @@ const mockProvider: LLMProvider = {
   },
   async generateOutline() { return { plan: {} as any, usage: null }; },
   async refinePlan() { return { plan: {} as any, usage: null }; },
+  async refinePlanItems() { return { items: [] as any, usage: null }; },
   async generateLore() { return ''; },
   async generateFill() { return { fields: {} }; },
 };
@@ -77,6 +78,7 @@ describe('ContentPlanService', () => {
       parseDescription: parseSpy,
       async generateOutline() { return { plan: {} as any, usage: null }; },
       async refinePlan() { return { plan: {} as any, usage: null }; },
+      async refinePlanItems() { return { items: [] as any, usage: null }; },
       async generateLore() { return ''; },
       async generateFill() { return { fields: {} }; },
     };
@@ -151,6 +153,7 @@ describe('generateOutline + validateAndRepairOutline', () => {
       },
       async parseDescription() { return { plan: {} as any, usage: null }; },
       async refinePlan() { return { plan: {} as any, usage: null }; },
+      async refinePlanItems() { return { items: [] as any, usage: null }; },
       async generateLore() { return ''; },
       async generateFill() { return { fields: {} }; },
     };

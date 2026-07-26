@@ -299,7 +299,7 @@ The entire game interface is rendered inside a phone-shaped DOM container layere
 - `docs/FOUNDATION_ARCHITECTURE.md` — infrastructure, content pipeline
 - `docs/MVW_ARCHITECTURE.md` — player state, flat interface
 - `docs/TIME_TRAVEL_ARCHITECTURE.md` — mystery lifecycle, leaderboard worker
-- `docs/STORY_BUILDER_OPERATIONS.md` — operational findings and story-beat gating reference
+- `docs/STORY_BUILDER_OPERATIONS.md` — operational findings, verification results, and runbook procedures
 - `docs/lore/game_systems.md` — relationship schema (lore-side)
 - `shared/src/schemas/dialogue.ts` — dialogue node/choice/effects schema
 - `shared/src/schemas/gig.ts` — gig schema with reputation fields

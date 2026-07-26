@@ -2,7 +2,7 @@
 
 > Review of the content intake experience (Story Builder wizard) and the AI plan-generation pipeline, with prioritized next steps.
 >
-> **Created**: 2026-07-25 · **Status**: review captured; implementation deferred pending scope approval
+> **Created**: 2026-07-25 · **Status**: all phases implemented; kept as historical review record
 
 ---
 

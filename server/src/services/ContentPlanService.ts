@@ -1,8 +1,7 @@
 import fs from 'node:fs/promises';
 import yaml from 'js-yaml';
 import { glob } from 'glob';
-import crypto from 'node:crypto';
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { createLLMProvider } from './LLMService.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
@@ -11,46 +10,11 @@ import { generateForPlan } from './LoreGenerator.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { chunkDescription, mergeCandidates, buildSynopsisFromCandidates, type EntityCandidate } from './OutlineChunking.js';
 import { buildEntityExtractionPrompt } from './LLMPrompts.js';
+import { validateAndRepairOutline, generateFallbackPlan, setStatus, updatePlanJson, uuidv4 } from './ContentPlanValidation.js';
 
 export interface PlanWithUsage {
   plan: ContentPlan;
   usage: LLMUsage | null;
-}
-
-function uuidv4(): string {
-  return crypto.randomUUID();
-}
-
-function slugify(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'untitled';
-}
-
-const TODO_FIELDS: Record<string, string[]> = {
-  character: ['description', 'metadata.personality', 'title'],
-  scene: ['description', 'mood'],
-  location: ['description', 'history', 'daytime', 'nightlife'],
-  dialogue: ['description'],
-  mission: ['description'],
-  overlay: ['description'],
-  vault: ['description'],
-  gig: ['description', 'reward'],
-  shop_item: ['description'],
-};
-
-function addTodoFields(item: ContentPlanItem): void {
-  const fields = TODO_FIELDS[item.type] || [];
-  for (const field of fields) {
-    const parts = field.split('.');
-    let current: any = item.fields;
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (!current[parts[i]]) current[parts[i]] = {};
-      current = current[parts[i]];
-    }
-    const lastField = parts[parts.length - 1];
-    if (!current[lastField] || !String(current[lastField]).startsWith('TODO:')) {
-      current[lastField] = `TODO: Add ${lastField}`;
-    }
-  }
 }
 
 export class ContentPlanService {
@@ -158,134 +122,11 @@ export class ContentPlanService {
   }
 
   validateAndRepairOutline(plan: ContentPlan, description: string): ContentPlan {
-    let repaired = false;
-    const itemIds = new Set<string>();
-    const slugCounts = new Map<string, number>();
-
-    if (!Array.isArray(plan.items)) {
-      plan.items = [];
-      repaired = true;
-    }
-
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(plan.id)) {
-      plan.id = uuidv4();
-      repaired = true;
-    }
-
-    for (const item of plan.items) {
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item.id)) {
-        item.id = uuidv4();
-        repaired = true;
-      }
-
-      if (!item.slug || !/^[a-z0-9_]+$/.test(item.slug)) {
-        item.slug = slugify(item.name);
-        repaired = true;
-      }
-
-      const slugKey = `${item.type}:${item.slug}`;
-      const count = slugCounts.get(slugKey) || 0;
-      if (count > 0) {
-        item.slug = `${item.slug}_${count}`;
-        repaired = true;
-      }
-      slugCounts.set(slugKey, count + 1);
-
-      if (itemIds.has(item.id)) {
-        item.id = uuidv4();
-        repaired = true;
-      }
-      itemIds.add(item.id);
-
-      const validTypes = ['character', 'scene', 'dialogue', 'overlay', 'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat', 'gig', 'vault'];
-      if (!validTypes.includes(item.type)) {
-        item.type = 'character';
-        repaired = true;
-      }
-
-      const validActions = ['create', 'update'];
-      if (!validActions.includes(item.action)) {
-        item.action = 'create';
-        repaired = true;
-      }
-
-      addTodoFields(item);
-    }
-
-    if (plan.items.length === 0) {
-      const fallback = this.generateFallbackPlan(description);
-      plan.items = fallback.items;
-      plan._meta = {
-        ...plan._meta,
-        outline_source: 'fallback' as const,
-        outline_repaired: false,
-      };
-      return plan;
-    }
-
-    plan._meta = {
-      ...plan._meta,
-      outline_source: plan._meta?.outline_source || 'llm' as const,
-      outline_repaired: repaired,
-    };
-
-    return plan;
+    return validateAndRepairOutline(plan, description);
   }
 
   private generateFallbackPlan(description: string): ContentPlan {
-    const words = description.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-    const charName = words[0] ? words[0].charAt(0).toUpperCase() + words[0].slice(1) : 'Character';
-    const locationName = words[1] ? words[1].charAt(0).toUpperCase() + words[1].slice(1) : 'Location';
-
-    return {
-      id: uuidv4(),
-      description: `Fallback plan for: ${description.substring(0, 100)}`,
-      items: [
-        {
-          id: uuidv4(),
-          type: 'character',
-          action: 'create',
-          name: charName,
-          description: `A character mentioned in: ${description.substring(0, 50)}`,
-          slug: slugify(charName),
-          fields: {
-            name: charName,
-            description: 'TODO: Add description',
-            title: 'TODO: Add title',
-            metadata: {
-              type: 'human',
-              role: 'npc',
-              faction: 'TODO: Add faction',
-              personality: 'TODO: Add personality',
-            },
-          },
-          assetNeeds: [],
-          dependsOn: [],
-        },
-        {
-          id: uuidv4(),
-          type: 'scene',
-          action: 'create',
-          name: `${locationName} Scene`,
-          description: `A scene at: ${description.substring(0, 50)}`,
-          slug: slugify(locationName),
-          fields: {
-            name: `${locationName} Scene`,
-            description: 'TODO: Add description',
-            district: 'TODO: Add district',
-            mood: 'TODO: Add mood',
-          },
-          assetNeeds: [],
-          dependsOn: [],
-        },
-      ],
-      links: [],
-      status: 'draft',
-      _meta: {
-        outline_source: 'fallback' as const,
-        outline_repaired: false,
-      },
-    };
+    return generateFallbackPlan(description);
   }
 
   async refinePlan(planId: string, feedback: string): Promise<PlanWithUsage> {
@@ -331,21 +172,20 @@ export class ContentPlanService {
     }
 
     // 8. Create a NEW plan row (versioning) instead of updating in place
+    const newPlanId = uuidv4();
+    validated.id = newPlanId;
     const feedbackEntry = {
       feedback,
       timestamp: new Date().toISOString(),
       planSnapshot: existingPlan,
     };
 
-    const newPlanResult = await queryOLTP<{ id: string }>(
-      `INSERT INTO content_plans (description, plan_json, status, feedback_log, parent_plan_id)
-       VALUES ($1, $2, 'proposed', $3::jsonb, $4)
-       RETURNING id`,
-      [validated.description, validated, JSON.stringify([feedbackEntry]), planId]
+    await queryOLTP(
+      `INSERT INTO content_plans (id, description, plan_json, status, feedback_log, parent_plan_id)
+       VALUES ($1, $2, $3, 'proposed', $4::jsonb, $5)`,
+      [newPlanId, validated.description, validated, JSON.stringify([feedbackEntry]), planId]
     );
 
-    // Return the new plan with its new ID
-    validated.id = newPlanResult.rows[0].id;
     return { plan: validated, usage };
   }
 
@@ -372,31 +212,35 @@ export class ContentPlanService {
       throw new Error('None of the specified item IDs were found in the plan');
     }
 
-    // 3. Build a scoped plan containing only selected items for the LLM
-    const scopedPlan: ContentPlan = {
-      ...existingPlan,
-      items: selectedItems,
-      links: existingPlan.links.filter(
-        l => itemIds.includes(l.fromItem) && itemIds.includes(l.toItem)
-      ),
-    };
-
-    // 4. Gather context
+    // 3. Gather context
     const context = await this.gatherContext();
 
-    // 5. Call LLM to refine the scoped plan
-    const { plan: rawRefined, usage } = await this.provider.refinePlan(scopedPlan, feedback, context);
+    // 4. Call LLM with dedicated item-scoped prompt
+    const { items: refinedItems, usage } = await this.provider.refinePlanItems(selectedItems, existingPlan, feedback, context);
 
-    // 6. Merge refined items back into the full plan (replace by ID)
-    const refinedMap = new Map(rawRefined.items.map(i => [i.id, i]));
+    // 5. Merge refined items back into the full plan (replace by ID)
+    const selectedIds = new Set(selectedItems.map(i => i.id));
+    const refinedMap = new Map(refinedItems.filter(i => selectedIds.has(i.id)).map(i => [i.id, i]));
     const mergedItems = existingPlan.items.map(item => {
       const refined = refinedMap.get(item.id);
       return refined ? { ...item, ...refined, id: item.id } : item;
     });
 
+    // 6. Merge refined links: keep links outside the scope, replace those inside the scope
+    const scopedLinkKeys = new Set(
+      existingPlan.links
+        .filter(l => selectedIds.has(l.fromItem) && selectedIds.has(l.toItem))
+        .map(l => `${l.fromItem}->${l.toItem}:${l.field}`)
+    );
+    const outsideScopeLinks = existingPlan.links.filter(
+      l => !scopedLinkKeys.has(`${l.fromItem}->${l.toItem}:${l.field}`)
+    );
+
     const mergedPlan: ContentPlan = {
       ...existingPlan,
       items: mergedItems,
+      links: outsideScopeLinks,
+      status: 'proposed',
     };
 
     // 7. Validate
@@ -406,20 +250,20 @@ export class ContentPlanService {
     injectAssetNeeds(validated.items);
 
     // 9. Create a NEW plan row (versioning)
+    const newPlanId = uuidv4();
+    validated.id = newPlanId;
     const feedbackEntry = {
       feedback: `[item-scoped] ${feedback}`,
       timestamp: new Date().toISOString(),
       planSnapshot: existingPlan,
     };
 
-    const newPlanResult = await queryOLTP<{ id: string }>(
-      `INSERT INTO content_plans (description, plan_json, status, feedback_log, parent_plan_id)
-       VALUES ($1, $2, 'proposed', $3::jsonb, $4)
-       RETURNING id`,
-      [validated.description, validated, JSON.stringify([feedbackEntry]), planId]
+    await queryOLTP(
+      `INSERT INTO content_plans (id, description, plan_json, status, feedback_log, parent_plan_id)
+       VALUES ($1, $2, $3, 'proposed', $4::jsonb, $5)`,
+      [newPlanId, validated.description, validated, JSON.stringify([feedbackEntry]), planId]
     );
 
-    validated.id = newPlanResult.rows[0].id;
     return { plan: validated, usage };
   }
 
@@ -428,15 +272,7 @@ export class ContentPlanService {
    * Throws if the plan is not found.
    */
   static async setStatus(planId: string, status: string, client?: import('pg').PoolClient): Promise<void> {
-    const exec = (text: string, params: any[]) =>
-      client ? client.query<any>(text, params) : queryOLTP<any>(text, params);
-    const result = await exec(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING status',
-      [status, planId]
-    );
-    if (result.rows.length === 0) {
-      throw new Error(`Plan not found: ${planId}`);
-    }
+    return setStatus(planId, status, client);
   }
 
   /**
@@ -444,15 +280,7 @@ export class ContentPlanService {
    * to persist asset-need status changes. Throws if plan not found.
    */
   static async updatePlanJson(planId: string, planJson: any, client?: import('pg').PoolClient): Promise<void> {
-    const exec = (text: string, params: any[]) =>
-      client ? client.query<any>(text, params) : queryOLTP<any>(text, params);
-    const result = await exec(
-      'UPDATE content_plans SET plan_json = $1::jsonb, updated_at = NOW() WHERE id = $2',
-      [planJson, planId]
-    );
-    if (result.rowCount === 0) {
-      throw new Error(`Plan not found: ${planId}`);
-    }
+    return updatePlanJson(planId, planJson, client);
   }
 
   async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {

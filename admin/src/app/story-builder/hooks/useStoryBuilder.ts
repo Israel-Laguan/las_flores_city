@@ -15,6 +15,40 @@ interface Template {
   icon: string;
 }
 
+function buildHandlers(
+  planId: string | null,
+  refineFeedback: string,
+  apiCallbacks: any,
+  applyMutation: (fn: (plan: ContentPlan) => ContentPlan) => void,
+  handleRefineItem: (itemId: string) => void,
+  setStep: (fn: (s: Step) => Step) => void
+) {
+  return {
+    handleGeneratePlan: apiCallbacks.handleGeneratePlan,
+    handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
+    handleApproveAndSolidify: () => { if (planId) apiCallbacks.handleApproveAndSolidify(planId); },
+    handleSelectTemplate: apiCallbacks.handleSelectTemplate,
+    handleClone: apiCallbacks.handleClone,
+    handleRegenerateLore: (itemId: string) => { if (planId) apiCallbacks.handleRegenerateLore(planId, itemId); },
+    handleGenerateDrafts: async (count?: number) => { if (planId) await apiCallbacks.handleGenerateDrafts(planId, count); },
+    handleChooseDraft: async (itemId: string, promptType: string, filename: string) => {
+      if (planId) await apiCallbacks.handleChooseDraft(planId, itemId, promptType, filename);
+    },
+    updateItemField: (i: number, f: string, v: string) => applyMutation(p => mutations.updateItemField(p, i, f, v)),
+    updateItemDependsOn: (i: number, d: string[]) => applyMutation(p => mutations.updateItemDependsOn(p, i, d)),
+    addLink: () => applyMutation(mutations.addLink),
+    updateLink: (i: number, f: string, v: string) => applyMutation(p => mutations.updateLink(p, i, f, v)),
+    removeLink: (i: number) => applyMutation(p => mutations.removeLink(p, i)),
+    removeItem: (i: number) => applyMutation(p => mutations.removeItem(p, i)),
+    removeAssetPath: (i: number, k: string) => applyMutation(p => mutations.removeAssetPath(p, i, k)),
+    addItem: () => applyMutation(mutations.addItem),
+    addItemFromRoster: (entity: { name: string; type: string; description?: string }) =>
+      applyMutation(p => mutations.addItemFromRoster(p, entity)),
+    handleRefineItem,
+    goBack: useCallback(() => { setStep(s => (s === 2 ? 1 : s) as Step); }, [setStep]),
+  };
+}
+
 export function useStoryBuilder(initialPlanId: string | null) {
   const [step, setStep] = useState<Step>(1);
   const [description, setDescription] = useState('');
@@ -84,51 +118,34 @@ export function useStoryBuilder(initialPlanId: string | null) {
     setPlan(fn(plan));
   }
 
+  const handleRefineItem = useCallback(async (itemId: string) => {
+    if (!planId || !plan || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      // Persist edits first
+      const saveRes = await import('./useStoryBuilderApi').then(m => m.updatePlan(planId, plan));
+      if (!saveRes.success) throw new Error(saveRes.error || 'Failed to save plan edits');
+      const res = await refinePlan(planId, `Refine the ${plan.items.find(i => i.id === itemId)?.name || 'selected'} item`, [itemId]);
+      if (res.success && res.data) {
+        setPlan(res.data.plan);
+        setPlanId(res.data.plan.id);
+      } else {
+        setError(res.error || 'Failed to refine item');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to refine item');
+    } finally {
+      setLoading(false);
+    }
+  }, [planId, plan, loading, setLoading, setError, setPlan, setPlanId]);
+
+  const handlers = buildHandlers(planId, refineFeedback, apiCallbacks, applyMutation, handleRefineItem, setStep);
+
   return {
     step, description, setDescription, plan, loading, error, planId,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
     solidifyResult, genStatus, templates, contentTree,
-    handleGeneratePlan: apiCallbacks.handleGeneratePlan,
-    handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
-    handleApproveAndSolidify: () => { if (planId) apiCallbacks.handleApproveAndSolidify(planId); },
-    handleSelectTemplate: apiCallbacks.handleSelectTemplate,
-    handleClone: apiCallbacks.handleClone,
-    handleRegenerateLore: (itemId: string) => { if (planId) apiCallbacks.handleRegenerateLore(planId, itemId); },
-    handleGenerateDrafts: async (count?: number) => { if (planId) await apiCallbacks.handleGenerateDrafts(planId, count); },
-    handleChooseDraft: async (itemId: string, promptType: string, filename: string) => {
-      if (planId) await apiCallbacks.handleChooseDraft(planId, itemId, promptType, filename);
-    },
-    updateItemField: (i: number, f: string, v: string) => applyMutation(p => mutations.updateItemField(p, i, f, v)),
-    updateItemDependsOn: (i: number, d: string[]) => applyMutation(p => mutations.updateItemDependsOn(p, i, d)),
-    addLink: () => applyMutation(mutations.addLink),
-    updateLink: (i: number, f: string, v: string) => applyMutation(p => mutations.updateLink(p, i, f, v)),
-    removeLink: (i: number) => applyMutation(p => mutations.removeLink(p, i)),
-    removeItem: (i: number) => applyMutation(p => mutations.removeItem(p, i)),
-    removeAssetPath: (i: number, k: string) => applyMutation(p => mutations.removeAssetPath(p, i, k)),
-    addItem: () => applyMutation(mutations.addItem),
-    addItemFromRoster: (entity: { name: string; type: string; description?: string }) =>
-      applyMutation(p => mutations.addItemFromRoster(p, entity)),
-    handleRefineItem: useCallback(async (itemId: string) => {
-      if (!planId || !plan) return;
-      setLoading(true);
-      setError(null);
-      try {
-        // Persist edits first
-        const saveRes = await import('./useStoryBuilderApi').then(m => m.updatePlan(planId, plan));
-        if (!saveRes.success) throw new Error(saveRes.error || 'Failed to save plan edits');
-        const res = await refinePlan(planId, `Refine the ${plan.items.find(i => i.id === itemId)?.name || 'selected'} item`, [itemId]);
-        if (res.success && res.data) {
-          setPlan(res.data.plan);
-          setPlanId(res.data.plan.id);
-        } else {
-          setError(res.error || 'Failed to refine item');
-        }
-      } catch (err: any) {
-        setError(err.message || 'Failed to refine item');
-      } finally {
-        setLoading(false);
-      }
-    }, [planId, plan, setLoading, setError, setPlan, setPlanId]),
-    goBack: useCallback(() => { setStep(s => (s === 2 ? 1 : s) as Step); }, []),
+    ...handlers,
   };
 }

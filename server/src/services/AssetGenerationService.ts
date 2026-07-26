@@ -166,7 +166,7 @@ export async function generateImageBuffer(params: {
       }
 
       return buffer;
-    } catch (err) {
+    } catch {
       if (attempt < MAX_RETRIES) {
         await sleep(wait);
         wait = Math.min(wait * 1.5, 300000);
@@ -259,7 +259,7 @@ export async function generateVariantImage(options: {
           }
 
           return buffer;
-        } catch (err) {
+        } catch {
           if (attempt < MAX_RETRIES) {
             await sleep(wait);
             wait = Math.min(wait * 1.5, 300000);

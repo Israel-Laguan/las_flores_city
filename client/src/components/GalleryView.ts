@@ -57,7 +57,7 @@ export class GalleryView {
         el.addEventListener('click', () => this.openItem(item));
         grid.appendChild(el);
       }
-    } catch (err) {
+    } catch {
       grid.innerHTML = '<p style="color:#ff4444;">Error loading vault.</p>';
     }
   }

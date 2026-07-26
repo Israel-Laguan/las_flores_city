@@ -39,6 +39,117 @@ interface ReviewStepProps {
   genStatus?: GenerationStatus | null;
 }
 
+function ProgressSection({ genStatus }: { genStatus: import('../types').GenerationStatus }) {
+  if (!genStatus.progress || genStatus.progress.total === 0) return null;
+  return (
+    <div className={styles.progressSection}>
+      <div className={styles.progressHeader}>
+        <span className={styles.progressLabel}>
+          Filling content&hellip; {genStatus.progress.completed}/{genStatus.progress.total} items complete
+        </span>
+        {genStatus.progress.failed > 0 && (
+          <span className={styles.progressFailed}>{genStatus.progress.failed} failed</span>
+        )}
+      </div>
+      <div className={styles.progressBar}>
+        <div
+          className={styles.progressFill}
+          style={{ width: `${(genStatus.progress.completed / genStatus.progress.total) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CoverageSection({
+  unplannedEntities,
+  onAddFromRoster,
+}: {
+  unplannedEntities: Array<{ name: string; type: string; description?: string }>;
+  onAddFromRoster?: (entity: { name: string; type: string; description?: string }) => void;
+}) {
+  'use client';
+  if (unplannedEntities.length === 0) return null;
+  return (
+    <div className={styles.coverageSection}>
+      <h3 className={styles.coverageHeading}>
+        Mentioned but not planned ({unplannedEntities.length})
+      </h3>
+      <p className={styles.description}>
+        These entities were extracted from your description but don't have plan items yet.
+      </p>
+      {unplannedEntities.map((entity: { name: string; type: string; description?: string }, i: number) => (
+        <div key={i} className={styles.coverageItem}>
+          <span className={styles.coverageType}>{entity.type}</span>
+          <span className={styles.coverageName}>{entity.name}</span>
+          {entity.description && (
+            <span className={styles.coverageDesc}>{entity.description}</span>
+          )}
+          {onAddFromRoster && (
+            <button
+              className={styles.coverageAddBtn}
+              onClick={() => onAddFromRoster(entity)}
+            >
+              + Add
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ShipFooter({
+  pendingNeeds,
+  chosenNeeds,
+  publishedNeeds,
+  onApproveAndShip,
+  approving,
+  planId,
+  isGenerationActive,
+}: {
+  pendingNeeds: any[];
+  chosenNeeds: any[];
+  publishedNeeds: any[];
+  onApproveAndShip?: () => void;
+  approving: boolean;
+  planId: string | null;
+  isGenerationActive: boolean;
+}) {
+  'use client';
+  return (
+    <div className={styles.shipFooter}>
+      {pendingNeeds.length > 0 && (
+        <p className={styles.shipNote}>
+          {pendingNeeds.length} asset{pendingNeeds.length === 1 ? ' is' : 's are'} still missing
+          a selected draft. The system will auto-pick <code>{'<slug>__default.png'}</code>{' '}
+          for each. Choose a draft above to override.
+        </p>
+      )}
+
+      <button
+        className={cn(styles.shipButton, styles.shipPrimary)}
+        onClick={onApproveAndShip}
+        disabled={approving || !planId || !!isGenerationActive}
+      >
+        {approving ? 'Approving & Shipping…' : 'Approve & Ship →'}
+      </button>
+
+      <p className={styles.shipHint}>
+        One click writes the files, uploads chosen drafts to MinIO (dev cascade),
+        migrates the database, and verifies references. This can take up to a few
+        minutes for plans with many images.
+      </p>
+
+      {(chosenNeeds.length > 0 || publishedNeeds.length > 0) && (
+        <p className={styles.shipCounts}>
+          {chosenNeeds.length} chosen · {publishedNeeds.length} published
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function ReviewStep({
   plan, planId, loading, onRegenerateLore, refineFeedback, setRefineFeedback, showRefine, setShowRefine,
   onRefine, onUpdateItem, onRemoveItem, onAddItem, onAddFromRoster, onRefineItem, onAssetPathRemove,
@@ -65,9 +176,10 @@ export default function ReviewStep({
 
   // Coverage check: entities extracted from the description but not in the plan
   const roster = plan._meta?.entity_roster;
+  const normalizeForCompare = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
   const unplannedEntities = roster?.filter(r =>
     !items.some(item =>
-      item.name.toLowerCase() === r.name.toLowerCase() &&
+      normalizeForCompare(item.name) === normalizeForCompare(r.name) &&
       item.type === r.type
     )
   ) ?? [];
@@ -87,54 +199,11 @@ export default function ReviewStep({
         </div>
       )}
 
-      {isGenerationActive && genStatus.progress && genStatus.progress.total > 0 && (
-        <div className={styles.progressSection}>
-          <div className={styles.progressHeader}>
-            <span className={styles.progressLabel}>
-              Filling content&hellip; {genStatus.progress.completed}/{genStatus.progress.total} items complete
-            </span>
-            {genStatus.progress.failed > 0 && (
-              <span className={styles.progressFailed}>{genStatus.progress.failed} failed</span>
-            )}
-          </div>
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${(genStatus.progress.completed / genStatus.progress.total) * 100}%` }}
-            />
-          </div>
-        </div>
-      )}
+      {isGenerationActive && <ProgressSection genStatus={genStatus} />}
 
       <PlanSummary plan={plan} />
 
-      {unplannedEntities.length > 0 && (
-        <div className={styles.coverageSection}>
-          <h3 className={styles.coverageHeading}>
-            Mentioned but not planned ({unplannedEntities.length})
-          </h3>
-          <p className={styles.description}>
-            These entities were extracted from your description but don&apos;t have plan items yet.
-          </p>
-          {unplannedEntities.map((entity, i) => (
-            <div key={i} className={styles.coverageItem}>
-              <span className={styles.coverageType}>{entity.type}</span>
-              <span className={styles.coverageName}>{entity.name}</span>
-              {entity.description && (
-                <span className={styles.coverageDesc}>{entity.description}</span>
-              )}
-              {onAddFromRoster && (
-                <button
-                  className={styles.coverageAddBtn}
-                  onClick={() => onAddFromRoster(entity)}
-                >
-                  + Add
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      <CoverageSection unplannedEntities={unplannedEntities} onAddFromRoster={onAddFromRoster} />
 
       {plan.items.map((item, i) => (
         <ContentCard
@@ -180,35 +249,15 @@ export default function ReviewStep({
         />
       )}
 
-      <div className={styles.shipFooter}>
-        {pendingNeeds.length > 0 && (
-          <p className={styles.shipNote}>
-            {pendingNeeds.length} asset{pendingNeeds.length === 1 ? ' is' : 's are'} still missing
-            a selected draft. The system will auto-pick <code>&lt;slug&gt;__default.png</code>{' '}
-            for each. Choose a draft above to override.
-          </p>
-        )}
-
-        <button
-          className={cn(styles.shipButton, styles.shipPrimary)}
-          onClick={onApproveAndShip}
-          disabled={approving || !planId || !!isGenerationActive}
-        >
-          {approving ? 'Approving & Shipping…' : 'Approve & Ship →'}
-        </button>
-
-        <p className={styles.shipHint}>
-          One click writes the files, uploads chosen drafts to MinIO (dev cascade),
-          migrates the database, and verifies references. This can take up to a few
-          minutes for plans with many images.
-        </p>
-
-        {(chosenNeeds.length > 0 || publishedNeeds.length > 0) && (
-          <p className={styles.shipCounts}>
-            {chosenNeeds.length} chosen · {publishedNeeds.length} published
-          </p>
-        )}
-      </div>
+      <ShipFooter
+        pendingNeeds={pendingNeeds}
+        chosenNeeds={chosenNeeds}
+        publishedNeeds={publishedNeeds}
+        onApproveAndShip={onApproveAndShip}
+        approving={approving}
+        planId={planId}
+        isGenerationActive={isGenerationActive}
+      />
     </div>
   );
 }

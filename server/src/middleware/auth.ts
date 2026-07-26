@@ -41,7 +41,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     req.userId = decoded.userId;
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({
       success: false,
       error: 'Invalid token',
@@ -67,7 +67,7 @@ export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     req.userId = decoded.userId;
-  } catch (error) {
+  } catch {
     // Token invalid, continue without auth
   }
 

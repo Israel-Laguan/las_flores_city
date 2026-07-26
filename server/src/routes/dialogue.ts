@@ -55,7 +55,7 @@ dialogueRouter.get('/chunk/:chunkId', authMiddleware, async (req: AuthRequest, r
     let resolvedChunk;
     try {
       resolvedChunk = await DialogueResolver.resolveNextChunk(userId, chunkKey);
-    } catch (err) {
+    } catch {
       return res.status(404).json({ success: false, error: 'Chunk not found' });
     }
 

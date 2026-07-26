@@ -39,8 +39,8 @@ const ContentPlanMetaSchema = z.object({
   jobPrefix: z.string().optional(),
   fill_attempts: z.record(z.string(), z.number()).optional(),
   entity_roster: z.array(z.object({
-    name: z.string(),
-    type: z.string(),
+    name: z.string().min(1),
+    type: z.string().min(1),
     description: z.string().optional(),
   })).optional(),
 }).optional();

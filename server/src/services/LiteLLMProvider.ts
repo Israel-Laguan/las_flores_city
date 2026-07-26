@@ -1,7 +1,7 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
-import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 
 export interface LiteLLMProviderOptions {
@@ -45,6 +45,35 @@ export class LiteLLMProvider implements LLMProvider {
       };
     }
     return null;
+  }
+
+  private enhanceError(lastError: Error, timeoutMs: number, maxTimeoutMs: number): never {
+    const baseMsg = `LiteLLM call failed after ${this.retries + 1} attempts`;
+    if (lastError.name === 'TimeoutError' || lastError.message?.includes('timeout')) {
+      const enhancedError = new Error(
+        `${baseMsg}: Connection to ${this.baseUrl} timed out. ` +
+        `Model: ${this.model}, current timeout: ${timeoutMs}ms, max: ${maxTimeoutMs}ms. ` +
+        `Check if LiteLLM is running and reachable from this container. ` +
+        `Test with: curl -s ${this.baseUrl}/health`
+      );
+      (enhancedError as any).cause = lastError;
+      (enhancedError as any).model = this.model;
+      (enhancedError as any).baseUrl = this.baseUrl;
+      (enhancedError as any).timeoutMs = timeoutMs;
+      throw enhancedError;
+    }
+    if (lastError.message?.includes('fetch failed') || lastError.message?.includes('Failed to fetch')) {
+      const enhancedError = new Error(
+        `${baseMsg}: Cannot reach LiteLLM at ${this.baseUrl}. ` +
+        `Check container networking, DNS resolution, and that LiteLLM is running. ` +
+        `With Podman rootless, host.containers.internal may not resolve without aardvark-dns. ` +
+        `Try using the host's IP address directly.`
+      );
+      (enhancedError as any).cause = lastError;
+      (enhancedError as any).baseUrl = this.baseUrl;
+      throw enhancedError;
+    }
+    throw lastError;
   }
 
   private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number, maxTokens?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
@@ -124,35 +153,7 @@ export class LiteLLMProvider implements LLMProvider {
         if (attempt === this.retries) break;
       }
     }
-    // Enhance error with context before throwing
-    if (lastError) {
-      const baseMsg = `LiteLLM call failed after ${this.retries + 1} attempts`;
-      if (lastError.name === 'TimeoutError' || lastError.message?.includes('timeout')) {
-        const enhancedError = new Error(
-          `${baseMsg}: Connection to ${this.baseUrl} timed out. ` +
-          `Model: ${this.model}, current timeout: ${timeoutMs}ms, max: ${maxTimeoutMs}ms. ` +
-          `Check if LiteLLM is running and reachable from this container. ` +
-          `Test with: curl -s ${this.baseUrl}/health`
-        );
-        (enhancedError as any).cause = lastError;
-        (enhancedError as any).model = this.model;
-        (enhancedError as any).baseUrl = this.baseUrl;
-        (enhancedError as any).timeoutMs = timeoutMs;
-        throw enhancedError;
-      }
-      if (lastError.message?.includes('fetch failed') || lastError.message?.includes('Failed to fetch')) {
-        const enhancedError = new Error(
-          `${baseMsg}: Cannot reach LiteLLM at ${this.baseUrl}. ` +
-          `Check container networking, DNS resolution, and that LiteLLM is running. ` +
-          `With Podman rootless, host.containers.internal may not resolve without aardvark-dns. ` +
-          `Try using the host's IP address directly.`
-        );
-        (enhancedError as any).cause = lastError;
-        (enhancedError as any).baseUrl = this.baseUrl;
-        throw enhancedError;
-      }
-    }
-    throw lastError!;
+    this.enhanceError(lastError!, timeoutMs, maxTimeoutMs);
   }
 
   private async callLLMText(systemPrompt: string, userMessage: string): Promise<string> {
@@ -256,6 +257,13 @@ export class LiteLLMProvider implements LLMProvider {
     const { result, usage } = await this.callLLM(systemPrompt, feedback);
     result.id = existingPlan.id;
     return { plan: ContentPlanSchema.parse(result), usage };
+  }
+
+  async refinePlanItems(selectedItems: ContentPlanItem[], fullPlan: ContentPlan, feedback: string, context: ExistingContentContext): Promise<{ items: ContentPlanItem[]; usage: LLMUsage | null }> {
+    const systemPrompt = buildItemScopedRefinementPrompt(selectedItems, fullPlan, feedback, context);
+    const { result, usage } = await this.callLLM(systemPrompt, feedback);
+    const items = Array.isArray(result.items) ? result.items : [];
+    return { items: items as ContentPlanItem[], usage };
   }
 
   async generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string> {
