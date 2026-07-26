@@ -1,5 +1,6 @@
 import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import type { EntityCandidate } from './OutlineChunking.js';
 import { buildLorePrompt, buildRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 
@@ -46,7 +47,7 @@ export class LiteLLMProvider implements LLMProvider {
     return null;
   }
 
-  private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
+  private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number, maxTokens?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
     const timeoutMs = customTimeoutMs ?? this.defaultTimeoutMs;
     const maxTimeoutMs = parseInt(process.env.LLM_MAX_TIMEOUT_MS || '300000', 10);
     let lastError: Error | null = null;
@@ -74,6 +75,7 @@ export class LiteLLMProvider implements LLMProvider {
             ],
             temperature: 0.7,
             response_format: { type: 'json_object' },
+            ...(maxTokens ? { max_tokens: maxTokens } : {}),
           }),
           signal: AbortSignal.timeout(attemptTimeoutMs),
         });
@@ -92,6 +94,17 @@ export class LiteLLMProvider implements LLMProvider {
 
         const data = await response.json();
         const usage = this.extractUsage(data);
+
+        const finishReason = data.choices?.[0]?.finish_reason;
+        if (finishReason === 'length') {
+          const truncError = new Error(
+            `LLM output truncated (finish_reason=length, max_tokens=${maxTokens}). ` +
+            `Consider increasing LLM_OUTLINE_MAX_TOKENS or reducing input size.`
+          );
+          (truncError as any).isRetryable = false;
+          throw truncError;
+        }
+
         const content = data.choices?.[0]?.message?.content ?? data.choices?.[0]?.message?.reasoning_content;
         if (!content) {
           throw new Error('LiteLLM response did not contain any message content.');
@@ -213,7 +226,8 @@ export class LiteLLMProvider implements LLMProvider {
       : this;
 
     const systemPrompt = buildOutlinePrompt(context);
-    const { result, usage } = await provider.callLLM(systemPrompt, description);
+    const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
+    const { result, usage } = await provider.callLLM(systemPrompt, description, undefined, maxTokens);
     return { plan: result as ContentPlan, usage };
   }
 
@@ -235,6 +249,12 @@ export class LiteLLMProvider implements LLMProvider {
       fields: (result.fields as Record<string, string>) || {},
       lore_refs: Array.isArray(result.lore_refs) ? result.lore_refs : [],
     };
+  }
+
+  async extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
+    const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
+    const { result } = await this.callLLM(systemPrompt, chunk, undefined, maxTokens);
+    return { entities: (result as any).entities || [] };
   }
 
 }

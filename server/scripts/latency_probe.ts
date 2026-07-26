@@ -6,14 +6,14 @@ import dotenv from 'dotenv';
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
 const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS || '1000', 10);
 const MAX_WAIT_MS = parseInt(process.env.MAX_WAIT_MS || '600000', 10);
+const FULL_INPUT = process.env.FULL_INPUT === '1';
 const INPUT_FILE = process.env.INPUT_FILE
   || path.join(os.homedir(), 'Downloads', 'posts-compilation-complete.md');
 
 /**
  * Derive a Story Builder description from the story-bible input file.
- * Uses the document's first non-empty heading (H1/H2) as a title anchor, then
- * the first ~1200 characters of body text as the brief. Falls back to the
- * deterministic description if the file cannot be read (keeps tests hermetic).
+ * Uses the document's first non-empty heading (H1/H2) as a title anchor.
+ * In FULL_INPUT mode, sends the entire file; otherwise slices to ~1200 chars.
  */
 async function buildDescription(): Promise<string> {
   let raw = '';
@@ -26,6 +26,12 @@ async function buildDescription(): Promise<string> {
   const lines = raw.split('\n');
   const heading = lines.find((l) => /^#{1,2}\s+/.test(l))?.replace(/^#{1,2}\s+/, '').trim() || 'story bible';
   const body = raw.replace(/^#{1,6}\s+.*$/gm, '').replace(/\s+/g, ' ').trim();
+
+  if (FULL_INPUT) {
+    console.log(`   FULL_INPUT mode: sending entire file (${body.length} chars)`);
+    return `From the story bible "${heading}": ${body}`;
+  }
+
   const brief = body.slice(0, 1200);
   return `From the story bible "${heading}": ${brief}`;
 }
@@ -78,6 +84,22 @@ async function main() {
     console.error('FAIL: Fill did not complete successfully (status=' + finalStatus + ')');
     await req('DELETE', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
     process.exit(1);
+  }
+
+  // Big-story assertions in FULL_INPUT mode
+  if (FULL_INPUT) {
+    const planCheck = await req<{ success: boolean; data: { plan: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+    const planData = planCheck.data?.data?.plan;
+    const itemCount = planData?.items?.length ?? 0;
+    console.log('[5] Big-story assertions');
+    console.log('   Item count: ' + itemCount);
+    if (itemCount < 3) {
+      console.error('FAIL: Expected at least 3 items from full input, got ' + itemCount);
+      await req('DELETE', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
+      process.exit(1);
+    }
+    console.log('   All items filled: yes (status=done)');
+    console.log('   ok\n');
   }
 
   console.log('[4] Approve-and-solidify');

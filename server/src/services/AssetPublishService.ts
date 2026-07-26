@@ -7,6 +7,7 @@ import { markPublished } from './AssetNeedsService.js';
 import { resolveEntityRootDir } from './LocalDraftService.js';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { queryOLTP } from '../database/connection.js';
+import { resolveContentDir } from './StoryBuilderLore.js';
 import type pg from 'pg';
 
 export interface PublishedAsset {
@@ -48,8 +49,6 @@ export interface EntityPromotionStatus {
 }
 
 type Stage = 'staging' | 'production';
-
-function resolveContentDir(): string { return path.resolve(process.cwd(), 'content'); }
 
 function validateContentPathLocal(contentPath: string): string {
   if (!contentPath || typeof contentPath !== 'string' || contentPath.trim() === '') {

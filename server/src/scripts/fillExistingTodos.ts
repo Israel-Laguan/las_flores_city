@@ -7,13 +7,9 @@ import { generatePromptForItem } from '../services/PromptFileGenerator.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { ContentPlanItemSchema } from '@las-flores/shared';
 import type { ExistingContentContext } from '../services/types/LLMTypes.js';
+import { resolveContentDir } from '../services/StoryBuilderLore.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-function resolveContentDir(): string {
-  const result = path.resolve(__dirname, '../../../content');
-  return result;
-}
 
 async function main(): Promise<void> {
   console.log('[fillExistingTodos] Starting TODO placeholder scan...');
