@@ -81,8 +81,8 @@ const baseNode: DialogueNode = {
 
 const baseNodes: Record<string, DialogueNode> = {
   root: baseNode,
-  next_a: { id: 'next_a', type: 'npc', text: 'Base A end' },
-  next_b: { id: 'next_b', type: 'npc', text: 'Base B end' },
+  next_a: { id: 'next_a', type: 'character', text: 'Base A end' },
+  next_b: { id: 'next_b', type: 'character', text: 'Base B end' },
 };
 
 const overlayNodes: Record<string, DialogueNode> = {
@@ -96,7 +96,7 @@ const overlayNodes: Record<string, DialogueNode> = {
   },
   mystery_path: {
     id: 'mystery_path',
-    type: 'npc',
+    type: 'character',
     text: 'Hidden in shadow...',
   },
 };
@@ -463,7 +463,7 @@ describe('DialogueResolver', () => {
     olapApp.use(express.json());
     olapApp.use('/dialogue', dialogueRouter);
 
-    let olapServer: ReturnType<typeof express.Application.listen>;
+    let olapServer: ReturnType<typeof express.application.listen>;
     let olapPort: number;
 
     beforeAll(async () => {
@@ -496,7 +496,7 @@ describe('DialogueResolver', () => {
         [TB_TEST_USER_ID, TB_TEST_TREE_ID, TB_ROOT_NODE]
       );
 
-      olapServer = await new Promise<ReturnType<typeof express.Application.listen>>((resolve) => {
+      olapServer = await new Promise<ReturnType<typeof express.application.listen>>((resolve) => {
         const s = olapApp.listen(0, () => resolve(s));
       });
       olapPort = (olapServer.address() as { port: number }).port;
@@ -537,11 +537,11 @@ describe('DialogueResolver', () => {
         [TB_TEST_USER_ID]
       );
 
-      expect(after.rows.length).toBe(1);
-      expect(after.rows[0].event_type).toBe('dialogue_choice');
-      expect(after.rows[0].time_blocks_cost).toBe(3);
-      expect(after.rows[0].event_data.dialogue_tree_id).toBe(TB_TEST_TREE_ID);
-      expect(after.rows[0].event_data.choice_index).toBe(0);
+      expect(after!.rows.length).toBe(1);
+      expect(after!.rows[0].event_type).toBe('dialogue_choice');
+      expect(after!.rows[0].time_blocks_cost).toBe(3);
+      expect(after!.rows[0].event_data.dialogue_tree_id).toBe(TB_TEST_TREE_ID);
+      expect(after!.rows[0].event_data.choice_index).toBe(0);
     });
   });
 });

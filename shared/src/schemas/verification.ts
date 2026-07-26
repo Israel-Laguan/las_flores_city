@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid } from './uuid.js';
 
 export const CheckResultSchema = z.object({
   name: z.string(),
@@ -8,7 +9,7 @@ export const CheckResultSchema = z.object({
 });
 
 export const VerificationReportSchema = z.object({
-  planId: z.string().uuid(),
+  planId: zodUuid(),
   checkedAt: z.string(),
   passed: z.boolean(),
   checks: z.array(CheckResultSchema),

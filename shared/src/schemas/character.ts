@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid } from './uuid.js';
 
 export const RelationshipSchema = z.object({
   target_id: z.string(),
@@ -9,7 +10,7 @@ export const RelationshipSchema = z.object({
 });
 
 export const CharacterSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   title: z.string().max(100).optional(),
   birth_year: z.number().optional(),

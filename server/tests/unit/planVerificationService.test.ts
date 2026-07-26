@@ -42,7 +42,6 @@ const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 function makeItem(overrides: Partial<ContentPlanItem> & { slug: string; type: string }): ContentPlanItem {
   return {
     id: '00000000-0000-0000-0000-000000000001',
-    type: 'character' as any,
     action: 'create',
     name: 'Test Item',
     fields: {},

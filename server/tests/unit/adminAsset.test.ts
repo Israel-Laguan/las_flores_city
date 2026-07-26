@@ -10,9 +10,9 @@ import type { Server } from 'node:http';
 import { jest as jestGlobals } from '@jest/globals';
 
 // Mock StorageService
-const mockSignMinioUrl = jestGlobals.fn<() => Promise<string>>().mockResolvedValue('http://mocked-signed-url');
+const mockSignMinioUrl = jestGlobals.fn<(url: string, ttl: number) => Promise<string>>().mockResolvedValue('http://mocked-signed-url');
 
-jest.doMock('../../src/services/StorageService.js', () => ({
+jestGlobals.doMock('../../src/services/StorageService.js', () => ({
   signMinioUrl: mockSignMinioUrl,
   default: {
     signMinioUrl: mockSignMinioUrl,
@@ -20,8 +20,8 @@ jest.doMock('../../src/services/StorageService.js', () => ({
 }));
 
 // Mock auth middleware
-const mockAuthMiddleware = jest.fn((req: any, res: any, next: any) => next());
-jest.doMock('../../src/middleware/adminAuth.js', () => ({
+const mockAuthMiddleware = jestGlobals.fn((req: any, res: any, next: any) => next());
+jestGlobals.doMock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: mockAuthMiddleware,
   default: {
     authAndAdminMiddleware: mockAuthMiddleware,
@@ -29,7 +29,7 @@ jest.doMock('../../src/middleware/adminAuth.js', () => ({
 }));
 
 // Mock auth types
-jest.doMock('../../src/middleware/auth.js', () => ({
+jestGlobals.doMock('../../src/middleware/auth.js', () => ({
   authMiddleware: mockAuthMiddleware,
   optionalAuth: mockAuthMiddleware,
 }));
@@ -65,7 +65,7 @@ afterAll(async () => {
     );
   } catch (e: any) {}
   
-  jest.restoreAllMocks();
+  jestGlobals.restoreAllMocks();
 });
 
 beforeEach(() => {
@@ -141,7 +141,7 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
     test('should return 404 when asset not found in local or MinIO', async () => {
       // Mock global.fetch to return 404 from MinIO but pass through test server requests
       const originalFetch = global.fetch;
-      (global as any).fetch = jest.fn().mockImplementation((url: string, init?: any) => {
+      (global as any).fetch = (jestGlobals.fn() as any).mockImplementation((url: string, init?: any) => {
         if (typeof url === 'string' && url.startsWith(`http://localhost:${port}`)) {
           return originalFetch(url, init);
         }
@@ -164,7 +164,7 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
       // Mock global.fetch to return a valid image from MinIO but pass through test server requests
       const testImageBuffer = Buffer.from('test-image-data');
       const originalFetch = global.fetch;
-      (global as any).fetch = jest.fn().mockImplementation((url: string, init?: any) => {
+      (global as any).fetch = (jestGlobals.fn() as any).mockImplementation((url: string, init?: any) => {
         if (typeof url === 'string' && url.startsWith(`http://localhost:${port}`)) {
           return originalFetch(url, init);
         }
@@ -181,7 +181,7 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
         
         // Should have tried MinIO
         expect(global.fetch).toHaveBeenCalled();
-        const fetchCalls = (global.fetch as jest.Mock).mock.calls;
+        const fetchCalls = (global.fetch as any).mock.calls;
         const minioCall = fetchCalls.find((call: any[]) => typeof call[0] === 'string' && call[0].includes('mocked-signed-url'));
         expect(minioCall).toBeDefined();
         expect(minioCall![0]).toContain('mocked-signed-url');
@@ -237,7 +237,7 @@ describe('Admin Asset Endpoint (GET /admin/asset)', () => {
     test('should set Cache-Control header on successful response', async () => {
       const testImageBuffer = Buffer.from('test-image-data');
       const originalFetch = global.fetch;
-      (global as any).fetch = jest.fn().mockImplementation((url: string, init?: any) => {
+      (global as any).fetch = (jestGlobals.fn() as any).mockImplementation((url: string, init?: any) => {
         if (typeof url === 'string' && url.startsWith(`http://localhost:${port}`)) {
           return originalFetch(url, init);
         }

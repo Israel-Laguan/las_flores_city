@@ -1,13 +1,14 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidOptional } from './uuid.js';
 
 export const VaultItemSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   title: z.string().min(1),
   description: z.string().min(1),
   thumbnail_url: z.string().url(),
   media_path: z.string().min(1),
   item_type: z.enum(['clue', 'memento', 'premium_cg']),
-  mission_id: z.string().uuid().optional(),
+  mission_id: zodUuidOptional(),
   requires_signed_url: z.boolean().optional(),
   // UGC authorship metadata. Optional so existing content parses unchanged.
   written_by: z.string().max(100).optional(),

@@ -54,8 +54,8 @@ describe('Compiler Unit Tests', () => {
       const leafKey = costedChoice.next_node_id;
       const leaf = chunk1.leaves[leafKey];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('time_block_cost');
-      expect(leaf.tb_cost).toBe(1);
+      expect((leaf as any).reasons).toContain('time_block_cost');
+      expect((leaf as any).tb_cost).toBe(1);
     });
 
     it('effects boundary (target node has effects) → GUARDED leaf', () => {
@@ -71,7 +71,7 @@ describe('Compiler Unit Tests', () => {
       expect(choice.next_node_id).toMatch(/^__leaf__:/);
       const leaf = chunk1.leaves[choice.next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('effects');
+      expect((leaf as any).reasons).toContain('effects');
     });
 
     it('conditional boundary (required_flags) → GUARDED leaf', () => {
@@ -87,7 +87,7 @@ describe('Compiler Unit Tests', () => {
       const chunk1 = chunks.find(c => c.chunk_key === 'n1')!;
       const leaf = chunk1.leaves[chunk1.nodes.n1.choices![0].next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('conditional');
+      expect((leaf as any).reasons).toContain('conditional');
     });
 
     it('mystery_solve boundary → GUARDED leaf', () => {
@@ -103,7 +103,7 @@ describe('Compiler Unit Tests', () => {
       const chunk1 = chunks.find(c => c.chunk_key === 'n1')!;
       const leaf = chunk1.leaves[chunk1.nodes.n1.choices![0].next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('mystery_solve');
+      expect((leaf as any).reasons).toContain('mystery_solve');
     });
 
     it('vault_unlock boundary → GUARDED leaf', () => {
@@ -119,7 +119,7 @@ describe('Compiler Unit Tests', () => {
       const chunk1 = chunks.find(c => c.chunk_key === 'n1')!;
       const leaf = chunk1.leaves[chunk1.nodes.n1.choices![0].next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('vault_unlock');
+      expect((leaf as any).reasons).toContain('vault_unlock');
     });
 
     it('relationship_change boundary → GUARDED leaf', () => {
@@ -135,7 +135,7 @@ describe('Compiler Unit Tests', () => {
       const chunk1 = chunks.find(c => c.chunk_key === 'n1')!;
       const leaf = chunk1.leaves[chunk1.nodes.n1.choices![0].next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('relationship_change');
+      expect((leaf as any).reasons).toContain('relationship_change');
     });
 
     it('overlay_gate boundary → GUARDED leaf', () => {
@@ -151,7 +151,7 @@ describe('Compiler Unit Tests', () => {
       const chunk1 = chunks.find(c => c.chunk_key === 'n1')!;
       const leaf = chunk1.leaves[chunk1.nodes.n1.choices![0].next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toContain('overlay_gate');
+      expect((leaf as any).reasons).toContain('overlay_gate');
       // n2 should start its own chunk
       expect(chunks.find(c => c.chunk_key === 'n2')).toBeDefined();
     });
@@ -171,8 +171,8 @@ describe('Compiler Unit Tests', () => {
       const chunk1 = chunks.find(c => c.chunk_key === 'n1')!;
       const leaf = chunk1.leaves[chunk1.nodes.n1.choices![0].next_node_id];
       expect(leaf.type).toBe('GUARDED');
-      expect(leaf.reasons).toEqual(expect.arrayContaining(['time_block_cost', 'vault_unlock']));
-      expect(leaf.tb_cost).toBe(2);
+      expect((leaf as any).reasons).toEqual(expect.arrayContaining(['time_block_cost', 'vault_unlock']));
+      expect((leaf as any).tb_cost).toBe(2);
     });
   });
 

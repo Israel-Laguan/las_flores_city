@@ -20,6 +20,7 @@
     "validate:content": "npm run validate --workspace=server",
     "build": "npm run build --workspaces",
     "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test:server && npm run test:client:e2e",
     "test:server": "npm run test --workspace=server",
     "test:client:e2e": "npm run test:e2e --workspace=client"

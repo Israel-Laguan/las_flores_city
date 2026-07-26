@@ -1,4 +1,4 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
 
 // ============================================================
@@ -26,26 +26,26 @@ import fc from 'fast-check';
 
 // Mock withOLTPTransaction to run the callback immediately with a
 // fake client. This prevents any real DB connection.
-jest.mock('../../src/database/connection.js', () => ({
-  withOLTPTransaction: jest.fn(
+jestGlobals.mock('../../src/database/connection.js', () => ({
+  withOLTPTransaction: jestGlobals.fn(
     async (cb: (client: unknown) => Promise<unknown>) => {
       return cb(fakePgClient);
     }
   ),
 }));
 
-jest.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
+jestGlobals.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
   PlayerStateRepository: {
-    spendTimeBlocks: jest.fn(),
-    mergeFlags: jest.fn(async () => undefined),
-    setStoryBeat: jest.fn(async () => undefined),
+    spendTimeBlocks: jestGlobals.fn(),
+    mergeFlags: jestGlobals.fn(async () => undefined),
+    setStoryBeat: jestGlobals.fn(async () => undefined),
   },
 }));
 
 // mystery_solve guard calls client.query directly — mock returns
 // no rows by default (player NOT INVESTIGATING).
 const fakePgClient = {
-  query: jest.fn(async () => ({ rows: [] })),
+  query: jestGlobals.fn(async () => ({ rows: [] })),
 } as unknown as import('pg').PoolClient;
 
 // ── Imports (after mocks) ─────────────────────────────────────
@@ -109,10 +109,10 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  jestGlobals.clearAllMocks();
 
   // Reset fakePgClient.query to return no rows (mystery guard = not eligible).
-  (fakePgClient.query as jest.Mock).mockResolvedValue({ rows: [] });
+  (fakePgClient.query as jest.Mock<any>).mockResolvedValue({ rows: [] });
 });
 
 // ── Free leaf allows seamless transition ─────────────────────
@@ -205,11 +205,11 @@ describe('Guarded leaf enforces all reasons', () => {
         tbGuardedLeafArb(),
         async (userId, chunkId, choiceId, leaf) => {
           // Reset per-iteration.
-          jest.clearAllMocks();
-          (fakePgClient.query as jest.Mock).mockResolvedValue({ rows: [] });
+          jestGlobals.clearAllMocks();
+          (fakePgClient.query as jest.Mock<any>).mockResolvedValue({ rows: [] });
 
           // Simulate player having zero TB — always insufficient.
-          (PlayerStateRepository.spendTimeBlocks as jest.Mock).mockResolvedValueOnce({
+          (PlayerStateRepository.spendTimeBlocks as jest.Mock<any>).mockResolvedValueOnce({
             success: false,
           });
 
@@ -237,9 +237,9 @@ describe('Guarded leaf enforces all reasons', () => {
         fc.string({ minLength: 1, maxLength: 40 }), // target_chunk
         async (userId, chunkId, choiceId, target_chunk) => {
           // Reset per-iteration.
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
           // fakePgClient.query returns no rows — player NOT INVESTIGATING.
-          (fakePgClient.query as jest.Mock).mockResolvedValue({ rows: [] });
+          (fakePgClient.query as jest.Mock<any>).mockResolvedValue({ rows: [] });
 
           const leaf: GuardedLeaf = {
             type: 'GUARDED',
@@ -274,13 +274,13 @@ describe('Guarded leaf enforces all reasons', () => {
         fc.string({ minLength: 1, maxLength: 40 }),
         async (userId, chunkId, choiceId, tbCost, target_chunk) => {
           // Reset per-iteration.
-          jest.clearAllMocks();
+          jestGlobals.clearAllMocks();
 
-          (PlayerStateRepository.spendTimeBlocks as jest.Mock).mockResolvedValueOnce({
+          (PlayerStateRepository.spendTimeBlocks as jest.Mock<any>).mockResolvedValueOnce({
             success: false,
           });
           // Provide INVESTIGATING mystery so mystery_solve would pass if reached.
-          (fakePgClient.query as jest.Mock).mockResolvedValueOnce({
+          (fakePgClient.query as jest.Mock<any>).mockResolvedValueOnce({
             rows: [{ mystery_id: 'mystery-abc' }],
           });
 
@@ -336,11 +336,11 @@ describe('TB deduction is atomic', () => {
         fc.integer({ min: 0, max: 1000 }), // remaining balance after deduction
         async (userId, chunkId, choiceId, leaf, remaining) => {
           // Reset per-iteration so call counts are isolated across fast-check runs.
-          jest.clearAllMocks();
-          (fakePgClient.query as jest.Mock).mockResolvedValue({ rows: [] });
+          jestGlobals.clearAllMocks();
+          (fakePgClient.query as jest.Mock<any>).mockResolvedValue({ rows: [] });
 
           // Simulate sufficient TB — spendTimeBlocks succeeds.
-          (PlayerStateRepository.spendTimeBlocks as jest.Mock).mockResolvedValueOnce({
+          (PlayerStateRepository.spendTimeBlocks as jest.Mock<any>).mockResolvedValueOnce({
             success: true,
             remaining,
           });
@@ -361,7 +361,7 @@ describe('TB deduction is atomic', () => {
 
           // 5b — called with the exact cost from the leaf, not more or less.
           const [clientArg, userIdArg, amountArg] =
-            (PlayerStateRepository.spendTimeBlocks as jest.Mock).mock.calls[0];
+            (PlayerStateRepository.spendTimeBlocks as jest.Mock<any>).mock.calls[0];
           expect(userIdArg).toBe(userId);
           expect(amountArg).toBe(leaf.tb_cost);
 
@@ -385,8 +385,8 @@ describe('TB deduction is atomic', () => {
         simpleGuardedLeafArb(), // no time_block_cost reason
         async (userId, chunkId, choiceId, leaf) => {
           // Reset per-iteration.
-          jest.clearAllMocks();
-          (fakePgClient.query as jest.Mock).mockResolvedValue({ rows: [] });
+          jestGlobals.clearAllMocks();
+          (fakePgClient.query as jest.Mock<any>).mockResolvedValue({ rows: [] });
           const result = await IronGateValidator.validateChoice(
             userId,
             chunkId,

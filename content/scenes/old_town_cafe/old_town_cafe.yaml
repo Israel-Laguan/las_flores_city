@@ -1,4 +1,4 @@
-id: e5f6a7b8-c9d0-1234-efab-345678901234
+id: e5f6a7b8-c9d0-4234-afab-345678901234
 name: Old Town Cafe
 description: A cozy cafe tucked away in the old quarter. The smell of fresh coffee mingles with the sound of jazz playing from an old vinyl record player. Local regulars nod hello as you enter.
 district: South
@@ -8,7 +8,7 @@ background_url: /assets/scenes/old_town_cafe/background.png
 ambient_sound_url: /assets/scenes/old_town_cafe/ambient.mp3
 mood: cozy
 available_dialogues:
-  - f6a7b8c9-d0e1-2345-fabc-456789012345
+  - f6a7b8c9-d0e1-4345-babc-456789012345
   - a1b2c3d4-e5f6-7890-abcd-ef1234567890
 metadata:
   required_story_beat: act1_awakening

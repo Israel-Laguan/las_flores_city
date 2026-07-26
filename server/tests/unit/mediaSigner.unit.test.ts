@@ -28,11 +28,11 @@ function restoreEnv(prev: Record<string, string | undefined>) {
 }
 
 beforeAll(() => {
-  const { privateKey } = crypto.generateKeyPairSync('rsa', {
+  const { privateKey } = crypto.generateKeyPairSync('rsa' as any, {
     modulusLength: 2048,
     privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
   });
-  fs.writeFileSync(KEY_PATH, privateKey);
+  fs.writeFileSync(KEY_PATH, privateKey as any);
 });
 
 beforeEach(() => {

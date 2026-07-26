@@ -15,10 +15,10 @@ import fs from 'fs/promises';
 
 // Mock Redis cache operations to avoid Redis dependency in integration tests
 jest.mock('../../src/database/redis.js', () => ({
-  setCache: jest.fn().mockResolvedValue(undefined),
-  getCache: jest.fn().mockResolvedValue(null),
-  deleteCache: jest.fn().mockResolvedValue(undefined),
-  invalidatePattern: jest.fn().mockResolvedValue(undefined),
+  setCache: jest.fn() as any,
+  getCache: jest.fn() as any,
+  deleteCache: jest.fn() as any,
+  invalidatePattern: jest.fn() as any,
 }));
 
 import yaml from 'js-yaml';
@@ -200,8 +200,8 @@ describe('Story Beat Pipeline Integration', () => {
       // Also verify label and description match the YAML
       const yamlBeat = yamlData.beats.find((b) => b.slug === expectedBeat.slug);
       expect(yamlBeat).toBeDefined();
-      expect(beatResult.rows[0].label).toBe(yamlBeat.label);
-      expect(beatResult.rows[0].description).toBe(yamlBeat.description);
+      expect(beatResult.rows[0].label).toBe(yamlBeat!.label);
+      expect(beatResult.rows[0].description).toBe(yamlBeat!.description);
     }
   });
 
@@ -273,7 +273,7 @@ describe('Story Beat Pipeline Integration', () => {
       (call: any[]) => call[0] === 'story_beats:slugs',
     );
     expect(cacheCall).toBeDefined();
-    const cachedSlugs: string[] = cacheCall[1];
+    const cachedSlugs = cacheCall![1] as string[];
     expect(cachedSlugs).toContain('beat_sofia_alberto_risk');
     // Cache should contain all 12 registry slugs, not just this one
     expect(cachedSlugs.length).toBe(12);

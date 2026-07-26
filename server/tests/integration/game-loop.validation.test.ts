@@ -9,7 +9,7 @@
  *   Feed Redis cache hit / miss after post creation
  *   OLAP event format: gig_completed, post_liked, sms_reply_submitted
  */
-import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import pg from 'pg';
 import express from 'express';
 import { bankRouter } from '../../src/routes/bank.js';
@@ -127,7 +127,9 @@ afterAll(async () => {
   }
   await oltpPool.query('DELETE FROM bank_transactions WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM player_sms_threads WHERE user_id = $1', [TEST_USER_ID]);
-  // Null out FK references to scenes before deleting them
+  // Null out FK references to scenes for ALL player_states referencing APARTMENT_ID,
+  // not just TEST_USER_ID, because parallel test suites may have created their own
+  // player_states rows referencing the same scene.
   await oltpPool.query('UPDATE player_states SET current_location_id = NULL WHERE current_location_id = $1', [APARTMENT_ID]);
   await oltpPool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);

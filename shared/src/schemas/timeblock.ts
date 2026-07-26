@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { zodUuid } from './uuid.js';
 
 export const TimeBlockSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: zodUuid(),
+  user_id: zodUuid(),
   current_blocks: z.number().int().min(0).max(24),
   max_blocks: z.number().int().min(1).max(24).default(12),
   last_refresh_at: z.string().datetime(),

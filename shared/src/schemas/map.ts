@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { zodUuid } from './uuid.js';
 
 export const MapTileSchema = z.object({
-  id: z.string().uuid(),
-  district_id: z.string().uuid(),
+  id: zodUuid(),
+  district_id: zodUuid(),
   x: z.number().int(),
   y: z.number().int(),
   terrain_type: z.string().min(1).max(50),

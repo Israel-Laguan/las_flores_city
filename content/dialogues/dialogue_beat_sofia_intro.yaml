@@ -2,7 +2,7 @@ id: "5f4a3b2c-1d0e-4f9a-8b7c-6d5e4f3a2b1c"
 name: "Beat 1 — The Encounter"
 description: "The player spots Sofia in South Las Flores being harassed by low-level gangers while handing out community flyers. Three options: intervene violently, intervene diplomatically, or ignore."
 start_node_id: "node_sofia_harassment_scene"
-character_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+character_id: "c3d4e5f6-a7b8-4012-8def-123456789012"
 mission_id: "a0000000-e29b-41d4-a716-446655440001"
 dialogue_scope: "mission"
 metadata:
@@ -50,7 +50,7 @@ nodes:
   node_violent_intervention:
     id: "node_violent_intervention"
     type: "character"
-    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    speaker_id: "c3d4e5f6-a7b8-4012-8def-123456789012"
     text: "Stay away from her. Now."
     thought: "Sofia sizes you up quickly. She's seen this before - the violence, the posturing. She's grateful, but there's something else in her eyes. Recognition? Wariness?"
     choices:
@@ -71,7 +71,7 @@ nodes:
   node_diplomatic_intervention:
     id: "node_diplomatic_intervention"
     type: "character"
-    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    speaker_id: "c3d4e5f6-a7b8-4012-8def-123456789012"
     text: "You don't have to do this. Let her pass."
     thought: "Sofia watches intently. There's a flicker of hope in her eyes - maybe, just maybe, there's another way."
     choices:
@@ -82,7 +82,7 @@ nodes:
   node_diplomatic_resolution:
     id: "node_diplomatic_resolution"
     type: "character"
-    speaker_id: "c3d4e5f6-a7b8-9012-cdef-123456789012"
+    speaker_id: "c3d4e5f6-a7b8-4012-8def-123456789012"
     text: "Thank you. That... that was impressive. Most people just walk by."
     thought: "She's genuinely impressed. This wasn't just about helping her - it was about doing it the right way."
     is_end: true

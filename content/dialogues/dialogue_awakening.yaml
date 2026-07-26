@@ -18,7 +18,7 @@ nodes:
         next_node_id: "6e289bf0-410c-44bf-8a7e-123456789abc"
       - id: "reply_confused"
         text: "Uplink received. Explain <important>Project Synthesis</important> parameters again."
-        next_node_id: "7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d"
+        next_node_id: "7a1b8c0d-e2f3-4a5b-ac7d-8e9f0a1b2c3d"
 
   6e289bf0-410c-44bf-8a7e-123456789abc:
     id: "6e289bf0-410c-44bf-8a7e-123456789abc"
@@ -32,8 +32,8 @@ nodes:
         awakening_path: "understood"
       story_beat: act1_awakening
 
-  7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d:
-    id: "7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d"
+  7a1b8c0d-e2f3-4a5b-ac7d-8e9f0a1b2c3d:
+    id: "7a1b8c0d-e2f3-4a5b-ac7d-8e9f0a1b2c3d"
     type: "character"
     speaker_id: "3b2b8000-e29b-41d4-a716-446655440001"
     text: "You signed the contract. We provide the hardware and the apartment; you provide the human heuristics. Guide the Unit's daily life, manage its Time Blocks, and collect behavioral data. Our timeline is tight."

@@ -193,7 +193,7 @@ describe('Schema rejects unknown keys (strict)', () => {
 // Validates: Requirements 3.3, 3.6, 4.1
 // ─────────────────────────────────────────────────────────────
 
-import { jest } from '@jest/globals';
+import { jest as jestGlobals } from '@jest/globals';
 
 // ── Arbitraries (re-declared locally for scope) ───────────────
 
@@ -224,30 +224,30 @@ const genUniqueBeatsArray = (minLength = 1, maxLength = 8) =>
 describe('Beat upsert round-trip', () => {
   it('upserts every slug and writes slugs to cache via setCache', async () => {
     // Mock modules before importing the module under test
-    const queryOLTPMock = jest.fn<() => Promise<{ rows: unknown[] }>>().mockResolvedValue({ rows: [] });
-    const deleteCacheMock = jest.fn<() => Promise<boolean>>().mockResolvedValue(true);
+    const queryOLTPMock = jestGlobals.fn<(...args: any[]) => Promise<{ rows: unknown[] }>>().mockResolvedValue({ rows: [] });
+    const deleteCacheMock = jestGlobals.fn<(...args: any[]) => Promise<boolean>>().mockResolvedValue(true);
 
     // Track setCache calls: key → value
     const cacheStore: Record<string, unknown> = {};
-    const setCacheMock = jest.fn<(key: string, value: unknown, ttl: number) => Promise<boolean>>()
+    const setCacheMock = jestGlobals.fn<(...args: any[]) => Promise<boolean>>()
       .mockImplementation(async (key: string, value: unknown) => {
         cacheStore[key] = value;
         return true;
       });
 
     // Dynamically mock the modules used by processStoryBeatData
-    jest.unstable_mockModule('@las-flores/shared', async () => {
-      const actual = await jest.requireActual<typeof import('@las-flores/shared')>('@las-flores/shared');
+    jestGlobals.unstable_mockModule('@las-flores/shared', async () => {
+      const actual = await jestGlobals.requireActual<typeof import('@las-flores/shared')>('@las-flores/shared');
       return { ...actual };
     });
-    jest.unstable_mockModule('../../src/database/connection.js', () => ({
+    jestGlobals.unstable_mockModule('../../src/database/connection.js', () => ({
       queryOLTP: queryOLTPMock,
     }));
-    jest.unstable_mockModule('../../src/database/redis.js', () => ({
+    jestGlobals.unstable_mockModule('../../src/database/redis.js', () => ({
       setCache: setCacheMock,
       deleteCache: deleteCacheMock,
-      getCache: jest.fn(),
-      invalidatePattern: jest.fn(),
+      getCache: jestGlobals.fn(),
+      invalidatePattern: jestGlobals.fn(),
     }));
 
     await fc.assert(
@@ -301,7 +301,7 @@ describe('Beat upsert round-trip', () => {
         expect(new Set(cachedSlugs)).toEqual(new Set(beats.map(b => b.slug)));
 
         // Each queryOLTP call passed the correct slug
-        const upsertedSlugs = queryOLTPMock.mock.calls.map(call => (call[1] as unknown[])[0]);
+        const upsertedSlugs = queryOLTPMock.mock.calls.map((call: any) => (call[1] as unknown[])[0]);
         expect(new Set(upsertedSlugs)).toEqual(new Set(beats.map(b => b.slug)));
       }),
       { numRuns: 100, verbose: false },
@@ -1019,7 +1019,7 @@ describe('dialogue_awakening.yaml beat effects', () => {
   const BEAT = 'act1_awakening';
   const END_NODES = [
     '6e289bf0-410c-44bf-8a7e-123456789abc',
-    '7a1b8c0d-e2f3-4a5b-6c7d-8e9f0a1b2c3d',
+    '7a1b8c0d-e2f3-4a5b-ac7d-8e9f0a1b2c3d',
   ] as const;
 
   let data: any;

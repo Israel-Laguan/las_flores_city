@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { zodUuid } from './uuid.js';
 
 export const UserSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   email: z.string().email(),
   username: z.string().min(3).max(30),
   display_name: z.string().max(50),
@@ -12,7 +13,7 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 export const UserEntitlementsSchema = z.object({
-  user_id: z.string().uuid(),
+  user_id: zodUuid(),
   is_premium: z.boolean().default(false),
   is_nsfw_unlocked: z.boolean().default(false),
   patreon_tier: z.enum(['none', 'supporter', 'premium', 'exclusive']).default('none'),

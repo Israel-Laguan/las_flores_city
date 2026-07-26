@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidOptional, zodUuidNullable } from './uuid.js';
 
 export const AssetBaseSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   prompt_rel: z.string(),
   proposal_index: z.number().int(),
   image_path: z.string(),
@@ -20,8 +21,8 @@ export const AssetBaseSchema = z.object({
 export type AssetBase = z.infer<typeof AssetBaseSchema>;
 
 export const AssetVariantSchema = z.object({
-  id: z.string().uuid(),
-  base_id: z.string().uuid(),
+  id: zodUuid(),
+  base_id: zodUuid(),
   variant_name: z.string(),
   image_path: z.string(),
   i2i_strength: z.number().nullable().optional(),
@@ -49,7 +50,7 @@ export const GenerateBasesRequestSchema = z.object({
 export type GenerateBasesRequest = z.infer<typeof GenerateBasesRequestSchema>;
 
 export const GenerateVariantsRequestSchema = z.object({
-  base_id: z.string().uuid(),
+  base_id: zodUuid(),
   variants: z.array(z.object({
     variant_name: z.string(),
     prompt: z.string(),
@@ -64,7 +65,7 @@ export const GenerateVariantsRequestSchema = z.object({
 export type GenerateVariantsRequest = z.infer<typeof GenerateVariantsRequestSchema>;
 
 export const ApproveBaseRequestSchema = z.object({
-  base_id: z.string().uuid(),
+  base_id: zodUuid(),
 });
 
 export type ApproveBaseRequest = z.infer<typeof ApproveBaseRequestSchema>;
@@ -110,8 +111,8 @@ export type PromptCatalogResponse = z.infer<typeof PromptCatalogResponseSchema>;
 
 // Publish workflow
 export const PublishAssetRequestSchema = z.object({
-  base_id: z.string().uuid().optional(),
-  variant_id: z.string().uuid().optional(),
+  base_id: zodUuidOptional(),
+  variant_id: zodUuidOptional(),
   // If omitted, uses the inventory convention based on asset_type + prompt_rel
   final_path: z.string().optional(),
 });
@@ -131,7 +132,7 @@ export const AssetGroupSummarySchema = z.object({
   prompt_rel: z.string(),
   base_count: z.number().int(),
   variant_count: z.number().int(),
-  chosen_base_id: z.string().uuid().nullable().optional(),
+  chosen_base_id: zodUuidNullable().optional(),
 });
 
 export type AssetGroupSummary = z.infer<typeof AssetGroupSummarySchema>;

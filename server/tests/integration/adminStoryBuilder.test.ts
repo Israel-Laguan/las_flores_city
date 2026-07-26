@@ -37,7 +37,7 @@ jest.mock('node:fs/promises', () => ({
 }));
 
 jest.mock('../../src/database/connection.js', () => ({
-  queryOLTP: jest.fn(async (text) => {
+  queryOLTP: jest.fn(async (text: string) => {
     if (text.includes('INSERT INTO content_plans')) {
       return { rows: [{ id: MOCK_PLAN_ID }], rowCount: 1 };
     }
@@ -47,7 +47,7 @@ jest.mock('../../src/database/connection.js', () => ({
     return { rows: [] };
   }),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
-  withOLTPTransaction: jest.fn(async (cb) => cb({ query: jest.fn() })),
+  withOLTPTransaction: jest.fn(async (cb: any) => cb({ query: jest.fn() })),
 }));
 
 jest.mock('../../src/database/redis.js', () => ({
@@ -58,7 +58,7 @@ jest.mock('../../src/database/redis.js', () => ({
 }));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
-  authAndAdminMiddleware: (_req, _res, next) => {
+  authAndAdminMiddleware: (_req: any, _res: any, next: any) => {
     _req.userId = MOCK_USER_ID;
     next();
   },

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidOptional } from './uuid.js';
 
 export const DialogueNodeTypeSchema = z.enum([
   'narrator',
@@ -50,8 +51,8 @@ export const DialogueChoiceSchema = z.object({
     })
     .optional(),
   relationship_change: RelationshipChangeSchema.optional(),
-  vault_unlock: z.string().uuid().optional(),
-  mystery_solve: z.string().uuid().optional(),
+  vault_unlock: zodUuidOptional(),
+  mystery_solve: zodUuidOptional(),
   // Boolean flag gates (presence check). Backwards-compatible.
   required_flags: z.record(z.string(), z.boolean()).optional(),
   hidden_if: z.record(z.string(), z.boolean()).optional(),
@@ -97,7 +98,7 @@ export const EffectsSchema = z.object({
       currency: z.enum(['credits', 'gold_credits']).default('credits'),
     })
     .optional(),
-  grant_item: z.string().uuid().optional(),
+  grant_item: zodUuidOptional(),
 }).strict();
 
 export type Effects = z.infer<typeof EffectsSchema>;
@@ -118,14 +119,14 @@ export const DialogueNodeSchema = z.object({
 export type DialogueNode = z.infer<typeof DialogueNodeSchema>;
 
 export const DialogueTreeSchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   start_node_id: z.string(),
   nodes: z.record(z.string(), DialogueNodeSchema),
-  character_id: z.string().uuid().optional(),
-  scene_id: z.string().uuid().optional(),
-  mission_id: z.string().uuid().optional(),
+  character_id: zodUuidOptional(),
+  scene_id: zodUuidOptional(),
+  mission_id: zodUuidOptional(),
   dialogue_scope: z.enum(['character', 'scene', 'mission', 'onboarding', 'system']).default('character'),
   metadata: z.record(z.string(), z.any()).optional(),
   created_at: z.string().datetime(),
@@ -135,10 +136,10 @@ export const DialogueTreeSchema = z.object({
 export type DialogueTree = z.infer<typeof DialogueTreeSchema>;
 
 export const DialogueOverlaySchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  target_tree_id: z.string().uuid(),
+  target_tree_id: zodUuid(),
   modifications: z.array(z.object({
     node_id: z.string(),
     action: z.enum(['replace', 'add_choice', 'remove_choice', 'modify_text']),

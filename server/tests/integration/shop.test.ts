@@ -40,7 +40,7 @@ const app = express();
 app.use(express.json());
 app.use('/shop', shopRouter);
 
-let server: ReturnType<typeof express.Application.listen>;
+let server: ReturnType<typeof express.application.listen>;
 let oltpPool: pg.Pool;
 let olapPool: pg.Pool;
 let port: number;
@@ -115,7 +115,7 @@ beforeAll(async () => {
     [THEME_ITEM_ID, BORDER_ITEM_ID, GOLD_ITEM_ID, LUXURY_ITEM_ID]
   );
 
-  server = await new Promise<ReturnType<typeof express.Application.listen>>((resolve) => {
+  server = await new Promise<ReturnType<typeof express.application.listen>>((resolve) => {
     const s = app.listen(0, () => resolve(s));
   });
   port = (server.address() as { port: number }).port;
@@ -124,7 +124,7 @@ beforeAll(async () => {
 afterAll(async () => {
   try {
     await new Promise<void>((resolve, reject) =>
-      server.close((e) => (e ? reject(e) : resolve()))
+      server.close((e: any) => (e ? reject(e) : resolve()))
     );
   } catch {
     // server may already be closed

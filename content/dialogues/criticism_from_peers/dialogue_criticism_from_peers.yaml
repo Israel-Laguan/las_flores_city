@@ -1,4 +1,4 @@
-id: a3b4c5d6-e7f8-9012-6789-123456789012
+id: a3b4c5d6-e7f8-4012-a789-123456789012
 name: Criticism from Peers
 description: A tense exchange unfolds in the neon-drenched backrooms of a corporate tower, where ARIA finds herself defending her recent actions against skeptical colleagues who question her loyalty to Minera Estrella's agenda.
 start_node_id: start
@@ -150,7 +150,7 @@ nodes:
   maria_skepticism:
     id: "maria_skepticism"
     type: character
-    speaker_id: "770fa600-a4bd-43f6-c938-668877662222"
+    speaker_id: "770fa600-a4bd-43f6-8938-668877662222"
     text: "Maria crosses her arms. 'ARIA, we've been burning through budget on your little pet project. The board wants results, not excuses. When do we see ROI on these... subjects?'"
     thought: "Maria's the real threat here. She has the board's ear. If she turns against me, the project is at risk."
     effects:

@@ -129,7 +129,7 @@ describe('choicePassesFilters — numeric stats', () => {
 
 describe('choicePassesFilters — combined + economy', () => {
   it('passes with no conditions', () => {
-    expect(choicePassesFilters({ id: 'c', text: 't', next_node_id: 'n' }, EMPTY)).toBe(true);
+    expect(choicePassesFilters({} as any, EMPTY)).toBe(true);
   });
 
   it('enforces the time_block_cost gate using timeBlocks', () => {
@@ -144,6 +144,7 @@ describe('choicePassesFilters — combined + economy', () => {
       flags: { met_sofia: true },
       state: { sofia_status: 'romanced' },
       stats: { sofia_trust: 80 },
+      timeBlocks: 100,
     };
     expect(
       choicePassesFilters(
@@ -152,8 +153,7 @@ describe('choicePassesFilters — combined + economy', () => {
           required_state: { sofia_status: 'romanced' },
           required_stats: { sofia_trust: 'gte:75' },
         },
-        player,
-        100
+        player
       )
     ).toBe(true);
   });

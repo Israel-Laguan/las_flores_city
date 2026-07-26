@@ -46,7 +46,7 @@ const app = express();
 app.use(express.json());
 app.use('/dialogue', dialogueRouter);
 
-let server: ReturnType<typeof express.Application.listen>;
+let server: ReturnType<typeof express.application.listen>;
 let port: number;
 
 const generateTestUserIds = (): string[] => {
@@ -199,7 +199,7 @@ describe('Breakthrough Concurrency Test - 50 Simultaneous Requests', () => {
 
   beforeAll(async () => {
     userIds = await setupTestFixtures();
-    server = await new Promise<ReturnType<typeof express.Application.listen>>((resolve) => {
+    server = await new Promise<ReturnType<typeof express.application.listen>>((resolve) => {
       const s = app.listen(0, () => resolve(s));
     });
     port = (server.address() as { port: number }).port;

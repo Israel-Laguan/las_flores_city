@@ -29,7 +29,7 @@ process.env.CDN_BASE_URL = 'https://cdn.lasflores2077.com';
 process.env.CDN_KEY_PAIR_ID = 'APKADEV00000000000';
 process.env.CDN_PRIVATE_KEY_PATH = '/nonexistent/key-for-test.pem';
 
-let server: ReturnType<typeof express.Application.listen>;
+let server: ReturnType<typeof express.application.listen>;
 let oltpPool: pg.Pool;
 let olapPool: pg.Pool;
 let port: number;
@@ -122,7 +122,7 @@ beforeAll(async () => {
     ]
   );
 
-  server = await new Promise<ReturnType<typeof express.Application.listen>>((resolve) => {
+  server = await new Promise<ReturnType<typeof express.application.listen>>((resolve) => {
     const s = app.listen(0, () => resolve(s));
   });
   port = (server.address() as { port: number }).port;
@@ -130,7 +130,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await new Promise<void>((resolve, reject) =>
-    server.close((e) => (e ? reject(e) : resolve()))
+    server.close((e: any) => (e ? reject(e) : resolve()))
   );
   await oltpPool.query('DELETE FROM player_vault WHERE user_id = $1', [TEST_USER_ID]);
   await oltpPool.query('DELETE FROM player_dialogue_states WHERE user_id = $1', [TEST_USER_ID]);

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid } from '../schemas/uuid.js';
 
 // ==================== Leaderboard ====================
 
@@ -6,15 +7,15 @@ export const LeaderboardBadgeTypeSchema = z.enum(['breakthrough', 'diamond', 'go
 export type LeaderboardBadgeType = z.infer<typeof LeaderboardBadgeTypeSchema>;
 
 export const LeaderboardBadgeSchema = z.object({
-  mystery_id: z.string().uuid(),
+  mystery_id: zodUuid(),
   badge_type: LeaderboardBadgeTypeSchema,
   earned_at: z.string().datetime(),
 });
 export type LeaderboardBadge = z.infer<typeof LeaderboardBadgeSchema>;
 
 export const LeaderboardEntrySchema = z.object({
-  mystery_id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  mystery_id: zodUuid(),
+  user_id: zodUuid(),
   username: z.string(),
   rank: z.number().int().min(1),
   total_tb_spent: z.number().int().min(0),

@@ -130,8 +130,7 @@ describe('Lore Path Validation', () => {
       await validateLorePaths(yamlPath, {
         asset_paths: {
           portrait: 'test_slug__default.png',
-          // @ts-expect-error - testing with invalid type
-          invalid: 123,
+          invalid: 123 as any,
         },
       }, warnings);
       

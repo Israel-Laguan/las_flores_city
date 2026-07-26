@@ -6,22 +6,22 @@
  * `content/` tree with a staged YAML that publishChosenDrafts reads back to
  * append the `label:'dev'` cascade entry.
  */
-import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, jest as jestGlobals, beforeEach, afterEach } from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import yaml from 'js-yaml';
 
-const mockUploadToMinio = jest.fn().mockImplementation(async (buf: Buffer, key: string) => {
-  return `https://minio.test/${key}`;
+const mockUploadToMinio = jestGlobals.fn(async (..._args: any[]) => {
+  return `https://minio.test/${_args[1]}`;
 });
-const mockQueryOLTP = jest.fn();
+const mockQueryOLTP = jestGlobals.fn<(...args: any[]) => Promise<any>>();
 
-jest.doMock('../../src/services/StorageService.js', () => ({
+jestGlobals.doMock('../../src/services/StorageService.js', () => ({
   uploadToMinio: mockUploadToMinio,
   default: { uploadToMinio: mockUploadToMinio },
 }));
-jest.doMock('../../src/database/connection.js', () => ({
+jestGlobals.doMock('../../src/database/connection.js', () => ({
   queryOLTP: (...args: any[]) => mockQueryOLTP(...args),
 }));
 
@@ -68,7 +68,7 @@ describe('AssetPublishService', () => {
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'asset-publish-test-'));
-    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jestGlobals.spyOn(process, 'cwd').mockReturnValue(tmpDir);
     const entityDir = path.join(tmpDir, 'content', 'characters', 'diego');
     await fs.mkdir(path.join(entityDir, 'assets'), { recursive: true });
     await fs.writeFile(path.join(entityDir, 'assets', 'diego__chosen.png'), 'PNGDATA');
@@ -88,7 +88,7 @@ describe('AssetPublishService', () => {
   });
 
   afterEach(async () => {
-    jest.restoreAllMocks();
+    jestGlobals.restoreAllMocks();
     mockUploadToMinio.mockClear();
     mockQueryOLTP.mockReset();
     await fs.rm(tmpDir, { recursive: true, force: true });
@@ -179,7 +179,7 @@ describe('promotion methods', () => {
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'asset-promotion-test-'));
-    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jestGlobals.spyOn(process, 'cwd').mockReturnValue(tmpDir);
     const entityDir = path.join(tmpDir, 'content', 'characters', 'diego');
     await fs.mkdir(path.join(entityDir, 'assets'), { recursive: true });
     await fs.writeFile(
@@ -196,7 +196,7 @@ describe('promotion methods', () => {
   });
 
   afterEach(async () => {
-    jest.restoreAllMocks();
+    jestGlobals.restoreAllMocks();
     mockUploadToMinio.mockClear();
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
@@ -290,7 +290,7 @@ describe('scene/location promotion', () => {
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'asset-scene-promotion-test-'));
-    jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
+    jestGlobals.spyOn(process, 'cwd').mockReturnValue(tmpDir);
 
     // Create scene entity
     const sceneDir = path.join(tmpDir, 'content', 'scenes', 'sunset_boulevard');
@@ -326,7 +326,7 @@ describe('scene/location promotion', () => {
   });
 
   afterEach(async () => {
-    jest.restoreAllMocks();
+    jestGlobals.restoreAllMocks();
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
 

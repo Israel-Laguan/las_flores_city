@@ -92,10 +92,10 @@ jestGlobals.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
 // Mock fs/promises readFile so parsePromptFile can read the prompt content
 // without the file existing on disk.
 jestGlobals.doMock('node:fs/promises', () => {
-  const real = jest.requireActual('node:fs/promises');
+    const real = jestGlobals.requireActual('node:fs/promises') as Record<string, any>;
   return {
     ...real,
-    readFile: jestGlobals.fn().mockImplementation(async (filePath: string, encoding?: string) => {
+    readFile: jestGlobals.fn<(filePath: string, encoding?: string) => Promise<any>>().mockImplementation(async (filePath: string, encoding?: string) => {
       if (typeof filePath === 'string' && filePath.includes('app_misiones.prompt.md')) {
         return `---
 asset_type: app-icon
@@ -129,9 +129,13 @@ let port: number;
 
 let TEST_PROMPT_REL: string;
 let adminToken: string;
-const ADMIN_USER_ID = '00000000-0000-0000-0000-000000000001';
+let ADMIN_USER_ID: string;
 
 beforeAll(async () => {
+  const crypto = await import('node:crypto');
+  // Use a unique UUID for the test admin user to avoid collisions with parallel test suites
+  ADMIN_USER_ID = crypto.randomUUID();
+
   const { assetsRouter } = await import('../../src/routes/assets.js');
   const { authRouter } = await import('../../src/routes/auth.js');
   const redisModule = await import('../../src/database/redis.js');
@@ -164,7 +168,6 @@ beforeAll(async () => {
   });
 
   // Generate a unique test key to avoid collisions with other test runs
-  const crypto = await import('node:crypto');
   TEST_PROMPT_REL = `test_assets_prompt_${crypto.randomUUID().replace(/-/g, '_')}`;
 
   await oltpPool.query('DELETE FROM asset_variants WHERE prompt_text LIKE $1 OR variant_name LIKE $1', ['%test%']);

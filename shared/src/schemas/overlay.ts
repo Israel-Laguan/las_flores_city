@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { zodUuid, zodUuidOptional, zodUuidNullable } from './uuid.js';
 import { DialogueNodeSchema } from './dialogue.js';
 
 // ============================================================
@@ -25,12 +26,12 @@ export const UnlockConditionSchema = z.enum([
 export type UnlockCondition = z.infer<typeof UnlockConditionSchema>;
 
 export const OverlaySchema = z.object({
-  id: z.string().uuid(),
+  id: zodUuid(),
   name: z.string().min(1),
   description: z.string().optional(),
-  target_tree_id: z.string().uuid(),
-  mission_id: z.string().uuid().nullable().optional(),
-  gate_node_id: z.string().uuid().optional().describe('Documentation: where the branch diverges'),
+  target_tree_id: zodUuid(),
+  mission_id: zodUuidNullable().optional(),
+  gate_node_id: zodUuidOptional().describe('Documentation: where the branch diverges'),
   priority: z.number().int().default(0),
   is_nsfw: z.boolean().default(false),
   unlock_condition: UnlockConditionSchema.optional(),

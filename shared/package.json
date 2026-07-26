@@ -9,10 +9,11 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint --ext .ts src/",
+    "typecheck": "tsc --noEmit",
     "test": "npx --no-install jest --detectOpenHandles"
   },
   "dependencies": {
-    "zod": "~3.25.76"
+    "zod": "~4.4.3"
   },
   "devDependencies": {
     "@types/jest": "~30.0.0",
