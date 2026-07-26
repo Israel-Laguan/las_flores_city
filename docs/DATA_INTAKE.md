@@ -135,6 +135,8 @@ The Story Builder path can be driven end-to-end from a long-form markdown brief 
 
 The LLM pre-fill step calls `ContentPlanService.gatherContext()`, which must match the live schema: scenes are joined to `districts` (the old `scenes.district` column was dropped in migration `033`), and **locations are read from `content/locations/*/*.yaml` — there is no `locations` DB table**. A mismatch here throws before `stagePlan` writes any files, so the plan goes `failed` and no `content/` folders are produced. This was the root cause of an earlier "no output" ingestion run.
 
+**Big-story behavior**: When the input exceeds ~8–12k characters, the outline step may produce truncated JSON or miss entities. A two-pass ingestion approach (chunk → extract → merge → bounded outline) is planned but not yet implemented. See `docs/STORY_BUILDER_INTAKE_REVIEW.md` Phase 2 for details.
+
 ### Open questions
 
 See `docs/STORY_BUILDER_DESIGN.md` §6 for unresolved design questions and §4.4 for future extensions.
@@ -209,6 +211,6 @@ All three paths share the same validation and migration infrastructure.
 
 - `docs/ADMIN_ARCHITECTURE.md` — Admin panel structure and conventions
 - `docs/STORY_BUILDER_DESIGN.md` — Story Builder design rationale and shipped state
-- `docs/NEXT_STEPS.md` — open action items
+- `docs/STORY_BUILDER_OPERATIONS.md` — operational findings
 - `docs/UI_STYLE_SYSTEM.md` — Shared styling contract
 - `AGENTS.md` — Hard constraints (DB/cache patterns, Docker gotchas, verification checklist)

@@ -148,9 +148,9 @@ Standalone script to bulk-fill existing TODO placeholders in content files that 
 ### 4.2 TODO Placeholders: File vs YAML
 
 - **File-level TODO**: In `.md` or `.prompt.md` files → `fillExistingTodos.ts` handles these
-- **YAML field TODO**: In YAML `metadata.faction: 'TODO: Add faction'` → NOT handled by current scripts
+- **YAML field TODO**: In YAML `metadata.faction: 'TODO: Add faction'` → `ContentFillService.ts` handles these via `fillFields()`
 
-`FILL_TARGETS` in `ContentFillService.ts:6-16` defines which YAML fields get filled. Currently only covers `description`, `metadata.personality`, `title`. Fields like `faction` remain as TODO.
+`FILL_TARGETS` in `ContentFillService.ts` defines which YAML fields get LLM-filled. Characters cover 20+ fields (description, title, physical_description, psychological_description, metadata.personality, metadata.faction, metadata.age, etc.). Scene, location, mission, overlay, vault, gig, shop_item, story, and story_beat types are also covered. See `ContentFillService.ts` for the full map.
 
 ### 4.3 LLM Placeholder Behavior
 

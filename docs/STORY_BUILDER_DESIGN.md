@@ -10,9 +10,8 @@
 > historical context); Section 4 records what was actually built and the key files
 > that make up the implementation.
 >
-> **Note (2026-07-17):** The per-milestone planning docs in `docs/milestones/` have
-> been removed. All milestones (M01–M08, M13–M18) are complete; any remaining open
-> work is tracked in `docs/NEXT_STEPS.md`.
+> All milestones (M01–M08, M13–M18) are complete. Operational findings and open work
+> are tracked in `docs/STORY_BUILDER_OPERATIONS.md`.
 
 ## 1. Context
 
@@ -1027,7 +1026,7 @@ migrate + verify), and the UI shows a 2-step flow for the happy path
 
 ### 4.4 Future extensions
 
-Not planned, but noted as natural extensions. These are aspirational and require their own design review before implementation. Remaining intake work is tracked in `docs/NEXT_STEPS.md`. Operational findings, verification results, and runbook procedures are in `docs/STORY_BUILDER_OPERATIONS.md`.
+Not planned, but noted as natural extensions. These are aspirational and require their own design review before implementation. Operational findings, verification results, and runbook procedures are in `docs/STORY_BUILDER_OPERATIONS.md`.
 
 - Tiered asset needs (major/standard/minor character).
 - Collaborative editing.
@@ -1093,7 +1092,7 @@ All questions are resolved. Multi-language support was decided against.
 
 7. **How do we handle multi-language content?** Resolved: not pursuing. Spanish and English content are handled by separate YAML files under `content/`.
 
-8. **What analytics should we track?** Resolved: `admin_events` table (lives in OLTP, analytics-scoped) with event emission for plan_created, plan_refined, plan_staged, plan_migrated, plan_verified, plan_failed, plus user/settings events. Retention: indefinite, with future migration to OLAP date-partitioned tables (see `docs/NEXT_STEPS.md` "Decisions"). Remaining gap: LLM token/cost per plan (see `docs/NEXT_STEPS.md`).
+8. **What analytics should we track?** Resolved: `admin_events` table (lives in OLTP, analytics-scoped) with event emission for plan_created, plan_refined, plan_staged, plan_migrated, plan_verified, plan_failed, plus user/settings events. Retention: indefinite, with future migration to OLAP date-partitioned tables. Analytics implementation is documented in `docs/STORY_BUILDER_OPERATIONS.md`.
 
 9. **Should `story_beat` be enforced strictly (404 if missing) or allow fallback dialogues?** Resolved: scenes gate by `metadata.required_story_beat` (`server/src/routes/location.ts:244-271`); dialogues mirror that pattern via `metadata.required_story_beat` on dialogue trees (`server/src/routes/dialogue-helpers.ts:resolveDialogueTree`, `isStoryBeatAllowed`). If the tree is gated and the player doesn't satisfy the gate, `resolveDialogueTree` returns `null` and `handleStartDialogue` 404s with the existing "No dialogue available" error.
 
@@ -1227,8 +1226,6 @@ via `const SERVER_SIDE_BEATS = new Set(['act2_mystery_active',
 
 ### 7.7 Cross-references
 
-- `docs/NEXT_STEPS.md` — open action items (the beat-semantics
-  doc was opened as item 2; this section closes it).
 - `server/src/routes/location.ts:244-271` — scene gating
   implementation (the reference for the dialogue-tree mirror).
 - `server/src/routes/dialogue-helpers.ts` — `isStoryBeatAllowed`
