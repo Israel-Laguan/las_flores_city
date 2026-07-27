@@ -72,21 +72,19 @@ The easiest way to start the entire stack with Podman:
 # Clone and enter the repository
 cd /path/to/las_flores_city
 
-# Make the script executable
-chmod +x start-stack.sh
+# Start the full stack (databases + server + admin)
+./scripts/podman-workflow.sh setup
 
-# Run the full stack
-./start-stack.sh
+# Or start admin panel separately (requires server already running)
+./scripts/podman-workflow.sh admin
 ```
 
 The script will:
-1. Clean up existing containers
-2. Create the podman network and volumes
-3. Start backing services (PostgreSQL, Redis, MinIO)
-4. Build and start the server
-5. Build and start the admin panel
-6. Apply database migrations
-7. Output service URLs
+1. Create the podman network and volumes (one-time)
+2. Start backing services (PostgreSQL, Redis, MinIO)
+3. Build and start the server
+4. Start the admin panel
+5. Output service URLs
 
 Access the services:
 - **Server API:** http://localhost:3000
@@ -94,6 +92,22 @@ Access the services:
 - **Admin UI:** http://localhost:3002 (mapped from container port 3000)
 
 > Both runtimes expose the admin panel on host port 3002. The admin container internally listens on 3000; the host mapping is `3002:3000` in both `docker-compose.yml` and `start-stack.sh`.
+
+### Podman Workflow Commands
+
+```bash
+# Full setup (build images, start services, apply migrations)
+./scripts/podman-workflow.sh setup
+
+# Start admin panel only (requires server running)
+./scripts/podman-workflow.sh admin
+
+# Check status of all services
+./scripts/podman-workflow.sh status
+
+# Clean up all containers and volumes
+./scripts/podman-workflow.sh clean
+```
 
 ## LiteLLM Setup (Required for Story Builder)
 
@@ -199,6 +213,16 @@ const promptPath = path.join(contentDir, filePath.replace(/[^/]+$/, ''), item.sl
 ## Manual Setup (For Debugging)
 
 > The manual steps below are for the **Podman** path. Docker users rarely need manual setup — `docker compose up -d <service>` handles networking and volumes automatically. Use these steps only if you need fine-grained control over individual Podman containers.
+
+If you need to start services individually, prefer the `podman-workflow.sh` script:
+
+```bash
+# Start the full stack
+./scripts/podman-workflow.sh setup
+
+# Or start admin panel only (requires server running)
+./scripts/podman-workflow.sh admin
+```
 
 If you need to start services individually:
 
@@ -501,7 +525,15 @@ las_flores_city/
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| NODE_ENV | development | Node.js environment |
+| `NEXT_PUBLIC_SERVER_URL` | `http://localhost:3000` | Server URL for client-side API calls |
+| `INTERNAL_SERVER_URL` | `http://<SERVER_IP>:3000` | Server URL for server-side API calls (must be container IP) |
+| `NODE_ENV` | development | Node.js environment |
+
+### Admin Dev Login
+
+In development mode, the admin panel includes a "DEV LOGIN" button on the login page that uses the `/api/auth/dev-login` endpoint to authenticate via the server's `/auth/dev-admin-login` route. No password is required.
+
+This is enabled automatically when `NODE_ENV !== 'production'` in the admin container.
 
 ## Tips for Development
 

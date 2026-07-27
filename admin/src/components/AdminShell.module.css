@@ -1,0 +1,49 @@
+.shell {
+  --current-sidebar-width: 260px;
+  min-height: 100vh;
+}
+
+.shell[data-collapsed='true'] {
+  --current-sidebar-width: 72px;
+}
+
+.content {
+  margin-left: var(--current-sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.2s ease;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    padding: 0;
+    z-index: 90;
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    transition: none;
+  }
+}
