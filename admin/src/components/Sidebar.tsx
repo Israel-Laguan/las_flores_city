@@ -21,7 +21,7 @@ function NavItemLink({ item, pathname }: { item: NavItem; pathname: string }) {
   const itemActive = isItemActive(pathname, item);
   const subActive = subItems.some(sub => isActive(pathname, sub.href));
   const [manualExpanded, setManualExpanded] = useState<boolean | null>(null);
-  const expanded = manualExpanded ?? subActive;
+  const expanded = subActive || (manualExpanded ?? false);
   const subNavId = `subnav-${item.href.replace(/\//g, '-')}`;
 
   return (
@@ -107,7 +107,7 @@ function NavSection({ section, pathname }: { section: NavSectionType; pathname: 
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { mobileOpen, collapsed, toggleCollapsed } = useSidebar();
+  const { mobileOpen, collapsed, toggleCollapsed, closeMobile } = useSidebar();
 
   return (
     <aside
@@ -115,7 +115,7 @@ export default function Sidebar() {
       aria-label="Primary navigation"
     >
       <div className={styles.sidebarHeader}>
-        <Link href="/" className={styles.logo} title="Las Flores 2077 — Dashboard">
+        <Link href="/" className={styles.logo} title="Las Flores 2077 — Dashboard" onClick={closeMobile}>
           <span className={styles.logoFull}>Las Flores 2077</span>
           <span className={styles.logoShort}>LF</span>
         </Link>

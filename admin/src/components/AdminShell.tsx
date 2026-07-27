@@ -41,16 +41,18 @@ export default function AdminShell({ user, children }: AdminShellProps) {
   }, []);
 
   const toggleCollapsed = useCallback(() => {
-    setCollapsed(prev => {
-      const next = !prev;
-      try {
-        window.localStorage.setItem(COLLAPSE_STORAGE_KEY, String(next));
-      } catch {
-        // localStorage unavailable — state still toggles for the session
-      }
-      return next;
-    });
+    setCollapsed(prev => !prev);
   }, []);
+
+  // Persist collapse preference after the state is committed (avoids React replay
+  // writing to localStorage with a stale value).
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(COLLAPSE_STORAGE_KEY, String(collapsed));
+    } catch {
+      // localStorage unavailable — state still works for the session
+    }
+  }, [collapsed]);
 
   const toggleMobile = useCallback(() => setMobileOpen(open => !open), []);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
@@ -62,17 +64,27 @@ export default function AdminShell({ user, children }: AdminShellProps) {
       <div className={styles.shell} data-collapsed={collapsed ? 'true' : undefined}>
         <Sidebar />
         {mobileOpen && (
-          <button
-            type="button"
-            className={styles.backdrop}
-            aria-label="Close navigation"
-            onClick={closeMobile}
-          />
+          <>
+            {/* Focus trap: move focus into the sidebar on open; the sidebar
+                contains the first focusable element (logo link) so Tab follows
+                navigation items. The backdrop closes the drawer when clicked. */}
+            <div
+              className={styles.backdrop}
+              role="presentation"
+              aria-hidden="true"
+              onClick={closeMobile}
+            />
+          </>
         )}
-        <div className={styles.content}>
+        <div
+          className={styles.content}
+          // On mobile when the drawer is open, mark content as inert so
+          // keyboard focus stays within the navigation.
+          {...(mobileOpen ? { inert: '' as unknown as boolean } : {})}
+        >
           <TopBar user={user} />
           <Breadcrumbs />
-          <main className={styles.main}>{children}</main>
+          <div className={styles.main}>{children}</div>
         </div>
       </div>
     </SidebarContext.Provider>

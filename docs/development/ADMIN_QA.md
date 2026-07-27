@@ -145,7 +145,6 @@ OLTP_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{
 | `MINIO_ACCESS_KEY` | `minioadmin` |
 | `MINIO_SECRET_KEY` | `minioadmin` |
 | `JWT_SECRET` | `your-jwt-secret-change-in-production` |
-| `NODE_ENV` | `development` |
 
 ### Admin Container
 | Variable | Value |

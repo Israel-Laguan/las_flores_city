@@ -206,7 +206,19 @@ wait_healthy "las-flores-server" 60
     # Get server IP for admin panel
     SERVER_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-server)
 
+    # Build admin image before starting the container so setup works on a
+    # fresh environment (no cached image).
+    log_info "Building admin image..."
+    podman build -f admin/Dockerfile -t las-flores-admin . || {
+        log_error "Failed to build admin image"
+        exit 1
+    }
+
     log_info "Starting admin panel..."
+    if podman inspect las-flores-admin &>/dev/null 2>&1; then
+        log_warn "Admin container already exists — recreating"
+        podman rm -f las-flores-admin
+    fi
     podman run -d --name las-flores-admin \
         --network las-flores-net -p 3002:3000 \
         -v "$PROJECT_ROOT/admin:/app/admin" \
@@ -215,7 +227,11 @@ wait_healthy "las-flores-server" 60
         -w /app \
         -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
         -e INTERNAL_SERVER_URL=http://$SERVER_IP:3000 \
-        las-flores-admin 2>/dev/null || log_warn "Admin container already exists"
+        -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+        las-flores-admin || {
+            log_error "Failed to start admin container"
+            exit 1
+        }
 
     log_header "=== Setup Complete ==="
     log_info "Admin panel available at http://localhost:3002"
@@ -354,15 +370,36 @@ cleanup() {
 start_admin() {
     log_header "=== Starting Admin Panel ==="
     
-    # Check if server is running
-    if ! podman inspect las-flores-server &> /dev/null; then
+    # Check if server is running (inspect runtime state, not just existence)
+    if [ "$(podman inspect -f '{{.State.Status}}' las-flores-server 2>/dev/null)" != "running" ]; then
         log_error "Server is not running. Run './scripts/podman-workflow.sh setup' first."
         exit 1
+    fi
+
+    # Build admin image if not present
+    if ! podman image exists las-flores-admin &>/dev/null; then
+        log_info "Building admin image..."
+        podman build -f admin/Dockerfile -t las-flores-admin . || {
+            log_error "Failed to build admin image"
+            exit 1
+        }
     fi
     
     # Get server IP for admin panel
     SERVER_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-server)
     
+    # Remove existing container if stopped so run succeeds
+    if podman inspect las-flores-admin &>/dev/null 2>&1; then
+        local admin_status=$(podman inspect -f '{{.State.Status}}' las-flores-admin 2>/dev/null)
+        if [ "$admin_status" = "running" ]; then
+            log_info "Admin container already running"
+            log_info "Admin panel at http://localhost:3002"
+            return 0
+        fi
+        log_warn "Removing stopped admin container"
+        podman rm -f las-flores-admin
+    fi
+
     podman run -d --name las-flores-admin \
         --network las-flores-net -p 3002:3000 \
         -v "$PROJECT_ROOT/admin:/app/admin" \
@@ -371,7 +408,11 @@ start_admin() {
         -w /app \
         -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
         -e INTERNAL_SERVER_URL=http://$SERVER_IP:3000 \
-        las-flores-admin 2>/dev/null || log_warn "Admin container already exists"
+        -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+        las-flores-admin || {
+            log_error "Failed to start admin container — check image, port (3002), and network (las-flores-net)"
+            exit 1
+        }
     
     log_info "Admin panel starting at http://localhost:3002"
 }
@@ -423,7 +464,7 @@ case "${1:-help}" in
         show_status
         ;;
     help|*)
-        echo "Usage: $0 {setup|test|lint|build|server-test|e2e|clean|status}"
+        echo "Usage: $0 {setup|admin|test|lint|build|server-test|e2e|clean|status}"
         echo ""
         echo "Commands:"
         echo "  setup       - Initial setup (build images, start services, apply migrations)"

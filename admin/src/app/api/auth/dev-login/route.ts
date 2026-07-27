@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+
+import { forwardSessionCookie } from '@/lib/cookie-forwarder';
 
 const SERVER_URL = process.env.INTERNAL_SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
@@ -7,11 +8,14 @@ const SERVER_URL = process.env.INTERNAL_SERVER_URL || process.env.NEXT_PUBLIC_SE
  * Dev login endpoint for development/testing only.
  * Uses the server's /auth/dev-admin-login to create/login a dev admin user.
  * This bypasses password authentication for local development.
+ *
+ * Guarded by DEV_LOGIN_ENABLED=true (in addition to NODE_ENV !== 'production')
+ * to prevent accidental exposure on staging or QA deployments.
  */
 export async function POST() {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' || process.env.DEV_LOGIN_ENABLED !== 'true') {
     return NextResponse.json(
-      { success: false, error: 'Dev login is not available in production' },
+      { success: false, error: 'Dev login is not available' },
       { status: 403 }
     );
   }
@@ -33,34 +37,7 @@ export async function POST() {
     }
 
     const setCookieHeader = response.headers.get('set-cookie');
-
-    if (!setCookieHeader) {
-      return NextResponse.json(
-        { success: false, error: 'No session cookie in response' },
-        { status: 401 }
-      );
-    }
-
-    const match = setCookieHeader.match(/jwt_session=([^;]+)/);
-    if (!match) {
-      return NextResponse.json(
-        { success: false, error: 'Missing or malformed session cookie' },
-        { status: 401 }
-      );
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set('jwt_session', match[1], {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24,
-      path: '/',
-    });
-
-    const response_ = NextResponse.json({ success: true });
-    response_.headers.set('set-cookie', setCookieHeader);
-    return response_;
+    return forwardSessionCookie(setCookieHeader);
   } catch (error) {
     console.error('Dev admin login error:', error);
     return NextResponse.json(

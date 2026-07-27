@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { cn } from '@las-flores/ui';
 import styles from './login.module.css';
 
-const isDev = process.env.NODE_ENV !== 'production';
+const devLoginEnabled = process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_DEV_LOGIN_ENABLED === 'true';
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -76,10 +76,11 @@ export default function LoginPage() {
           {loading ? 'LOGGING IN...' : 'LOGIN'}
         </button>
 
-        {isDev && (
+        {devLoginEnabled && (
           <button
             type="button"
             className={cn('btn', 'btn--secondary', styles.devLoginBtn)}
+            disabled={loading}
             onClick={async () => {
               setError(null);
               setLoading(true);

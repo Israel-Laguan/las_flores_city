@@ -58,11 +58,11 @@ describe('TopBar', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Some Unknown Page' })).toBeInTheDocument();
   });
 
-  it('renders user info and a logout link when signed in', () => {
+  it('renders user info and a logout button when signed in', () => {
     renderTopBar({ username: 'tester', role: 'admin' });
     expect(screen.getByText('tester')).toBeInTheDocument();
     expect(screen.getByText('admin')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Logout' })).toHaveAttribute('href', '/api/auth/logout');
+    expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument();
   });
 
   it('renders a login link when signed out', () => {
