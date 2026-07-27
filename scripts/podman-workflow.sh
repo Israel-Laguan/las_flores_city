@@ -228,6 +228,7 @@ wait_healthy "las-flores-server" 60
         -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
         -e INTERNAL_SERVER_URL=http://$SERVER_IP:3000 \
         -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+        -e DEV_LOGIN_ENABLED=true \
         las-flores-admin || {
             log_error "Failed to start admin container"
             exit 1
@@ -379,7 +380,7 @@ start_admin() {
     # Build admin image if not present
     if ! podman image exists las-flores-admin &>/dev/null; then
         log_info "Building admin image..."
-        podman build -f admin/Dockerfile -t las-flores-admin . || {
+        podman build -f "$PROJECT_ROOT/admin/Dockerfile" -t las-flores-admin "$PROJECT_ROOT" || {
             log_error "Failed to build admin image"
             exit 1
         }
@@ -409,6 +410,7 @@ start_admin() {
         -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
         -e INTERNAL_SERVER_URL=http://$SERVER_IP:3000 \
         -e NEXT_PUBLIC_DEV_LOGIN_ENABLED=true \
+        -e DEV_LOGIN_ENABLED=true \
         las-flores-admin || {
             log_error "Failed to start admin container — check image, port (3002), and network (las-flores-net)"
             exit 1

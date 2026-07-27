@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     const setCookieHeader = response.headers.get('set-cookie');
-    return forwardSessionCookie(setCookieHeader);
+    return await forwardSessionCookie(setCookieHeader);
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(

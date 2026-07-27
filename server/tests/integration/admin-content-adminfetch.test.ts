@@ -23,7 +23,7 @@ describe('Admin Content Uses adminFetch Helper', () => {
   describe('Admin pages call content endpoints via adminFetch', () => {
     it('migration page uses adminFetch for status and migrate', () => {
       const content = readFileSync(
-        join(projectRoot, 'admin', 'src', 'app', 'migration', 'page.tsx'),
+        join(projectRoot, 'admin', 'src', 'app', '(admin)', 'migration', 'page.tsx'),
         'utf-8',
       );
 
@@ -38,7 +38,7 @@ describe('Admin Content Uses adminFetch Helper', () => {
 
     it('validation page uses adminFetch for validate', () => {
       const content = readFileSync(
-        join(projectRoot, 'admin', 'src', 'app', 'validation', 'page.tsx'),
+        join(projectRoot, 'admin', 'src', 'app', '(admin)', 'validation', 'page.tsx'),
         'utf-8',
       );
 

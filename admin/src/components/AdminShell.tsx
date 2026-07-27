@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
@@ -24,6 +24,7 @@ interface AdminShellProps {
 export default function AdminShell({ user, children }: AdminShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const restored = useRef(false);
   const pathname = usePathname();
 
   // Close the mobile drawer whenever the route changes.
@@ -38,6 +39,7 @@ export default function AdminShell({ user, children }: AdminShellProps) {
     } catch {
       // localStorage unavailable — keep default
     }
+    restored.current = true;
   }, []);
 
   const toggleCollapsed = useCallback(() => {
@@ -45,8 +47,10 @@ export default function AdminShell({ user, children }: AdminShellProps) {
   }, []);
 
   // Persist collapse preference after the state is committed (avoids React replay
-  // writing to localStorage with a stale value).
+  // writing to localStorage with a stale value). Only persist after restoration
+  // has completed so the initial `false` doesn't overwrite a stored `true`.
   useEffect(() => {
+    if (!restored.current) return;
     try {
       window.localStorage.setItem(COLLAPSE_STORAGE_KEY, String(collapsed));
     } catch {
@@ -80,7 +84,7 @@ export default function AdminShell({ user, children }: AdminShellProps) {
           className={styles.content}
           // On mobile when the drawer is open, mark content as inert so
           // keyboard focus stays within the navigation.
-          {...(mobileOpen ? { inert: '' as unknown as boolean } : {})}
+          {...(mobileOpen ? { inert: true } : {})}
         >
           <TopBar user={user} />
           <Breadcrumbs />
