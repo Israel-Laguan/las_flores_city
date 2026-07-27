@@ -1,9 +1,9 @@
 'use client';
 
-import styles from './editor.module.css';
-import FileTree from './components/FileTree';
-import EditorPanel from './components/EditorPanel';
-import { useEditor } from './hooks/useEditor';
+import styles from '@/components/editor/editor.module.css';
+import FileTree from '@/components/editor/FileTree';
+import EditorPanel from '@/components/editor/EditorPanel';
+import { useEditor } from '@/components/editor/useEditor';
 
 export default function EditorPage() {
   const editor = useEditor();

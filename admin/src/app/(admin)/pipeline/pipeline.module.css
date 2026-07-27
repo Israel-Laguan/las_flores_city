@@ -1,0 +1,181 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  margin-bottom: 0.5rem;
+}
+
+.stepContainer {
+  min-height: 400px;
+}
+
+.stepContent {
+  padding: 0 0 2rem;
+}
+
+.stepTitle {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepDescription {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* Editor layout */
+.editorLayout {
+  display: flex;
+  gap: 1rem;
+  min-height: calc(100vh - 20rem);
+}
+
+.treePanel {
+  width: 280px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* Buttons */
+.buttonBar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.primaryButton {
+  background: var(--accent);
+  color: #000;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.disabledButton {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Results */
+.resultSection {
+  border: 1px solid var(--accent);
+  padding: 1.5rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.cleanMessage {
+  margin-top: 1rem;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Error */
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 0.75rem 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.errorPre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Muted */
+.muted {
+  color: var(--muted);
+}
+
+/* Coverage */
+.coverageSummary {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.coverageList {
+  margin: 0;
+  padding-left: 1.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.coverageItem {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+/* Publish */
+.publishSummary {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.publishStat {
+  font-size: 0.95rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--accent);
+}
+
+/* Navigation buttons */
+.navButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.completeMessage {
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 1.1rem;
+}

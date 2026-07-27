@@ -1,0 +1,120 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 400px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+  flex-shrink: 0;
+}
+
+.pathLabel {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.toolbarActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+  font-family: var(--font-mono);
+}
+
+.editButton {
+  background: transparent;
+  color: var(--accent);
+}
+
+.editButton:hover {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.saveButton {
+  background: var(--accent);
+  color: #000;
+  border: none;
+}
+
+.saveButton:disabled {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.cancelButton:hover {
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.dirtyIndicator {
+  color: #ffaa00;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.cleanIndicator {
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.textarea {
+  flex: 1;
+  width: 100%;
+  background: var(--panel-bg);
+  color: var(--accent);
+  border: none;
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  resize: none;
+  outline: none;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.viewerWrapper {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.errorBox {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid var(--danger);
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.successBox {
+  background: rgba(0, 255, 0, 0.2);
+  border: 1px solid var(--accent);
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}

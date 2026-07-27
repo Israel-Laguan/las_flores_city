@@ -19,21 +19,40 @@ export interface NavSection {
 
 export const navSections: NavSection[] = [
   {
-    title: 'Content',
+    title: 'Authoring',
     items: [
-      { href: '/characters', label: 'Characters', icon: 'users' },
-      { href: '/dialogues', label: 'Dialogues', icon: 'chat' },
-      { href: '/scenes', label: 'Scenes', icon: 'film' },
+      { href: '/pipeline', label: 'Pipeline', icon: 'layers' },
       {
-        href: '/story-beats',
-        label: 'Story Beats',
-        icon: 'list',
+        href: '/story-builder',
+        label: 'Story Builder',
+        icon: 'wrench',
         subItems: [
-          { href: '/story-beats', label: 'All Beats' },
-          { href: '/story-beats/new', label: 'New Beat' },
+          { href: '/story-builder', label: 'Builder' },
+          { href: '/story-builder/plans', label: 'Plans' },
         ],
       },
+      { href: '/editor', label: 'YAML Editor', icon: 'code' },
+    ],
+  },
+  {
+    title: 'Story Bible',
+    items: [
+      { href: '/lore', label: 'Lore', icon: 'fileText' },
+    ],
+  },
+  {
+    title: 'Narrative',
+    items: [
       { href: '/story-arc', label: 'Story Arc', icon: 'trending' },
+      {
+        href: '/stories',
+        label: 'Stories',
+        icon: 'book',
+        subItems: [
+          { href: '/stories', label: 'All Stories' },
+          { href: '/story-beats', label: 'Story Beats' },
+        ],
+      },
       {
         href: '/missions',
         label: 'Missions',
@@ -41,46 +60,85 @@ export const navSections: NavSection[] = [
         subItems: [
           { href: '/missions', label: 'All Missions' },
           { href: '/missions/new', label: 'New Mission' },
+          { href: '/mysteries', label: 'Mysteries' },
+          { href: '/gigs', label: 'Gigs' },
         ],
       },
-      { href: '/stories', label: 'Stories', icon: 'book' },
+    ],
+  },
+  {
+    title: 'World',
+    items: [
+      { href: '/characters', label: 'Characters', icon: 'users' },
+      {
+        href: '/scenes',
+        label: 'Scenes',
+        icon: 'film',
+        subItems: [
+          { href: '/scenes', label: 'All Scenes' },
+          { href: '/locations', label: 'Locations' },
+          { href: '/maps', label: 'Maps' },
+        ],
+      },
+      {
+        href: '/vault',
+        label: 'Vault',
+        icon: 'lock',
+        subItems: [
+          { href: '/vault', label: 'All Items' },
+          { href: '/shop', label: 'Shop' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Dialogue',
+    items: [
+      { href: '/dialogues', label: 'Dialogues', icon: 'chat' },
       { href: '/overlays', label: 'Overlays', icon: 'layers' },
-      { href: '/locations', label: 'Locations', icon: 'pin' },
-      { href: '/vault', label: 'Vault', icon: 'lock' },
-      { href: '/gigs', label: 'Gigs', icon: 'bolt' },
-      { href: '/shop', label: 'Shop', icon: 'cart' },
-      { href: '/maps', label: 'Maps', icon: 'map' },
-      { href: '/lore', label: 'Lore', icon: 'fileText' },
-      { href: '/mysteries', label: 'Mysteries', icon: 'search' },
     ],
   },
   {
-    title: 'Creation',
+    title: 'Tools',
     items: [
-      { href: '/story-builder', label: 'Story Builder', icon: 'wrench' },
-      { href: '/story-builder/plans', label: 'Plans', icon: 'clipboard' },
-      { href: '/editor', label: 'YAML Editor', icon: 'code' },
-      { href: '/content-linker', label: 'Content Linker', icon: 'link' },
-      { href: '/assets', label: 'Asset Generation', icon: 'image' },
+      {
+        href: '/migration',
+        label: 'Migration',
+        icon: 'database',
+        subItems: [
+          { href: '/migration', label: 'Run Migration' },
+          { href: '/validation', label: 'Validation' },
+          { href: '/diff', label: 'Diff' },
+          { href: '/content-linker', label: 'Linker' },
+        ],
+      },
+      {
+        href: '/assets',
+        label: 'Assets',
+        icon: 'image',
+        subItems: [
+          { href: '/assets', label: 'Generation' },
+          { href: '/asset-coverage', label: 'Coverage' },
+          { href: '/asset-promotion', label: 'Promotion' },
+        ],
+      },
+      {
+        href: '/quality',
+        label: 'Insights',
+        icon: 'activity',
+        subItems: [
+          { href: '/quality', label: 'Quality' },
+          { href: '/analytics', label: 'Analytics' },
+        ],
+      },
     ],
   },
   {
-    title: 'Operations',
+    title: 'System',
     items: [
-      { href: '/migration', label: 'Migration', icon: 'database' },
-      { href: '/validation', label: 'Validation', icon: 'checkCircle' },
-      { href: '/quality', label: 'Quality Dashboard', icon: 'activity' },
-      { href: '/analytics', label: 'Analytics', icon: 'chart' },
-      { href: '/asset-coverage', label: 'Asset Coverage', icon: 'grid' },
-      { href: '/asset-promotion', label: 'Asset Promotion', icon: 'send' },
-      { href: '/diff', label: 'Diff', icon: 'columns' },
-    ],
-  },
-  {
-    title: 'Admin',
-    items: [
-      { href: '/users', label: 'Users', icon: 'shield' },
+      { href: '/ai-config', label: 'AI Config', icon: 'cpu' },
       { href: '/settings', label: 'Settings', icon: 'cog' },
+      { href: '/users', label: 'Users', icon: 'shield' },
     ],
   },
 ];

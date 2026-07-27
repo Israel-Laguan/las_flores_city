@@ -32,37 +32,40 @@ beforeEach(() => {
 });
 
 describe('Sidebar', () => {
-  it('renders all four nav sections', () => {
+  it('renders all seven nav sections', () => {
     renderSidebar();
-    for (const title of ['Content', 'Creation', 'Operations', 'Admin']) {
+    for (const title of ['Authoring', 'Story Bible', 'Narrative', 'World', 'Dialogue', 'Tools', 'System']) {
       expect(screen.getByText(title)).toBeInTheDocument();
     }
   });
 
   it('renders top-level links with their hrefs', () => {
     renderSidebar();
+    expect(screen.getByRole('link', { name: 'Pipeline' })).toHaveAttribute('href', '/pipeline');
+    expect(screen.getByRole('link', { name: 'Story Builder' })).toHaveAttribute('href', '/story-builder');
+    expect(screen.getByRole('link', { name: 'YAML Editor' })).toHaveAttribute('href', '/editor');
+    expect(screen.getByRole('link', { name: 'Lore' })).toHaveAttribute('href', '/lore');
+    expect(screen.getByRole('link', { name: 'Story Arc' })).toHaveAttribute('href', '/story-arc');
     expect(screen.getByRole('link', { name: 'Characters' })).toHaveAttribute('href', '/characters');
-    expect(screen.getByRole('link', { name: 'Dialogues' })).toHaveAttribute('href', '/dialogues');
-    expect(screen.getByRole('link', { name: 'Scenes' })).toHaveAttribute('href', '/scenes');
-    expect(screen.getByRole('link', { name: 'Mysteries' })).toHaveAttribute('href', '/mysteries');
+    expect(screen.getByRole('link', { name: 'AI Config' })).toHaveAttribute('href', '/ai-config');
   });
 
   it('marks the active top-level link with aria-current="page"', () => {
-    mockPathname = '/characters';
+    mockPathname = '/pipeline';
     renderSidebar();
-    expect(screen.getByRole('link', { name: 'Characters' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('link', { name: 'Dialogues' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Pipeline' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Lore' })).not.toHaveAttribute('aria-current');
   });
 
   it('keeps sub-items hidden until the parent is expanded', () => {
     renderSidebar();
-    expect(screen.queryByRole('link', { name: 'New Beat' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'All Scenes' })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Expand Story Beats' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Expand Scenes' }));
 
-    expect(screen.getByRole('link', { name: 'New Beat' })).toHaveAttribute('href', '/story-beats/new');
-    expect(screen.getByRole('link', { name: 'All Beats' })).toHaveAttribute('href', '/story-beats');
-    expect(screen.getByRole('button', { name: 'Collapse Story Beats' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'All Scenes' })).toHaveAttribute('href', '/scenes');
+    expect(screen.getByRole('link', { name: 'Locations' })).toHaveAttribute('href', '/locations');
+    expect(screen.getByRole('button', { name: 'Collapse Scenes' })).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('auto-expands sub-items when a sub-route is active', () => {
@@ -76,18 +79,18 @@ describe('Sidebar', () => {
   });
 
   it('does not put aria-current on parent links that have sub-items', () => {
-    mockPathname = '/missions';
+    mockPathname = '/stories';
     renderSidebar();
 
-    expect(screen.getByRole('link', { name: 'Missions' })).not.toHaveAttribute('aria-current');
-    expect(screen.getByRole('link', { name: 'All Missions' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Stories' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'All Stories' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('collapses sections when the section header is clicked', () => {
     renderSidebar();
-    fireEvent.click(screen.getByRole('button', { name: /Admin/ }));
+    fireEvent.click(screen.getByRole('button', { name: /System/ }));
     expect(screen.queryByRole('link', { name: 'Settings' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Admin/ }));
+    fireEvent.click(screen.getByRole('button', { name: /System/ }));
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument();
   });
 

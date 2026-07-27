@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@las-flores/ui';
-import styles from '../editor.module.css';
+import styles from './editor.module.css';
 
 const TYPE_ICONS: Record<string, string> = {
   character: '👤',

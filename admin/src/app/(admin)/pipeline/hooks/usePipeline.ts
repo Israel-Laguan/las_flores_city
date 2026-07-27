@@ -1,0 +1,218 @@
+'use client';
+
+import { useState, useCallback, useMemo } from 'react';
+import { adminFetch } from '@/lib/client-api';
+
+export type PipelineStep = 'edit' | 'validate' | 'migrate' | 'assets' | 'publish';
+const ALL_STEPS: PipelineStep[] = ['edit', 'validate', 'migrate', 'assets', 'publish'];
+
+export const STEP_LABELS: Record<PipelineStep, { label: string; description: string }> = {
+  edit:     { label: 'Edit',     description: 'Create or edit content files' },
+  validate: { label: 'Validate', description: 'Validate YAML against schemas' },
+  migrate:  { label: 'Migrate',  description: 'Migrate content to database' },
+  assets:   { label: 'Assets',   description: 'Generate and publish assets' },
+  publish:  { label: 'Publish',  description: 'Promote to production' },
+};
+
+export interface ValidationError {
+  file?: string;
+  line?: number;
+  column?: number;
+  message: string;
+  severity: 'error' | 'warning';
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  errors: ValidationError[];
+  warnings: string[];
+}
+
+export interface MigrationFile {
+  filePath: string;
+  checksum: string;
+  contentType: string;
+  contentId: string;
+  appliedAt: string;
+  appliedBy: string | null;
+}
+
+export interface MigrationStatus {
+  totalFiles: number;
+  byType: Record<string, MigrationFile[]>;
+  files: MigrationFile[];
+}
+
+export interface AppliedMigration {
+  filePath: string;
+  contentType: string;
+  contentId: string;
+  action: 'created' | 'updated' | 'skipped';
+}
+
+export interface MigrationResult {
+  success: boolean;
+  filesProcessed: number;
+  filesSkipped: number;
+  filesFailed: number;
+  errors: string[];
+  appliedMigrations: AppliedMigration[];
+}
+
+export interface PromotionStatus {
+  contentPath: string;
+  name: string;
+  slug: string;
+  stages: {
+    dev?: { url: string };
+    staging?: { url: string };
+    production?: { url: string };
+  };
+}
+
+export function usePipeline() {
+  const [currentStepIdx, setCurrentStepIdx] = useState(0);
+
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [validating, setValidating] = useState(false);
+
+  const [migrationStatus, setMigrationStatus] = useState<MigrationStatus | null>(null);
+  const [migrationResult, setMigrationResult] = useState<MigrationResult | null>(null);
+  const [migrationError, setMigrationError] = useState<string | null>(null);
+  const [migrating, setMigrating] = useState(false);
+
+  const [assetCoverage, setAssetCoverage] = useState<unknown[] | null>(null);
+  const [assetCoverageLoading, setAssetCoverageLoading] = useState(false);
+
+  const [promotionStatuses, setPromotionStatuses] = useState<PromotionStatus[]>([]);
+  const [promotionLoading, setPromotionLoading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  const hasValidationErrors = validationResult !== null && !validationResult.valid;
+
+  const canProceed = useMemo(() => {
+    if (currentStepIdx === 1 && hasValidationErrors) return false;
+    return true;
+  }, [currentStepIdx, hasValidationErrors]);
+
+  const goNext = useCallback(() => {
+    if (currentStepIdx < ALL_STEPS.length - 1 && canProceed) {
+      setCurrentStepIdx(i => i + 1);
+    }
+  }, [currentStepIdx, canProceed]);
+
+  const goBack = useCallback(() => {
+    if (currentStepIdx > 0) setCurrentStepIdx(i => i - 1);
+  }, [currentStepIdx]);
+
+  const goToStep = useCallback((idx: number) => {
+    if (idx >= 0 && idx <= currentStepIdx + 1) setCurrentStepIdx(idx);
+  }, [currentStepIdx]);
+
+  const runValidation = useCallback(async () => {
+    setValidating(true);
+    setValidationResult(null);
+    setValidationError(null);
+    try {
+      const data = await adminFetch<{ success: boolean; data?: ValidationResult; error?: string }>(
+        '/admin/content/validate', { method: 'POST' },
+      );
+      if (data.success) setValidationResult(data.data ?? null);
+      else setValidationError(data.error || 'Validation failed');
+    } catch {
+      setValidationError('Network error during validation');
+    } finally {
+      setValidating(false);
+    }
+  }, []);
+
+  const fetchMigrationStatus = useCallback(async () => {
+    try {
+      const data = await adminFetch<{ success: boolean; data?: MigrationStatus }>(
+        '/admin/content/status',
+      );
+      if (data.success) setMigrationStatus(data.data ?? null);
+    } catch { /* soft */ }
+  }, []);
+
+  const runMigration = useCallback(async () => {
+    setMigrating(true);
+    setMigrationResult(null);
+    setMigrationError(null);
+    try {
+      const data = await adminFetch<{ success: boolean; data?: MigrationResult; error?: string }>(
+        '/admin/content/migrate', { method: 'POST' },
+      );
+      if (data.success) {
+        setMigrationResult(data.data ?? null);
+        await fetchMigrationStatus();
+      } else {
+        setMigrationError(data.error || 'Migration failed');
+      }
+    } catch {
+      setMigrationError('Network error during migration');
+    } finally {
+      setMigrating(false);
+    }
+  }, [fetchMigrationStatus]);
+
+  const fetchAssetCoverage = useCallback(async () => {
+    setAssetCoverageLoading(true);
+    try {
+      const data = await adminFetch<{ success: boolean; data?: unknown[] }>('/admin/coverage/assets');
+      if (data.success) setAssetCoverage(data.data ?? []);
+    } catch { /* soft */ }
+    finally { setAssetCoverageLoading(false); }
+  }, []);
+
+  const fetchPromotionStatus = useCallback(async () => {
+    setPromotionLoading(true);
+    try {
+      const data = await adminFetch<{ success: boolean; data: PromotionStatus[] }>(
+        '/admin/content/assets/promotion-status',
+      );
+      if (data.success) setPromotionStatuses(data.data);
+    } catch { /* soft */ }
+    finally { setPromotionLoading(false); }
+  }, []);
+
+  const runPublish = useCallback(async () => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      for (const status of promotionStatuses) {
+        if (!status.stages.dev) continue;
+        if (!status.stages.staging) {
+          await adminFetch('/admin/content/assets/promote-staging', {
+            method: 'POST',
+            body: JSON.stringify({ contentPath: status.contentPath }),
+          });
+        }
+        if (!status.stages.production) {
+          await adminFetch('/admin/content/assets/promote-production', {
+            method: 'POST',
+            body: JSON.stringify({ contentPath: status.contentPath }),
+          });
+        }
+      }
+      await fetchPromotionStatus();
+    } catch {
+      setPublishError('Publish failed');
+    } finally {
+      setPublishing(false);
+    }
+  }, [promotionStatuses, fetchPromotionStatus]);
+
+  return {
+    currentStepIdx,
+    currentStep: ALL_STEPS[currentStepIdx],
+    goNext, goBack, goToStep, canProceed,
+    validationResult, validationError, validating, runValidation,
+    migrationStatus, migrationResult, migrationError, migrating, runMigration, fetchMigrationStatus,
+    assetCoverage, assetCoverageLoading, fetchAssetCoverage,
+    promotionStatuses, promotionLoading, publishing, publishError, runPublish, fetchPromotionStatus,
+    hasValidationErrors,
+  };
+}

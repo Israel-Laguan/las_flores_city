@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@las-flores/ui';
-import styles from '../validation.module.css';
+import styles from './validation.module.css';
 
 interface ValidationError {
   file?: string;

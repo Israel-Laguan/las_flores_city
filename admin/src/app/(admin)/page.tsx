@@ -63,9 +63,10 @@ function RecentActivity({ activity, loading }: { activity: StatsData['recentActi
 }
 
 const actions = [
-  { href: '/migration', label: 'Run Migration', variant: 'primary' as const },
-  { href: '/validation', label: 'Validate Content', variant: 'secondary' as const },
-  { href: '/analytics', label: 'View Analytics', variant: 'secondary' as const },
+  { href: '/pipeline', label: 'Open Pipeline →', variant: 'primary' as const },
+  { href: '/lore', label: 'Story Bible', variant: 'secondary' as const },
+  { href: '/story-arc', label: 'Story Arc', variant: 'secondary' as const },
+  { href: '/ai-config', label: 'AI Config', variant: 'secondary' as const },
 ];
 
 export default function Home() {
