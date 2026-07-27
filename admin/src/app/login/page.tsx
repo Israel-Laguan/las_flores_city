@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { cn } from '@las-flores/ui';
 import styles from './login.module.css';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -73,9 +75,35 @@ export default function LoginPage() {
         <button type="submit" className={cn('btn', 'btn--primary')} disabled={loading}>
           {loading ? 'LOGGING IN...' : 'LOGIN'}
         </button>
-      </form>
 
-      <Link href="/" className={styles.backLink}>&larr; Back to Home</Link>
+        {isDev && (
+          <button
+            type="button"
+            className={cn('btn', 'btn--secondary', styles.devLoginBtn)}
+            onClick={async () => {
+              setError(null);
+              setLoading(true);
+              try {
+                const res = await fetch('/api/auth/dev-login', { method: 'POST' });
+                const data = await res.json().catch(() => null);
+                if (data?.success) {
+                  window.location.href = '/';
+                } else {
+                  setError(data?.error || 'Dev login failed');
+                }
+              } catch {
+                setError('Network error. Is the server running?');
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            DEV LOGIN
+          </button>
+        )}
+
+        <Link href="/" className={styles.backLink}>&larr; Back to Home</Link>
+    </form>
     </main>
   );
 }

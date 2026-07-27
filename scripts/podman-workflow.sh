@@ -201,9 +201,24 @@ setup() {
         -e JWT_SECRET=your-jwt-secret-change-in-production \
         las-flores-server 2>/dev/null || log_warn "Container already exists"
     
-    wait_healthy "las-flores-server" 60
-    
+wait_healthy "las-flores-server" 60
+
+    # Get server IP for admin panel
+    SERVER_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-server)
+
+    log_info "Starting admin panel..."
+    podman run -d --name las-flores-admin \
+        --network las-flores-net -p 3002:3000 \
+        -v "$PROJECT_ROOT/admin:/app/admin" \
+        -v "$PROJECT_ROOT/shared:/app/shared" \
+        -v "$PROJECT_ROOT/ui:/app/ui" \
+        -w /app \
+        -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
+        -e INTERNAL_SERVER_URL=http://$SERVER_IP:3000 \
+        las-flores-admin 2>/dev/null || log_warn "Admin container already exists"
+
     log_header "=== Setup Complete ==="
+    log_info "Admin panel available at http://localhost:3002"
 }
 
 # Run linting
@@ -316,6 +331,7 @@ cleanup() {
     
     # Stop and remove containers
     podman rm -f las-flores-server 2>/dev/null || true
+    podman rm -f las-flores-admin 2>/dev/null || true
     podman rm -f las-flores-postgres-oltp 2>/dev/null || true
     podman rm -f las-flores-postgres-olap 2>/dev/null || true
     podman rm -f las-flores-redis 2>/dev/null || true
@@ -332,6 +348,32 @@ cleanup() {
     podman volume rm minio-data 2>/dev/null || true
     
     log_info "Cleanup complete!"
+}
+
+# Start admin panel only
+start_admin() {
+    log_header "=== Starting Admin Panel ==="
+    
+    # Check if server is running
+    if ! podman inspect las-flores-server &> /dev/null; then
+        log_error "Server is not running. Run './scripts/podman-workflow.sh setup' first."
+        exit 1
+    fi
+    
+    # Get server IP for admin panel
+    SERVER_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-server)
+    
+    podman run -d --name las-flores-admin \
+        --network las-flores-net -p 3002:3000 \
+        -v "$PROJECT_ROOT/admin:/app/admin" \
+        -v "$PROJECT_ROOT/shared:/app/shared" \
+        -v "$PROJECT_ROOT/ui:/app/ui" \
+        -w /app \
+        -e NEXT_PUBLIC_SERVER_URL=http://localhost:3000 \
+        -e INTERNAL_SERVER_URL=http://$SERVER_IP:3000 \
+        las-flores-admin 2>/dev/null || log_warn "Admin container already exists"
+    
+    log_info "Admin panel starting at http://localhost:3002"
 }
 
 # Show status
@@ -355,6 +397,9 @@ show_status() {
 case "${1:-help}" in
     setup)
         setup
+        ;;
+    admin)
+        start_admin
         ;;
     test)
         run_all_tests
@@ -382,6 +427,7 @@ case "${1:-help}" in
         echo ""
         echo "Commands:"
         echo "  setup       - Initial setup (build images, start services, apply migrations)"
+        echo "  admin       - Start admin panel only (requires server running)"
         echo "  test        - Run all tests (lint, build, server tests, e2e)"
         echo "  lint        - Run linting only"
         echo "  build       - Build all workspaces"
