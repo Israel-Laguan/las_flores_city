@@ -3,19 +3,22 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--sidebar-width, 260px);
+  width: var(--current-sidebar-width, 260px);
   background: var(--panel-bg);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   z-index: 100;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, width 0.2s ease;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
   .sectionToggle,
+  .expandChevron,
+  .collapseChevron,
   .navLink,
   .subNavLink {
     transition: none;
@@ -23,15 +26,23 @@
 }
 
 .sidebarHeader {
-  padding: 1rem 1.5rem;
+  padding: 0.85rem 1.25rem;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
 }
 
 .logo {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--accent);
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.logoShort {
+  display: none;
 }
 
 .nav {
@@ -48,13 +59,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 1.5rem;
+  padding: 0.6rem 1.25rem;
   background: none;
   border: none;
-  cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: bold;
-  color: var(--text-secondary, #888);
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -76,119 +86,191 @@
   padding: 0.25rem 0;
 }
 
-.navItem {
-  padding: 0;
+.navRow {
+  display: flex;
+  align-items: center;
 }
 
 .navLink {
-  display: block;
-  padding: 0.4rem 1.5rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem 0.45rem 1.25rem;
   font-size: 0.85rem;
-  color: var(--text);
+  color: var(--foreground);
   text-decoration: none;
   border-left: 3px solid transparent;
   transition: background 0.15s ease, border-color 0.15s ease;
+  min-width: 0;
 }
 
 .navLink:hover {
   background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
+  text-decoration: none;
 }
 
 .navLinkActive {
   background: rgba(255, 255, 255, 0.06);
   border-left-color: var(--accent);
-  color: var(--text);
   font-weight: 600;
 }
 
-.navLinkSubActive {
-  border-left-color: var(--accent);
-  color: var(--text-muted, #ccc);
+.navIcon {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.navLinkActive .navIcon {
+  color: var(--accent);
+}
+
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expandToggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 0.45rem 0.75rem;
+  line-height: 1;
+}
+
+.expandToggle:hover {
+  color: var(--foreground);
+  opacity: 1;
+}
+
+.expandChevron {
+  display: inline-block;
+  font-size: 0.7rem;
+  transform: rotate(-90deg);
+  transition: transform 0.2s ease;
+}
+
+.expandChevronOpen {
+  transform: rotate(0deg);
 }
 
 .subNav {
-  display: none;
-  padding: 0;
-}
-
-.subNavOpen {
-  display: block;
+  padding: 0.1rem 0 0.25rem;
 }
 
 .subNavLink {
   display: block;
-  padding: 0.3rem 1.5rem 0.3rem 2.5rem;
+  padding: 0.3rem 1.25rem 0.3rem 3.2rem;
   font-size: 0.8rem;
-  color: var(--text-muted, #999);
+  color: var(--muted);
   text-decoration: none;
-  border-left: 2px solid transparent;
+  border-left: 3px solid transparent;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .subNavLink:hover {
   background: rgba(255, 255, 255, 0.03);
-  color: var(--text-muted, #ccc);
+  color: var(--foreground);
+  text-decoration: none;
 }
 
 .subNavLinkActive {
-  color: var(--text);
+  color: var(--foreground);
   border-left-color: var(--accent);
   background: rgba(255, 255, 255, 0.04);
 }
 
 .sidebarFooter {
-  padding: 1rem 1.5rem;
+  padding: 0.5rem;
   border-top: 1px solid var(--border);
 }
 
-.userArea {
+.collapseToggle {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.userName {
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.75rem;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm, 3px);
+  color: var(--muted);
   font-size: 0.85rem;
-  font-weight: 600;
 }
 
-.logoutBtn,
-.loginBtn {
-  font-size: 0.75rem;
-  padding: 0.3rem 0.75rem;
-  align-self: flex-start;
+.collapseToggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--foreground);
+  opacity: 1;
 }
 
-.mobileToggle {
-  display: none;
-  position: fixed;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 200;
-  background: var(--panel-bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 1.2rem;
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  border-radius: 4px;
+.collapseChevron {
+  display: inline-block;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
+.collapseChevronCollapsed {
+  transform: rotate(180deg);
+}
+
+/* Desktop icon-rail mode (driven by the shell's data-collapsed attribute) */
+@media (min-width: 769px) {
+  :global([data-collapsed='true']) .logoFull {
+    display: none;
   }
 
-  .sidebar:not(.sidebarCollapsed) {
+  :global([data-collapsed='true']) .logoShort {
+    display: inline;
+  }
+
+  :global([data-collapsed='true']) .sidebarHeader {
+    justify-content: center;
+    padding: 0.85rem 0;
+  }
+
+  :global([data-collapsed='true']) .sectionHeader {
+    display: none;
+  }
+
+  :global([data-collapsed='true']) .navLink {
+    justify-content: center;
+    padding: 0.55rem 0;
+    border-left-color: transparent;
+  }
+
+  :global([data-collapsed='true']) .navLabel {
+    display: none;
+  }
+
+  :global([data-collapsed='true']) .expandToggle,
+  :global([data-collapsed='true']) .subNav {
+    display: none;
+  }
+
+  :global([data-collapsed='true']) .collapseToggle {
+    justify-content: center;
+  }
+}
+
+/* Mobile drawer */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebarOpen {
     transform: translateX(0);
   }
 
-  .sidebarCollapsed {
-    transform: translateX(-100%);
+  .collapseToggle {
+    display: none;
   }
 
-  .mobileToggle {
-    display: block;
+  .sidebarFooter {
+    display: none;
   }
 }

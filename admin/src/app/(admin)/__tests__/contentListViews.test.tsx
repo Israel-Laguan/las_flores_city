@@ -235,7 +235,7 @@ describe('LocationDetailPage', () => {
 
 describe('Sidebar navigation', () => {
   it('sidebar renders links to /dialogues, /scenes, /characters', () => {
-    render(<Sidebar user={{ username: 'tester', role: 'admin' }} />);
+    render(<Sidebar />);
 
     const dialogues = screen.getByRole('link', { name: /Dialogues/i });
     const scenes = screen.getByRole('link', { name: /Scenes/i });

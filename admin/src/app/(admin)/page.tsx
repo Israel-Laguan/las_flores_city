@@ -93,7 +93,7 @@ export default function Home() {
   const counts = stats?.counts ?? { characters: 0, dialogues: 0, scenes: 0, overlays: 0, mysteries: 0 };
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <h1>Dashboard</h1>
       <QuickStats counts={counts} loading={statsLoading} />
       <div className={styles.grid}>
@@ -110,6 +110,6 @@ export default function Home() {
           </a>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

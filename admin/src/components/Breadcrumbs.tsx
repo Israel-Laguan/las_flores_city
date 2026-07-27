@@ -4,13 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Breadcrumbs.module.css';
 
-const sectionLabels: Record<string, string> = {
-  'content': 'Content',
-  'creation': 'Creation',
-  'operations': 'Operations',
-  'admin': 'Admin',
-};
-
 function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }> {
   const parts = pathname.split('/').filter(Boolean);
   const crumbs: Array<{ label: string; href: string }> = [];
@@ -18,7 +11,7 @@ function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }
   let accumulated = '';
   for (const part of parts) {
     accumulated += `/${part}`;
-    const label = sectionLabels[part] || part
+    const label = part
       .replace(/-/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase());
     crumbs.push({ label, href: accumulated });

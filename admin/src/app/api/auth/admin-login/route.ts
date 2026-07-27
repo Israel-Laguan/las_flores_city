@@ -33,31 +33,33 @@ export async function POST(request: Request) {
 
     const setCookieHeader = response.headers.get('set-cookie');
 
-    if (setCookieHeader) {
-      const match = setCookieHeader.match(/jwt_session=([^;]+)/);
-      if (match) {
-        const cookieStore = await cookies();
-        cookieStore.set('jwt_session', match[1], {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24,
-          path: '/',
-        });
-      } else {
-        return NextResponse.json(
-          { success: false, error: 'Missing or malformed session cookie' },
-          { status: 401 }
-        );
-      }
-    } else {
+    if (!setCookieHeader) {
       return NextResponse.json(
         { success: false, error: 'No session cookie in response' },
         { status: 401 }
       );
     }
 
-    return NextResponse.json({ success: true });
+    const match = setCookieHeader.match(/jwt_session=([^;]+)/);
+    if (!match) {
+      return NextResponse.json(
+        { success: false, error: 'Missing or malformed session cookie' },
+        { status: 401 }
+      );
+    }
+
+    const cookieStore = await cookies();
+    cookieStore.set('jwt_session', match[1], {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24,
+      path: '/',
+    });
+
+    const response_ = NextResponse.json({ success: true });
+    response_.headers.set('set-cookie', setCookieHeader);
+    return response_;
   } catch (error) {
     console.error('Admin login error:', error);
     return NextResponse.json(

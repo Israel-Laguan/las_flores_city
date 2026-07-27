@@ -3,105 +3,68 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  navSections,
+  isActive,
+  isItemActive,
+  type NavItem,
+  type NavSection as NavSectionType,
+} from './nav-config';
+import { NavIcon } from './navIcons';
+import { useSidebar } from './SidebarContext';
 import styles from './Sidebar.module.css';
 
-interface NavItem {
-  href: string;
-  label: string;
-  subItems?: Array<{ href: string; label: string }>;
-}
-
-interface NavSection {
-  title: string;
-  items: NavItem[];
-}
-
-const navSections: NavSection[] = [
-  {
-    title: 'Content',
-    items: [
-      { href: '/characters', label: 'Characters' },
-      { href: '/dialogues', label: 'Dialogues' },
-      { href: '/scenes', label: 'Scenes' },
-      { href: '/story-beats', label: 'Story Beats', subItems: [
-        { href: '/story-beats', label: 'All Beats' },
-        { href: '/story-beats/new', label: 'New Beat' },
-      ]},
-      { href: '/story-arc', label: 'Story Arc' },
-      { href: '/missions', label: 'Missions', subItems: [
-        { href: '/missions', label: 'All Missions' },
-        { href: '/missions/new', label: 'New Mission' },
-      ]},
-      { href: '/stories', label: 'Stories' },
-      { href: '/overlays', label: 'Overlays' },
-      { href: '/locations', label: 'Locations' },
-      { href: '/vault', label: 'Vault' },
-      { href: '/gigs', label: 'Gigs' },
-      { href: '/shop', label: 'Shop' },
-      { href: '/maps', label: 'Maps' },
-      { href: '/lore', label: 'Lore' },
-      { href: '/mysteries', label: 'Mysteries' },
-    ],
-  },
-  {
-    title: 'Creation',
-    items: [
-      { href: '/story-builder', label: 'Story Builder' },
-      { href: '/story-builder/plans', label: 'Plans' },
-      { href: '/editor', label: 'YAML Editor' },
-      { href: '/content-linker', label: 'Content Linker' },
-      { href: '/assets', label: 'Asset Generation' },
-    ],
-  },
-  {
-    title: 'Operations',
-    items: [
-      { href: '/migration', label: 'Migration' },
-      { href: '/validation', label: 'Validation' },
-      { href: '/quality', label: 'Quality Dashboard' },
-      { href: '/analytics', label: 'Analytics' },
-      { href: '/asset-coverage', label: 'Asset Coverage' },
-      { href: '/asset-promotion', label: 'Asset Promotion' },
-      { href: '/diff', label: 'Diff' },
-    ],
-  },
-  {
-    title: 'Admin',
-    items: [
-      { href: '/users', label: 'Users' },
-      { href: '/settings', label: 'Settings' },
-    ],
-  },
-];
-
-function isActive(pathname: string, href: string): boolean {
-  if (href === '/') return pathname === '/';
-  return pathname === href || pathname.startsWith(href + '/');
-}
-
 function NavItemLink({ item, pathname }: { item: NavItem; pathname: string }) {
-  const active = isActive(pathname, item.href);
-  const subItems = item.subItems;
-  const hasSubItems = subItems && subItems.length > 0;
-  const subActive = subItems ? subItems.some(sub => isActive(pathname, sub.href)) : false;
+  const { closeMobile } = useSidebar();
+  const subItems = item.subItems ?? [];
+  const hasSubItems = subItems.length > 0;
+  const itemActive = isItemActive(pathname, item);
+  const subActive = subItems.some(sub => isActive(pathname, sub.href));
+  const [manualExpanded, setManualExpanded] = useState<boolean | null>(null);
+  const expanded = manualExpanded ?? subActive;
+  const subNavId = `subnav-${item.href.replace(/\//g, '-')}`;
 
   return (
     <div className={styles.navItem}>
-      <Link
-        href={item.href}
-        className={`${styles.navLink} ${active ? styles.navLinkActive : ''} ${subActive ? styles.navLinkSubActive : ''}`}
-      >
-        {item.label}
-      </Link>
-      {hasSubItems && subItems && (
-        <div className={`${styles.subNav} ${subActive ? styles.subNavOpen : ''}`}>
+      <div className={styles.navRow}>
+        <Link
+          href={item.href}
+          className={`${styles.navLink} ${itemActive ? styles.navLinkActive : ''}`}
+          aria-current={!hasSubItems && itemActive ? 'page' : undefined}
+          title={item.label}
+          onClick={closeMobile}
+        >
+          <NavIcon name={item.icon} className={styles.navIcon} />
+          <span className={styles.navLabel}>{item.label}</span>
+        </Link>
+        {hasSubItems && (
+          <button
+            type="button"
+            className={styles.expandToggle}
+            aria-expanded={expanded}
+            aria-controls={subNavId}
+            aria-label={`${expanded ? 'Collapse' : 'Expand'} ${item.label}`}
+            onClick={() => setManualExpanded(!expanded)}
+          >
+            <span
+              className={`${styles.expandChevron} ${expanded ? styles.expandChevronOpen : ''}`}
+            >
+              ▾
+            </span>
+          </button>
+        )}
+      </div>
+      {hasSubItems && expanded && (
+        <div className={styles.subNav} id={subNavId}>
           {subItems.map(sub => (
             <Link
               key={sub.href}
               href={sub.href}
               className={`${styles.subNavLink} ${isActive(pathname, sub.href) ? styles.subNavLinkActive : ''}`}
+              aria-current={isActive(pathname, sub.href) ? 'page' : undefined}
+              onClick={closeMobile}
             >
-              {sub.label}
+              <span className={styles.navLabel}>{sub.label}</span>
             </Link>
           ))}
         </div>
@@ -110,23 +73,28 @@ function NavItemLink({ item, pathname }: { item: NavItem; pathname: string }) {
   );
 }
 
-function NavSection({ section, pathname }: { section: NavSection; pathname: string }) {
+function NavSection({ section, pathname }: { section: NavSectionType; pathname: string }) {
   const [collapsed, setCollapsed] = useState(false);
-  const _hasActive = section.items.some(item => isActive(pathname, item.href) || (item.subItems && item.subItems.some(sub => isActive(pathname, sub.href))));
+  const { collapsed: railCollapsed } = useSidebar();
+  // In icon-rail mode section collapsing makes no sense — always show the icons.
+  const effectiveCollapsed = collapsed && !railCollapsed;
 
   return (
     <div className={styles.navSection}>
       <button
+        type="button"
         className={styles.sectionHeader}
         onClick={() => setCollapsed(!collapsed)}
-        aria-expanded={!collapsed}
+        aria-expanded={!effectiveCollapsed}
       >
         <span className={styles.sectionTitle}>{section.title}</span>
-        <span className={`${styles.sectionToggle} ${collapsed ? styles.sectionToggleCollapsed : ''}`}>
+        <span
+          className={`${styles.sectionToggle} ${effectiveCollapsed ? styles.sectionToggleCollapsed : ''}`}
+        >
           ▾
         </span>
       </button>
-      {!collapsed && (
+      {!effectiveCollapsed && (
         <div className={styles.sectionBody}>
           {section.items.map(item => (
             <NavItemLink key={item.href} item={item} pathname={pathname} />
@@ -137,44 +105,43 @@ function NavSection({ section, pathname }: { section: NavSection; pathname: stri
   );
 }
 
-interface SidebarProps {
-  user?: { username?: string; email?: string; role?: string } | null;
-}
-
-export default function Sidebar({ user }: SidebarProps) {
+export default function Sidebar() {
   const pathname = usePathname();
-  const [mobileCollapsed, setMobileCollapsed] = useState(true);
+  const { mobileOpen, collapsed, toggleCollapsed } = useSidebar();
 
   return (
-    <>
-      <button
-        className={styles.mobileToggle}
-        onClick={() => setMobileCollapsed(!mobileCollapsed)}
-        aria-label="Toggle navigation"
-      >
-        {mobileCollapsed ? '☰' : '✕'}
-      </button>
-      <aside className={`${styles.sidebar} ${mobileCollapsed ? styles.sidebarCollapsed : ''}`}>
-        <div className={styles.sidebarHeader}>
-          <Link href="/" className={styles.logo}>Las Flores 2077</Link>
-        </div>
-        <nav className={styles.nav}>
-          {navSections.map(section => (
-            <NavSection key={section.title} section={section} pathname={pathname} />
-          ))}
-        </nav>
-        <div className={styles.sidebarFooter}>
-          {user ? (
-            <div className={styles.userArea}>
-              <span className={styles.userName}>{user.username || user.email}</span>
-              <span className="badge badge--success">{user.role}</span>
-              <Link href="/api/auth/logout" className={`btn btn--danger ${styles.logoutBtn}`}>LOGOUT</Link>
-            </div>
-          ) : (
-            <Link href="/login" className={`btn btn--danger ${styles.loginBtn}`}>LOGIN</Link>
-          )}
-        </div>
-      </aside>
-    </>
+    <aside
+      className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}
+      aria-label="Primary navigation"
+    >
+      <div className={styles.sidebarHeader}>
+        <Link href="/" className={styles.logo} title="Las Flores 2077 — Dashboard">
+          <span className={styles.logoFull}>Las Flores 2077</span>
+          <span className={styles.logoShort}>LF</span>
+        </Link>
+      </div>
+      <nav className={styles.nav}>
+        {navSections.map(section => (
+          <NavSection key={section.title} section={section} pathname={pathname} />
+        ))}
+      </nav>
+      <div className={styles.sidebarFooter}>
+        <button
+          type="button"
+          className={styles.collapseToggle}
+          onClick={toggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <span
+            className={`${styles.collapseChevron} ${collapsed ? styles.collapseChevronCollapsed : ''}`}
+          >
+            «
+          </span>
+          <span className={styles.navLabel}>Collapse</span>
+        </button>
+      </div>
+    </aside>
   );
 }
