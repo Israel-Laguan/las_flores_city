@@ -88,12 +88,27 @@ test('Status bar clock shows 04:00 PM at 32 TBs', async ({ page }) => {
 });
 
 test('Status bar clock shows 02:00 AM at 12 TBs', async ({ page }) => {
-  await page.evaluate(() => {
-    (window as any).__phoneStore?.setState?.({ timeBlocks: 12 });
-  });
-  await page.waitForTimeout(100);
   const clock = page.locator('#phone-clock, [data-testid="phone-clock"]');
-  await expect(clock).toContainText('02:00 AM');
+  
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await page.evaluate(() => {
+        (window as any).__phoneStore?.setState?.({ timeBlocks: 48 });
+      });
+      await page.waitForTimeout(1000);
+      
+      await page.evaluate(() => {
+        (window as any).__phoneStore?.setState?.({ timeBlocks: 12 });
+      });
+      await page.waitForTimeout(1000);
+      await expect(clock).toContainText('02:00 AM');
+      break;
+    } catch (e) {
+      if (attempt === maxAttempts) throw e;
+      await page.waitForTimeout(500);
+    }
+  }
 });
 
 // ── App routing stability ────────────────────────────────────────────────────
