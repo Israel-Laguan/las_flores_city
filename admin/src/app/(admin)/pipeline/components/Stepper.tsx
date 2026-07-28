@@ -21,7 +21,8 @@ interface StepperProps {
 export default function Stepper({ steps, currentStep, onStepClick, blockedSteps }: StepperProps) {
   return (
     <nav className={styles.stepper} aria-label="Pipeline steps">
-      {steps.map((step, i) => {
+      {steps.map((step) => {
+const i = step.order;
         const isDone = i < currentStep;
         const isCurrent = i === currentStep;
         const isBlocked = blockedSteps?.[i] != null;
@@ -40,23 +41,20 @@ export default function Stepper({ steps, currentStep, onStepClick, blockedSteps 
               disabled={!isClickable}
               onClick={() => onStepClick?.(i)}
               aria-current={isCurrent ? 'step' : undefined}
-              title={isBlocked ? blockedSteps[i] ?? step.label : step.label}
+              title={isBlocked ? blockedSteps[i] ?? step.label : step.description}
             >
               {isDone ? '✓' : isBlocked ? '!' : i + 1}
             </button>
             {onStepClick ? (
-              <button
-                type="button"
+              <span
                 className={cn(
                   styles.stepLabel,
                   isCurrent && styles.stepLabelActive,
                   isDone && !isCurrent && styles.stepLabelDone,
                 )}
-                disabled={!isClickable}
-                onClick={() => onStepClick?.(i)}
               >
                 {step.label}
-              </button>
+              </span>
             ) : (
               <span
                 className={cn(

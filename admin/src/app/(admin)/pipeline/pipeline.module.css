@@ -71,6 +71,7 @@
   cursor: pointer;
   border: none;
   font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .primaryButton {
@@ -85,8 +86,8 @@
 }
 
 .disabledButton {
-  background: #555;
-  color: #999;
+  background: var(--disabled-bg, #555);
+  color: var(--disabled-text, #999);
   cursor: not-allowed;
 }
 
@@ -178,4 +179,10 @@
   color: var(--accent);
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+.assetLink {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }

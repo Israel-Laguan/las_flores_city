@@ -1,4 +1,4 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, expect, jest, beforeEach, afterAll } from '@jest/globals';
 import express from 'express';
 import request from 'supertest';
 import { adminAiConfigRouter } from '../../src/routes/admin-ai-config.js';
@@ -7,6 +7,24 @@ import { adminAiConfigRouter } from '../../src/routes/admin-ai-config.js';
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: () => void) => next(),
 }));
+
+const envKeys = [
+  'LLM_PROVIDER',
+  'LITELLM_BASE_URL',
+  'LITELLM_API_KEY',
+  'LLM_MODEL',
+  'LLM_TIMEOUT_MS',
+  'LLM_MAX_TIMEOUT_MS',
+  'LLM_OUTLINE_MODEL',
+  'LLM_OUTLINE_MAX_TOKENS',
+  'LLM_OUTLINE_INITIAL_MAX_ITEMS',
+  'PLAN_OUTLINE_CONTEXT_DEPTH',
+  'PLAN_OUTLINE_MAX_INPUT_CHARS',
+  'PLAN_FILL_CONCURRENCY',
+  'PLAN_FILL_TIMEOUT_MS',
+  'LLM_PRICE_TABLE',
+] as const;
+const originalEnv = new Map(envKeys.map((key) => [key, process.env[key]]));
 
 function buildApp() {
   const app = express();
@@ -17,20 +35,14 @@ function buildApp() {
 
 describe('GET /admin/ai-config', () => {
   beforeEach(() => {
-    delete process.env.LLM_PROVIDER;
-    delete process.env.LITELLM_BASE_URL;
-    delete process.env.LITELLM_API_KEY;
-    delete process.env.LLM_MODEL;
-    delete process.env.LLM_TIMEOUT_MS;
-    delete process.env.LLM_MAX_TIMEOUT_MS;
-    delete process.env.LLM_OUTLINE_MODEL;
-    delete process.env.LLM_OUTLINE_MAX_TOKENS;
-    delete process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS;
-    delete process.env.PLAN_OUTLINE_CONTEXT_DEPTH;
-    delete process.env.PLAN_OUTLINE_MAX_INPUT_CHARS;
-    delete process.env.PLAN_FILL_CONCURRENCY;
-    delete process.env.PLAN_FILL_TIMEOUT_MS;
-    delete process.env.LLM_PRICE_TABLE;
+    for (const key of envKeys) delete process.env[key];
+  });
+
+  afterAll(() => {
+    for (const [key, value] of originalEnv) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
   });
 
   it('returns 200 with default config when no env vars set', async () => {
@@ -107,6 +119,22 @@ describe('GET /admin/ai-config', () => {
     expect(res.body.data.apiKeyMasked).toBe('••••cret');
     expect(res.body.data.apiKeyConfigured).toBe(true);
     expect(JSON.stringify(res.body)).not.toContain('sk-my-secret');
+  });
+
+  it('sanitizes baseUrl and falls back for malformed numeric env', async () => {
+    process.env.LITELLM_BASE_URL = 'http://user:pass@my-proxy:5000/api/v1';
+    process.env.LLM_TIMEOUT_MS = 'abc';
+    process.env.LLM_MAX_TIMEOUT_MS = '';
+    process.env.LLM_OUTLINE_MAX_TOKENS = 'not-a-number';
+
+    const app = buildApp();
+    const res = await request(app).get('/admin/ai-config');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.baseUrl).toBe('http://my-proxy:5000');
+    expect(res.body.data.timeoutMs).toBe(60000);
+    expect(res.body.data.maxTimeoutMs).toBe(300000);
+    expect(res.body.data.outlineMaxTokens).toBe(4096);
   });
 
   it('handles empty API key', async () => {

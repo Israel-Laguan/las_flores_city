@@ -16,7 +16,7 @@ export default function LoreBrowserPage() {
   const router = useRouter();
   const selectedPath = searchParams.get('path') || null;
 
-  const { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType } = useLoreTree();
+  const { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType, refetch: refetchTree } = useLoreTree();
   const { content, contentLoading, contentError, refetch } = useLoreContent(selectedPath);
   const [searchQuery, setSearchQuery] = useState('');
   const [newFilePath, setNewFilePath] = useState('');
@@ -43,6 +43,7 @@ export default function LoreBrowserPage() {
   };
 
   const handleNewFile = useCallback(async () => {
+    if (creating) return;
     const path = newFilePath.trim();
     if (!path) { setNewFileError('Path is required'); return; }
     setCreating(true);
@@ -55,13 +56,14 @@ export default function LoreBrowserPage() {
       if (data.success) {
         setShowNewForm(false);
         setNewFilePath('');
+        await refetchTree();
         router.push(`/lore?path=${encodeURIComponent(path)}`);
       } else {
         setNewFileError(data.error || 'Failed to create file');
       }
     } catch { setNewFileError('Network error'); }
     finally { setCreating(false); }
-  }, [newFilePath, router]);
+  }, [creating, newFilePath, router, refetchTree]);
 
   return (
     <main className={styles.main}>
@@ -83,7 +85,7 @@ export default function LoreBrowserPage() {
               <div className={styles.newFileForm}>
                 <input
                   type="text"
-                  placeholder="characters/my-character.md"
+                  placeholder="guides/my-note.md"
                   value={newFilePath}
                   onChange={(e) => setNewFilePath(e.target.value)}
                   className={styles.newFileInput}

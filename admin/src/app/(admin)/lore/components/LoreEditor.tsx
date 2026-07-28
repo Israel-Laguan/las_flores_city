@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { adminFetch } from '@/lib/client-api';
 import MarkdownViewer from './MarkdownViewer';
 import styles from './LoreEditor.module.css';
@@ -20,6 +20,18 @@ export default function LoreEditor({ selectedPath, content, contentLoading, cont
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    setEditing(false);
+    setDraft('');
+    setDirty(false);
+    setSaving(false);
+    setSaveError(null);
+    setSaveSuccess(false);
+  }, [selectedPath]);
+
+  const savePathRef = useRef<string | null>(null);
+  const saveContentRef = useRef<string>('');
 
   const enterEdit = useCallback(() => {
     setDraft(content ?? '');
@@ -43,28 +55,34 @@ export default function LoreEditor({ selectedPath, content, contentLoading, cont
 
   const handleSave = useCallback(async () => {
     if (!selectedPath) return;
+    if (saving) return;
     setSaving(true);
     setSaveError(null);
     setSaveSuccess(false);
+    savePathRef.current = selectedPath;
+    saveContentRef.current = draft;
     try {
       const data = await adminFetch<{ success: boolean; error?: string }>(
         '/admin/lore/file',
         { method: 'POST', body: JSON.stringify({ path: selectedPath, content: draft }) },
       );
       if (data.success) {
+        if (savePathRef.current !== selectedPath || saveContentRef.current !== draft) return;
         setSaveSuccess(true);
         setDirty(false);
         setEditing(false);
         onSaved?.();
       } else {
+        if (savePathRef.current !== selectedPath || saveContentRef.current !== draft) return;
         setSaveError(data.error || 'Save failed');
       }
     } catch {
-      setSaveError('Network error during save');
+      if (savePathRef.current !== selectedPath || saveContentRef.current !== draft) return;
+      setSaveError('Save failed');
     } finally {
       setSaving(false);
     }
-  }, [selectedPath, draft, onSaved]);
+  }, [selectedPath, draft, saving, onSaved]);
 
   if (!selectedPath) {
     return <MarkdownViewer selectedPath={null} content={null} contentLoading={false} contentError={null} />;

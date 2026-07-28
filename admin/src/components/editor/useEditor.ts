@@ -14,6 +14,7 @@ interface FileEntry {
 export function useEditor() {
   const [tree, setTree] = useState<FileEntry[]>([]);
   const [treeLoading, setTreeLoading] = useState(true);
+  const [treeError, setTreeError] = useState<string | null>(null);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState('');
   const [originalContent, setOriginalContent] = useState('');
@@ -33,7 +34,7 @@ export function useEditor() {
           setTree(data.data.tree);
           setExpandedTypes(new Set(data.data.tree.map(f => f.type)));
         }
-      } catch { /* ignore */ } finally { if (active) setTreeLoading(false); }
+      } catch { if (active) setTreeError('Failed to load file tree'); } finally { if (active) setTreeLoading(false); }
     })();
     return () => { active = false; };
   }, []);
@@ -86,7 +87,7 @@ export function useEditor() {
   };
 
   return {
-    tree, treeLoading, selectedPath, fileContent, dirty, saving, saveError, saveSuccess, filter, expandedTypes,
+    tree, treeLoading, treeError, selectedPath, fileContent, dirty, saving, saveError, saveSuccess, filter, expandedTypes,
     setFilter, setSelectedPath, toggleType, handleSave, handleContentChange,
   };
 }

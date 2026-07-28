@@ -51,11 +51,11 @@ describe('AiConfigPage', () => {
   });
 
   it('shows error when fetch fails', async () => {
-    mockAdminFetch.mockResolvedValueOnce({ success: false, error: 'Not available' });
+    mockAdminFetch.mockRejectedValueOnce(new Error('Network error'));
     render(<AiConfigPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to load AI configuration')).toBeInTheDocument();
+      expect(screen.getByText('Network error')).toBeInTheDocument();
     });
   });
 

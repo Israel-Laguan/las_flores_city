@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { adminFetch } from '@/lib/client-api';
 
 export type PipelineStep = 'edit' | 'validate' | 'migrate' | 'assets' | 'publish';
-const ALL_STEPS: PipelineStep[] = ['edit', 'validate', 'migrate', 'assets', 'publish'];
+export const ALL_STEPS: PipelineStep[] = ['edit', 'validate', 'migrate', 'assets', 'publish'];
 
 export const STEP_LABELS: Record<PipelineStep, { label: string; description: string }> = {
   edit:     { label: 'Edit',     description: 'Create or edit content files' },
@@ -70,8 +70,27 @@ export interface PromotionStatus {
   };
 }
 
-export function usePipeline() {
-  const [currentStepIdx, setCurrentStepIdx] = useState(0);
+export interface CharacterAsset {
+  id: string;
+  name: string;
+  hasPortrait: boolean;
+}
+
+export interface SceneAsset {
+  id: string;
+  name: string;
+  hasBackground: boolean;
+}
+
+export interface PipelineAssetCoverage {
+  characters: CharacterAsset[];
+  scenes: SceneAsset[];
+}
+
+export function usePipeline(initialStepIdx = 0) {
+  const [currentStepIdx, setCurrentStepIdx] = useState(
+    Math.min(Math.max(initialStepIdx, 0), ALL_STEPS.length - 1),
+  );
 
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -82,7 +101,7 @@ export function usePipeline() {
   const [migrationError, setMigrationError] = useState<string | null>(null);
   const [migrating, setMigrating] = useState(false);
 
-  const [assetCoverage, setAssetCoverage] = useState<unknown[] | null>(null);
+  const [assetCoverage, setAssetCoverage] = useState<PipelineAssetCoverage | null>(null);
   const [assetCoverageLoading, setAssetCoverageLoading] = useState(false);
 
   const [promotionStatuses, setPromotionStatuses] = useState<PromotionStatus[]>([]);
@@ -90,12 +109,13 @@ export function usePipeline() {
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
 
+  const currentStep: PipelineStep = ALL_STEPS[currentStepIdx];
   const hasValidationErrors = validationResult !== null && !validationResult.valid;
 
   const canProceed = useMemo(() => {
-    if (currentStepIdx === 1 && hasValidationErrors) return false;
+    if (currentStep === 'validate' && hasValidationErrors) return false;
     return true;
-  }, [currentStepIdx, hasValidationErrors]);
+  }, [currentStep, hasValidationErrors]);
 
   const goNext = useCallback(() => {
     if (currentStepIdx < ALL_STEPS.length - 1 && canProceed) {
@@ -161,8 +181,8 @@ export function usePipeline() {
   const fetchAssetCoverage = useCallback(async () => {
     setAssetCoverageLoading(true);
     try {
-      const data = await adminFetch<{ success: boolean; data?: unknown[] }>('/admin/coverage/assets');
-      if (data.success) setAssetCoverage(data.data ?? []);
+      const data = await adminFetch<{ success: boolean; data?: PipelineAssetCoverage }>('/admin/coverage/assets');
+      if (data.success) setAssetCoverage(data.data ?? null);
     } catch { /* soft */ }
     finally { setAssetCoverageLoading(false); }
   }, []);
@@ -197,13 +217,61 @@ export function usePipeline() {
           });
         }
       }
-      await fetchPromotionStatus();
     } catch {
       setPublishError('Publish failed');
     } finally {
+      await fetchPromotionStatus();
       setPublishing(false);
     }
   }, [promotionStatuses, fetchPromotionStatus]);
+
+  const promoteStaging = useCallback(async (contentPath: string) => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      await adminFetch('/admin/content/assets/promote-staging', {
+        method: 'POST',
+        body: JSON.stringify({ contentPath }),
+      });
+      await fetchPromotionStatus();
+    } catch {
+      setPublishError('Failed to promote to staging');
+    } finally {
+      setPublishing(false);
+    }
+  }, [fetchPromotionStatus]);
+
+  const promoteProduction = useCallback(async (contentPath: string) => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      await adminFetch('/admin/content/assets/promote-production', {
+        method: 'POST',
+        body: JSON.stringify({ contentPath }),
+      });
+      await fetchPromotionStatus();
+    } catch {
+      setPublishError('Failed to promote to production');
+    } finally {
+      setPublishing(false);
+    }
+  }, [fetchPromotionStatus]);
+
+  const rollbackStaging = useCallback(async (contentPath: string) => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      await adminFetch('/admin/content/assets/rollback-staging', {
+        method: 'POST',
+        body: JSON.stringify({ contentPath }),
+      });
+      await fetchPromotionStatus();
+    } catch {
+      setPublishError('Failed to rollback staging');
+    } finally {
+      setPublishing(false);
+    }
+  }, [fetchPromotionStatus]);
 
   return {
     currentStepIdx,
@@ -213,6 +281,7 @@ export function usePipeline() {
     migrationStatus, migrationResult, migrationError, migrating, runMigration, fetchMigrationStatus,
     assetCoverage, assetCoverageLoading, fetchAssetCoverage,
     promotionStatuses, promotionLoading, publishing, publishError, runPublish, fetchPromotionStatus,
+    promoteStaging, promoteProduction, rollbackStaging,
     hasValidationErrors,
   };
 }

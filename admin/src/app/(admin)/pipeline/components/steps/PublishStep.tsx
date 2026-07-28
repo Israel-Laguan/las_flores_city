@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { cn } from '@las-flores/ui';
 import PromotionRow from '@/components/promotion/PromotionRow';
 import type { PromotionStatus } from '../../hooks/usePipeline';
@@ -13,22 +13,32 @@ interface Props {
   publishError: string | null;
   onFetchStatus: () => void;
   onPublish: () => void;
+  onPromoteStaging: (contentPath: string) => void;
+  onPromoteProduction: (contentPath: string) => void;
+  onRollbackStaging: (contentPath: string) => void;
 }
 
-export default function PublishStep({ statuses, loading, publishing, publishError, onFetchStatus, onPublish }: Props) {
+export default function PublishStep({ statuses, loading, publishing, publishError, onFetchStatus, onPublish, onPromoteStaging, onPromoteProduction, onRollbackStaging }: Props) {
+  const initialFetchRef = useRef(false);
   useEffect(() => {
-    if (statuses.length === 0 && !loading) onFetchStatus();
+    if (statuses.length === 0 && !loading && !initialFetchRef.current) {
+      initialFetchRef.current = true;
+      onFetchStatus();
+    }
   }, [statuses.length, loading, onFetchStatus]);
 
   const publishedCount = statuses.filter(s => s.stages.production).length;
   const readyCount = statuses.filter(s => s.stages.dev && !s.stages.production).length;
   const allPublished = statuses.length > 0 && publishedCount === statuses.length;
-  const anyToPromote = statuses.some(s => s.stages.dev);
+  const anyToPromote = statuses.some(s => s.stages.dev && !s.stages.production);
 
   function entityType(contentPath: string): string {
-    const first = contentPath.split('/')[0];
-    const map: Record<string, string> = { characters: 'Character', scenes: 'Scene', locations: 'Location' };
-    return map[first] || first;
+    const segments = contentPath.split('/');
+    const map: Record<string, string> = { characters: 'Character', scenes: 'Scene', locations: 'Location', districts: 'District' };
+    for (const seg of segments) {
+      if (map[seg]) return map[seg];
+    }
+    return segments[0] || 'Unknown';
   }
 
   return (
@@ -78,7 +88,13 @@ export default function PublishStep({ statuses, loading, publishing, publishErro
 
       {loading && <p className={styles.muted}>Loading promotion status...</p>}
 
-      {!loading && statuses.length === 0 && (
+      {!loading && publishError && (
+        <div className={styles.errorBox}>
+          <pre className={styles.errorPre}>{publishError}</pre>
+        </div>
+      )}
+
+      {!loading && !publishError && statuses.length === 0 && (
         <p className={styles.muted}>No entities found for asset publishing.</p>
       )}
 
@@ -91,6 +107,7 @@ export default function PublishStep({ statuses, loading, publishing, publishErro
               <th className={styles.th}>Dev</th>
               <th className={styles.th}>Staging</th>
               <th className={styles.th}>Production</th>
+              <th className={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -100,9 +117,9 @@ export default function PublishStep({ statuses, loading, publishing, publishErro
                 status={s}
                 entityType={entityType(s.contentPath)}
                 disabled={publishing}
-                onPromoteStaging={() => {}}
-                onPromoteProduction={() => {}}
-                onRollbackStaging={() => {}}
+                onPromoteStaging={onPromoteStaging}
+                onPromoteProduction={onPromoteProduction}
+                onRollbackStaging={onRollbackStaging}
               />
             ))}
           </tbody>

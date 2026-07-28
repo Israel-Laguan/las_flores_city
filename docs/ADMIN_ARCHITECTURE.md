@@ -376,7 +376,7 @@ Vitest + jsdom + Testing Library. Run with `npm run test --workspace=admin` (19 
 | `src/app/(admin)/pipeline/__tests__/usePipeline.test.ts` | Pipeline hook: gating, validation, migration, promotion |
 | `src/app/(admin)/ai-config/__tests__/page.test.tsx` | AI config page: loading, config display, error state |
 | `src/app/(admin)/asset-promotion/__tests__/PromotionRow.test.tsx` | Promotion row rendering and callbacks |
-| `src/app/(admin)/story-builder/__tests__/*` (6 files) | Story Builder suite |
+| `src/app/(admin)/story-builder/**/__tests__/*` (7 files) | Story Builder suite, including plan pages |
 | `src/app/(admin)/story-beats/__tests__/*` (2 files) | Story Beats: list CRUD + detail view |
 | `src/app/(admin)/missions/new/__tests__/redirect.test.tsx` | New mission redirect |
 The setup file is one line: `import '@testing-library/jest-dom';`. There is no global mock layer; tests that need to mock `adminFetch` use `vi.mock('@/lib/client-api', ...)`.

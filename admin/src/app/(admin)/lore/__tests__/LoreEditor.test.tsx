@@ -107,6 +107,24 @@ describe('LoreEditor', () => {
     });
   });
 
+  it('shows error when save request fails', async () => {
+    mockAdminFetch.mockRejectedValueOnce(new Error('Network error'));
+
+    const user = userEvent.setup();
+    render(<LoreEditor selectedPath="test.md" content="# Hello" contentLoading={false} contentError={null} />);
+
+    await user.click(screen.getByRole('button', { name: 'Edit' }));
+    const textarea = screen.getByRole('textbox');
+    await user.clear(textarea);
+    await user.type(textarea, '# Modified');
+
+    await user.click(screen.getByRole('button', { name: /Save/ }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Save failed')).toBeInTheDocument();
+    });
+  });
+
   it('Cancel returns to view mode', async () => {
     const user = userEvent.setup();
     render(<LoreEditor selectedPath="test.md" content="# Hello" contentLoading={false} contentError={null} />);

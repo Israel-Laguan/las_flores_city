@@ -12,7 +12,7 @@
 
 Las Flores 2077's admin panel grew 28 pages across four nav sections as content types and tooling were added incrementally. The current authoring journey is fragmented across 8 separate pages:
 
-```
+```text
 Editor → Validation → Migration → Assets → Asset Coverage → Asset Promotion + Diff + Quality
 ```
 
@@ -24,7 +24,7 @@ Meanwhile the server already exposes every endpoint the consolidated flow needs 
 
 | Pillar | External-authoring-tool analogy | What we have today | This plan addresses |
 |---|---|---|---|
-| **Story Bible** | The canon reference (world-building, character profiles, lore) | `docs/lore/` world research, `content/lore/` canon files, per-entity `<slug>.md`, a **read-only** `/lore` browser page → server has `POST /admin/lore/file` that can write, but the UI never calls it | Phase 3: upgrade `/lore` with an edit button + "new lore file" |
+| **Story Bible** | The canon reference (world-building, character profiles, lore) | `docs/lore/` world research, `content/lore/` canon files, per-entity `<slug>.md`, `/lore` browser page with edit + create support via `POST /admin/lore/file` | Phase 3 complete: `/lore` is editable and supports new lore file creation |
 | **Narrative / Chapters** | Scenes/acts/chapters board (what happens in what order) | `/story-arc` coverage dashboard, `/stories`, `/story-beats`, `/missions`, `/mysteries`, `/gigs`, `/dialogues`, `/overlays` — all functional but scattered | Phase 5: nav consolidation groups them under "Narrative" and positions Story Arc as the "chapters map" |
 | **AI Configuration** | Model settings, prompt guidelines, generation controls | `LLMService`/`LiteLLMProvider`/`LLMPrompts`/`LLMCostEstimator`, 12 env tunables (`LLM_MODEL`, `LLM_TIMEOUT_MS`, `PLAN_FILL_CONCURRENCY`,...), generic `/settings` key-value store, `PROMPT_GUIDELINES.md`, asset prompt catalog — none surfaced as "here's what your AI runs on" | Phase 4: read-only config page + one server endpoint |
 | **Intake** | New-content creation workflow (two flavours: manual step-by-step, AI-assisted) | Path A (manual YAML → validate → migrate) has scattered pages; Path B (Story Builder AI wizard) is complete with its own stepper | Phase 2: unified Path A intake pipeline; Story Builder stays as Path B peer |
@@ -52,7 +52,6 @@ The intake pipeline is **session-based** (local state + `?step=` URL param for d
 - Narrative cross-linking map (arc → story → beat → mission relational view)
 - Moving AKOOL asset generation into the pipeline
 - `@las-flores/ui` wrapper adoption sweep ("button", "card", "badge" component wrapper adoption)
-- `/users` page (still a stub — not on the active roadmap)
 - Game client (`client/`) UI
 
 ## 2. Milestones
@@ -100,8 +99,8 @@ Manual smoke: walk `/pipeline` end-to-end.
 
 ---
 
-### M3 — Story Bible: editable lore (M3: lore-edit)
-**Scope:** Upgrade `/lore` from read-only browser to editable canon library. **No server changes** — `POST /admin/lore/file` already exists.
+### M3 — Story Bible: editable lore (M3: lore-edit) ✅ COMPLETE
+**Scope:** `/lore` is editable with edit/create support via `POST /admin/lore/file`. No further server changes needed.
 
 **Files:**
 - `components/LoreEditor.tsx` — toggle MarkdownViewer / textarea, dirty-guard, save to `/admin/lore/file`
@@ -122,7 +121,7 @@ Manual: edit + save lore, verify on disk.
 **Scope:** New `/ai-config` route + one server endpoint.
 
 **Server** (`server/src/routes/admin-ai-config.ts`):
-- `GET /admin/ai-config` returns effective LLM/plan config from env: `provider`, `model`, `outlineModel`, `timeoutMs`, `maxTimeoutMs`, `outlineMaxTokens`, `outlineInitialMaxItems`, `planFillConcurrency`, `planFillTimeoutMs`, `planOutlineMaxInputChars`, `priceTableConfigured`
+- `GET /admin/ai-config` returns effective LLM/plan config from env: `provider`, `baseUrl`, `apiKeyConfigured`, `apiKeyMasked`, `model`, `timeoutMs`, `maxTimeoutMs`, `outlineModel`, `outlineMaxTokens`, `outlineInitialMaxItems`, `outlineContextDepth`, `planOutlineMaxInputChars`, `planFillConcurrency`, `planFillTimeoutMs`, `priceTableConfigured`
 - Secrets redacted, base URL host kept (key masked)
 - Mounted at `/admin/ai-config` in index.ts
 
@@ -131,15 +130,16 @@ Manual: edit + save lore, verify on disk.
 - Links: PROMPT_GUIDELINES.md, asset prompt catalog, Story Builder docs
 
 **Tests:**
-- `server/tests/routes/admin-ai-config.test.ts` — shape, secrets guarded, defaults
+- `server/tests/unit/admin-ai-config.test.ts` — shape, secrets guarded, defaults
 - `admin/ai-config/__tests__/page.test.tsx` — renders config, missing-value state
 
 **Verification:**
 ```bash
-npm run lint --workspace=server && npm run build --workspace=server && npm run test --workspace=server
 npm run lint --workspace=admin && npm run test --workspace=admin && npm run build --workspace=admin
-docker compose build server && docker compose up -d server
-docker exec las-flores-server wget -qO- http://localhost:3000/health
+npx --no-install jest --workspace=server --clearCache
+npm run lint --workspace=server && npm run test --workspace=server && npm run build --workspace=server
+./scripts/podman-workflow.sh build
+./scripts/podman-workflow.sh server-test
 ```
 
 ---
@@ -148,18 +148,19 @@ docker exec las-flores-server wget -qO- http://localhost:3000/health
 **Scope:** Rewrite `nav-config.ts` sidebar and update dashboard.
 
 **Nav structure:**
-```
+```text
 Authoring          Pipeline [NEW], Story Builder, Plans
 Story Bible        Lore [upgraded, renamed]
 Narrative          Story Arc, Stories, Story Beats, Missions,
-                   Mysteries, Gigs, Dialogues, Overlays
+                   Mysteries, Gigs
+Dialogue           Dialogues, Overlays
 World              Characters, Scenes, Locations, Maps, Vault, Shop
 Tools (collapsible sub-items)
   Content Ops      YAML Editor, Validation, Migration, Diff
   Asset Ops        Asset Generation, Coverage, Promotion
   Content Linker
   Insights         Quality, Analytics
-System             AI Config [NEW], Settings, Users (stub)
+System             AI Config [NEW], Settings, Users
 ```
 
 **Dashboard:** Primary CTA "Open Pipeline →"; secondary CTAs (Story Bible, Story Arc, AI Config).
@@ -196,7 +197,7 @@ npm run lint --workspace=admin && npm run test --workspace=admin && npm run buil
 
 ### 4. Commit order
 
-```
+```text
 1. refactor(admin): extract shared editor/validation/migration/promotion components
 2. feat(admin): add unified intake pipeline page
 3. feat(admin): add editable story bible (lore editor)
@@ -210,9 +211,10 @@ npm run lint --workspace=admin && npm run test --workspace=admin && npm run buil
 
 ```bash
 npm run lint --workspace=admin && npm run test --workspace=admin && npm run build --workspace=admin
+npx --no-install jest --workspace=server --clearCache
 npm run lint --workspace=server && npm run build --workspace=server && npm run test --workspace=server
-docker compose build server && docker compose up -d server
-docker exec las-flores-server wget -qO- http://localhost:3000/health
+./scripts/podman-workflow.sh build
+./scripts/podman-workflow.sh server-test
 ```
 
 Acceptance walk-through: Dashboard → Pipeline (edit→validate→migrate→assets→publish) → Story Bible (edit + save lore) → AI Config (values match .env) → standalone pages still work → nav sections collapse correctly.

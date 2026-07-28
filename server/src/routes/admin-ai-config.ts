@@ -30,6 +30,21 @@ function maskApiKey(key: string): string {
   return '••••' + visible;
 }
 
+function displayBaseUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    const sanitized = new URL(url.origin);
+    return sanitized.origin;
+  } catch {
+    return 'invalid URL';
+  }
+}
+
+function finiteInt(value: string | undefined, fallback: number): number {
+  const parsed = parseInt(value || '', 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 adminAiConfigRouter.get('/', (_req, res) => {
   const provider = process.env.LLM_PROVIDER || 'mock';
   const apiKey = process.env.LITELLM_API_KEY || '';
@@ -39,8 +54,11 @@ adminAiConfigRouter.get('/', (_req, res) => {
     try {
       const envJson = process.env.LLM_PRICE_TABLE;
       if (envJson) {
-        JSON.parse(envJson);
-        return true;
+        const parsed = JSON.parse(envJson);
+        if (parsed && typeof parsed === 'object') {
+          const values = Object.values(parsed);
+          if (values.some(v => v && typeof v === 'object' && 'input' in v && 'output' in v)) return true;
+        }
       }
     } catch { /* not valid JSON */ }
     return false;
@@ -48,19 +66,19 @@ adminAiConfigRouter.get('/', (_req, res) => {
 
   const config: AiConfigResponse = {
     provider,
-    baseUrl: process.env.LITELLM_BASE_URL || 'http://litellm:4000',
+    baseUrl: displayBaseUrl(process.env.LITELLM_BASE_URL || 'http://litellm:4000'),
     apiKeyConfigured: apiKey !== '',
     apiKeyMasked: maskApiKey(apiKey),
     model,
-    timeoutMs: parseInt(process.env.LLM_TIMEOUT_MS || '60000', 10),
-    maxTimeoutMs: parseInt(process.env.LLM_MAX_TIMEOUT_MS || '300000', 10),
+    timeoutMs: finiteInt(process.env.LLM_TIMEOUT_MS, 60000),
+    maxTimeoutMs: finiteInt(process.env.LLM_MAX_TIMEOUT_MS, 300000),
     outlineModel,
-    outlineMaxTokens: parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10),
-    outlineInitialMaxItems: parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10),
+    outlineMaxTokens: finiteInt(process.env.LLM_OUTLINE_MAX_TOKENS, 4096),
+    outlineInitialMaxItems: finiteInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS, 15),
     outlineContextDepth: process.env.PLAN_OUTLINE_CONTEXT_DEPTH || 'names',
-    planOutlineMaxInputChars: parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10),
-    planFillConcurrency: parseInt(process.env.PLAN_FILL_CONCURRENCY || '3', 10),
-    planFillTimeoutMs: parseInt(process.env.PLAN_FILL_TIMEOUT_MS || '120000', 10),
+    planOutlineMaxInputChars: finiteInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS, 10000),
+    planFillConcurrency: finiteInt(process.env.PLAN_FILL_CONCURRENCY, 3),
+    planFillTimeoutMs: finiteInt(process.env.PLAN_FILL_TIMEOUT_MS, 120000),
     priceTableConfigured,
   };
 

@@ -9,33 +9,17 @@ import ValidateStep from './components/steps/ValidateStep';
 import MigrateStep from './components/steps/MigrateStep';
 import AssetsStep from './components/steps/AssetsStep';
 import PublishStep from './components/steps/PublishStep';
-import { usePipeline, STEP_LABELS, type PipelineStep } from './hooks/usePipeline';
+import { usePipeline, STEP_LABELS, ALL_STEPS, type PipelineStep } from './hooks/usePipeline';
 import styles from './pipeline.module.css';
-
-const ALL_STEPS: PipelineStep[] = ['edit', 'validate', 'migrate', 'assets', 'publish'];
-
-const STEP_MAP: Record<PipelineStep, { label: string; description: string }> = {
-  edit: STEP_LABELS.edit,
-  validate: STEP_LABELS.validate,
-  migrate: STEP_LABELS.migrate,
-  assets: STEP_LABELS.assets,
-  publish: STEP_LABELS.publish,
-};
 
 export default function PipelinePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pipeline = usePipeline();
 
-  // Sync step index with URL search param
   const stepParam = searchParams.get('step');
   const urlStepIdx = stepParam !== null ? parseInt(stepParam, 10) : 0;
-
-  // If URL is out of sync with state, push the current step
-  if (urlStepIdx !== pipeline.currentStepIdx && !isNaN(urlStepIdx)) {
-    // This is a render-time effect — use router.replace
-    // (we handle sync via goToStep when user clicks stepper)
-  }
+  const initialStepIdx = Number.isFinite(urlStepIdx) ? Math.min(Math.max(urlStepIdx, 0), ALL_STEPS.length - 1) : 0;
+  const pipeline = usePipeline(initialStepIdx);
 
   const handleStepClick = useCallback((idx: number) => {
     pipeline.goToStep(idx);
@@ -44,13 +28,13 @@ export default function PipelinePage() {
 
   const steps = ALL_STEPS.map((step, i) => ({
     order: i,
-    label: STEP_MAP[step].label,
-    description: STEP_MAP[step].description,
+    label: STEP_LABELS[step].label,
+    description: STEP_LABELS[step].description,
   }));
 
   const blockedSteps: Record<number, string | null> = {};
-  if (pipeline.currentStepIdx === 1 && pipeline.hasValidationErrors) {
-    blockedSteps[2] = 'Fix validation errors before migrating';
+  if (pipeline.currentStep === 'validate' && pipeline.hasValidationErrors) {
+    blockedSteps[ALL_STEPS.indexOf('migrate')] = 'Fix validation errors before migrating';
   }
 
   return (
@@ -99,6 +83,9 @@ export default function PipelinePage() {
             publishError={pipeline.publishError}
             onFetchStatus={pipeline.fetchPromotionStatus}
             onPublish={pipeline.runPublish}
+            onPromoteStaging={pipeline.promoteStaging}
+            onPromoteProduction={pipeline.promoteProduction}
+            onRollbackStaging={pipeline.rollbackStaging}
           />
         )}
       </div>

@@ -15,19 +15,18 @@ export default function EditStep() {
         Create or edit YAML content files. When finished, proceed to validation.
       </p>
       <div className={styles.editorLayout}>
-        <div className={styles.treePanel}>
-          <FileTree
-            tree={editor.tree}
-            treeLoading={editor.treeLoading}
-            filter={editor.filter}
-            selectedPath={editor.selectedPath}
-            expandedTypes={editor.expandedTypes}
-            dirty={editor.dirty}
-            onFilterChange={editor.setFilter}
-            onSelect={editor.setSelectedPath}
-            onToggleType={editor.toggleType}
-          />
-        </div>
+        <FileTree
+          tree={editor.tree}
+          treeLoading={editor.treeLoading}
+          treeError={editor.treeError}
+          filter={editor.filter}
+          selectedPath={editor.selectedPath}
+          expandedTypes={editor.expandedTypes}
+          dirty={editor.dirty}
+          onFilterChange={editor.setFilter}
+          onSelect={editor.setSelectedPath}
+          onToggleType={editor.toggleType}
+        />
         <div className={styles.editorPanel}>
           <EditorPanel
             selectedPath={editor.selectedPath}

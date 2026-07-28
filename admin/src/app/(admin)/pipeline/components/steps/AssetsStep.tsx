@@ -1,21 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { cn } from '@las-flores/ui';
 import styles from '../../pipeline.module.css';
+import type { PipelineAssetCoverage } from '../../hooks/usePipeline';
 
 interface Props {
-  assetCoverage: unknown[] | null;
+  assetCoverage: PipelineAssetCoverage | null;
   loading: boolean;
   onFetch: () => void;
 }
 
 export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
+  const initialFetchRef = useRef(false);
   useEffect(() => {
-    if (!assetCoverage) onFetch();
-  }, [assetCoverage, onFetch]);
+    if (!assetCoverage && !loading && !initialFetchRef.current) {
+      initialFetchRef.current = true;
+      onFetch();
+    }
+  }, [assetCoverage, loading, onFetch]);
 
-  const coverageCount = Array.isArray(assetCoverage) ? assetCoverage.length : 0;
+  const charCount = assetCoverage?.characters?.length ?? 0;
+  const sceneCount = assetCoverage?.scenes?.length ?? 0;
+  const coverageCount = charCount + sceneCount;
 
   return (
     <div className={styles.stepContent}>
@@ -35,8 +42,7 @@ export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
         </button>
         <a
           href="/assets"
-          className={cn(styles.button, styles.primaryButton)}
-          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          className={cn(styles.button, styles.primaryButton, styles.assetLink)}
         >
           Open Asset Generation →
         </a>
@@ -51,10 +57,14 @@ export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
           </div>
           {coverageCount > 0 ? (
             <ul className={styles.coverageList}>
-              {Array.isArray(assetCoverage) && assetCoverage.slice(0, 20).map((item: any, i: number) => (
-                <li key={i} className={styles.coverageItem}>
-                  {item?.name || item?.slug || `Entity ${i + 1}`}
-                  {item?.hasDefaultAsset ? ' ✅' : ' ❌'}
+              {assetCoverage.characters.slice(0, 10).map((item: { id: string; name: string; hasPortrait: boolean }) => (
+                <li key={item.id} className={styles.coverageItem}>
+                  {item.name} {item.hasPortrait ? '✅' : '❌'}
+                </li>
+              ))}
+              {assetCoverage.scenes.slice(0, 10).map((item: { id: string; name: string; hasBackground: boolean }) => (
+                <li key={item.id} className={styles.coverageItem}>
+                  {item.name} {item.hasBackground ? '✅' : '❌'}
                 </li>
               ))}
             </ul>

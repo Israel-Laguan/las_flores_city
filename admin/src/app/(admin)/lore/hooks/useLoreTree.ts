@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { adminFetch } from '@/lib/client-api';
 
 interface LoreFileEntry {
@@ -30,25 +30,26 @@ export function useLoreTree() {
   const [treeError, setTreeError] = useState<string | null>(null);
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    async function fetchTree() {
-      try {
-        const data = await adminFetch<LoreTreeResponse>('/admin/lore/tree');
-        if (data.success) {
-          setTree(data.data.tree);
-          const types = new Set(Object.keys(groupByType(data.data.tree)));
-          setExpandedTypes(types);
-        } else {
-          setTreeError('Failed to load lore tree');
-        }
-      } catch {
+  const fetchTree = useCallback(async () => {
+    setTreeLoading(true);
+    setTreeError(null);
+    try {
+      const data = await adminFetch<LoreTreeResponse>('/admin/lore/tree');
+      if (data.success) {
+        setTree(data.data.tree);
+        const types = new Set(Object.keys(groupByType(data.data.tree)));
+        setExpandedTypes(types);
+      } else {
         setTreeError('Failed to load lore tree');
-      } finally {
-        setTreeLoading(false);
       }
+    } catch {
+      setTreeError('Failed to load lore tree');
+    } finally {
+      setTreeLoading(false);
     }
-    fetchTree();
   }, []);
+
+  useEffect(() => { fetchTree(); }, [fetchTree]);
 
   const toggleType = (type: string) => {
     setExpandedTypes((prev) => {
@@ -59,5 +60,5 @@ export function useLoreTree() {
     });
   };
 
-  return { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType };
+  return { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType, refetch: fetchTree };
 }

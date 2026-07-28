@@ -67,9 +67,12 @@ export default function ValidateStep({ validationResult, validationError, valida
           />
           <ErrorsByFile errorsByFile={errorsByFile} />
           <WarningsByFile warningsByFile={warningsByFile} systemWarnings={validationResult.warnings} />
-          {validationResult.valid && errorCount === 0 && warningCount === 0 && (
-            <div className={styles.cleanMessage}>All content is clean — no errors or warnings.</div>
-          )}
+          {validationResult.valid &&
+            errorCount === 0 &&
+            warningCount === 0 &&
+            validationResult.warnings.length === 0 && (
+              <div className={styles.cleanMessage}>All content is clean — no errors or warnings.</div>
+            )}
         </div>
       )}
 

@@ -29,6 +29,7 @@ interface FileEntry {
 interface Props {
   tree: FileEntry[];
   treeLoading: boolean;
+  treeError?: string | null;
   filter: string;
   selectedPath: string | null;
   expandedTypes: Set<string>;
@@ -38,7 +39,7 @@ interface Props {
   onToggleType: (type: string) => void;
 }
 
-export default function FileTree({ tree, treeLoading, filter, selectedPath, expandedTypes, dirty, onFilterChange, onSelect, onToggleType }: Props) {
+export default function FileTree({ tree, treeLoading, treeError = null, filter, selectedPath, expandedTypes, dirty, onFilterChange, onSelect, onToggleType }: Props) {
   const filtered = filter
     ? tree.filter(f => f.name.toLowerCase().includes(filter.toLowerCase()) || f.path.toLowerCase().includes(filter.toLowerCase()))
     : tree;
@@ -60,12 +61,14 @@ export default function FileTree({ tree, treeLoading, filter, selectedPath, expa
           className={styles.treeInput}
         />
       </div>
-      <div className={styles.treeScroll}>
-        {treeLoading ? (
-          <p className={cn(styles.muted, styles.treeEmpty)}>Loading...</p>
-        ) : Object.keys(grouped).length === 0 ? (
-          <p className={cn(styles.muted, styles.treeEmpty)}>No files found</p>
-        ) : (
+<div className={styles.treeScroll}>
+         {treeLoading ? (
+           <p className={cn(styles.muted, styles.treeEmpty)}>Loading...</p>
+         ) : treeError ? (
+           <p className={cn(styles.muted, styles.treeEmpty)}>{treeError}</p>
+         ) : Object.keys(grouped).length === 0 ? (
+           <p className={cn(styles.muted, styles.treeEmpty)}>No files found</p>
+         ) : (
           Object.entries(grouped).map(([type, files]) => (
             <div key={type} className={styles.typeGroup}>
               <div
