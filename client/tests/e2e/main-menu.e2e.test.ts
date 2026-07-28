@@ -55,33 +55,27 @@ test.describe('Main menu — normal operations', () => {
       await registerAndLogin(page);
       await page.goto('/main');
 
-      // Wait for page to fully load and settle
-      await page.waitForLoadState('networkidle');
+      // Wait for page to load (not networkidle — SPA may have persistent polling)
+      await page.waitForLoadState('load');
 
       for (let i = 0; i < 3; i++) {
         await page.locator('.menu-btn[data-action="settings"]').click();
         await page.locator('.view-back-btn[data-action="back"]').click();
-        await page.locator('.menu-btn[data-action="about"]').waitFor();
+        await page.locator('.menu-btn[data-action="about"]').waitFor({ state: 'visible' });
       }
 
-      // Wait for page to settle after navigation
-      await page.waitForLoadState('networkidle');
-
-      // Use Playwright's popup event to count popups
-      let popupCount = 0;
-      const popupPromise = page.waitForEvent('popup', { timeout: 5000 }).catch(() => null);
-
-      // Click the About Us button and wait for popup
+      // Confirm the about button is interactive before clicking
       const aboutBtn = page.locator('.menu-btn[data-action="about"]');
-      await aboutBtn.click();
+      await aboutBtn.waitFor({ state: 'visible' });
 
-      const popup = await popupPromise;
-      if (popup) {
-        popupCount = 1;
-        popup.close();
-      }
+      // Standard Promise.all pattern (same as the previous test) to capture the popup
+      const [popup] = await Promise.all([
+        page.waitForEvent('popup'),
+        aboutBtn.click(),
+      ]);
 
-      expect(popupCount).toBe(1);
+      expect(popup.url()).toBe(ABOUT_US_URL);
+      popup.close();
     });
   });
 });
