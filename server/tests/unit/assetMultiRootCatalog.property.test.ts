@@ -1,5 +1,6 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 import path from 'node:path';
 
 // ============================================================
@@ -108,7 +109,7 @@ function buildVirtualFS(
 
 /** Safe filename stem: lowercase letters + underscores, 1-20 chars. */
 const stemArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(
+  stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz_'.split('')),
     { minLength: 1, maxLength: 20 },
   );

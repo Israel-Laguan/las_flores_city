@@ -1,5 +1,6 @@
 import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // Admin Content — PUT /admin/content/file Property-Based Test
@@ -116,11 +117,11 @@ const knownInvalidYamlArb = (): fc.Arbitrary<string> =>
  */
 const validPathArb = (): fc.Arbitrary<string> =>
   fc.tuple(
-    fc.stringOf(
+    stringOf(
       fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split('')),
       { minLength: 3, maxLength: 12 },
     ),
-    fc.stringOf(
+    stringOf(
       fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
       { minLength: 3, maxLength: 20 },
     ),

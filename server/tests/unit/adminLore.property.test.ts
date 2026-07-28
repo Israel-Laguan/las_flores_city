@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // Admin Lore — Property-Based Tests
@@ -22,7 +23,7 @@ import { inferLoreType, validateLorePath, LORE_SUBDIRS } from '../../src/routes/
 
 /** A safe filename component (alphanumeric + underscores, no dots or slashes). */
 const filenameStemArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(
+  stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
     { minLength: 1, maxLength: 40 },
   );

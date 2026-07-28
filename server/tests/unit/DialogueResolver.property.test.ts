@@ -1,5 +1,6 @@
 import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // DialogueResolver Property-Based Tests
@@ -50,7 +51,7 @@ import type { DialogueNode, Leaf } from '@las-flores/shared';
 
 /** Generates a valid node id string. */
 const nodeIdArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 20,
   });

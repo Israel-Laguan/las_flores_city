@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 import path from 'node:path';
 
 // ============================================================
@@ -22,7 +23,7 @@ import { validateContentPath, resolveContentDir } from '../../src/routes/admin-c
 
 /** A safe path segment (alphanumeric + underscores, no dots or slashes). */
 const safeSegmentArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(
+  stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
     { minLength: 1, maxLength: 30 },
   );
@@ -106,7 +107,7 @@ describe('validateContentPath — falsy inputs always return valid: false', () =
   it('rejects whitespace-only string', () => {
     fc.assert(
       fc.property(
-        fc.stringOf(fc.constantFrom(' ', '\t', '\n'), { minLength: 1, maxLength: 10 }),
+        stringOf(fc.constantFrom(' ', '\t', '\n'), { minLength: 1, maxLength: 10 }),
         (ws) => {
           const result = validateContentPath(ws);
           expect(result.valid).toBe(false);

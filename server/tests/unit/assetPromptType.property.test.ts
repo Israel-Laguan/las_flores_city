@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // Asset Prompt Catalog — Property-Based Tests
@@ -24,7 +25,7 @@ import { extractAssetType } from '../../src/routes/assets.helpers.js';
  * Examples: "portrait", "background", "html-background", "tile".
  */
 const assetTypeTokenArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(
+  stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789-'.split('')),
     { minLength: 1, maxLength: 40 },
   );

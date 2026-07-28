@@ -82,7 +82,7 @@ describe('TB receipt format correctness', () => {
       fc.property(
         anyNodeArb(),
         tbAmountArb(),
-        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }),
+        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }).filter(d => !Number.isNaN(d.getTime())),
         (node, tbAmount, now) => {
           const result = appendTBReceipt(node, tbAmount, now);
 
@@ -118,7 +118,7 @@ describe('TB receipt format correctness', () => {
       fc.property(
         nodeWithoutThoughtArb(),
         tbAmountArb(),
-        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }),
+        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }).filter(d => !Number.isNaN(d.getTime())),
         (node, tbAmount, now) => {
           const result = appendTBReceipt(node, tbAmount, now);
 
@@ -137,7 +137,7 @@ describe('TB receipt format correctness', () => {
       fc.property(
         nodeWithThoughtArb(),
         tbAmountArb(),
-        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }),
+        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }).filter(d => !Number.isNaN(d.getTime())),
         (node, tbAmount, now) => {
           const originalThought = node.thought;
           const result = appendTBReceipt(node, tbAmount, now);
@@ -158,7 +158,7 @@ describe('TB receipt format correctness', () => {
       fc.property(
         anyNodeArb(),
         tbAmountArb(),
-        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }),
+        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }).filter(d => !Number.isNaN(d.getTime())),
         (node, tbAmount, now) => {
           // Capture original thought before the call.
           const originalThought = node.thought;
@@ -178,7 +178,7 @@ describe('TB receipt format correctness', () => {
       fc.property(
         anyNodeArb(),
         tbAmountArb(),
-        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }),
+        fc.date({ min: new Date('2020-01-01'), max: new Date('2099-12-31') }).filter(d => !Number.isNaN(d.getTime())),
         (node, tbAmount, now) => {
           const result = appendTBReceipt(node, tbAmount, now);
 

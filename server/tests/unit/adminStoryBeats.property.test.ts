@@ -1,5 +1,6 @@
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 import request from 'supertest';
 import express from 'express';
 
@@ -67,7 +68,7 @@ const mockSetCache = setCache as jest.MockedFunction<typeof setCache>;
 const validSlugArb = (): fc.Arbitrary<string> =>
   fc.tuple(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split('')),
-    fc.stringOf(
+    stringOf(
       fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
       { minLength: 0, maxLength: 49 },
     ),

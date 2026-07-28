@@ -37,7 +37,9 @@ export function appendTBReceipt(
   tbAmount: number,
   now: Date = new Date()
 ): DialogueNode {
-  const timestamp = now.toISOString();
+  const timestamp = Number.isNaN(now.getTime())
+    ? new Date().toISOString()
+    : now.toISOString();
   const receipt = `[TB EXPENDED: ${tbAmount} — ${timestamp}]`;
 
   // Requirement 5.3: if no thought field exists, create one with only the receipt

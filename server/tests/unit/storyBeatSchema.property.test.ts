@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 import { StoryBeatRegistrySchema } from '@las-flores/shared';
 
 // ============================================================
@@ -22,7 +23,7 @@ import { StoryBeatRegistrySchema } from '@las-flores/shared';
 const validSlugArb = (): fc.Arbitrary<string> =>
   fc.tuple(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split('')),
-    fc.stringOf(
+    stringOf(
       fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
       { minLength: 0, maxLength: 98 },
     ),
@@ -200,7 +201,7 @@ import { jest as jestGlobals } from '@jest/globals';
 const genValidSlug = (): fc.Arbitrary<string> =>
   fc.tuple(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split('')),
-    fc.stringOf(
+    stringOf(
       fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
       { minLength: 0, maxLength: 48 },
     ),
@@ -343,7 +344,7 @@ describe('Redis cache round-trip', () => {
         fc.array(
           fc.tuple(
             fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split('')),
-            fc.stringOf(
+            stringOf(
               fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
               { minLength: 0, maxLength: 48 },
             ),
@@ -392,7 +393,7 @@ describe('Redis cache round-trip', () => {
         fc.array(
           fc.tuple(
             fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz'.split('')),
-            fc.stringOf(
+            stringOf(
               fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
               { minLength: 0, maxLength: 48 },
             ),
