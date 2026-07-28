@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "lint": "eslint --ext .ts src/",
+    "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "npx --no-install jest --detectOpenHandles"
   },
