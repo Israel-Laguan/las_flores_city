@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import type { ContentPlanItem, ContentLink, AssetNeed } from '@las-flores/shared';
 import { generateYaml, resolveFilePath } from './ContentSkeletonGenerator.js';
 

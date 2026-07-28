@@ -7,7 +7,7 @@ import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 
 const mockUploadToMinio = (jest.fn() as any).mockImplementation(async (buf: Buffer, key: string) => {
   return `https://minio.test/${key}`;

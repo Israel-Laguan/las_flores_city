@@ -2,7 +2,7 @@ import { jest, describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 
 // Use a temp directory instead of the real content directory, which is
 // read-only when running inside the Podman test container.

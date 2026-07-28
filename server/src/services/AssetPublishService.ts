@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 import { uploadToMinio } from './StorageService.js';
 import { markPublished } from './AssetNeedsService.js';

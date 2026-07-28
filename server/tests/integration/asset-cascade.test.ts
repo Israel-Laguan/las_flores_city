@@ -10,7 +10,7 @@ import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import { queryOLTP, closeConnections } from '../../src/database/connection.js';
 import { deleteCache, closeRedis } from '../../src/database/redis.js';
 import { authMiddleware, AuthRequest, generateToken } from '../../src/middleware/auth.js';

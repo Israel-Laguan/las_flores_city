@@ -21,7 +21,7 @@ jest.mock('../../src/database/redis.js', () => ({
   invalidatePattern: jest.fn() as any,
 }));
 
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import crypto from 'crypto';
 import { processContentFile } from '../../src/content/upsert.js';
 

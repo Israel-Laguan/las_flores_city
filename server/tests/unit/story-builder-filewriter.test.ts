@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import { updateExistingFile, deepMergeFields } from '../../src/services/StoryBuilderFileWriter.js';
 
 let tmpDir: string;

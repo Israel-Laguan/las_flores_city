@@ -996,7 +996,7 @@ describe('Processing order — story_beat before dialogue and scene', () => {
 
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import yamlLib from 'js-yaml';
+import * as yamlLib from 'js-yaml';
 import { validateContentByType } from '../../src/content/validate.js';
 
 // process.cwd() is the server/ directory when Jest runs.

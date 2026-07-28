@@ -10,7 +10,7 @@ import { describe, it, expect, jest as jestGlobals, beforeEach, afterEach } from
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 
 const mockUploadToMinio = jestGlobals.fn(async (..._args: any[]) => {
   return `https://minio.test/${_args[1]}`;

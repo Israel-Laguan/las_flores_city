@@ -5,7 +5,7 @@ import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import express from 'express';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';

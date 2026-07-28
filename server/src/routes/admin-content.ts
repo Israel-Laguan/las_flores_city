@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
-import jsYaml from 'js-yaml';
+import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContent, checkContentQuality } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';

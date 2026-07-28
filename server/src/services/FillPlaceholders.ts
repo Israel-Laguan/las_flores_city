@@ -4,7 +4,7 @@ import type { LLMProvider, ExistingContentContext } from './types/LLMTypes.js';
 import { generateForItem } from './LoreGenerator.js';
 import { generatePromptForItem } from './PromptFileGenerator.js';
 import { ContentPlanItemSchema } from '@las-flores/shared';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 
 /**
  * Result of scanning for TODO placeholders
