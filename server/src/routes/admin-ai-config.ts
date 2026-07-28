@@ -1,5 +1,6 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
+import { finiteInt } from '../utils/env.js';
 
 export const adminAiConfigRouter = express.Router();
 
@@ -40,11 +41,6 @@ function displayBaseUrl(value: string): string {
   }
 }
 
-function finiteInt(value: string | undefined, fallback: number): number {
-  const parsed = parseInt(value || '', 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
 adminAiConfigRouter.get('/', (_req, res) => {
   const provider = process.env.LLM_PROVIDER || 'mock';
   const apiKey = process.env.LITELLM_API_KEY || '';
@@ -56,8 +52,12 @@ adminAiConfigRouter.get('/', (_req, res) => {
       if (envJson) {
         const parsed = JSON.parse(envJson);
         if (parsed && typeof parsed === 'object') {
-          const values = Object.values(parsed);
-          if (values.some(v => v && typeof v === 'object' && 'input' in v && 'output' in v)) return true;
+          for (const v of Object.values(parsed)) {
+            if (typeof v === 'object' && v !== null && 'input' in v && 'output' in v) {
+              const entry = v as Record<string, unknown>;
+              if (typeof entry.input === 'number' && Number.isFinite(entry.input) && typeof entry.output === 'number' && Number.isFinite(entry.output)) return true;
+            }
+          }
         }
       }
     } catch { /* not valid JSON */ }

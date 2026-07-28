@@ -32,14 +32,15 @@ export default function PublishStep({ statuses, loading, publishing, publishErro
   const allPublished = statuses.length > 0 && publishedCount === statuses.length;
   const anyToPromote = statuses.some(s => s.stages.dev && !s.stages.production);
 
-  function entityType(contentPath: string): string {
-    const segments = contentPath.split('/');
-    const map: Record<string, string> = { characters: 'Character', scenes: 'Scene', locations: 'Location', districts: 'District' };
-    for (const seg of segments) {
-      if (map[seg]) return map[seg];
-    }
-    return segments[0] || 'Unknown';
+function entityType(contentPath: string): string {
+  const segments = contentPath.split('/');
+  if (segments.includes('locations')) return 'Location';
+  const map: Record<string, string> = { characters: 'Character', scenes: 'Scene', districts: 'District' };
+  for (const seg of segments) {
+    if (map[seg]) return map[seg];
   }
+  return segments[0] || 'Unknown';
+}
 
   return (
     <div className={styles.stepContent}>

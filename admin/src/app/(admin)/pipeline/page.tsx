@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { cn } from '@las-flores/ui';
 import Stepper from './components/Stepper';
 import EditStep from './components/steps/EditStep';
@@ -20,6 +20,13 @@ export default function PipelinePage() {
   const urlStepIdx = stepParam !== null ? parseInt(stepParam, 10) : 0;
   const initialStepIdx = Number.isFinite(urlStepIdx) ? Math.min(Math.max(urlStepIdx, 0), ALL_STEPS.length - 1) : 0;
   const pipeline = usePipeline(initialStepIdx);
+
+  useEffect(() => {
+    const targetIdx = Number.isFinite(urlStepIdx) ? Math.min(Math.max(urlStepIdx, 0), ALL_STEPS.length - 1) : 0;
+    if (targetIdx !== pipeline.currentStepIdx) {
+      pipeline.goToStep(targetIdx);
+    }
+  }, [stepParam, pipeline, urlStepIdx]);
 
   const handleStepClick = useCallback((idx: number) => {
     pipeline.goToStep(idx);

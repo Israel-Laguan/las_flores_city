@@ -3,6 +3,7 @@ import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
 import { setCache, getCache, deleteCache } from '../database/redis.js';
 import { createLLMProvider } from './LLMService.js';
 import { contentPlanService } from './ContentPlanService.js';
+import { finiteInt } from '../utils/env.js';
 import { fillFields, mergeFilledFields } from './ContentFillService.js';
 import type { LLMProvider } from './types/LLMTypes.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
@@ -90,8 +91,8 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
     const context = await contentPlanService.gatherContext();
     const contentDir = resolveContentDir();
 
-    const concurrency = parseInt(process.env.PLAN_FILL_CONCURRENCY || '3', 10);
-    const timeoutMs = parseInt(process.env.PLAN_FILL_TIMEOUT_MS || '120000', 10);
+    const concurrency = finiteInt(process.env.PLAN_FILL_CONCURRENCY, 3);
+    const timeoutMs = finiteInt(process.env.PLAN_FILL_TIMEOUT_MS, 120000);
 
     for (let i = 0; i < createItems.length; i += concurrency) {
       const batch = createItems.slice(i, i + concurrency);

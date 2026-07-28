@@ -3,6 +3,7 @@ import yaml from 'js-yaml';
 import { glob } from 'glob';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
+import { finiteInt } from '../utils/env.js';
 import { createLLMProvider } from './LLMService.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
 import { injectAssetNeeds } from './AssetNeedsService.js';
@@ -44,7 +45,7 @@ export class ContentPlanService {
 
   async generateOutline(description: string): Promise<PlanWithUsage> {
     const context = await this.gatherContext();
-    const maxInputChars = parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10);
+    const maxInputChars = finiteInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS, 10000);
 
     let plan: ContentPlan;
     let usage: LLMUsage | null = null;
@@ -81,8 +82,8 @@ export class ContentPlanService {
     description: string,
     context: ExistingContentContext,
   ): Promise<{ plan: ContentPlan; usage: LLMUsage | null; roster?: EntityCandidate[] }> {
-    const maxInputChars = parseInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS || '10000', 10);
-    const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
+    const maxInputChars = finiteInt(process.env.PLAN_OUTLINE_MAX_INPUT_CHARS, 10000);
+    const initialMaxItems = finiteInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS, 15);
 
     // 1. Chunk the description
     const chunks = chunkDescription(description, maxInputChars);

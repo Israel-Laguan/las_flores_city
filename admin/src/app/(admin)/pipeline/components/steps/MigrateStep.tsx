@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@las-flores/ui';
 import MigrationResultView from '@/components/migration/MigrationResultView';
 import MigrationStatusView from '@/components/migration/MigrationStatusView';
@@ -19,18 +19,23 @@ interface Props {
 export default function MigrateStep({
   migrationStatus, migrationResult, migrationError, migrating, onMigrate, onFetchStatus,
 }: Props) {
-  const initialFetchRef = useRef(false);
   const [fetchingStatus, setFetchingStatus] = useState(false);
+  const initialFetchRef = useRef(false);
+
+  const handleRefresh = useCallback(async () => {
+    setFetchingStatus(true);
+    try {
+      await onFetchStatus();
+    } finally {
+      setFetchingStatus(false);
+    }
+  }, [onFetchStatus]);
+
   useEffect(() => {
     if (migrationStatus || initialFetchRef.current) return;
     initialFetchRef.current = true;
-    setFetchingStatus(true);
-    onFetchStatus();
-  }, [migrationStatus, onFetchStatus]);
-
-  useEffect(() => {
-    if (migrationStatus) setFetchingStatus(false);
-  }, [migrationStatus]);
+    handleRefresh();
+  }, [migrationStatus, handleRefresh]);
 
   return (
     <div className={styles.stepContent}>
@@ -48,7 +53,7 @@ export default function MigrateStep({
           {migrating ? 'Migrating...' : 'Run Migration'}
         </button>
         <button
-          onClick={onFetchStatus}
+          onClick={handleRefresh}
           disabled={migrating || fetchingStatus}
           className={cn(styles.button, migrating || fetchingStatus ? styles.disabledButton : styles.secondaryButton)}
         >

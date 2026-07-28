@@ -2,6 +2,9 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { adminFetch } from '@/lib/client-api';
+import { fetchPromotionStatus as fetchPromoStatus, promoteStaging as promoStaging, promoteProduction as promoProduction, rollbackStaging as rollbackStg, type PromotionStatus } from '@/lib/promotion';
+
+export type { PromotionStatus } from '@/lib/promotion';
 
 export type PipelineStep = 'edit' | 'validate' | 'migrate' | 'assets' | 'publish';
 export const ALL_STEPS: PipelineStep[] = ['edit', 'validate', 'migrate', 'assets', 'publish'];
@@ -57,17 +60,6 @@ export interface MigrationResult {
   filesFailed: number;
   errors: string[];
   appliedMigrations: AppliedMigration[];
-}
-
-export interface PromotionStatus {
-  contentPath: string;
-  name: string;
-  slug: string;
-  stages: {
-    dev?: { url: string };
-    staging?: { url: string };
-    production?: { url: string };
-  };
 }
 
 export interface CharacterAsset {
@@ -190,10 +182,8 @@ export function usePipeline(initialStepIdx = 0) {
   const fetchPromotionStatus = useCallback(async () => {
     setPromotionLoading(true);
     try {
-      const data = await adminFetch<{ success: boolean; data: PromotionStatus[] }>(
-        '/admin/content/assets/promotion-status',
-      );
-      if (data.success) setPromotionStatuses(data.data);
+      const data = await fetchPromoStatus();
+      setPromotionStatuses(data);
     } catch { /* soft */ }
     finally { setPromotionLoading(false); }
   }, []);
@@ -205,16 +195,10 @@ export function usePipeline(initialStepIdx = 0) {
       for (const status of promotionStatuses) {
         if (!status.stages.dev) continue;
         if (!status.stages.staging) {
-          await adminFetch('/admin/content/assets/promote-staging', {
-            method: 'POST',
-            body: JSON.stringify({ contentPath: status.contentPath }),
-          });
+          await promoStaging(status.contentPath);
         }
         if (!status.stages.production) {
-          await adminFetch('/admin/content/assets/promote-production', {
-            method: 'POST',
-            body: JSON.stringify({ contentPath: status.contentPath }),
-          });
+          await promoProduction(status.contentPath);
         }
       }
     } catch {
@@ -223,55 +207,46 @@ export function usePipeline(initialStepIdx = 0) {
       await fetchPromotionStatus();
       setPublishing(false);
     }
-  }, [promotionStatuses, fetchPromotionStatus]);
+  }, [promotionStatuses]);
 
   const promoteStaging = useCallback(async (contentPath: string) => {
     setPublishing(true);
     setPublishError(null);
     try {
-      await adminFetch('/admin/content/assets/promote-staging', {
-        method: 'POST',
-        body: JSON.stringify({ contentPath }),
-      });
+      await promoStaging(contentPath);
       await fetchPromotionStatus();
     } catch {
       setPublishError('Failed to promote to staging');
     } finally {
       setPublishing(false);
     }
-  }, [fetchPromotionStatus]);
+  }, []);
 
   const promoteProduction = useCallback(async (contentPath: string) => {
     setPublishing(true);
     setPublishError(null);
     try {
-      await adminFetch('/admin/content/assets/promote-production', {
-        method: 'POST',
-        body: JSON.stringify({ contentPath }),
-      });
+      await promoProduction(contentPath);
       await fetchPromotionStatus();
     } catch {
       setPublishError('Failed to promote to production');
     } finally {
       setPublishing(false);
     }
-  }, [fetchPromotionStatus]);
+  }, []);
 
   const rollbackStaging = useCallback(async (contentPath: string) => {
     setPublishing(true);
     setPublishError(null);
     try {
-      await adminFetch('/admin/content/assets/rollback-staging', {
-        method: 'POST',
-        body: JSON.stringify({ contentPath }),
-      });
+      await rollbackStg(contentPath);
       await fetchPromotionStatus();
     } catch {
       setPublishError('Failed to rollback staging');
     } finally {
       setPublishing(false);
     }
-  }, [fetchPromotionStatus]);
+  }, []);
 
   return {
     currentStepIdx,

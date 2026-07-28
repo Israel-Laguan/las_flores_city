@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { adminFetch } from '@/lib/client-api';
 
 interface LoreFileEntry {
@@ -29,12 +29,15 @@ export function useLoreTree() {
   const [treeLoading, setTreeLoading] = useState(true);
   const [treeError, setTreeError] = useState<string | null>(null);
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
+  const requestIdRef = useRef(0);
 
   const fetchTree = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setTreeLoading(true);
     setTreeError(null);
     try {
       const data = await adminFetch<LoreTreeResponse>('/admin/lore/tree');
+      if (requestId !== requestIdRef.current) return;
       if (data.success) {
         setTree(data.data.tree);
         const types = new Set(Object.keys(groupByType(data.data.tree)));
@@ -43,9 +46,9 @@ export function useLoreTree() {
         setTreeError('Failed to load lore tree');
       }
     } catch {
-      setTreeError('Failed to load lore tree');
+      if (requestId === requestIdRef.current) setTreeError('Failed to load lore tree');
     } finally {
-      setTreeLoading(false);
+      if (requestId === requestIdRef.current) setTreeLoading(false);
     }
   }, []);
 

@@ -30,8 +30,7 @@ export default function LoreEditor({ selectedPath, content, contentLoading, cont
     setSaveSuccess(false);
   }, [selectedPath]);
 
-  const savePathRef = useRef<string | null>(null);
-  const saveContentRef = useRef<string>('');
+  const saveRequestIdRef = useRef(0);
 
   const enterEdit = useCallback(() => {
     setDraft(content ?? '');
@@ -59,26 +58,24 @@ export default function LoreEditor({ selectedPath, content, contentLoading, cont
     setSaving(true);
     setSaveError(null);
     setSaveSuccess(false);
-    savePathRef.current = selectedPath;
-    saveContentRef.current = draft;
+    const requestId = ++saveRequestIdRef.current;
     try {
       const data = await adminFetch<{ success: boolean; error?: string }>(
         '/admin/lore/file',
         { method: 'POST', body: JSON.stringify({ path: selectedPath, content: draft }) },
       );
+      if (requestId !== saveRequestIdRef.current) return;
       if (data.success) {
-        if (savePathRef.current !== selectedPath || saveContentRef.current !== draft) return;
         setSaveSuccess(true);
         setDirty(false);
         setEditing(false);
         onSaved?.();
       } else {
-        if (savePathRef.current !== selectedPath || saveContentRef.current !== draft) return;
         setSaveError(data.error || 'Save failed');
       }
     } catch {
-      if (savePathRef.current !== selectedPath || saveContentRef.current !== draft) return;
-      setSaveError('Save failed');
+      if (requestId !== saveRequestIdRef.current) return;
+      setSaveError('Network error during save');
     } finally {
       setSaving(false);
     }
