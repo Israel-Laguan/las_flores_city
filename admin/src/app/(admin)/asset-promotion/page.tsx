@@ -1,7 +1,7 @@
 'use client';
 
-import { useAssetPromotion } from './hooks/useAssetPromotion';
-import PromotionRow from './components/PromotionRow';
+import { useAssetPromotion } from '@/components/promotion/useAssetPromotion';
+import PromotionRow from '@/components/promotion/PromotionRow';
 import styles from './asset-promotion.module.css';
 
 function entityType(contentPath: string): string {

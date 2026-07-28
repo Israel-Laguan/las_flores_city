@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { adminFetch } from '@/lib/client-api';
+import { useTrackedFetch } from './useTrackedFetch';
 
 interface LoreFileResponse {
   success: boolean;
@@ -10,41 +11,31 @@ export function useLoreContent(selectedPath: string | null) {
   const [content, setContent] = useState<string | null>(null);
   const [contentLoading, setContentLoading] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
+  const { withTracking } = useTrackedFetch();
 
-  useEffect(() => {
-    let active = true;
-    if (selectedPath) {
-      setContentLoading(true);
-      setContentError(null);
-      adminFetch<LoreFileResponse>(
-        `/admin/lore/file?path=${encodeURIComponent(selectedPath)}`,
-      )
-        .then((data: LoreFileResponse) => {
-          if (active) {
-            if (data.success) {
-              setContent(data.data.content);
-            } else {
-              setContentError('Failed to load file content');
-            }
-          }
-        })
-        .catch(() => {
-          if (active) {
-            setContentError('Failed to load file content');
-          }
-        })
-        .finally(() => {
-          if (active) {
-            setContentLoading(false);
-          }
-        });
-    } else {
+  const fetchContent = useCallback(async () => {
+    if (!selectedPath) {
       setContent(null);
+      setContentLoading(false);
+      setContentError(null);
+      return;
     }
-    return () => {
-      active = false;
-    };
-  }, [selectedPath]);
+    setContentLoading(true);
+    setContentError(null);
+    await withTracking(
+      () => adminFetch<LoreFileResponse>(
+        `/admin/lore/file?path=${encodeURIComponent(selectedPath)}`,
+      ),
+      (data) => {
+        if (data.success) setContent(data.data.content);
+        else setContentError('Failed to load file content');
+      },
+      () => setContentError('Failed to load file content'),
+      () => setContentLoading(false),
+    );
+  }, [selectedPath, withTracking]);
 
-  return { content, contentLoading, contentError };
+  useEffect(() => { fetchContent(); }, [fetchContent]);
+
+  return { content, contentLoading, contentError, refetch: fetchContent };
 }

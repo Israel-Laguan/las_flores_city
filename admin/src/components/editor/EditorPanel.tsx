@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { cn } from '@las-flores/ui';
-import styles from '../editor.module.css';
+import styles from './editor.module.css';
 
 interface Props {
   selectedPath: string | null;

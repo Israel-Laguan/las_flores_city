@@ -149,8 +149,8 @@
   border-left: 3px solid;
   border-bottom: 1px solid;
   border-right: 1px solid;
-  borderBottomLeftRadius: 5px;
-  borderBottomRightRadius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   font-family: var(--font-mono);
   font-size: 0.85rem;
 }

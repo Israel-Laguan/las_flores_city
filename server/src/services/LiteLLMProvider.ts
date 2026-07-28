@@ -3,6 +3,7 @@ import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMT
 import type { EntityCandidate } from './OutlineChunking.js';
 import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
+import { finiteInt } from '../utils/env.js';
 
 export interface LiteLLMProviderOptions {
   timeoutMs?: number;
@@ -21,7 +22,7 @@ export class LiteLLMProvider implements LLMProvider {
     this.baseUrl = process.env.LITELLM_BASE_URL || 'http://litellm:4000';
     this.apiKey = process.env.LITELLM_API_KEY || '';
     this.model = opts?.model || process.env.LLM_MODEL || 'poolside/laguna-m.1';
-    this.defaultTimeoutMs = opts?.timeoutMs ?? parseInt(process.env.LLM_TIMEOUT_MS || '60000', 10);
+    this.defaultTimeoutMs = opts?.timeoutMs ?? finiteInt(process.env.LLM_TIMEOUT_MS, 60000);
     this.retries = opts?.retries ?? 2;
   }
 
@@ -78,7 +79,7 @@ export class LiteLLMProvider implements LLMProvider {
 
   private async callLLM(systemPrompt: string, userMessage: string, customTimeoutMs?: number, maxTokens?: number): Promise<{ result: Record<string, unknown>; usage: LLMUsage | null }> {
     const timeoutMs = customTimeoutMs ?? this.defaultTimeoutMs;
-    const maxTimeoutMs = parseInt(process.env.LLM_MAX_TIMEOUT_MS || '300000', 10);
+    const maxTimeoutMs = finiteInt(process.env.LLM_MAX_TIMEOUT_MS, 300000);
     let lastError: Error | null = null;
     let attemptTimeoutMs = timeoutMs;
 
@@ -226,8 +227,8 @@ export class LiteLLMProvider implements LLMProvider {
       ? new LiteLLMProvider({ model: outlineModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
       : this;
 
-    const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
-    const initialMaxItems = parseInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS || '15', 10);
+    const maxTokens = finiteInt(process.env.LLM_OUTLINE_MAX_TOKENS, 4096);
+    const initialMaxItems = finiteInt(process.env.LLM_OUTLINE_INITIAL_MAX_ITEMS, 15);
 
     const attemptOutline = async (maxItems?: number): Promise<{ plan: ContentPlan; usage: LLMUsage | null }> => {
       const systemPrompt = buildOutlinePrompt(context, { maxItems });
@@ -288,7 +289,7 @@ export class LiteLLMProvider implements LLMProvider {
   }
 
   async extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }> {
-    const maxTokens = parseInt(process.env.LLM_OUTLINE_MAX_TOKENS || '4096', 10);
+    const maxTokens = finiteInt(process.env.LLM_OUTLINE_MAX_TOKENS, 4096);
     const { result } = await this.callLLM(systemPrompt, chunk, undefined, maxTokens);
     const raw = Array.isArray((result as any).entities) ? (result as any).entities : [];
     const entities = raw.filter((e: any) =>

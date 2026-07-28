@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@las-flores/ui';
-import styles from '../migration.module.css';
+import styles from './migration.module.css';
 
 interface AppliedMigration {
   filePath: string;

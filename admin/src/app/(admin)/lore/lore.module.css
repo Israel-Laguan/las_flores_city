@@ -21,3 +21,80 @@
   border-radius: 5px;
   margin: 0.5rem;
 }
+.newFileSection {
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.addFileButton {
+  width: 100%;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.addFileButton:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0, 255, 0, 0.03);
+}
+
+.newFileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.newFileInput {
+  width: 100%;
+  padding: 0.45rem;
+  background: var(--page-bg);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+.newFileActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.newFileButton {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-mono);
+}
+
+.newFileSaveButton {
+  background: var(--accent);
+  color: #000;
+}
+
+.newFileSaveButton:disabled {
+  background: #555;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.newFileCancelButton {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.newFileError {
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+

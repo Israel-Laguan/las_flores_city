@@ -1,0 +1,104 @@
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
+  overflow-x: auto;
+}
+
+.stepGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepDot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border: 2px solid var(--border);
+  background: var(--panel-bg);
+  color: var(--muted);
+  cursor: default;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.stepDot:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.stepDot:not(:disabled) {
+  cursor: pointer;
+}
+
+.stepDot:not(:disabled):hover {
+  border-color: var(--accent);
+}
+
+.stepActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+.stepDone {
+  background: rgba(0, 255, 0, 0.18);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.stepBlocked {
+  background: rgba(255, 68, 68, 0.18);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.stepLabel {
+  font-size: 0.78rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 0;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.stepLabel:disabled {
+  opacity: 0.6;
+}
+
+.stepLabel:not(:disabled) {
+  cursor: pointer;
+}
+
+.stepLabel:not(:disabled):hover {
+  color: var(--accent);
+}
+
+.stepLabelActive {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.stepLabelDone {
+  color: var(--foreground);
+}
+
+.stepLine {
+  width: 2rem;
+  height: 2px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.stepLineDone {
+  background: var(--accent);
+}

@@ -28,7 +28,7 @@ What it is **not**:
 | Bundler | Turbopack (`next dev --turbopack`) |
 | Language | TypeScript (`strict: true`, `jsx: preserve`) |
 | Styling | CSS Modules + shared `@las-flores/ui` classes (see [docs/UI_STYLE_SYSTEM.md](UI_STYLE_SYSTEM.md)) |
-| Tests | Vitest + Testing Library + jsdom (7 files, 76 tests) |
+| Tests | Vitest + Testing Library + jsdom (19 files, 145 tests) |
 | Lint | ESLint 8 (custom config in `admin/.eslintrc.json`) |
 | Port | 3002 on the host (via `docker-compose.yml` or `start-stack.sh`), 3000 inside the container |
 
@@ -275,7 +275,7 @@ export default function StoryBeatsPage() {
 
 The hook owns: `useState` for the list, edit state, submitting flag, error, and exposes `handleAddSubmit`, `handleEditStart`, `handleEditSave`, `handleDelete`. It calls Express via `adminFetch` and refetches on success.
 
-Used by: `story-beats`, `missions`, `missions/new`, `editor`, `content-linker`, `migration`, `validation`, `quality`, `analytics`, `asset-coverage`, `assets`, `users` (stub), `settings` (stub).
+Used by: `story-beats`, `missions`, `missions/new`, `editor`, `content-linker`, `migration`, `validation`, `quality`, `analytics`, `asset-coverage`, `assets`, `users` , `settings` .
 
 ### Type C — multi-step orchestrator
 
@@ -363,18 +363,22 @@ For the full contract — the shared class vocabulary, the theme-variable namesp
 
 ## Testing
 
-Vitest + jsdom + Testing Library. Run with `npm run test --workspace=admin` (7 files, 76 tests at handoff).
+Vitest + jsdom + Testing Library. Run with `npm run test --workspace=admin` (19 files, 145 tests at handoff).
 
 | File | What it tests |
 |---|---|
-| `src/app/__tests__/badgeRendering.test.tsx` | `<Badge>` renders the right variant class. Uses `fast-check` for property-based invariants: across 100 random arrays of `name` + `beatAssociation`, the badge `<span>` always gets the right variant class. |
-| `src/app/__tests__/contentListViews.test.tsx` | `ContentListPage` end-to-end with mocked `adminFetch`: loading, error, empty, populated. |
-| `src/app/story-builder/__tests__/ContentCard.test.tsx` | `<ContentCard>` renders all expected fields and slots. |
-| `src/app/story-builder/__tests__/PlanSummary.test.tsx` | `<PlanSummary>` summary counts. |
-| `src/app/story-builder/__tests__/FieldDefinitions.test.ts` | Pure data sanity: every field def has a key, label, and type. |
-| `src/app/story-beats/__tests__/storyBeatsPage.test.tsx` | `<StoryBeatsPage>` end-to-end with mocked `adminFetch`: add / edit / delete flows. |
-| `src/app/story-beats/__tests__/beatDetailPage.test.tsx` | The detail view of a single beat. |
-
+| `src/components/__tests__/Sidebar.test.tsx` | Sidebar nav: sections, active-state, collapsible groups |
+| `src/components/__tests__/TopBar.test.tsx` | TopBar renders breadcrumbs and title |
+| `src/app/(admin)/__tests__/badgeRendering.test.tsx` | Badge variant class rendering (property-based) |
+| `src/app/(admin)/__tests__/contentListViews.test.tsx` | ContentListPage end-to-end with mocked adminFetch |
+| `src/app/(admin)/lore/__tests__/LoreEditor.test.tsx` | Lore editor: edit/save/cancel, dirty-guard, error display |
+| `src/app/(admin)/pipeline/__tests__/Stepper.test.tsx` | Pipeline stepper: step rendering, click nav, blocked states |
+| `src/app/(admin)/pipeline/__tests__/usePipeline.test.ts` | Pipeline hook: gating, validation, migration, promotion |
+| `src/app/(admin)/ai-config/__tests__/page.test.tsx` | AI config page: loading, config display, error state |
+| `src/app/(admin)/asset-promotion/__tests__/PromotionRow.test.tsx` | Promotion row rendering and callbacks |
+| `src/app/(admin)/story-builder/**/__tests__/*` (7 files) | Story Builder suite, including plan pages |
+| `src/app/(admin)/story-beats/__tests__/*` (2 files) | Story Beats: list CRUD + detail view |
+| `src/app/(admin)/missions/new/__tests__/redirect.test.tsx` | New mission redirect |
 The setup file is one line: `import '@testing-library/jest-dom';`. There is no global mock layer; tests that need to mock `adminFetch` use `vi.mock('@/lib/client-api', ...)`.
 
 The Vitest config (`admin/vitest.config.ts`) resolves `@` and `@las-flores/shared` aliases so tests can import with the same paths as the source.
@@ -462,7 +466,7 @@ These are tracked in `docs/UI_STYLE_SYSTEM.md`; they are not blockers:
 1. **Page-level `.module.css` migration** — not every page module composes the shared classes yet. The pattern is established; the rest is mechanical.
 2. **Optional React wrappers** — `Button` / `Input` / `Card` / `Badge` are now available in `@las-flores/ui` as opt-in conveniences. Adoption across admin pages is a follow-up — pages that compose classes directly with `cn()` keep working unchanged.
 
-The only known "real" gap is that **`/users` and `/settings` are stubs** (placeholders, not implemented). They are not on the active roadmap.
+/users and /settings are fully implemented.
 
 ### Dependency note
 
@@ -478,7 +482,7 @@ Run from the repo root after any admin change:
 npm run lint --workspace=admin
 
 # Tests
-npm run test --workspace=admin          # 7 files, 76 tests at handoff
+npm run test --workspace=admin          # 19 files, 145 tests at handoff
 
 # Build
 npm run build --workspace=admin         # Next build; surfaces route / TS errors

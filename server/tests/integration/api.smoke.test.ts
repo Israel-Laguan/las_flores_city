@@ -49,6 +49,7 @@ beforeAll(async () => {
       'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
     connectionTimeoutMillis: 5000,
   });
+  await pool.query('SELECT 1');
 
   // Build test app
   app = express();

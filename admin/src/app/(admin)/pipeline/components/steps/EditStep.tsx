@@ -1,20 +1,24 @@
 'use client';
 
-import styles from '@/components/editor/editor.module.css';
 import FileTree from '@/components/editor/FileTree';
 import EditorPanel from '@/components/editor/EditorPanel';
 import { useEditor } from '@/components/editor/useEditor';
+import styles from '../../pipeline.module.css';
 
-export default function EditorPage() {
+export default function EditStep() {
   const editor = useEditor();
 
   return (
-    <main className={styles.main}>
-      <h1>Content Editor</h1>
-      <div className={styles.container}>
+    <div className={styles.stepContent}>
+      <h2 className={styles.stepTitle}>1. Edit Content</h2>
+      <p className={styles.stepDescription}>
+        Create or edit YAML content files. When finished, proceed to validation.
+      </p>
+      <div className={styles.editorLayout}>
         <FileTree
           tree={editor.tree}
           treeLoading={editor.treeLoading}
+          treeError={editor.treeError}
           filter={editor.filter}
           selectedPath={editor.selectedPath}
           expandedTypes={editor.expandedTypes}
@@ -36,6 +40,6 @@ export default function EditorPage() {
           />
         </div>
       </div>
-    </main>
+    </div>
   );
 }

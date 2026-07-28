@@ -29,6 +29,7 @@ import { adminContentAssetRouter } from './routes/admin-content-asset.js';
 import { adminCoverageRouter } from './routes/admin-coverage.js';
 import { adminLoreRouter } from './routes/admin-lore.js';
 import { adminStoryBeatsRouter } from './routes/admin-story-beats.js';
+import { adminAiConfigRouter } from './routes/admin-ai-config.js';
 import { adminListViewsRouter } from './routes/admin-list-views.js';
 import { adminStoryBuilderRouter } from './routes/admin-story-builder.js';
 import { adminAssetRouter } from './routes/admin-asset.js';
@@ -150,6 +151,7 @@ app.use('/admin/asset', adminAssetRouter);
 app.use('/admin/analytics', adminAnalyticsRouter);
 app.use('/admin/users', adminUsersRouter);
 app.use('/admin/settings', adminSettingsRouter);
+app.use('/admin/ai-config', adminAiConfigRouter);
 app.use('/admin', adminListViewsRouter);
 
 // Error handling middleware

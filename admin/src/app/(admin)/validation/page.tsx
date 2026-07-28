@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import styles from './validation.module.css';
+import styles from '@/components/validation/validation.module.css';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
-import ValidationSummary from './components/ValidationSummary';
-import ErrorsByFile from './components/ErrorsByFile';
-import WarningsByFile from './components/WarningsByFile';
+import ValidationSummary from '@/components/validation/ValidationSummary';
+import ErrorsByFile from '@/components/validation/ErrorsByFile';
+import WarningsByFile from '@/components/validation/WarningsByFile';
 
 interface ValidationError {
   file?: string;

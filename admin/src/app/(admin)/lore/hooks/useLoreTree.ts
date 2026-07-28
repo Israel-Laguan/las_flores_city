@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { adminFetch } from '@/lib/client-api';
+import { useTrackedFetch } from './useTrackedFetch';
 
 interface LoreFileEntry {
   path: string;
@@ -29,26 +30,33 @@ export function useLoreTree() {
   const [treeLoading, setTreeLoading] = useState(true);
   const [treeError, setTreeError] = useState<string | null>(null);
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
+  const isInitialLoadRef = useRef(true);
+  const { withTracking } = useTrackedFetch();
 
-  useEffect(() => {
-    async function fetchTree() {
-      try {
-        const data = await adminFetch<LoreTreeResponse>('/admin/lore/tree');
-        if (data.success) {
-          setTree(data.data.tree);
-          const types = new Set(Object.keys(groupByType(data.data.tree)));
-          setExpandedTypes(types);
-        } else {
-          setTreeError('Failed to load lore tree');
-        }
-      } catch {
-        setTreeError('Failed to load lore tree');
-      } finally {
-        setTreeLoading(false);
-      }
-    }
-    fetchTree();
-  }, []);
+  const fetchTree = useCallback(async () => {
+    setTreeLoading(true);
+    setTreeError(null);
+    await withTracking(
+      () => adminFetch<LoreTreeResponse>('/admin/lore/tree'),
+      (data) => {
+        setTree(data.data.tree);
+        const types = new Set(Object.keys(groupByType(data.data.tree)));
+        setExpandedTypes((prev) => {
+          if (isInitialLoadRef.current) {
+            isInitialLoadRef.current = false;
+            return types;
+          }
+          const merged = new Set(prev);
+          for (const type of types) merged.add(type);
+          return merged;
+        });
+      },
+      () => setTreeError('Failed to load lore tree'),
+      () => setTreeLoading(false),
+    );
+  }, [withTracking]);
+
+  useEffect(() => { fetchTree(); }, [fetchTree]);
 
   const toggleType = (type: string) => {
     setExpandedTypes((prev) => {
@@ -59,5 +67,5 @@ export function useLoreTree() {
     });
   };
 
-  return { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType };
+  return { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType, refetch: fetchTree };
 }
