@@ -1,4 +1,4 @@
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import type { ContentPlanItem, ContentType } from '@las-flores/shared';
 
 type TemplateFn = (item: ContentPlanItem) => string;

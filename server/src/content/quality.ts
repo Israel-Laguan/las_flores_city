@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import { glob } from 'glob';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import type { ContentType } from '@las-flores/shared';
 
 // ---------------------------------------------------------------------------

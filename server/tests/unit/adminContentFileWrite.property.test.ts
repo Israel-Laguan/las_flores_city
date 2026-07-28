@@ -30,7 +30,7 @@ import fc from 'fast-check';
 // we use jest.spyOn on the actual `fs.promises` methods after import.
 
 import fs from 'node:fs';
-import jsYaml from 'js-yaml';
+import * as jsYaml from 'js-yaml';
 
 // Import the route module (it re-exports validateContentPath too).
 // The route handler is NOT exported directly, so we test via a

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import type { ContentPlanItem, AssetNeed } from '@las-flores/shared';
 import { generateImageBuffer } from './AssetGenerationService.js';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';

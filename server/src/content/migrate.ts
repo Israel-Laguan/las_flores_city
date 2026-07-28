@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
 import crypto from 'crypto';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import type pg from 'pg';
 import type { ContentType } from '@las-flores/shared';
 import { oltpPool, queryOLTP } from '../database/connection.js';

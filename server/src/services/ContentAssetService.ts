@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import jsYaml from 'js-yaml';
+import * as jsYaml from 'js-yaml';
 import { resolveContentDir } from './StoryBuilderLore.js';
 
 /**
