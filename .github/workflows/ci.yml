@@ -219,6 +219,9 @@ jobs:
           CI: 'true'
           API_URL: http://localhost:5173
           CLIENT_ORIGIN_URL: http://localhost:5173
+          # Explicit contract: the test runner and the Vite dev server share
+          # the same About Us URL so main-menu popup assertions match the app.
+          VITE_ABOUT_US_URL: https://example.com/about-us
 
       - uses: actions/upload-artifact@v7
         if: failure()

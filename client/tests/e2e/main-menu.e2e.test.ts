@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { login } from './helpers';
 
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
 const ABOUT_US_URL = process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us';
@@ -17,10 +18,7 @@ async function registerAndLogin(page: Page): Promise<void> {
     },
   });
   expect(res.ok()).toBeTruthy();
-  const loginRes = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
-    data: { email, password: 'test1234' },
-  });
-  expect(loginRes.ok()).toBeTruthy();
+  await login(page, email, 'test1234', AUTH_BASE);
 }
 
 test.describe('Main menu — normal operations', () => {

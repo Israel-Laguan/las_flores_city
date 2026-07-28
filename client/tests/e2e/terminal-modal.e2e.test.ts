@@ -12,6 +12,7 @@
  *   6. confirm modal inherits faction palette via cascade
  */
 import { test, expect, Page } from '@playwright/test';
+import { login } from './helpers';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
@@ -31,10 +32,7 @@ test.beforeAll(async ({ request }) => {
 });
 
 async function injectAuth(page: Page) {
-  const res = await page.request.post(`${API_BASE}/api/auth/login`, {
-    data: { email: testEmail, password: 'test1234' },
-  });
-  expect(res.ok()).toBeTruthy();
+  await login(page, testEmail, 'test1234', API_BASE);
 }
 
 test.beforeEach(async ({ page }) => {

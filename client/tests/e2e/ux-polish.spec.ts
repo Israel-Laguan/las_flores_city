@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { startNewGame } from './helpers';
+import { startNewGame, login } from './helpers';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
@@ -35,9 +35,7 @@ test.beforeAll(async ({ request }) => {
  * cookies. See Task 6.5 spec §E2E migration.
  */
 async function injectAuth(page: Page) {
-  await page.request.post(`${API_BASE}/api/auth/login`, {
-    data: { email: testEmail, password: 'test1234' },
-  });
+  await login(page, testEmail, 'test1234', API_BASE);
 }
 
 test.describe('UX Polish Readiness', () => {
@@ -132,14 +130,18 @@ test.describe('UX Polish Readiness', () => {
   test('CSS backdrop-filter has solid fallback for Safari/iOS', async ({ page }) => {
     await injectAuth(page);
     await startNewGame(page);
-    await page.waitForTimeout(500);
+    // startNewGame guarantees the Phaser canvas is ready; wait for the phone
+    // shell markup to mount before reading computed styles so getComputedStyle
+    // returns a real value instead of "" (which fails the toBeTruthy assert
+    // under parallel load where React mounts lag the canvas by a frame).
+    await expect(page.locator('#phone-overlay')).toBeAttached({ timeout: 10_000 });
 
     // Verify the phone screen has a solid background fallback
     const phoneScreen = page.locator('.phone-screen');
     const count = await phoneScreen.count();
 
     if (count > 0) {
-      const bgColor = await phoneScreen.evaluate((el) => {
+      const bgColor = await phoneScreen.first().evaluate((el) => {
         return window.getComputedStyle(el).backgroundColor;
       });
       // The background should be a solid rgba color (not transparent)
@@ -166,7 +168,8 @@ test.describe('UX Polish Readiness', () => {
   test('WebGL context recovery: visibilitychange handler is registered', async ({ page }) => {
     await injectAuth(page);
     await startNewGame(page);
-    await page.waitForTimeout(1000);
+    // startNewGame waits for the Phaser canvas to be fully initialized, so the
+    // canvas is guaranteed to exist here — no fixed sleep needed.
 
     // Verify that the Phaser canvas exists and the app handles tab visibility
     const canvasExists = await page.evaluate(() => {

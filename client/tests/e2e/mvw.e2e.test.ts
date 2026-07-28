@@ -7,7 +7,7 @@
  * Full loop: Apartment → Move → Dialogue → Sleep
  */
 import { test, expect, Page } from '@playwright/test';
-import { startNewGame } from './helpers';
+import { startNewGame, login } from './helpers';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:5173';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
@@ -36,9 +36,7 @@ test.beforeAll(async ({ request }) => {
  * cookies. See Task 6.5 spec §E2E migration.
  */
 async function injectAuth(page: Page) {
-  await page.request.post(`${API_URL}/api/auth/login`, {
-    data: { email: testEmail, password: 'test1234' },
-  });
+  await login(page, testEmail, 'test1234', API_URL);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -240,9 +238,7 @@ test.describe('Full First Hour Loop', () => {
   });
 
   test('Apartment → Move → Dialogue → Sleep completes without crash', async ({ page }) => {
-    await page.request.post(`${API_URL}/api/auth/login`, {
-      data: { email: loopTestEmail, password: 'test1234' },
-    });
+    await login(page, loopTestEmail, 'test1234', API_URL);
 
     // 1. Verify starting health
     const healthRes = await page.request.get(`${API_URL}/api/health`);

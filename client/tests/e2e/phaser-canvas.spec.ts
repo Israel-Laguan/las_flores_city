@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { startNewGame } from './helpers';
+import { startNewGame, login } from './helpers';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
@@ -27,9 +27,7 @@ test.beforeAll(async ({ request }) => {
 });
 
 async function injectAuth(page: Page) {
-  await page.request.post(`${API_BASE}/api/auth/login`, {
-    data: { email: testEmail, password: 'test1234' },
-  });
+  await login(page, testEmail, 'test1234', API_BASE);
 }
 
 test.describe('Phaser Canvas', () => {

@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { startNewGame } from './helpers';
+import { startNewGame, login } from './helpers';
 import { seedE2EUser, cleanupE2EUser } from './e2e-seed';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
@@ -40,9 +40,7 @@ test.afterAll(async ({ request }) => {
  * cookies. See Task 6.5 spec §E2E migration.
  */
 async function injectAuth(page: Page) {
-  await page.request.post(`${API_BASE}/api/auth/login`, {
-    data: { email: testEmail, password: 'test1234' },
-  });
+  await login(page, testEmail, 'test1234', API_BASE);
 }
 
 test.describe('Interactive Polish ()', () => {

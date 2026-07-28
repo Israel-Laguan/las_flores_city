@@ -4,7 +4,12 @@ const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests/e2e',
-  fullyParallel: true,
+  // Files still parallelize across workers, but tests *within* a file run in
+  // declared order. The Phaser-canvas E2E tests are isolation-sensitive
+  // (canvas init races + shared server state under load), so intra-file
+  // parallelism makes them flaky. Running each file's tests sequentially on
+  // one worker removes that contention while keeping cross-file throughput.
+  fullyParallel: false,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
   workers: isCI ? 2 : undefined,
