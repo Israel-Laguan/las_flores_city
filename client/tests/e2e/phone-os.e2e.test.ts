@@ -8,7 +8,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 
-const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
+const API_BASE = process.env.API_URL ?? 'http://localhost:5173';
 
 const testEmail = `phone-os-${Date.now()}-${Math.random().toString(36).slice(2, 6)}@example.com`;
 const testUsername = `phone_os_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;

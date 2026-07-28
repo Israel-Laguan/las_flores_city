@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
+const AUTH_BASE = process.env.API_URL ?? 'http://localhost:5173';
 const ABOUT_US_URL = process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us';
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
