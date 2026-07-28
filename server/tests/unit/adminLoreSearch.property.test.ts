@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // Admin Lore Search — Property-Based Tests
@@ -22,7 +23,7 @@ import { LoreFileRecord } from '../../src/routes/admin-lore.js';
 
 /** A safe alphanumeric string — used for stems and query tokens. */
 const alphaArb = (minLength = 1, maxLength = 30): fc.Arbitrary<string> =>
-  fc.stringOf(
+  stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
     { minLength, maxLength },
   );

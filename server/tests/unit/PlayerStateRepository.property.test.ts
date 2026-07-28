@@ -1,5 +1,6 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // PlayerStateRepository Property-Based Tests
@@ -67,7 +68,7 @@ const uuidArb = (): fc.Arbitrary<string> => fc.uuid();
 
 /** Valid node id — alphanumeric + underscore. */
 const nodeIdArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 40,
   });

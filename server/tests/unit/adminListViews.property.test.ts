@@ -1,5 +1,6 @@
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 import request from 'supertest';
 import express from 'express';
 
@@ -73,7 +74,7 @@ describe('Property 1: Pagination slice correctness', () => {
    * Restricting to [a-z0-9] ensures JS string comparison matches DB ORDER BY name ASC
    * without locale collation edge-cases affecting the assertion.
    */
-  const alphanumNameArb = fc.stringOf(
+  const alphanumNameArb = stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789'.split('')),
     { minLength: 1, maxLength: 20 },
   );

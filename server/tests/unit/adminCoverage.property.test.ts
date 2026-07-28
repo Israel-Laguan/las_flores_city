@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // Admin Coverage — Property-Based Tests
@@ -28,7 +29,7 @@ import {
  * Represents a bare name like "ana_kim".
  */
 const stemArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(
+  stringOf(
     fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'.split('')),
     { minLength: 1, maxLength: 30 },
   );

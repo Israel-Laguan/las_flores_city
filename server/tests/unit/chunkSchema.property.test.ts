@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf, hexString } from './__utils__/fastCheckV4';
 
 // ============================================================
 // ChunkSchema Round-Trip Property-Based Tests
@@ -22,34 +23,34 @@ import { ChunkSchema } from '@las-flores/shared';
 /** Generates a valid UUID v4 string (lowercase). */
 const uuidArb = (): fc.Arbitrary<string> =>
   fc.tuple(
-    fc.hexaString({ minLength: 8, maxLength: 8 }),
-    fc.hexaString({ minLength: 4, maxLength: 4 }),
+    hexString({ minLength: 8, maxLength: 8 }),
+    hexString({ minLength: 4, maxLength: 4 }),
     fc.constant('4'),
-    fc.hexaString({ minLength: 3, maxLength: 3 }),
+    hexString({ minLength: 3, maxLength: 3 }),
     fc.constantFrom('8', '9', 'a', 'b'),
-    fc.hexaString({ minLength: 3, maxLength: 3 }),
-    fc.hexaString({ minLength: 12, maxLength: 12 }),
+    hexString({ minLength: 3, maxLength: 3 }),
+    hexString({ minLength: 12, maxLength: 12 }),
   ).map(([p1, p2, p3, p4, p5, p6, p7]) => 
     `${p1}-${p2}-${p3}${p4}-${p5}${p6}-${p7}`
   );
 
 /** Generates a valid chunk key string (node-id-like value). */
 const chunkKeyArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 40,
   });
 
 /** Generates a node ID string. */
 const nodeIdArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 20,
   });
 
 /** Generates a choice ID string. */
 const choiceIdArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 20,
   });

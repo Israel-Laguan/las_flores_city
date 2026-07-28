@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // dialogue-response-helpers Property-Based Tests
@@ -29,7 +30,7 @@ const ISO_8601_RE =
 
 /** Generates a valid node id string. */
 const nodeIdArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 20,
   });

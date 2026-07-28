@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
+import { stringOf } from './__utils__/fastCheckV4';
 
 // ============================================================
 // payloadStripping Property-Based Tests
@@ -22,14 +23,14 @@ import type { Leaf } from '@las-flores/shared';
 
 /** Generates a valid chunk key string used as a leaf key. */
 const leafKeyArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 20,
   });
 
 /** Generates a valid target_chunk string (a node-id-like value). */
 const targetChunkArb = (): fc.Arbitrary<string> =>
-  fc.stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
+  stringOf(fc.constantFrom(...'abcdefghijklmnopqrstuvwxyz0123456789_'), {
     minLength: 3,
     maxLength: 40,
   });
