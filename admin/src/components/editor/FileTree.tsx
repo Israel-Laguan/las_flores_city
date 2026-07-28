@@ -65,7 +65,7 @@ export default function FileTree({ tree, treeLoading, treeError = null, filter, 
          {treeLoading ? (
            <p className={cn(styles.muted, styles.treeEmpty)}>Loading...</p>
          ) : treeError ? (
-           <p className={cn(styles.muted, styles.treeEmpty)}>{treeError}</p>
+           <p role="alert" className={cn(styles.muted, styles.treeEmpty)}>{treeError}</p>
          ) : Object.keys(grouped).length === 0 ? (
            <p className={cn(styles.muted, styles.treeEmpty)}>No files found</p>
          ) : (

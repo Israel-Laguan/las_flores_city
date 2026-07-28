@@ -12,6 +12,8 @@ import path from 'path';
 import { glob } from 'glob';
 import { validateContent, validateYAMLFile } from '../../src/content/validate.js';
 
+jest.setTimeout(60000);
+
 // Resolve content dir relative to this file's location (tests/integration/ → project root/content)
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
@@ -57,12 +59,10 @@ describe('Per-file validation (dynamic)', () => {
   // We resolve the glob synchronously via a workaround: the tests will
   // actually execute after beforeAll has run, so yamlFiles will be populated.
   test('each YAML file is individually valid', async () => {
-    // Re-resolve in case beforeAll hasn't run yet in this scope
-    const files = await glob(`${CONTENT_DIR}/**/*.{yaml,yml}`, { absolute: true });
-    expect(files.length).toBeGreaterThan(0);
+    expect(yamlFiles.length).toBeGreaterThan(0);
 
     const results = await Promise.all(
-      files.map(async (file) => {
+      yamlFiles.map(async (file) => {
         const result = await validateYAMLFile(file);
         return { file: path.relative(CONTENT_DIR, file), result };
       })

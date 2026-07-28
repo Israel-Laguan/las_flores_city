@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { adminFetch } from '@/lib/client-api';
+import { useTrackedFetch } from './useTrackedFetch';
 
 interface LoreFileEntry {
   path: string;
@@ -29,28 +30,31 @@ export function useLoreTree() {
   const [treeLoading, setTreeLoading] = useState(true);
   const [treeError, setTreeError] = useState<string | null>(null);
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(new Set());
-  const requestIdRef = useRef(0);
+  const isInitialLoadRef = useRef(true);
+  const { withTracking } = useTrackedFetch();
 
   const fetchTree = useCallback(async () => {
-    const requestId = ++requestIdRef.current;
     setTreeLoading(true);
     setTreeError(null);
-    try {
-      const data = await adminFetch<LoreTreeResponse>('/admin/lore/tree');
-      if (requestId !== requestIdRef.current) return;
-      if (data.success) {
+    await withTracking(
+      () => adminFetch<LoreTreeResponse>('/admin/lore/tree'),
+      (data) => {
         setTree(data.data.tree);
         const types = new Set(Object.keys(groupByType(data.data.tree)));
-        setExpandedTypes(types);
-      } else {
-        setTreeError('Failed to load lore tree');
-      }
-    } catch {
-      if (requestId === requestIdRef.current) setTreeError('Failed to load lore tree');
-    } finally {
-      if (requestId === requestIdRef.current) setTreeLoading(false);
-    }
-  }, []);
+        setExpandedTypes((prev) => {
+          if (isInitialLoadRef.current) {
+            isInitialLoadRef.current = false;
+            return types;
+          }
+          const merged = new Set(prev);
+          for (const type of types) merged.add(type);
+          return merged;
+        });
+      },
+      () => setTreeError('Failed to load lore tree'),
+      () => setTreeLoading(false),
+    );
+  }, [withTracking]);
 
   useEffect(() => { fetchTree(); }, [fetchTree]);
 

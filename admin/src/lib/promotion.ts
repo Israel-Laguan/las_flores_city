@@ -19,7 +19,7 @@ export interface PromotionStatusResponse {
 export async function fetchPromotionStatus(): Promise<PromotionStatus[]> {
   const data = await adminFetch<PromotionStatusResponse>('/admin/content/assets/promotion-status');
   if (data.success) return data.data;
-  return [];
+  throw new Error('Failed to load promotion status');
 }
 
 export async function promoteStaging(contentPath: string): Promise<void> {

@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { adminFetch } from '@/lib/client-api';
+import { useTrackedFetch } from './useTrackedFetch';
 
 interface LoreFileResponse {
   success: boolean;
@@ -10,10 +11,9 @@ export function useLoreContent(selectedPath: string | null) {
   const [content, setContent] = useState<string | null>(null);
   const [contentLoading, setContentLoading] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
-  const requestIdRef = useRef(0);
+  const { withTracking } = useTrackedFetch();
 
   const fetchContent = useCallback(async () => {
-    const requestId = ++requestIdRef.current;
     if (!selectedPath) {
       setContent(null);
       setContentLoading(false);
@@ -22,19 +22,18 @@ export function useLoreContent(selectedPath: string | null) {
     }
     setContentLoading(true);
     setContentError(null);
-    try {
-      const data = await adminFetch<LoreFileResponse>(
+    await withTracking(
+      () => adminFetch<LoreFileResponse>(
         `/admin/lore/file?path=${encodeURIComponent(selectedPath)}`,
-      );
-      if (requestId !== requestIdRef.current) return;
-      if (data.success) setContent(data.data.content);
-      else setContentError('Failed to load file content');
-    } catch {
-      if (requestId === requestIdRef.current) setContentError('Failed to load file content');
-    } finally {
-      if (requestId === requestIdRef.current) setContentLoading(false);
-    }
-  }, [selectedPath]);
+      ),
+      (data) => {
+        if (data.success) setContent(data.data.content);
+        else setContentError('Failed to load file content');
+      },
+      () => setContentError('Failed to load file content'),
+      () => setContentLoading(false),
+    );
+  }, [selectedPath, withTracking]);
 
   useEffect(() => { fetchContent(); }, [fetchContent]);
 

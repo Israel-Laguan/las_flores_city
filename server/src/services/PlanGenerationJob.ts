@@ -91,7 +91,7 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
     const context = await contentPlanService.gatherContext();
     const contentDir = resolveContentDir();
 
-    const concurrency = finiteInt(process.env.PLAN_FILL_CONCURRENCY, 3);
+    const concurrency = Math.max(1, finiteInt(process.env.PLAN_FILL_CONCURRENCY, 3));
     const timeoutMs = finiteInt(process.env.PLAN_FILL_TIMEOUT_MS, 120000);
 
     for (let i = 0; i < createItems.length; i += concurrency) {

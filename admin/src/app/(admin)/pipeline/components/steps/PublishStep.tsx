@@ -62,18 +62,12 @@ function entityType(contentPath: string): string {
         </button>
         <button
           onClick={onFetchStatus}
-          disabled={loading}
-          className={cn(styles.button, loading ? styles.disabledButton : styles.secondaryButton)}
+          disabled={loading || publishing}
+          className={cn(styles.button, loading || publishing ? styles.disabledButton : styles.secondaryButton)}
         >
           {loading ? 'Loading...' : 'Refresh Status'}
         </button>
       </div>
-
-      {publishError && (
-        <div className={styles.errorBox}>
-          <pre className={styles.errorPre}>{publishError}</pre>
-        </div>
-      )}
 
       <div className={styles.publishSummary}>
         <span className={styles.publishStat}>
