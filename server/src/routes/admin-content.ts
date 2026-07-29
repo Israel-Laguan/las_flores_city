@@ -8,6 +8,7 @@ import { migrateContent } from '../content/migrate.js';
 import { queryOLTP } from '../database/connection.js';
 import { computeContentDiff } from './utils/contentDiff.js';
 import { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
+import { invalidateContentResolverCache } from './admin-content-resolver.js';
 import { adminContentTreeRouter } from './admin-content.tree.js';
 
 export { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
@@ -296,6 +297,9 @@ adminContentRouter.put('/file', async (req, res) => {
 
     // Step 5: stat the written file and return metadata
     const stat = await fs.promises.stat(resolvedPath);
+
+    // Invalidate the by-id resolver cache so detail pages see the fresh YAML.
+    invalidateContentResolverCache();
 
     res.json({
       success: true,

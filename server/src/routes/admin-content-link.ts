@@ -4,6 +4,7 @@ import path from 'node:path';
 import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContentPath, resolveContentDir } from './admin-content.helpers.js';
+import { invalidateContentResolverCache } from './admin-content-resolver.js';
 
 export const adminContentLinkRouter = express.Router();
 adminContentLinkRouter.use(authAndAdminMiddleware);
@@ -83,6 +84,10 @@ adminContentLinkRouter.post('/link', async (req, res) => {
       return;
     }
     const newYaml = await writeLinkedYaml(absolutePath, data);
+
+    // Invalidate the by-id resolver cache so detail pages see the fresh YAML.
+    invalidateContentResolverCache();
+
     res.json({ success: true, data: { contentPath, fieldPath, action, value, content: newYaml }, timestamp: new Date().toISOString() });
   } catch (error: any) {
     if (error.code === 'ENOENT') {

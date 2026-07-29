@@ -1,0 +1,91 @@
+.main {
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.heading {
+  color: var(--accent);
+  margin: 0 0 var(--space-4);
+}
+
+.sectionHeading {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.helpText {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.array {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.tagRemove {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 0;
+}
+
+.addButton {
+  margin-top: var(--space-2);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin-top: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.actions {
+  margin-top: var(--space-6);
+  display: flex;
+  gap: var(--space-3);
+}
