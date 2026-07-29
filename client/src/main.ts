@@ -23,6 +23,21 @@ import * as api from './utils/api';
 declare global {
   interface Window {
     __lasFloresInitialized?: boolean;
+    __lasFloresBootError?: Error;
+  }
+}
+
+function reportBootFailure(err: Error): void {
+  window.__lasFloresBootError = err;
+  window.dispatchEvent(new CustomEvent('lf:boot-error', { detail: err }));
+  console.error('[boot] Fatal boot failure:', err);
+
+  if (!document.getElementById('lf-boot-error')) {
+    const banner = document.createElement('div');
+    banner.id = 'lf-boot-error';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:16px;background:#c00;color:#fff;font:14px/1.4 monospace;text-align:center;';
+    banner.textContent = `Boot Error: ${err.message || 'Unknown error'}`;
+    document.body.appendChild(banner);
   }
 }
 
@@ -77,7 +92,12 @@ export function startGame(): void {
 
   destroyGame();
 
-  gameInstance = new Phaser.Game(config);
+  try {
+    gameInstance = new Phaser.Game(config);
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
   sleepOverlayInstance = new SleepOverlay();
   phoneOverlayInstance = new PhoneOverlay();
   initThemeEngine();
@@ -109,7 +129,12 @@ async function startGameForLocation(locationId: string): Promise<void> {
 
   destroyGame();
 
-  gameInstance = new Phaser.Game(config);
+  try {
+    gameInstance = new Phaser.Game(config);
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
   sleepOverlayInstance = new SleepOverlay();
   phoneOverlayInstance = new PhoneOverlay();
   initThemeEngine();
@@ -215,6 +240,23 @@ async function initOnce() {
   const initialPath = window.location.pathname;
   initializeUI();
   restoreSession(initialPath);
+
+  installBootWatchdog();
+}
+
+function installBootWatchdog(): void {
+  setTimeout(() => {
+    if (window.__lasFloresBootError) return; // already reported
+
+    const loginMenu = document.getElementById('login-menu');
+    const gameContainer = document.getElementById('game-container');
+    const hasLoginContent = loginMenu && loginMenu.innerHTML.trim().length > 0;
+    const hasGameCanvas = gameContainer && gameContainer.querySelector('canvas') !== null;
+
+    if (!hasLoginContent && !hasGameCanvas) {
+      reportBootFailure(new Error('Boot watchdog: neither login menu nor game canvas appeared within 5s'));
+    }
+  }, 5000);
 }
 
 function initializeUI(): void {
