@@ -20,12 +20,21 @@
   margin-top: 1rem;
 }
 
-.json {
-  background: var(--panel-bg);
-  border: 1px solid var(--border);
-  padding: 1rem;
-  border-radius: 5px;
-  overflow-x: auto;
-  color: #aaa;
-  font-size: 0.85rem;
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
