@@ -108,7 +108,7 @@ export default function EntityDetailView({ record, fields, title }: Props) {
     <main className={styles.main}>
       {title && <h1>{title}</h1>}
       {sections.map((section) => {
-        const sectionFields = section === '__root__' ? fields : fields.filter((f) => f.section === section);
+        const sectionFields = section === '__root__' ? fields.filter((f) => !f.section) : fields.filter((f) => f.section === section);
         return (
           <React.Fragment key={section || '__root__'}>
             {section !== '__root__' && <div className={styles.sectionHeading}>{section}</div>}

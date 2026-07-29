@@ -26,7 +26,7 @@ describe('Stepper', () => {
 
   it('shows checkmark for done steps', () => {
     render(<Stepper steps={testSteps} currentStep={1} />);
-    const dots = screen.getAllByRole('button', { pressed: undefined });
+    const dots = screen.getAllByRole('button');
     // First dot should show ✓
     expect(dots[0]).toHaveTextContent('✓');
   });
@@ -44,7 +44,7 @@ describe('Stepper', () => {
     const onStepClick = vi.fn();
     render(<Stepper steps={testSteps} currentStep={0} onStepClick={onStepClick} />);
 
-    const migrateBtn = screen.getByText('Migrate');
+    const migrateBtn = screen.getByRole('button', { name: '3' });
     expect(migrateBtn).toBeDisabled();
     fireEvent.click(migrateBtn);
     expect(onStepClick).not.toHaveBeenCalled();

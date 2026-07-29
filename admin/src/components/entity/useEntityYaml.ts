@@ -43,9 +43,7 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
   }, [id, type]);
 
   useEffect(() => {
-    let active = true;
     fetchYaml();
-    return () => { active = false; };
   }, [fetchYaml]);
 
   return { ...state, refetch: fetchYaml };

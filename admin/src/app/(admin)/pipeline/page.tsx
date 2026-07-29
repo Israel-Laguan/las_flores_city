@@ -9,8 +9,57 @@ import ValidateStep from './components/steps/ValidateStep';
 import MigrateStep from './components/steps/MigrateStep';
 import AssetsStep from './components/steps/AssetsStep';
 import PublishStep from './components/steps/PublishStep';
-import { usePipeline, STEP_LABELS, ALL_STEPS, type PipelineStep } from './hooks/usePipeline';
+import { usePipeline, STEP_LABELS, ALL_STEPS } from './hooks/usePipeline';
 import styles from './pipeline.module.css';
+
+function StepContent({ pipeline }: { pipeline: ReturnType<typeof usePipeline> }) {
+  const { currentStep } = pipeline;
+  if (currentStep === 'edit') return <EditStep />;
+  if (currentStep === 'validate') {
+    return (
+      <ValidateStep
+        validationResult={pipeline.validationResult}
+        validationError={pipeline.validationError}
+        validating={pipeline.validating}
+        onValidate={pipeline.runValidation}
+      />
+    );
+  }
+  if (currentStep === 'migrate') {
+    return (
+      <MigrateStep
+        migrationStatus={pipeline.migrationStatus}
+        migrationResult={pipeline.migrationResult}
+        migrationError={pipeline.migrationError}
+        migrating={pipeline.migrating}
+        onMigrate={pipeline.runMigration}
+        onFetchStatus={pipeline.fetchMigrationStatus}
+      />
+    );
+  }
+  if (currentStep === 'assets') {
+    return (
+      <AssetsStep
+        assetCoverage={pipeline.assetCoverage}
+        loading={pipeline.assetCoverageLoading}
+        onFetch={pipeline.fetchAssetCoverage}
+      />
+    );
+  }
+  return (
+    <PublishStep
+      statuses={pipeline.promotionStatuses}
+      loading={pipeline.promotionLoading}
+      publishing={pipeline.publishing}
+      publishError={pipeline.publishError}
+      onFetchStatus={pipeline.fetchPromotionStatus}
+      onPublish={pipeline.runPublish}
+      onPromoteStaging={pipeline.promoteStaging}
+      onPromoteProduction={pipeline.promoteProduction}
+      onRollbackStaging={pipeline.rollbackStaging}
+    />
+  );
+}
 
 export default function PipelinePage() {
   const searchParams = useSearchParams();
@@ -56,45 +105,7 @@ export default function PipelinePage() {
       />
 
       <div className={styles.stepContainer}>
-        {pipeline.currentStep === 'edit' && <EditStep />}
-        {pipeline.currentStep === 'validate' && (
-          <ValidateStep
-            validationResult={pipeline.validationResult}
-            validationError={pipeline.validationError}
-            validating={pipeline.validating}
-            onValidate={pipeline.runValidation}
-          />
-        )}
-        {pipeline.currentStep === 'migrate' && (
-          <MigrateStep
-            migrationStatus={pipeline.migrationStatus}
-            migrationResult={pipeline.migrationResult}
-            migrationError={pipeline.migrationError}
-            migrating={pipeline.migrating}
-            onMigrate={pipeline.runMigration}
-            onFetchStatus={pipeline.fetchMigrationStatus}
-          />
-        )}
-        {pipeline.currentStep === 'assets' && (
-          <AssetsStep
-            assetCoverage={pipeline.assetCoverage}
-            loading={pipeline.assetCoverageLoading}
-            onFetch={pipeline.fetchAssetCoverage}
-          />
-        )}
-        {pipeline.currentStep === 'publish' && (
-          <PublishStep
-            statuses={pipeline.promotionStatuses}
-            loading={pipeline.promotionLoading}
-            publishing={pipeline.publishing}
-            publishError={pipeline.publishError}
-            onFetchStatus={pipeline.fetchPromotionStatus}
-            onPublish={pipeline.runPublish}
-            onPromoteStaging={pipeline.promoteStaging}
-            onPromoteProduction={pipeline.promoteProduction}
-            onRollbackStaging={pipeline.rollbackStaging}
-          />
-        )}
+        <StepContent pipeline={pipeline} />
       </div>
 
       {/* Navigation buttons */}

@@ -13,6 +13,128 @@ interface Props {
   onSubmit: () => void;
 }
 
+function ArrayOfObjectsField({ field, value, onChange }: { field: FieldDef; value: unknown; onChange: (v: unknown) => void }) {
+  const list = Array.isArray(value) ? value : [];
+  const subFields = field.itemFields || [];
+  return (
+    <div>
+      <div className={styles.tableWrap}>
+        <table className="table">
+          <thead>
+            <tr>
+              {subFields.map((sf) => (
+                <th key={sf.key} className="table__th">{sf.label}</th>
+              ))}
+              <th className="table__th" style={{ width: 70 }} />
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((item, idx) => (
+              <tr key={idx}>
+                {subFields.map((sf) => {
+                  const val = getByPath(item, sf.key);
+                  return (
+                    <td key={sf.key} className="table__td">
+                      <input
+                        className="input"
+                        value={typeof val === 'string' || typeof val === 'number' ? val : ''}
+                        onChange={(e) => {
+                          const nextItem = setByPath({ ...(item as Record<string, unknown>) }, sf.key, e.target.value);
+                          onChange(list.map((v, i) => (i === idx ? nextItem : v)));
+                        }}
+                      />
+                    </td>
+                  );
+                })}
+                <td className="table__td">
+                  <button
+                    type="button"
+                    className="btn btn--danger btn--small"
+                    onClick={() => onChange(list.filter((_, i) => i !== idx))}
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <button
+        type="button"
+        className={cn('btn btn--secondary btn--small', styles.addButton)}
+        onClick={() => {
+          const empty: Record<string, string> = {};
+          for (const sf of subFields) empty[sf.key] = '';
+          onChange([...list, empty]);
+        }}
+      >
+        Add row
+      </button>
+    </div>
+  );
+}
+
+function KVField({ value, onChange }: { value: unknown; onChange: (v: unknown) => void }) {
+  const data = value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+  const entries = Object.entries(data);
+  return (
+    <div>
+      <table className={styles.kvTable}>
+        <tbody>
+          {entries.map(([k, v]) => (
+            <tr key={k}>
+              <td style={{ width: '40%' }}>
+                <input
+                  className="input"
+                  value={k}
+                  onChange={(e) => {
+                    const next: Record<string, unknown> = {};
+                    for (const [ek, ev] of Object.entries(data)) {
+                      if (ek !== k) next[ek] = ev;
+                    }
+                    next[e.target.value] = v;
+                    onChange(next);
+                  }}
+                />
+              </td>
+              <td>
+                <input
+                  className="input"
+                  value={v === null || v === undefined ? '' : String(v)}
+                  onChange={(e) => {
+                    const next = { ...data, [k]: e.target.value };
+                    onChange(next);
+                  }}
+                />
+              </td>
+              <td style={{ width: 70 }}>
+                <button
+                  type="button"
+                  className="btn btn--danger btn--small"
+                  onClick={() => {
+                    const next = { ...data };
+                    delete next[k];
+                    onChange(next);
+                  }}
+                >
+                  ×
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button
+        type="button"
+        className={cn('btn btn--secondary btn--small', styles.addButton)}
+        onClick={() => onChange({ ...data, '': '' })}
+      >
+        Add entry
+      </button>
+    </div>
+  );
+}
 function Control({ field, value, onChange }: { field: FieldDef; value: unknown; onChange: (v: unknown) => void }) {
   if (field.readOnly) {
     return (
@@ -24,7 +146,6 @@ function Control({ field, value, onChange }: { field: FieldDef; value: unknown; 
       />
     );
   }
-
   switch (field.type) {
     case 'textarea':
       return (
@@ -54,10 +175,9 @@ function Control({ field, value, onChange }: { field: FieldDef; value: unknown; 
           onChange={(e) => onChange(e.target.value === 'true')}
         >
           <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      );
-    case 'select': {
+           <option value="false">No</option>
+         </select>);
+     case 'select': {
       const options = field.options || [];
       return (
         <select className="select" value={typeof value === 'string' ? value : ''} onChange={(e) => onChange(e.target.value)}>
@@ -95,130 +215,12 @@ function Control({ field, value, onChange }: { field: FieldDef; value: unknown; 
               }
             }}
           />
-        </div>
-      );
+         </div>);
     }
-    case 'array-of-objects': {
-      const list = Array.isArray(value) ? value : [];
-      const subFields = field.itemFields || [];
-      return (
-        <div>
-          <div className={styles.tableWrap}>
-            <table className="table">
-              <thead>
-                <tr>
-                  {subFields.map((sf) => (
-                    <th key={sf.key} className="table__th">{sf.label}</th>
-                  ))}
-                  <th className="table__th" style={{ width: 70 }} />
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((item, idx) => (
-                  <tr key={idx}>
-                    {subFields.map((sf) => {
-                      const val = getByPath(item, sf.key);
-                      return (
-                        <td key={sf.key} className="table__td">
-                          <input
-                            className="input"
-                            value={typeof val === 'string' || typeof val === 'number' ? val : ''}
-                            onChange={(e) => {
-                              const nextItem = setByPath({ ...(item as Record<string, unknown>) }, sf.key, e.target.value);
-                              onChange(list.map((v, i) => (i === idx ? nextItem : v)));
-                            }}
-                          />
-                        </td>
-                      );
-                    })}
-                    <td className="table__td">
-                      <button
-                        type="button"
-                        className="btn btn--danger btn--small"
-                        onClick={() => onChange(list.filter((_, i) => i !== idx))}
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <button
-            type="button"
-            className={cn('btn btn--secondary btn--small', styles.addButton)}
-            onClick={() => {
-              const empty: Record<string, string> = {};
-              for (const sf of subFields) empty[sf.key] = '';
-              onChange([...list, empty]);
-            }}
-          >
-            Add row
-          </button>
-        </div>
-      );
-    }
-    case 'kv': {
-      const data = value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
-      const entries = Object.entries(data);
-      return (
-        <div>
-          <table className={styles.kvTable}>
-            <tbody>
-              {entries.map(([k, v]) => (
-                <tr key={k}>
-                  <td style={{ width: '40%' }}>
-                    <input
-                      className="input"
-                      value={k}
-                      onChange={(e) => {
-                        const next: Record<string, unknown> = {};
-                        for (const [ek, ev] of Object.entries(data)) {
-                          if (ek !== k) next[ek] = ev;
-                        }
-                        next[e.target.value] = v;
-                        onChange(next);
-                      }}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      className="input"
-                      value={v === null || v === undefined ? '' : String(v)}
-                      onChange={(e) => {
-                        const next = { ...data, [k]: e.target.value };
-                        onChange(next);
-                      }}
-                    />
-                  </td>
-                  <td style={{ width: 70 }}>
-                    <button
-                      type="button"
-                      className="btn btn--danger btn--small"
-                      onClick={() => {
-                        const next = { ...data };
-                        delete next[k];
-                        onChange(next);
-                      }}
-                    >
-                      ×
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button
-            type="button"
-            className={cn('btn btn--secondary btn--small', styles.addButton)}
-            onClick={() => onChange({ ...data, '': '' })}
-          >
-            Add entry
-          </button>
-        </div>
-      );
-    }
+    case 'array-of-objects':
+      return <ArrayOfObjectsField field={field} value={value} onChange={onChange} />;
+    case 'kv':
+      return <KVField value={value} onChange={onChange} />;
     case 'image':
     case 'text':
     case 'date':

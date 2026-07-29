@@ -1,4 +1,3 @@
-import type { YAMLCharacter } from "@las-flores/shared";
 import type { FieldDef } from "@/components/entity/FieldDef";
 
 const RELATIONSHIP_TYPES = [

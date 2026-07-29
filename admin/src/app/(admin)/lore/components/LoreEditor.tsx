@@ -13,6 +13,58 @@ interface LoreEditorProps {
   onSaved?: () => void;
 }
 
+function LoreEditorToolbar({
+  selectedPath,
+  editing,
+  dirty,
+  saving,
+  onEdit,
+  onSave,
+  onCancel,
+}: {
+  selectedPath: string;
+  editing: boolean;
+  dirty: boolean;
+  saving: boolean;
+  onEdit: () => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className={styles.toolbar}>
+      <span className={styles.pathLabel}>{selectedPath}</span>
+      <div className={styles.toolbarActions}>
+        {!editing && (
+          <button onClick={onEdit} className={styles.editButton}>
+            Edit
+          </button>
+        )}
+        {editing && (
+          <>
+            <span className={dirty ? styles.dirtyIndicator : styles.cleanIndicator}>
+              {dirty ? '● Unsaved' : '✓ Saved'}
+            </span>
+            <button
+              onClick={onSave}
+              disabled={saving || !dirty}
+              className={styles.saveButton}
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+            <button onClick={onCancel} disabled={saving} className={styles.cancelButton}>
+              Cancel
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LoreEditorStatus({ saveError, saveSuccess }: { saveError: string | null; saveSuccess: boolean }) {
+  return <>{saveError && <div className={styles.errorBox}>{saveError}</div>}{saveSuccess && <div className={styles.successBox}>Saved successfully.</div>}</>;
+}
+
 export default function LoreEditor({ selectedPath, content, contentLoading, contentError, onSaved }: LoreEditorProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
@@ -21,24 +73,11 @@ export default function LoreEditor({ selectedPath, content, contentLoading, cont
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  useEffect(() => {
-    setEditing(false);
-    setDraft('');
-    setDirty(false);
-    setSaving(false);
-    setSaveError(null);
-    setSaveSuccess(false);
-  }, [selectedPath]);
+   useEffect(() => { setEditing(false); setDraft(''); setDirty(false); setSaving(false); setSaveError(null); setSaveSuccess(false); }, [selectedPath]);
 
   const saveRequestIdRef = useRef(0);
 
-  const enterEdit = useCallback(() => {
-    setDraft(content ?? '');
-    setDirty(false);
-    setSaveError(null);
-    setSaveSuccess(false);
-    setEditing(true);
-  }, [content]);
+   const enterEdit = useCallback(() => { setDraft(content ?? ''); setDirty(false); setSaveError(null); setSaveSuccess(false); setEditing(true); }, [content]);
 
   const cancelEdit = useCallback(() => {
     setEditing(false);
@@ -75,58 +114,32 @@ export default function LoreEditor({ selectedPath, content, contentLoading, cont
       }
     } catch {
       if (requestId !== saveRequestIdRef.current) return;
-      setSaveError('Network error during save');
+      setSaveError('Save failed');
     } finally {
       setSaving(false);
     }
-  }, [selectedPath, draft, saving, onSaved]);
-
-  if (!selectedPath) {
-    return <MarkdownViewer selectedPath={null} content={null} contentLoading={false} contentError={null} />;
-  }
-
-  if (contentLoading) {
-    return <MarkdownViewer selectedPath={selectedPath} content={null} contentLoading={true} contentError={null} />;
-  }
-
-  if (contentError) {
-    return <MarkdownViewer selectedPath={selectedPath} content={null} contentLoading={false} contentError={contentError} />;
-  }
-
-  return (
+   }, [selectedPath, draft, saving, onSaved]);
+   if (!selectedPath) {
+     return <MarkdownViewer selectedPath={null} content={null} contentLoading={false} contentError={null} />;
+   }
+   if (contentLoading) {
+     return <MarkdownViewer selectedPath={selectedPath} content={null} contentLoading={true} contentError={null} />;
+   }
+   if (contentError) {
+     return <MarkdownViewer selectedPath={selectedPath} content={null} contentLoading={false} contentError={contentError} />;
+   }
+   return (
     <div className={styles.container}>
-      {/* Toolbar */}
-      <div className={styles.toolbar}>
-        <span className={styles.pathLabel}>{selectedPath}</span>
-        <div className={styles.toolbarActions}>
-          {!editing && (
-            <button onClick={enterEdit} className={styles.editButton}>
-              Edit
-            </button>
-          )}
-          {editing && (
-            <>
-              <span className={dirty ? styles.dirtyIndicator : styles.cleanIndicator}>
-                {dirty ? '● Unsaved' : '✓ Saved'}
-              </span>
-              <button
-                onClick={handleSave}
-                disabled={saving || !dirty}
-                className={styles.saveButton}
-              >
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-              <button onClick={cancelEdit} disabled={saving} className={styles.cancelButton}>
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {saveError && <div className={styles.errorBox}>{saveError}</div>}
-      {saveSuccess && <div className={styles.successBox}>Saved successfully.</div>}
-
+      <LoreEditorToolbar
+        selectedPath={selectedPath}
+        editing={editing}
+        dirty={dirty}
+        saving={saving}
+        onEdit={enterEdit}
+        onSave={handleSave}
+        onCancel={cancelEdit}
+      />
+      <LoreEditorStatus saveError={saveError} saveSuccess={saveSuccess} />
       {editing ? (
         <textarea
           className={styles.textarea}
