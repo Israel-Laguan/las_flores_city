@@ -161,20 +161,44 @@ async function recordMigration(
 }
 
 async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
-  const client = await oltpPool.connect();
-  try {
-    const result = await client.query<{ pg_try_advisory_lock: boolean }>(
-      `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
-    );
-    if (result.rows[0].pg_try_advisory_lock) {
-      return client;
+  const MAX_RETRIES = 5;
+  const RETRY_DELAY_MS = 200;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    let client: pg.PoolClient;
+    try {
+      client = await oltpPool.connect();
+    } catch (error) {
+      if (attempt === MAX_RETRIES - 1) throw error;
+      await sleep(RETRY_DELAY_MS);
+      continue;
     }
-    client.release();
-    return null;
-  } catch (error) {
-    client.release();
-    throw error;
+
+    try {
+      const result = await client.query<{ pg_try_advisory_lock: boolean }>(
+        `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
+      );
+      if (result.rows[0].pg_try_advisory_lock) {
+        return client;
+      }
+      client.release();
+    } catch (error) {
+      client.release();
+      if (attempt === MAX_RETRIES - 1) throw error;
+      await sleep(RETRY_DELAY_MS);
+      continue;
+    }
+
+    if (attempt < MAX_RETRIES - 1) {
+      await sleep(RETRY_DELAY_MS);
+    }
   }
+
+  return null;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function releaseMigrationLock(client: pg.PoolClient): Promise<void> {

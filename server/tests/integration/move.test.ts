@@ -150,10 +150,90 @@ afterAll(async () => {
   await closeRedis();
 });
 
+let DOWNTOWN_ID: string;
+let OLD_TOWN_ID: string;
+
 beforeEach(async () => {
+  // Recreate districts and scenes in beforeEach to ensure they exist after
+  // other test files may have run migrations that affected the scenes table.
+  // This is necessary because ON CONFLICT only works on existing rows,
+  // and migrations may have recreated the table.
   await pool.query(
-    `UPDATE player_states SET time_blocks = 48, current_location_id = $1 WHERE user_id = $2`,
-    [APARTMENT_ID, TEST_USER_ID]
+    `CREATE TABLE IF NOT EXISTS districts (
+       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+       name VARCHAR(50) NOT NULL UNIQUE,
+       slug VARCHAR(50) NOT NULL UNIQUE,
+       description TEXT,
+       minimap_asset_url VARCHAR(500),
+       x INTEGER NOT NULL,
+       y INTEGER NOT NULL
+     )`
+  );
+  await pool.query(
+    `INSERT INTO districts (id, name, slug, description, x, y) VALUES
+     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
+     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
+     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
+     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
+     ON CONFLICT (name) DO UPDATE SET
+       slug = EXCLUDED.slug,
+       x = EXCLUDED.x,
+       y = EXCLUDED.y`
+  );
+
+  const downtownQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'Downtown'"
+  );
+  DOWNTOWN_ID = downtownQ.rows[0].id;
+  const oldTownQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'Old Town'"
+  );
+  OLD_TOWN_ID = oldTownQ.rows[0].id;
+
+  // Recreate scenes with test IDs
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
+    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DOWNTOWN_ID]
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
+    [WELCOME_CENTER_ID, 'Welcome Center', 'Test welcome center location', DOWNTOWN_ID]
+  );
+  await pool.query(
+    `INSERT INTO scenes (id, name, description, district_id, metadata)
+     VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name, description = EXCLUDED.description,
+       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
+    [CAFE_ID, 'The Cafe', 'Test cafe location', OLD_TOWN_ID]
+  );
+
+  // Ensure user and player_state exist
+  await pool.query(
+    `INSERT INTO users (id, email, username, display_name)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (id) DO UPDATE SET
+       email = EXCLUDED.email,
+       username = EXCLUDED.username,
+       updated_at = NOW()`,
+    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test']
+  );
+  await pool.query(
+    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
+     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
+     ON CONFLICT (user_id) DO UPDATE SET
+       time_blocks = 48,
+       current_location_id = $2,
+       updated_at = NOW()`,
+    [TEST_USER_ID, APARTMENT_ID]
   );
 });
 

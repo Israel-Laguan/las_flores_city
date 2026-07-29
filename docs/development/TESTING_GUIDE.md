@@ -65,6 +65,40 @@ Location: `server/tests/unit/`
 
 ## Troubleshooting
 
+### Flaky Integration Tests
+
+Integration tests share the same Postgres and Redis instances. Under parallel execution (`npm test` without `--runInBand`), tests can interfere with each other. The `npm test` command now runs integration tests sequentially to prevent this.
+
+#### Known flaky tests (fixed)
+
+| Test file | Symptom | Root cause | Fix |
+|-----------|---------|------------|-----|
+| `aftermath.worker.test.ts` | `scRows` = 1 (scene_characters not deleted) | `processExpiredMysteries()` reused one DB client across all mysteries; a failure on a foreign mystery poisoned the test's own mystery | Per-mystery clients in `LeaderboardWorker.ts` |
+| `migration.drift.test.ts` | `result.success === false` | Shared `MYSTERY_ID` with `leaderboard.simulation.test.ts` + advisory lock fail-fast | Decoupled IDs + retry lock acquisition |
+
+#### Reproducing the flakiness (diagnostic)
+
+```bash
+# 1. Clear stale ts-jest cache first (required!)
+npx --no-install jest --workspace=server --clearCache
+
+# 2. Run integration tests in PARALLEL (no --runInBand) to reproduce the flake
+npx jest tests/integration --forceExit --detectOpenHandles --verbose
+
+# 3. Run the two flaky files together in parallel
+npx jest tests/integration/aftermath.worker.test.ts tests/integration/migration.drift.test.ts tests/integration/leaderboard.simulation.test.ts --forceExit --detectOpenHandles --verbose
+
+# 4. Verify fix: run sequentially (should pass)
+npm run test:integration
+```
+
+#### Writing flake-proof integration tests
+
+1. **Use a dedicated synthetic UUID** for every test fixture. Never reuse a real content ID (e.g., `a0000000-...`) for a synthetic simulation.
+2. **Clean up rows in `afterAll`** — delete test data but do NOT call `closeConnections()` / `closeRedis()` unless you must. `globalTeardown` handles pool teardown.
+3. **If you call `processExpiredMysteries()`**, assert only your own mystery's state. The worker is global.
+4. **If you call `migrateContent()`**, rely on the now-retryable advisory lock. Run integration tests with `--runInBand`.
+
 ### Asset Tests Fail in CI but Pass Another Way
 
 Lessons learned from fixing the asset test suites under podman/CI:

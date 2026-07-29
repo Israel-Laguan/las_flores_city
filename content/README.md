@@ -10,17 +10,17 @@ Every entity has its own folder under `content/<type>/<slug>/`:
 
 ```
 content/
-├── characters/<slug>/     # Character YAML + lore + prompt + assets/
-├── scenes/<slug>/         # Scene YAML + lore + assets/
-├── locations/<slug>/      # Location YAML + lore + assets/
-├── overlays/<slug>/       # Overlay YAML + lore + assets/
-├── mysteries/<slug>/      # Mystery YAML + lore + assets/
-├── dialogues/             # Dialogue trees (flat YAML files)
-├── vault/                 # Collectible items and clues
-├── gigs/                  # Side jobs and commissions
-├── shop/                  # Cosmetic and functional items
-├── maps/                  # District tile map definitions
-└── story_beats.yaml       # Narrative beat registry (single file)
+├── characters/<slug>/        # Character YAML + lore + prompt + assets/
+├── scenes/<slug>/            # Scene YAML + lore + assets/
+├── districts/<district>/     # District folder
+│   └── locations/<slug>/     # Location YAML + lore + prompt + assets/
+├── overlays/<slug>/          # Overlay YAML + lore + assets/
+├── mysteries/<slug>/         # Mystery YAML + lore + assets/
+├── dialogues/                # Dialogue trees (flat YAML files)
+├── vault/                    # Collectible items and clues
+├── gigs/                     # Side jobs and commissions
+├── shop/                     # Cosmetic and functional items
+└── story_beats.yaml          # Narrative beat registry (single file)
 ```
 
 ## Per-Entity Folder Layout
