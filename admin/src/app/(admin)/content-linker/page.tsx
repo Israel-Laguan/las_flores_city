@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import styles from './content-linker.module.css';
 import { cn } from '@las-flores/ui';
 import ScalarLink from './components/ScalarLink';
@@ -8,7 +9,7 @@ import ArrayLink from './components/ArrayLink';
 import { ListItem, LinkOp, SectionConfig } from './types';
 import { useContentLinker } from './hooks/useContentLinker';
 
-type Tab = 'scenes' | 'missions' | 'stories';
+type Tab = 'scenes' | 'missions' | 'stories' | 'characters';
 
 const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName: string; sections: SectionConfig[] }> = {
   scenes: {
@@ -39,6 +40,14 @@ const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName:
       { field: 'dialogues', label: 'Dialogues', availableEndpoint: '/admin/dialogues', idField: 'id', nameField: 'name', yamlDir: 'dialogues', fileType: 'dialogue' },
       { field: 'overlays', label: 'Overlays', availableEndpoint: '/admin/overlays', idField: 'id', nameField: 'name', yamlDir: 'overlays', fileType: 'overlay' },
       { field: 'vault_items', label: 'Vault Items', availableEndpoint: '/admin/vault', idField: 'id', nameField: 'title', yamlDir: 'vault', fileType: 'vault' },
+    ],
+  },
+  characters: {
+    label: 'Characters',
+    listEndpoint: '/admin/characters',
+    entityName: 'Character',
+    sections: [
+      { field: 'available_dialogues', label: 'Linked Dialogues', availableEndpoint: '/admin/dialogues', idField: 'id', nameField: 'name', yamlDir: 'dialogues', fileType: 'dialogue' },
     ],
   },
 };
@@ -101,9 +110,13 @@ function LinksSection({ config, selectedData, available, onAddPendingOp, onGetLi
 }
 
 export default function ContentLinkerPage() {
-  const [tab, setTab] = useState<Tab>('scenes');
+  const searchParams = useSearchParams();
+  const initialTab = (searchParams.get('tab') as Tab | null) ?? 'scenes';
+  const initialId = searchParams.get('id') ?? '';
+
+  const [tab, setTab] = useState<Tab>(initialTab);
   const config = TAB_CONFIG[tab];
-  const linker = useContentLinker(config);
+  const linker = useContentLinker(config, initialId);
 
   const getLinkOpParams = (
     action: 'add' | 'remove' | 'set',
@@ -120,6 +133,8 @@ export default function ContentLinkerPage() {
       } else if (section.field === 'vault_items') {
         return { contentPath: `vault/${itemId}.yaml`, fieldPath: 'mission_id', action: 'set', value: action === 'remove' ? '' : linker.selectedId };
       }
+    } else if (tab === 'characters') {
+      return { contentPath: `characters/${linker.selectedId}.yaml`, fieldPath: section.field, action, value: itemId };
     }
     return { contentPath: `${section.yamlDir}/${itemId}.yaml`, fieldPath: section.field, action, value: itemId };
   };
@@ -130,7 +145,7 @@ export default function ContentLinkerPage() {
       <h1>Content Linker</h1>
 
       <div className={styles.tabBar}>
-        {(['scenes', 'missions', 'stories'] as Tab[]).map(t => (
+        {(['scenes', 'missions', 'stories', 'characters'] as Tab[]).map(t => (
           <button key={t} onClick={() => setTab(t)} className={cn(styles.tab, tab === t && styles.tabActive)}>
             {TAB_CONFIG[t].label}
           </button>

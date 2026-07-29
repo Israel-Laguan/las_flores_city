@@ -53,3 +53,28 @@
   color: var(--accent);
   text-decoration: underline;
 }
+
+.dialogueSection {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.dialogueSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.dialogueSectionHeader h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.dialogueHint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: var(--space-2);
+}

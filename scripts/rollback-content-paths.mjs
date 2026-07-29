@@ -12,7 +12,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { glob } from 'glob';
-import yaml from 'js-yaml';
+import { load, dump } from 'js-yaml';
 
 // Project root. Defaults to the current working directory, but can be
 // overridden (e.g. by tests) so the script never touches the live repo.
@@ -29,7 +29,7 @@ async function rollbackFile(filePath) {
   const content = await fs.readFile(filePath, 'utf-8');
   let data;
   try {
-    data = yaml.load(content);
+    data = load(content);
   } catch {
     console.log(`  SKIP ${relativePath}: YAML parse error`);
     return;
@@ -49,7 +49,7 @@ async function rollbackFile(filePath) {
 
   if (updated) {
     if (!DRY_RUN) {
-      const updatedYaml = yaml.dump(data, { lineWidth: -1, noRefs: true, quotingType: '"' });
+      const updatedYaml = dump(data, { lineWidth: -1, noRefs: true, quotingType: '"' });
       await fs.writeFile(filePath, updatedYaml, 'utf-8');
     }
     filesUpdated++;

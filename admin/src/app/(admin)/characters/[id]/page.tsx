@@ -15,6 +15,7 @@ interface CharacterRecord {
   title?: string;
   description?: string;
   portrait_urls?: Array<Record<string, unknown>> | null;
+  available_dialogues?: string[] | null;
   created_at?: string;
   updated_at?: string;
   [key: string]: unknown;
@@ -28,6 +29,9 @@ export default function CharacterDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  // Fetch dialogues list to resolve UUIDs → names
+  const [dialoguesMap, setDialoguesMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function fetchRecord() {
@@ -52,6 +56,22 @@ export default function CharacterDetailPage() {
     }
     fetchRecord();
   }, [id]);
+
+  // Build a dialogue-id → name lookup once
+  useEffect(() => {
+    if (!record?.available_dialogues?.length) return;
+    adminFetch<{ success: boolean; data?: { items: Array<{ id: string; name: string }> } }>(
+      '/admin/dialogues?pageSize=200',
+    ).then((data) => {
+      if (data.success && data.data?.items) {
+        const map: Record<string, string> = {};
+        for (const d of data.data.items) {
+          map[d.id] = d.name;
+        }
+        setDialoguesMap(map);
+      }
+    });
+  }, [record?.available_dialogues]);
 
   if (loading) {
     return (
@@ -82,6 +102,8 @@ export default function CharacterDetailPage() {
 
   const hasPortraits = Array.isArray(record.portrait_urls) && record.portrait_urls.length > 0;
   const portraitStatus = hasPortraits ? 'ready' : 'missing';
+  const dialogueIds: string[] = Array.isArray(record.available_dialogues) ? record.available_dialogues : [];
+  const linkingUrl = `/content-linker?tab=characters&id=${encodeURIComponent(id)}`;
 
   return (
     <main className={styles.main}>
@@ -94,6 +116,29 @@ export default function CharacterDetailPage() {
         </div>
       </div>
       <EntityDetailView fields={CHARACTER_VIEW_FIELDS} record={record as unknown} />
+
+      {/* Linked Dialogues section — outside EntityDetailView so we can show named links */}
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Linked Dialogues</h2>
+          <Link href={linkingUrl} target="_blank" className="btn btn--secondary btn--small">
+            Manage Dialogues
+          </Link>
+        </div>
+        {dialogueIds.length === 0 ? (
+          <p className={styles.muted}>No dialogues linked</p>
+        ) : (
+          <ul className={styles.dialogueList}>
+            {dialogueIds.map((dId) => (
+              <li key={dId}>
+                <Link href={`/dialogues/${dId}`} target="_blank" className={styles.dialogueLink}>
+                  {dialoguesMap[dId] || dId}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </main>
   );
 }

@@ -114,6 +114,23 @@ export default function CharacterEditPage() {
           submitting={saving}
         />
       )}
+
+      {/* Dialogue management — not editable inline, handled via content-linker */}
+      <div className={styles.dialogueSection}>
+        <div className={styles.dialogueSectionHeader}>
+          <h2>Linked Dialogues</h2>
+          <Link
+            href={`/content-linker?tab=characters&id=${encodeURIComponent(id)}`}
+            target="_blank"
+            className="btn btn--secondary"
+          >
+            Manage Dialogues
+          </Link>
+        </div>
+        <p className={styles.dialogueHint}>
+          Dialogue associations are managed via the Content Linker. Click "Manage Dialogues" to open it in a new tab.
+        </p>
+      </div>
     </main>
   );
 }

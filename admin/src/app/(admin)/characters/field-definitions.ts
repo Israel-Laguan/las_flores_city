@@ -209,7 +209,6 @@ export const CHARACTER_VIEW_FIELDS: FieldDef[] = [
           { key: "context", label: "Context", type: "text" },
         ],
       },
-      { key: "available_dialogues", label: "Dialogues", type: "array" },
       {
         key: "portrait_urls",
         label: "Portraits",
@@ -268,12 +267,6 @@ export const CHARACTER_EDIT_FIELDS: FieldDef[] = [
           { key: "trust", label: "Trust", type: "number" },
           { key: "context", label: "Context", type: "text" },
         ],
-      },
-      {
-        key: "available_dialogues",
-        label: "Dialogue IDs",
-        type: "array",
-        helpText: "One dialogue UUID per item",
       },
       {
         key: "portrait_urls",

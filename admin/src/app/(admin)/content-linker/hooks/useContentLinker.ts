@@ -6,8 +6,8 @@ import { useEntityList } from './useEntityList';
 import { useEntityDetail } from './useEntityDetail';
 import { usePendingOps } from './usePendingOps';
 
-export function useContentLinker(tab: { label: string; listEndpoint: string; entityName: string; sections: SectionConfig[] }) {
-  const [selectedId, setSelectedId] = useState<string>('');
+export function useContentLinker(tab: { label: string; listEndpoint: string; entityName: string; sections: SectionConfig[] }, initialId?: string) {
+  const [selectedId, setSelectedId] = useState<string>(initialId || '');
 
   const { entities, loading, loadError } = useEntityList(tab.listEndpoint);
   const { selectedData, setSelectedData, available } = useEntityDetail(tab.listEndpoint, tab.sections, selectedId);

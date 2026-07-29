@@ -12,7 +12,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { glob } from 'glob';
-import yaml from 'js-yaml';
+import { load, dump } from 'js-yaml';
 
 // Project root. Defaults to the current working directory, but can be
 // overridden (e.g. by tests) so the script never touches the live repo.
@@ -50,7 +50,7 @@ async function processFile(filePath) {
   const content = await fs.readFile(filePath, 'utf-8');
   let data;
   try {
-    data = yaml.load(content);
+    data = load(content);
   } catch {
     return;
   }
