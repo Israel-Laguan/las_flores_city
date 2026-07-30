@@ -11,11 +11,43 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 // actually needing Redis.
 let _redis: Redis | null = null;
 
+// Set to true by closeRedis() so retryStrategy can short-circuit.
+// This flag lives in the same module instance as _redis, so it is
+// effective even when closeRedis() is called from a different
+// module instance (e.g. globalTeardown.cjs via tsx/cjs vs test
+// files via ts-jest — they get separate module registries under
+// --detectOpenHandles/--runInBand).
+let redisClosed = false;
+
 export function getRedis(): Redis {
   if (!_redis) {
+    // Reset the closed flag for the new client so it can be closed
+    // again by a subsequent closeRedis() call.
+    redisClosed = false;
+
+    // Under Jest (unit or integration), JEST_WORKER_ID is set even
+    // in --runInBand mode.  In unit tests Redis is typically unavailable,
+    // and an unbounded retryStrategy would keep scheduling setTimeout
+    // handles that prevent the Node.js event loop from exiting — the
+    // root cause of the `timeout 180 … test:unit` exit-code-124 hang.
+    // Returning null tells ioredis to give up immediately after the
+    // first connection failure (it emits 'end' and releases all handles).
+    // Integration tests have a real Redis, so the first attempt succeeds
+    // and the retry strategy is never consulted.
+    const isTestEnv = !!process.env.JEST_WORKER_ID;
+
     _redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
       maxRetriesPerRequest: 3,
       retryStrategy(times) {
+        // Stop retrying once closeRedis() has been called.
+        if (redisClosed) {
+          return null;
+        }
+        // In test environments, never retry — prevents event-loop
+        // hang when Redis is unavailable (unit tests in CI).
+        if (isTestEnv) {
+          return null;
+        }
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
@@ -26,7 +58,13 @@ export function getRedis(): Redis {
     });
 
     _redis.on('error', (err) => {
-      console.error('❌ Redis error:', err);
+      // Suppress error spam once the connection has been intentionally
+      // closed (e.g. during test teardown).  This also prevents the
+      // "Cannot log after tests are done" Jest warnings that fire
+      // when a lingering socket error arrives after the suite finishes.
+      if (!redisClosed) {
+        console.error('❌ Redis error:', err);
+      }
     });
   }
   return _redis;
@@ -125,8 +163,6 @@ export async function incrementContentVersion(contentType: string, contentId: st
   return getRedis().incr(key);
 }
 
-let redisClosed = false;
-
 // Close Redis connection
 export async function closeRedis(): Promise<void> {
   if (redisClosed || !_redis) {
@@ -135,6 +171,12 @@ export async function closeRedis(): Promise<void> {
 
   redisClosed = true;
   const r = _redis;
+
+  // Remove our listeners so error events from the in-flight socket
+  // don't log after the test suite has finished ("Cannot log after
+  // tests are done" Jest warnings).
+  r.removeAllListeners('error');
+  r.removeAllListeners('connect');
 
   if (r.status === 'ready') {
     try {
@@ -147,4 +189,8 @@ export async function closeRedis(): Promise<void> {
   if (r.status !== 'end' && r.status !== 'close') {
     r.disconnect();
   }
+
+  // Drop the reference so the closed client can be garbage-collected.
+  // A subsequent getRedis() call will create a fresh client if needed.
+  _redis = null;
 }

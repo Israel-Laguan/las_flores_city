@@ -14,7 +14,7 @@
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test": "npx --no-install jest tests/unit tests/smoke --forceExit && npx --no-install jest tests/integration --runInBand --detectOpenHandles --forceExit",
-    "test:unit": "npx --no-install jest tests/unit --detectOpenHandles",
+    "test:unit": "npx --no-install jest tests/unit --detectOpenHandles --forceExit",
     "test:smoke": "npx --no-install jest tests/smoke --forceExit",
     "test:integration": "npx --no-install jest tests/integration --runInBand --detectOpenHandles --forceExit",
     "test:load": "k6 run tests/load/breakthrough_rush.js",
