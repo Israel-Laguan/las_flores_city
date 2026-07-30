@@ -167,6 +167,8 @@ fi
 # when targeting a specific integration test file.
 # Strip trailing slash so patterns match both "tests/integration" and "tests/integration/"
 TEST_PATH="${TEST_PATH%/}"
+# Strip redundant "server/" prefix so the path is relative to SERVER_DIR
+TEST_PATH="${TEST_PATH#server/}"
 if [[ "$TEST_PATH" == *"tests/integration"* ]]; then
     # Use test:integration (--runInBand) for integration test paths
     TEST_COMMAND="cd ${SERVER_DIR} && npm run test:integration -- ${TEST_PATH}"

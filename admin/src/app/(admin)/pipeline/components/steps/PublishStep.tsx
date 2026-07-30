@@ -6,6 +6,16 @@ import PromotionRow from '@/components/promotion/PromotionRow';
 import type { PromotionStatus } from '../../hooks/usePipeline';
 import styles from '../../pipeline.module.css';
 
+function entityType(contentPath: string): string {
+  const segments = contentPath.split('/');
+  if (segments.includes('locations')) return 'Location';
+  const map: Record<string, string> = { characters: 'Character', scenes: 'Scene', districts: 'District' };
+  for (const seg of segments) {
+    if (map[seg]) return map[seg];
+  }
+  return segments[0] || 'Unknown';
+}
+
 interface Props {
   statuses: PromotionStatus[];
   loading: boolean;
@@ -32,16 +42,6 @@ export default function PublishStep({ statuses, loading, publishing, publishErro
   const readyCount = statuses.filter(s => s.stages.dev && !s.stages.production).length;
   const allPublished = statuses.length > 0 && publishedCount === statuses.length;
   const anyToPromote = statuses.some(s => s.stages.dev && !s.stages.production);
-
-function entityType(contentPath: string): string {
-  const segments = contentPath.split('/');
-  if (segments.includes('locations')) return 'Location';
-  const map: Record<string, string> = { characters: 'Character', scenes: 'Scene', districts: 'District' };
-  for (const seg of segments) {
-    if (map[seg]) return map[seg];
-  }
-  return segments[0] || 'Unknown';
-}
 
   return (
     <div className={styles.stepContent}>
@@ -96,7 +96,7 @@ function entityType(contentPath: string): string {
         </div>
       )}
 
-      {!loading && !publishError && statuses.length === 0 && (
+      {!loading && !publishError && !promotionError && statuses.length === 0 && (
         <p className={styles.muted}>No entities found for asset publishing.</p>
       )}
 

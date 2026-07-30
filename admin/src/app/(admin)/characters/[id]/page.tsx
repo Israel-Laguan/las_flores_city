@@ -21,6 +21,23 @@ interface CharacterRecord {
   [key: string]: unknown;
 }
 
+function LinkedDialogues({ dialogueIds, dialoguesMap }: { dialogueIds: string[]; dialoguesMap: Record<string, string> }) {
+  if (dialogueIds.length === 0) {
+    return <p className={styles.muted}>No dialogues linked</p>;
+  }
+  return (
+    <ul className={styles.dialogueList}>
+      {dialogueIds.map((dId) => (
+        <li key={dId}>
+          <Link href={`/dialogues/${dId}`} target="_blank" className={styles.dialogueLink}>
+            {dialoguesMap[dId] || dId}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function CharacterDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -119,7 +136,6 @@ export default function CharacterDetailPage() {
       </div>
       <EntityDetailView fields={CHARACTER_VIEW_FIELDS} record={record as unknown} />
 
-      {/* Linked Dialogues section — outside EntityDetailView so we can show named links */}
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Linked Dialogues</h2>
@@ -127,19 +143,7 @@ export default function CharacterDetailPage() {
             Manage Dialogues
           </Link>
         </div>
-        {dialogueIds.length === 0 ? (
-          <p className={styles.muted}>No dialogues linked</p>
-        ) : (
-          <ul className={styles.dialogueList}>
-            {dialogueIds.map((dId) => (
-              <li key={dId}>
-                <Link href={`/dialogues/${dId}`} target="_blank" className={styles.dialogueLink}>
-                  {dialoguesMap[dId] || dId}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+        <LinkedDialogues dialogueIds={dialogueIds} dialoguesMap={dialoguesMap} />
       </div>
     </main>
   );

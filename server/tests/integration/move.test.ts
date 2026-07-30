@@ -67,28 +67,29 @@ async function seedTestData(): Promise<void> {
   await pool.query(
     `INSERT INTO districts (id, name, slug, description, x, y) VALUES
      -- Synthetic UUIDs reserved for this test — cleaned up in afterAll, no collision with other tests.
-     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
-     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
-     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
-     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
-     ON CONFLICT (name) DO UPDATE SET
+     ('d1000000-0000-0000-0000-000000000001', 'test-district-alpha', 'test-district-alpha', 'Test district alpha.', 0, 0),
+     ('d1000000-0000-0000-0000-000000000002', 'test-district-beta', 'test-district-beta', 'Test district beta.', 1, 0),
+     ('d1000000-0000-0000-0000-000000000003', 'test-district-gamma', 'test-district-gamma', 'Test district gamma.', 0, 1),
+     ('d1000000-0000-0000-0000-000000000004', 'test-district-delta', 'test-district-delta', 'Test district delta.', 1, 2)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
        slug = EXCLUDED.slug,
+       description = EXCLUDED.description,
        x = EXCLUDED.x,
        y = EXCLUDED.y`
   );
 
   await applyMigration('033_district_travel_costs.sql');
 
-  // Use the existing district UUIDs. When seed migrations 034/035 created
-  // these districts with auto-generated IDs, we must reuse those IDs.
-  const downtownQ = await pool.query<{ id: string }>(
-    "SELECT id FROM districts WHERE name = 'Downtown'"
+  // Use the synthetic UUIDs for test-owned districts.
+  const alphaQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'test-district-alpha'"
   );
-  DOWNTOWN_ID = downtownQ.rows[0].id;
-  const oldTownQ = await pool.query<{ id: string }>(
-    "SELECT id FROM districts WHERE name = 'Old Town'"
+  DOWNTOWN_ID = alphaQ.rows[0].id;
+  const betaQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'test-district-beta'"
   );
-  OLD_TOWN_ID = oldTownQ.rows[0].id;
+  OLD_TOWN_ID = betaQ.rows[0].id;
 
   // Insert scenes with valid district_ids
   await pool.query(
@@ -156,6 +157,7 @@ afterAll(async () => {
   }
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await pool.query("DELETE FROM districts WHERE name IN ('test-district-alpha', 'test-district-beta', 'test-district-gamma', 'test-district-delta')");
   await pool.end();
   await closeRedis();
 });

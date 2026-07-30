@@ -135,6 +135,19 @@ function KVField({ value, onChange }: { value: unknown; onChange: (v: unknown) =
     </div>
   );
 }
+function BooleanField({ value, onChange }: { value: unknown; onChange: (v: boolean) => void }) {
+  return (
+    <select
+      className="select"
+      value={typeof value === 'boolean' ? (value ? 'true' : 'false') : 'false'}
+      onChange={(e) => onChange(e.target.value === 'true')}
+    >
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  );
+}
+
 function Control({ field, value, onChange }: { field: FieldDef; value: unknown; onChange: (v: unknown) => void }) {
   if (field.readOnly) {
     return (
@@ -169,16 +182,8 @@ function Control({ field, value, onChange }: { field: FieldDef; value: unknown; 
       );
     }
     case 'boolean':
-      return (
-        <select
-          className="select"
-          value={typeof value === 'boolean' ? (value ? 'true' : 'false') : 'false'}
-          onChange={(e) => onChange(e.target.value === 'true')}
-        >
-          <option value="true">Yes</option>
-           <option value="false">No</option>
-         </select>);
-     case 'select': {
+      return <BooleanField value={value} onChange={onChange} />;
+    case 'select': {
       const options = field.options || [];
       return (
         <select className="select" value={typeof value === 'string' ? value : ''} onChange={(e) => onChange(e.target.value)}>
@@ -216,7 +221,8 @@ function Control({ field, value, onChange }: { field: FieldDef; value: unknown; 
               }
             }}
           />
-         </div>);
+        </div>
+      );
     }
     case 'array-of-objects':
       return <ArrayOfObjectsField field={field} value={value} onChange={onChange} />;

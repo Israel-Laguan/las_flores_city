@@ -18,6 +18,23 @@ interface EntityEditPageProps {
   footer?: ReactNode;
 }
 
+function SaveSuccess({ entityLabel, routeBase, id, migrated, onMigrate, saving }: { entityLabel: string; routeBase: string; id: string; migrated: boolean; onMigrate: () => void; saving: boolean }) {
+  return (
+    <div className={styles.successBox}>
+      Saved to YAML. Run migration to sync the DB.
+      {!migrated ? (
+        <button type="button" onClick={onMigrate} disabled={saving} className="btn btn--secondary">
+          {saving ? 'Migrating...' : 'Run Migration'}
+        </button>
+      ) : (
+        <div className={styles.migrated}>
+          Migration completed. <Link href={`/${routeBase}/${id}`} className={styles.link}>View updated {entityLabel.toLowerCase()}</Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function EntityEditPage({
   type, id, schema, editFields, entityLabel, routeBase, footer,
 }: EntityEditPageProps) {
@@ -55,7 +72,10 @@ export default function EntityEditPage({
       return;
     }
     setValidationErrors(null);
-    if (!path) return;
+    if (!path) {
+      setValidationErrors(['(root): missing content file path; cannot save']);
+      return;
+    }
     const ok = await save(path, draft);
     if (ok) {
       setMigrated(false);
@@ -106,18 +126,7 @@ export default function EntityEditPage({
       )}
       {saveError && <div className={styles.errorBox}>{saveError}</div>}
       {(saveSuccess || migrated) && (
-        <div className={styles.successBox}>
-          Saved to YAML. Run migration to sync the DB.
-          {!migrated ? (
-            <button type="button" onClick={handleMigrate} disabled={saving} className="btn btn--secondary">
-              {saving ? 'Migrating...' : 'Run Migration'}
-            </button>
-          ) : (
-            <div className={styles.migrated}>
-              Migration completed. <Link href={`/${routeBase}/${id}`} className={styles.link}>View updated {entityLabel.toLowerCase()}</Link>
-            </div>
-          )}
-        </div>
+        <SaveSuccess entityLabel={entityLabel} routeBase={routeBase} id={id} migrated={migrated} onMigrate={handleMigrate} saving={saving} />
       )}
       {draft && (
         <EntityEditForm

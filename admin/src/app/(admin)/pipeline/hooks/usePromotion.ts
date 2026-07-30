@@ -44,16 +44,22 @@ export function usePromotion() {
     try {
       for (const status of promotionStatuses) {
         if (!status.stages.dev) continue;
-        try {
-          if (!status.stages.staging) {
+        if (!status.stages.staging) {
+          try {
             await promoStaging(status.contentPath);
+          } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error);
+            errors.push(`Failed to promote ${status.contentPath} to staging: ${msg}`);
+            continue;
           }
+        }
+        try {
           if (!status.stages.production) {
             await promoProduction(status.contentPath);
           }
         } catch (error) {
           const msg = error instanceof Error ? error.message : String(error);
-          errors.push(`Failed to promote ${status.contentPath}: ${msg}`);
+          errors.push(`Failed to promote ${status.contentPath} to production: ${msg}`);
         }
       }
       if (errors.length > 0) {

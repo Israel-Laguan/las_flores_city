@@ -189,6 +189,8 @@ async function initOnce() {
   if (window.__lasFloresInitialized) return;
 
   window.__lasFloresInitialized = true;
+  installBootWatchdog();
+
   const viewportManager = new ViewportManager();
   (window as any).__viewportManager = viewportManager;
   new DialogueUI();
@@ -238,8 +240,6 @@ async function initOnce() {
     destroyCurrentView();
     navigateTo('/map');
   });
-
-    installBootWatchdog();
 
   const initialPath = window.location.pathname;
   initializeUI();

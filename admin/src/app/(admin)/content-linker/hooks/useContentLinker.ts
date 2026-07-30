@@ -27,8 +27,8 @@ export function useContentLinker(tab: TabConfigLike, initialId?: string) {
   // admin content resolver. The per-folder content layout means we cannot
   // construct the path from the entity id alone (e.g. characters/<slug>/char_<slug>.yaml).
   useEffect(() => {
+    setContentPath(null);
     if (!selectedId) {
-      setContentPath(null);
       return;
     }
     let active = true;
