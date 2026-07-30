@@ -113,11 +113,11 @@ Direct DB edits outside the migration path are considered drift and are out of s
 
 ### D3 — districts naming mismatch
 
-**What:** DB seeds define districts named `Downtown`, `Old Town`, `Commercial`, `Industrial`, `South`, `City`, `Unknown`. Content lives under `content/districts/` folders: `southeast`, `rio_de_las_flores`, `pacific`, `industrial`, `port`, `far_south`, `central`, `northeast`, `south`, `city`, `north`, `los_andes`, `forest_and_swamps`. Only 3 of 14 overlap.
+**What:** DB seeds define districts named `Downtown`, `Old Town`, `Commercial`, `Industrial`, `South`, `City`, `Unknown`. Content lives under `content/districts/` folders: `southeast`, `rio_de_las_flores`, `pacific`, `industrial`, `port`, `far_south`, `central`, `northeast`, `south`, `city`, `north`, `los_andes`, `forest_and_swamps`. Only 3 of 13 overlap.
 
 **Evidence:** `server/src/database/migrations/034_seed_districts.sql:13-59`. `find content/districts -mindepth 2 -maxdepth 2 -type d` shows 13 non-matching slugs.
 
-**Impact:** Most location YAMLs omit `district` or use `Unknown` because the real district names do not map cleanly. `upsertScene` auto-creates districts rows for any string it sees (`upsert.ts:72-75`), so the DB accumulates mismatched district names. The tile map (`client MapView`) shows the DB's 6 seeded districts, not the 14 authored ones.
+**Impact:** Most location YAMLs omit `district` or use `Unknown` because the real district names do not map cleanly. `upsertScene` auto-creates districts rows for any string it sees (`upsert.ts:72-75`), so the DB accumulates mismatched district names. The tile map (`client MapView`) shows the DB's 6 seeded districts, not the 13 authored ones.
 
 **Recommended fix:** Normalize to whichever side needs fewer moves — option (a) rename `content/districts/*` folders to match seeded slugs, or (b) replace seeded rows to match authored slugs and add a `content/districts` mapping doc. Either way, run `./scripts/apply-migrations.sh both` after because `scenes.district_id` FK will need backfill.
 
