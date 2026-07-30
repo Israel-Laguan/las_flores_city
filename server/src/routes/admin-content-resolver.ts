@@ -122,7 +122,7 @@ async function findContentFile(
             if (Array.isArray(arr)) {
               for (const item of arr) {
                 if (item && typeof item === 'object' && (item as { id?: unknown }).id === id) {
-                  return { path: relPath, yaml: parsed };
+                  return { path: relPath, yaml: item };
                 }
               }
             }

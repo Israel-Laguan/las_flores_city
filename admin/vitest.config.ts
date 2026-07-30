@@ -12,12 +12,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      // Point at the TS source entry explicitly (mirrors the server jest
-      // moduleNameMapper). Resolving the directory would let a stale
-      // shared/src/index.js shadow shared/src/index.ts under vite's
-      // resolve.extensions (.js before .ts), hiding newer exports such as
-      // YAMLLocationSchema.
-      '@las-flores/shared': path.resolve(__dirname, '../shared/src/index.ts'),
+      // Resolve the built shared entry so test module resolution matches the
+      // admin tsconfig path (`@las-flores/shared` → `../shared/dist`) and CI's
+      // build order. Pointing at the directory lets Vite follow the package.json
+      // `main` field to `dist/index.js`.
+      '@las-flores/shared': path.resolve(__dirname, '../shared/dist'),
     },
   },
 });

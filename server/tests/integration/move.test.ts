@@ -194,7 +194,10 @@ afterAll(async () => {
     );
   }
 
-  await pool.query("DELETE FROM districts WHERE name IN ('test-district-alpha', 'test-district-beta', 'test-district-gamma', 'test-district-delta')");
+  await pool.query(
+    'DELETE FROM districts WHERE id = ANY($1::uuid[])',
+    [['d1000000-0000-0000-0000-000000000001', 'd1000000-0000-0000-0000-000000000002', 'd1000000-0000-0000-0000-000000000003', 'd1000000-0000-0000-0000-000000000004']]
+  );
   await pool.end();
   await closeRedis();
 });

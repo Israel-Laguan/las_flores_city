@@ -73,6 +73,7 @@ function registerHomeOrCity({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('login-menu')!.style.display = 'flex';
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/city', () => {
@@ -86,6 +87,7 @@ function registerHomeOrCity({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new CityNav(container, getCachedPlayerState());
+    window.__lasFloresBootReady = true;
   });
 }
 
@@ -108,6 +110,7 @@ function registerMainMenu({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new MainMenu(container, getCachedPlayerState());
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/main/settings', () => {
@@ -120,6 +123,7 @@ function registerMainMenu({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new SettingsView(container);
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/main/gallery', () => {
@@ -132,6 +136,7 @@ function registerMainMenu({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new GalleryView(container);
+    window.__lasFloresBootReady = true;
   });
 }
 
@@ -153,6 +158,7 @@ function registerMapRoutes({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     void mountReactView(MapView, { playerState: getCachedPlayerState() });
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/map/', () => {
@@ -166,6 +172,7 @@ function registerMapRoutes({
     document.getElementById('view-container')!.style.display = 'flex';
     const districtSlug = extractDistrictSlug();
     void mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
+    window.__lasFloresBootReady = true;
   });
 }
 

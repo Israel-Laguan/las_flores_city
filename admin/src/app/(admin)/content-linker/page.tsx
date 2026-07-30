@@ -180,7 +180,7 @@ export default function ContentLinkerPage() {
               {linker.error && <div className={styles.errorBox}>{linker.error}</div>}
               {linker.success && <div className={styles.successBox}>Links updated successfully</div>}
 
-              {linker.pathError ? (
+              {needsContentPath && linker.pathError ? (
                 <div className={styles.errorBox}>Content path error: {linker.pathError}</div>
               ) : contentPathReady ? (
                 <>
@@ -196,7 +196,7 @@ export default function ContentLinkerPage() {
                     {linker.saving ? 'Saving...' : `Save ${linker.pendingOps.length} Change${linker.pendingOps.length !== 1 ? 's' : ''}`}
                   </button>
                 </>
-              ) : linker.pathLoading ? (
+              ) : needsContentPath && linker.pathLoading ? (
                 <p className={styles.muted}>Resolving content path…</p>
               ) : null}
             </div>

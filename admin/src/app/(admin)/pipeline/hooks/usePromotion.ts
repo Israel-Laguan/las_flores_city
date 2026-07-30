@@ -19,6 +19,7 @@ export function usePromotion() {
       setPromotionStatuses(data);
       setPromotionError(null);
     } catch {
+      setPromotionStatuses([]);
       setPromotionError('Failed to fetch promotion status');
     }
     finally { setPromotionLoading(false); }

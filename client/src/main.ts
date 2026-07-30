@@ -24,6 +24,7 @@ declare global {
   interface Window {
     __lasFloresInitialized?: boolean;
     __lasFloresBootError?: Error;
+    __lasFloresBootReady?: boolean;
   }
 }
 
@@ -100,9 +101,15 @@ export function startGame(): void {
     reportBootFailure(err instanceof Error ? err : new Error(String(err)));
     return;
   }
-  sleepOverlayInstance = new SleepOverlay();
-  phoneOverlayInstance = new PhoneOverlay();
-  initThemeEngine();
+  try {
+    sleepOverlayInstance = new SleepOverlay();
+    phoneOverlayInstance = new PhoneOverlay();
+    initThemeEngine();
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
+  window.__lasFloresBootReady = true;
 }
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -137,9 +144,14 @@ async function startGameForLocation(locationId: string): Promise<void> {
     reportBootFailure(err instanceof Error ? err : new Error(String(err)));
     return;
   }
-  sleepOverlayInstance = new SleepOverlay();
-  phoneOverlayInstance = new PhoneOverlay();
-  initThemeEngine();
+  try {
+    sleepOverlayInstance = new SleepOverlay();
+    phoneOverlayInstance = new PhoneOverlay();
+    initThemeEngine();
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
 
   try {
     gameInstance.scene.start('LocationScene');
@@ -152,6 +164,7 @@ async function startGameForLocation(locationId: string): Promise<void> {
   const waitForReady = () => {
     if (gameInstance?.scene.isActive('LocationScene')) {
       eventBus.emit('city:travel-to', { locationId });
+      window.__lasFloresBootReady = true;
     } else if (++attempts < maxAttempts) {
       requestAnimationFrame(waitForReady);
     } else {
@@ -249,17 +262,9 @@ async function initOnce() {
 function installBootWatchdog(): void {
   setTimeout(() => {
     if (window.__lasFloresBootError) return; // already reported
+    if (window.__lasFloresBootReady) return; // complete startup succeeded
 
-    const loginMenu = document.getElementById('login-menu');
-    const viewContainer = document.getElementById('view-container');
-    const gameContainer = document.getElementById('game-container');
-    const hasLoginContent = loginMenu && loginMenu.style.display !== 'none' && loginMenu.innerHTML.trim().length > 0;
-    const hasViewContent = viewContainer && viewContainer.style.display !== 'none' && viewContainer.innerHTML.trim().length > 0;
-    const hasGameCanvas = gameContainer && gameContainer.querySelector('canvas') !== null;
-
-    if (!hasLoginContent && !hasViewContent && !hasGameCanvas) {
-      reportBootFailure(new Error('Boot watchdog: neither login menu, view container, nor game canvas appeared within 5s'));
-    }
+    reportBootFailure(new Error('Boot watchdog: startup did not complete within 5s'));
   }, 5000);
 }
 
@@ -267,6 +272,7 @@ function initializeUI(): void {
   new LoginMenu();
   hideAllContainers();
   document.getElementById('login-menu')!.style.display = 'flex';
+  window.__lasFloresBootReady = true;
   navigateTo('/', true);
 }
 

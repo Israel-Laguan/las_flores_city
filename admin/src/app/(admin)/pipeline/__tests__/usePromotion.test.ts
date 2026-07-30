@@ -23,7 +23,7 @@ describe('fetchPromotionStatus', () => {
     const mockStatuses = [{ contentPath: 'characters/test', stages: { dev: { url: 'x' } } }];
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce(mockStatuses);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.fetchPromotionStatus(); });
+    await act(async () => { await result.current.fetchPromotionStatus(); });
     await waitFor(() => expect(result.current.promotionStatuses.length).toBeGreaterThan(0));
     expect(result.current.promotionLoading).toBe(false);
   });
@@ -31,8 +31,9 @@ describe('fetchPromotionStatus', () => {
   it('sets promotionError on failure', async () => {
     mockPromotion.fetchPromotionStatus.mockRejectedValueOnce(new Error('network error'));
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.fetchPromotionStatus(); });
+    await act(async () => { await result.current.fetchPromotionStatus(); });
     expect(result.current.promotionError).toBe('Failed to fetch promotion status');
+    expect(result.current.promotionStatuses).toEqual([]);
     expect(result.current.promotionLoading).toBe(false);
   });
 });
@@ -44,7 +45,7 @@ describe('promoteStaging', () => {
     mockPromotion.promoteStaging.mockResolvedValueOnce(undefined);
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce([]);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.promoteStaging('characters/test'); });
+    await act(async () => { await result.current.promoteStaging('characters/test'); });
     expect(mockPromotion.promoteStaging).toHaveBeenCalledWith('characters/test');
     expect(mockPromotion.fetchPromotionStatus).toHaveBeenCalled();
     expect(result.current.publishing).toBe(false);
@@ -54,7 +55,7 @@ describe('promoteStaging', () => {
   it('sets error on failure', async () => {
     mockPromotion.promoteStaging.mockRejectedValueOnce(new Error('fail'));
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.promoteStaging('characters/test'); });
+    await act(async () => { await result.current.promoteStaging('characters/test'); });
     expect(result.current.publishError).toBe('Failed to promote to staging');
     expect(result.current.publishing).toBe(false);
   });
@@ -67,7 +68,7 @@ describe('promoteProduction', () => {
     mockPromotion.promoteProduction.mockResolvedValueOnce(undefined);
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce([]);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.promoteProduction('characters/test'); });
+    await act(async () => { await result.current.promoteProduction('characters/test'); });
     expect(mockPromotion.promoteProduction).toHaveBeenCalledWith('characters/test');
     expect(mockPromotion.fetchPromotionStatus).toHaveBeenCalled();
     expect(result.current.publishing).toBe(false);
@@ -76,7 +77,7 @@ describe('promoteProduction', () => {
   it('sets error on failure', async () => {
     mockPromotion.promoteProduction.mockRejectedValueOnce(new Error('fail'));
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.promoteProduction('characters/test'); });
+    await act(async () => { await result.current.promoteProduction('characters/test'); });
     expect(result.current.publishError).toBe('Failed to promote to production');
   });
 });
@@ -88,7 +89,7 @@ describe('rollbackStaging', () => {
     mockPromotion.rollbackStaging.mockResolvedValueOnce(undefined);
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce([]);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.rollbackStaging('characters/test'); });
+    await act(async () => { await result.current.rollbackStaging('characters/test'); });
     expect(mockPromotion.rollbackStaging).toHaveBeenCalledWith('characters/test');
     expect(mockPromotion.fetchPromotionStatus).toHaveBeenCalled();
     expect(result.current.publishing).toBe(false);
@@ -97,7 +98,7 @@ describe('rollbackStaging', () => {
   it('sets error on failure', async () => {
     mockPromotion.rollbackStaging.mockRejectedValueOnce(new Error('fail'));
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.rollbackStaging('characters/test'); });
+    await act(async () => { await result.current.rollbackStaging('characters/test'); });
     expect(result.current.publishError).toBe('Failed to rollback staging');
   });
 });
@@ -113,9 +114,9 @@ describe('runPublish', () => {
     mockPromotion.promoteProduction.mockResolvedValueOnce(undefined);
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce([]);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.fetchPromotionStatus(); });
+    await act(async () => { await result.current.fetchPromotionStatus(); });
     await waitFor(() => expect(result.current.promotionStatuses.length).toBe(1));
-    await act(async () => { result.current.runPublish(); });
+    await act(async () => { await result.current.runPublish(); });
     expect(mockPromotion.promoteStaging).toHaveBeenCalled();
     expect(mockPromotion.promoteProduction).toHaveBeenCalled();
     expect(result.current.publishing).toBe(false);
@@ -128,9 +129,9 @@ describe('runPublish', () => {
     mockPromotion.promoteProduction.mockResolvedValueOnce(undefined);
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce([]);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.fetchPromotionStatus(); });
+    await act(async () => { await result.current.fetchPromotionStatus(); });
     await waitFor(() => expect(result.current.promotionStatuses.length).toBe(1));
-    await act(async () => { result.current.runPublish(); });
+    await act(async () => { await result.current.runPublish(); });
     expect(mockPromotion.promoteStaging).not.toHaveBeenCalled();
     expect(mockPromotion.promoteProduction).toHaveBeenCalled();
   });
@@ -141,9 +142,9 @@ describe('runPublish', () => {
     ]);
     mockPromotion.promoteStaging.mockRejectedValueOnce(new Error('fail'));
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.fetchPromotionStatus(); });
+    await act(async () => { await result.current.fetchPromotionStatus(); });
     await waitFor(() => expect(result.current.promotionStatuses.length).toBe(1));
-    await act(async () => { result.current.runPublish(); });
+    await act(async () => { await result.current.runPublish(); });
     expect(result.current.publishError).toContain('Publish completed with 1 error(s)');
     expect(result.current.publishError).toContain('Failed to promote characters/test to staging: fail');
     expect(result.current.publishing).toBe(false);
@@ -162,9 +163,9 @@ describe('runPublish', () => {
     mockPromotion.promoteProduction.mockResolvedValue(undefined);
     mockPromotion.fetchPromotionStatus.mockResolvedValueOnce([]);
     const { result } = renderHook(() => usePromotion());
-    await act(async () => { result.current.fetchPromotionStatus(); });
+    await act(async () => { await result.current.fetchPromotionStatus(); });
     await waitFor(() => expect(result.current.promotionStatuses.length).toBe(2));
-    await act(async () => { result.current.runPublish(); });
+    await act(async () => { await result.current.runPublish(); });
     // Both assets were attempted for staging
     expect(mockPromotion.promoteStaging).toHaveBeenCalledTimes(2);
     // Production was called only for the second asset (first failed at staging)

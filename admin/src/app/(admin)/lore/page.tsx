@@ -46,6 +46,7 @@ function NewFileForm({
               {creating ? 'Creating...' : 'Create'}
             </button>
             <button onClick={() => { setShowForm(false); setNewFilePath(''); onCancel(); }}
+              disabled={creating}
               className={cn(styles.newFileButton, styles.newFileCancelButton)}>
               Cancel
             </button>
