@@ -180,7 +180,9 @@ export default function ContentLinkerPage() {
               {linker.error && <div className={styles.errorBox}>{linker.error}</div>}
               {linker.success && <div className={styles.successBox}>Links updated successfully</div>}
 
-              {contentPathReady ? (
+              {linker.pathError ? (
+                <div className={styles.errorBox}>Content path error: {linker.pathError}</div>
+              ) : contentPathReady ? (
                 <>
                   <LinksSection config={config} selectedData={linker.selectedData} available={linker.available} onAddPendingOp={linker.addPendingOp} onGetLinkOpParams={getLinkOpParams} />
 
@@ -194,9 +196,9 @@ export default function ContentLinkerPage() {
                     {linker.saving ? 'Saving...' : `Save ${linker.pendingOps.length} Change${linker.pendingOps.length !== 1 ? 's' : ''}`}
                   </button>
                 </>
-              ) : (
+              ) : linker.pathLoading ? (
                 <p className={styles.muted}>Resolving content path…</p>
-              )}
+              ) : null}
             </div>
           )}
         </>

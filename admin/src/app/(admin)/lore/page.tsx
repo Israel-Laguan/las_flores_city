@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
@@ -72,6 +72,11 @@ export default function LoreBrowserPage() {
   const [newFilePath, setNewFilePath] = useState('');
   const [newFileError, setNewFileError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+
+  // Clear any stale new-file error when the user navigates to a different file
+  useEffect(() => {
+    setNewFileError(null);
+  }, [selectedPath]);
 
   const grouped = groupByType(tree);
   const filteredGroups = searchQuery

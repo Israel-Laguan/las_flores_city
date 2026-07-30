@@ -40,6 +40,10 @@ export async function invalidateContentResolverCache(): Promise<void> {
 interface TypeConfig {
   roots: string[];
   pathTest?: (relPath: string) => boolean;
+  /** Array of keys at the document root whose values are arrays of objects with `id` fields.
+   *  If set, the resolver also searches these nested arrays for matching IDs,
+   *  in addition to the root-level `id` check. */
+  idArrays?: string[];
 }
 
 const TYPE_CONFIG: Record<string, TypeConfig> = {
@@ -47,16 +51,16 @@ const TYPE_CONFIG: Record<string, TypeConfig> = {
   character: { roots: ['characters'] },
   // content/scenes/<slug>/scene_<slug>.yaml
   scene: { roots: ['scenes'] },
-  // content/stories/<slug>/story_<slug>.yaml
-  story: { roots: ['stories'] },
-  // content/missions/<slug>/mission_<slug>.yaml
-  mission: { roots: ['missions'] },
+  // content/stories/<slug>/story_<slug>.yaml — supports both beats-based (root id) and stories-array-based
+  story: { roots: ['stories'], idArrays: ['stories'] },
+  // content/missions/<slug>/mission_<slug>.yaml — IDs nested under missions[]
+  mission: { roots: ['missions'], idArrays: ['missions'] },
   // content/overlays/<slug>/overlay_<slug>.yaml (or flat overlay_<slug>.yaml)
   overlay: { roots: ['overlays'] },
   // content/dialogues/<slug>.yaml (flat files)
   dialogue: { roots: ['dialogues'] },
-  // content/vault/<slug>.yaml (flat files)
-  vault: { roots: ['vault'] },
+  // content/vault/<slug>.yaml (flat files) — IDs nested under vault_items[]
+  vault: { roots: ['vault'], idArrays: ['vault_items'] },
   // content/districts/<district>/locations/<slug>/location_<slug>.yaml (nested)
   location: { roots: ['districts'], pathTest: (rel) => rel.includes('/locations/') },
 };
@@ -106,12 +110,24 @@ async function findContentFile(
     try {
       const raw = await fs.promises.readFile(absolutePath, 'utf-8');
       const parsed = jsYaml.load(raw);
-      if (
-        parsed &&
-        typeof parsed === 'object' &&
-        (parsed as { id?: unknown }).id === id
-      ) {
-        return { path: relPath, yaml: parsed };
+      if (parsed && typeof parsed === 'object') {
+        // Check root-level id first (e.g. character, scene, overlay, dialogue, beats-based story, location)
+        if ((parsed as { id?: unknown }).id === id) {
+          return { path: relPath, yaml: parsed };
+        }
+        // Check nested arrays (e.g. missions[], vault_items[], stories[])
+        if (config.idArrays) {
+          for (const key of config.idArrays) {
+            const arr = (parsed as Record<string, unknown>)[key];
+            if (Array.isArray(arr)) {
+              for (const item of arr) {
+                if (item && typeof item === 'object' && (item as { id?: unknown }).id === id) {
+                  return { path: relPath, yaml: parsed };
+                }
+              }
+            }
+          }
+        }
       }
     } catch {
       // Skip unparseable files rather than failing the whole request.

@@ -10,10 +10,6 @@ updates:
     ignore:
       # TypeScript 7+ is not yet compatible with Next.js 16
       - dependency-name: "typescript"
-      # Vite is pinned to ~7.3.6 — major bumps need manual validation
-      - dependency-name: "vite"
-        update-types:
-          - "version-update:semver-major"
     groups:
       # Patch updates (bug fixes, security) — auto-merge candidate
       patches:

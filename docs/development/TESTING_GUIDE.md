@@ -80,13 +80,13 @@ Integration tests share the same Postgres and Redis instances. Under parallel ex
 
 ```bash
 # 1. Clear stale ts-jest cache first (required!)
-cd server && npx jest --clearCache
+cd server && npx --no-install jest --clearCache
 
 # 2. Run integration tests in PARALLEL (no --runInBand) to reproduce the flake
-npx jest tests/integration --forceExit --detectOpenHandles --verbose
+npx --no-install jest tests/integration --forceExit --detectOpenHandles --verbose
 
 # 3. Run the two flaky files together in parallel
-npx jest tests/integration/aftermath.worker.test.ts tests/integration/migration.drift.test.ts tests/integration/leaderboard.simulation.test.ts --forceExit --detectOpenHandles --verbose
+npx --no-install jest tests/integration/aftermath.worker.test.ts tests/integration/migration.drift.test.ts tests/integration/leaderboard.simulation.test.ts --forceExit --detectOpenHandles --verbose
 
 # 4. Verify fix: run sequentially (should pass)
 npm run test:integration
