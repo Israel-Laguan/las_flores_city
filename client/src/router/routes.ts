@@ -161,11 +161,20 @@ function registerMapRoutes({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
+    // Capture the route so a mount that completes after the user has navigated
+    // away (e.g. via logout) is ignored — otherwise a late failure would pin a
+    // permanent Boot Error banner over an otherwise-usable route, and a late
+    // success would mark boot ready for a route that is no longer active.
+    const routePath = window.location.pathname;
     try {
       await mountReactView(MapView, { playerState: getCachedPlayerState() });
-      window.__lasFloresBootReady = true;
+      if (window.location.pathname === routePath) {
+        window.__lasFloresBootReady = true;
+      }
     } catch (err) {
-      reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+      if (window.location.pathname === routePath) {
+        reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+      }
     }
   });
 
@@ -179,11 +188,16 @@ function registerMapRoutes({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const districtSlug = extractDistrictSlug();
+    const routePath = window.location.pathname;
     try {
       await mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
-      window.__lasFloresBootReady = true;
+      if (window.location.pathname === routePath) {
+        window.__lasFloresBootReady = true;
+      }
     } catch (err) {
-      reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+      if (window.location.pathname === routePath) {
+        reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+      }
     }
   });
 }

@@ -14,49 +14,65 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 // globalTeardown (which run under separate module registries under
 // tsx/cjs vs ts-jest), and the running server all operate on the same
 // client. Without this, teardown may close a different module instance's
-// `_redis` and leave the real handle dangling.
-let _redisHandle: { client: Redis; closed: boolean } | null =
-  (globalThis as Record<string, unknown>).__lasFloresRedisHandle as
-    { client: Redis; closed: boolean } | null;
+// client and leave the real handle dangling.
+const REDIS_HANDLE_KEY = '__lasFloresRedisHandle';
 
-function ensureHandle(): { client: Redis; closed: boolean } {
-  if (!_redisHandle) {
-    _redisHandle = {
-      client: new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-        maxRetriesPerRequest: 3,
-        retryStrategy(times) {
-          // Stop retrying once closeRedis() has been called.
-          if (_redisHandle?.closed) {
-            return null;
-          }
-          // Bounded retry: tolerate brief unavailability (a few blips, up to
-          // ~1s) without unbounded setTimeout loops that hang unit tests when
-          // Redis is unavailable. This also lets integration tests recover
-          // from a transient startup hiccup during CI.
-          if (times > 5) {
-            return null;
-          }
-          return 200;
-        },
-      }),
-      closed: false,
-    };
-    (globalThis as Record<string, unknown>).__lasFloresRedisHandle = _redisHandle;
+type RedisHandle = { client: Redis; closed: boolean };
 
-    _redisHandle.client.on('connect', () => {
-      console.log('✅ Redis connected');
-    });
+// Module-local cache; always re-synchronised from `globalThis` inside
+// `ensureHandle`/`closeRedis` so separate Jest module registries share one
+// handle instead of diverging after a teardown nulls the global slot.
+let _redisHandle: RedisHandle | null = null;
 
-    _redisHandle.client.on('error', (err) => {
-      // Suppress error spam once the connection has been intentionally
-      // closed (e.g. during test teardown). This also prevents the
-      // "Cannot log after tests are done" Jest warnings.
-      if (!_redisHandle?.closed) {
-        console.error('❌ Redis error:', err);
-      }
-    });
+function ensureHandle(): RedisHandle {
+  // Re-read the global slot on every call. A different module instance (e.g.
+  // globalTeardown vs a ts-jest sandbox) may have created or torn down the
+  // handle since this module was last loaded, so a load-time snapshot would
+  // be stale and could hand back a closed/disconnected client.
+  const existing = (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] as RedisHandle | null;
+  if (existing && !existing.closed) {
+    _redisHandle = existing;
+    return existing;
   }
-  return _redisHandle;
+
+  const handle: RedisHandle = { client: undefined as unknown as Redis, closed: false };
+  handle.client = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+    maxRetriesPerRequest: 3,
+    retryStrategy(times) {
+      // Stop retrying once closeRedis() has been called. Capture `handle`
+      // (not the module `_redisHandle` variable) so this stays correct after
+      // closeRedis nulls the module cache.
+      if (handle.closed) {
+        return null;
+      }
+      // Bounded retry: tolerate brief unavailability (a few blips, up to
+      // ~1s) without unbounded setTimeout loops that hang unit tests when
+      // Redis is unavailable. This also lets integration tests recover
+      // from a transient startup hiccup during CI.
+      if (times > 5) {
+        return null;
+      }
+      return 200;
+    },
+  });
+  (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] = handle;
+  _redisHandle = handle;
+
+  handle.client.on('connect', () => {
+    console.log('✅ Redis connected');
+  });
+
+  // Capture `handle` in the closure (not the module `_redisHandle` variable)
+  // so that post-close errors — when `_redisHandle` has been nulled — are still
+  // suppressed via `handle.closed`. This prevents the "Cannot log after tests
+  // are done" Jest warnings.
+  handle.client.on('error', (err) => {
+    if (!handle.closed) {
+      console.error('❌ Redis error:', err);
+    }
+  });
+
+  return handle;
 }
 
 export function getRedis(): Redis {
@@ -156,15 +172,19 @@ export async function incrementContentVersion(contentType: string, contentId: st
   return getRedis().incr(key);
 }
 
-// Close Redis connection
+// Close Redis connection. Does NOT create a client if one was never opened,
+// preserving the lazy-connection behaviour and avoiding needless connection
+// attempts (and teardown errors) during test teardown.
 export async function closeRedis(): Promise<void> {
-  if (_redisHandle?.closed) {
+  // Re-read the global slot so teardown closes the exact client the tests
+  // created, even across separate Jest module registries.
+  const handle = (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] as RedisHandle | null;
+  if (!handle || handle.closed) {
+    _redisHandle = null;
     return;
   }
 
-  const handle = ensureHandle();
   handle.closed = true;
-
   const r = handle.client;
 
   if (r.status === 'ready') {
@@ -179,6 +199,6 @@ export async function closeRedis(): Promise<void> {
     r.disconnect();
   }
 
+  (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] = null;
   _redisHandle = null;
-  (globalThis as Record<string, unknown>).__lasFloresRedisHandle = null;
 }
