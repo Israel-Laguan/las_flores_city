@@ -47,6 +47,10 @@ function authHeaders() {
 let DOWNTOWN_ID: string;
 let OLD_TOWN_ID: string;
 
+// Captured in beforeAll (before seedTestData hijacks real content scenes) so
+// afterAll can restore their original district_id instead of deleting them.
+const originalSceneDistricts = new Map<string, string>();
+
 // Seed the districts, scenes, user, and player_state rows these tests rely on.
 // Other test files run migrations that may drop/recreate the scenes table, so
 // this is idempotent (CREATE TABLE IF NOT EXISTS / ON CONFLICT) and is invoked
@@ -144,6 +148,17 @@ beforeAll(async () => {
     connectionTimeoutMillis: 5000,
   });
 
+  // Capture the original district_id of any pre-existing real content scenes
+  // BEFORE seedTestData hijacks them (repoints district_id at synthetic test
+  // districts). afterAll restores these so real content is not corrupted.
+  const preTestScenes = await pool.query(
+    'SELECT id, district_id FROM scenes WHERE id = ANY($1::uuid[])',
+    [[APARTMENT_ID, WELCOME_CENTER_ID, CAFE_ID]],
+  );
+  for (const row of preTestScenes.rows) {
+    originalSceneDistricts.set(row.id, row.district_id);
+  }
+
   await seedTestData();
 
   await new Promise<void>((resolve) => {
@@ -157,6 +172,28 @@ afterAll(async () => {
   }
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+
+  // The test hijacks real content scenes (e.g. the Welcome Center) by repointing
+  // their district_id at synthetic test districts. We cannot delete those real
+  // scenes — other players' player_states reference them — so restore their
+  // original district_id. Scenes that did not exist before the test (purely
+  // synthetic) are safe to delete.
+  for (const [sceneId, originalDistrictId] of originalSceneDistricts) {
+    await pool.query(
+      'UPDATE scenes SET district_id = $1 WHERE id = $2',
+      [originalDistrictId, sceneId],
+    );
+  }
+  const syntheticSceneIds = [APARTMENT_ID, WELCOME_CENTER_ID, CAFE_ID].filter(
+    id => !originalSceneDistricts.has(id),
+  );
+  if (syntheticSceneIds.length > 0) {
+    await pool.query(
+      `DELETE FROM scenes WHERE id = ANY($1::uuid[])`,
+      [syntheticSceneIds],
+    );
+  }
+
   await pool.query("DELETE FROM districts WHERE name IN ('test-district-alpha', 'test-district-beta', 'test-district-gamma', 'test-district-delta')");
   await pool.end();
   await closeRedis();
