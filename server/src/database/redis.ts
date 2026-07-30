@@ -9,65 +9,58 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 // Prevents Jest from hanging on open TCPWRAP handles when tests
 // import modules that transitively pull in this file without
 // actually needing Redis.
-let _redis: Redis | null = null;
+//
+// Shared via `globalThis` so that Jest test sandboxes, globalSetup /
+// globalTeardown (which run under separate module registries under
+// tsx/cjs vs ts-jest), and the running server all operate on the same
+// client. Without this, teardown may close a different module instance's
+// `_redis` and leave the real handle dangling.
+let _redisHandle: { client: Redis; closed: boolean } | null =
+  (globalThis as Record<string, unknown>).__lasFloresRedisHandle as
+    { client: Redis; closed: boolean } | null;
 
-// Set to true by closeRedis() so retryStrategy can short-circuit.
-// This flag lives in the same module instance as _redis, so it is
-// effective even when closeRedis() is called from a different
-// module instance (e.g. globalTeardown.cjs via tsx/cjs vs test
-// files via ts-jest — they get separate module registries under
-// --detectOpenHandles/--runInBand).
-let redisClosed = false;
+function ensureHandle(): { client: Redis; closed: boolean } {
+  if (!_redisHandle) {
+    _redisHandle = {
+      client: new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
+        maxRetriesPerRequest: 3,
+        retryStrategy(times) {
+          // Stop retrying once closeRedis() has been called.
+          if (_redisHandle?.closed) {
+            return null;
+          }
+          // Bounded retry: keep going for a few blips, then give up. This
+          // avoids the unbounded setTimeout loops that hang unit tests when
+          // Redis is unavailable, while still letting integration tests
+          // recover from a transient startup hiccup.
+          if (times > 3) {
+            return null;
+          }
+          return 100;
+        },
+      }),
+      closed: false,
+    };
+    (globalThis as Record<string, unknown>).__lasFloresRedisHandle = _redisHandle;
 
-export function getRedis(): Redis {
-  if (!_redis) {
-    // Reset the closed flag for the new client so it can be closed
-    // again by a subsequent closeRedis() call.
-    redisClosed = false;
-
-    // Under Jest (unit or integration), JEST_WORKER_ID is set even
-    // in --runInBand mode.  In unit tests Redis is typically unavailable,
-    // and an unbounded retryStrategy would keep scheduling setTimeout
-    // handles that prevent the Node.js event loop from exiting — the
-    // root cause of the `timeout 180 … test:unit` exit-code-124 hang.
-    // Returning null tells ioredis to give up immediately after the
-    // first connection failure (it emits 'end' and releases all handles).
-    // Integration tests have a real Redis, so the first attempt succeeds
-    // and the retry strategy is never consulted.
-    const isTestEnv = !!process.env.JEST_WORKER_ID;
-
-    _redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-      maxRetriesPerRequest: 3,
-      retryStrategy(times) {
-        // Stop retrying once closeRedis() has been called.
-        if (redisClosed) {
-          return null;
-        }
-        // In test environments, never retry — prevents event-loop
-        // hang when Redis is unavailable (unit tests in CI).
-        if (isTestEnv) {
-          return null;
-        }
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-      },
-    });
-
-    _redis.on('connect', () => {
+    _redisHandle.client.on('connect', () => {
       console.log('✅ Redis connected');
     });
 
-    _redis.on('error', (err) => {
+    _redisHandle.client.on('error', (err) => {
       // Suppress error spam once the connection has been intentionally
-      // closed (e.g. during test teardown).  This also prevents the
-      // "Cannot log after tests are done" Jest warnings that fire
-      // when a lingering socket error arrives after the suite finishes.
-      if (!redisClosed) {
+      // closed (e.g. during test teardown). This also prevents the
+      // "Cannot log after tests are done" Jest warnings.
+      if (!_redisHandle?.closed) {
         console.error('❌ Redis error:', err);
       }
     });
   }
-  return _redis;
+  return _redisHandle;
+}
+
+export function getRedis(): Redis {
+  return ensureHandle().client;
 }
 
 // Cache helpers
@@ -165,18 +158,14 @@ export async function incrementContentVersion(contentType: string, contentId: st
 
 // Close Redis connection
 export async function closeRedis(): Promise<void> {
-  if (redisClosed || !_redis) {
+  if (_redisHandle?.closed) {
     return;
   }
 
-  redisClosed = true;
-  const r = _redis;
+  const handle = ensureHandle();
+  handle.closed = true;
 
-  // Remove our listeners so error events from the in-flight socket
-  // don't log after the test suite has finished ("Cannot log after
-  // tests are done" Jest warnings).
-  r.removeAllListeners('error');
-  r.removeAllListeners('connect');
+  const r = handle.client;
 
   if (r.status === 'ready') {
     try {
@@ -190,7 +179,6 @@ export async function closeRedis(): Promise<void> {
     r.disconnect();
   }
 
-  // Drop the reference so the closed client can be garbage-collected.
-  // A subsequent getRedis() call will create a fresh client if needed.
-  _redis = null;
+  _redisHandle = null;
+  (globalThis as Record<string, unknown>).__lasFloresRedisHandle = null;
 }

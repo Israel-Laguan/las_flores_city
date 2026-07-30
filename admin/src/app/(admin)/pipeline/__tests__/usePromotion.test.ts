@@ -29,8 +29,14 @@ describe('fetchPromotionStatus', () => {
   });
 
   it('sets promotionError on failure', async () => {
-    mockPromotion.fetchPromotionStatus.mockRejectedValueOnce(new Error('network error'));
+    const mockStatuses = [{ contentPath: 'characters/test', stages: { dev: { url: 'x' } } }];
+    mockPromotion.fetchPromotionStatus.mockResolvedValueOnce(mockStatuses);
     const { result } = renderHook(() => usePromotion());
+    await act(async () => { await result.current.fetchPromotionStatus(); });
+    await waitFor(() => expect(result.current.promotionStatuses.length).toBeGreaterThan(0));
+    expect(result.current.promotionLoading).toBe(false);
+
+    mockPromotion.fetchPromotionStatus.mockRejectedValueOnce(new Error('network error'));
     await act(async () => { await result.current.fetchPromotionStatus(); });
     expect(result.current.promotionError).toBe('Failed to fetch promotion status');
     expect(result.current.promotionStatuses).toEqual([]);

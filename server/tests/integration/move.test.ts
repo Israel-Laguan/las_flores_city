@@ -11,6 +11,11 @@ import { closeRedis } from '../../src/database/redis.js';
 const { Pool } = pg;
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000010';
+// These are real content scenes (Apartment, Welcome Center, Cafe). Per the
+// integration-test guideline we normally use dedicated synthetic UUIDs, but
+// these tests depend on existing player_states referencing them (see seedTestData).
+// The accepted exception is documented here; a follow-up should create synthetic
+// scene/player_state fixtures to remove this drift.
 const APARTMENT_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 const WELCOME_CENTER_ID = '550e8400-e29b-41d4-a716-446655440002';
 const CAFE_ID = 'e5f6a7b8-c9d0-1234-efab-345678901234';

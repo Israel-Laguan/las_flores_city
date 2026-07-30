@@ -17,6 +17,7 @@ interface RouteDeps {
   getCachedPlayerState: () => any;
   mountReactView: (component: any, props: Record<string, unknown>) => Promise<void>;
   getGameInstance: () => Phaser.Game | null;
+  reportBootFailure: (err: Error) => void;
 }
 
 export function registerRoutes({
@@ -29,6 +30,7 @@ export function registerRoutes({
   getCachedPlayerState,
   mountReactView,
   getGameInstance,
+  reportBootFailure,
 }: RouteDeps): void {
   registerHomeOrCity({
     destroyGame,
@@ -51,6 +53,7 @@ export function registerRoutes({
     mountReactView,
     getIsAuthenticated,
     getCachedPlayerState,
+    reportBootFailure,
   });
   registerGameRoutes({
     getIsAuthenticated,
@@ -147,8 +150,9 @@ function registerMapRoutes({
   mountReactView,
   getIsAuthenticated,
   getCachedPlayerState,
-}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'mountReactView' | 'getIsAuthenticated' | 'getCachedPlayerState'>): void {
-  registerRoute('/map', () => {
+  reportBootFailure,
+}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'mountReactView' | 'getIsAuthenticated' | 'getCachedPlayerState' | 'reportBootFailure'>): void {
+  registerRoute('/map', async () => {
     if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
@@ -157,11 +161,15 @@ function registerMapRoutes({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
-    void mountReactView(MapView, { playerState: getCachedPlayerState() });
-    window.__lasFloresBootReady = true;
+    try {
+      await mountReactView(MapView, { playerState: getCachedPlayerState() });
+      window.__lasFloresBootReady = true;
+    } catch (err) {
+      reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    }
   });
 
-  registerRoute('/map/', () => {
+  registerRoute('/map/', async () => {
     if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
@@ -171,8 +179,12 @@ function registerMapRoutes({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const districtSlug = extractDistrictSlug();
-    void mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
-    window.__lasFloresBootReady = true;
+    try {
+      await mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
+      window.__lasFloresBootReady = true;
+    } catch (err) {
+      reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    }
   });
 }
 

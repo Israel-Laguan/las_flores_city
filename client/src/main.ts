@@ -28,7 +28,7 @@ declare global {
   }
 }
 
-function reportBootFailure(err: Error): void {
+export function reportBootFailure(err: Error): void {
   window.__lasFloresBootError = err;
   window.dispatchEvent(new CustomEvent('lf:boot-error', { detail: err }));
   console.error('[boot] Fatal boot failure:', err);
@@ -89,6 +89,19 @@ export function hideAllContainers(): void {
   document.getElementById('game-container')!.style.display = 'none';
 }
 
+function initOverlaysAndTheme(): boolean {
+  try {
+    sleepOverlayInstance = new SleepOverlay();
+    phoneOverlayInstance = new PhoneOverlay();
+    initThemeEngine();
+    return true;
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    destroyGame();
+    return false;
+  }
+}
+
 export function startGame(): void {
   hideAllContainers();
   document.getElementById('game-container')!.style.display = 'flex';
@@ -101,14 +114,8 @@ export function startGame(): void {
     reportBootFailure(err instanceof Error ? err : new Error(String(err)));
     return;
   }
-  try {
-    sleepOverlayInstance = new SleepOverlay();
-    phoneOverlayInstance = new PhoneOverlay();
-    initThemeEngine();
-  } catch (err) {
-    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
-    return;
-  }
+
+  if (!initOverlaysAndTheme()) return;
   window.__lasFloresBootReady = true;
 }
 
@@ -144,14 +151,7 @@ async function startGameForLocation(locationId: string): Promise<void> {
     reportBootFailure(err instanceof Error ? err : new Error(String(err)));
     return;
   }
-  try {
-    sleepOverlayInstance = new SleepOverlay();
-    phoneOverlayInstance = new PhoneOverlay();
-    initThemeEngine();
-  } catch (err) {
-    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
-    return;
-  }
+  if (!initOverlaysAndTheme()) return;
 
   try {
     gameInstance.scene.start('LocationScene');
@@ -185,6 +185,7 @@ registerRoutes({
   getCachedPlayerState: () => cachedPlayerState,
   mountReactView,
   getGameInstance: () => gameInstance,
+  reportBootFailure,
 });
 
 window.addEventListener('lf:dialogue-start', (e: Event) => {
@@ -264,15 +265,14 @@ function installBootWatchdog(): void {
     if (window.__lasFloresBootError) return; // already reported
     if (window.__lasFloresBootReady) return; // complete startup succeeded
 
-    reportBootFailure(new Error('Boot watchdog: startup did not complete within 5s'));
-  }, 5000);
+    reportBootFailure(new Error('Boot watchdog: startup did not complete within 11s'));
+  }, 11000);
 }
 
 function initializeUI(): void {
   new LoginMenu();
   hideAllContainers();
   document.getElementById('login-menu')!.style.display = 'flex';
-  window.__lasFloresBootReady = true;
   navigateTo('/', true);
 }
 
