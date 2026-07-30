@@ -26,7 +26,7 @@
         "./src/*"
       ],
       "@las-flores/shared": [
-        "../shared/dist"
+        "../shared/src"
       ],
       "@las-flores/ui": [
         "../ui/src"
