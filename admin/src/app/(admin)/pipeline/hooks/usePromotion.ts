@@ -10,79 +10,82 @@ export function usePromotion() {
   const [promotionLoading, setPromotionLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [promotionError, setPromotionError] = useState<string | null>(null);
 
   const fetchPromotionStatus = useCallback(async () => {
     setPromotionLoading(true);
     try {
       const data = await fetchPromoStatus();
       setPromotionStatuses(data);
-    } catch { /* soft */ }
+      setPromotionError(null);
+    } catch {
+      setPromotionError('Failed to fetch promotion status');
+    }
     finally { setPromotionLoading(false); }
   }, []);
+
+  const runPromotionAction = useCallback(async (action: () => Promise<void>, errorMessage: string) => {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      await action();
+      await fetchPromotionStatus();
+    } catch {
+      setPublishError(errorMessage);
+    } finally {
+      setPublishing(false);
+    }
+  }, [fetchPromotionStatus]);
 
   const runPublish = useCallback(async () => {
     setPublishing(true);
     setPublishError(null);
+    const errors: string[] = [];
     try {
       for (const status of promotionStatuses) {
         if (!status.stages.dev) continue;
-        if (!status.stages.staging) {
-          await promoStaging(status.contentPath);
-        }
-        if (!status.stages.production) {
-          await promoProduction(status.contentPath);
+        try {
+          if (!status.stages.staging) {
+            await promoStaging(status.contentPath);
+          }
+          if (!status.stages.production) {
+            await promoProduction(status.contentPath);
+          }
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : String(error);
+          errors.push(`Failed to promote ${status.contentPath}: ${msg}`);
         }
       }
-    } catch {
-      setPublishError('Publish failed');
+      if (errors.length > 0) {
+        setPublishError(
+          `Publish completed with ${errors.length} error(s):\n${errors.join('\n')}`,
+        );
+      }
     } finally {
       await fetchPromotionStatus();
       setPublishing(false);
     }
   }, [promotionStatuses, fetchPromotionStatus]);
 
-  const promoteStaging = useCallback(async (contentPath: string) => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      await promoStaging(contentPath);
-      await fetchPromotionStatus();
-    } catch {
-      setPublishError('Failed to promote to staging');
-    } finally {
-      setPublishing(false);
-    }
-  }, [fetchPromotionStatus]);
+  const promoteStaging = useCallback(
+    (contentPath: string) => runPromotionAction(() => promoStaging(contentPath), 'Failed to promote to staging'),
+    [runPromotionAction],
+  );
 
-  const promoteProduction = useCallback(async (contentPath: string) => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      await promoProduction(contentPath);
-      await fetchPromotionStatus();
-    } catch {
-      setPublishError('Failed to promote to production');
-    } finally {
-      setPublishing(false);
-    }
-  }, [fetchPromotionStatus]);
+  const promoteProduction = useCallback(
+    (contentPath: string) => runPromotionAction(() => promoProduction(contentPath), 'Failed to promote to production'),
+    [runPromotionAction],
+  );
 
-  const rollbackStaging = useCallback(async (contentPath: string) => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      await rollbackStg(contentPath);
-      await fetchPromotionStatus();
-    } catch {
-      setPublishError('Failed to rollback staging');
-    } finally {
-      setPublishing(false);
-    }
-  }, [fetchPromotionStatus]);
+  const rollbackStaging = useCallback(
+    (contentPath: string) => runPromotionAction(() => rollbackStg(contentPath), 'Failed to rollback staging'),
+    [runPromotionAction],
+  );
 
   return {
     promotionStatuses,
     promotionLoading,
+    promotionError,
     publishing,
     publishError,
     fetchPromotionStatus,

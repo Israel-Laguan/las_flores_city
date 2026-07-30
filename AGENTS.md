@@ -325,7 +325,7 @@ npm run test:integration --workspace=server -- tests/integration/aftermath.worke
 
 #### 4. `migrateContent` advisory lock now retries
 
-`migrateContent()` uses `pg_try_advisory_lock(hashtext('content_migration'))` — a global Postgres lock. The lock-failure previously returned `success=false` immediately (the exact `migration.drift` symptom). Now it retries 5× with 200ms backoff before giving up, so concurrent callers serialize instead of failing.
+`migrateContent()` uses `pg_try_advisory_lock(hashtext('content_migration'))` — a global Postgres lock. The lock-failure previously returned `success=false` immediately (the exact `migration.drift` symptom). Now it retries 5× with 200ms backoff before giving up, providing bounded transient-contention mitigation: under mild concurrency the retries let callers acquire the lock; however, a lock held beyond the ~800ms retry window can still return `success: false`. If true serialization is required, the implementation should be changed to wait for the lock rather than retrying-and-giving-up.
 
 If you add a new test that calls `migrateContent`, be aware the lock is global. Under `--runInBand` there's no contention; always run integration tests with `--runInBand`.
 

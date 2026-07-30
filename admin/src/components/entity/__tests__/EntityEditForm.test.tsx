@@ -33,17 +33,78 @@ describe('EntityEditForm', () => {
   it('calls onChange with setByPath-shaped updates and onSubmit', () => {
     const onChange = vi.fn();
     const onSubmit = vi.fn();
-    const { container } = render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
 
-    const nameInput = container.querySelector('input[value="Alice"]') as HTMLInputElement;
+    const nameInput = screen.getByDisplayValue('Alice') as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: 'Eve' } });
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ name: 'Eve' }));
 
-    const desc = container.querySelector('textarea') as HTMLTextAreaElement;
+    const desc = screen.getByDisplayValue('desc') as HTMLTextAreaElement;
     fireEvent.change(desc, { target: { value: 'new desc' } });
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ description: 'new desc' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(onSubmit).toHaveBeenCalled();
+  });
+
+  it('handles number field type', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    const ageInput = screen.getByDisplayValue('30') as HTMLInputElement;
+    fireEvent.change(ageInput, { target: { value: '25' } });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ age: 25 }));
+  });
+
+  it('handles boolean field type', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    // The boolean control renders a <select> with Yes/No options; for a
+    // <select>, getByDisplayValue matches the selected option's text content.
+    const activeSelect = screen.getByDisplayValue('Yes') as HTMLSelectElement;
+    fireEvent.change(activeSelect, { target: { value: 'false' } });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ active: false }));
+  });
+
+  it('handles select field type', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    const roleSelect = screen.getByDisplayValue('hero') as HTMLSelectElement;
+    fireEvent.change(roleSelect, { target: { value: 'villain' } });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ role: 'villain' }));
+  });
+
+  it('handles array field type — adds a new tag', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    const tagsInput = screen.getByPlaceholderText('Add item') as HTMLInputElement;
+    fireEvent.change(tagsInput, { target: { value: 'newtag' } });
+    fireEvent.keyDown(tagsInput, { key: 'Enter' });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ tags: expect.arrayContaining(['x', 'newtag']) }));
+  });
+
+  it('handles array-of-objects field type — edits a sub-field', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    const skillNameInput = screen.getByDisplayValue('run') as HTMLInputElement;
+    fireEvent.change(skillNameInput, { target: { value: 'jump' } });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      skills: expect.arrayContaining([expect.objectContaining({ name: 'jump' })]),
+    }));
+  });
+
+  it('handles kv field type — edits a key', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<EntityEditForm yaml={INITIAL as any} fields={FIELDS} onChange={onChange} onSubmit={onSubmit} />);
+    const kvKeyInput = screen.getByDisplayValue('a') as HTMLInputElement;
+    fireEvent.change(kvKeyInput, { target: { value: 'b' } });
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      metadata: expect.objectContaining({ b: '1' }),
+    }));
   });
 });

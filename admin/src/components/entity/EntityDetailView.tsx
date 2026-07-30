@@ -54,7 +54,7 @@ function renderValue(field: FieldDef, value: unknown, record: unknown) {
           ))}
         </ul>
       );
-    case 'array-of-objects':
+    case 'array-of-objects': {
       if (!Array.isArray(value) || value.length === 0) return <span className={styles.muted}>—</span>;
       const itemFields = field.itemFields || [];
       return (
@@ -81,6 +81,7 @@ function renderValue(field: FieldDef, value: unknown, record: unknown) {
           </table>
         </div>
       );
+    }
     case 'kv': {
       const data = value && typeof value === 'object' ? (value as Record<string, unknown>) : null;
       if (!data || Object.keys(data).length === 0) return <span className={styles.muted}>—</span>;
@@ -90,7 +91,7 @@ function renderValue(field: FieldDef, value: unknown, record: unknown) {
             {Object.entries(data).map(([k, v]) => (
               <tr key={k}>
                 <td>{k}</td>
-                <td className={styles.mono}>{v === null || v === undefined ? 'null' : String(v)}</td>
+                <td className={styles.mono}>{v === null || v === undefined ? 'null' : typeof v === 'object' ? JSON.stringify(v) : String(v)}</td>
               </tr>
             ))}
           </tbody>

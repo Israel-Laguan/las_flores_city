@@ -40,7 +40,7 @@ import { adminFetch } from "@/lib/client-api";
 
 describe("LocationEditPage", () => {
   beforeEach(() => {
-    (adminFetch as ReturnType<typeof vi.fn>).mockClear();
+    (adminFetch as ReturnType<typeof vi.fn>).mockReset();
   });
 
   it("renders an editable form from YAML state", async () => {

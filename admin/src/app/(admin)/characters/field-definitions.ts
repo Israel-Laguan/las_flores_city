@@ -66,39 +66,13 @@ const ASSET_ENTRY_FIELDS: FieldDef[] = [
   { key: "expression", label: "Expression", type: "text" },
 ];
 
-const BIO_FIELDS: FieldDef[] = [
-  {
-    key: "biometric_refs.horizontal_face_sheet",
-    label: "H Face Sheet",
-    type: "text",
-    section: "Biometrics",
-  },
-  {
-    key: "biometric_refs.vertical_face_sheet",
-    label: "V Face Sheet",
-    type: "text",
-    section: "Biometrics",
-  },
-  {
-    key: "biometric_refs.body_sheet",
-    label: "Body Sheet",
-    type: "text",
-    section: "Biometrics",
-  },
-];
-
 const MANIFEST_OUTFIT_FIELDS: FieldDef[] = [
   { key: "id", label: "Outfit ID", type: "text" },
   { key: "label", label: "Label", type: "text" },
   {
     key: "pose_urls",
     label: "Pose URLs",
-    type: "array-of-objects",
-    itemFields: [
-      { key: "front", label: "Front", type: "text" },
-      { key: "side", label: "Side", type: "text" },
-    ],
-    section: "Asset Manifest",
+    type: "kv",
   },
 ];
 
@@ -218,8 +192,7 @@ export const CHARACTER_VIEW_FIELDS: FieldDef[] = [
       {
         key: "biometric_refs",
         label: "Biometric Ref",
-        type: "array-of-objects",
-        itemFields: BIO_FIELDS,
+        type: "kv",
       },
       {
         key: "asset_manifest.outfits",

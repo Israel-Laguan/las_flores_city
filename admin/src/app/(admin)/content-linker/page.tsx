@@ -11,11 +11,12 @@ import { useContentLinker } from './hooks/useContentLinker';
 
 type Tab = 'scenes' | 'missions' | 'stories' | 'characters';
 
-const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName: string; sections: SectionConfig[] }> = {
+const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName: string; entityType: string; sections: SectionConfig[] }> = {
   scenes: {
     label: 'Scenes',
     listEndpoint: '/admin/scenes',
     entityName: 'Scene',
+    entityType: 'scene',
     sections: [
       { field: 'available_dialogues', label: 'Linked Dialogues', availableEndpoint: '/admin/dialogues', idField: 'id', nameField: 'name', yamlDir: 'dialogues', fileType: 'dialogue' },
     ],
@@ -24,6 +25,7 @@ const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName:
     label: 'Missions',
     listEndpoint: '/admin/mysteries',
     entityName: 'Mission',
+    entityType: 'mission',
     sections: [
       { field: 'mission_id', label: 'Linked Overlay (mission_id)', availableEndpoint: '/admin/overlays', idField: 'id', nameField: 'name', yamlDir: 'overlays', fileType: 'overlay', scalar: true },
       { field: 'vault_items', label: 'Vault Items (mission_id)', availableEndpoint: '/admin/vault', idField: 'id', nameField: 'title', yamlDir: 'vault', fileType: 'vault', scalar: false, arrayItemPath: 'mission_id' },
@@ -33,6 +35,7 @@ const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName:
     label: 'Stories',
     listEndpoint: '/admin/stories',
     entityName: 'Story',
+    entityType: 'story',
     sections: [
       { field: 'mission_id', label: 'Linked Mission', availableEndpoint: '/admin/mysteries', idField: 'id', nameField: 'title', yamlDir: 'missions', fileType: 'mission', scalar: true },
       { field: 'characters', label: 'Characters', availableEndpoint: '/admin/characters', idField: 'id', nameField: 'name', yamlDir: 'characters', fileType: 'character' },
@@ -46,6 +49,7 @@ const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName:
     label: 'Characters',
     listEndpoint: '/admin/characters',
     entityName: 'Character',
+    entityType: 'character',
     sections: [
       { field: 'available_dialogues', label: 'Linked Dialogues', availableEndpoint: '/admin/dialogues', idField: 'id', nameField: 'name', yamlDir: 'dialogues', fileType: 'dialogue' },
     ],
@@ -111,7 +115,9 @@ function LinksSection({ config, selectedData, available, onAddPendingOp, onGetLi
 
 export default function ContentLinkerPage() {
   const searchParams = useSearchParams();
-  const initialTab = (searchParams.get('tab') as Tab | null) ?? 'scenes';
+  const VALID_TABS: Tab[] = ['scenes', 'missions', 'stories', 'characters'];
+  const requestedTab = searchParams.get('tab');
+  const initialTab: Tab = requestedTab && (VALID_TABS as ReadonlyArray<string>).includes(requestedTab) ? (requestedTab as Tab) : 'scenes';
   const initialId = searchParams.get('id') ?? '';
 
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -123,21 +129,29 @@ export default function ContentLinkerPage() {
     section: SectionConfig,
     itemId: string
   ): LinkOp => {
-    if (tab === 'scenes') {
-      return { contentPath: `scenes/${linker.selectedId}.yaml`, fieldPath: section.field, action, value: itemId };
-    } else if (tab === 'stories') {
-      return { contentPath: `stories/${linker.selectedId}.yaml`, fieldPath: section.field, action, value: itemId };
+    if (tab === 'scenes' || tab === 'stories' || tab === 'characters') {
+      // Use the canonical content path resolved from the filesystem. The
+      // per-folder layout (e.g. characters/<slug>/char_<slug>.yaml) means we
+      // cannot construct the path from the entity id alone.
+      if (!linker.contentPath) {
+        throw new Error('Content path is not resolved yet — wait for the entity to finish loading.');
+      }
+      return { contentPath: linker.contentPath, fieldPath: section.field, action, value: itemId };
     } else if (tab === 'missions') {
       if (section.field === 'mission_id') {
         return { contentPath: `overlays/${itemId}.yaml`, fieldPath: 'mission_id', action: 'set', value: action === 'remove' ? '' : linker.selectedId };
       } else if (section.field === 'vault_items') {
         return { contentPath: `vault/${itemId}.yaml`, fieldPath: 'mission_id', action: 'set', value: action === 'remove' ? '' : linker.selectedId };
       }
-    } else if (tab === 'characters') {
-      return { contentPath: `characters/${linker.selectedId}.yaml`, fieldPath: section.field, action, value: itemId };
     }
     return { contentPath: `${section.yamlDir}/${itemId}.yaml`, fieldPath: section.field, action, value: itemId };
   };
+
+  // For the selected-entity tabs the link ops write into the entity's own YAML
+  // file, so we must wait for the canonical path to resolve before enabling the
+  // link UI. The missions tab writes into the *linked* entities' files instead.
+  const needsContentPath = tab === 'scenes' || tab === 'stories' || tab === 'characters';
+  const contentPathReady = !needsContentPath || linker.contentPath !== null;
 
 
   return (
@@ -145,7 +159,7 @@ export default function ContentLinkerPage() {
       <h1>Content Linker</h1>
 
       <div className={styles.tabBar}>
-        {(['scenes', 'missions', 'stories', 'characters'] as Tab[]).map(t => (
+        {(Object.keys(TAB_CONFIG) as Tab[]).map(t => (
           <button key={t} onClick={() => setTab(t)} className={cn(styles.tab, tab === t && styles.tabActive)}>
             {TAB_CONFIG[t].label}
           </button>
@@ -166,17 +180,23 @@ export default function ContentLinkerPage() {
               {linker.error && <div className={styles.errorBox}>{linker.error}</div>}
               {linker.success && <div className={styles.successBox}>Links updated successfully</div>}
 
-              <LinksSection config={config} selectedData={linker.selectedData} available={linker.available} onAddPendingOp={linker.addPendingOp} onGetLinkOpParams={getLinkOpParams} />
+              {contentPathReady ? (
+                <>
+                  <LinksSection config={config} selectedData={linker.selectedData} available={linker.available} onAddPendingOp={linker.addPendingOp} onGetLinkOpParams={getLinkOpParams} />
 
-              {linker.pendingOps.length > 0 && <PendingOpsList ops={linker.pendingOps} onRemove={linker.removePendingOp} />}
+                  {linker.pendingOps.length > 0 && <PendingOpsList ops={linker.pendingOps} onRemove={linker.removePendingOp} />}
 
-              <button
-                onClick={() => linker.handleSave(config)}
-                disabled={linker.saving || linker.pendingOps.length === 0}
-                className={cn(styles.saveButton, (linker.saving || linker.pendingOps.length === 0) && styles.disabledButton)}
-              >
-                {linker.saving ? 'Saving...' : `Save ${linker.pendingOps.length} Change${linker.pendingOps.length !== 1 ? 's' : ''}`}
-              </button>
+                  <button
+                    onClick={() => linker.handleSave(config)}
+                    disabled={linker.saving || linker.pendingOps.length === 0}
+                    className={cn(styles.saveButton, (linker.saving || linker.pendingOps.length === 0) && styles.disabledButton)}
+                  >
+                    {linker.saving ? 'Saving...' : `Save ${linker.pendingOps.length} Change${linker.pendingOps.length !== 1 ? 's' : ''}`}
+                  </button>
+                </>
+              ) : (
+                <p className={styles.muted}>Resolving content path…</p>
+              )}
             </div>
           )}
         </>

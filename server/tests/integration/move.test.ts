@@ -44,16 +44,15 @@ function authHeaders() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
 }
 
-beforeAll(async () => {
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
-    connectionTimeoutMillis: 5000,
-  });
+let DOWNTOWN_ID: string;
+let OLD_TOWN_ID: string;
 
-  // Seed districts table FIRST (required for scenes district_id FK)
-  // Must use ON CONFLICT (name) because seed migrations 034/035 may have
-  // already created these districts with auto-generated UUIDs. We want to
-  // force our known UUIDs so the hardcoded constants above work as FK targets.
+// Seed the districts, scenes, user, and player_state rows these tests rely on.
+// Other test files run migrations that may drop/recreate the scenes table, so
+// this is idempotent (CREATE TABLE IF NOT EXISTS / ON CONFLICT) and is invoked
+// from both beforeAll and beforeEach. The district travel-cost migration is
+// idempotent as well, so re-applying it per-test is safe.
+async function seedTestData(): Promise<void> {
   await pool.query(
     `CREATE TABLE IF NOT EXISTS districts (
        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -67,6 +66,7 @@ beforeAll(async () => {
   );
   await pool.query(
     `INSERT INTO districts (id, name, slug, description, x, y) VALUES
+     -- Synthetic UUIDs reserved for this test — cleaned up in afterAll, no collision with other tests.
      ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
      ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
      ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
@@ -84,113 +84,13 @@ beforeAll(async () => {
   const downtownQ = await pool.query<{ id: string }>(
     "SELECT id FROM districts WHERE name = 'Downtown'"
   );
-  const DOWNTOWN_ID = downtownQ.rows[0].id;
-  const oldTownQ = await pool.query<{ id: string }>(
-    "SELECT id FROM districts WHERE name = 'Old Town'"
-  );
-  const OLD_TOWN_ID = oldTownQ.rows[0].id;
-
-  // Now insert scenes with valid district_ids
-  await pool.query(
-    `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name, description = EXCLUDED.description,
-       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
-    [APARTMENT_ID, 'The Apartment', 'Test apartment location', DOWNTOWN_ID]
-  );
-  await pool.query(
-    `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true}'::jsonb)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name, description = EXCLUDED.description,
-       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
-    [WELCOME_CENTER_ID, 'Welcome Center', 'Test welcome center location', DOWNTOWN_ID]
-  );
-  await pool.query(
-    `INSERT INTO scenes (id, name, description, district_id, metadata)
-     VALUES ($1, $2, $3, $4, '{"type": "location", "accessible": true}'::jsonb)
-     ON CONFLICT (id) DO UPDATE SET
-       name = EXCLUDED.name, description = EXCLUDED.description,
-       district_id = EXCLUDED.district_id, metadata = EXCLUDED.metadata`,
-    [CAFE_ID, 'The Cafe', 'Test cafe location', OLD_TOWN_ID]
-  );
-
-  await pool.query(
-    `INSERT INTO users (id, email, username, display_name)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (id) DO UPDATE SET
-       email = EXCLUDED.email,
-       username = EXCLUDED.username,
-       updated_at = NOW()`,
-    [TEST_USER_ID, 'move-test@example.com', 'move_test', 'Move Test']
-  );
-  await pool.query(
-    `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
-     VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
-     ON CONFLICT (user_id) DO UPDATE SET
-       time_blocks = 48,
-       current_location_id = $2,
-       updated_at = NOW()`,
-    [TEST_USER_ID, APARTMENT_ID]
-  );
-
-  await new Promise<void>((resolve) => {
-    server = app.listen(0, () => resolve());
-  });
-});
-
-afterAll(async () => {
-  if (server) {
-    await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
-  }
-  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
-  await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
-  await pool.end();
-  await closeRedis();
-});
-
-let DOWNTOWN_ID: string;
-let OLD_TOWN_ID: string;
-
-beforeEach(async () => {
-  // Recreate districts and scenes in beforeEach to ensure they exist after
-  // other test files may have run migrations that affected the scenes table.
-  // This is necessary because ON CONFLICT only works on existing rows,
-  // and migrations may have recreated the table.
-  await pool.query(
-    `CREATE TABLE IF NOT EXISTS districts (
-       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-       name VARCHAR(50) NOT NULL UNIQUE,
-       slug VARCHAR(50) NOT NULL UNIQUE,
-       description TEXT,
-       minimap_asset_url VARCHAR(500),
-       x INTEGER NOT NULL,
-       y INTEGER NOT NULL
-     )`
-  );
-  await pool.query(
-    `INSERT INTO districts (id, name, slug, description, x, y) VALUES
-     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
-     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
-     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
-     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
-     ON CONFLICT (name) DO UPDATE SET
-       slug = EXCLUDED.slug,
-       x = EXCLUDED.x,
-       y = EXCLUDED.y`
-  );
-
-  const downtownQ = await pool.query<{ id: string }>(
-    "SELECT id FROM districts WHERE name = 'Downtown'"
-  );
   DOWNTOWN_ID = downtownQ.rows[0].id;
   const oldTownQ = await pool.query<{ id: string }>(
     "SELECT id FROM districts WHERE name = 'Old Town'"
   );
   OLD_TOWN_ID = oldTownQ.rows[0].id;
 
-  // Recreate scenes with test IDs
+  // Insert scenes with valid district_ids
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
      VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
@@ -235,6 +135,35 @@ beforeEach(async () => {
        updated_at = NOW()`,
     [TEST_USER_ID, APARTMENT_ID]
   );
+}
+
+beforeAll(async () => {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
+    connectionTimeoutMillis: 5000,
+  });
+
+  await seedTestData();
+
+  await new Promise<void>((resolve) => {
+    server = app.listen(0, () => resolve());
+  });
+});
+
+afterAll(async () => {
+  if (server) {
+    await new Promise<void>((resolve, reject) => server.close((error: Error | undefined) => error ? reject(error) : resolve()));
+  }
+  await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
+  await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+  await pool.end();
+  await closeRedis();
+});
+
+beforeEach(async () => {
+  // Re-seed in case other test files ran migrations that dropped/recreated the
+  // scenes table between tests. seedTestData is idempotent.
+  await seedTestData();
 });
 
 describe('POST /player/move', () => {

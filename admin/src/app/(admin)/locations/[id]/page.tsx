@@ -53,28 +53,28 @@ export default function LocationDetailPage() {
 
   if (loading) {
     return (
-      <main className={styles.main}>
+      <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
         <p className={styles.muted}>Loading...</p>
-      </main>
+      </div>
     );
   }
 
   if (notFound) {
     return (
-      <main className={styles.main}>
+      <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
         <p>Not found.</p>
-      </main>
+      </div>
     );
   }
 
   if (error || !record) {
     return (
-      <main className={styles.main}>
+      <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
         <div className={styles.errorBox}>{error || 'Location not found'}</div>
-      </main>
+      </div>
     );
   }
 
@@ -90,7 +90,7 @@ export default function LocationDetailPage() {
   const flattened = { ...record, ...metadata } as Record<string, unknown>;
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
       <div className={styles.header}>
         <h1 className={styles.title}>Location: {record.name}</h1>
@@ -99,6 +99,6 @@ export default function LocationDetailPage() {
         </div>
       </div>
       <EntityDetailView fields={LOCATION_VIEW_FIELDS} record={flattened} />
-    </main>
+    </div>
   );
 }

@@ -33,10 +33,12 @@ describe('Stepper', () => {
 
   it('calls onStepClick when a past step label is clicked', () => {
     const onStepClick = vi.fn();
-    // At currentStep=1, step 0 (Edit) is done/clickable
+    // At currentStep=1, step 0 (Edit) is done/clickable. The done step's dot
+    // button renders '✓'; the label text lives in a separate <span>, so the
+    // button's accessible name is the checkmark, not the step label.
     render(<Stepper steps={testSteps} currentStep={1} onStepClick={onStepClick} />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('button', { name: '✓' }));
     expect(onStepClick).toHaveBeenCalledWith(0);
   });
 

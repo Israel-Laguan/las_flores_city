@@ -18,7 +18,7 @@ import path from 'path';
 // live data. Cleans up in afterAll.
 // ============================================================
 
-const MYSTERY_ID = 'd0000000-e29b-41d4-a716-446655440001';
+const MYSTERY_ID = 'd0000000-e29b-41d4-a716-446655440001'; // Private synthetic mystery ID — cleaned up in afterAll, no collision with real content or other tests.
 
 type PlayerSpec = {
   name: string;

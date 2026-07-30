@@ -12,7 +12,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { glob } from 'glob';
-import { load, dump } from 'js-yaml';
+import { load } from 'js-yaml';
 
 // Project root. Defaults to the current working directory, but can be
 // overridden (e.g. by tests) so the script never touches the live repo.

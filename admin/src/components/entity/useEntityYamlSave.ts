@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import * as jsYaml from 'js-yaml';
+import { dump } from 'js-yaml';
 import { adminFetch } from '@/lib/client-api';
 
 export interface EntityYamlSaveState {
@@ -20,7 +20,7 @@ export function useEntityYamlSave() {
   const save = useCallback(async (path: string, yamlObj: Record<string, unknown>) => {
     setState({ saving: true, error: null, success: false });
     try {
-      const content = jsYaml.dump(yamlObj, { lineWidth: -1, noRefs: true });
+      const content = dump(yamlObj, { lineWidth: -1, noRefs: true });
       const data = await adminFetch<{ success: boolean; data?: { path: string; modifiedAt: string }; error?: string }>(
         '/admin/content/file',
         {

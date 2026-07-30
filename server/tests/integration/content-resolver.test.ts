@@ -39,7 +39,7 @@ describe('Admin Content Resolver Routes', () => {
     // hits don't pollute filesystem-path/non-match cases.
     try {
       const mod = await import('../../src/routes/admin-content-resolver.js');
-      mod.invalidateContentResolverCache?.();
+      await mod.invalidateContentResolverCache?.();
     } catch {
       // noop
     }
@@ -94,7 +94,14 @@ describe('Admin Content Resolver Routes', () => {
   });
 
   it('GET /by-id returns 400 for unknown type', async () => {
-    const res = await request(app).get('/admin/content/by-id?type=scene&id=anything');
+    const res = await request(app).get('/admin/content/by-id?type=notarealtype&id=anything');
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/type must be one of/);
+  });
+
+  it('GET /by-id returns 400 for prototype-chain type names', async () => {
+    const res = await request(app).get('/admin/content/by-id?type=constructor&id=anything');
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.error).toMatch(/type must be one of/);
@@ -120,18 +127,37 @@ describe('Admin Content Resolver Routes', () => {
     expect(res.status).toBe(404);
   });
 
-  it('caches the result and invalidates on explicit cache clear', async () => {
+    it('serves cached result and reflects invalidation after YAML change', async () => {
     const { invalidateContentResolverCache } = await import('../../src/routes/admin-content-resolver.js');
 
+    // First request: hits the filesystem and caches the result
     const first = await request(app)
       .get('/admin/content/by-id?type=character&id=a0000001-0000-4000-8000-000000000001');
     expect(first.status).toBe(200);
+    expect(first.body.data.yaml).toEqual(expect.objectContaining({ name: 'Alice' }));
 
-    invalidateContentResolverCache();
+    // Modify the YAML file on disk — a fresh filesystem read would return the new name
+    const charDir = path.join(tmpDir, 'content', 'characters', 'alice');
+    await fs.writeFile(
+      path.join(charDir, 'char_alice.yaml'),
+      yaml.dump({ id: 'a0000001-0000-4000-8000-000000000001', name: 'Alice Modified' }),
+      'utf-8',
+    );
 
+    // Second request WITHOUT invalidation: should return the CACHED value (old name),
+    // proving the cache is actually serving hits rather than re-reading the file
     const second = await request(app)
       .get('/admin/content/by-id?type=character&id=a0000001-0000-4000-8000-000000000001');
     expect(second.status).toBe(200);
     expect(second.body.data.yaml).toEqual(expect.objectContaining({ name: 'Alice' }));
+
+    // Invalidate the cache
+    await invalidateContentResolverCache();
+
+    // Third request after invalidation: should reflect the updated YAML
+    const third = await request(app)
+      .get('/admin/content/by-id?type=character&id=a0000001-0000-4000-8000-000000000001');
+    expect(third.status).toBe(200);
+    expect(third.body.data.yaml).toEqual(expect.objectContaining({ name: 'Alice Modified' }));
   });
 });

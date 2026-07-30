@@ -17,22 +17,30 @@ describe('useEntityYamlSave', () => {
 
   it('save PUTs a stringified YAML and resets state', async () => {
     const { result } = renderHook(() => useEntityYamlSave());
+    expect(result.current.saving).toBe(false);
+    expect(result.current.success).toBe(false);
+    expect(result.current.error).toBeNull();
     await act(async () => {
       await result.current.save('characters/x/char_x.yaml', { id: '1', name: 'X' });
     });
     expect(adminFetch).toHaveBeenCalledTimes(1);
-    const [, options] = (adminFetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    const [url, options] = (adminFetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('/admin/content/file');
     expect(options.method).toBe('PUT');
     const body = JSON.parse(options.body as string);
     expect(body.path).toBe('characters/x/char_x.yaml');
     expect(body.content).toContain('name: X');
+    expect(result.current.saving).toBe(false);
+    expect(result.current.success).toBe(true);
+    expect(result.current.error).toBeNull();
   });
 
   it('migrate POSTs to /admin/content/migrate', async () => {
     (adminFetch as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, data: {} });
     const { result } = renderHook(() => useEntityYamlSave());
     await act(async () => result.current.migrate());
-    const [url] = (adminFetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string];
+    const [url, options] = (adminFetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
     expect(url).toBe('/admin/content/migrate');
+    expect(options.method).toBe('POST');
   });
 });

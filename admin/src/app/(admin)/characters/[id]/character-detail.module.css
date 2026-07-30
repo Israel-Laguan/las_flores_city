@@ -1,11 +1,11 @@
 .main {
-  padding: 2rem;
+  padding: var(--space-8);
   min-height: 100vh;
 }
 
 .backLink {
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .muted {
@@ -13,11 +13,11 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
-  padding: 1rem;
-  border-radius: 5px;
-  margin-top: 1rem;
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  margin-top: var(--space-4);
 }
 
 .header {
@@ -30,7 +30,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--text-lg);
 }
 
 .headerActions {
@@ -54,7 +54,7 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-md);
   color: var(--accent);
 }
 

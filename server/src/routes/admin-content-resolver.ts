@@ -4,6 +4,7 @@ import path from 'node:path';
 import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
+import { getCache, setCache, invalidatePattern } from '../database/redis.js';
 
 /**
  * Admin Content Resolver Router
@@ -24,27 +25,13 @@ export const adminContentResolverRouter = express.Router();
 adminContentResolverRouter.use(authAndAdminMiddleware);
 
 // ---------------------------------------------------------------------------
-// In-process cache (dev tool only — NOT a new cache layer per AGENTS.md).
-// Plain module-level Map with TTL. Invalidated on any content write via
-// invalidateContentResolverCache() (called from PUT /file and POST /link).
+// Content resolver cache via shared Redis layer (per AGENTS.md hard constraints).
+// 30-second TTL. Invalidated on any content write via invalidateContentResolverCache().
 // ---------------------------------------------------------------------------
-const CACHE_TTL_MS = 30_000;
-
-interface CacheEntry {
-  path: string;
-  yaml: unknown;
-  expiresAt: number;
-}
-
-const cache = new Map<string, CacheEntry>();
 
 /** Exported so the write routes (PUT /file, POST /link) can invalidate stale entries. */
-export function invalidateContentResolverCache(): void {
-  cache.clear();
-}
-
-function cacheKey(type: string, id: string): string {
-  return `${type}:${id}`;
+export async function invalidateContentResolverCache(): Promise<void> {
+  await invalidatePattern('content-resolver:*');
 }
 
 // ---------------------------------------------------------------------------
@@ -58,6 +45,18 @@ interface TypeConfig {
 const TYPE_CONFIG: Record<string, TypeConfig> = {
   // content/characters/<slug>/char_<slug>.yaml
   character: { roots: ['characters'] },
+  // content/scenes/<slug>/scene_<slug>.yaml
+  scene: { roots: ['scenes'] },
+  // content/stories/<slug>/story_<slug>.yaml
+  story: { roots: ['stories'] },
+  // content/missions/<slug>/mission_<slug>.yaml
+  mission: { roots: ['missions'] },
+  // content/overlays/<slug>/overlay_<slug>.yaml (or flat overlay_<slug>.yaml)
+  overlay: { roots: ['overlays'] },
+  // content/dialogues/<slug>.yaml (flat files)
+  dialogue: { roots: ['dialogues'] },
+  // content/vault/<slug>.yaml (flat files)
+  vault: { roots: ['vault'] },
   // content/districts/<district>/locations/<slug>/location_<slug>.yaml (nested)
   location: { roots: ['districts'], pathTest: (rel) => rel.includes('/locations/') },
 };
@@ -78,20 +77,28 @@ async function findContentFile(
     return null;
   }
 
-  const dirents = await fs.promises.readdir(contentDir, {
-    withFileTypes: true,
-    recursive: true,
-  });
-
   const candidates: string[] = [];
-  for (const dirent of dirents) {
-    if (!dirent.isFile()) continue;
-    if (!dirent.name.endsWith('.yaml')) continue;
-    const absolutePath = path.join(dirent.parentPath, dirent.name);
-    const relPath = path.relative(contentDir, absolutePath).split(path.sep).join('/');
-    if (!config.roots.some((root) => relPath.startsWith(`${root}/`))) continue;
-    if (config.pathTest && !config.pathTest(relPath)) continue;
-    candidates.push(relPath);
+  for (const root of config.roots) {
+    const rootDir = path.join(contentDir, root);
+    try {
+      await fs.promises.access(rootDir);
+    } catch {
+      // Skip roots that don't exist rather than failing the whole request.
+      continue;
+    }
+    const dirents = await fs.promises.readdir(rootDir, {
+      withFileTypes: true,
+      recursive: true,
+    });
+    for (const dirent of dirents) {
+      if (!dirent.isFile()) continue;
+      if (!dirent.name.endsWith('.yaml')) continue;
+      const absolutePath = path.join(dirent.parentPath, dirent.name);
+      const relWithinRoot = path.relative(rootDir, absolutePath).split(path.sep).join('/');
+      const fullRelPath = `${root}/${relWithinRoot}`;
+      if (config.pathTest && !config.pathTest(fullRelPath)) continue;
+      candidates.push(fullRelPath);
+    }
   }
 
   for (const relPath of candidates) {
@@ -121,7 +128,7 @@ adminContentResolverRouter.get('/by-id', async (req, res) => {
   const type = req.query.type;
   const id = req.query.id;
 
-  if (typeof type !== 'string' || !type || !(type in TYPE_CONFIG)) {
+  if (typeof type !== 'string' || !type || !Object.prototype.hasOwnProperty.call(TYPE_CONFIG, type)) {
     res.status(400).json({
       success: false,
       error: `type must be one of: ${Object.keys(TYPE_CONFIG).join(', ')}`,
@@ -139,9 +146,9 @@ adminContentResolverRouter.get('/by-id', async (req, res) => {
     return;
   }
 
-  const key = cacheKey(type, id);
-  const cached = cache.get(key);
-  if (cached && cached.expiresAt > Date.now()) {
+  const key = `content-resolver:${type}:${id}`;
+  const cached = await getCache<{ path: string; yaml: unknown }>(key);
+  if (cached) {
     res.json({
       success: true,
       data: { path: cached.path, yaml: cached.yaml },
@@ -171,11 +178,7 @@ adminContentResolverRouter.get('/by-id', async (req, res) => {
       return;
     }
 
-    cache.set(key, {
-      path: found.path,
-      yaml: found.yaml,
-      expiresAt: Date.now() + CACHE_TTL_MS,
-    });
+    await setCache(key, { path: found.path, yaml: found.yaml }, 30);
 
     res.json({
       success: true,

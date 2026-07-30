@@ -299,7 +299,7 @@ adminContentRouter.put('/file', async (req, res) => {
     const stat = await fs.promises.stat(resolvedPath);
 
     // Invalidate the by-id resolver cache so detail pages see the fresh YAML.
-    invalidateContentResolverCache();
+    await invalidateContentResolverCache();
 
     res.json({
       success: true,

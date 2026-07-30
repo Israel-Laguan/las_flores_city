@@ -34,7 +34,9 @@ function reportBootFailure(err: Error): void {
 
   if (!document.getElementById('lf-boot-error')) {
     const banner = document.createElement('div');
-    banner.id = 'lf-boot-error';
+        banner.id = 'lf-boot-error';
+    banner.setAttribute('role', 'alert');
+    banner.setAttribute('aria-live', 'assertive');
     banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:16px;background:#c00;color:#fff;font:14px/1.4 monospace;text-align:center;';
     banner.textContent = `Boot Error: ${err.message || 'Unknown error'}`;
     document.body.appendChild(banner);
@@ -237,11 +239,11 @@ async function initOnce() {
     navigateTo('/map');
   });
 
+    installBootWatchdog();
+
   const initialPath = window.location.pathname;
   initializeUI();
   restoreSession(initialPath);
-
-  installBootWatchdog();
 }
 
 function installBootWatchdog(): void {
@@ -249,12 +251,14 @@ function installBootWatchdog(): void {
     if (window.__lasFloresBootError) return; // already reported
 
     const loginMenu = document.getElementById('login-menu');
+    const viewContainer = document.getElementById('view-container');
     const gameContainer = document.getElementById('game-container');
-    const hasLoginContent = loginMenu && loginMenu.innerHTML.trim().length > 0;
+    const hasLoginContent = loginMenu && loginMenu.style.display !== 'none' && loginMenu.innerHTML.trim().length > 0;
+    const hasViewContent = viewContainer && viewContainer.style.display !== 'none' && viewContainer.innerHTML.trim().length > 0;
     const hasGameCanvas = gameContainer && gameContainer.querySelector('canvas') !== null;
 
-    if (!hasLoginContent && !hasGameCanvas) {
-      reportBootFailure(new Error('Boot watchdog: neither login menu nor game canvas appeared within 5s'));
+    if (!hasLoginContent && !hasViewContent && !hasGameCanvas) {
+      reportBootFailure(new Error('Boot watchdog: neither login menu, view container, nor game canvas appeared within 5s'));
     }
   }, 5000);
 }

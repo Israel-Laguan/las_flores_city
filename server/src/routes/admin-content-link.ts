@@ -86,7 +86,7 @@ adminContentLinkRouter.post('/link', async (req, res) => {
     const newYaml = await writeLinkedYaml(absolutePath, data);
 
     // Invalidate the by-id resolver cache so detail pages see the fresh YAML.
-    invalidateContentResolverCache();
+    await invalidateContentResolverCache();
 
     res.json({ success: true, data: { contentPath, fieldPath, action, value, content: newYaml }, timestamp: new Date().toISOString() });
   } catch (error: any) {

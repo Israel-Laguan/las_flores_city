@@ -80,7 +80,7 @@ Integration tests share the same Postgres and Redis instances. Under parallel ex
 
 ```bash
 # 1. Clear stale ts-jest cache first (required!)
-npx --no-install jest --workspace=server --clearCache
+cd server && npx jest --clearCache
 
 # 2. Run integration tests in PARALLEL (no --runInBand) to reproduce the flake
 npx jest tests/integration --forceExit --detectOpenHandles --verbose

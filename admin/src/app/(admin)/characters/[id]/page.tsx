@@ -70,6 +70,8 @@ export default function CharacterDetailPage() {
         }
         setDialoguesMap(map);
       }
+    }).catch((err) => {
+      console.error('[CharacterDetailPage] Failed to load dialogue names:', err);
     });
   }, [record?.available_dialogues]);
 

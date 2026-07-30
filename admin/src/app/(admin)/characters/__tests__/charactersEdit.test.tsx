@@ -115,6 +115,7 @@ describe("CharacterEditPage", () => {
       );
       expect(call).toBeDefined();
     });
+    expect(await screen.findByText(/Migration completed/)).toBeDefined();
   });
 
   it("validates against YAMLCharacterSchema before save", async () => {

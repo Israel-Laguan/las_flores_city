@@ -35,12 +35,12 @@ function ArrayOfObjectsField({ field, value, onChange }: { field: FieldDef; valu
                   const val = getByPath(item, sf.key);
                   return (
                     <td key={sf.key} className="table__td">
-                      <input
-                        className="input"
-                        value={typeof val === 'string' || typeof val === 'number' ? val : ''}
-                        onChange={(e) => {
-                          const nextItem = setByPath({ ...(item as Record<string, unknown>) }, sf.key, e.target.value);
-                          onChange(list.map((v, i) => (i === idx ? nextItem : v)));
+                      <Control
+                        field={sf}
+                        value={val}
+                        onChange={(v) => {
+                          const nextItem = setByPath({ ...(item as Record<string, unknown>) }, sf.key, v);
+                          onChange(list.map((row, i) => (i === idx ? nextItem : row)));
                         }}
                       />
                     </td>
@@ -82,8 +82,8 @@ function KVField({ value, onChange }: { value: unknown; onChange: (v: unknown) =
     <div>
       <table className={styles.kvTable}>
         <tbody>
-          {entries.map(([k, v]) => (
-            <tr key={k}>
+          {entries.map(([k, v], idx) => (
+            <tr key={idx}>
               <td style={{ width: '40%' }}>
                 <input
                   className="input"
@@ -157,12 +157,13 @@ function Control({ field, value, onChange }: { field: FieldDef; value: unknown; 
         />
       );
     case 'number': {
+      const isBlank = value === '' || value === null || value === undefined;
       const num = typeof value === 'number' ? value : Number(value || 0);
       return (
         <input
           type="number"
           className="input"
-          value={Number.isFinite(num) ? num : ''}
+          value={isBlank ? '' : Number.isFinite(num) ? num : ''}
           onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
         />
       );
@@ -252,7 +253,7 @@ export default function EntityEditForm({ yaml, fields, submitting, onChange, onS
   return (
     <div>
       {sections.map((section) => {
-        const sectionFields = section === '__root__' ? fields : fields.filter((f) => f.section === section);
+        const sectionFields = section === '__root__' ? fields.filter((f) => !f.section) : fields.filter((f) => f.section === section);
         return (
           <React.Fragment key={section || '__root__'}>
             {section !== '__root__' && <div className={styles.sectionHeading}>{section}</div>}

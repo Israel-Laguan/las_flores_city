@@ -41,7 +41,7 @@
 }
 
 .value {
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .image {

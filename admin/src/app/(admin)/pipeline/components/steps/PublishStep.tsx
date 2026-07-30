@@ -11,6 +11,7 @@ interface Props {
   loading: boolean;
   publishing: boolean;
   publishError: string | null;
+  promotionError: string | null;
   onFetchStatus: () => void;
   onPublish: () => void;
   onPromoteStaging: (contentPath: string) => void;
@@ -18,7 +19,7 @@ interface Props {
   onRollbackStaging: (contentPath: string) => void;
 }
 
-export default function PublishStep({ statuses, loading, publishing, publishError, onFetchStatus, onPublish, onPromoteStaging, onPromoteProduction, onRollbackStaging }: Props) {
+export default function PublishStep({ statuses, loading, publishing, publishError, promotionError, onFetchStatus, onPublish, onPromoteStaging, onPromoteProduction, onRollbackStaging }: Props) {
   const initialFetchRef = useRef(false);
   useEffect(() => {
     if (statuses.length === 0 && !loading && !initialFetchRef.current) {
@@ -82,6 +83,12 @@ function entityType(contentPath: string): string {
       </div>
 
       {loading && <p className={styles.muted}>Loading promotion status...</p>}
+
+      {!loading && promotionError && (
+        <div className={styles.errorBox}>
+          <pre className={styles.errorPre}>{promotionError}</pre>
+        </div>
+      )}
 
       {!loading && publishError && (
         <div className={styles.errorBox}>

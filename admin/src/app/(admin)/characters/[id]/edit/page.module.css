@@ -1,11 +1,11 @@
 .main {
-  padding: 2rem;
+  padding: var(--space-8);
   min-height: 100vh;
 }
 
 .backLink {
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .muted {
@@ -13,26 +13,26 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
-  padding: 1rem;
-  border-radius: 5px;
+  padding: var(--space-4);
+  border-radius: var(--radius);
   margin: var(--space-4) 0;
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.1);
+  background: var(--success-bg);
   border: 1px solid var(--success);
-  padding: 1rem;
-  border-radius: 5px;
+  padding: var(--space-4);
+  border-radius: var(--radius);
   margin: var(--space-4) 0;
 }
 
 .validationErrors {
-  background: rgba(255, 0, 0, 0.1);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
-  padding: 1rem;
-  border-radius: 5px;
+  padding: var(--space-4);
+  border-radius: var(--radius);
   margin: var(--space-4) 0;
 }
 
@@ -69,12 +69,12 @@
 
 .dialogueSectionHeader h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-md);
   color: var(--accent);
 }
 
 .dialogueHint {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   margin-top: var(--space-2);
 }

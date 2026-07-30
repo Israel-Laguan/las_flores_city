@@ -46,19 +46,23 @@ function StepContent({ pipeline }: { pipeline: ReturnType<typeof usePipeline> })
       />
     );
   }
-  return (
-    <PublishStep
-      statuses={pipeline.promotionStatuses}
-      loading={pipeline.promotionLoading}
-      publishing={pipeline.publishing}
-      publishError={pipeline.publishError}
-      onFetchStatus={pipeline.fetchPromotionStatus}
-      onPublish={pipeline.runPublish}
-      onPromoteStaging={pipeline.promoteStaging}
-      onPromoteProduction={pipeline.promoteProduction}
-      onRollbackStaging={pipeline.rollbackStaging}
-    />
-  );
+  if (currentStep === 'publish') {
+    return (
+      <PublishStep
+        statuses={pipeline.promotionStatuses}
+        loading={pipeline.promotionLoading}
+        publishing={pipeline.publishing}
+        publishError={pipeline.publishError}
+        promotionError={pipeline.promotionError}
+        onFetchStatus={pipeline.fetchPromotionStatus}
+        onPublish={pipeline.runPublish}
+        onPromoteStaging={pipeline.promoteStaging}
+        onPromoteProduction={pipeline.promoteProduction}
+        onRollbackStaging={pipeline.rollbackStaging}
+      />
+    );
+  }
+  return null;
 }
 
 export default function PipelinePage() {

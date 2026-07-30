@@ -31,7 +31,7 @@ export function getByPath(obj: unknown, path: string): unknown {
   const segments = path.split('.');
   let current: unknown = obj;
   for (const segment of segments) {
-    if (current && typeof current === 'object' && segment in (current as Record<string, unknown>)) {
+    if (current && typeof current === 'object' && Object.prototype.hasOwnProperty.call(current, segment)) {
       current = (current as Record<string, unknown>)[segment];
     } else {
       return undefined;
@@ -50,7 +50,7 @@ export function setByPath(obj: Record<string, unknown>, path: string, value: unk
   for (let i = 0; i < segments.length - 1; i++) {
     const segment = segments[i];
     const existing = current[segment];
-    current[segment] = existing && typeof existing === 'object' ? { ...(existing as Record<string, unknown>) } : {};
+    current[segment] = existing && typeof existing === 'object' ? (Array.isArray(existing) ? [...(existing as unknown[])] : { ...(existing as Record<string, unknown>) }) : {};
     current = current[segment] as Record<string, unknown>;
   }
   current[segments[segments.length - 1]] = value;

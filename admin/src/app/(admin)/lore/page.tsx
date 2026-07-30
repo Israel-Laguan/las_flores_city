@@ -129,6 +129,7 @@ export default function LoreBrowserPage() {
             onSelectFile={selectFile}
           />
           <NewFileForm
+            key={selectedPath ?? 'new-file-form'}
             newFilePath={newFilePath}
             setNewFilePath={setNewFilePath}
             newFileError={newFileError}

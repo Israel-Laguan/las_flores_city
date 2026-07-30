@@ -35,10 +35,10 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
       if (data.success && data.data) {
         setState({ yaml: data.data.yaml, path: data.data.path, loading: false, error: null });
       } else {
-        setState((prev) => ({ ...prev, loading: false, error: data.error || 'Failed to load content' }));
+        setState({ yaml: null, path: null, loading: false, error: data.error || 'Failed to load content' });
       }
     } catch (err: any) {
-      setState((prev) => ({ ...prev, loading: false, error: err?.status === 404 ? 'Not found' : 'Failed to load content' }));
+      setState({ yaml: null, path: null, loading: false, error: err?.status === 404 ? 'Not found' : 'Failed to load content' });
     }
   }, [id, type]);
 
