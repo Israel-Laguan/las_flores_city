@@ -29,14 +29,14 @@ function ensureHandle(): { client: Redis; closed: boolean } {
           if (_redisHandle?.closed) {
             return null;
           }
-          // Bounded retry: keep going for a few blips, then give up. This
-          // avoids the unbounded setTimeout loops that hang unit tests when
-          // Redis is unavailable, while still letting integration tests
-          // recover from a transient startup hiccup.
-          if (times > 3) {
+          // Bounded retry: tolerate brief unavailability (a few blips, up to
+          // ~1s) without unbounded setTimeout loops that hang unit tests when
+          // Redis is unavailable. This also lets integration tests recover
+          // from a transient startup hiccup during CI.
+          if (times > 5) {
             return null;
           }
-          return 100;
+          return 200;
         },
       }),
       closed: false,

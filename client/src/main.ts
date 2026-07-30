@@ -265,8 +265,8 @@ function installBootWatchdog(): void {
     if (window.__lasFloresBootError) return; // already reported
     if (window.__lasFloresBootReady) return; // complete startup succeeded
 
-    reportBootFailure(new Error('Boot watchdog: startup did not complete within 11s'));
-  }, 11000);
+    reportBootFailure(new Error('Boot watchdog: startup did not complete within 15s'));
+  }, 15000);
 }
 
 function initializeUI(): void {
