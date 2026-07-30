@@ -81,13 +81,18 @@ jestGlobals.doMock('../../src/services/AssetGenerationService.js', () => ({
   },
 }));
 
-// Mock fs.existsSync so the prompt-file check in the route handler
-// succeeds for our test prompt_rel without requiring the file on disk.
+// Capture the original existsSync at module load so we can re-install the
+// spy in beforeAll/beforeEach.  (restoreMocks:true in jest.config would
+// strip a module-level spyOn before the first test, so the spy must be
+// (re)created inside hooks, not at module scope.)
 const originalExistsSync = fs.existsSync;
-jestGlobals.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
-  if (typeof p === 'string' && p.includes('app_misiones.prompt.md')) return true;
-  return originalExistsSync(p);
-});
+
+function installExistsSyncSpy(): void {
+  jestGlobals.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+    if (typeof p === 'string' && p.includes('app_misiones.prompt.md')) return true;
+    return originalExistsSync(p);
+  });
+}
 
 // Mock fs/promises readFile so parsePromptFile can read the prompt content
 // without the file existing on disk.
@@ -132,6 +137,10 @@ let adminToken: string;
 let ADMIN_USER_ID: string;
 
 beforeAll(async () => {
+  // Install the existsSync spy before importing route modules so any
+  // module-load-time checks see the mocked version.
+  installExistsSyncSpy();
+
   const crypto = await import('node:crypto');
   // Use a unique UUID for the test admin user to avoid collisions with parallel test suites
   ADMIN_USER_ID = crypto.randomUUID();
@@ -208,6 +217,10 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
+  // Re-install the existsSync spy — restoreMocks:true in jest.config
+  // strips it before each test, so we must re-create it here.
+  installExistsSyncSpy();
+
   mockSignMinioUrl.mockClear();
   mockUploadToMinio.mockClear();
   mockDeleteFromMinio.mockClear();

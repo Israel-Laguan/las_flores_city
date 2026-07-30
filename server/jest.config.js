@@ -23,6 +23,16 @@ export default {
   },
   testMatch: ['**/*.test.ts'],
   testTimeout: 15000,
+  // Auto-clean mocks between tests so parallel worker reuse can never leak
+  // spies (e.g. process.cwd, fs.promises.*, console.warn) or stale call
+  // counts across test files.  restoreMocks runs jest.restoreAllMocks()
+  // before every test — restoring any jest.spyOn() spy to its original
+  // implementation.  clearMocks runs jest.clearAllMocks() before every
+  // test — resetting mock.calls / mock.results so assertion counts stay
+  // scoped to the current test.  Neither option affects jest.mock()
+  // factory implementations, so module-level auto-mocks are preserved.
+  clearMocks: true,
+  restoreMocks: true,
   globalSetup: '<rootDir>/tests/globalSetup.cjs',
   globalTeardown: '<rootDir>/tests/globalTeardown.cjs',
 };

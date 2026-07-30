@@ -335,3 +335,19 @@ The `connectionsClosed`/`redisClosed` guards in `connection.ts` and `redis.ts` p
 - Do clean up your test's own data rows in `afterAll`.
 - Calling `closeConnections()` / `closeRedis()` in the same `afterAll` is optional — globalTeardown handles it at the end of the Jest run.
 - Never rely on another test to close the pool for you (cross-file ordering is undefined).
+
+#### 6. `jest.config.js` has `clearMocks: true` + `restoreMocks: true` — use `jest.spyOn` freely
+
+Jest **reuses worker processes** across test files. Without automatic cleanup, a `jest.spyOn()` spy (e.g. on `process.cwd`, `fs.promises.*`, `console.warn`) that isn't manually restored can leak into the next test file assigned to that worker, causing intermittent failures that only appear under parallel execution.
+
+The config now sets:
+- **`restoreMocks: true`** — runs `jest.restoreAllMocks()` *before every test*, restoring every `jest.spyOn()` spy to its original implementation. This runs *before* `beforeEach`, so `beforeEach` can re-create fresh spies.
+- **`clearMocks: true`** — runs `jest.clearAllMocks()` *before every test*, resetting `mock.calls` / `mock.results` so call-count assertions stay scoped to the current test.
+
+Neither option affects `jest.mock()` factory implementations (they persist across tests as before). Only `jest.spyOn()` spies and mock call histories are auto-cleaned.
+
+When writing new tests:
+- ✅ **Good**: `jest.spyOn(process, 'cwd').mockReturnValue(tmpDir)` in `beforeEach` — auto-restored before next test, re-created by `beforeEach`.
+- ✅ **Good**: `jest.spyOn(console, 'warn').mockImplementation()` inside a `try { ... } finally { spy.mockRestore() }` block — doubly safe (config + finally).
+- ❌ **Bad**: `jest.spyOn(fs, 'existsSync')` at **module scope** (outside any hook) — `restoreMocks` strips it before the first test. Move it into `beforeAll` + `beforeEach` instead (see `assets.test.ts` for the pattern).
+- ❌ **Bad**: `jest.spyOn(...)` in `beforeAll` expecting it to persist across tests — `restoreMocks` strips it before the second test. Use `beforeEach` instead.
