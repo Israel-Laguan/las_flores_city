@@ -42,6 +42,21 @@ jestGlobals.mock('../../src/database/repositories/PlayerStateRepository.js', () 
   },
 }));
 
+// Mock Redis so the mystery_solve guard path (processBreakthroughSolve →
+// invalidatePattern → getRedis) never opens a real ioredis connection.
+// A real connection would store a handle on globalThis that
+// jest-environment-node soft-deletes at worker teardown, crashing the
+// worker (see redis.ts handle.closed comment). Unit tests must stay
+// DB/Redis-free.
+jestGlobals.mock('../../src/database/redis.js', () => ({
+  getCache: jestGlobals.fn(async () => null),
+  setCache: jestGlobals.fn(async () => undefined),
+  deleteCache: jestGlobals.fn(async () => true),
+  invalidatePattern: jestGlobals.fn(async () => 0),
+  getRedis: jestGlobals.fn(),
+  closeRedis: jestGlobals.fn(async () => undefined),
+}));
+
 // mystery_solve guard calls client.query directly — mock returns
 // no rows by default (player NOT INVESTIGATING).
 const fakePgClient = {

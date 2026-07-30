@@ -36,6 +36,21 @@ function ensureHandle(): RedisHandle {
   }
 
   const handle: RedisHandle = { client: undefined as unknown as Redis, closed: false };
+  // Lock `closed` as non-configurable so that jest-environment-node's
+  // worker-teardown cleanup (jest-util `deleteProperty`) cannot "soft-delete"
+  // it by wrapping the data property with a deprecation accessor.  That
+  // wrapper's fallback setter (`Reflect.set(obj, 'closed', value)`) would
+  // re-trigger the same setter and infinite-recurse (stack overflow) the
+  // next time the ioredis 'end' handler or closeRedis() assigns
+  // `handle.closed = true`.  A configurable property (the literal default)
+  // can be redefined non-configurable in one defineProperty step; `closed`
+  // stays writable so runtime assignments are unaffected.
+  Object.defineProperty(handle, 'closed', {
+    value: false,
+    writable: true,
+    configurable: false,
+    enumerable: true,
+  });
   handle.client = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
     maxRetriesPerRequest: 3,
     retryStrategy(times) {

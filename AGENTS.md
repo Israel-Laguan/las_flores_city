@@ -351,3 +351,14 @@ When writing new tests:
 - ✅ **Good**: `jest.spyOn(console, 'warn').mockImplementation()` inside a `try { ... } finally { spy.mockRestore() }` block — doubly safe (config + finally).
 - ❌ **Bad**: `jest.spyOn(fs, 'existsSync')` at **module scope** (outside any hook) — `restoreMocks` strips it before the first test. Move it into `beforeAll` + `beforeEach` instead (see `assets.test.ts` for the pattern).
 - ❌ **Bad**: `jest.spyOn(...)` in `beforeAll` expecting it to persist across tests — `restoreMocks` strips it before the second test. Use `beforeEach` instead.
+
+#### 7. Unit tests must mock `database/redis.js` when importing Redis-using modules
+
+Any unit test that imports a module transitively reaching `database/redis.js` (e.g. route handlers that invalidate caches, services that read/write cache) must `jest.mock('../../src/database/redis.js', ...)` so no real TCP connection to Redis is opened. Real ioredis clients:
+- create `globalThis` handles that `jest-environment-node` tries to clean at worker teardown, and
+- emit connection errors asynchronously after the test has finished.
+
+Both behaviors cause flaky failures under parallel workers. Keep unit tests DB/Redis-free; integration tests are the place for real Redis.
+
+- ✅ **Good**: `adminStoryBeats.property.test.ts`, `resolver.unit.test.ts`, `IronGateValidator.property.test.ts`, `plan-generation-job.test.ts`, and now `adminContentFileWrite.property.test.ts` all mock the Redis module.
+- ❌ **Bad**: Importing `admin-content.js` (which mounts `admin-content-resolver.js`) and exercising the `PUT /file` success path without mocking Redis — the `invalidateContentResolverCache()` call creates a real client and logs `ECONNREFUSED` errors after the test ends.
