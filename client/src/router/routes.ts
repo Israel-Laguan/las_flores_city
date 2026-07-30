@@ -143,6 +143,8 @@ function registerMainMenu({
   });
 }
 
+let mapMountGeneration = 0;
+
 function registerMapRoutes({
   destroyGame,
   destroyCurrentView,
@@ -161,18 +163,19 @@ function registerMapRoutes({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
-    // Capture the route so a mount that completes after the user has navigated
-    // away (e.g. via logout) is ignored — otherwise a late failure would pin a
-    // permanent Boot Error banner over an otherwise-usable route, and a late
-    // success would mark boot ready for a route that is no longer active.
-    const routePath = window.location.pathname;
+    // Capture a per-mount generation so that a mount completing after a
+    // newer /map or /map/ navigation is ignored. Comparing pathname alone
+    // is not enough: re-entering the same URL while the previous mount is
+    // still pending would still let the stale completion set boot-ready or
+    // report a failure on the new view.
+    const generation = ++mapMountGeneration;
     try {
       await mountReactView(MapView, { playerState: getCachedPlayerState() });
-      if (window.location.pathname === routePath) {
+      if (generation === mapMountGeneration) {
         window.__lasFloresBootReady = true;
       }
     } catch (err) {
-      if (window.location.pathname === routePath) {
+      if (generation === mapMountGeneration) {
         reportBootFailure(err instanceof Error ? err : new Error(String(err)));
       }
     }
@@ -188,14 +191,14 @@ function registerMapRoutes({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const districtSlug = extractDistrictSlug();
-    const routePath = window.location.pathname;
+    const generation = ++mapMountGeneration;
     try {
       await mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
-      if (window.location.pathname === routePath) {
+      if (generation === mapMountGeneration) {
         window.__lasFloresBootReady = true;
       }
     } catch (err) {
-      if (window.location.pathname === routePath) {
+      if (generation === mapMountGeneration) {
         reportBootFailure(err instanceof Error ? err : new Error(String(err)));
       }
     }

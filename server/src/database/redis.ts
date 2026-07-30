@@ -30,7 +30,7 @@ function ensureHandle(): RedisHandle {
   // handle since this module was last loaded, so a load-time snapshot would
   // be stale and could hand back a closed/disconnected client.
   const existing = (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] as RedisHandle | null;
-  if (existing && !existing.closed) {
+  if (existing && !existing.closed && existing.client.status !== 'end') {
     _redisHandle = existing;
     return existing;
   }
@@ -50,6 +50,16 @@ function ensureHandle(): RedisHandle {
       // Redis is unavailable. This also lets integration tests recover
       // from a transient startup hiccup during CI.
       if (times > 5) {
+        // ioredis enters the terminal 'end' state here and will not
+        // reconnect without manual intervention. Mark the handle closed
+        // so subsequent ensureHandle() calls create a fresh client instead
+        // of recycling this dead one, and clear the global slot so the
+        // replacement is visible across module registries.
+        handle.closed = true;
+        if ((globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] === handle) {
+          (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] = null;
+        }
+        _redisHandle = null;
         return null;
       }
       return 200;
@@ -69,6 +79,19 @@ function ensureHandle(): RedisHandle {
   handle.client.on('error', (err) => {
     if (!handle.closed) {
       console.error('❌ Redis error:', err);
+    }
+  });
+
+  // If ioredis ever enters the terminal 'end' state outside the explicit
+  // shutdown path (e.g. after retryStrategy gives up below), clear the
+  // dead handle so ensureHandle() stops recycling it.
+  handle.client.on('end', () => {
+    if (!handle.closed) {
+      handle.closed = true;
+      if ((globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] === handle) {
+        (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] = null;
+      }
+      _redisHandle = null;
     }
   });
 
@@ -199,6 +222,12 @@ export async function closeRedis(): Promise<void> {
     r.disconnect();
   }
 
-  (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] = null;
+  // Only clear the global slot if it still references the handle being
+  // closed. Another set of code may have published a replacement while
+  // `quit()`/`disconnect()` was in flight; clearing the slot in that case
+  // would orphan the live replacement and leak connections.
+  if ((globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] === handle) {
+    (globalThis as Record<string, unknown>)[REDIS_HANDLE_KEY] = null;
+  }
   _redisHandle = null;
 }
