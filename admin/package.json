@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:css": "node ../scripts/check-css-color-literals.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"

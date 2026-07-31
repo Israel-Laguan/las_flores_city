@@ -28,6 +28,25 @@
   opacity: 1;
 }
 
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm, 3px);
+  color: var(--muted);
+  padding: 0.3rem;
+  line-height: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.themeToggle:hover {
+  color: var(--foreground);
+  background: var(--hover-overlay);
+}
+
 .pageTitle {
   font-size: 1rem;
   font-weight: 600;
