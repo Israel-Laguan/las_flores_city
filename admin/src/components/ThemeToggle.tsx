@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { setTheme, subscribeTheme } from '@/lib/themeEngine';
+import { getStoredTheme, setTheme, subscribeTheme } from '@/lib/themeEngine';
 import styles from './ThemeToggle.module.css';
 
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<'dark' | 'light'>('dark');
+  const [mode, setMode] = useState<'dark' | 'light'>(getStoredTheme);
 
   useEffect(() => {
     return subscribeTheme(setMode);

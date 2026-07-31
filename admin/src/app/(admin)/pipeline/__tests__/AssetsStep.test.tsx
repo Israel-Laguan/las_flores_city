@@ -8,10 +8,10 @@ vi.mock('@/lib/client-api', () => ({
   adminFetch: (...args: unknown[]) => mockAdminFetch(...args),
 }));
 
-const sampleChar1 = { id: 'char-1', name: 'Diego', hasPortrait: true, portraitUrls: ['https://minio.test/diego__default.png', 'https://minio.test/diego__v2.png'] };
-const sampleChar2 = { id: 'char-2', name: 'Ryu', hasPortrait: false, portraitUrls: [] };
-const sampleScene1 = { id: 'scene-1', name: 'The Wasteland', hasBackground: true, backgroundUrl: 'https://minio.test/wasteland__bg.png' };
-const sampleScene2 = { id: 'scene-2', name: 'Neon Alley', hasBackground: false, backgroundUrl: null };
+const sampleChar1 = { id: 'char-1', name: 'Diego', slug: 'diego', hasPortrait: true, portraitUrls: [{ url: 'https://minio.test/diego__default.png' }, { url: 'https://minio.test/diego__v2.png' }] };
+const sampleChar2 = { id: 'char-2', name: 'Ryu', slug: 'ryu', hasPortrait: false, portraitUrls: [] };
+const sampleScene1 = { id: 'scene-1', name: 'The Wasteland', slug: 'the-wasteland', hasBackground: true, backgroundUrl: 'https://minio.test/wasteland__bg.png' };
+const sampleScene2 = { id: 'scene-2', name: 'Neon Alley', slug: 'neon-alley', hasBackground: false, backgroundUrl: null };
 
 const sampleCoverage: PipelineAssetCoverage = {
   characters: [sampleChar1, sampleChar2],
@@ -138,8 +138,8 @@ describe('AssetsStep — interactions', () => {
     });
 
     const body = JSON.parse(mockAdminFetch.mock.calls[0][1].body);
-    expect(body.contentPath).toBe('characters/char-1/character_char-1.yaml');
-    expect(body.fieldPath).toBe('portrait_urls[0]');
+    expect(body.contentPath).toBe('characters/diego/char_diego.yaml');
+    expect(body.fieldPath).toBe('portrait_urls[0].url');
     expect(body.assetUrl).toBe('https://minio.test/diego__v2.png');
   });
 
@@ -173,7 +173,7 @@ describe('AssetsStep — interactions', () => {
     });
 
     const body = JSON.parse(mockAdminFetch.mock.calls[0][1].body);
-    expect(body.contentPath).toBe('scenes/scene-1/scene_scene-1.yaml');
+    expect(body.contentPath).toBe('scenes/the-wasteland/scene_the-wasteland.yaml');
     expect(body.fieldPath).toBe('background_url');
   });
 

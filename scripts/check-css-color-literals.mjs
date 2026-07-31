@@ -13,8 +13,8 @@
 
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import { readFileSync } from 'fs';
-import { execSync } from 'child_process';
+import { existsSync, readFileSync } from 'fs';
+import { execFileSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -48,19 +48,18 @@ for (const dir of ['admin/src', 'client/src']) {
   const fullDir = resolve(ROOT, dir);
   let findResult;
   try {
-    findResult = execSync(`find ${fullDir} -name '*.css' 2>/dev/null`, {
+    findResult = execFileSync('find', [fullDir, '-name', '*.css'], {
       encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
     });
   } catch {
     // dir may not exist (e.g. in CI without content checkout)
-    try {
-      execSync(`test -d "${fullDir}"`, { encoding: 'utf8', stdio: 'ignore' });
-      // If we get here, the directory exists but find failed
+    if (existsSync(fullDir)) {
+      // Directory exists but find failed
       console.error(`  ERROR: Failed to scan ${fullDir}`);
       exitCode = 1;
-    } catch {
-      // Directory does not exist — skip
     }
+    // Directory does not exist — skip
     continue;
   }
   const files = findResult.trim().split('\n').filter(Boolean);

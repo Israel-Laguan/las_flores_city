@@ -30,9 +30,9 @@ describe('ThemeToggle', () => {
     expect(themeEngine.setTheme).toHaveBeenCalledWith('dark');
   });
 
-  it('calls applyTheme when light button is clicked', () => {
+  it('calls setTheme when light button is clicked', () => {
     render(<ThemeToggle />);
     fireEvent.click(screen.getByRole('button', { name: 'Light' }));
-    expect(themeEngine.applyTheme).toHaveBeenCalledWith('light');
+    expect(themeEngine.setTheme).toHaveBeenCalledWith('light');
   });
 });

@@ -17,8 +17,8 @@ function hasAsset(row: EntityRow): boolean {
 
 function previewUrl(row: EntityRow): string | null {
   if (row.kind === 'character') {
-    const urls = row.item.portraitUrls;
-    return urls.length > 0 ? urls[0] : null;
+    const entries = row.item.portraitUrls;
+    return entries.length > 0 ? entries[0].url : null;
   }
   return row.item.backgroundUrl;
 }
@@ -79,8 +79,8 @@ function CoverageRow({ row, sdState, onSetDefault }: {
               <option value="" disabled>
                 {sdState?.saving ? 'Setting...' : sdState?.success ? '✓ Set!' : 'Set as Default'}
               </option>
-              {row.item.portraitUrls.map((url, i) => (
-                <option key={url} value={url}>Portrait #{i + 1}</option>
+              {row.item.portraitUrls.map((entry, i) => (
+                <option key={entry.url} value={entry.url}>Portrait #{i + 1}</option>
               ))}
             </select>
           )}
@@ -88,7 +88,7 @@ function CoverageRow({ row, sdState, onSetDefault }: {
             <button
               disabled={sdState?.saving}
               className={cn(styles.inlineButton, sdState?.success ? styles.inlineButtonSuccess : '')}
-              onClick={() => onSetDefault(row, row.item.portraitUrls[0])}
+               onClick={() => onSetDefault(row, row.item.portraitUrls[0].url)}
               title="Set this portrait as default in YAML"
             >
               {sdState?.saving ? '...' : sdState?.success ? '✓ Default' : 'Set Default'}
@@ -144,7 +144,7 @@ export default function CoverageTable({ rows, setDefaultStates, onSetDefault }: 
             <CoverageRow
               key={`${row.kind}:${row.item.id}`}
               row={row}
-              sdState={setDefaultStates[`${row.kind}:${row.item.id}`]}
+               sdState={setDefaultStates[`${row.kind}:${row.item.slug}`]}
               onSetDefault={onSetDefault}
             />
           ))}

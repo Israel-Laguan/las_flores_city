@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { adminFetch } from '@/lib/client-api';
+import type { AssetEntry } from '@las-flores/shared';
 import { usePromotion } from './usePromotion';
 
 export type { PromotionStatus } from '@/lib/promotion';
@@ -67,7 +68,7 @@ export interface CharacterAsset {
   name: string;
   slug: string;
   hasPortrait: boolean;
-  portraitUrls: string[];
+  portraitUrls: AssetEntry[];
 }
 
 export interface SceneAsset {

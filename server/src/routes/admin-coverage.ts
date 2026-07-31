@@ -74,10 +74,14 @@ async function buildIdToSlugMap(
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
       const slug = entry.name;
-      const yamlFiles = await fs.readdir(path.join(contentDir, subdir, slug));
-      const yamlFile = yamlFiles.find(f => f.endsWith('.yaml'));
-      if (!yamlFile) continue;
+      const prefix = subdir === 'characters' ? 'char_' : 'scene_';
+      const yamlFile = `${prefix}${slug}.yaml`;
       const yamlPath = path.join(contentDir, subdir, slug, yamlFile);
+      try {
+        await fs.access(yamlPath);
+      } catch {
+        continue;
+      }
       const raw = await fs.readFile(yamlPath, 'utf-8');
       const parsed = jsYaml.load(raw);
       if (parsed && typeof parsed === 'object' && 'id' in parsed && typeof (parsed as Record<string, unknown>).id === 'string') {
