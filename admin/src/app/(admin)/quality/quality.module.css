@@ -21,12 +21,12 @@
 
 .primaryButton {
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
 }
 
 .disabledButton {
-  background: #555;
-  color: #999;
+  background: var(--muted);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .warningColor {
-  color: #ffaa00;
+  color: var(--warning);
 }
 
 .errorColor {
@@ -76,7 +76,7 @@
 
 .warningBox {
   background: rgba(255, 170, 0, 0.2);
-  border: 1px solid #ffaa00;
+  border: 1px solid var(--warning);
   padding: 1rem;
   border-radius: 5px;
   margin-bottom: 1.5rem;
@@ -104,7 +104,7 @@
   cursor: pointer;
   border: 1px solid var(--border);
   background: transparent;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -148,12 +148,12 @@
 }
 
 .expandIcon {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .issueRow {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--surface);
   display: flex;
   gap: 1rem;
   align-items: flex-start;
@@ -179,7 +179,7 @@
 }
 
 .issueType {
-  color: #555;
+  color: var(--muted);
   font-size: 0.75rem;
   text-transform: uppercase;
   margin-left: 0.5rem;
@@ -195,12 +195,12 @@
 
 .errorBadge {
   background: var(--danger);
-  color: #fff;
+  color: var(--foreground);
 }
 
 .warningBadge {
-  background: #ffaa00;
-  color: #000;
+  background: var(--warning);
+  color: var(--foreground);
 }
 
 .cleanMessage {

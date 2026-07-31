@@ -1,26 +1,26 @@
 .page {
   padding: 2rem;
   font-family: monospace;
-  background-color: #1a1a2e;
+  background-color: var(--page-bg);
   min-height: 100vh;
-  color: #fff;
+  color: var(--foreground);
 }
 
 .title {
-  color: #00ff00;
+  color: var(--accent);
   margin-bottom: 2rem;
 }
 
 .errorBanner {
-  background: #ff0000;
-  color: #fff;
+  background: var(--danger);
+  color: var(--on-danger);
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 5px;
 }
 
 .sectionTitle {
-  color: #00ff00;
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .sectionHeader h2 {
-  color: #00ff00;
+  color: var(--accent);
   margin: 0;
 }
 
@@ -50,13 +50,13 @@
 }
 
 .categoryCard {
-  border: 1px solid #00ff00;
+  border: 1px solid var(--accent);
   padding: 1.5rem;
   border-radius: 5px;
 }
 
 .categoryTitle {
-  color: #00ff00;
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
@@ -67,9 +67,9 @@
 }
 
 .entryBtn {
-  background: #0d0d1a;
-  color: #00ff00;
-  border: 1px solid #00ff00;
+  background: var(--panel-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   padding: 0.75rem;
   cursor: pointer;
   text-align: left;
@@ -82,7 +82,7 @@
 
 .entryBtnMeta {
   font-size: 0.8rem;
-  color: #888;
+  color: var(--muted);
 }
 
 .btnRow {
@@ -93,8 +93,8 @@
 
 .btnPrimary {
   padding: 0.75rem 1.5rem;
-  background: #00ff00;
-  color: #000;
+  background: var(--accent);
+  color: var(--on-accent);
   cursor: pointer;
   border: none;
   font-weight: bold;
@@ -102,8 +102,8 @@
 
 .btnSecondary {
   padding: 0.75rem 1.5rem;
-  background: #00aaff;
-  color: #000;
+  background: var(--info);
+  color: var(--on-info);
   cursor: pointer;
   border: none;
   font-weight: bold;
@@ -112,9 +112,9 @@
 .btnDanger {
   padding: 0.5rem 1rem;
   background: transparent;
-  color: #ff4444;
+  color: var(--danger);
   cursor: pointer;
-  border: 1px solid #ff4444;
+  border: 1px solid var(--danger);
   font-weight: bold;
 }
 
@@ -132,25 +132,25 @@
 
 .btnSmallPrimary {
   composes: btnSmall;
-  color: #00ff00;
-  border: 1px solid #00ff00;
+  color: var(--accent);
+  border: 1px solid var(--accent);
 }
 
 .btnSmallDanger {
   composes: btnSmall;
-  color: #ff4444;
-  border: 1px solid #ff4444;
+  color: var(--danger);
+  border: 1px solid var(--danger);
 }
 
 .btnSmallFull {
   composes: btnSmall;
-  color: #00ff00;
-  border: 1px solid #00ff00;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   width: 100%;
 }
 
 .muted {
-  color: #888;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
@@ -164,8 +164,8 @@
 .catalogBtn {
   padding: 0.5rem 1rem;
   background: transparent;
-  color: #00ff00;
-  border: 1px solid #00ff00;
+  color: var(--accent);
+  border: 1px solid var(--accent);
   cursor: pointer;
   margin-bottom: 1rem;
 }
@@ -173,34 +173,34 @@
 .infoBox {
   margin-bottom: 2rem;
   padding: 1rem;
-  background: #0d0d1a;
-  border: 1px solid #00ff00;
+  background: var(--panel-bg);
+  border: 1px solid var(--accent);
   border-radius: 5px;
 }
 
 .infoBoxTitle {
-  color: #00ff00;
+  color: var(--accent);
   margin-bottom: 0.5rem;
 }
 
 .infoBoxMeta {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--muted);
 }
 
 .card {
-  border: 2px solid #444;
+  border: 2px solid var(--border);
   padding: 1rem;
   border-radius: 5px;
   position: relative;
 }
 
 .cardChosen {
-  border-color: #00ff00;
+  border-color: var(--accent);
 }
 
 .cardNew {
-  border-color: #00aaff;
+  border-color: var(--info);
 }
 
 .badge {
@@ -215,14 +215,14 @@
 
 .badgeNew {
   composes: badge;
-  background: #00aaff;
-  color: #000;
+  background: var(--info);
+  color: var(--on-info);
 }
 
 .badgeChosen {
   composes: badge;
-  background: #00ff00;
-  color: #000;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .cardImage {
@@ -260,9 +260,9 @@
 
 .formInput {
   padding: 0.5rem;
-  background: #0d0d1a;
-  color: #00ff00;
-  border: 1px solid #00ff00;
+  background: var(--panel-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent);
 }
 
 .sliderRow {
@@ -272,7 +272,7 @@
 }
 
 .sliderLabel {
-  color: #00ff00;
+  color: var(--accent);
 }
 
 .sliderInput {
@@ -280,7 +280,7 @@
 }
 
 .publishSection {
-  border: 1px solid #444;
+  border: 1px solid var(--border);
   padding: 1rem;
   border-radius: 5px;
   max-width: 400px;
