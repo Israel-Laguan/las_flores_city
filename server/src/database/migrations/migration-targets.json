@@ -49,7 +49,8 @@
     "054_admin_settings.sql",
     "055_content_plans_async.sql",
     "056_player_state_and_stats.sql",
-    "057_dialogue_ownership.sql"
+    "057_dialogue_ownership.sql",
+    "058_drop_stories_table.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

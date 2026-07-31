@@ -328,7 +328,6 @@ ${unfilledFields.join(', ')}
 - Scenes: ${e.scenes}
 - Dialogues: ${e.dialogues}
 - Missions: ${e.missions}
-- Stories: ${e.stories}
 - Overlays: ${e.overlays}
 - Locations: ${e.locations}
 
