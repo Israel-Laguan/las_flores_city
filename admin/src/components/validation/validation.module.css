@@ -22,12 +22,12 @@
 
 .primaryButton {
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
 }
 
 .disabledButton {
-  background: var(--disabled-bg, #555);
-  color: var(--disabled-text, #999);
+  background: var(--disabled-bg, var(--muted));
+  color: var(--disabled-text, var(--disabled-text));
   cursor: not-allowed;
 }
 
@@ -81,7 +81,7 @@
 }
 
 .warningColor {
-  color: #ffaa00;
+  color: var(--warning);
 }
 
 .successBox {
@@ -144,19 +144,19 @@
 
 .errorBadge {
   background: var(--danger);
-  color: #fff;
+  color: var(--foreground);
 }
 
 .warningBadge {
-  background: #ffaa00;
-  color: #000;
+  background: var(--warning);
+  color: var(--foreground);
 }
 
 .codeBlock {
   background: var(--panel-bg);
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 
@@ -171,7 +171,7 @@
 
 .warningItem {
   margin-bottom: 0.25rem;
-  color: #ffaa00;
+  color: var(--warning);
 }
 
 .cleanMessage {

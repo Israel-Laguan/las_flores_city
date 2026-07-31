@@ -51,8 +51,8 @@
 }
 
 .tag {
-  background: #0066ff;
-  color: #fff;
+  background: var(--info);
+  color: var(--foreground);
   padding: 0.2rem 0.5rem;
   border-radius: 3px;
   font-size: 0.75rem;

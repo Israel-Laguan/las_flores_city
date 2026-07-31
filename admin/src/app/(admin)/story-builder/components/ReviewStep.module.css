@@ -12,7 +12,7 @@
 }
 
 .description {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
@@ -28,7 +28,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
 }
 
 .secondaryButton {
@@ -112,7 +112,7 @@
 
 .dangerButton {
   background: var(--danger);
-  color: #fff;
+  color: var(--foreground);
 }
 
 .removeLinkButton {
@@ -123,7 +123,7 @@
   cursor: pointer;
   border: none;
   background: var(--danger);
-  color: #fff;
+  color: var(--foreground);
 }
 
 .shipFooter {
@@ -135,7 +135,7 @@
 
 .shipNote {
   font-size: 0.85rem;
-  color: var(--warning, #f59e0b);
+  color: var(--warning, var(--warning));
   margin-bottom: 1rem;
 }
 
@@ -156,7 +156,7 @@
 
 .shipPrimary {
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
 }
 
 .shipPrimary:disabled {
@@ -166,14 +166,14 @@
 
 .shipHint {
   font-size: 0.8rem;
-  color: var(--muted, #666);
+  color: var(--muted, var(--text-secondary));
   margin-top: 0.85rem;
   line-height: 1.4;
 }
 
 .shipCounts {
   font-size: 0.78rem;
-  color: var(--muted, #666);
+  color: var(--muted, var(--text-secondary));
   margin-top: 0.4rem;
 }
 

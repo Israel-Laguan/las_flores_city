@@ -26,6 +26,6 @@
   padding: 1rem;
   border-radius: 5px;
   overflow-x: auto;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }

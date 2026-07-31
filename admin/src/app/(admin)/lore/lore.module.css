@@ -78,12 +78,12 @@
 
 .newFileSaveButton {
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
 }
 
 .newFileSaveButton:disabled {
-  background: #555;
-  color: #999;
+  background: var(--muted);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 

@@ -21,7 +21,7 @@
 }
 
 .crumbSeparator {
-  color: #555;
+  color: var(--muted);
   font-size: 0.8rem;
   margin: 0 0.25rem;
 }

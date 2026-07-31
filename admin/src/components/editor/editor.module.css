@@ -64,7 +64,7 @@
 }
 
 .expandIcon {
-  color: #555;
+  color: var(--muted);
 }
 
 .fileItem {
@@ -124,12 +124,12 @@
   border: none;
   font-size: 0.85rem;
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
 }
 
 .disabledButton {
-  background: #555;
-  color: #999;
+  background: var(--muted);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 
@@ -184,7 +184,7 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  color: #555;
+  color: var(--muted);
   font-size: 1rem;
 }
 
@@ -193,6 +193,6 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ffaa00;
+  background: var(--warning);
   margin-left: 0.5rem;
 }

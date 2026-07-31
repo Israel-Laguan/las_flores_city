@@ -50,13 +50,13 @@
 
 .saveButton {
   background: var(--accent);
-  color: #000;
+  color: var(--foreground);
   border: none;
 }
 
 .saveButton:disabled {
-  background: #555;
-  color: #999;
+  background: var(--muted);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 
@@ -71,7 +71,7 @@
 }
 
 .dirtyIndicator {
-  color: #ffaa00;
+  color: var(--warning);
   font-size: 0.8rem;
   font-weight: bold;
 }

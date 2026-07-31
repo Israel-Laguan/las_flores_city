@@ -7,26 +7,26 @@
 }
 
 .success {
-  background-color: #00ff00;
-  color: #000;
+  background-color: var(--accent);
+  color: var(--foreground);
 }
 
 .warning {
-  background-color: #ffaa00;
-  color: #000;
+  background-color: var(--warning);
+  color: var(--foreground);
 }
 
 .danger {
-  background-color: #ff4444;
-  color: #fff;
+  background-color: var(--danger);
+  color: var(--foreground);
 }
 
 .info {
-  background-color: #0066ff;
-  color: #fff;
+  background-color: var(--info);
+  color: var(--foreground);
 }
 
 .muted {
-  background-color: #555;
-  color: #999;
+  background-color: var(--muted);
+  color: var(--disabled-text);
 }

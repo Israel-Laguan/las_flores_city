@@ -72,7 +72,7 @@
 
 .envVar {
   font-size: 0.7rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .envVar code {
@@ -84,7 +84,7 @@
 
 .fieldNote {
   font-size: 0.75rem;
-  color: #888;
+  color: var(--muted);
   font-style: italic;
 }
 
