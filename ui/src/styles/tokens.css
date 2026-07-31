@@ -146,7 +146,7 @@ body.theme-light {
   --on-accent: #ffffff;
   --on-danger: #ffffff;
   --on-info: #ffffff;
-  --on-warning: #000000;
+  --on-warning: #ffffff;
   --on-success: #ffffff;
 
   /* Migration badge colors */
