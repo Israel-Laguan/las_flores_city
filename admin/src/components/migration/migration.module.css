@@ -94,32 +94,32 @@
 }
 
 .purpleBadge {
-  background: #9900ff;
+  background: var(--info);
   color: var(--foreground);
 }
 
 .orangeBadge {
-  background: #ff6600;
+  background: var(--warning);
   color: var(--foreground);
 }
 
 .pinkBadge {
-  background: #ff00ff;
+  background: var(--info);
   color: var(--foreground);
 }
 
 .cyanBadge {
-  background: #00ccff;
+  background: var(--info);
   color: var(--foreground);
 }
 
 .tealBadge {
-  background: #00ffaa;
-  color: var(--foreground);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .greenBadge {
-  background: #88cc88;
+  background: var(--success);
   color: var(--foreground);
 }
 
@@ -161,7 +161,7 @@
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.2);
+  background: var(--success-bg);
   border: 1px solid var(--accent);
   padding: 1rem;
   border-radius: 5px;
@@ -169,7 +169,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 1rem;
   border-radius: 5px;

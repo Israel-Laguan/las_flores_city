@@ -14,7 +14,7 @@
 }
 
 .cardType {
-  background: rgba(0, 255, 0, 0.13);
+  background: var(--accent-bg);
   color: var(--accent);
   padding: 0.15rem 0.5rem;
   border-radius: 3px;
@@ -88,7 +88,7 @@
 }
 
 .existingLabel {
-  color: #ff6666;
+  color: var(--danger);
   font-size: 0.8rem;
   cursor: pointer;
 }

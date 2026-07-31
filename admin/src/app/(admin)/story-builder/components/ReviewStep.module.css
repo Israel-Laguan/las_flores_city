@@ -135,7 +135,7 @@
 
 .shipNote {
   font-size: 0.85rem;
-  color: var(--warning, var(--warning));
+  color: var(--warning);
   margin-bottom: 1rem;
 }
 
@@ -166,14 +166,14 @@
 
 .shipHint {
   font-size: 0.8rem;
-  color: var(--muted, var(--text-secondary));
+  color: var(--text-secondary);
   margin-top: 0.85rem;
   line-height: 1.4;
 }
 
 .shipCounts {
   font-size: 0.78rem;
-  color: var(--muted, var(--text-secondary));
+  color: var(--text-secondary);
   margin-top: 0.4rem;
 }
 

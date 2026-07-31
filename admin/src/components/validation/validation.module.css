@@ -85,7 +85,7 @@
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.2);
+  background: var(--success-bg);
   border: 1px solid var(--accent);
   padding: 1rem;
   border-radius: 5px;
@@ -93,7 +93,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 1rem;
   border-radius: 5px;

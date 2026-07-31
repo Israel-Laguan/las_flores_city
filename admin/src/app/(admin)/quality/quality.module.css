@@ -67,7 +67,7 @@
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.2);
+  background: var(--success-bg);
   border: 1px solid var(--accent);
   padding: 1rem;
   border-radius: 5px;
@@ -75,7 +75,7 @@
 }
 
 .warningBox {
-  background: rgba(255, 170, 0, 0.2);
+  background: var(--warning-bg);
   border: 1px solid var(--warning);
   padding: 1rem;
   border-radius: 5px;
@@ -83,7 +83,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 1rem;
   border-radius: 5px;
@@ -110,7 +110,7 @@
 
 .filterBtnActive {
   border-color: var(--accent);
-  background: rgba(0, 255, 0, 0.1);
+  background: var(--accent-bg);
   color: var(--accent);
 }
 

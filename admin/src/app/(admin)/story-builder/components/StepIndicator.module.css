@@ -28,7 +28,7 @@
 }
 
 .stepDone {
-  background: rgba(0, 255, 0, 0.27);
+  background: var(--accent-bg);
   color: var(--accent);
   border: 1px solid var(--accent);
 }

@@ -77,7 +77,7 @@
 }
 
 .fileItemActive {
-  background: rgba(0, 255, 0, 0.1);
+  background: var(--accent-bg);
   border-left: 2px solid var(--accent);
 }
 
@@ -160,7 +160,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 0.75rem;
   border-radius: 5px;
@@ -168,7 +168,7 @@
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.2);
+  background: var(--success-bg);
   border: 1px solid var(--accent);
   padding: 0.75rem;
   border-radius: 5px;

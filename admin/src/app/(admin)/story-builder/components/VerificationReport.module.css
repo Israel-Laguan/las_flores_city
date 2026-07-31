@@ -32,12 +32,12 @@
 
 .bannerPass {
   color: var(--status-success);
-  background: rgba(16, 185, 129, 0.12);
+  background: var(--status-success-bg);
 }
 
 .bannerFail {
   color: var(--status-error);
-  background: rgba(239, 68, 68, 0.12);
+  background: var(--status-error-bg);
 }
 
 .counts {
@@ -65,11 +65,11 @@
 }
 
 .errorList {
-  background: rgba(239, 68, 68, 0.08);
+  background: var(--status-error-bg);
 }
 
 .warningList {
-  background: rgba(245, 158, 11, 0.08);
+  background: var(--warning-bg);
 }
 
 .errorItem {
@@ -130,17 +130,17 @@
 
 .statusIcon.pass {
   color: var(--status-success);
-  background: rgba(16, 185, 129, 0.15);
+  background: var(--status-success-bg);
 }
 
 .statusIcon.fail {
   color: var(--status-error);
-  background: rgba(239, 68, 68, 0.15);
+  background: var(--status-error-bg);
 }
 
 .statusIcon.warn {
   color: var(--status-warn);
-  background: rgba(245, 158, 11, 0.15);
+  background: var(--warning-bg);
 }
 
 .checkName {

@@ -50,13 +50,13 @@
 }
 
 .stepDone {
-  background: rgba(0, 255, 0, 0.18);
+  background: var(--accent-bg);
   border-color: var(--accent);
   color: var(--accent);
 }
 
 .stepBlocked {
-  background: rgba(255, 68, 68, 0.18);
+  background: var(--danger-bg);
   border-color: var(--danger);
   color: var(--danger);
 }

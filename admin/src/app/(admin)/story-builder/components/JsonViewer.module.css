@@ -51,7 +51,7 @@
 }
 
 .key { color: var(--accent); }
-.string { color: #ff0; }
+.string { color: var(--warning); }
 .number { color: var(--warning); }
 .boolean { color: var(--info); }
 .null { color: var(--muted); }

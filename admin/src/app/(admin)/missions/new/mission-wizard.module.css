@@ -33,7 +33,7 @@
 }
 
 .stepDone {
-  background: rgba(0, 255, 0, 0.25);
+  background: var(--success-bg);
   color: var(--accent);
   border: 1px solid var(--accent);
 }
@@ -229,7 +229,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 0.75rem;
   border-radius: 5px;
@@ -237,7 +237,7 @@
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.2);
+  background: var(--success-bg);
   border: 1px solid var(--accent);
   padding: 1rem;
   border-radius: 5px;
