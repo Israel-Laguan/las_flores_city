@@ -19,6 +19,50 @@ body.theme-terminal-dark {
   --scene-bg: #0a0a1a;
   --scene-title: #00ff00;
   --scene-muted: #888888;
+
+  /* Feed / Comms / Banco / Trabajando / Vault / Terminal-Modal tokens */
+  --color-text-white: #ffffff;
+  --color-text-body: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-text-dim: #4b5563;
+  --color-text-light: #d1d5db;
+  --color-text-tag: #374151;
+  --color-text-player-bubble: #fce7f3;
+  --color-text-badge: #64748b;
+  --color-error: #ff3333;
+  --color-success: #33ff33;
+  --color-like: #ef4444;
+  --color-purple: #a855f7;
+  --color-gold: #ffb700;
+  --color-surface: #1f2937;
+  --color-surface-card: rgba(15, 23, 42, 0.6);
+  --color-surface-card-hover: rgba(15, 23, 42, 0.8);
+  --color-surface-card-alt: rgba(15, 23, 42, 0.5);
+  --color-surface-very-dark: #030712;
+  --color-surface-overlay: rgba(3, 7, 18, 0.95);
+  --color-surface-overlay-heavy: rgba(3, 7, 18, 0.98);
+  --color-border-dark: #1a1a1a;
+  --color-border-darker: #222222;
+  --color-border-light: #333333;
+  --color-border-muted: #444444;
+  --color-border-dim: #555555;
+  --color-border-subtle: #666666;
+  --color-hover-bg-subtle: rgba(255, 255, 255, 0.05);
+  --color-row-bg: rgba(15, 23, 42, 0.4);
+  --color-avatar-bg: #1f2937;
+  --color-progress-bg: rgba(255, 255, 255, 0.1);
+  --color-teal: #00cccc;
+  --color-accent-dim: #008866;
+  --color-accent-bright: #00ff88;
+  --color-border-strong: rgba(0, 255, 0, 0.5);
+
+  /* Map-specific tokens */
+  --color-map-text: #F5F5DC;
+  --color-map-accent: #E6A857;
+  --color-map-danger: #9E3030;
+  --color-map-surface: #1a1a2e;
+  --color-streetlight-amber: #E6A857;
 }
 
 body.theme-white-high-contrast {
@@ -39,6 +83,50 @@ body.theme-white-high-contrast {
   --scene-muted: #333333;
   --disabled-bg: #cccccc;
   --disabled-text: #666666;
+
+  /* Feed / Comms / Banco / Trabajando / Vault / Terminal-Modal tokens */
+  --color-text-white: #000000;
+  --color-text-body: #333333;
+  --color-text-secondary: #555555;
+  --color-text-muted: #666666;
+  --color-text-dim: #777777;
+  --color-text-light: #444444;
+  --color-text-tag: #cccccc;
+  --color-text-player-bubble: #333333;
+  --color-text-badge: #475569;
+  --color-error: #cc0000;
+  --color-success: #008800;
+  --color-like: #cc0000;
+  --color-purple: #7c3aed;
+  --color-gold: #b8860b;
+  --color-surface: #e5e7eb;
+  --color-surface-card: rgba(240, 244, 248, 0.8);
+  --color-surface-card-hover: rgba(240, 244, 248, 0.9);
+  --color-surface-card-alt: rgba(240, 244, 248, 0.6);
+  --color-surface-very-dark: #ffffff;
+  --color-surface-overlay: rgba(255, 255, 255, 0.95);
+  --color-surface-overlay-heavy: rgba(255, 255, 255, 0.98);
+  --color-border-dark: #cccccc;
+  --color-border-darker: #bbbbbb;
+  --color-border-light: #999999;
+  --color-border-muted: #888888;
+  --color-border-dim: #777777;
+  --color-border-subtle: #777777;
+  --color-hover-bg-subtle: rgba(0, 0, 0, 0.05);
+  --color-row-bg: rgba(240, 244, 248, 0.5);
+  --color-avatar-bg: #e5e7eb;
+  --color-progress-bg: rgba(0, 0, 0, 0.1);
+  --color-teal: #005050;
+  --color-accent-dim: #004433;
+  --color-accent-bright: #008844;
+  --color-border-strong: #1a1a1a;
+
+  /* Map-specific tokens */
+  --color-map-text: #333333;
+  --color-map-accent: #8B6914;
+  --color-map-danger: #cc0000;
+  --color-map-surface: #e5e7eb;
+  --color-streetlight-amber: #8B6914;
 }
 
 /* Fallback when no body theme class is present (also matches default) */
@@ -58,4 +146,48 @@ body:not([class*="theme-"]) {
   --scene-bg: #0a0a1a;
   --scene-title: #00ff00;
   --scene-muted: #888888;
+
+  /* Feed / Comms / Banco / Trabajando / Vault / Terminal-Modal tokens */
+  --color-text-white: #ffffff;
+  --color-text-body: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-text-dim: #4b5563;
+  --color-text-light: #d1d5db;
+  --color-text-tag: #374151;
+  --color-text-player-bubble: #fce7f3;
+  --color-text-badge: #64748b;
+  --color-error: #ff3333;
+  --color-success: #33ff33;
+  --color-like: #ef4444;
+  --color-purple: #a855f7;
+  --color-gold: #ffb700;
+  --color-surface: #1f2937;
+  --color-surface-card: rgba(15, 23, 42, 0.6);
+  --color-surface-card-hover: rgba(15, 23, 42, 0.8);
+  --color-surface-card-alt: rgba(15, 23, 42, 0.5);
+  --color-surface-very-dark: #030712;
+  --color-surface-overlay: rgba(3, 7, 18, 0.95);
+  --color-surface-overlay-heavy: rgba(3, 7, 18, 0.98);
+  --color-border-dark: #1a1a1a;
+  --color-border-darker: #222222;
+  --color-border-light: #333333;
+  --color-border-muted: #444444;
+  --color-border-dim: #555555;
+  --color-border-subtle: #666666;
+  --color-hover-bg-subtle: rgba(255, 255, 255, 0.05);
+  --color-row-bg: rgba(15, 23, 42, 0.4);
+  --color-avatar-bg: #1f2937;
+  --color-progress-bg: rgba(255, 255, 255, 0.1);
+  --color-teal: #00cccc;
+  --color-accent-dim: #008866;
+  --color-accent-bright: #00ff88;
+  --color-border-strong: rgba(0, 255, 0, 0.5);
+
+  /* Map-specific tokens */
+  --color-map-text: #F5F5DC;
+  --color-map-accent: #E6A857;
+  --color-map-danger: #9E3030;
+  --color-map-surface: #1a1a2e;
+  --color-streetlight-amber: #E6A857;
 }

@@ -1,6 +1,6 @@
 .banco-app {
   padding: 16px;
-  color: #fff;
+  color: var(--color-text-white);
   font-family: 'Courier New', monospace;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
 
 .secure-token {
   font-size: 0.65rem;
-  color: #4b5563;
+  color: var(--color-text-dim);
 }
 
 .balance-cards {
@@ -28,7 +28,7 @@
 }
 
 .balance-card {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--color-surface-card);
   border: 1px solid rgba(0, 255, 255, 0.1);
   padding: 12px;
   border-radius: 8px;
@@ -40,7 +40,7 @@
 
 .balance-card .label {
   font-size: 0.65rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   display: block;
   margin-bottom: 4px;
 }
@@ -51,7 +51,7 @@
 }
 
 .balance-card.creds .value { color: var(--neon-cyan); }
-.balance-card.gold-creds .value { color: #ffb700; }
+.balance-card.gold-creds .value { color: var(--color-gold); }
 
 .ledger-container {
   flex-grow: 1;
@@ -62,7 +62,7 @@
 
 .ledger-container h3 {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin: 0 0 10px 0;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .ledger-row {
-  background: rgba(15, 23, 42, 0.4);
+  background: var(--color-row-bg);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding: 8px 4px;
 }
@@ -84,7 +84,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.65rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin-bottom: 4px;
 }
 
@@ -94,8 +94,8 @@
   font-size: 0.8rem;
 }
 
-.ledger-amount.income  { color: #33ff33; }
-.ledger-amount.expense { color: #ff3333; }
+.ledger-amount.income  { color: var(--color-success); }
+.ledger-amount.expense { color: var(--color-error); }
 
 /* ── : Balance flash animation ── */
 .balance-card .value {
@@ -112,12 +112,12 @@
 
 @keyframes flash-green-glow {
   0%   { transform: scale(1);    color: var(--neon-cyan); }
-  15%  { transform: scale(1.12); color: #33ff33; filter: drop-shadow(0 0 8px #33ff33); }
+  15%  { transform: scale(1.12); color: var(--color-success); filter: drop-shadow(0 0 8px var(--color-success)); }
   100% { transform: scale(1);    color: var(--neon-cyan); filter: none; }
 }
 
 @keyframes flash-red-glow {
   0%   { transform: scale(1);    color: var(--neon-cyan); }
-  15%  { transform: scale(1.12); color: #ff3333; filter: drop-shadow(0 0 8px #ff3333); }
+  15%  { transform: scale(1.12); color: var(--color-error); filter: drop-shadow(0 0 8px var(--color-error)); }
   100% { transform: scale(1);    color: var(--neon-cyan); filter: none; }
 }

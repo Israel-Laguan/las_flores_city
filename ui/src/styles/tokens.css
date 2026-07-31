@@ -43,7 +43,7 @@
 
   /* Semantic backgrounds */
   --danger-bg: rgba(255, 0, 0, 0.2);
-  --success-bg: rgba(0, 255, 0, 0.1);
+  --success-bg: rgba(0, 255, 0, 0.15);
 
   /* Semantic surfaces */
   --surface: #15151f;
@@ -68,7 +68,7 @@
   --border-color: #333;
   --warning-border: rgba(245, 158, 11, 0.3);
   --accent-bg: rgba(0, 200, 150, 0.15);
-  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-bg: rgba(255, 170, 0, 0.15);
   --hover-overlay: rgba(255, 255, 255, 0.05);
 
   /* Text drawn on colored backgrounds (multi-theme safe) */
@@ -118,7 +118,7 @@ body.theme-light {
   --border-color: #cfcfd6;
   --warning-border: rgba(180, 83, 9, 0.4);
   --accent-bg: rgba(0, 122, 51, 0.12);
-  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-bg: rgba(255, 170, 0, 0.15);
   --hover-overlay: rgba(0, 0, 0, 0.06);
 
   /* Text drawn on colored backgrounds */

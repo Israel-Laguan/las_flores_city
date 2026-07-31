@@ -108,8 +108,8 @@
 }
 
 .gallery-item {
-  background: rgba(0, 20, 0, 0.4);
-  border: 1px solid rgba(0, 255, 0, 0.3);
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-border);
   aspect-ratio: 1;
   cursor: pointer;
   transition: all 0.2s;
@@ -118,7 +118,7 @@
 }
 
 .gallery-item:hover {
-  border-color: #00ff00;
+  border-color: var(--color-text);
   box-shadow: 0 0 12px rgba(0, 255, 0, 0.2);
 }
 
@@ -133,8 +133,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 10, 30, 0.85);
-  color: #00ff00;
+  background: var(--color-surface-overlay);
+  color: var(--color-text);
   font-size: 10px;
   padding: 4px 8px;
   text-align: center;

@@ -1,6 +1,6 @@
 .feed-app {
   padding: 12px;
-  color: #fff;
+  color: var(--color-text-white);
   font-family: 'Courier New', monospace;
   display: flex;
   flex-direction: column;
@@ -25,7 +25,7 @@
 }
 
 .feed-card {
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--color-surface-card-alt);
   border: 1px solid rgba(0, 255, 255, 0.05);
   padding: 10px;
   border-radius: 6px;
@@ -33,7 +33,7 @@
 
 .feed-card.system    { border-color: rgba(239, 68, 68, 0.3); }
 .feed-card.leaderboard { border-color: rgba(168, 85, 247, 0.3); }
-.feed-card.ad        { background: rgba(3, 7, 18, 0.8); border-color: rgba(255, 255, 255, 0.1); }
+.feed-card.ad        { background: var(--color-surface-overlay); border-color: rgba(255, 255, 255, 0.1); }
 
 .card-header {
   display: flex;
@@ -57,17 +57,17 @@
 
 .author-name { font-size: 0.8rem; font-weight: bold; }
 
-.type-badge { font-size: 0.55rem; color: #ff3333; margin-left: 4px; }
-.feed-card.leaderboard .type-badge { color: #a855f7; }
+.type-badge { font-size: 0.55rem; color: var(--color-error); margin-left: 4px; }
+.feed-card.leaderboard .type-badge { color: var(--color-purple); }
 
-.author-handle { font-size: 0.65rem; color: #6b7280; }
-.post-time     { font-size: 0.65rem; color: #6b7280; }
+.author-handle { font-size: 0.65rem; color: var(--color-text-muted); }
+.post-time     { font-size: 0.65rem; color: var(--color-text-muted); }
 
 .card-body p {
   font-size: 0.75rem;
   line-height: 1.4;
   margin: 0;
-  color: #e5e7eb;
+  color: var(--color-text-body);
 }
 
 .card-footer {
@@ -81,7 +81,7 @@
 .like-button {
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 2px 6px;
   border-radius: 4px;
@@ -89,7 +89,7 @@
   font-size: 0.7rem;
 }
 
-.like-button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.05); color: #fff; }
-.like-button.liked { color: #ef4444; }
+.like-button:hover:not(:disabled) { background: var(--color-hover-bg-subtle); color: var(--color-text-white); }
+.like-button.liked { color: var(--color-like); }
 
-.action-id-tag { color: #374151; }
+.action-id-tag { color: var(--color-text-tag); }

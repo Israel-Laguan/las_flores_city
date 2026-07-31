@@ -5,7 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: var(--color-page-bg, #0a0a1a);
+  background: var(--color-page-bg);
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 }
 
