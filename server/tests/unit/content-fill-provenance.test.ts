@@ -10,7 +10,6 @@ const mockContext: ExistingContentContext = {
   scenes: [],
   dialogues: [],
   missions: [],
-  stories: [],
   overlays: [],
   locations: [],
 };

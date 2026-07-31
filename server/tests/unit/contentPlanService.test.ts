@@ -248,7 +248,6 @@ describe('refinePlanItems', () => {
       .mockResolvedValueOnce({ rows: [] } as any) // scenes
       .mockResolvedValueOnce({ rows: [] } as any) // dialogues
       .mockResolvedValueOnce({ rows: [] } as any) // missions
-      .mockResolvedValueOnce({ rows: [] } as any) // stories
       .mockResolvedValueOnce({ rows: [] } as any) // overlays
       .mockResolvedValueOnce({ rows: [] } as any); // INSERT new version
   }

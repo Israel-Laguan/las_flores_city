@@ -13,7 +13,6 @@ const mockContext: ExistingContentContext = {
   ],
   dialogues: [],
   missions: [],
-  stories: [],
   overlays: [],
   locations: [
     { id: 'loc-1', name: 'The Neon Flask', district: 'downtown' },

@@ -11,6 +11,9 @@ const MYSTERY_ID = 'a0000000-e29b-41d4-a716-446655440001';
 const MISSION_FILE = 'missions/great_lithium_leak/mission_great_lithium_leak.yaml';
 const VAULT_FILE = 'vault/great_lithium_leak_clues.yaml';
 const OVERLAY_FILE = 'overlays/great_lithium_leak/overlay_great_lithium_leak.yaml';
+// Beats-based story arc file (content/stories/real_heroism_in_latam/). Migrates
+// as content type 'story' and writes story_beats rows (slug keys), not a manifest row.
+const STORY_FILE = 'stories/real_heroism_in_latam/real_heroism_in_latam.yaml';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
@@ -56,12 +59,15 @@ describe('Migration drift guard', () => {
     await applyMigration('018_vault_system.sql');
     await applyMigration('026_vault_signed_urls.sql');
     await applyMigration('046_stories.sql');
+    // The dead stories manifest table no longer exists; 058 drops it (046 above
+    // may have recreated it if the real DB already ran 058).
+    await applyMigration('058_drop_stories_table.sql');
   });
 
   afterAll(async () => {
     await pool.query(
-      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3)`,
-      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE]
+      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3, $4)`,
+      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE, STORY_FILE]
     );
     await pool.end();
     await closeRedis();
@@ -135,5 +141,31 @@ describe('Migration drift guard', () => {
         WHERE ml.content_type = 'mission' AND m.id IS NULL`
     );
     expect(drift.rows).toHaveLength(0);
+  });
+
+  test('story arc file migrates to story_beats and the stories manifest table is gone', async () => {
+    // Beats-based story arcs write slug rows into story_beats — NOT a `stories`
+    // manifest row. 058 dropped the dead table; the migration drift guard must
+    // verify presence via story_beats.slug for content type 'story'.
+    const storyPath = path.resolve(CONTENT_DIR, STORY_FILE);
+    const result = await migrateContent(CONTENT_DIR, [storyPath]);
+    expect(result.success).toBe(true);
+    expect(result.filesFailed).toBe(0);
+
+    const beats = await pool.query(
+      'SELECT slug, "order" FROM story_beats WHERE slug = ANY($1) ORDER BY "order"',
+      [['beat_sofia_intro', 'beat_sofia_resolution']]
+    );
+    expect(beats.rows.map((r) => r.slug)).toEqual(['beat_sofia_intro', 'beat_sofia_resolution']);
+
+    const tableCheck = await pool.query(`SELECT to_regclass('public.stories') AS table_name`);
+    expect(tableCheck.rows[0].table_name).toBeNull();
+
+    const log = await pool.query(
+      `SELECT content_type, content_id FROM migration_log WHERE file_path = $1`,
+      [STORY_FILE]
+    );
+    expect(log.rows[0]?.content_type).toBe('story');
+    expect(log.rows[0]?.content_id).toBe('beat_sofia_intro');
   });
 });
