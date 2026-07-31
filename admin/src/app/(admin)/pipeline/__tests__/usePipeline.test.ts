@@ -58,6 +58,12 @@ describe('usePipeline', () => {
     act(() => result.current.goToStep(3));
     expect(result.current.currentStepIdx).toBe(0);
   });
+});
+
+describe('usePipeline async actions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   describe('validation', () => {
     it('runValidation fetches and stores result', async () => {
@@ -107,25 +113,25 @@ describe('usePipeline', () => {
   });
 
   describe('migration', () => {
-     it('runMigration calls endpoint and updates status', async () => {
-       mockAdminFetch
-         .mockResolvedValueOnce({
-           success: true,
-           data: { success: true, filesProcessed: 3, filesSkipped: 0, filesFailed: 0, errors: [], appliedMigrations: [] },
-         })
-         .mockResolvedValueOnce({
-           success: true,
-           data: { totalFiles: 3, byType: {}, files: [] },
-         });
-       const { result } = renderHook(() => usePipeline());
-       await act(async () => { result.current.runMigration(); });
-       await waitFor(() => expect(result.current.migrationResult).not.toBeNull());
-       expect(result.current.migrationResult?.success).toBe(true);
-       expect(mockAdminFetch).toHaveBeenCalledWith('/admin/content/migrate', { method: 'POST' });
-       expect(mockAdminFetch).toHaveBeenCalledWith('/admin/content/status');
-       expect(result.current.migrationStatus).not.toBeNull();
-     });
-   });
+    it('runMigration calls endpoint and updates status', async () => {
+      mockAdminFetch
+        .mockResolvedValueOnce({
+          success: true,
+          data: { success: true, filesProcessed: 3, filesSkipped: 0, filesFailed: 0, errors: [], appliedMigrations: [] },
+        })
+        .mockResolvedValueOnce({
+          success: true,
+          data: { totalFiles: 3, byType: {}, files: [] },
+        });
+      const { result } = renderHook(() => usePipeline());
+      await act(async () => { result.current.runMigration(); });
+      await waitFor(() => expect(result.current.migrationResult).not.toBeNull());
+      expect(result.current.migrationResult?.success).toBe(true);
+      expect(mockAdminFetch).toHaveBeenCalledWith('/admin/content/migrate', { method: 'POST' });
+      expect(mockAdminFetch).toHaveBeenCalledWith('/admin/content/status');
+      expect(result.current.migrationStatus).not.toBeNull();
+    });
+  });
 
   describe('promotion', () => {
     it('fetchPromotionStatus loads statuses', async () => {

@@ -23,6 +23,24 @@ import * as api from './utils/api';
 declare global {
   interface Window {
     __lasFloresInitialized?: boolean;
+    __lasFloresBootError?: Error;
+    __lasFloresBootReady?: boolean;
+  }
+}
+
+export function reportBootFailure(err: Error): void {
+  window.__lasFloresBootError = err;
+  window.dispatchEvent(new CustomEvent('lf:boot-error', { detail: err }));
+  console.error('[boot] Fatal boot failure:', err);
+
+  if (!document.getElementById('lf-boot-error')) {
+    const banner = document.createElement('div');
+        banner.id = 'lf-boot-error';
+    banner.setAttribute('role', 'alert');
+    banner.setAttribute('aria-live', 'assertive');
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:16px;background:#c00;color:#fff;font:14px/1.4 monospace;text-align:center;';
+    banner.textContent = `Boot Error: ${err.message || 'Unknown error'}`;
+    document.body.appendChild(banner);
   }
 }
 
@@ -71,16 +89,34 @@ export function hideAllContainers(): void {
   document.getElementById('game-container')!.style.display = 'none';
 }
 
+function initOverlaysAndTheme(): boolean {
+  try {
+    sleepOverlayInstance = new SleepOverlay();
+    phoneOverlayInstance = new PhoneOverlay();
+    initThemeEngine();
+    return true;
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    destroyGame();
+    return false;
+  }
+}
+
 export function startGame(): void {
   hideAllContainers();
   document.getElementById('game-container')!.style.display = 'flex';
 
   destroyGame();
 
-  gameInstance = new Phaser.Game(config);
-  sleepOverlayInstance = new SleepOverlay();
-  phoneOverlayInstance = new PhoneOverlay();
-  initThemeEngine();
+  try {
+    gameInstance = new Phaser.Game(config);
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
+
+  if (!initOverlaysAndTheme()) return;
+  window.__lasFloresBootReady = true;
 }
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -109,10 +145,13 @@ async function startGameForLocation(locationId: string): Promise<void> {
 
   destroyGame();
 
-  gameInstance = new Phaser.Game(config);
-  sleepOverlayInstance = new SleepOverlay();
-  phoneOverlayInstance = new PhoneOverlay();
-  initThemeEngine();
+  try {
+    gameInstance = new Phaser.Game(config);
+  } catch (err) {
+    reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+    return;
+  }
+  if (!initOverlaysAndTheme()) return;
 
   try {
     gameInstance.scene.start('LocationScene');
@@ -125,6 +164,7 @@ async function startGameForLocation(locationId: string): Promise<void> {
   const waitForReady = () => {
     if (gameInstance?.scene.isActive('LocationScene')) {
       eventBus.emit('city:travel-to', { locationId });
+      window.__lasFloresBootReady = true;
     } else if (++attempts < maxAttempts) {
       requestAnimationFrame(waitForReady);
     } else {
@@ -145,6 +185,7 @@ registerRoutes({
   getCachedPlayerState: () => cachedPlayerState,
   mountReactView,
   getGameInstance: () => gameInstance,
+  reportBootFailure,
 });
 
 window.addEventListener('lf:dialogue-start', (e: Event) => {
@@ -162,6 +203,8 @@ async function initOnce() {
   if (window.__lasFloresInitialized) return;
 
   window.__lasFloresInitialized = true;
+  installBootWatchdog();
+
   const viewportManager = new ViewportManager();
   (window as any).__viewportManager = viewportManager;
   new DialogueUI();
@@ -215,6 +258,15 @@ async function initOnce() {
   const initialPath = window.location.pathname;
   initializeUI();
   restoreSession(initialPath);
+}
+
+function installBootWatchdog(): void {
+  setTimeout(() => {
+    if (window.__lasFloresBootError) return; // already reported
+    if (window.__lasFloresBootReady) return; // complete startup succeeded
+
+    reportBootFailure(new Error('Boot watchdog: startup did not complete within 15s'));
+  }, 15000);
 }
 
 function initializeUI(): void {

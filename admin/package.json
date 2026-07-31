@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "cd .. && npm run build --workspace=shared",
     "build": "next build",
     "start": "next start",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
@@ -12,6 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "js-yaml": "~5.2.2",
     "next": "~16.2.10",
     "react": "~19.2.7",
     "react-dom": "~19.2.7",

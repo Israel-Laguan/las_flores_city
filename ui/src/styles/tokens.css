@@ -13,6 +13,7 @@
   --danger: #ff4444;
   --warning: #ffaa00;
   --info: #0066ff;
+  --success: #22c55e;
   --disabled-bg: #555;
   --disabled-text: #999;
   --font-mono: monospace;
@@ -37,4 +38,10 @@
   --text-xs: 0.75rem;
   --text-sm: 0.8rem;
   --text-base: 0.9rem;
+  --text-md: 1rem;
+  --text-lg: 1.5rem;
+
+  /* Semantic backgrounds */
+  --danger-bg: rgba(255, 0, 0, 0.2);
+  --success-bg: rgba(0, 255, 0, 0.1);
 }

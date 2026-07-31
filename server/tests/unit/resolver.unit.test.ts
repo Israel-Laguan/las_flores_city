@@ -1,6 +1,21 @@
+import { describe, it, expect, afterAll } from '@jest/globals';
 import { deepMergeNodes } from '../../src/services/DialogueResolver.js';
-import { closeRedis } from '../../src/database/redis.js';
 import type { DialogueNode } from '@las-flores/shared';
+
+// Mock Redis so this pure unit test never loads the real ioredis client
+// (which would register a handle on globalThis that jest-environment-node
+// soft-deletes at worker teardown). deepMergeNodes is pure and does not
+// use Redis, but DialogueResolver.js imports the redis module at load time.
+jest.mock('../../src/database/redis.js', () => ({
+  getCache: jest.fn(async () => null),
+  setCache: jest.fn(async () => undefined),
+  deleteCache: jest.fn(async () => true),
+  invalidatePattern: jest.fn(async () => 0),
+  getRedis: jest.fn(),
+  closeRedis: jest.fn(async () => undefined),
+}));
+
+import { closeRedis } from '../../src/database/redis.js';
 
 // ============================================================
 // DialogueResolver Unit Tests

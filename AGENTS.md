@@ -277,3 +277,88 @@ All SQL migrations now use `DROP TRIGGER IF EXISTS` before `CREATE TRIGGER` to e
 DROP TRIGGER IF EXISTS trigger_name ON table_name;
 CREATE TRIGGER trigger_name ...;
 ```
+
+---
+
+### Test isolation rules (anti-flakiness)
+
+Integration tests run against a **shared** Postgres+Redis instance. Under parallel Jest workers (the default for `npm test`), concurrent tests can interfere with each other. The following rules prevent flakiness:
+
+#### 1. Always use dedicated synthetic UUIDs
+
+Every test fixture must use a **private UUID** that no other test touches, declared as a module-level constant and cleaned up in `afterAll`. Collisions cause hard-to-debug cross-test interference.
+
+- ✅ **Good**: `const MYSTERY_ID = 'c1000000-e29b-41d4-a716-446655440099';`
+- ❌ **Bad**: reusing the same `MYSTERY_ID` as another test
+- ❌ **Never**: reuse the ID of a real content entity (e.g., `a0000000-e29b-41d4-a716-446655440001` for `great_lithium_leak`) for a synthetic simulation
+
+**The `leaderboard.simulation.test.ts` → `migration.drift.test.ts` collision** was the primary cause of the `migration.drift` flake. `migration.drift` must use the real content ID (it migrates the actual YAML file), but `leaderboard.simulation` must use a **different** synthetic ID — it seeds its own row independently. The fix: changed `leaderboard.simulation`'s ID to `d0000000-...`.
+
+#### 2. `processExpiredMysteries()` is global — it finalizes ALL expired RESOLVING mysteries
+
+`LeaderboardWorker.processExpiredMysteries()` selects **every** expired mystery in the DB, not just the test's own. Under parallel execution, a test calling this worker may also finalize a foreign mystery from another test.
+
+The fix (applied in `LeaderboardWorker.ts`): each mystery now gets a **fresh DB client** in the loop (`client = await oltpPool.connect()` inside the `for`), so a failure/rollback on one mystery can never abort another's transaction.
+
+When writing tests that invoke the worker:
+- Keep your mystery ID truly unique (see rule 1).
+- Assert only your own mystery's state, not global side-effects.
+- Under `--runInBand` (the `test:integration` script), the worker only sees the test's own mystery, making assertions deterministic.
+
+#### 3. Run integration tests sequentially
+
+`npm test` (full suite) runs unit+smoke in parallel, then integration with `--runInBand`:
+
+```bash
+npx --no-install jest tests/unit tests/smoke --forceExit \
+  && npx --no-install jest tests/integration --runInBand --detectOpenHandles --forceExit
+```
+
+The dedicated `test:integration` script already uses `--runInBand`. CI uses `test:integration`, so CI is safe. The `npm test` command now also runs integration sequentially for reliable local results.
+
+To run a single integration test file:
+```bash
+npm run test:integration -- tests/integration/aftermath.worker.test.ts
+# or from project root:
+npm run test:integration --workspace=server -- tests/integration/aftermath.worker.test.ts
+```
+
+#### 4. `migrateContent` advisory lock now retries
+
+`migrateContent()` uses `pg_try_advisory_lock(hashtext('content_migration'))` — a global Postgres lock. The lock-failure previously returned `success=false` immediately (the exact `migration.drift` symptom). Now it retries 5× with 200ms backoff before giving up, providing bounded transient-contention mitigation: under mild concurrency the retries let callers acquire the lock; however, a lock held beyond the ~800ms retry window can still return `success: false`. If true serialization is required, the implementation should be changed to wait for the lock rather than retrying-and-giving-up.
+
+If you add a new test that calls `migrateContent`, be aware the lock is global. Under `--runInBand` there's no contention; always run integration tests with `--runInBand`.
+
+#### 5. `closeConnections()`/`closeRedis()` in per-file `afterAll` is redundant but safe
+
+The `connectionsClosed`/`redisClosed` guards in `connection.ts` and `redis.ts` prevent double-close. However, relying solely on `globalTeardown.cjs` for pool cleanup is preferred. If you add a new test:
+- Do clean up your test's own data rows in `afterAll`.
+- Calling `closeConnections()` / `closeRedis()` in the same `afterAll` is optional — globalTeardown handles it at the end of the Jest run.
+- Never rely on another test to close the pool for you (cross-file ordering is undefined).
+
+#### 6. `jest.config.js` has `clearMocks: true` + `restoreMocks: true` — use `jest.spyOn` freely
+
+Jest **reuses worker processes** across test files. Without automatic cleanup, a `jest.spyOn()` spy (e.g. on `process.cwd`, `fs.promises.*`, `console.warn`) that isn't manually restored can leak into the next test file assigned to that worker, causing intermittent failures that only appear under parallel execution.
+
+The config now sets:
+- **`restoreMocks: true`** — runs `jest.restoreAllMocks()` *before every test*, restoring every `jest.spyOn()` spy to its original implementation. This runs *before* `beforeEach`, so `beforeEach` can re-create fresh spies.
+- **`clearMocks: true`** — runs `jest.clearAllMocks()` *before every test*, resetting `mock.calls` / `mock.results` so call-count assertions stay scoped to the current test.
+
+Neither option affects `jest.mock()` factory implementations (they persist across tests as before). Only `jest.spyOn()` spies and mock call histories are auto-cleaned.
+
+When writing new tests:
+- ✅ **Good**: `jest.spyOn(process, 'cwd').mockReturnValue(tmpDir)` in `beforeEach` — auto-restored before next test, re-created by `beforeEach`.
+- ✅ **Good**: `jest.spyOn(console, 'warn').mockImplementation()` inside a `try { ... } finally { spy.mockRestore() }` block — doubly safe (config + finally).
+- ❌ **Bad**: `jest.spyOn(fs, 'existsSync')` at **module scope** (outside any hook) — `restoreMocks` strips it before the first test. Move it into `beforeAll` + `beforeEach` instead (see `assets.test.ts` for the pattern).
+- ❌ **Bad**: `jest.spyOn(...)` in `beforeAll` expecting it to persist across tests — `restoreMocks` strips it before the second test. Use `beforeEach` instead.
+
+#### 7. Unit tests must mock `database/redis.js` when importing Redis-using modules
+
+Any unit test that imports a module transitively reaching `database/redis.js` (e.g. route handlers that invalidate caches, services that read/write cache) must `jest.mock('../../src/database/redis.js', ...)` so no real TCP connection to Redis is opened. Real ioredis clients:
+- create `globalThis` handles that `jest-environment-node` tries to clean at worker teardown, and
+- emit connection errors asynchronously after the test has finished.
+
+Both behaviors cause flaky failures under parallel workers. Keep unit tests DB/Redis-free; integration tests are the place for real Redis.
+
+- ✅ **Good**: `adminStoryBeats.property.test.ts`, `resolver.unit.test.ts`, `IronGateValidator.property.test.ts`, `plan-generation-job.test.ts`, and now `adminContentFileWrite.property.test.ts` all mock the Redis module.
+- ❌ **Bad**: Importing `admin-content.js` (which mounts `admin-content-resolver.js`) and exercising the `PUT /file` success path without mocking Redis — the `invalidateContentResolverCache()` call creates a real client and logs `ECONNREFUSED` errors after the test ends.

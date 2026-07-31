@@ -41,28 +41,53 @@ type OlapUsageRow = {
  */
 export class LeaderboardWorker {
   public static async processExpiredMysteries(): Promise<void> {
-    const client = await oltpPool.connect();
-
+    // Use a dedicated client just for the SELECT query so a connection
+    // failure here is isolated from per-mystery work.
+    let selectClient: import('pg').PoolClient;
     try {
-      const { rows: expiredMysteries } = await client.query(
+      selectClient = await oltpPool.connect();
+    } catch (err) {
+      console.error('[LeaderboardWorker] processExpiredMysteries error:', err);
+      return;
+    }
+
+    let expiredMysteries: Array<{ id: string; title: string }>;
+    try {
+      const { rows } = await selectClient.query<{ id: string; title: string }>(
         `SELECT id, title
            FROM mysteries
           WHERE status = 'RESOLVING'
             AND expires_at <= NOW() - ($1 || ' minutes')::interval`,
         [OLAP_GRACE_PERIOD_MINUTES]
       );
-
-      for (const mystery of expiredMysteries) {
-        try {
-          await this.finalizeMystery(client, mystery.id, mystery.title);
-        } catch (err) {
-          console.error(`[LeaderboardWorker] finalize failed for mystery=${mystery.id}:`, err);
-        }
-      }
+      expiredMysteries = rows;
     } catch (err) {
       console.error('[LeaderboardWorker] processExpiredMysteries error:', err);
+      return;
     } finally {
-      client.release();
+      selectClient.release();
+    }
+
+    // Use a fresh client per mystery so a failure/rollback on one
+    // mystery's finalizeMystery cannot abort another mystery's
+    // transaction (avoids cross-mystery transaction poisoning under
+    // concurrent test execution).
+    for (const mystery of expiredMysteries) {
+      let client: import('pg').PoolClient;
+      try {
+        client = await oltpPool.connect();
+      } catch (err) {
+        console.error(`[LeaderboardWorker] failed to connect for mystery=${mystery.id}:`, err);
+        continue;
+      }
+
+      try {
+        await this.finalizeMystery(client, mystery.id, mystery.title);
+      } catch (err) {
+        console.error(`[LeaderboardWorker] finalize failed for mystery=${mystery.id}:`, err);
+      } finally {
+        client.release();
+      }
     }
   }
 

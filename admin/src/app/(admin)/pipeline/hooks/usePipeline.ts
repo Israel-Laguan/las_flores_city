@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { adminFetch } from '@/lib/client-api';
-import { fetchPromotionStatus as fetchPromoStatus, promoteStaging as promoStaging, promoteProduction as promoProduction, rollbackStaging as rollbackStg, type PromotionStatus } from '@/lib/promotion';
+import { usePromotion } from './usePromotion';
 
 export type { PromotionStatus } from '@/lib/promotion';
 
@@ -96,10 +96,7 @@ export function usePipeline(initialStepIdx = 0) {
   const [assetCoverage, setAssetCoverage] = useState<PipelineAssetCoverage | null>(null);
   const [assetCoverageLoading, setAssetCoverageLoading] = useState(false);
 
-  const [promotionStatuses, setPromotionStatuses] = useState<PromotionStatus[]>([]);
-  const [promotionLoading, setPromotionLoading] = useState(false);
-  const [publishing, setPublishing] = useState(false);
-  const [publishError, setPublishError] = useState<string | null>(null);
+  const promotion = usePromotion();
 
   const currentStep: PipelineStep = ALL_STEPS[currentStepIdx];
   const hasValidationErrors = validationResult !== null && !validationResult.valid;
@@ -179,75 +176,6 @@ export function usePipeline(initialStepIdx = 0) {
     finally { setAssetCoverageLoading(false); }
   }, []);
 
-  const fetchPromotionStatus = useCallback(async () => {
-    setPromotionLoading(true);
-    try {
-      const data = await fetchPromoStatus();
-      setPromotionStatuses(data);
-    } catch { /* soft */ }
-    finally { setPromotionLoading(false); }
-  }, []);
-
-  const runPublish = useCallback(async () => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      for (const status of promotionStatuses) {
-        if (!status.stages.dev) continue;
-        if (!status.stages.staging) {
-          await promoStaging(status.contentPath);
-        }
-        if (!status.stages.production) {
-          await promoProduction(status.contentPath);
-        }
-      }
-    } catch {
-      setPublishError('Publish failed');
-    } finally {
-      await fetchPromotionStatus();
-      setPublishing(false);
-    }
-  }, [promotionStatuses]);
-
-  const promoteStaging = useCallback(async (contentPath: string) => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      await promoStaging(contentPath);
-      await fetchPromotionStatus();
-    } catch {
-      setPublishError('Failed to promote to staging');
-    } finally {
-      setPublishing(false);
-    }
-  }, []);
-
-  const promoteProduction = useCallback(async (contentPath: string) => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      await promoProduction(contentPath);
-      await fetchPromotionStatus();
-    } catch {
-      setPublishError('Failed to promote to production');
-    } finally {
-      setPublishing(false);
-    }
-  }, []);
-
-  const rollbackStaging = useCallback(async (contentPath: string) => {
-    setPublishing(true);
-    setPublishError(null);
-    try {
-      await rollbackStg(contentPath);
-      await fetchPromotionStatus();
-    } catch {
-      setPublishError('Failed to rollback staging');
-    } finally {
-      setPublishing(false);
-    }
-  }, []);
-
   return {
     currentStepIdx,
     currentStep: ALL_STEPS[currentStepIdx],
@@ -255,8 +183,7 @@ export function usePipeline(initialStepIdx = 0) {
     validationResult, validationError, validating, runValidation,
     migrationStatus, migrationResult, migrationError, migrating, runMigration, fetchMigrationStatus,
     assetCoverage, assetCoverageLoading, fetchAssetCoverage,
-    promotionStatuses, promotionLoading, publishing, publishError, runPublish, fetchPromotionStatus,
-    promoteStaging, promoteProduction, rollbackStaging,
+    ...promotion,
     hasValidationErrors,
   };
 }

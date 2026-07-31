@@ -163,7 +163,23 @@ fi
 
 # Build the test command
 # The container workdir is /app, and SERVER_DIR is "server", so TEST_PATH should be relative to /app
-TEST_COMMAND="cd ${SERVER_DIR} && npm test -- ${TEST_PATH}"
+# Choose the right npm script based on test path to avoid running all unit tests
+# when targeting a specific integration test file.
+# Strip trailing slash so patterns match both "tests/integration" and "tests/integration/"
+TEST_PATH="${TEST_PATH%/}"
+# Strip redundant "server/" prefix so the path is relative to SERVER_DIR
+TEST_PATH="${TEST_PATH#server/}"
+if [[ "$TEST_PATH" == *"tests/integration"* ]]; then
+    # Use test:integration (--runInBand) for integration test paths
+    TEST_COMMAND="cd ${SERVER_DIR} && npm run test:integration -- ${TEST_PATH}"
+elif [[ "$TEST_PATH" == *"tests/unit"* ]]; then
+    TEST_COMMAND="cd ${SERVER_DIR} && npm run test:unit -- ${TEST_PATH}"
+elif [[ "$TEST_PATH" == *"tests/smoke"* ]]; then
+    TEST_COMMAND="cd ${SERVER_DIR} && npm run test:smoke -- ${TEST_PATH}"
+else
+    # Default: run full suite (unit+smoke in parallel, then integration sequentially)
+    TEST_COMMAND="cd ${SERVER_DIR} && npm test -- ${TEST_PATH}"
+fi
 
 if [[ "$VERBOSE" == "true" ]]; then
     TEST_COMMAND="$TEST_COMMAND --verbose"

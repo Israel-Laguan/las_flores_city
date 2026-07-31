@@ -1,7 +1,104 @@
 'use client';
 
-import ContentDetailPage from '@/components/ContentDetailPage';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { adminFetch } from '@/lib/client-api';
+import EntityDetailView from '@/components/entity/EntityDetailView';
+import { LOCATION_VIEW_FIELDS } from '../field-definitions';
+import styles from './page.module.css';
+
+interface LocationRecord {
+  id: string;
+  name: string;
+  description?: string;
+  metadata?: Record<string, unknown> | null;
+  created_at?: string;
+  updated_at?: string;
+  [key: string]: unknown;
+}
 
 export default function LocationDetailPage() {
-  return <ContentDetailPage title="Location" backHref="/locations" backLabel="Locations" />;
+  const params = useParams();
+  const id = params.id as string;
+
+  const [record, setRecord] = useState<LocationRecord | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    async function fetchRecord() {
+      try {
+        const data = await adminFetch<{ success: boolean; data?: LocationRecord; error?: string }>(
+          `/admin/locations/${id}`,
+        );
+        if (data.success && data.data) {
+          setRecord(data.data);
+        } else {
+          setError(data.error || 'Failed to fetch location');
+        }
+      } catch (err: any) {
+        if (err?.status === 404) {
+          setNotFound(true);
+        } else {
+          setError('Failed to fetch location');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRecord();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className={styles.main}>
+        <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
+        <p className={styles.muted}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className={styles.main}>
+        <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
+        <p>Not found.</p>
+      </div>
+    );
+  }
+
+  if (error || !record) {
+    return (
+      <div className={styles.main}>
+        <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
+        <div className={styles.errorBox}>{error || 'Location not found'}</div>
+      </div>
+    );
+  }
+
+  // Locations are `scenes` rows whose location-specific fields (district, tags,
+  // aliases, history, map, etc.) live inside the `metadata` JSONB column
+  // (migrated from YAML via `metadata: { ...data, type: 'location' }`). Flatten
+  // metadata onto the record so EntityDetailView can read fields by their flat
+  // canonical key (e.g. `district`, `tags`, `map.spawn.x`).
+  const metadata =
+    record.metadata && typeof record.metadata === 'object'
+      ? (record.metadata as Record<string, unknown>)
+      : {};
+  const flattened = { ...record, ...metadata } as Record<string, unknown>;
+
+  return (
+    <div className={styles.main}>
+      <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Location: {record.name}</h1>
+        <div className={styles.headerActions}>
+          <Link href={`/locations/${id}/edit`} className="btn btn--primary">Edit</Link>
+        </div>
+      </div>
+      <EntityDetailView fields={LOCATION_VIEW_FIELDS} record={flattened} />
+    </div>
+  );
 }

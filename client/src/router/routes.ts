@@ -17,6 +17,7 @@ interface RouteDeps {
   getCachedPlayerState: () => any;
   mountReactView: (component: any, props: Record<string, unknown>) => Promise<void>;
   getGameInstance: () => Phaser.Game | null;
+  reportBootFailure: (err: Error) => void;
 }
 
 export function registerRoutes({
@@ -29,6 +30,7 @@ export function registerRoutes({
   getCachedPlayerState,
   mountReactView,
   getGameInstance,
+  reportBootFailure,
 }: RouteDeps): void {
   registerHomeOrCity({
     destroyGame,
@@ -51,6 +53,7 @@ export function registerRoutes({
     mountReactView,
     getIsAuthenticated,
     getCachedPlayerState,
+    reportBootFailure,
   });
   registerGameRoutes({
     getIsAuthenticated,
@@ -73,6 +76,7 @@ function registerHomeOrCity({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('login-menu')!.style.display = 'flex';
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/city', () => {
@@ -86,6 +90,7 @@ function registerHomeOrCity({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new CityNav(container, getCachedPlayerState());
+    window.__lasFloresBootReady = true;
   });
 }
 
@@ -108,6 +113,7 @@ function registerMainMenu({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new MainMenu(container, getCachedPlayerState());
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/main/settings', () => {
@@ -120,6 +126,7 @@ function registerMainMenu({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new SettingsView(container);
+    window.__lasFloresBootReady = true;
   });
 
   registerRoute('/main/gallery', () => {
@@ -132,8 +139,11 @@ function registerMainMenu({
     document.getElementById('view-container')!.style.display = 'flex';
     const container = document.getElementById('view-container') as HTMLDivElement;
     new GalleryView(container);
+    window.__lasFloresBootReady = true;
   });
 }
+
+let mapMountGeneration = 0;
 
 function registerMapRoutes({
   destroyGame,
@@ -142,8 +152,9 @@ function registerMapRoutes({
   mountReactView,
   getIsAuthenticated,
   getCachedPlayerState,
-}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'mountReactView' | 'getIsAuthenticated' | 'getCachedPlayerState'>): void {
-  registerRoute('/map', () => {
+  reportBootFailure,
+}: Pick<RouteDeps, 'destroyGame' | 'destroyCurrentView' | 'hideAllContainers' | 'mountReactView' | 'getIsAuthenticated' | 'getCachedPlayerState' | 'reportBootFailure'>): void {
+  registerRoute('/map', async () => {
     if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
@@ -152,10 +163,25 @@ function registerMapRoutes({
     destroyCurrentView();
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
-    void mountReactView(MapView, { playerState: getCachedPlayerState() });
+    // Capture a per-mount generation so that a mount completing after a
+    // newer /map or /map/ navigation is ignored. Comparing pathname alone
+    // is not enough: re-entering the same URL while the previous mount is
+    // still pending would still let the stale completion set boot-ready or
+    // report a failure on the new view.
+    const generation = ++mapMountGeneration;
+    try {
+      await mountReactView(MapView, { playerState: getCachedPlayerState() });
+      if (generation === mapMountGeneration) {
+        window.__lasFloresBootReady = true;
+      }
+    } catch (err) {
+      if (generation === mapMountGeneration) {
+        reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+      }
+    }
   });
 
-  registerRoute('/map/', () => {
+  registerRoute('/map/', async () => {
     if (!getIsAuthenticated()) {
       navigateTo('/', true);
       return;
@@ -165,7 +191,17 @@ function registerMapRoutes({
     hideAllContainers();
     document.getElementById('view-container')!.style.display = 'flex';
     const districtSlug = extractDistrictSlug();
-    void mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
+    const generation = ++mapMountGeneration;
+    try {
+      await mountReactView(MapView, { initialDistrict: districtSlug, playerState: getCachedPlayerState() });
+      if (generation === mapMountGeneration) {
+        window.__lasFloresBootReady = true;
+      }
+    } catch (err) {
+      if (generation === mapMountGeneration) {
+        reportBootFailure(err instanceof Error ? err : new Error(String(err)));
+      }
+    }
   });
 }
 

@@ -81,7 +81,7 @@ const choiceEntryArb = (): fc.Arbitrary<Record<string, unknown>> =>
   fc.record({
     choice_id: fc.string({ minLength: 1, maxLength: 40 }),
     chunk_id: uuidArb(),
-    timestamp: fc.date().map((d) => d.toISOString()),
+    timestamp: fc.date().filter(d => !isNaN(d.getTime())).map((d) => d.toISOString()),
   });
 
 // ── Helpers ───────────────────────────────────────────────────

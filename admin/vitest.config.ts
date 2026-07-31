@@ -12,7 +12,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@las-flores/shared': path.resolve(__dirname, '../shared/src'),
+      // Point at the TS source entry explicitly (mirrors the server jest
+      // moduleNameMapper). Resolving the directory would let a stale
+      // shared/src/index.js shadow shared/src/index.ts under vite's
+      // resolve.extensions (.js before .ts), hiding newer exports such as
+      // YAMLLocationSchema.
+      '@las-flores/shared': path.resolve(__dirname, '../shared/src/index.ts'),
     },
   },
 });

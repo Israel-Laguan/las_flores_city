@@ -1,0 +1,40 @@
+.main {
+  padding: var(--space-8);
+  min-height: 100vh;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.errorBox {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  margin-top: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}

@@ -242,27 +242,29 @@ describe('Compiler Unit Tests', () => {
     it('dangling edge → warning logged, no crash, no leaf for that edge', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      const nodes: Record<string, DialogueNode> = {
-        n1: { id: 'n1', type: 'narrator', text: 'Start', choices: [
-          { id: 'c1', text: 'Good', next_node_id: 'n2' },
-          { id: 'c2', text: 'Broken', next_node_id: 'nonexistent' },
-        ]},
-        n2: { id: 'n2', type: 'narrator', text: 'Real next', is_end: true },
-      };
+      try {
+        const nodes: Record<string, DialogueNode> = {
+          n1: { id: 'n1', type: 'narrator', text: 'Start', choices: [
+            { id: 'c1', text: 'Good', next_node_id: 'n2' },
+            { id: 'c2', text: 'Broken', next_node_id: 'nonexistent' },
+          ]},
+          n2: { id: 'n2', type: 'narrator', text: 'Real next', is_end: true },
+        };
 
-      const chunks = compileTree(TREE_ID, 'n1', nodes, new Set());
+        const chunks = compileTree(TREE_ID, 'n1', nodes, new Set());
 
-      expect(chunks).toHaveLength(1);
-      // The dangling choice should still be in the chunk (untouched),
-      // but no leaf is created for it and no crash occurs
-      expect(chunks[0].nodes.n1.choices!.length).toBe(2);
-      // No leaf with 'nonexistent' as target
-      const hasNonexistentLeaf = Object.values(chunks[0].leaves).some(
-        (l: any) => l.target_chunk === 'nonexistent'
-      );
-      expect(hasNonexistentLeaf).toBe(false);
-
-      consoleSpy.mockRestore();
+        expect(chunks).toHaveLength(1);
+        // The dangling choice should still be in the chunk (untouched),
+        // but no leaf is created for it and no crash occurs
+        expect(chunks[0].nodes.n1.choices!.length).toBe(2);
+        // No leaf with 'nonexistent' as target
+        const hasNonexistentLeaf = Object.values(chunks[0].leaves).some(
+          (l: any) => l.target_chunk === 'nonexistent'
+        );
+        expect(hasNonexistentLeaf).toBe(false);
+      } finally {
+        consoleSpy.mockRestore();
+      }
     });
 
     it('idempotency — same input produces identical output', () => {

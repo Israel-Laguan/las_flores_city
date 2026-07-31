@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
@@ -11,6 +11,57 @@ import TreePanel from './components/TreePanel';
 import LoreEditor from './components/LoreEditor';
 import styles from './lore.module.css';
 
+function NewFileForm({
+  newFilePath,
+  setNewFilePath,
+  newFileError,
+  creating,
+  onSubmit,
+  onCancel,
+}: {
+  newFilePath: string;
+  setNewFilePath: (v: string) => void;
+  newFileError: string | null;
+  creating: boolean;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) {
+  const [showForm, setShowForm] = useState(false);
+
+  return (
+    <div className={styles.newFileSection}>
+      {showForm ? (
+        <div className={styles.newFileForm}>
+          <input
+            type="text"
+            placeholder="guides/my-note.md"
+            value={newFilePath}
+            onChange={(e) => setNewFilePath(e.target.value)}
+            className={styles.newFileInput}
+            onKeyDown={(e) => { if (e.key === 'Enter') onSubmit(); }}
+          />
+          <div className={styles.newFileActions}>
+            <button onClick={onSubmit} disabled={creating}
+              className={cn(styles.newFileButton, styles.newFileSaveButton)}>
+              {creating ? 'Creating...' : 'Create'}
+            </button>
+            <button onClick={() => { setShowForm(false); setNewFilePath(''); onCancel(); }}
+              disabled={creating}
+              className={cn(styles.newFileButton, styles.newFileCancelButton)}>
+              Cancel
+            </button>
+          </div>
+          {newFileError && <div className={styles.newFileError}>{newFileError}</div>}
+        </div>
+      ) : (
+        <button onClick={() => setShowForm(true)} className={styles.addFileButton}>
+          + New Note
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function LoreBrowserPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -20,9 +71,13 @@ export default function LoreBrowserPage() {
   const { content, contentLoading, contentError, refetch } = useLoreContent(selectedPath);
   const [searchQuery, setSearchQuery] = useState('');
   const [newFilePath, setNewFilePath] = useState('');
-  const [showNewForm, setShowNewForm] = useState(false);
   const [newFileError, setNewFileError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+
+  // Clear any stale new-file error when the user navigates to a different file
+  useEffect(() => {
+    setNewFileError(null);
+  }, [selectedPath]);
 
   const grouped = groupByType(tree);
   const filteredGroups = searchQuery
@@ -54,7 +109,6 @@ export default function LoreBrowserPage() {
         { method: 'POST', body: JSON.stringify({ path, content: `# ${path.split('/').pop()?.replace(/\.[^.]+$/, '') ?? 'New Note'}\n\n` }) },
       );
       if (data.success) {
-        setShowNewForm(false);
         setNewFilePath('');
         await refetchTree();
         router.push(`/lore?path=${encodeURIComponent(path)}`);
@@ -80,35 +134,15 @@ export default function LoreBrowserPage() {
             onToggleType={toggleType}
             onSelectFile={selectFile}
           />
-          <div className={styles.newFileSection}>
-            {showNewForm ? (
-              <div className={styles.newFileForm}>
-                <input
-                  type="text"
-                  placeholder="guides/my-note.md"
-                  value={newFilePath}
-                  onChange={(e) => setNewFilePath(e.target.value)}
-                  className={styles.newFileInput}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleNewFile(); }}
-                />
-                <div className={styles.newFileActions}>
-                  <button onClick={handleNewFile} disabled={creating}
-                    className={cn(styles.newFileButton, styles.newFileSaveButton)}>
-                    {creating ? 'Creating...' : 'Create'}
-                  </button>
-                  <button onClick={() => { setShowNewForm(false); setNewFileError(null); }}
-                    className={cn(styles.newFileButton, styles.newFileCancelButton)}>
-                    Cancel
-                  </button>
-                </div>
-                {newFileError && <div className={styles.newFileError}>{newFileError}</div>}
-              </div>
-            ) : (
-              <button onClick={() => setShowNewForm(true)} className={styles.addFileButton}>
-                + New Note
-              </button>
-            )}
-          </div>
+          <NewFileForm
+            key={selectedPath ?? 'new-file-form'}
+            newFilePath={newFilePath}
+            setNewFilePath={setNewFilePath}
+            newFileError={newFileError}
+            creating={creating}
+            onSubmit={handleNewFile}
+            onCancel={() => { setNewFileError(null); }}
+          />
         </div>
         <LoreEditor
           selectedPath={selectedPath}

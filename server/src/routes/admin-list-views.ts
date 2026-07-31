@@ -268,6 +268,11 @@ adminListViewsRouter.get('/locations', makeListHandler({
   entityLabel: 'locations',
 }));
 
+adminListViewsRouter.get('/locations/:id', makeDetailHandler({
+  sql: `SELECT * FROM scenes WHERE id = $1 AND metadata->>'type' = 'location'`,
+  entityLabel: 'Location',
+}));
+
 // ---------------------------------------------------------------------------
 // Vault items
 // ---------------------------------------------------------------------------

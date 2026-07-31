@@ -33,6 +33,18 @@ import { stringOf } from './__utils__/fastCheckV4';
 import fs from 'node:fs';
 import * as jsYaml from 'js-yaml';
 
+// Mock Redis so the PUT /file success path (invalidateContentResolverCache)
+// never opens a real ioredis connection in unit tests.  Without this, the
+// valid-YAML spot-check creates a Redis client that fires connection errors
+// after the test has already finished.
+jest.mock('../../src/database/redis.js', () => ({
+  getCache: jest.fn(async () => null),
+  setCache: jest.fn(async () => undefined),
+  deleteCache: jest.fn(async () => true),
+  invalidatePattern: jest.fn(async () => 0),
+  closeRedis: jest.fn(async () => undefined),
+}));
+
 // Import the route module (it re-exports validateContentPath too).
 // The route handler is NOT exported directly, so we test via a
 // lightweight fake Express request/response pair.

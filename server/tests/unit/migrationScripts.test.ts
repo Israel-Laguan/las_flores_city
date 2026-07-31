@@ -23,6 +23,7 @@ const execFileAsync = promisify(execFile);
 
 // Real repo root — used ONLY to locate the scripts and node_modules.
 // It is never used as the content/docs root the scripts operate on.
+// Use process.cwd() since __dirname doesn't resolve correctly in podman container
 const REPO_ROOT = path.resolve(process.cwd(), '..');
 const SCRIPTS_DIR = path.resolve(REPO_ROOT, 'scripts');
 

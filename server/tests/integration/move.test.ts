@@ -11,6 +11,11 @@ import { closeRedis } from '../../src/database/redis.js';
 const { Pool } = pg;
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000010';
+// These are real content scenes (Apartment, Welcome Center, Cafe). Per the
+// integration-test guideline we normally use dedicated synthetic UUIDs, but
+// these tests depend on existing player_states referencing them (see seedTestData).
+// The accepted exception is documented here; a follow-up should create synthetic
+// scene/player_state fixtures to remove this drift.
 const APARTMENT_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 const WELCOME_CENTER_ID = '550e8400-e29b-41d4-a716-446655440002';
 const CAFE_ID = 'e5f6a7b8-c9d0-1234-efab-345678901234';
@@ -44,16 +49,19 @@ function authHeaders() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
 }
 
-beforeAll(async () => {
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
-    connectionTimeoutMillis: 5000,
-  });
+let DOWNTOWN_ID: string;
+let OLD_TOWN_ID: string;
 
-  // Seed districts table FIRST (required for scenes district_id FK)
-  // Must use ON CONFLICT (name) because seed migrations 034/035 may have
-  // already created these districts with auto-generated UUIDs. We want to
-  // force our known UUIDs so the hardcoded constants above work as FK targets.
+// Captured in beforeAll (before seedTestData hijacks real content scenes) so
+// afterAll can restore their original district_id instead of deleting them.
+const originalSceneDistricts = new Map<string, string>();
+
+// Seed the districts, scenes, user, and player_state rows these tests rely on.
+// Other test files run migrations that may drop/recreate the scenes table, so
+// this is idempotent (CREATE TABLE IF NOT EXISTS / ON CONFLICT) and is invoked
+// from both beforeAll and beforeEach. The district travel-cost migration is
+// idempotent as well, so re-applying it per-test is safe.
+async function seedTestData(): Promise<void> {
   await pool.query(
     `CREATE TABLE IF NOT EXISTS districts (
        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -67,30 +75,32 @@ beforeAll(async () => {
   );
   await pool.query(
     `INSERT INTO districts (id, name, slug, description, x, y) VALUES
-     ('d1000000-0000-0000-0000-000000000001', 'Downtown', 'downtown', 'Heart of the city.', 0, 0),
-     ('d1000000-0000-0000-0000-000000000002', 'Old Town', 'old-town', 'Historic district.', 1, 0),
-     ('d1000000-0000-0000-0000-000000000003', 'Commercial', 'commercial', 'Commerce hub.', 0, 1),
-     ('d1000000-0000-0000-0000-000000000004', 'Industrial', 'industrial', 'Factory zone.', 1, 2)
-     ON CONFLICT (name) DO UPDATE SET
+     -- Synthetic UUIDs reserved for this test — cleaned up in afterAll, no collision with other tests.
+     ('d1000000-0000-0000-0000-000000000001', 'test-district-alpha', 'test-district-alpha', 'Test district alpha.', 0, 0),
+     ('d1000000-0000-0000-0000-000000000002', 'test-district-beta', 'test-district-beta', 'Test district beta.', 1, 0),
+     ('d1000000-0000-0000-0000-000000000003', 'test-district-gamma', 'test-district-gamma', 'Test district gamma.', 0, 1),
+     ('d1000000-0000-0000-0000-000000000004', 'test-district-delta', 'test-district-delta', 'Test district delta.', 1, 2)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
        slug = EXCLUDED.slug,
+       description = EXCLUDED.description,
        x = EXCLUDED.x,
        y = EXCLUDED.y`
   );
 
   await applyMigration('033_district_travel_costs.sql');
 
-  // Use the existing district UUIDs. When seed migrations 034/035 created
-  // these districts with auto-generated IDs, we must reuse those IDs.
-  const downtownQ = await pool.query<{ id: string }>(
-    "SELECT id FROM districts WHERE name = 'Downtown'"
+  // Use the synthetic UUIDs for test-owned districts.
+  const alphaQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'test-district-alpha'"
   );
-  const DOWNTOWN_ID = downtownQ.rows[0].id;
-  const oldTownQ = await pool.query<{ id: string }>(
-    "SELECT id FROM districts WHERE name = 'Old Town'"
+  DOWNTOWN_ID = alphaQ.rows[0].id;
+  const betaQ = await pool.query<{ id: string }>(
+    "SELECT id FROM districts WHERE name = 'test-district-beta'"
   );
-  const OLD_TOWN_ID = oldTownQ.rows[0].id;
+  OLD_TOWN_ID = betaQ.rows[0].id;
 
-  // Now insert scenes with valid district_ids
+  // Insert scenes with valid district_ids
   await pool.query(
     `INSERT INTO scenes (id, name, description, district_id, metadata)
      VALUES ($1, $2, $3, $4, '{"type": "starting_location", "accessible": true, "is_sleep_location": true}'::jsonb)
@@ -116,6 +126,7 @@ beforeAll(async () => {
     [CAFE_ID, 'The Cafe', 'Test cafe location', OLD_TOWN_ID]
   );
 
+  // Ensure user and player_state exist
   await pool.query(
     `INSERT INTO users (id, email, username, display_name)
      VALUES ($1, $2, $3, $4)
@@ -134,6 +145,26 @@ beforeAll(async () => {
        updated_at = NOW()`,
     [TEST_USER_ID, APARTMENT_ID]
   );
+}
+
+beforeAll(async () => {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://las_flores:las_flores_dev_password@localhost:5434/las_flores',
+    connectionTimeoutMillis: 5000,
+  });
+
+  // Capture the original district_id of any pre-existing real content scenes
+  // BEFORE seedTestData hijacks them (repoints district_id at synthetic test
+  // districts). afterAll restores these so real content is not corrupted.
+  const preTestScenes = await pool.query(
+    'SELECT id, district_id FROM scenes WHERE id = ANY($1::uuid[])',
+    [[APARTMENT_ID, WELCOME_CENTER_ID, CAFE_ID]],
+  );
+  for (const row of preTestScenes.rows) {
+    originalSceneDistricts.set(row.id, row.district_id);
+  }
+
+  await seedTestData();
 
   await new Promise<void>((resolve) => {
     server = app.listen(0, () => resolve());
@@ -146,15 +177,40 @@ afterAll(async () => {
   }
   await pool.query('DELETE FROM player_states WHERE user_id = $1', [TEST_USER_ID]);
   await pool.query('DELETE FROM users WHERE id = $1', [TEST_USER_ID]);
+
+  // The test hijacks real content scenes (e.g. the Welcome Center) by repointing
+  // their district_id at synthetic test districts. We cannot delete those real
+  // scenes — other players' player_states reference them — so restore their
+  // original district_id. Scenes that did not exist before the test (purely
+  // synthetic) are safe to delete.
+  for (const [sceneId, originalDistrictId] of originalSceneDistricts) {
+    await pool.query(
+      'UPDATE scenes SET district_id = $1 WHERE id = $2',
+      [originalDistrictId, sceneId],
+    );
+  }
+  const syntheticSceneIds = [APARTMENT_ID, WELCOME_CENTER_ID, CAFE_ID].filter(
+    id => !originalSceneDistricts.has(id),
+  );
+  if (syntheticSceneIds.length > 0) {
+    await pool.query(
+      `DELETE FROM scenes WHERE id = ANY($1::uuid[])`,
+      [syntheticSceneIds],
+    );
+  }
+
+  await pool.query(
+    'DELETE FROM districts WHERE id = ANY($1::uuid[])',
+    [['d1000000-0000-0000-0000-000000000001', 'd1000000-0000-0000-0000-000000000002', 'd1000000-0000-0000-0000-000000000003', 'd1000000-0000-0000-0000-000000000004']]
+  );
   await pool.end();
   await closeRedis();
 });
 
 beforeEach(async () => {
-  await pool.query(
-    `UPDATE player_states SET time_blocks = 48, current_location_id = $1 WHERE user_id = $2`,
-    [APARTMENT_ID, TEST_USER_ID]
-  );
+  // Re-seed in case other test files ran migrations that dropped/recreated the
+  // scenes table between tests. seedTestData is idempotent.
+  await seedTestData();
 });
 
 describe('POST /player/move', () => {
