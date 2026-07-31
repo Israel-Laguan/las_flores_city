@@ -12,7 +12,7 @@
 }
 
 .description {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
@@ -28,7 +28,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .secondaryButton {
@@ -112,7 +112,7 @@
 
 .dangerButton {
   background: var(--danger);
-  color: #fff;
+  color: var(--on-danger);
 }
 
 .removeLinkButton {
@@ -123,7 +123,7 @@
   cursor: pointer;
   border: none;
   background: var(--danger);
-  color: #fff;
+  color: var(--on-danger);
 }
 
 .shipFooter {
@@ -135,12 +135,12 @@
 
 .shipNote {
   font-size: 0.85rem;
-  color: var(--warning, #f59e0b);
+  color: var(--warning);
   margin-bottom: 1rem;
 }
 
 .shipNote code {
-  background: var(--surface-2, #1f2937);
+  background: var(--surface-2);
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
 }
@@ -156,7 +156,7 @@
 
 .shipPrimary {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .shipPrimary:disabled {
@@ -166,22 +166,22 @@
 
 .shipHint {
   font-size: 0.8rem;
-  color: var(--muted, #666);
+  color: var(--text-secondary);
   margin-top: 0.85rem;
   line-height: 1.4;
 }
 
 .shipCounts {
   font-size: 0.78rem;
-  color: var(--muted, #666);
+  color: var(--text-secondary);
   margin-top: 0.4rem;
 }
 
 /* Fallback warning banner */
 .fallbackBanner {
   padding: 0.6rem 0.85rem;
-  background: var(--warning-bg, rgba(245, 158, 11, 0.1));
-  border: 1px solid var(--warning-border, rgba(245, 158, 11, 0.3));
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   border-radius: 5px;
   color: var(--warning);
   font-size: 0.85rem;
@@ -293,5 +293,5 @@
 
 .coverageAddBtn:hover {
   background: var(--accent);
-  color: var(--background);
+  color: var(--on-accent);
 }

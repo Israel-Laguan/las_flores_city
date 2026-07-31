@@ -49,11 +49,11 @@
 
 .primaryButton {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .disabledButton {
-  background: #555;
-  color: #999;
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }

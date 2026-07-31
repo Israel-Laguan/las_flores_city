@@ -3,15 +3,15 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--color-page-bg, #0a0a1a);
-  color: var(--neon-cyan, #00ff00);
+  background: var(--color-page-bg);
+  color: var(--neon-cyan);
   font-family: monospace;
   overflow-y: auto;
 }
 
 .city-nav-header {
   padding: 20px 24px 12px;
-  border-bottom: 1px solid var(--neon-cyan, #00ff00);
+  border-bottom: 1px solid var(--neon-cyan);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -27,8 +27,8 @@
 
 .city-nav-back {
   background: none;
-  border: 1px solid var(--neon-cyan, #00ff00);
-  color: var(--neon-cyan, #00ff00);
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
   font-family: monospace;
   font-size: 12px;
   padding: 6px 12px;
@@ -45,8 +45,8 @@
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: #666;
-  border-bottom: 1px solid #222;
+  color: var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-darker);
   flex-shrink: 0;
 }
 
@@ -61,7 +61,7 @@
   gap: 12px;
   padding: 12px 24px;
   cursor: pointer;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--color-border-dark);
   transition: background 0.15s;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .city-nav-item.current {
-  border-left: 3px solid var(--neon-cyan, #00ff00);
+  border-left: 3px solid var(--neon-cyan);
   background: rgba(0, 255, 255, 0.08);
 }
 
@@ -88,13 +88,13 @@
 
 .city-nav-item-name {
   font-size: 14px;
-  color: var(--neon-cyan, #00ff00);
+  color: var(--neon-cyan);
   margin-bottom: 2px;
 }
 
 .city-nav-item-desc {
   font-size: 11px;
-  color: #666;
+  color: var(--color-border-subtle);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -102,23 +102,23 @@
 
 .city-nav-item-tb {
   font-size: 11px;
-  color: #888;
+  color: var(--color-text-muted);
   flex-shrink: 0;
   padding: 2px 8px;
-  border: 1px solid #333;
+  border: 1px solid var(--color-border-light);
   border-radius: 3px;
 }
 
 .city-nav-loading {
   padding: 40px 24px;
   text-align: center;
-  color: #666;
+  color: var(--color-border-subtle);
   font-size: 13px;
 }
 
 .city-nav-error {
   padding: 40px 24px;
   text-align: center;
-  color: #ff4444;
+  color: var(--color-error);
   font-size: 13px;
 }

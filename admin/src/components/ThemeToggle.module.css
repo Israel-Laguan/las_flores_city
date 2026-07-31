@@ -1,0 +1,30 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.button {
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm, 3px);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm, 0.8rem);
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--hover-overlay);
+}
+
+.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
+
+.active:hover {
+  background: var(--accent);
+}

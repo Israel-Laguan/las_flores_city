@@ -22,7 +22,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 1rem;
   border-radius: 5px;
@@ -51,8 +51,8 @@
 }
 
 .tag {
-  background: #0066ff;
-  color: #fff;
+  background: var(--info);
+  color: var(--on-info);
   padding: 0.2rem 0.5rem;
   border-radius: 3px;
   font-size: 0.75rem;

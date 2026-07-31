@@ -16,7 +16,7 @@
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
-  background: rgba(3, 7, 18, 0.98);
+  background: var(--color-surface-overlay-heavy);
   z-index: 200;
   font-family: 'Courier New', monospace;
 }
@@ -28,7 +28,7 @@
 .terminal-modal-content {
   width: 100%;
   max-width: 320px;
-  background: #030712;
+  background: var(--color-surface-very-dark);
   border: 1px solid var(--neon-blue);   /* faction-aware via cascade */
   border-radius: 8px;
   box-shadow: var(--border-glow);
@@ -46,14 +46,14 @@
 
 /* Fatal-error override — red regardless of faction */
 .terminal-modal-overlay.fatal-error .terminal-modal-content {
-  border-color: #ff3333;
-  box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+  border-color: var(--color-error);
+  box-shadow: var(--error-glow);
 }
 
 .terminal-modal-overlay.fatal-error .terminal-modal-header {
-  background: rgba(255, 51, 51, 0.1);
-  border-bottom-color: #ff3333;
-  color: #ff3333;
+  background: var(--error-overlay);
+  border-bottom-color: var(--color-error);
+  color: var(--color-error);
 }
 
 .error-flash {
@@ -77,19 +77,19 @@
 .terminal-modal-body h4 {
   margin: 0 0 8px 0;
   font-size: 0.95rem;
-  color: #fff;
+  color: var(--color-text-white);
 }
 
 .terminal-modal-body p {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
   margin: 0 0 12px 0;
   line-height: 1.4;
 }
 
 .error-code {
   font-weight: bold;
-  color: #ff3333 !important;
+  color: var(--color-error) !important;
 }
 
 .error-msg {
@@ -134,7 +134,7 @@
 
 .modal-btn:hover:not(:disabled) {
   background: var(--neon-blue);
-  color: #000;
+  color: var(--color-surface-very-dark);
   box-shadow: var(--border-glow);
 }
 
@@ -144,24 +144,24 @@
 }
 
 .modal-btn.cancel {
-  border-color: #4b5563;
-  color: #6b7280;
+  border-color: var(--color-text-dim);
+  color: var(--color-text-muted);
 }
 
 .modal-btn.cancel:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: var(--color-hover-bg-subtle);
+  color: var(--color-text-white);
   box-shadow: none;
 }
 
 .fatal-error .modal-btn.retry {
-  border-color: #ff3333;
-  color: #ff3333;
+  border-color: var(--color-error);
+  color: var(--color-error);
   width: 100%;
 }
 
 .fatal-error .modal-btn.retry:hover:not(:disabled) {
-  background: #ff3333;
-  color: #000;
+  background: var(--color-error);
+  color: var(--color-surface-very-dark);
   box-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
 }

@@ -194,3 +194,44 @@ All four must exit `0` before merging. A failing `npm run build --workspace=clie
 | `client/src/components/SettingsView.ts` | Imports `@las-flores/ui/styles/themes.css` |
 | `client/src/styles/*.css` | Game-specific CSS (phone, map, terminal, comms, etc.) — uses `--color-*` |
 
+## Light theme
+
+The admin panel supports a light theme toggle. The theme is implemented as a `body.theme-light` class that overrides token values in `ui/src/styles/tokens.css`. The theme engine (`admin/src/lib/themeEngine.ts`) manages the toggle, persists to `localStorage` (`lf-admin-theme`), and applies the body class.
+
+### How it works
+
+1. **Token overrides**: `body.theme-light { ... }` in `tokens.css` redefines every token with light-appropriate values.
+2. **Theme engine**: `admin/src/lib/themeEngine.ts` exports `applyTheme()`, `toggleTheme()`, `getStoredTheme()`, `subscribeTheme()`, and `restorePersistedTheme()`.
+3. **Toggle**: The `ThemeToggle` component is rendered in the `/settings` page and a quick-toggle icon in the `TopBar`.
+4. **Persistence**: `localStorage('lf-admin-theme')` stores the preference (`'dark'` | `'light'`).
+
+### Adding a new theme
+
+1. Add a new `body.theme-<name>` block in `tokens.css` with all token overrides.
+2. The toggle component can be extended to support the new theme.
+3. No app CSS changes needed — all components use token variables.
+
+## CSS color contract
+
+To prevent hardcoded color drift and ensure theme compatibility, the project enforces a strict rule:
+
+> **No hex or rgba color literals in app CSS files.** All colors must be CSS custom properties (tokens) from `@las-flores/ui`.
+
+### Scope
+
+- **`admin/src/**/*.css`**: Zero hex literals. Zero rgba() literals (except allowlisted decorative shadows).
+- **`client/src/**/*.css`**: Zero hex literals. rgba() values are allowed for neon decorative effects and shadows.
+- **`ui/src/styles/*.css`**: Exempt — this is the token definition layer.
+
+### Enforcement
+
+Run `node scripts/check-css-color-literals.mjs` to verify compliance. The script checks:
+
+- Hex literals (`#hex`) in all app CSS files
+- rgba() literals in admin CSS (allowlisted patterns: backdrop overlay, drawer shadow)
+
+### Allowlisted files
+
+- `client/src/styles/glitch.css` — CRT scanline effects
+- `client/src/styles/phone.css` — `:root` `--neon-*` variable definitions
+

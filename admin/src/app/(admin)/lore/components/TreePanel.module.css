@@ -75,7 +75,7 @@
 }
 
 .fileButtonActive {
-  background: rgba(0, 255, 0, 0.1);
+  background: var(--success-bg);
   color: var(--accent);
   border-left-color: var(--accent);
 }

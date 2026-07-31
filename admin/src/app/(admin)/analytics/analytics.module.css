@@ -63,7 +63,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 1rem;
   border-radius: 5px;
@@ -104,15 +104,15 @@
 
 .activeBadge {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .resolvingBadge {
-  background: #ffaa00;
-  color: #000;
+  background: var(--warning);
+  color: var(--on-warning);
 }
 
 .archivedBadge {
-  background: #888;
-  color: #fff;
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
 }

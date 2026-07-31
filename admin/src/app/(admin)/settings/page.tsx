@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
+import ThemeToggle from '@/components/ThemeToggle';
 import styles from './settings.module.css';
 
 interface Setting {
@@ -181,6 +182,11 @@ export default function SettingsPage() {
           ))}
         </div>
       )}
+
+      <section className={styles.appearanceSection}>
+        <h2 className={styles.appearanceHeading}>Appearance</h2>
+        <ThemeToggle />
+      </section>
     </main>
   );
 }

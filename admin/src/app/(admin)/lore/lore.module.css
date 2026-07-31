@@ -15,7 +15,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 0.75rem;
   border-radius: 5px;
@@ -40,7 +40,7 @@
 .addFileButton:hover {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(0, 255, 0, 0.03);
+  background: var(--success-bg);
 }
 
 .newFileForm {
@@ -78,12 +78,12 @@
 
 .newFileSaveButton {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .newFileSaveButton:disabled {
-  background: #555;
-  color: #999;
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 

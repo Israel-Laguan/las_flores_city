@@ -64,7 +64,7 @@
 }
 
 .expandIcon {
-  color: #555;
+  color: var(--muted);
 }
 
 .fileItem {
@@ -77,7 +77,7 @@
 }
 
 .fileItemActive {
-  background: rgba(0, 255, 0, 0.1);
+  background: var(--accent-bg);
   border-left: 2px solid var(--accent);
 }
 
@@ -124,12 +124,12 @@
   border: none;
   font-size: 0.85rem;
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .disabledButton {
-  background: #555;
-  color: #999;
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 0.75rem;
   border-radius: 5px;
@@ -168,8 +168,8 @@
 }
 
 .successBox {
-  background: rgba(0, 255, 0, 0.2);
-  border: 1px solid var(--accent);
+  background: var(--success-bg);
+  border: 1px solid var(--success);
   padding: 0.75rem;
   border-radius: 5px;
   margin: 0.5rem 1rem;
@@ -184,7 +184,7 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  color: #555;
+  color: var(--muted);
   font-size: 1rem;
 }
 
@@ -193,6 +193,6 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ffaa00;
+  background: var(--warning);
   margin-left: 0.5rem;
 }

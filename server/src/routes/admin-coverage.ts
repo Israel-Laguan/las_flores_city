@@ -1,4 +1,7 @@
 import express from 'express';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { getLoreDir } from './admin-lore.js';
 import { resolveContentDir } from './admin-content.helpers.js';
@@ -61,8 +64,43 @@ function assembleResponse(
   };
 }
 
+async function buildIdToSlugMap(
+  contentDir: string,
+  subdir: string,
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  try {
+    const entries = await fs.readdir(path.join(contentDir, subdir), { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const slug = entry.name;
+      const prefix = subdir === 'characters' ? 'char_' : 'scene_';
+      const yamlFile = `${prefix}${slug}.yaml`;
+      const yamlPath = path.join(contentDir, subdir, slug, yamlFile);
+      try {
+        await fs.access(yamlPath);
+      } catch {
+        continue;
+      }
+      const raw = await fs.readFile(yamlPath, 'utf-8');
+      const parsed = jsYaml.load(raw);
+      if (parsed && typeof parsed === 'object' && 'id' in parsed && typeof (parsed as Record<string, unknown>).id === 'string') {
+        map.set((parsed as Record<string, unknown>).id as string, slug);
+      }
+    }
+  } catch {
+    // content directory unavailable — return empty map
+  }
+  return map;
+}
+
 adminCoverageRouter.get('/assets', async (_req, res) => {
   try {
+    const contentDir = resolveContentDir();
+    const [charIdToSlug, sceneIdToSlug] = await Promise.all([
+      buildIdToSlugMap(contentDir, 'characters'),
+      buildIdToSlugMap(contentDir, 'scenes'),
+    ]);
     const [charResult, sceneResult] = await Promise.all([
       queryOLTP<{ id: string; name: string; portrait_urls?: string[] | null }>('SELECT id, name, portrait_urls FROM characters ORDER BY name'),
       queryOLTP<{ id: string; name: string; background_url?: string | null }>('SELECT id, name, background_url FROM scenes ORDER BY name'),
@@ -71,6 +109,7 @@ adminCoverageRouter.get('/assets', async (_req, res) => {
     const characters = charResult.rows.map((row) => ({
       id: row.id,
       name: row.name,
+      slug: charIdToSlug.get(row.id) ?? row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
       hasPortrait: Array.isArray(row.portrait_urls) && row.portrait_urls.length > 0,
       portraitUrls: Array.isArray(row.portrait_urls) ? row.portrait_urls : [],
     }));
@@ -78,6 +117,7 @@ adminCoverageRouter.get('/assets', async (_req, res) => {
     const scenes = sceneResult.rows.map((row) => ({
       id: row.id,
       name: row.name,
+      slug: sceneIdToSlug.get(row.id) ?? row.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''),
       hasBackground: typeof row.background_url === 'string' && row.background_url.length > 0,
       backgroundUrl: typeof row.background_url === 'string' ? row.background_url : null,
     }));

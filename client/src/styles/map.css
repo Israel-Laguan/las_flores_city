@@ -1,11 +1,11 @@
 /* ========== TILE MAP — Base ========== */
 
 .map-container {
-  --map-bg: #0a0a1a;
-  --map-surface: #1a1a2e;
-  --map-text: #F5F5DC;
-  --map-accent: #E6A857;
-  --map-danger: #9E3030;
+  --map-bg: var(--color-page-bg);
+  --map-surface: var(--color-map-surface);
+  --map-text: var(--color-map-text);
+  --map-accent: var(--color-map-accent);
+  --map-danger: var(--color-map-danger);
   --map-radius: 10px;
 
   color: var(--map-text);
@@ -30,7 +30,7 @@
   font-weight: 700;
   font-size: 2rem;
   letter-spacing: 0.15em;
-  color: var(--color-streetlight-amber, #E6A857);
+  color: var(--color-streetlight-amber);
   margin: 0;
 }
 
@@ -50,7 +50,7 @@
 
 .district-card {
   background: var(--map-surface);
-  border: 1px solid #333;
+  border: 1px solid var(--color-border-light);
   border-radius: var(--map-radius);
   padding: 20px;
   text-align: left;
@@ -105,9 +105,9 @@
 }
 
 .daynight-toggle {
-  background: #222;
+  background: var(--color-border-darker);
   color: var(--map-text);
-  border: 1px solid #444;
+  border: 1px solid var(--color-border-muted);
   border-radius: 999px;
   padding: 8px 16px;
   cursor: pointer;
@@ -132,7 +132,7 @@
 .back-button {
   background: transparent;
   color: var(--map-text);
-  border: 1px solid #555;
+  border: 1px solid var(--color-border-dim);
   border-radius: 8px;
   padding: 8px 12px;
   cursor: pointer;
@@ -173,7 +173,7 @@
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid #222;
+  border: 1px solid var(--color-border-darker);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -183,7 +183,7 @@
 }
 
 .map-tile.current-location {
-  box-shadow: 0 0 0 3px var(--color-streetlight-amber, #E6A857);
+  box-shadow: 0 0 0 3px var(--color-streetlight-amber);
   animation: pulse-amber 2s ease-in-out infinite;
 }
 

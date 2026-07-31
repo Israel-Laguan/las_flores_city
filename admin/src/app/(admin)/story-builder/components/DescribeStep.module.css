@@ -12,7 +12,7 @@
 }
 
 .description {
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
@@ -70,8 +70,8 @@
 .warningBanner {
   margin-top: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background: var(--warning-bg, rgba(245, 158, 11, 0.1));
-  border: 1px solid var(--warning-border, rgba(245, 158, 11, 0.3));
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   border-radius: 3px;
   color: var(--warning);
   font-size: 0.8rem;
@@ -134,7 +134,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .secondaryButton {
@@ -144,14 +144,14 @@
 }
 
 .disabledButton {
-  background: #555;
-  color: #999;
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
   cursor: not-allowed;
 }
 
 .hint {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 0.5rem;
 }
 

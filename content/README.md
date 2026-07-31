@@ -104,7 +104,7 @@ Before committing content changes, validate your YAML files:
 npm run validate:content
 ```
 
-Or visit `http://localhost:3001/validation` in the admin UI.
+Or visit `http://localhost:3002/pipeline` in the admin UI for the unified intake flow.
 
 ## Migration
 
@@ -114,7 +114,7 @@ To push content to the database:
 npm run migrate
 ```
 
-Or visit `http://localhost:3001/migration` in the admin UI.
+Or visit `http://localhost:3002/pipeline` (or `/migration`) in the admin UI.
 
 ## Best Practices
 

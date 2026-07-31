@@ -4,6 +4,7 @@ import { adminFetch } from '@/lib/client-api';
 interface CharacterAsset {
   id: string;
   name: string;
+  slug: string;
   hasPortrait: boolean;
   portraitUrls: string[];
 }
@@ -11,6 +12,7 @@ interface CharacterAsset {
 interface SceneAsset {
   id: string;
   name: string;
+  slug: string;
   hasBackground: boolean;
   backgroundUrl: string | null;
 }

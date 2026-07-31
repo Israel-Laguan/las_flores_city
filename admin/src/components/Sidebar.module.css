@@ -70,7 +70,7 @@
 }
 
 .sectionHeader:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hover-overlay);
 }
 
 .sectionToggle {
@@ -106,12 +106,12 @@
 }
 
 .navLink:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--hover-overlay);
   text-decoration: none;
 }
 
 .navLinkActive {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--hover-overlay);
   border-left-color: var(--accent);
   font-weight: 600;
 }
@@ -170,7 +170,7 @@
 }
 
 .subNavLink:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hover-overlay);
   color: var(--foreground);
   text-decoration: none;
 }
@@ -178,7 +178,7 @@
 .subNavLinkActive {
   color: var(--foreground);
   border-left-color: var(--accent);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--hover-overlay);
 }
 
 .sidebarFooter {
@@ -200,7 +200,7 @@
 }
 
 .collapseToggle:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--hover-overlay);
   color: var(--foreground);
   opacity: 1;
 }

@@ -68,3 +68,11 @@
   display: flex;
   gap: 0.5rem;
 }
+
+.appearanceSection {
+  margin-top: 2rem;
+}
+
+.appearanceHeading {
+  margin-bottom: 0.75rem;
+}

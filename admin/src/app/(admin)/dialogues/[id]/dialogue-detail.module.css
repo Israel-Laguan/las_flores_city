@@ -13,7 +13,7 @@
 }
 
 .errorBox {
-  background: rgba(255, 0, 0, 0.2);
+  background: var(--danger-bg);
   border: 1px solid var(--danger);
   padding: 1rem;
   border-radius: 5px;
@@ -26,6 +26,6 @@
   padding: 1rem;
   border-radius: 5px;
   overflow-x: auto;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }

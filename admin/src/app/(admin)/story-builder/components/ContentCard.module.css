@@ -70,8 +70,8 @@
 
 .assetTag {
   display: inline-block;
-  background: rgba(255, 0, 0, 0.13);
-  color: #ff6666;
+  background: var(--danger-bg);
+  color: var(--danger);
   padding: 0.15rem 0.5rem;
   border-radius: 3px;
   font-size: 0.75rem;
@@ -195,13 +195,13 @@
 }
 
 .todoBadge {
-  background: rgba(255, 170, 0, 0.15);
+  background: var(--warning-bg);
   color: var(--warning);
 }
 
 .filledBadge {
-  background: rgba(0, 200, 150, 0.15);
-  color: #00c896;
+  background: var(--accent-bg);
+  color: var(--accent);
 }
 
 .todoField {
@@ -210,7 +210,7 @@
 }
 
 .filledField {
-  border-left: 2px solid rgba(0, 200, 150, 0.4);
+  border-left: 2px solid var(--accent-bg);
 }
 
 /* Fill status chips */
@@ -224,18 +224,18 @@
 }
 
 .fillChip_filling {
-  background: var(--warning-bg, rgba(245, 158, 11, 0.15));
+  background: var(--warning-bg);
   color: var(--warning);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .fillChip_done {
-  background: var(--accent-bg, rgba(0, 200, 150, 0.15));
+  background: var(--accent-bg);
   color: var(--accent);
 }
 
 .fillChip_failed {
-  background: var(--danger-bg, rgba(255, 80, 80, 0.15));
+  background: var(--danger-bg);
   color: var(--danger);
 }
 

@@ -56,9 +56,9 @@ content/
 
 | Step | Command / entry point | What it does |
 |---|---|---|
-| Author | Edit YAML by hand or via `/editor` | Produces or updates a content file |
-| Validate | `npm run validate:content` (or `/validation` admin page) | Runs Zod schema checks, XSS checks, story-flow validation |
-| Migrate | `npm run migrate:content` (or `/migration` admin page) | Reads YAML, upserts rows in Postgres, writes `migration_log` |
+| Author | Edit YAML by hand or via `/editor` or the unified `/pipeline` flow | Produces or updates a content file |
+| Validate | `npm run validate:content` (or `/validation` admin page, or step 2 of `/pipeline`) | Runs Zod schema checks, XSS checks, story-flow validation |
+| Migrate | `npm run migrate:content` (or `/migration` admin page, or step 3 of `/pipeline`) | Reads YAML, upserts rows in Postgres, writes `migration_log` |
 | Inspect | `/characters`, `/dialogues`, etc. admin pages | Browse migrated content |
 
 ### Key files
@@ -72,6 +72,7 @@ content/
 | `server/src/content/upsert.ts` | Per-type upsert logic |
 | `server/src/routes/admin-content.ts` | Admin endpoints for file tree, read, write |
 | `admin/src/app/editor/` | Raw YAML editor UI |
+| `admin/src/app/(admin)/pipeline/` | Unified Path A intake flow (edit → validate → migrate → assets → publish) |
 | `admin/src/app/validation/` | Validation report UI |
 | `admin/src/app/migration/` | Migration status + result UI |
 

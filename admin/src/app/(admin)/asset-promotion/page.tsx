@@ -2,7 +2,7 @@
 
 import { useAssetPromotion } from '@/components/promotion/useAssetPromotion';
 import PromotionRow from '@/components/promotion/PromotionRow';
-import styles from './asset-promotion.module.css';
+import styles from '@/components/promotion/promotion.module.css';
 
 function entityType(contentPath: string): string {
   const first = contentPath.split('/')[0];

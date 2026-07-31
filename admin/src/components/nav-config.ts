@@ -21,7 +21,7 @@ export const navSections: NavSection[] = [
   {
     title: 'Authoring',
     items: [
-      { href: '/pipeline', label: 'Pipeline', icon: 'layers' },
+      { href: '/pipeline', label: 'Pipeline', icon: 'send' },
       {
         href: '/story-builder',
         label: 'Story Builder',
@@ -31,8 +31,7 @@ export const navSections: NavSection[] = [
           { href: '/story-builder/plans', label: 'Plans' },
         ],
       },
-      { href: '/editor', label: 'YAML Editor', icon: 'code' },
-    ],
+      ],
   },
   {
     title: 'Story Bible',
@@ -44,51 +43,22 @@ export const navSections: NavSection[] = [
     title: 'Narrative',
     items: [
       { href: '/story-arc', label: 'Story Arc', icon: 'trending' },
-      {
-        href: '/stories',
-        label: 'Stories',
-        icon: 'book',
-        subItems: [
-          { href: '/stories', label: 'All Stories' },
-          { href: '/story-beats', label: 'Story Beats' },
-        ],
-      },
-      {
-        href: '/missions',
-        label: 'Missions',
-        icon: 'target',
-        subItems: [
-          { href: '/missions', label: 'All Missions' },
-          { href: '/missions/new', label: 'New Mission' },
-          { href: '/mysteries', label: 'Mysteries' },
-          { href: '/gigs', label: 'Gigs' },
-        ],
-      },
+      { href: '/stories', label: 'Stories', icon: 'book' },
+      { href: '/story-beats', label: 'Story Beats', icon: 'grid' },
+      { href: '/missions', label: 'Missions', icon: 'target' },
+      { href: '/mysteries', label: 'Mysteries', icon: 'search' },
+      { href: '/gigs', label: 'Gigs', icon: 'bolt' },
     ],
   },
   {
     title: 'World',
     items: [
       { href: '/characters', label: 'Characters', icon: 'users' },
-      {
-        href: '/scenes',
-        label: 'Scenes',
-        icon: 'film',
-        subItems: [
-          { href: '/scenes', label: 'All Scenes' },
-          { href: '/locations', label: 'Locations' },
-          { href: '/maps', label: 'Maps' },
-        ],
-      },
-      {
-        href: '/vault',
-        label: 'Vault',
-        icon: 'lock',
-        subItems: [
-          { href: '/vault', label: 'All Items' },
-          { href: '/shop', label: 'Shop' },
-        ],
-      },
+      { href: '/scenes', label: 'Scenes', icon: 'film' },
+      { href: '/locations', label: 'Locations', icon: 'pin' },
+      { href: '/maps', label: 'Maps', icon: 'map' },
+      { href: '/vault', label: 'Vault', icon: 'lock' },
+      { href: '/shop', label: 'Shop', icon: 'cart' },
     ],
   },
   {
@@ -103,24 +73,29 @@ export const navSections: NavSection[] = [
     items: [
       {
         href: '/migration',
-        label: 'Migration',
-        icon: 'database',
+        label: 'Content Ops',
+        icon: 'code',
         subItems: [
-          { href: '/migration', label: 'Run Migration' },
+          { href: '/editor', label: 'YAML Editor' },
           { href: '/validation', label: 'Validation' },
+          { href: '/migration', label: 'Migration' },
           { href: '/diff', label: 'Diff' },
-          { href: '/content-linker', label: 'Linker' },
         ],
       },
       {
         href: '/assets',
-        label: 'Assets',
+        label: 'Asset Ops',
         icon: 'image',
         subItems: [
-          { href: '/assets', label: 'Generation' },
+          { href: '/assets', label: 'Asset Generation' },
           { href: '/asset-coverage', label: 'Coverage' },
           { href: '/asset-promotion', label: 'Promotion' },
         ],
+      },
+      {
+        href: '/content-linker',
+        label: 'Content Linker',
+        icon: 'link',
       },
       {
         href: '/quality',
