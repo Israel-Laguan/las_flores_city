@@ -224,13 +224,13 @@
 }
 
 .fillChip_filling {
-  background: var(--warning-bg, rgba(245, 158, 11, 0.15));
+  background: var(--warning-bg);
   color: var(--warning);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .fillChip_done {
-  background: var(--accent-bg, rgba(0, 200, 150, 0.15));
+  background: var(--accent-bg);
   color: var(--accent);
 }
 

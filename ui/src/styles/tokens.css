@@ -44,4 +44,35 @@
   /* Semantic backgrounds */
   --danger-bg: rgba(255, 0, 0, 0.2);
   --success-bg: rgba(0, 255, 0, 0.1);
+
+  /* Semantic surfaces */
+  --surface: #15151f;
+  --surface-raised: #1c1c2a;
+  --surface-2: #1f2937;
+
+  /* Semantic status colors */
+  --status-success: #10b981;
+  --status-error: #ef4444;
+  --status-warn: #f59e0b;
+  --status-success-bg: rgba(16, 185, 129, 0.25);
+  --status-error-bg: rgba(239, 68, 68, 0.25);
+
+  /* Semantic text */
+  --text-muted: #8a8a9a;
+  --text-primary: #ededed;
+  --text-secondary: #aaa;
+  --text: 0.9rem;
+
+  /* Semantic backgrounds / borders */
+  --page-bg-alt: #15151f;
+  --border-color: #333;
+  --warning-border: rgba(245, 158, 11, 0.3);
+  --accent-bg: rgba(0, 200, 150, 0.15);
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+
+  /* Text drawn on colored backgrounds (multi-theme safe) */
+  --on-accent: #000;
+  --on-danger: #fff;
+  --on-info: #fff;
 }

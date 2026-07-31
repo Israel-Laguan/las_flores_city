@@ -118,7 +118,7 @@
 .tableCellInfo {
   padding: 0.4rem 0.5rem;
   font-size: 0.85rem;
-  color: var(--muted, #666);
+  color: var(--muted);
 }
 
 .statusBadge {
@@ -128,13 +128,13 @@
 }
 
 .statusSuccess {
-  background: var(--status-success-bg, rgba(16, 185, 129, 0.25));
-  color: var(--status-success, #10b981);
+  background: var(--status-success-bg);
+  color: var(--status-success);
 }
 
 .statusError {
-  background: var(--status-error-bg, rgba(239, 68, 68, 0.25));
-  color: var(--status-error, #ef4444);
+  background: var(--status-error-bg);
+  color: var(--status-error);
 }
 
 .assetList {

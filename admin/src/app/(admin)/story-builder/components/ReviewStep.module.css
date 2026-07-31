@@ -140,7 +140,7 @@
 }
 
 .shipNote code {
-  background: var(--surface-2, #1f2937);
+  background: var(--surface-2);
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
 }
@@ -180,8 +180,8 @@
 /* Fallback warning banner */
 .fallbackBanner {
   padding: 0.6rem 0.85rem;
-  background: var(--warning-bg, rgba(245, 158, 11, 0.1));
-  border: 1px solid var(--warning-border, rgba(245, 158, 11, 0.3));
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
   border-radius: 5px;
   color: var(--warning);
   font-size: 0.85rem;

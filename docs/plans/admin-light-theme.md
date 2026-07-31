@@ -3,7 +3,7 @@
 > Analysis and phased plan for adding a light theme to the Las Flores 2077 admin panel.
 >
 > **Created**: 2026-07-30
-> **Status**: Draft (analysis complete, awaiting approval to begin Phase 0)
+> **Status**: Approved — see `docs/plans/admin-light-theme-milestones.md` for phased milestone plan (M1–M7)
 > **Related**: `docs/UI_STYLE_SYSTEM.md`, `docs/ADMIN_ARCHITECTURE.md`, `client/src/utils/themeEngine.ts`, `ui/src/styles/tokens.css`, `AGENTS.md`
 
 ---
@@ -296,13 +296,15 @@ Optionally run a quick WCAG contrast check on `--accent`/`--muted`/`--text-*` ag
 
 ---
 
-## 7. Decision points to confirm before starting
+## 7. Decision points — resolved (see `docs/plans/admin-light-theme-milestones.md`)
 
-1. **Light accent color**: neon-preserving (`#00802b`, AA-large only) vs. accessible (`#007a33`, AA normal)? — see §4 Phase 1.
-2. **Toggle placement**: TopBar icon only, `/settings` row only, or both?
-3. **`prefers-color-scheme` on first run**: adopt OS preference, or always default to dark until the user opts in?
-4. **Rollout strategy**: ship behind a `/settings`-only toggle until Phase 3 done, or ship globally once complete?
-5. **Namespace strategy (Path A vs Path B)** — see §3.5. Per-namespace theme blocks (compliant, incremental) vs. fully unifying `--color-*` with the unprefixed namespace (bigger one-shot rename, touches `UI_STYLE_SYSTEM.md` + `AGENTS.md`). **Not chosen in this plan — pending review.**
+| # | Question | Decision |
+|---|---|---|
+| 1 | Light `--accent` | `#007a33` (WCAG AA on white) |
+| 2 | Toggle placement | `/settings` row only during beta; TopBar icon promoted after M5 |
+| 3 | `prefers-color-scheme` on first run | Always dark in v1 (no OS auto-detect) |
+| 4 | Rollout | Beta behind `/settings` until Phase 3 sweep completes |
+| 5 | Namespace strategy | **Path A** — per-namespace theme blocks in `@las-flores/ui`; do not unify `--color-*` with unprefixed namespace |
 
 ---
 
