@@ -47,11 +47,11 @@
 /* Fatal-error override — red regardless of faction */
 .terminal-modal-overlay.fatal-error .terminal-modal-content {
   border-color: var(--color-error);
-  box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+  box-shadow: var(--error-glow);
 }
 
 .terminal-modal-overlay.fatal-error .terminal-modal-header {
-  background: rgba(255, 51, 51, 0.1);
+  background: var(--error-overlay);
   border-bottom-color: var(--color-error);
   color: var(--color-error);
 }

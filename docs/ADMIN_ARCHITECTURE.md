@@ -80,7 +80,7 @@ admin/
     │   ├── Sidebar.tsx
     │   ├── SidebarContext.tsx
     │   ├── nav-config.ts
-    │   ├── navIcons.ts
+    │   ├── navIcons.tsx
     │   ├── TopBar.tsx
     │   ├── Breadcrumbs.tsx
     │   ├── ContentListPage.tsx
@@ -445,7 +445,7 @@ When contributing to `admin/`, follow these rules. They are the result of the mu
    if (data.success) { ... } else { setError(data.error); }
    ```
 9. **Local form state** in the page when the hook needs to defer the mutation (e.g. `story-beats` keeps `formSlug`/`formLabel`/etc. locally and passes them to the hook on submit).
-10. **Nav is defined in `src/components/nav-config.ts` + rendered by `Sidebar.tsx` + `AdminShell.tsx`**: when adding a new link, add a `NavItem` / `NavSection` to `navSections` in `nav-config.ts`. The sidebar and top-bar title pick up the change automatically. For section-group parent icons, add the icon name to `src/components/navIcons.ts`.
+10. **Nav is defined in `src/components/nav-config.ts` + rendered by `Sidebar.tsx` + `AdminShell.tsx`**: when adding a new link, add a `NavItem` / `NavSection` to `navSections` in `nav-config.ts`. The sidebar and top-bar title pick up the change automatically. For section-group parent icons, add the icon name to `src/components/navIcons.tsx`.
 11. **Tests** for the new page live in `app/<area>/__tests__/`. Follow the `ContentListPage` or `storyBeatsPage` patterns for the boilerplate.
 
 ## Adding a new CRUD page (recipe)
@@ -459,7 +459,7 @@ When contributing to `admin/`, follow these rules. They are the result of the mu
    - `components/<X>.tsx` + `<X>.module.css` — one or more dumb sub-components, each with its own `.module.css`.
    - `__tests__/<area>.test.tsx` — `vi.mock('@/lib/client-api', ...)`, `render`, `waitFor`, assert on visible text.
 5. For Type C, model it on `story-builder/` (state-owning hook + orchestrator + dumb step components).
-6. Wire navigation: add a `NavItem` / `NavSection` to `src/components/nav-config.ts` `navSections`. The sidebar and `getPageTitle()` pick up the change automatically; add icon names to `src/components/navIcons.ts` if a new section/group is needed.
+6. Wire navigation: add a `NavItem` / `NavSection` to `src/components/nav-config.ts` `navSections`. The sidebar and `getPageTitle()` pick up the change automatically; add icon names to `src/components/navIcons.tsx` if a new section/group is needed.
 7. If the new page needs a server endpoint, add it under `server/src/routes/admin/<area>.ts`. (Out of scope for this doc; see `server/` and `AGENTS.md` for backend conventions.)
 8. Verify:
    ```bash
@@ -515,7 +515,7 @@ All three must exit `0` before merging.
 | `admin/src/components/Sidebar.tsx` | Collapsible, section-grouped sidebar with expand/collapse per item |
 | `admin/src/components/SidebarContext.tsx` | Mobile-open + collapsed state provider |
 | `admin/src/components/nav-config.ts` | `navSections` array + `isActive` / `getPageTitle` helpers |
-| `admin/src/components/navIcons.ts` | Icon map for sidebar items |
+| `admin/src/components/navIcons.tsx` | Icon map for sidebar items |
 | `admin/src/components/TopBar.tsx` | Breadcrumb-aware top bar with mobile hamburger |
 | `admin/src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail from `nav-config.ts` |
 | `admin/src/components/ContentListPage.tsx` | Generic paginated table primitive (Type A) |

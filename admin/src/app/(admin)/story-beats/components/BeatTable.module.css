@@ -68,7 +68,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .secondaryButton {
@@ -79,7 +79,7 @@
 
 .dangerButton {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .detailLink {

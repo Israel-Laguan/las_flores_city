@@ -77,7 +77,7 @@
 
 .primaryAction {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .secondaryAction {

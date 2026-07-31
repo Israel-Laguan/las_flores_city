@@ -60,7 +60,7 @@
   height: 100px;
   background-size: cover;
   background-position: center;
-  background-color: var(--color-surface-card);
+  background-color: rgba(15, 23, 42, 0.9);
   border-bottom: 1px solid rgba(0, 255, 255, 0.2);
 }
 

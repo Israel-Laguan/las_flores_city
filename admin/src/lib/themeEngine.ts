@@ -29,17 +29,21 @@ export function applyTheme(mode: ThemeMode): void {
   } else {
     body.classList.remove('theme-light');
   }
+  try {
+    window.localStorage.setItem(STORAGE_KEY, mode);
+  } catch {
+    // localStorage unavailable — state still works for the session
+  }
   notify();
+}
+
+export function setTheme(mode: ThemeMode): void {
+  applyTheme(mode);
 }
 
 export function toggleTheme(): ThemeMode {
   const next = currentMode === 'dark' ? 'light' : 'dark';
   applyTheme(next);
-  try {
-    window.localStorage.setItem(STORAGE_KEY, next);
-  } catch {
-    // localStorage unavailable — state still works for the session
-  }
   return next;
 }
 

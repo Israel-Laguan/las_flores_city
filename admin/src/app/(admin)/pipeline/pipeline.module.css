@@ -76,7 +76,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .secondaryButton {
@@ -165,7 +165,7 @@
 }
 
 .rowReady {
-  /* subtle green background for rows with assets */
+  background: var(--accent-bg);
 }
 
 .rowMissing {
@@ -184,7 +184,7 @@
 
 .typeChar {
   background: var(--accent-bg);
-  color: var(--info);
+  color: var(--accent);
 }
 
 .typeScene {
@@ -273,7 +273,7 @@
 
 .inlineButton:hover:not(:disabled) {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .inlineButton:disabled {

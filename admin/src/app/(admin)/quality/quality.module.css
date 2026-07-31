@@ -21,11 +21,11 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .disabledButton {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
   cursor: not-allowed;
 }
@@ -68,7 +68,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 1rem;
   border-radius: 5px;
   margin-bottom: 1.5rem;
@@ -153,7 +153,7 @@
 
 .issueRow {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--surface);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   gap: 1rem;
   align-items: flex-start;
@@ -195,12 +195,12 @@
 
 .errorBadge {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .warningBadge {
   background: var(--warning);
-  color: var(--foreground);
+  color: var(--on-warning);
 }
 
 .cleanMessage {

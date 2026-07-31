@@ -61,7 +61,6 @@
   --text-muted: #8a8a9a;
   --text-primary: #ededed;
   --text-secondary: #aaa;
-  --text: 0.9rem;
 
   /* Semantic backgrounds / borders */
   --page-bg-alt: #15151f;
@@ -75,6 +74,23 @@
   --on-accent: #000;
   --on-danger: #fff;
   --on-info: #fff;
+  --on-warning: #000;
+  --on-success: #000;
+
+  /* Migration badge colors */
+  --purple: #9900ff;
+  --pink: #ff00ff;
+  --cyan: #00ccff;
+  --teal: #00ffaa;
+  --orange: #ff6600;
+  --on-purple: #fff;
+  --on-pink: #fff;
+  --on-cyan: #000;
+  --on-teal: #000;
+  --on-orange: #000;
+
+  /* Overlay background (translucent) */
+  --overlay-bg: rgba(0, 0, 0, 0.75);
 }
 
 /* =========================================================================
@@ -107,6 +123,7 @@ body.theme-light {
   /* Semantic status backgrounds */
   --status-success-bg: rgba(21, 128, 61, 0.12);
   --status-error-bg: rgba(185, 28, 28, 0.12);
+  --status-warn: #b45309;
 
   /* Semantic text */
   --text-muted: #555555;
@@ -121,13 +138,31 @@ body.theme-light {
   --warning-bg: rgba(255, 170, 0, 0.15);
   --hover-overlay: rgba(0, 0, 0, 0.06);
 
+  /* Semantic backgrounds (light theme adjusted) */
+  --danger-bg: rgba(185, 28, 28, 0.15);
+  --success-bg: rgba(21, 128, 61, 0.12);
+
   /* Text drawn on colored backgrounds */
   --on-accent: #ffffff;
   --on-danger: #ffffff;
   --on-info: #ffffff;
+  --on-warning: #000000;
+  --on-success: #ffffff;
 
-  /* Typography */
-  --text: 0.9rem;
+  /* Migration badge colors */
+  --purple: #9900ff;
+  --pink: #ff00ff;
+  --cyan: #00ccff;
+  --teal: #00ffaa;
+  --orange: #ff6600;
+  --on-purple: #ffffff;
+  --on-pink: #ffffff;
+  --on-cyan: #000000;
+  --on-teal: #000000;
+  --on-orange: #000000;
+
+  /* Overlay background */
+  --overlay-bg: rgba(0, 0, 0, 0.6);
 
   /* Elevation */
   --shadow-glow: 0 0 8px rgba(0, 0, 0, 0.12);

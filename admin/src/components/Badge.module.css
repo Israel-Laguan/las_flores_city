@@ -7,26 +7,26 @@
 }
 
 .success {
-  background-color: var(--accent);
-  color: var(--foreground);
+  background-color: var(--success);
+  color: var(--on-success);
 }
 
 .warning {
   background-color: var(--warning);
-  color: var(--foreground);
+  color: var(--on-warning);
 }
 
 .danger {
   background-color: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .info {
   background-color: var(--info);
-  color: var(--foreground);
+  color: var(--on-info);
 }
 
 .muted {
-  background-color: var(--muted);
+  background-color: var(--disabled-bg);
   color: var(--disabled-text);
 }

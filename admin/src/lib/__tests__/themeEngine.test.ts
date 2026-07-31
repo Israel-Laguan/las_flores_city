@@ -35,6 +35,23 @@ describe('themeEngine', () => {
     expect(document.body.classList.contains('theme-light')).toBe(false);
   });
 
+  it('persists mode via applyTheme', async () => {
+    const { applyTheme, getStoredTheme } = await import('../themeEngine');
+    applyTheme('light');
+    expect(getStoredTheme()).toBe('light');
+    expect(document.body.classList.contains('theme-light')).toBe(true);
+    // applyTheme is idempotent — same mode doesn't change storage
+    applyTheme('light');
+    expect(getStoredTheme()).toBe('light');
+  });
+
+  it('persists direct dark selection via setTheme', async () => {
+    const { setTheme, getStoredTheme } = await import('../themeEngine');
+    setTheme('dark');
+    expect(getStoredTheme()).toBe('dark');
+    expect(document.body.classList.contains('theme-light')).toBe(false);
+  });
+
   it('notifies subscribers on theme changes', async () => {
     const { applyTheme, subscribeTheme } = await import('../themeEngine');
     const listener = vi.fn();

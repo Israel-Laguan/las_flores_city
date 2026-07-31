@@ -22,7 +22,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .disabledButton {
@@ -86,7 +86,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 1rem;
   border-radius: 5px;
   margin-bottom: 1rem;
@@ -144,12 +144,12 @@
 
 .errorBadge {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .warningBadge {
   background: var(--warning);
-  color: var(--foreground);
+  color: var(--on-warning);
 }
 
 .codeBlock {

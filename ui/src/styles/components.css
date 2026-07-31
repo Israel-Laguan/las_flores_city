@@ -146,7 +146,7 @@
 
 .badge--info {
   background: var(--info);
-  color: var(--on-danger);
+  color: var(--on-info);
 }
 
 .badge--muted {

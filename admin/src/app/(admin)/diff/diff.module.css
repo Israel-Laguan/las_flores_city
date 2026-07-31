@@ -33,11 +33,11 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .disabledButton {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
   cursor: not-allowed;
 }
@@ -67,28 +67,28 @@
 }
 
 .unchangedBadge {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
 }
 
 .newBadge {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .modifiedBadge {
   background: var(--warning);
-  color: var(--foreground);
+  color: var(--on-warning);
 }
 
 .deletedBadge {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .errorBadge {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .summaryGrid {
@@ -129,7 +129,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 1rem;
   border-radius: 5px;
   margin-top: 1rem;

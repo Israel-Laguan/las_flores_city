@@ -13,7 +13,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 1rem;
   border-radius: 5px;
   margin-bottom: 1rem;
@@ -59,7 +59,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .secondaryButton {

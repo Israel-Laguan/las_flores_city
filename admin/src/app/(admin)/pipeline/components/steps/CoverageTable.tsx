@@ -1,18 +1,8 @@
 'use client';
 
 import { cn } from '@las-flores/ui';
-import type { CharacterAsset, SceneAsset } from '../../hooks/usePipeline';
+import type { EntityRow, SetDefaultState } from '../../hooks/usePipeline';
 import styles from '../../pipeline.module.css';
-
-type EntityRow =
-  | { kind: 'character'; item: CharacterAsset }
-  | { kind: 'scene'; item: SceneAsset };
-
-interface SetDefaultState {
-  saving: boolean;
-  error: string | null;
-  success: boolean;
-}
 
 interface Props {
   rows: EntityRow[];

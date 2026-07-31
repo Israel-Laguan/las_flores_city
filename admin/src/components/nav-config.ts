@@ -31,8 +31,7 @@ export const navSections: NavSection[] = [
           { href: '/story-builder/plans', label: 'Plans' },
         ],
       },
-      { href: '/story-builder/plans', label: 'Plans', icon: 'clipboard' },
-    ],
+      ],
   },
   {
     title: 'Story Bible',

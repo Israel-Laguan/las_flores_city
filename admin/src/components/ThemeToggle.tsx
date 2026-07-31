@@ -1,18 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { applyTheme, getStoredTheme, subscribeTheme, toggleTheme } from '@/lib/themeEngine';
+import { useState, useEffect } from 'react';
+import { setTheme, subscribeTheme } from '@/lib/themeEngine';
 import styles from './ThemeToggle.module.css';
 
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<'dark' | 'light'>(getStoredTheme);
+  const [mode, setMode] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
     return subscribeTheme(setMode);
-  }, []);
-
-  const handleToggle = useCallback(() => {
-    toggleTheme();
   }, []);
 
   return (
@@ -20,7 +16,7 @@ export default function ThemeToggle() {
       <button
         type="button"
         className={`${styles.button} ${mode === 'dark' ? styles.active : ''}`}
-        onClick={() => applyTheme('dark')}
+        onClick={() => setTheme('dark')}
         aria-pressed={mode === 'dark'}
       >
         Dark
@@ -28,7 +24,7 @@ export default function ThemeToggle() {
       <button
         type="button"
         className={`${styles.button} ${mode === 'light' ? styles.active : ''}`}
-        onClick={handleToggle}
+        onClick={() => setTheme('light')}
         aria-pressed={mode === 'light'}
       >
         Light

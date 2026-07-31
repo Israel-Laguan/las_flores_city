@@ -65,6 +65,7 @@ export interface MigrationResult {
 export interface CharacterAsset {
   id: string;
   name: string;
+  slug: string;
   hasPortrait: boolean;
   portraitUrls: string[];
 }
@@ -72,6 +73,7 @@ export interface CharacterAsset {
 export interface SceneAsset {
   id: string;
   name: string;
+  slug: string;
   hasBackground: boolean;
   backgroundUrl: string | null;
 }
@@ -79,6 +81,16 @@ export interface SceneAsset {
 export interface PipelineAssetCoverage {
   characters: CharacterAsset[];
   scenes: SceneAsset[];
+}
+
+export type EntityRow =
+  | { kind: 'character'; item: CharacterAsset }
+  | { kind: 'scene'; item: SceneAsset };
+
+export interface SetDefaultState {
+  saving: boolean;
+  error: string | null;
+  success: boolean;
 }
 
 export function usePipeline(initialStepIdx = 0) {

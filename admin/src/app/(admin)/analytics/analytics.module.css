@@ -104,15 +104,15 @@
 
 .activeBadge {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .resolvingBadge {
   background: var(--warning);
-  color: var(--foreground);
+  color: var(--on-warning);
 }
 
 .archivedBadge {
-  background: var(--muted);
-  color: var(--foreground);
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
 }

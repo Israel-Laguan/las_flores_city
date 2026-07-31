@@ -11,8 +11,14 @@
  * Usage: node scripts/check-css-color-literals.mjs
  */
 
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 import { readFileSync } from 'fs';
 import { execSync } from 'child_process';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const ROOT = resolve(__dirname, '..');
 
 const ALLOWLIST_PREFIXES = ['ui/src/styles', 'node_modules'];
 
@@ -33,49 +39,64 @@ const ALLOWLIST_RGBA_PATTERNS = [
 ];
 
 const HEX_RE = /(?:^|[^\w-])(#[0-9a-fA-F]{3,8})\b/;
-const RGBA_RE = /\brgba\(/;
+const RGBA_RE = /rgba\(/g;
 
 let exitCode = 0;
 let totalFiles = 0;
 
 for (const dir of ['admin/src', 'client/src']) {
+  const fullDir = resolve(ROOT, dir);
+  let findResult;
   try {
-    const result = execSync(`find ${dir} -name '*.css' 2>/dev/null || true`, {
+    findResult = execSync(`find ${fullDir} -name '*.css' 2>/dev/null`, {
       encoding: 'utf8',
     });
-    const files = result.trim().split('\n').filter(Boolean);
+  } catch {
+    // dir may not exist (e.g. in CI without content checkout)
+    try {
+      execSync(`test -d "${fullDir}"`, { encoding: 'utf8', stdio: 'ignore' });
+      // If we get here, the directory exists but find failed
+      console.error(`  ERROR: Failed to scan ${fullDir}`);
+      exitCode = 1;
+    } catch {
+      // Directory does not exist — skip
+    }
+    continue;
+  }
+  const files = findResult.trim().split('\n').filter(Boolean);
 
-    for (const file of files) {
-      if (ALLOWLIST_PREFIXES.some(p => file.includes(p))) continue;
-      if (ALLOWLIST_FILES.some(f => file.endsWith(f))) continue;
+  for (const file of files) {
+    if (ALLOWLIST_PREFIXES.some(p => file.includes(p))) continue;
+    if (ALLOWLIST_FILES.some(f => file.endsWith(f))) continue;
 
-      totalFiles++;
-      const content = readFileSync(file, 'utf8');
-      const lines = content.split('\n');
+    totalFiles++;
+    const content = readFileSync(file, 'utf8');
+    const lines = content.split('\n');
 
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
 
-        // Check hex — forbidden everywhere in app CSS
-        const hexMatch = line.match(HEX_RE);
-        if (hexMatch) {
-          console.log(`  ${file}:${i + 1}: HEX ${hexMatch[1]}`);
-          exitCode = 1;
-        }
+      // Check hex — forbidden everywhere in app CSS
+      const hexMatch = line.match(HEX_RE);
+      if (hexMatch) {
+        console.log(`  ${file}:${i + 1}: HEX ${hexMatch[1]}`);
+        exitCode = 1;
+      }
 
-        // Check rgba — forbidden in admin/src (except allowlisted shadows)
-        if (file.startsWith('admin/')) {
-          const rgbaMatch = line.match(RGBA_RE);
-          if (rgbaMatch) {
-            if (ALLOWLIST_RGBA_PATTERNS.some(pat => pat.test(line))) continue;
+      // Check rgba — forbidden in admin/src (except allowlisted shadows)
+      // Validate each rgba() occurrence independently
+      if (file.includes('/admin/')) {
+        let rgbaMatch;
+        RGBA_RE.lastIndex = 0;
+        while ((rgbaMatch = RGBA_RE.exec(line)) !== null) {
+          const rgbaValue = line.slice(rgbaMatch.index, line.indexOf(')', rgbaMatch.index) + 1);
+          if (!ALLOWLIST_RGBA_PATTERNS.some(pat => pat.test(rgbaValue))) {
             console.log(`  ${file}:${i + 1}: rgba(...)`);
             exitCode = 1;
           }
         }
       }
     }
-  } catch {
-    // dir may not exist (e.g. in CI)
   }
 }
 

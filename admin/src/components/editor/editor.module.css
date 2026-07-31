@@ -124,11 +124,11 @@
   border: none;
   font-size: 0.85rem;
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .disabledButton {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
   cursor: not-allowed;
 }
@@ -169,7 +169,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 0.75rem;
   border-radius: 5px;
   margin: 0.5rem 1rem;

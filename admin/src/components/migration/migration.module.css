@@ -21,7 +21,7 @@
 
 .primaryButton {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .secondaryButton {
@@ -31,7 +31,7 @@
 }
 
 .disabledButton {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
   cursor: not-allowed;
 }
@@ -75,52 +75,52 @@
 
 .successBadge {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .errorBadge {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .warningBadge {
   background: var(--warning);
-  color: var(--foreground);
+  color: var(--on-warning);
 }
 
 .infoBadge {
   background: var(--info);
-  color: var(--foreground);
+  color: var(--on-info);
 }
 
 .purpleBadge {
-  background: var(--info);
-  color: var(--foreground);
+  background: var(--purple);
+  color: var(--on-purple);
 }
 
 .orangeBadge {
-  background: var(--warning);
-  color: var(--foreground);
+  background: var(--orange);
+  color: var(--on-orange);
 }
 
 .pinkBadge {
-  background: var(--info);
-  color: var(--foreground);
+  background: var(--pink);
+  color: var(--on-pink);
 }
 
 .cyanBadge {
-  background: var(--info);
-  color: var(--foreground);
+  background: var(--cyan);
+  color: var(--on-cyan);
 }
 
 .tealBadge {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--teal);
+  color: var(--on-teal);
 }
 
 .greenBadge {
   background: var(--success);
-  color: var(--foreground);
+  color: var(--on-success);
 }
 
 .summaryGrid {
@@ -162,7 +162,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 1rem;
   border-radius: 5px;
   margin-top: 1rem;

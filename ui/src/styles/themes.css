@@ -57,6 +57,10 @@ body.theme-terminal-dark {
   --color-accent-bright: #00ff88;
   --color-border-strong: rgba(0, 255, 0, 0.5);
 
+  /* Terminal modal fatal-error tokens */
+  --error-overlay: rgba(255, 51, 51, 0.1);
+  --error-glow: 0 0 15px rgba(255, 51, 51, 0.4);
+
   /* Map-specific tokens */
   --color-map-text: #F5F5DC;
   --color-map-accent: #E6A857;
@@ -121,6 +125,10 @@ body.theme-white-high-contrast {
   --color-accent-bright: #008844;
   --color-border-strong: #1a1a1a;
 
+  /* Terminal modal fatal-error tokens */
+  --error-overlay: rgba(204, 0, 0, 0.1);
+  --error-glow: 0 0 15px rgba(204, 0, 0, 0.4);
+
   /* Map-specific tokens */
   --color-map-text: #333333;
   --color-map-accent: #8B6914;
@@ -183,6 +191,10 @@ body:not([class*="theme-"]) {
   --color-accent-dim: #008866;
   --color-accent-bright: #00ff88;
   --color-border-strong: rgba(0, 255, 0, 0.5);
+
+  /* Terminal modal fatal-error tokens */
+  --error-overlay: rgba(255, 51, 51, 0.1);
+  --error-glow: 0 0 15px rgba(255, 51, 51, 0.4);
 
   /* Map-specific tokens */
   --color-map-text: #F5F5DC;

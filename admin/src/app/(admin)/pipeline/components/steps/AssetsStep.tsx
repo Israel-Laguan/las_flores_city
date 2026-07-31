@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@las-flores/ui';
-import type { PipelineAssetCoverage, CharacterAsset, SceneAsset } from '../../hooks/usePipeline';
+import type { PipelineAssetCoverage, EntityRow, SetDefaultState } from '../../hooks/usePipeline';
 import CoverageTable from './CoverageTable';
 import styles from '../../pipeline.module.css';
 
@@ -12,19 +12,16 @@ interface Props {
   onFetch: () => void;
 }
 
-type EntityRow =
-  | { kind: 'character'; item: CharacterAsset }
-  | { kind: 'scene'; item: SceneAsset };
-
-interface SetDefaultState {
-  saving: boolean;
-  error: string | null;
-  success: boolean;
-}
-
 export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
   const initialFetchRef = useRef(false);
   const [setDefaultStates, setSetDefaultStates] = useState<Record<string, SetDefaultState>>({});
+  const timersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  useEffect(() => {
+    return () => {
+      Object.values(timersRef.current).forEach(clearTimeout);
+    };
+  }, []);
 
   useEffect(() => {
     if (!assetCoverage && !loading && !initialFetchRef.current) {
@@ -34,7 +31,7 @@ export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
   }, [assetCoverage, loading, onFetch]);
 
   const handleSetDefault = useCallback(async (row: EntityRow, url: string) => {
-    const slug = row.item.id;
+    const slug = row.item.slug;
     const stateKey = `${row.kind}:${slug}`;
     setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: true, error: null, success: false } }));
     try {
@@ -42,15 +39,16 @@ export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
       await adminFetch('/admin/content/assign-asset', {
         method: 'POST',
         body: JSON.stringify({
-          contentPath: `${row.kind}s/${slug}/${row.kind}_${slug}.yaml`,
-          fieldPath: row.kind === 'character' ? 'portrait_urls[0]' : 'background_url',
+          contentPath: `${row.kind}s/${slug}/${row.kind === 'character' ? 'char_' : 'scene_'}${slug}.yaml`,
+          fieldPath: row.kind === 'character' ? 'portrait_urls[0].url' : 'background_url',
           assetUrl: url,
         }),
       });
       setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: false, error: null, success: true } }));
-      setTimeout(() => {
+      timersRef.current[stateKey] = setTimeout(() => {
         setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: false, error: null, success: false } }));
         onFetch();
+        delete timersRef.current[stateKey];
       }, 800);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to set default';

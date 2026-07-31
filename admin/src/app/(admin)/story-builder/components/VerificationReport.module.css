@@ -169,6 +169,6 @@
 .detailItem {
   font-family: var(--font-mono);
   font-size: 0.78rem;
-  color: var(--text);
+  color: var(--text-primary);
   padding: 2px 0;
 }

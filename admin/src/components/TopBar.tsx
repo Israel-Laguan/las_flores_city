@@ -22,8 +22,9 @@ export default function TopBar({ user }: TopBarProps) {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
+    const unsubscribe = subscribeTheme(setTheme);
     restorePersistedTheme();
-    return subscribeTheme(setTheme);
+    return unsubscribe;
   }, []);
 
   const handleLogout = async () => {

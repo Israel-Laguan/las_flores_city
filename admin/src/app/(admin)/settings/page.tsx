@@ -183,8 +183,8 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <section style={{ marginTop: '2rem' }}>
-        <h2 style={{ marginBottom: '0.75rem' }}>Appearance</h2>
+      <section className={styles.appearanceSection}>
+        <h2 className={styles.appearanceHeading}>Appearance</h2>
         <ThemeToggle />
       </section>
     </main>

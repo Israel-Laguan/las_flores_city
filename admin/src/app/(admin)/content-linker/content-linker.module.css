@@ -66,7 +66,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--surface);
+  border-bottom: 1px solid var(--border-color);
   font-size: 0.9rem;
 }
 
@@ -86,7 +86,7 @@
 
 .removeButton {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .smallButton {
@@ -143,12 +143,12 @@
   border: none;
   font-size: 1rem;
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
   margin-top: 1rem;
 }
 
 .disabledButton {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
   cursor: not-allowed;
 }
@@ -163,7 +163,7 @@
 
 .successBox {
   background: var(--success-bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--success);
   padding: 0.75rem;
   border-radius: 5px;
   margin-bottom: 1rem;

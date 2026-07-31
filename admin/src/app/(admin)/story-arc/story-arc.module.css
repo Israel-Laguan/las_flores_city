@@ -27,7 +27,7 @@
 }
 
 .disabledButton {
-  background: var(--muted);
+  background: var(--disabled-bg);
   color: var(--disabled-text);
   cursor: not-allowed;
 }
@@ -119,17 +119,17 @@
 
 .successBadge {
   background: var(--accent);
-  color: var(--foreground);
+  color: var(--on-accent);
 }
 
 .dangerBadge {
   background: var(--danger);
-  color: var(--foreground);
+  color: var(--on-danger);
 }
 
 .infoBadge {
   background: var(--info);
-  color: var(--foreground);
+  color: var(--on-info);
 }
 
 .beatDescription {
