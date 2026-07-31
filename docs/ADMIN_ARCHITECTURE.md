@@ -116,7 +116,7 @@ admin/
 | `/shop` + `/[id]` | List/Detail (Type A) | |
 | `/maps` + `/[id]` | List/Detail (Type A) | |
 | `/mysteries` + `/[id]` | List/Detail (Type A) | |
-| `/lore` | Browse (Type C-lite) | `useLoreTree` + `useLoreContent` + `TreePanel` + `MarkdownViewer` |
+| `/lore` | Browse (Type C-lite) — world lore from `content/lore/` | `useLoreTree` + `useLoreContent` + `TreePanel` + `MarkdownViewer` |
 | `/editor` | Editor (Type B) | `useEditor` + `FileTree` + `EditorPanel` |
 | `/content-linker` | Tool (Type B) | `useContentLinker` + `ScalarLink` + `ArrayLink` |
 | `/migration` | Op (Type B) | `MigrationStatusView` + `MigrationResultView` |
@@ -533,7 +533,7 @@ All three must exit `0` before merging.
 | `admin/src/test/setup.ts` | `@testing-library/jest-dom` side-effect import |
 | `admin/src/app/(admin)/pipeline/` | Intake pipeline: 5-step guided flow (edit → validate → migrate → assets → publish) |
 | `admin/src/app/(admin)/ai-config/` | Read-only AI configuration page |
-| `admin/src/app/(admin)/lore/` | Story Bible: file tree + `LoreEditor` with markdown preview |
+| `admin/src/app/(admin)/lore/` | Story Bible: file tree + `LoreEditor` with markdown preview; serves `content/lore/` world lore |
 | `admin/src/app/<area>/page.tsx` | One folder per top-level route |
 | `admin/src/app/<area>/[id]/page.tsx` | Detail page (where applicable) |
 | `admin/src/app/<area>/components/` | Area-specific sub-components |

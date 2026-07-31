@@ -43,7 +43,6 @@ export const navSections: NavSection[] = [
     title: 'Narrative',
     items: [
       { href: '/story-arc', label: 'Story Arc', icon: 'trending' },
-      { href: '/stories', label: 'Stories', icon: 'book' },
       { href: '/story-beats', label: 'Story Beats', icon: 'grid' },
       { href: '/missions', label: 'Missions', icon: 'target' },
       { href: '/mysteries', label: 'Mysteries', icon: 'search' },

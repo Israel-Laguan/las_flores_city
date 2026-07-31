@@ -1,23 +1,23 @@
 import { z } from 'zod';
-import { zodUuid, zodUuidArray } from './uuid.js';
+import { zodUuid } from './uuid.js';
 
-export const YAMLStorySchema = z.object({
+export const StoryBeatEntrySchema = z.object({
+  slug: z.string().min(1),
+  label: z.string().min(1),
+  order: z.number().int().nonnegative(),
+  description: z.string(),
+});
+
+export const YAMLStoryArcSchema = z.object({
   id: zodUuid(),
-  title: z.string().min(1).max(255),
+  name: z.string().min(1).max(255),
   description: z.string().max(1000).optional(),
-  mission_id: zodUuid(),
-  characters: zodUuidArray().default([]),
-  scenes: zodUuidArray().default([]),
-  dialogues: zodUuidArray().default([]),
-  overlays: zodUuidArray().default([]),
-  vault_items: zodUuidArray().default([]),
-  written_by: z.string().max(100).optional(),
-  lore_ref: z.string().max(255).optional(),
+  beats: z.array(StoryBeatEntrySchema).default([]),
 });
 
-export const YAMLStoryFileSchema = z.object({
-  stories: z.array(YAMLStorySchema),
+export const YAMLStoryArcFileSchema = z.object({
+  story: YAMLStoryArcSchema,
 });
 
-export type YAMLStory = z.infer<typeof YAMLStorySchema>;
-export type YAMLStoryFile = z.infer<typeof YAMLStoryFileSchema>;
+export type YAMLStoryArc = z.infer<typeof YAMLStoryArcSchema>;
+export type YAMLStoryArcFile = z.infer<typeof YAMLStoryArcFileSchema>;

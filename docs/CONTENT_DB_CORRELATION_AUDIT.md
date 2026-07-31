@@ -47,7 +47,7 @@ Direct DB edits outside the migration path are considered drift and are out of s
 | story_beat | content/story_beats.yaml (single file) | registry schema | story_beats | slug (not uuid) | handled by /admin/story-beats (not in admin-list-views.ts) | dialogue/scene beat cross-ref registry |
 | map_tile | content/maps/ (does not exist) | MapTileFileSchema | map_tiles | uuid | GET /admin/maps(:id) | /api/map, /api/map/:slug (districts + tiles) |
 | district | none (SQL-seeded only) | — | districts | uuid | no admin list/detail yet | /api/map (overview) |
-| lore | content/lore/**/*.md, docs/lore/**/*.md | Markdown | none | — | admin-lore router | not migrated |
+| lore | content/lore/**/*.md | Markdown | none | — | admin-lore router | not migrated |
 
 ### Key structural facts
 

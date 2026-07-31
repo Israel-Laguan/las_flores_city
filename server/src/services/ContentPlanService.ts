@@ -318,7 +318,7 @@ export class ContentPlanService {
   }
 
   async gatherContext(): Promise<ExistingContentContext> {
-    const [characters, scenes, dialogues, missions, stories, overlays, locations] = await Promise.all([
+    const [characters, scenes, dialogues, missions, overlays, locations] = await Promise.all([
       queryOLTP<{ id: string; name: string; role?: string; faction?: string; personality?: string; description?: string }>('SELECT id, name, metadata->>\'role\' as role, metadata->>\'faction\' as faction, metadata->>\'personality\' as personality, description FROM characters ORDER BY name ASC'),
       queryOLTP<{ id: string; name: string; district: string; mood?: string; description?: string }>(
         `SELECT s.id, s.name, COALESCE(d.name, '') AS district, s.mood, s.description
@@ -327,7 +327,6 @@ export class ContentPlanService {
       ),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_trees ORDER BY name ASC'),
       queryOLTP<{ id: string; title: string }>('SELECT id, title FROM mysteries ORDER BY title ASC'),
-      queryOLTP<{ id: string; title: string }>('SELECT id, title FROM stories ORDER BY title ASC'),
       queryOLTP<{ id: string; name: string }>('SELECT id, name FROM dialogue_overlays ORDER BY name ASC'),
       this.gatherLocationContext(),
     ]);
@@ -337,7 +336,6 @@ export class ContentPlanService {
       scenes: scenes.rows,
       dialogues: dialogues.rows,
       missions: missions.rows,
-      stories: stories.rows,
       overlays: overlays.rows,
       locations,
     };

@@ -6,11 +6,14 @@ import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 /**
  * Admin Lore Router
  *
- * Provides HTTP endpoints for browsing and reading lore markdown files
- * from docs/lore/. All routes require admin/developer role.
+ * Provides HTTP endpoints for browsing, reading, and editing the in-universe
+ * world lore markdown files under content/lore/ (the "story bible":
+ * timeline, geography, communities, organizations, events, media,
+ * governance, stories, and top-level overview documents). All routes
+ * require an admin/developer role.
  *
- * Endpoint handlers for tree, file, and search come in later tasks.
- * This file establishes the router skeleton and shared path helpers.
+ * Dev/authoring guides live under docs/lore/ and are intentionally NOT
+ * surfaced here — they are documentation, not in-universe lore.
  */
 export const adminLoreRouter = express.Router();
 
@@ -22,7 +25,11 @@ adminLoreRouter.use(authAndAdminMiddleware);
 // ---------------------------------------------------------------------------
 
 /**
- * Returns the absolute path to the lore directory (docs/lore/).
+ * Returns the absolute path to the legacy docs/lore/ directory (dev
+ * authoring references such as the prompt library and UI/UX guides).
+ * Used only by the admin-coverage route's figure↔character matching.
+ * In-universe world lore lives under content/lore/ (see getWorldLoreDir).
+ *
  * Resolves relative to process.cwd(), accounting for whether the cwd
  * is the server/ subdirectory or the project root.
  */
@@ -34,28 +41,36 @@ export function getLoreDir(): string {
 }
 
 /**
- * Allowlist of known immediate subdirectories under LoreDir.
+ * Returns the absolute path to the in-universe world lore directory
+ * (content/lore/). This is the "story bible" surfaced by the /lore admin
+ * page: timeline, geography, communities, organizations, events, media,
+ * governance, stories, and top-level overview documents.
+ *
+ * Resolves relative to process.cwd(), accounting for whether the cwd
+ * is the server/ subdirectory or the project root.
+ */
+export function getWorldLoreDir(): string {
+  const isSubdir = process.cwd().endsWith('server');
+  return isSubdir
+    ? path.resolve(process.cwd(), '..', 'content', 'lore')
+    : path.resolve(process.cwd(), 'content', 'lore');
+}
+
+/**
+ * Allowlist of known immediate subdirectories under the world lore
+ * directory (content/lore/).
  * `validateLorePath` rejects any path whose first segment is not in this list.
  */
 export const LORE_SUBDIRS = [
-  'figures',
-  'districts',
-  'landmarks',
-  'stories',
   'communities',
-  'companies',
   'events',
-  'organizations',
-  'families',
-  'media',
-  'platforms',
-  'partnerships',
-  'humanity_first',
-  'assets',
-  'guides',
-  'conflicts',
   'governance',
+  'media',
+  'organizations',
+  'stories',
 ] as const;
+// Note: `shared/` is deliberately excluded — it hosts the prompt/template
+// registry (phone, tiles, …), which is dev tooling, not in-universe lore.
 
 export type LoreSubdir = typeof LORE_SUBDIRS[number];
 
@@ -64,11 +79,12 @@ export type LoreSubdir = typeof LORE_SUBDIRS[number];
  * relative lore path. Strips a trailing 's' to produce the singular form.
  *
  * Examples:
- *   "figures/ana_kim.md"       → "figure"
- *   "districts/south.md"       → "district"
- *   "landmarks/city/foo.md"    → "landmark"
- *   "stories/the_fall.md"      → "story"
- *   "humanity_first/about.md"  → "humanity_first" (no trailing 's')
+ *   "communities/ana_kim.md"        → "community"
+ *   "events/revolution.md"          → "event"
+ *   "organizations/van_der_meer.md" → "organization"
+ *   "media/README.md"               → "media" (no trailing 's')
+ *   "stories/the_fall.md"           → "story"
+ *   "timeline.md"                   → "timeline.md" (top-level file: stem returned as-is)
  */
 export function inferLoreType(relativePath: string): string {
   const firstSegment = relativePath.split('/')[0] ?? '';
@@ -134,7 +150,7 @@ export function resolveLoreAbsolutePath(
     return { ok: false, reason: validation.reason };
   }
 
-  const loreDir = getLoreDir();
+  const loreDir = getWorldLoreDir();
   const absolutePath = path.join(loreDir, relPath);
 
   if (!absolutePath.startsWith(loreDir + path.sep) && absolutePath !== loreDir) {
@@ -149,7 +165,7 @@ export function resolveLoreAbsolutePath(
 // ---------------------------------------------------------------------------
 
 export interface LoreFileEntry {
-  path: string;       // Relative to docs/lore/, e.g. "figures/ana_kim.md"
+  path: string;       // Relative to content/lore/, e.g. "communities/ana_kim.md"
   name: string;       // Stem (filename without .md), e.g. "ana_kim"
   type: string;       // Singular inferred type, e.g. "figure"
   size: number;       // Bytes
@@ -210,8 +226,9 @@ async function walkLoreMdFiles(
 // ---------------------------------------------------------------------------
 // GET /admin/lore/tree
 //
-// Recursively walks getLoreDir(), filters to .md files (excluding
-// .prompt.md), stats each file, and returns a flat array of LoreFileEntry.
+// Recursively walks getWorldLoreDir() (content/lore/), filters to .md files
+// (excluding .prompt.md), stats each file, and returns a flat array of
+// LoreFileEntry.
 //
 // If the lore directory does not exist, returns an empty tree rather
 // than a 500 error.
@@ -221,9 +238,9 @@ async function walkLoreMdFiles(
 
 adminLoreRouter.get('/tree', async (_req, res) => {
   try {
-    const loreDir = getLoreDir();
+    const loreDir = getWorldLoreDir();
 
-    // Verify the lore directory exists before walking it.
+    // Verify the world lore directory exists before walking it.
     try {
       await fs.promises.access(loreDir);
     } catch {
@@ -330,7 +347,7 @@ export function searchLoreFiles(query: string, files: LoreFileRecord[]): SearchR
 // Returns the raw markdown content of a single lore file.
 // Applies two layers of traversal protection:
 //   1. validateLorePath rejects any relPath containing ".."
-//   2. After path.join, confirmed resolved path is still within getLoreDir()
+//   2. After path.join, confirmed resolved path is still within getWorldLoreDir()
 //
 // Satisfies: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
 // ---------------------------------------------------------------------------
@@ -495,9 +512,9 @@ adminLoreRouter.get('/search', async (req, res) => {
       return;
     }
 
-    const loreDir = getLoreDir();
+    const loreDir = getWorldLoreDir();
 
-    // Verify the lore directory exists before walking it.
+    // Verify the world lore directory exists before walking it.
     try {
       await fs.promises.access(loreDir);
     } catch {

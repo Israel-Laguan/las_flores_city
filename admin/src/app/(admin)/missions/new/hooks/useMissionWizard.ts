@@ -20,10 +20,6 @@ export function useMissionWizard() {
       selectedDialogues: entities.selectedDialogues,
       vaultItems: form.vaultItems,
       overlays: form.overlays,
-      createStory: form.createStory,
-      storyTitle: form.storyTitle,
-      storyDescription: form.storyDescription,
-      storyLoreRef: form.storyLoreRef,
     });
   };
 

@@ -22,7 +22,7 @@ export default function MissionResultView({ title, generatedLinks, onReset }: Pr
       </div>
       <div className={styles.navBar}>
         <Link href="/missions" className={styles.primaryButton}>View Missions</Link>
-        <Link href="/stories" className={styles.secondaryButton}>View Stories</Link>
+        <Link href="/story-beats" className={styles.secondaryButton}>View Story Beats</Link>
         <Link href="/editor" className={styles.secondaryButton}>Edit in YAML Editor</Link>
         <button className={styles.secondaryButton} onClick={onReset}>Create Another</button>
       </div>

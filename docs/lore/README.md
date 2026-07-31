@@ -1,20 +1,17 @@
-# Las Flores 2077 — World-Level Research
+# Las Flores 2077 — Dev Authoring References
 
-This directory contains **world-level research** for the Las Flores 2077 universe. It is NOT the game engine content — that lives in `content/`.
+This directory holds **dev/authoring references** for producing Las Flores 2077 content: prompt-writing guidelines, the prompt library, asset-generation guides, and workflow documentation.
+
+It is **not** in-universe lore. In-universe world research (the story bible: timeline, geography, communities, organizations, events, media, governance) lives in `content/lore/` and is surfaced in the admin **Story Bible** browser (`/lore`).
 
 ## What Belongs Here
 
-- **Timeline** — Historical events (2033–2077)
-- **Geography** — City layout, districts, elevation, travel
-- **Communities** — Cultural and ethnic community profiles
-- **Governance** — Political structures, councils, parties
-- **Organizations** — Companies, movements, civil society, criminal groups
-- **Media** — Press, platforms, journalists
-- **Events** — Major historical events
-- **Guides** — Authoring guides and workflows
+- `guides/` — Authoring guides and workflows
+- `PROMPT_GUIDELINES.md` — NVIDIA NIM / FLUX.2 Klein prompt-writing guidelines
 
 ## What Does NOT Belong Here
 
+- In-universe world research (timeline, geography, communities, organizations, …) → `content/lore/`
 - Per-entity game data (characters, scenes, locations) → `content/<type>/<slug>/`
 - Dev-time scripts → `scripts/asset-pipeline/`
 - Registries → `scripts/asset-pipeline/registries/`
@@ -24,19 +21,24 @@ This directory contains **world-level research** for the Las Flores 2077 univers
 
 ```
 docs/lore/
-├── communities/          # Cultural community profiles
 ├── guides/               # Authoring guides and workflows
-├── media/                # Press, platforms, journalists
-├── organizations/        # Companies, movements, civil society
-├── governance/           # Political structures
-├── geography.md          # City layout and geography
-├── timeline.md           # Historical timeline
+│   ├── art_style_exploration/
+│   ├── asset_generation_guide/
+│   ├── creative_mediums_guide/
+│   ├── lore_extraction_framework/
+│   ├── prompt_library/
+│   ├── templates/
+│   ├── ui_ux_design_system/
+│   ├── visual_style_translator/
+│   └── workflows/
+├── PROMPT_GUIDELINES.md  # Prompt-writing guidelines
 └── README.md             # This file
 ```
 
 ## Relationship to `content/`
 
-- `docs/lore/` = world-level research (who, what, when, where)
+- `docs/lore/` = dev/authoring references (prompts, guides, workflows)
+- `content/lore/` = in-universe world research (who, what, when, where) — the admin "Story Bible"
 - `content/` = game engine data (YAML + lore + assets per entity)
 - `shared/` = schema contracts (Zod types)
 - `server/` = sole mediator between content and database

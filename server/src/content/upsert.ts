@@ -1,7 +1,7 @@
 import * as yaml from 'js-yaml';
 import fs from 'fs/promises';
 import path from 'path';
-import { VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema, YAMLStorySchema } from '@las-flores/shared';
+import { VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema } from '@las-flores/shared';
 import { queryOLTP } from '../database/connection.js';
 import { setCache, deleteCache } from '../database/redis.js';
 import { sanitizeText } from './validate-xss.js';
@@ -15,7 +15,6 @@ import {
   upsertMystery,
   upsertVaultItem,
   upsertShopItem,
-  upsertStory,
   upsertMapTile,
   upsertStoryBeat,
 } from './content-upserts.js';
@@ -85,7 +84,7 @@ async function processStoryData(data: any): Promise<string> {
   if (!data) throw new Error("Invalid story data: content is empty");
 
   // Beats-based story format: { id, name, description, beats: [...] }
-  if (data.beats && !data.stories) {
+  if (data.beats) {
     const slugs: string[] = [];
     for (const beat of data.beats) {
       await upsertStoryBeat(beat);
@@ -94,14 +93,7 @@ async function processStoryData(data: any): Promise<string> {
     return slugs.join(',');
   }
 
-  const stories = data.stories || [data];
-  const storyIds: string[] = [];
-  for (const story of stories) {
-    YAMLStorySchema.parse(story);
-    const id = await upsertStory(story);
-    storyIds.push(id);
-  }
-  return storyIds.join(',');
+  throw new Error('Story data must have a beats array');
 }
 
 async function processShopItemData(data: any): Promise<string> {

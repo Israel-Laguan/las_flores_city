@@ -59,7 +59,7 @@ function getAllIds(data: any): string[] {
 function extractItems(data: any): any[] {
   if (!data) return [];
   if (Array.isArray(data)) return data;
-  for (const key of ['characters', 'missions', 'stories', 'vault_items', 'gigs', 'shop_items', 'overlays', 'beats']) {
+  for (const key of ['characters', 'missions', 'vault_items', 'gigs', 'shop_items', 'overlays', 'beats']) {
     if (Array.isArray(data[key])) return data[key];
   }
   return [data];

@@ -260,7 +260,7 @@ authRouter.post('/admin-login', async (req, res) => {
 });
 
 // GET /auth/admin-me - Get current admin user info
-authRouter.get('/admin-me', adminMiddleware, async (req: AuthRequest, res) => {
+authRouter.get('/admin-me', authMiddleware, adminMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
 

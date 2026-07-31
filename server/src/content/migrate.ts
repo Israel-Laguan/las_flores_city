@@ -22,7 +22,7 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   location: 'scenes',
   gig: 'gigs',
   mission: 'mysteries',
-  story: 'stories',
+  story: 'story_beats',
   vault: 'vault_items',
   shop_item: 'shop_items',
   map_tile: 'map_tiles',
@@ -55,9 +55,9 @@ async function isTargetContentPresent(contentType: ContentType, ids: string[]): 
     return false;
   }
 
-  // story_beat uses slug as PK (not UUID) — check by slug count
-  if (contentType === 'story_beat') {
-    const slugs = ids; // for story_beat, ids array holds slugs (comma-joined, split by caller)
+  // story_beat and story (beats-based) use slug as PK (not UUID) — check by slug count
+  if (contentType === 'story_beat' || contentType === 'story') {
+    const slugs = ids; // for story_beat/story, ids array holds slugs (comma-joined, split by caller)
     const result = await queryOLTP<{ count: number }>(
       `SELECT COUNT(*)::int AS count FROM story_beats WHERE slug = ANY($1::text[])`,
       [slugs]

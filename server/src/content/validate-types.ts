@@ -10,7 +10,6 @@ import {
   GigFileSchema,
   StoryBeatRegistrySchema,
   ContentType,
-  YAMLStoryFileSchema,
 } from '@las-flores/shared';
 import type { ValidationResult, ValidationError } from './validate.js';
 
@@ -86,9 +85,7 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         }
         break;
       case 'story':
-        if (data.stories) {
-          YAMLStoryFileSchema.parse(data);
-        } else if (data.beats) {
+        if (data.beats) {
           // Story file with beats-based format — validate each beat's required fields
           if (!data.id || typeof data.id !== 'string') {
             errors.push({ message: 'Story must have an id field', severity: 'error' });
@@ -115,7 +112,7 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
             }
           }
         } else {
-          YAMLStoryFileSchema.parse(data);
+          errors.push({ message: 'Story data must have a beats array', severity: 'error' });
         }
         break;
       case 'scene':
