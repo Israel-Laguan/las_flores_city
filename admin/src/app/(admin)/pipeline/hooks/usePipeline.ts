@@ -66,12 +66,14 @@ export interface CharacterAsset {
   id: string;
   name: string;
   hasPortrait: boolean;
+  portraitUrls: string[];
 }
 
 export interface SceneAsset {
   id: string;
   name: string;
   hasBackground: boolean;
+  backgroundUrl: string | null;
 }
 
 export interface PipelineAssetCoverage {

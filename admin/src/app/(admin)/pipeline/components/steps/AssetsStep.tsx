@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@las-flores/ui';
+import type { PipelineAssetCoverage, CharacterAsset, SceneAsset } from '../../hooks/usePipeline';
+import CoverageTable from './CoverageTable';
 import styles from '../../pipeline.module.css';
-import type { PipelineAssetCoverage } from '../../hooks/usePipeline';
 
 interface Props {
   assetCoverage: PipelineAssetCoverage | null;
@@ -11,8 +12,20 @@ interface Props {
   onFetch: () => void;
 }
 
+type EntityRow =
+  | { kind: 'character'; item: CharacterAsset }
+  | { kind: 'scene'; item: SceneAsset };
+
+interface SetDefaultState {
+  saving: boolean;
+  error: string | null;
+  success: boolean;
+}
+
 export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
   const initialFetchRef = useRef(false);
+  const [setDefaultStates, setSetDefaultStates] = useState<Record<string, SetDefaultState>>({});
+
   useEffect(() => {
     if (!assetCoverage && !loading && !initialFetchRef.current) {
       initialFetchRef.current = true;
@@ -20,9 +33,35 @@ export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
     }
   }, [assetCoverage, loading, onFetch]);
 
-  const charCount = assetCoverage?.characters?.length ?? 0;
-  const sceneCount = assetCoverage?.scenes?.length ?? 0;
-  const coverageCount = charCount + sceneCount;
+  const handleSetDefault = useCallback(async (row: EntityRow, url: string) => {
+    const slug = row.item.id;
+    const stateKey = `${row.kind}:${slug}`;
+    setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: true, error: null, success: false } }));
+    try {
+      const { adminFetch } = await import('@/lib/client-api');
+      await adminFetch('/admin/content/assign-asset', {
+        method: 'POST',
+        body: JSON.stringify({
+          contentPath: `${row.kind}s/${slug}/${row.kind}_${slug}.yaml`,
+          fieldPath: row.kind === 'character' ? 'portrait_urls[0]' : 'background_url',
+          assetUrl: url,
+        }),
+      });
+      setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: false, error: null, success: true } }));
+      setTimeout(() => {
+        setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: false, error: null, success: false } }));
+        onFetch();
+      }, 800);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to set default';
+      setSetDefaultStates(prev => ({ ...prev, [stateKey]: { saving: false, error: msg, success: false } }));
+    }
+  }, [onFetch]);
+
+  const rows: EntityRow[] = [
+    ...(assetCoverage?.characters ?? []).map(item => ({ kind: 'character' as const, item })),
+    ...(assetCoverage?.scenes ?? []).map(item => ({ kind: 'scene' as const, item })),
+  ];
 
   return (
     <div className={styles.stepContent}>
@@ -52,25 +91,11 @@ export default function AssetsStep({ assetCoverage, loading, onFetch }: Props) {
 
       {!loading && assetCoverage !== null && (
         <div className={styles.resultSection}>
-          <div className={styles.coverageSummary}>
-            <strong>{coverageCount}</strong> entities tracked in asset coverage
-          </div>
-          {coverageCount > 0 ? (
-            <ul className={styles.coverageList}>
-              {assetCoverage.characters.slice(0, 10).map((item: { id: string; name: string; hasPortrait: boolean }) => (
-                <li key={item.id} className={styles.coverageItem}>
-                  {item.name} {item.hasPortrait ? '✅' : '❌'}
-                </li>
-              ))}
-              {assetCoverage.scenes.slice(0, 10).map((item: { id: string; name: string; hasBackground: boolean }) => (
-                <li key={item.id} className={styles.coverageItem}>
-                  {item.name} {item.hasBackground ? '✅' : '❌'}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.muted}>No asset coverage data available.</p>
-          )}
+          <CoverageTable
+            rows={rows}
+            setDefaultStates={setDefaultStates}
+            onSetDefault={handleSetDefault}
+          />
         </div>
       )}
 
