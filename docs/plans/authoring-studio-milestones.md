@@ -99,7 +99,7 @@ Manual smoke: walk `/pipeline` end-to-end.
 
 ---
 
-### M3 — Story Bible: editable lore (M3: lore-edit) ✅ COMPLETE
+### M3 — Story Bible: editable lore (M3: lore-edit)
 **Scope:** `/lore` is editable with edit/create support via `POST /admin/lore/file`. No further server changes needed.
 
 **Files:**
