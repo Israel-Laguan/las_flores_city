@@ -28,7 +28,7 @@ What it is **not**:
 | Bundler | Turbopack (`next dev --turbopack`) |
 | Language | TypeScript (`strict: true`, `jsx: preserve`) |
 | Styling | CSS Modules + shared `@las-flores/ui` classes (see [docs/UI_STYLE_SYSTEM.md](UI_STYLE_SYSTEM.md)) |
-| Tests | Vitest + Testing Library + jsdom (19 files, 145 tests) |
+| Tests | Vitest + Testing Library + jsdom (22 files, ~190 tests) |
 | Lint | ESLint 8 (custom config in `admin/.eslintrc.json`) |
 | Port | 3002 on the host (via `docker-compose.yml` or `start-stack.sh`), 3000 inside the container |
 
@@ -76,7 +76,13 @@ admin/
     │   │   └── *.module.css
     │   └── __tests__/         # cross-page tests
     ├── components/           # shared primitives
-    │   ├── AdminNav.tsx
+    │   ├── AdminShell.tsx
+    │   ├── Sidebar.tsx
+    │   ├── SidebarContext.tsx
+    │   ├── nav-config.ts
+    │   ├── navIcons.ts
+    │   ├── TopBar.tsx
+    │   ├── Breadcrumbs.tsx
     │   ├── ContentListPage.tsx
     │   ├── ContentDetailPage.tsx
     │   ├── Badge.tsx
@@ -158,7 +164,7 @@ Three pieces:
 
 The cookie is `SameSite=None; Secure` so the admin app (different origin from the game) can read it back on subsequent requests.
 
-**`getAdminUser()`** in `src/lib/api.ts` is a server-side helper called by `app/layout.tsx` (async server component). It reads `cookies()` and calls Express `GET /auth/admin-me`, returning `null` on any failure. The result is passed to `<AdminNav user={...}/>`.
+**`getAdminUser()`** in `src/lib/api.ts` is a server-side helper called by `app/(admin)/layout.tsx` (async server component). It reads `cookies()` and calls Express `GET /auth/admin-me`, returning `null` on any failure. The result is passed to `<AdminShell user={...}>`, which renders `<Sidebar>` + `<TopBar>` + `<Breadcrumbs>` + the page children.
 
 ## Data fetching — the two `adminFetch` flavors
 
@@ -192,7 +198,10 @@ There are **zero** `/api/admin/*` route handlers. Pages and hooks do not call an
 
 | Component | File | Purpose |
 |---|---|---|
-| `AdminNav` | `src/components/AdminNav.tsx` | Top bar (logo, user area, logout/login button) + a nav-links row grouped by Content / Tools / System. Stateless; receives `user` from the layout server component. Uses the shared `.btn--danger` and `.badge--success` classes. |
+| `AdminShell` | `src/components/AdminShell.tsx` | Shell: renders `<Sidebar>` + `<TopBar>` + `<Breadcrumbs>` + mobile backdrop. Owns mobile-open and sidebar-collapsed state (with localStorage persistence). |
+| `Sidebar` | `src/components/Sidebar.tsx` | Renders pillar-based nav from `nav-config.ts`: collapsible sections, expandable items with sub-items, active-state highlighting, icon-rail collapse mode. |
+| `TopBar` | `src/components/TopBar.tsx` | Mobile hamburger + breadcrumb-aware title. Receives `user` from layout; shows logout button when authenticated. |
+| `Breadcrumbs` | `src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail derived from the current pathname and `nav-config.ts` labels. |
 | `ContentListPage<T>` | `src/components/ContentListPage.tsx` | Generic paginated table primitive. Props: `title`, `heading`, `endpoint`, `detailPath`, `columns: Column<T>[]`. Owns its own `useState` + `useEffect` + `AbortController` so callers don't have to. Renders a `.table` with clickable rows that route to `${detailPath}/${id}`. **This is the building block for most "Type A" list pages** — see below. |
 | `ContentDetailPage` | `src/components/ContentDetailPage.tsx` | Generic detail view that reads `params.id`, fetches `/admin/{area}/{id}`, and renders the JSON. Most areas opt for a hand-rolled detail page instead (e.g. `characters/[id]/page.tsx`) so they can show typed fields. |
 | `Badge` | `src/components/Badge.tsx` | `<span className={cn(styles.badge, styles[variant])}>` for the 5 variants (`success` / `warning` / `danger` / `info` / `muted`). Used by `ContentListPage` columns and by detail pages. |
@@ -200,7 +209,7 @@ There are **zero** `/api/admin/*` route handlers. Pages and hooks do not call an
 
 ## Page archetypes
 
-The 28 pages above are all instances of three archetypes. Knowing the archetype is the fastest way to predict what a new page in that area should look like.
+All admin pages are instances of three archetypes. Knowing the archetype is the fastest way to predict what a new page in that area should look like.
 
 ### Type A — list via `ContentListPage`
 
@@ -363,11 +372,11 @@ For the full contract — the shared class vocabulary, the theme-variable namesp
 
 ## Testing
 
-Vitest + jsdom + Testing Library. Run with `npm run test --workspace=admin` (19 files, 145 tests at handoff).
+Vitest + jsdom + Testing Library. Run with `npm run test --workspace=admin` (22 files, ~190 tests).
 
 | File | What it tests |
 |---|---|
-| `src/components/__tests__/Sidebar.test.tsx` | Sidebar nav: sections, active-state, collapsible groups |
+| `src/components/__tests__/Sidebar.test.tsx` | Sidebar nav: sections, active-state, collapsible groups, sub-items |
 | `src/components/__tests__/TopBar.test.tsx` | TopBar renders breadcrumbs and title |
 | `src/app/(admin)/__tests__/badgeRendering.test.tsx` | Badge variant class rendering (property-based) |
 | `src/app/(admin)/__tests__/contentListViews.test.tsx` | ContentListPage end-to-end with mocked adminFetch |
@@ -436,7 +445,7 @@ When contributing to `admin/`, follow these rules. They are the result of the mu
    if (data.success) { ... } else { setError(data.error); }
    ```
 9. **Local form state** in the page when the hook needs to defer the mutation (e.g. `story-beats` keeps `formSlug`/`formLabel`/etc. locally and passes them to the hook on submit).
-10. **Add the nav link** in two places when adding a new area: `src/components/AdminNav.tsx` `NavLinksRow`, and `src/app/page.tsx` `sections` array.
+10. **Nav is defined in `src/components/nav-config.ts` + rendered by `Sidebar.tsx` + `AdminShell.tsx`**: when adding a new link, add a `NavItem` / `NavSection` to `navSections` in `nav-config.ts`. The sidebar and top-bar title pick up the change automatically. For section-group parent icons, add the icon name to `src/components/navIcons.ts`.
 11. **Tests** for the new page live in `app/<area>/__tests__/`. Follow the `ContentListPage` or `storyBeatsPage` patterns for the boilerplate.
 
 ## Adding a new CRUD page (recipe)
@@ -450,7 +459,7 @@ When contributing to `admin/`, follow these rules. They are the result of the mu
    - `components/<X>.tsx` + `<X>.module.css` — one or more dumb sub-components, each with its own `.module.css`.
    - `__tests__/<area>.test.tsx` — `vi.mock('@/lib/client-api', ...)`, `render`, `waitFor`, assert on visible text.
 5. For Type C, model it on `story-builder/` (state-owning hook + orchestrator + dumb step components).
-6. Wire navigation: add a `<Link>` in `AdminNav.tsx` `NavLinksRow` and a `{ href, label }` in `app/page.tsx` `sections` array.
+6. Wire navigation: add a `NavItem` / `NavSection` to `src/components/nav-config.ts` `navSections`. The sidebar and `getPageTitle()` pick up the change automatically; add icon names to `src/components/navIcons.ts` if a new section/group is needed.
 7. If the new page needs a server endpoint, add it under `server/src/routes/admin/<area>.ts`. (Out of scope for this doc; see `server/` and `AGENTS.md` for backend conventions.)
 8. Verify:
    ```bash
@@ -482,7 +491,7 @@ Run from the repo root after any admin change:
 npm run lint --workspace=admin
 
 # Tests
-npm run test --workspace=admin          # 19 files, 145 tests at handoff
+npm run test --workspace=admin          # 22 files, ~190 tests
 
 # Build
 npm run build --workspace=admin         # Next build; surfaces route / TS errors
@@ -495,21 +504,37 @@ All three must exit `0` before merging.
 | Path | Holds |
 |---|---|
 | `admin/src/middleware.ts` | Cookie-based auth guard |
-| `admin/src/app/layout.tsx` | Async server component; renders `<AdminNav>` + children |
-| `admin/src/app/page.tsx` | Home: quick stats + recent activity + nav grid |
+| `admin/src/app/layout.tsx` | Root layout: global stylesheets + `<html>` / `<body>` |
+| `admin/src/app/(admin)/layout.tsx` | Async layout: `getAdminUser()` + `<AdminShell>` |
+| `admin/src/app/(admin)/page.tsx` | Dashboard: quick stats + recent migration activity + pillar CTAs |
+| `admin/src/app/(admin)/home.module.css` | Dashboard styles |
 | `admin/src/app/login/page.tsx` | Client login form; POSTs to `/api/auth/admin-login` |
 | `admin/src/app/api/auth/admin-login/route.ts` | Login route handler: relays `Set-Cookie` from Express |
 | `admin/src/app/api/auth/logout/route.ts` | Logout route handler: clears cookie + relays to Express |
-| `admin/src/components/AdminNav.tsx` | Top bar + nav-links row (Content / Tools / System) |
+| `admin/src/components/AdminShell.tsx` | Shell: `<Sidebar>` + `<TopBar>` + `<Breadcrumbs>` + mobile backdrop |
+| `admin/src/components/Sidebar.tsx` | Collapsible, section-grouped sidebar with expand/collapse per item |
+| `admin/src/components/SidebarContext.tsx` | Mobile-open + collapsed state provider |
+| `admin/src/components/nav-config.ts` | `navSections` array + `isActive` / `getPageTitle` helpers |
+| `admin/src/components/navIcons.ts` | Icon map for sidebar items |
+| `admin/src/components/TopBar.tsx` | Breadcrumb-aware top bar with mobile hamburger |
+| `admin/src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail from `nav-config.ts` |
 | `admin/src/components/ContentListPage.tsx` | Generic paginated table primitive (Type A) |
 | `admin/src/components/ContentDetailPage.tsx` | Generic JSON-viewer detail shell |
 | `admin/src/components/Badge.tsx` | 5-variant badge span |
 | `admin/src/components/ui/PageHeader.tsx` | `<header><h1>{title}</h1>{description?}</header>` |
+| `admin/src/components/editor/` | Extracted editor: `FileTree`, `EditorPanel`, `useEditor` (+ CSS) |
+| `admin/src/components/validation/` | Extracted validation: `ValidationSummary`, `ErrorsByFile`, `WarningsByFile` (+ CSS) |
+| `admin/src/components/migration/` | Extracted migration: `MigrationResultView`, `MigrationStatusView` (+ CSS) |
+| `admin/src/components/promotion/` | Extracted promotion: `PromotionRow`, `useAssetPromotion` (+ CSS) |
 | `admin/src/lib/api.ts` | Server-side `adminFetch` + `getAdminUser()` (reads `cookies()`) |
 | `admin/src/lib/client-api.ts` | Client-side `adminFetch` + `serverAssetUrl()` (uses `credentials: 'include'`) |
+| `admin/src/lib/promotion.ts` | Shared promotion helpers (`fetchPromotionStatus`, `promoteStaging`, `promoteProduction`, `rollbackStaging`) |
 | `admin/src/lib/cn.ts` | **Removed** — now imported from `@las-flores/ui` |
 | `admin/src/test/setup.ts` | `@testing-library/jest-dom` side-effect import |
-| `admin/src/app/<area>/page.tsx` | One folder per top-level route (28 areas) |
+| `admin/src/app/(admin)/pipeline/` | Intake pipeline: 5-step guided flow (edit → validate → migrate → assets → publish) |
+| `admin/src/app/(admin)/ai-config/` | Read-only AI configuration page |
+| `admin/src/app/(admin)/lore/` | Story Bible: file tree + `LoreEditor` with markdown preview |
+| `admin/src/app/<area>/page.tsx` | One folder per top-level route |
 | `admin/src/app/<area>/[id]/page.tsx` | Detail page (where applicable) |
 | `admin/src/app/<area>/components/` | Area-specific sub-components |
 | `admin/src/app/<area>/hooks/` | Area-specific `useXxx` hooks (Type B/C pages) |
