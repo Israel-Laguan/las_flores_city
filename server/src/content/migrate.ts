@@ -270,7 +270,11 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
 
   try {
     console.log('🔍 Validating content...');
-    const validationResult = await validateContent(contentDir);
+    // Use schema-only validation to skip DB/Redis cross-reference checks.
+    // The story_beats registry is populated by this very migration run, so
+    // cross-references would fail on a fresh database. Full cross-reference
+    // validation is performed by the admin UI (admin-content.ts), not here.
+    const validationResult = await validateContent(contentDir, true);
 
     if (!validationResult.valid) {
       result.success = false;
