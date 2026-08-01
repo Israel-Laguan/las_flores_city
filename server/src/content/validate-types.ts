@@ -9,6 +9,7 @@ import {
   ShopItemFileSchema,
   GigFileSchema,
   StoryBeatRegistrySchema,
+  YAMLStoryArcFileSchema,
   ContentType,
 } from '@las-flores/shared';
 import type { ValidationResult, ValidationError } from './validate.js';
@@ -85,35 +86,7 @@ export function validateContentByType(type: ContentType, data: any): ValidationR
         }
         break;
       case 'story':
-        if (data.beats) {
-          // Story file with beats-based format — validate each beat's required fields
-          if (!data.id || typeof data.id !== 'string') {
-            errors.push({ message: 'Story must have an id field', severity: 'error' });
-          }
-          if (!data.name || typeof data.name !== 'string') {
-            errors.push({ message: 'Story must have a name field', severity: 'error' });
-          }
-          if (Array.isArray(data.beats)) {
-            for (const [i, beat] of data.beats.entries()) {
-              if (!beat.slug || typeof beat.slug !== 'string') {
-                errors.push({ message: `Story beat at index ${i} must have a slug field`, severity: 'error' });
-              }
-              if (!beat.label || typeof beat.label !== 'string') {
-                errors.push({ message: `Story beat at index ${i} must have a label field`, severity: 'error' });
-              }
-              if (beat.order === undefined || beat.order === null) {
-                errors.push({ message: `Story beat at index ${i} must have an order field`, severity: 'error' });
-              } else if (!Number.isInteger(beat.order) || beat.order < 0) {
-                errors.push({ message: `Story beat at index ${i} order must be a non-negative integer`, severity: 'error' });
-              }
-              if (!beat.description || typeof beat.description !== 'string') {
-                errors.push({ message: `Story beat at index ${i} must have a description field`, severity: 'error' });
-              }
-            }
-          }
-        } else {
-          errors.push({ message: 'Story data must have a beats array', severity: 'error' });
-        }
+        YAMLStoryArcFileSchema.parse(data);
         break;
       case 'scene':
         YAMLSceneSchema.parse(data);
