@@ -115,7 +115,7 @@ async function findContentFile(
         if ((parsed as { id?: unknown }).id === id) {
           return { path: relPath, yaml: parsed };
         }
-        // Check nested arrays (e.g. missions[], vault_items[], stories[])
+        // Check nested arrays (e.g. missions[], vault_items[])
         if (config.idArrays) {
           for (const key of config.idArrays) {
             const arr = (parsed as Record<string, unknown>)[key];

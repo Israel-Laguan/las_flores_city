@@ -20,6 +20,11 @@ COPY admin ./admin
 COPY server ./server
 COPY shared ./shared
 COPY docs ./docs
+# Content directory holds the world lore markdown (content/lore/), entity YAML
+# files, and staged assets needed by the server in production (content migration,
+# admin lore endpoints, asset publishing). In dev, docker-compose bind-mounts
+# ./content over this; in production the baked-in copy is the sole source.
+COPY content ./content
 
 # Build workspaces
 RUN npm run build --workspace=shared && npm run build --workspace=server

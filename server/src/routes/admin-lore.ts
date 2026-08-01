@@ -25,22 +25,6 @@ adminLoreRouter.use(authAndAdminMiddleware);
 // ---------------------------------------------------------------------------
 
 /**
- * Returns the absolute path to the legacy docs/lore/ directory (dev
- * authoring references such as the prompt library and UI/UX guides).
- * Used only by the admin-coverage route's figure↔character matching.
- * In-universe world lore lives under content/lore/ (see getWorldLoreDir).
- *
- * Resolves relative to process.cwd(), accounting for whether the cwd
- * is the server/ subdirectory or the project root.
- */
-export function getLoreDir(): string {
-  const isSubdir = process.cwd().endsWith('server');
-  return isSubdir
-    ? path.resolve(process.cwd(), '..', 'docs', 'lore')
-    : path.resolve(process.cwd(), 'docs', 'lore');
-}
-
-/**
  * Returns the absolute path to the in-universe world lore directory
  * (content/lore/). This is the "story bible" surfaced by the /lore admin
  * page: timeline, geography, communities, organizations, events, media,
@@ -73,6 +57,22 @@ export const LORE_SUBDIRS = [
 // registry (phone, tiles, …), which is dev tooling, not in-universe lore.
 
 export type LoreSubdir = typeof LORE_SUBDIRS[number];
+
+/**
+ * Returns true if a relative lore path is within an allowed location for
+ * recursive discovery: either a top-level file (no subdirectory) or a file
+ * inside one of the LORE_SUBDIRS allowlisted subdirectories.
+ *
+ * Mirrors the subdirectory check in validateLorePath so that /tree and /search
+ * stay consistent with /file (which rejects paths outside the allowlist, e.g.
+ * the deliberately-excluded `shared/` dev-tooling directory).
+ */
+export function isLorePathInAllowlist(relativePath: string): boolean {
+  const segments = relativePath.split('/');
+  if (segments.length <= 1) return true; // top-level file
+  const firstSegment = segments[0] ?? '';
+  return (LORE_SUBDIRS as readonly string[]).includes(firstSegment);
+}
 
 /**
  * Derives the singular content type from the first path segment of a
@@ -220,7 +220,9 @@ async function walkLoreMdFiles(
     files.push({ relativePath, absolutePath });
   }
 
-  return files;
+  // Filter to the LORE_SUBDIRS allowlist (plus top-level files) so /tree and
+  // /search never surface excluded directories such as `shared/` (dev tooling).
+  return files.filter(f => isLorePathInAllowlist(f.relativePath));
 }
 
 // ---------------------------------------------------------------------------

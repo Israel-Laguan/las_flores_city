@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { getLoreDir } from './admin-lore.js';
+import { getWorldLoreDir } from './admin-lore.js';
 import { resolveContentDir } from './admin-content.helpers.js';
 import { queryOLTP } from '../database/connection.js';
 import * as matchers from './admin-coverage.matchers.js';
@@ -32,7 +32,7 @@ export {
 
 adminCoverageRouter.get('/', async (_req, res) => {
   try {
-    const loreDir = getLoreDir();
+    const loreDir = getWorldLoreDir();
     const contentDir = resolveContentDir();
     const filesData = await processFileSystem(loreDir, contentDir);
     const parsedData = await parseYamlFiles(contentDir, filesData);

@@ -35,6 +35,9 @@ Dockerfile*
 
 # Documentation
 *.md
+# Re-include content lore markdown — the admin lore endpoints serve these
+# files in production and they must be present in the server image.
+!content/**/*.md
 LICENSE
 
 # Test files

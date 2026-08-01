@@ -59,6 +59,12 @@ export async function processFileSystem(
   sceneYamlPaths: string[];
   missionYamlPaths: string[];
 }> {
+  // loreDir points to the world lore root (content/lore/ via getWorldLoreDir).
+  // After the lore reorganization, only `stories/` has a corresponding
+  // subdirectory under content/lore/. The `figures/`, `districts/`, and
+  // `landmarks/` subdirectories were removed when lore moved from docs/lore/
+  // to content/lore/ — listMdFiles gracefully returns [] for missing dirs,
+  // so those coverage types honestly report zero lore documents.
   const [figurePaths, districtPaths, landmarkPaths, storyPaths, characterYamlPaths, sceneYamlPaths, missionYamlPaths] =
     await Promise.all([
       listMdFiles(path.join(loreDir, 'figures')).then(ps => ps.map(p => `figures/${p}`)),

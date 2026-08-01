@@ -17,7 +17,7 @@ import { stringOf } from './__utils__/fastCheckV4';
 // functions — no DB, no network, no filesystem.
 // ============================================================
 
-import { inferLoreType, validateLorePath, LORE_SUBDIRS } from '../../src/routes/admin-lore.js';
+import { inferLoreType, validateLorePath, isLorePathInAllowlist, LORE_SUBDIRS } from '../../src/routes/admin-lore.js';
 
 // ── Shared arbitraries ────────────────────────────────────────
 
@@ -346,5 +346,33 @@ describe('validateLorePath — all four rejection rules', () => {
       ),
       { numRuns: 200, verbose: false },
     );
+  });
+});
+
+// ============================================================
+// isLorePathInAllowlist — recursive-discovery allowlist guard
+//
+// The recursive walker (walkLoreMdFiles, used by /tree and /search) must only
+// surface paths that /file would also accept. This guards against leaking
+// excluded dev-tooling directories (e.g. `shared/`) via /tree and /search.
+// ============================================================
+
+describe('isLorePathInAllowlist — recursive-discovery guard', () => {
+  it('accepts top-level files (no subdirectory)', () => {
+    expect(isLorePathInAllowlist('timeline.md')).toBe(true);
+    expect(isLorePathInAllowlist('geography.md')).toBe(true);
+  });
+
+  it('accepts files inside an allowlisted subdirectory', () => {
+    for (const subdir of LORE_SUBDIRS) {
+      expect(isLorePathInAllowlist(`${subdir}/note.md`)).toBe(true);
+      expect(isLorePathInAllowlist(`${subdir}/nested/deep/note.md`)).toBe(true);
+    }
+  });
+
+  it('rejects files inside a non-allowlisted subdirectory (e.g. shared/)', () => {
+    expect(isLorePathInAllowlist('shared/phone.md')).toBe(false);
+    expect(isLorePathInAllowlist('shared/tiles/foo.md')).toBe(false);
+    expect(isLorePathInAllowlist('random_dir/note.md')).toBe(false);
   });
 });

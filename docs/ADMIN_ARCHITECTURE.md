@@ -108,7 +108,6 @@ admin/
 | `/story-beats` | CRUD (Type B) | `useBeatHandlers` + `BeatForm` + `BeatTable` + `BeatUsagesTable` |
 | `/story-arc` | Visualization | Beat timeline + reachability |
 | `/missions` + `/[id]` + `/new` | CRUD (Type B) | `useMissionWizard` for new-mission flow |
-| `/stories` + `/[id]` | List/Detail (Type A) | |
 | `/overlays` + `/[id]` | List/Detail (Type A) | |
 | `/locations` + `/[id]` | List/Detail (Type A) | |
 | `/vault` + `/[id]` | List/Detail (Type A) | |
@@ -116,7 +115,7 @@ admin/
 | `/shop` + `/[id]` | List/Detail (Type A) | |
 | `/maps` + `/[id]` | List/Detail (Type A) | |
 | `/mysteries` + `/[id]` | List/Detail (Type A) | |
-| `/lore` | Browse (Type C-lite) — world lore from `content/lore/` | `useLoreTree` + `useLoreContent` + `TreePanel` + `MarkdownViewer` |
+| `/lore` | Browse + Edit (Type C-lite) — world lore from `content/lore/` | `useLoreTree` + `useLoreContent` + `TreePanel` + `NewFileForm` + `LoreEditor` (wraps `MarkdownViewer`) |
 | `/editor` | Editor (Type B) | `useEditor` + `FileTree` + `EditorPanel` |
 | `/content-linker` | Tool (Type B) | `useContentLinker` + `ScalarLink` + `ArrayLink` |
 | `/migration` | Op (Type B) | `MigrationStatusView` + `MigrationResultView` |
@@ -253,7 +252,7 @@ The primitive handles:
 - Routing via `useRouter().push()` on row click.
 - Pagination UI.
 
-Used by: `dialogues`, `scenes`, `characters`, `stories`, `overlays`, `locations`, `vault`, `gigs`, `shop`, `maps`, `mysteries`.
+Used by: `dialogues`, `scenes`, `characters`, `overlays`, `locations`, `vault`, `gigs`, `shop`, `maps`, `mysteries`.
 
 
 ### Type B — list via custom hook + custom components

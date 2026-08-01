@@ -13,6 +13,13 @@ const VAULT_FILE = 'vault/great_lithium_leak_clues.yaml';
 const OVERLAY_FILE = 'overlays/great_lithium_leak/overlay_great_lithium_leak.yaml';
 // Beats-based story arc file (content/stories/real_heroism_in_latam/). Migrates
 // as content type 'story' and writes story_beats rows (slug keys), not a manifest row.
+// Collision-avoidance note: the beat_sofia_* slugs asserted below are the CANONICAL
+// story-beat slugs from this real content file (not a synthetic fixture). Per
+// AGENTS.md, migration.drift deliberately migrates the actual YAML file (like the
+// great_lithium_leak mission above), so it must use the real slugs. The upserted
+// story_beats rows are intentionally NOT cleaned up in afterAll — they are canonical
+// rows that should persist; deleting them would corrupt the beat registry relied on
+// by dialogue/scene beat-slug validation. Only the migration_log row is cleaned up.
 const STORY_FILE = 'stories/real_heroism_in_latam/real_heroism_in_latam.yaml';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
@@ -58,6 +65,10 @@ describe('Migration drift guard', () => {
     await applyMigration('017_mystery_state.sql');
     await applyMigration('018_vault_system.sql');
     await applyMigration('026_vault_signed_urls.sql');
+    // 044 creates the story_beats table required by the story-arc migration
+    // test below (upsertStoryBeat writes to it). Must run before 046, which
+    // extends the migration_log CHECK constraint to include 'story'.
+    await applyMigration('044_story_beats.sql');
     await applyMigration('046_stories.sql');
     // The dead stories manifest table no longer exists; 058 drops it (046 above
     // may have recreated it if the real DB already ran 058).

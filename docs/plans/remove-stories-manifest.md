@@ -50,12 +50,24 @@ Evidence:
 -- Remove the dead stories manifest table.
 -- A story arc is now expressed as story_beats + mission_id/story_beat metadata on
 -- dialogues and scenes. Nothing at runtime reads the stories table.
+
+-- Guard: abort if the table still holds rows that have not been archived or
+-- migrated to story_beats. Only drop when empty (or already absent).
+DO $$
+BEGIN
+  IF to_regclass('public.stories') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM stories LIMIT 1) THEN
+      RAISE EXCEPTION 'Refusing to drop non-empty stories table. Archive or migrate its rows to story_beats before re-running 058.';
+    END IF;
+  END IF;
+END $$;
+
 DROP TABLE IF EXISTS stories;
 -- (idx_stories_mission_id is dropped with the table)
 ```
 
 - **Do NOT** remove `'story'` from the `migration_log` CHECK constraint — beats-based story arc files still migrate as content type `story`.
-- Before applying, run `SELECT count(*) FROM stories;` to confirm (expect 0; safe to drop regardless since nothing reads it).
+- The migration aborts (via the `DO` block above) if `stories` still contains rows — archive or migrate them to `story_beats` first. When the table is empty (or already absent) it is dropped safely.
 - Apply with `./scripts/apply-migrations.sh both`. Verify with `\dt stories` (should not exist).
 
 ### 4.2 Shared schemas (`shared/`)
@@ -79,9 +91,9 @@ DROP TABLE IF EXISTS stories;
     beats: z.array(StoryBeatEntrySchema).default([]),
   });
 
-  export const YAMLStoryArcFileSchema = z.object({
-    story: YAMLStoryArcSchema,
-  });
+  // The canonical story file uses the root-level shape directly (no `story:`
+  // wrapper), so the file schema validates the same shape as the arc schema.
+  export const YAMLStoryArcFileSchema = YAMLStoryArcSchema;
 
   export type YAMLStoryArc = z.infer<typeof YAMLStoryArcSchema>;
   ```
@@ -94,7 +106,7 @@ DROP TABLE IF EXISTS stories;
 - **`content-upserts.ts`** — remove the `upsertStory()` function (~line 188) entirely.
 - **`upsert.ts`**:
   - Remove `YAMLStorySchema` from the `@las-flores/shared` import (line 4).
-  - `processStoryData()` (~lines 84–105): **keep only the beats branch** (`if (data.beats && !data.stories) { ... upsertStoryBeat ... }`); delete the `const stories = data.stories || [data]; ... YAMLStorySchema.parse ... upsertStory(...)` fallback.
+  - `processStoryData()` (~lines 84–105): **keep only the beats branch** (`if (data.beats) { ... upsertStoryBeat ... }`); delete the `const stories = data.stories || [data]; ... YAMLStorySchema.parse ... upsertStory(...)` fallback.
 - **`validate-types.ts`**:
   - Remove `YAMLStoryFileSchema` from the import (line 11).
   - `case 'story'` (~lines 88–120): delete the `if (data.stories) { YAMLStoryFileSchema.parse(data) }` and the final `else { YAMLStoryFileSchema.parse(data) }` branches; **keep the `else if (data.beats)` manual validation**.
@@ -185,6 +197,6 @@ docker exec las-flores-server wget -qO- http://localhost:3000/health   # {"succe
 2. `/admin/stories` removed; sidebar no longer shows a `Stories` link; Content Linker has no `stories` tab; the missions wizard no longer offers/creates manifest story YAML.
 3. `content/stories/real_heroism_in_latam/real_heroism_in_latam.yaml` still migrates and its `beat_sofia_*` slugs land in `story_beats`.
 4. `story_beat` runtime gating (`isStoryBeatAllowed`, `required_story_beat`) untouched and passing tests.
-5. All lint/build/test suites green (clearing the Jest cache first if `ts-jest` parse errors appear: `npx --no-install jest --workspace=server --clearCache`).
+5. All lint/build/test suites green. Always clear the stale Jest cache before the server suite, then rerun normally: `npx --no-install jest --workspace=server --clearCache`.
 
 
