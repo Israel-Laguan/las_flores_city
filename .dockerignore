@@ -35,8 +35,10 @@ Dockerfile*
 
 # Documentation
 *.md
-# Re-include content lore markdown — the admin lore endpoints serve these
-# files in production and they must be present in the server image.
+# `*.md` (no slash) only excludes markdown at the build-context root; it never
+# excluded nested lore files (content/**/*.md). The negation below is therefore
+# a no-op today — it only guards against a future switch to `**/*.md`, which
+# would otherwise strip the lore markdown that the admin endpoints serve in prod.
 !content/**/*.md
 LICENSE
 

@@ -52,8 +52,6 @@ export async function processFileSystem(
   contentDir: string,
 ): Promise<{
   storyPaths: string[];
-  characterYamlPaths: string[];
-  sceneYamlPaths: string[];
   missionYamlPaths: string[];
 }> {
   // loreDir points to the world lore root (content/lore/ via getWorldLoreDir).
@@ -61,45 +59,30 @@ export async function processFileSystem(
   // subdirectory under content/lore/. The `figures/`, `districts/`, and
   // `landmarks/` subdirectories were removed when lore moved from docs/lore/
   // to content/lore/ — those coverage types are no longer supported.
-  const [storyPaths, characterYamlPaths, sceneYamlPaths, missionYamlPaths] =
-    await Promise.all([
-      listMdFiles(path.join(loreDir, 'stories')).then(ps => ps.map(p => `stories/${p}`)),
-      listYamlFiles(contentDir, 'characters'),
-      listYamlFiles(contentDir, 'scenes'),
-      listYamlFiles(contentDir, 'missions'),
-    ]);
+  //
+  // README/index files are index docs, not story entries — exclude them so the
+  // coverage list only reports actual story lore.
+  const [storyPaths, missionYamlPaths] = await Promise.all([
+    listMdFiles(path.join(loreDir, 'stories')).then(ps =>
+      ps
+        .filter(p => !/^(?:readme|index)\.md$/i.test(p.split('/').pop() ?? ''))
+        .map(p => `stories/${p}`)
+    ),
+    listYamlFiles(contentDir, 'missions'),
+  ]);
 
   return {
     storyPaths,
-    characterYamlPaths,
-    sceneYamlPaths,
     missionYamlPaths,
   };
 }
 
 export async function parseYamlFiles(
   contentDir: string,
-  filesData: { sceneYamlPaths: string[]; missionYamlPaths: string[] },
+  filesData: { missionYamlPaths: string[] },
 ): Promise<{
-  sceneObjects: Array<{ district?: string; name?: string }>;
   missionObjects: Array<{ title?: string }>;
 }> {
-  const sceneObjects: Array<{ district?: string; name?: string }> = (
-    await Promise.all(
-      filesData.sceneYamlPaths.map(async relPath => {
-        const parsed = await parseYamlFile(path.join(contentDir, relPath));
-        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-          const obj = parsed as Record<string, unknown>;
-          const result: { district?: string; name?: string } = {};
-          if (typeof obj['district'] === 'string') result.district = obj['district'];
-          if (typeof obj['name'] === 'string') result.name = obj['name'];
-          return result;
-        }
-        return null;
-      }),
-    )
-  ).filter((s): s is NonNullable<typeof s> => s !== null);
-
   const missionObjects: Array<{ title?: string }> = (
     await Promise.all(
       filesData.missionYamlPaths.map(async relPath => {
@@ -119,5 +102,5 @@ export async function parseYamlFiles(
     )
   ).flat();
 
-  return { sceneObjects, missionObjects };
+  return { missionObjects };
 }

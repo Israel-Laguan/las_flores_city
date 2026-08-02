@@ -329,6 +329,32 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
       await recreateDialogueTreeFKConstraints();
     }
 
+    // Full (non-scoped) migrations bootstrap the story_beats registry during
+    // this run, so up-front validation used schema-only mode (to avoid
+    // cross-references failing against an empty registry). Now that the
+    // registry is populated, re-run full cross-reference validation and fail
+    // the migration if any dialogue/scene references an unknown beat slug.
+    // Scoped migrations (files provided) are skipped here: they run on an
+    // already-initialized DB where out-of-scope beats legitimately vary, and
+    // the admin UI (admin-content.ts) performs full validation for them.
+    if (!files || files.length === 0) {
+      try {
+        const crossValidation = await validateContent(contentDir);
+        if (!crossValidation.valid) {
+          result.success = false;
+          const crossErrors = crossValidation.errors
+            .filter(e => e.severity === 'error')
+            .map(e => `Cross-reference (post-migration): ${e.file}: ${e.message}`);
+          result.errors.push(...crossErrors);
+          console.error('❌ Post-migration cross-reference validation failed:', crossErrors);
+        }
+      } catch (error: any) {
+        result.success = false;
+        result.errors.push(`Post-migration cross-reference validation failed: ${error.message}`);
+        console.error('❌ Post-migration cross-reference validation failed:', error.message);
+      }
+    }
+
     await runPostMigrationTasks(result);
     return result;
   } catch (error: any) {
