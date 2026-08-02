@@ -34,7 +34,7 @@ function NewFileForm({
         <div className={styles.newFileForm}>
           <input
             type="text"
-            placeholder="guides/my-note.md"
+            placeholder="organizations/new_entry.md"
             value={newFilePath}
             onChange={(e) => setNewFilePath(e.target.value)}
             className={styles.newFileInput}

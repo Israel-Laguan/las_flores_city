@@ -51,8 +51,8 @@ const TYPE_CONFIG: Record<string, TypeConfig> = {
   character: { roots: ['characters'] },
   // content/scenes/<slug>/scene_<slug>.yaml
   scene: { roots: ['scenes'] },
-  // content/stories/<slug>/story_<slug>.yaml — supports both beats-based (root id) and stories-array-based
-  story: { roots: ['stories'], idArrays: ['stories'] },
+  // content/stories/<slug>/<slug>.yaml — beats-based story arc files with root id
+  story: { roots: ['stories'] },
   // content/missions/<slug>/mission_<slug>.yaml — IDs nested under missions[]
   mission: { roots: ['missions'], idArrays: ['missions'] },
   // content/overlays/<slug>/overlay_<slug>.yaml (or flat overlay_<slug>.yaml)
@@ -115,7 +115,7 @@ async function findContentFile(
         if ((parsed as { id?: unknown }).id === id) {
           return { path: relPath, yaml: parsed };
         }
-        // Check nested arrays (e.g. missions[], vault_items[], stories[])
+        // Check nested arrays (e.g. missions[], vault_items[])
         if (config.idArrays) {
           for (const key of config.idArrays) {
             const arr = (parsed as Record<string, unknown>)[key];

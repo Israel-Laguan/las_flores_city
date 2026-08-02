@@ -69,12 +69,11 @@ describe('Story Beat Pipeline Integration', () => {
   });
 
   afterAll(async () => {
-    // Clean up only the canonical slugs this suite manages (collision-avoidance:
-    // these are the fixed slugs from content/story_beats.yaml under test).
-    await pool.query(
-      'DELETE FROM story_beats WHERE slug = ANY($1::text[])',
-      [EXPECTED_BEATS.map(b => b.slug)],
-    );
+    // Restore the canonical story_beats registry. These are real content slugs,
+    // so we must NOT delete them — doing so leaves the shared registry empty
+    // and breaks content-pipeline.test.ts, which validates dialogue/scene
+    // story_beat cross-references against it. Re-populate instead.
+    await processContentFile(path.join(CONTENT_DIR, 'story_beats.yaml'));
     await pool.end();
   });
 

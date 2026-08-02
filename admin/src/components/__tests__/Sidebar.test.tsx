@@ -40,6 +40,8 @@ describe('Sidebar', () => {
   });
 
   it('renders top-level links with their hrefs', () => {
+    // 'Plans' is a sub-item of Story Builder — activate the parent route so it renders.
+    mockPathname = '/story-builder';
     renderSidebar();
     expect(screen.getByRole('link', { name: 'Pipeline' })).toHaveAttribute('href', '/pipeline');
     expect(screen.getByRole('link', { name: 'Story Builder' })).toHaveAttribute('href', '/story-builder');

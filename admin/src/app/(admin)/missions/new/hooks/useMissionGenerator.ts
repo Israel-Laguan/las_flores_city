@@ -35,7 +35,6 @@ export function useMissionGenerator() {
     selectedCharacters: Set<string>; selectedScenes: Set<string>; selectedDialogues: Set<string>;
     vaultItems: Array<{ title: string; description: string; item_type: string }>;
     overlays: Array<{ name: string; target_tree_id: string }>;
-    createStory: boolean; storyTitle: string; storyDescription: string; storyLoreRef: string;
   }) => {
     if (!config.title.trim()) { setError('Title is required'); return; }
     setGenerating(true);
@@ -71,14 +70,6 @@ export function useMissionGenerator() {
         const overlayPath = `overlays/overlay_${overlaySlug}_${overlayId.slice(0, 8)}.yaml`;
         await writeYaml(overlayPath, overlayYaml);
         links.push(overlayPath);
-      }
-
-      if (config.createStory) {
-        const storyId = generateUUID();
-        const storyYaml = `stories:\n  - id: ${yamlEscape(storyId)}\n    title: ${yamlEscape(config.storyTitle || config.title)}\n    description: ${yamlEscape(config.storyDescription || config.description)}\n    mission_id: ${yamlEscape(missionId)}\n    characters: [${[...config.selectedCharacters].map(id => yamlEscape(id)).join(', ')}]\n    scenes: [${[...config.selectedScenes].map(id => yamlEscape(id)).join(', ')}]\n    dialogues: [${[...config.selectedDialogues].map(id => yamlEscape(id)).join(', ')}]\n    overlays: [${overlayIds.map(id => yamlEscape(id)).join(', ')}]\n    vault_items: [${vaultItemIds.map(id => yamlEscape(id)).join(', ')}]${config.storyLoreRef ? `\n    lore_ref: ${yamlEscape(config.storyLoreRef)}` : ''}`;
-        const storyPath = `stories/story_${slug}_${storyId.slice(0, 8)}.yaml`;
-        await writeYaml(storyPath, storyYaml);
-        links.push(storyPath);
       }
 
       setGeneratedLinks(links);

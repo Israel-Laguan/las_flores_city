@@ -108,7 +108,6 @@ admin/
 | `/story-beats` | CRUD (Type B) | `useBeatHandlers` + `BeatForm` + `BeatTable` + `BeatUsagesTable` |
 | `/story-arc` | Visualization | Beat timeline + reachability |
 | `/missions` + `/[id]` + `/new` | CRUD (Type B) | `useMissionWizard` for new-mission flow |
-| `/stories` + `/[id]` | List/Detail (Type A) | |
 | `/overlays` + `/[id]` | List/Detail (Type A) | |
 | `/locations` + `/[id]` | List/Detail (Type A) | |
 | `/vault` + `/[id]` | List/Detail (Type A) | |
@@ -116,7 +115,7 @@ admin/
 | `/shop` + `/[id]` | List/Detail (Type A) | |
 | `/maps` + `/[id]` | List/Detail (Type A) | |
 | `/mysteries` + `/[id]` | List/Detail (Type A) | |
-| `/lore` | Browse (Type C-lite) | `useLoreTree` + `useLoreContent` + `TreePanel` + `MarkdownViewer` |
+| `/lore` | Browse + Edit (Type C-lite) — world lore from `content/lore/` | `useLoreTree` + `useLoreContent` + `TreePanel` + `NewFileForm` + `LoreEditor` (wraps `MarkdownViewer`) |
 | `/editor` | Editor (Type B) | `useEditor` + `FileTree` + `EditorPanel` |
 | `/content-linker` | Tool (Type B) | `useContentLinker` + `ScalarLink` + `ArrayLink` |
 | `/migration` | Op (Type B) | `MigrationStatusView` + `MigrationResultView` |
@@ -253,7 +252,7 @@ The primitive handles:
 - Routing via `useRouter().push()` on row click.
 - Pagination UI.
 
-Used by: `dialogues`, `scenes`, `characters`, `stories`, `overlays`, `locations`, `vault`, `gigs`, `shop`, `maps`, `mysteries`.
+Used by: `dialogues`, `scenes`, `characters`, `overlays`, `locations`, `vault`, `gigs`, `shop`, `maps`, `mysteries`.
 
 
 ### Type B — list via custom hook + custom components
@@ -288,7 +287,7 @@ Used by: `story-beats`, `missions`, `missions/new`, `editor`, `content-linker`, 
 
 ### Type C — multi-step orchestrator
 
-For pages that have a stateful, multi-step interaction. The story-builder is the only full example; the lore browser is a smaller read-only variant.
+For pages that have a stateful, multi-step interaction. The story-builder is the only full example; the lore browser is a smaller edit-capable variant.
 
 ## Story Builder deep-dive (`/story-builder`)
 
@@ -339,23 +338,26 @@ app/story-builder/
 
 ## Lore Browser deep-dive (`/lore`)
 
-A smaller Type C-lite read-only page that demonstrates the URL-as-state pattern:
+A Type C-lite page that demonstrates the URL-as-state pattern with **browse and edit** support — world lore from `content/lore/`:
 
 ```text
 app/lore/
-├── page.tsx                # uses ?path=... in the URL
+├── page.tsx                # uses ?path=... in the URL; hosts NewFileForm (new-file creation)
 ├── lore.module.css
 ├── components/
 │   ├── TreePanel.tsx       # left pane: file tree grouped by type
 │   ├── SearchBar.tsx       # filter the tree
-│   ├── MarkdownViewer.tsx  # right pane: renders markdown + cross-links
+│   ├── LoreEditor.tsx      # edit pane: view/save markdown; wraps MarkdownViewer
+│   ├── MarkdownViewer.tsx  # renders markdown + cross-links
 │   └── MarkdownComponents.tsx  # custom remark components for the viewer
-└── hooks/
-    ├── useLoreTree.ts      # fetches /admin/lore/tree, groups by type
-    └── useLoreContent.ts   # fetches /admin/lore/file?path=... for the selected path
+├── hooks/
+│   ├── useLoreTree.ts      # fetches /admin/lore/tree, groups by type
+│   └── useLoreContent.ts   # fetches /admin/lore/file?path=... for the selected path
+└── __tests__/
+    └── LoreEditor.test.tsx
 ```
 
-The selected file is **not** in component state — it is the `?path=...` query param. This makes the view bookmarkable and reload-safe.
+The selected file is **not** in component state — it is the `?path=...` query param. This makes the view bookmarkable and reload-safe. `LoreEditor` (wrapping `MarkdownViewer`) handles edit/save/cancel with a dirty-guard, and `NewFileForm` (in `page.tsx`) creates new lore files.
 
 ## Styling contract
 
@@ -533,7 +535,7 @@ All three must exit `0` before merging.
 | `admin/src/test/setup.ts` | `@testing-library/jest-dom` side-effect import |
 | `admin/src/app/(admin)/pipeline/` | Intake pipeline: 5-step guided flow (edit → validate → migrate → assets → publish) |
 | `admin/src/app/(admin)/ai-config/` | Read-only AI configuration page |
-| `admin/src/app/(admin)/lore/` | Story Bible: file tree + `LoreEditor` with markdown preview |
+| `admin/src/app/(admin)/lore/` | Story Bible: file tree + `LoreEditor` with markdown preview; serves `content/lore/` world lore |
 | `admin/src/app/<area>/page.tsx` | One folder per top-level route |
 | `admin/src/app/<area>/[id]/page.tsx` | Detail page (where applicable) |
 | `admin/src/app/<area>/components/` | Area-specific sub-components |

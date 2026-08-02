@@ -15,7 +15,6 @@ export interface ExistingContentContext {
   scenes: Array<{ id: string; name: string; district: string; mood?: string; description?: string }>;
   dialogues: Array<{ id: string; name: string }>;
   missions: Array<{ id: string; title: string }>;
-  stories: Array<{ id: string; title: string }>;
   overlays: Array<{ id: string; name: string }>;
   locations: ExistingLocation[];
 }

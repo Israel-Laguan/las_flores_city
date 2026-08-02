@@ -9,7 +9,7 @@ import ArrayLink from './components/ArrayLink';
 import { ListItem, LinkOp, SectionConfig } from './types';
 import { useContentLinker } from './hooks/useContentLinker';
 
-type Tab = 'scenes' | 'missions' | 'stories' | 'characters';
+type Tab = 'scenes' | 'missions' | 'characters';
 
 const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName: string; entityType: string; sections: SectionConfig[] }> = {
   scenes: {
@@ -29,20 +29,6 @@ const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName:
     sections: [
       { field: 'mission_id', label: 'Linked Overlay (mission_id)', availableEndpoint: '/admin/overlays', idField: 'id', nameField: 'name', yamlDir: 'overlays', fileType: 'overlay', scalar: true },
       { field: 'vault_items', label: 'Vault Items (mission_id)', availableEndpoint: '/admin/vault', idField: 'id', nameField: 'title', yamlDir: 'vault', fileType: 'vault', scalar: false, arrayItemPath: 'mission_id' },
-    ],
-  },
-  stories: {
-    label: 'Stories',
-    listEndpoint: '/admin/stories',
-    entityName: 'Story',
-    entityType: 'story',
-    sections: [
-      { field: 'mission_id', label: 'Linked Mission', availableEndpoint: '/admin/mysteries', idField: 'id', nameField: 'title', yamlDir: 'missions', fileType: 'mission', scalar: true },
-      { field: 'characters', label: 'Characters', availableEndpoint: '/admin/characters', idField: 'id', nameField: 'name', yamlDir: 'characters', fileType: 'character' },
-      { field: 'scenes', label: 'Scenes', availableEndpoint: '/admin/scenes', idField: 'id', nameField: 'name', yamlDir: 'scenes', fileType: 'scene' },
-      { field: 'dialogues', label: 'Dialogues', availableEndpoint: '/admin/dialogues', idField: 'id', nameField: 'name', yamlDir: 'dialogues', fileType: 'dialogue' },
-      { field: 'overlays', label: 'Overlays', availableEndpoint: '/admin/overlays', idField: 'id', nameField: 'name', yamlDir: 'overlays', fileType: 'overlay' },
-      { field: 'vault_items', label: 'Vault Items', availableEndpoint: '/admin/vault', idField: 'id', nameField: 'title', yamlDir: 'vault', fileType: 'vault' },
     ],
   },
   characters: {
@@ -115,7 +101,7 @@ function LinksSection({ config, selectedData, available, onAddPendingOp, onGetLi
 
 export default function ContentLinkerPage() {
   const searchParams = useSearchParams();
-  const VALID_TABS: Tab[] = ['scenes', 'missions', 'stories', 'characters'];
+  const VALID_TABS: Tab[] = ['scenes', 'missions', 'characters'];
   const requestedTab = searchParams.get('tab');
   const initialTab: Tab = requestedTab && (VALID_TABS as ReadonlyArray<string>).includes(requestedTab) ? (requestedTab as Tab) : 'scenes';
   const initialId = searchParams.get('id') ?? '';
@@ -129,7 +115,7 @@ export default function ContentLinkerPage() {
     section: SectionConfig,
     itemId: string
   ): LinkOp => {
-    if (tab === 'scenes' || tab === 'stories' || tab === 'characters') {
+    if (tab === 'scenes' || tab === 'characters') {
       // Use the canonical content path resolved from the filesystem. The
       // per-folder layout (e.g. characters/<slug>/char_<slug>.yaml) means we
       // cannot construct the path from the entity id alone.
@@ -150,7 +136,7 @@ export default function ContentLinkerPage() {
   // For the selected-entity tabs the link ops write into the entity's own YAML
   // file, so we must wait for the canonical path to resolve before enabling the
   // link UI. The missions tab writes into the *linked* entities' files instead.
-  const needsContentPath = tab === 'scenes' || tab === 'stories' || tab === 'characters';
+  const needsContentPath = tab === 'scenes' || tab === 'characters';
   const contentPathReady = !needsContentPath || linker.contentPath !== null;
 
 

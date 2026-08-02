@@ -157,8 +157,8 @@ export type { Gig } from './schemas/gig.js';
 export { StoryBeatSchema, StoryBeatRegistrySchema } from './schemas/story-beat.js';
 export type { StoryBeat, StoryBeatRegistry } from './schemas/story-beat.js';
 
-export { YAMLStorySchema, YAMLStoryFileSchema } from './schemas/story.js';
-export type { YAMLStory, YAMLStoryFile } from './schemas/story.js';
+export { StoryBeatEntrySchema, YAMLStoryArcSchema, YAMLStoryArcFileSchema } from './schemas/story.js';
+export type { YAMLStoryArc, YAMLStoryArcFile } from './schemas/story.js';
 
 export { ContentTypeSchema, ContentFileSchema } from './schemas/content-validation.js';
 export type { ContentType, ContentFile } from './schemas/content-validation.js';

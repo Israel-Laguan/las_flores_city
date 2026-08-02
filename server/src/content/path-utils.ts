@@ -5,7 +5,10 @@ export function extractContentIds(contentType: ContentType, data: Record<string,
     case 'mission':
       return ((data.missions as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
     case 'story':
-      return ((data.stories as Array<{ id: string }>) || [data as { id: string }]).map((item) => item.id);
+      if (data.beats) {
+        return (data.beats as Array<{ slug: string }>).map((item) => item.slug);
+      }
+      return (data as { id?: string }).id ? [(data as { id: string }).id] : [];
     case 'vault':
       return ((data.vault_items as Array<{ id: string }>) || []).map((item) => item.id);
     case 'gig':

@@ -57,7 +57,6 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       scenes: [],
       dialogues: [],
       missions: [],
-      stories: [],
       overlays: [],
       locations: [],
     })),

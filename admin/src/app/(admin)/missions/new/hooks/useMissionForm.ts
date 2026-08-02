@@ -15,21 +15,14 @@ export function useMissionForm() {
   const [vaultItems, setVaultItems] = useState<VaultItemDraft[]>([]);
   const [overlays, setOverlays] = useState<OverlayDraft[]>([]);
 
-  const [createStory, setCreateStory] = useState(true);
-  const [storyTitle, setStoryTitle] = useState('');
-  const [storyDescription, setStoryDescription] = useState('');
-  const [storyLoreRef, setStoryLoreRef] = useState('');
-
   const resetForm = () => {
     setTitle(''); setDescription(''); setStatus('ACTIVE'); setLoreRef('');
     setVaultItems([]); setOverlays([]);
-    setCreateStory(true); setStoryTitle(''); setStoryDescription(''); setStoryLoreRef('');
   };
 
   return {
     title, setTitle, description, setDescription, status, setStatus, loreRef, setLoreRef,
     vaultItems, setVaultItems, overlays, setOverlays,
-    createStory, setCreateStory, storyTitle, setStoryTitle, storyDescription, setStoryDescription, storyLoreRef, setStoryLoreRef,
     resetForm,
   };
 }

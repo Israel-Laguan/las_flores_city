@@ -1,23 +1,26 @@
 import { z } from 'zod';
-import { zodUuid, zodUuidArray } from './uuid.js';
+import { zodUuid } from './uuid.js';
 
-export const YAMLStorySchema = z.object({
+export const StoryBeatEntrySchema = z.object({
+  slug: z.string().min(1),
+  label: z.string().min(1),
+  order: z.number().int().nonnegative(),
+  description: z.string().min(1),
+});
+
+export const YAMLStoryArcSchema = z.object({
   id: zodUuid(),
-  title: z.string().min(1).max(255),
+  name: z.string().min(1).max(255),
   description: z.string().max(1000).optional(),
-  mission_id: zodUuid(),
-  characters: zodUuidArray().default([]),
-  scenes: zodUuidArray().default([]),
-  dialogues: zodUuidArray().default([]),
-  overlays: zodUuidArray().default([]),
-  vault_items: zodUuidArray().default([]),
-  written_by: z.string().max(100).optional(),
-  lore_ref: z.string().max(255).optional(),
+  beats: z.array(StoryBeatEntrySchema),
 });
 
-export const YAMLStoryFileSchema = z.object({
-  stories: z.array(YAMLStorySchema),
-});
+// The canonical story-arc file (e.g. content/stories/real_heroism_in_latam/…yaml)
+// uses the root-level shape { id, name, description, beats } directly — there is
+// no `story:` wrapper. YAMLStoryArcFileSchema therefore validates the same shape
+// as YAMLStoryArcSchema so it matches the real files and the consumers in
+// validate-types.ts / upsert.ts that read data.id and data.beats at the root.
+export const YAMLStoryArcFileSchema = YAMLStoryArcSchema;
 
-export type YAMLStory = z.infer<typeof YAMLStorySchema>;
-export type YAMLStoryFile = z.infer<typeof YAMLStoryFileSchema>;
+export type YAMLStoryArc = z.infer<typeof YAMLStoryArcSchema>;
+export type YAMLStoryArcFile = z.infer<typeof YAMLStoryArcFileSchema>;

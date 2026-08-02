@@ -181,10 +181,6 @@ async function checkForeignKeyIntegrity(items: ContentPlanItem[]): Promise<Check
       const missionId = item.fields.mission_id;
       if (typeof missionId === 'string' && missionId.length > 0) mysteryIds.add(missionId);
     }
-    if (item.type === 'story') {
-      const missionId = item.fields.mission_id;
-      if (typeof missionId === 'string' && missionId.length > 0) mysteryIds.add(missionId);
-    }
     if (item.type === 'gig') {
       const locationId = item.fields.location_restriction_id;
       if (typeof locationId === 'string' && locationId.length > 0) sceneIds.add(locationId);

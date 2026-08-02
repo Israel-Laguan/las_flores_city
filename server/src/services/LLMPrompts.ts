@@ -8,14 +8,13 @@ export { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES };
 
 function formatExistingContent(context: ExistingContentContext): {
   chars: string; scenes: string; dialogues: string; missions: string;
-  stories: string; overlays: string; locations: string;
+  overlays: string; locations: string;
 } {
   return {
     chars: context.characters.map((c) => `${c.name} (id: ${c.id})${c.role ? `, role: ${c.role}` : ''}${c.faction ? `, faction: ${c.faction}` : ''}`).join(', ') || '(none)',
     scenes: context.scenes.map((s) => `${s.name} (id: ${s.id})${s.district ? `, district: ${s.district}` : ''}${s.mood ? `, mood: ${s.mood}` : ''}`).join(', ') || '(none)',
     dialogues: context.dialogues.map((d) => `${d.name} (id: ${d.id})`).join(', ') || '(none)',
     missions: context.missions.map((m) => `${m.title} (id: ${m.id})`).join(', ') || '(none)',
-    stories: context.stories.map((s) => `${s.title} (id: ${s.id})`).join(', ') || '(none)',
     overlays: context.overlays.map((o) => `${o.name} (id: ${o.id})`).join(', ') || '(none)',
     locations: context.locations.map((l) => `${l.name} (id: ${l.id})${l.district ? `, district: ${l.district}` : ''}${l.daytime ? `, daytime: ${l.daytime}` : ''}${l.nightlife ? `, nightlife: ${l.nightlife}` : ''}`).join(', ') || '(none)',
   };
@@ -53,7 +52,6 @@ ${CONTENT_TYPES.join(', ')}
 - Scenes: ${e.scenes}
 - Dialogues: ${e.dialogues}
 - Missions: ${e.missions}
-- Stories: ${e.stories}
 - Overlays: ${e.overlays}
 - Locations: ${e.locations}
 
@@ -111,7 +109,6 @@ export function buildOutlinePrompt(context: ExistingContentContext, options: Bui
   const existingScenes = context.scenes.map(s => depth === 'names' ? s.name : `${s.name} (id: ${s.id}, district: ${s.district})`).join(', ') || '(none)';
   const existingDialogues = context.dialogues.map(d => d.name).join(', ') || '(none)';
   const existingMissions = context.missions.map(m => m.title).join(', ') || '(none)';
-  const existingStories = context.stories.map(s => s.title).join(', ') || '(none)';
   const existingOverlays = context.overlays.map(o => o.name).join(', ') || '(none)';
   const existingLocations = context.locations.map(l => l.name).join(', ') || '(none)';
 
@@ -146,7 +143,6 @@ ${CONTENT_TYPES.join(', ')}
 - Scenes: ${existingScenes}
 - Dialogues: ${existingDialogues}
 - Missions: ${existingMissions}
-- Stories: ${existingStories}
 - Overlays: ${existingOverlays}
 - Locations: ${existingLocations}
 
@@ -229,7 +225,6 @@ ${CONTENT_TYPES.join(', ')}
 - Scenes: ${e.scenes}
 - Dialogues: ${e.dialogues}
 - Missions: ${e.missions}
-- Stories: ${e.stories}
 - Overlays: ${e.overlays}
 - Locations: ${e.locations}
 
@@ -293,7 +288,6 @@ ${CONTENT_TYPES.join(', ')}
 - Scenes: ${e.scenes}
 - Dialogues: ${e.dialogues}
 - Missions: ${e.missions}
-- Stories: ${e.stories}
 - Overlays: ${e.overlays}
 - Locations: ${e.locations}
 
@@ -334,7 +328,6 @@ ${unfilledFields.join(', ')}
 - Scenes: ${e.scenes}
 - Dialogues: ${e.dialogues}
 - Missions: ${e.missions}
-- Stories: ${e.stories}
 - Overlays: ${e.overlays}
 - Locations: ${e.locations}
 

@@ -185,33 +185,6 @@ export async function upsertShopItem(data: any): Promise<string> {
   return result.rows[0].id;
 }
 
-export async function upsertStory(data: any): Promise<string> {
-  const result = await queryOLTP(
-    `INSERT INTO stories (id, title, description, mission_id, characters, scenes, dialogues, overlays, vault_items, written_by, lore_ref)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      ON CONFLICT (id) DO UPDATE SET
-        title = EXCLUDED.title,
-        description = EXCLUDED.description,
-        mission_id = EXCLUDED.mission_id,
-        characters = EXCLUDED.characters,
-        scenes = EXCLUDED.scenes,
-        dialogues = EXCLUDED.dialogues,
-        overlays = EXCLUDED.overlays,
-        vault_items = EXCLUDED.vault_items,
-        written_by = EXCLUDED.written_by,
-        lore_ref = EXCLUDED.lore_ref,
-        updated_at = NOW()
-      RETURNING id`,
-    [
-      data.id, data.title, data.description || null, data.mission_id || null,
-      data.characters || [], data.scenes || [], data.dialogues || [],
-      data.overlays || [], data.vault_items || [],
-      data.written_by || null, data.lore_ref || null
-    ]
-  );
-  return result.rows[0].id;
-}
-
 export async function upsertMapTile(data: { district_id: string; x: number; y: number; terrain_type: string; base_image_url?: string; overlay_image_url?: string; rotation?: number; is_flipped?: boolean; metadata?: Record<string, unknown> }): Promise<string> {
   const result = await queryOLTP(
     `INSERT INTO map_tiles (district_id, x, y, terrain_type, base_image_url, overlay_image_url, rotation, is_flipped, metadata)

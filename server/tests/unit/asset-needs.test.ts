@@ -33,7 +33,7 @@ describe('AssetNeedsService', () => {
   });
 
   it('does not inject for types without assets', () => {
-    const typesWithoutAssets = ['dialogue', 'mission', 'story', 'shop_item', 'gig', 'vault', 'story_beat', 'map_tile'] as const;
+    const typesWithoutAssets = ['dialogue', 'mission', 'shop_item', 'gig', 'vault', 'story_beat', 'map_tile'] as const;
     for (const type of typesWithoutAssets) {
       const items = [{ type, assetNeeds: [] } as any];
       injectAssetNeeds(items);

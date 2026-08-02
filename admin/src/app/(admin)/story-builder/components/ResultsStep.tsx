@@ -52,7 +52,7 @@ function liveContentHref(item: ContentPlanItem): string | null {
     case 'mission':
       return `/mysteries/${slug}`;
     case 'story':
-      return `/stories/${slug}`;
+      return `/story-beats`;
     default:
       return null;
   }

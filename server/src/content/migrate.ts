@@ -22,7 +22,7 @@ const CONTENT_TYPE_TABLE: Record<ContentType, string> = {
   location: 'scenes',
   gig: 'gigs',
   mission: 'mysteries',
-  story: 'stories',
+  story: 'story_beats',
   vault: 'vault_items',
   shop_item: 'shop_items',
   map_tile: 'map_tiles',
@@ -55,9 +55,9 @@ async function isTargetContentPresent(contentType: ContentType, ids: string[]): 
     return false;
   }
 
-  // story_beat uses slug as PK (not UUID) — check by slug count
-  if (contentType === 'story_beat') {
-    const slugs = ids; // for story_beat, ids array holds slugs (comma-joined, split by caller)
+  // story_beat and story (beats-based) use slug as PK (not UUID) — check by slug count
+  if (contentType === 'story_beat' || contentType === 'story') {
+    const slugs = ids; // for story_beat/story, ids array holds slugs (comma-joined, split by caller)
     const result = await queryOLTP<{ count: number }>(
       `SELECT COUNT(*)::int AS count FROM story_beats WHERE slug = ANY($1::text[])`,
       [slugs]
@@ -270,7 +270,11 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
 
   try {
     console.log('🔍 Validating content...');
-    const validationResult = await validateContent(contentDir);
+    // Use schema-only validation to skip DB/Redis cross-reference checks.
+    // The story_beats registry is populated by this very migration run, so
+    // cross-references would fail on a fresh database. Full cross-reference
+    // validation is performed by the admin UI (admin-content.ts), not here.
+    const validationResult = await validateContent(contentDir, true);
 
     if (!validationResult.valid) {
       result.success = false;
@@ -323,6 +327,32 @@ export async function migrateContent(contentDir: string, files?: string[]): Prom
     } finally {
       console.log('🔒 Re-creating dialogue_trees FK constraints...');
       await recreateDialogueTreeFKConstraints();
+    }
+
+    // Full (non-scoped) migrations bootstrap the story_beats registry during
+    // this run, so up-front validation used schema-only mode (to avoid
+    // cross-references failing against an empty registry). Now that the
+    // registry is populated, re-run full cross-reference validation and fail
+    // the migration if any dialogue/scene references an unknown beat slug.
+    // Scoped migrations (files provided) are skipped here: they run on an
+    // already-initialized DB where out-of-scope beats legitimately vary, and
+    // the admin UI (admin-content.ts) performs full validation for them.
+    if (!files || files.length === 0) {
+      try {
+        const crossValidation = await validateContent(contentDir);
+        if (!crossValidation.valid) {
+          result.success = false;
+          const crossErrors = crossValidation.errors
+            .filter(e => e.severity === 'error')
+            .map(e => `Cross-reference (post-migration): ${e.file}: ${e.message}`);
+          result.errors.push(...crossErrors);
+          console.error('❌ Post-migration cross-reference validation failed:', crossErrors);
+        }
+      } catch (error: any) {
+        result.success = false;
+        result.errors.push(`Post-migration cross-reference validation failed: ${error.message}`);
+        console.error('❌ Post-migration cross-reference validation failed:', error.message);
+      }
     }
 
     await runPostMigrationTasks(result);
