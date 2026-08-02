@@ -81,14 +81,14 @@ DROP TABLE IF EXISTS stories;
     slug: z.string().min(1),
     label: z.string().min(1),
     order: z.number().int().nonnegative(),
-    description: z.string(),
+    description: z.string().min(1),
   });
 
   export const YAMLStoryArcSchema = z.object({
     id: zodUuid(),
     name: z.string().min(1).max(255),
     description: z.string().max(1000).optional(),
-    beats: z.array(StoryBeatEntrySchema).default([]),
+    beats: z.array(StoryBeatEntrySchema),
   });
 
   // The canonical story file uses the root-level shape directly (no `story:`
@@ -97,7 +97,7 @@ DROP TABLE IF EXISTS stories;
 
   export type YAMLStoryArc = z.infer<typeof YAMLStoryArcSchema>;
   ```
-  (If you prefer, delete `story.ts` and validate the beats shape inline as `validate-types.ts` already does manually — but a schema is cleaner and matches the `real_heroism_in_latam.yaml` shape.)
+  (The shipped implementation keeps `story.ts` and parses the complete file through `YAMLStoryArcFileSchema.parse(data)` in `validate-types.ts` — no manual beats validation — matching the `real_heroism_in_latam.yaml` shape.)
 - `shared/src/index.ts` (~lines 160–161) — replace the `YAMLStorySchema` / `YAMLStoryFileSchema` exports with the new arc schema exports.
 - `shared/src/schemas/content-validation.ts` — **keep `'story'`** in `ContentTypeSchema`.
 
@@ -109,7 +109,7 @@ DROP TABLE IF EXISTS stories;
   - `processStoryData()` (~lines 84–105): **keep only the beats branch** (`if (data.beats) { ... upsertStoryBeat ... }`); delete the `const stories = data.stories || [data]; ... YAMLStorySchema.parse ... upsertStory(...)` fallback.
 - **`validate-types.ts`**:
   - Remove `YAMLStoryFileSchema` from the import (line 11).
-  - `case 'story'` (~lines 88–120): delete the `if (data.stories) { YAMLStoryFileSchema.parse(data) }` and the final `else { YAMLStoryFileSchema.parse(data) }` branches; **keep the `else if (data.beats)` manual validation**.
+  - `case 'story'` (~lines 88–120): delete the `if (data.stories) { YAMLStoryFileSchema.parse(data) }` and the final `else { YAMLStoryFileSchema.parse(data) }` branches; **replace the manual `else if (data.beats)` validation with `YAMLStoryArcFileSchema.parse(data)`** (parses the complete arc).
 - **`path-utils.ts`** — `extractContentIds` `case 'story'` (lines 7–8): change to return **beat slugs** for beats-shaped files (mirror the `story_beat` case at lines 15–24):
   ```ts
   case 'story':

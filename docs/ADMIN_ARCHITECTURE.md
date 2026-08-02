@@ -287,7 +287,7 @@ Used by: `story-beats`, `missions`, `missions/new`, `editor`, `content-linker`, 
 
 ### Type C — multi-step orchestrator
 
-For pages that have a stateful, multi-step interaction. The story-builder is the only full example; the lore browser is a smaller read-only variant.
+For pages that have a stateful, multi-step interaction. The story-builder is the only full example; the lore browser is a smaller edit-capable variant.
 
 ## Story Builder deep-dive (`/story-builder`)
 
@@ -338,23 +338,26 @@ app/story-builder/
 
 ## Lore Browser deep-dive (`/lore`)
 
-A smaller Type C-lite read-only page that demonstrates the URL-as-state pattern:
+A Type C-lite page that demonstrates the URL-as-state pattern with **browse and edit** support — world lore from `content/lore/`:
 
 ```text
 app/lore/
-├── page.tsx                # uses ?path=... in the URL
+├── page.tsx                # uses ?path=... in the URL; hosts NewFileForm (new-file creation)
 ├── lore.module.css
 ├── components/
 │   ├── TreePanel.tsx       # left pane: file tree grouped by type
 │   ├── SearchBar.tsx       # filter the tree
-│   ├── MarkdownViewer.tsx  # right pane: renders markdown + cross-links
+│   ├── LoreEditor.tsx      # edit pane: view/save markdown; wraps MarkdownViewer
+│   ├── MarkdownViewer.tsx  # renders markdown + cross-links
 │   └── MarkdownComponents.tsx  # custom remark components for the viewer
-└── hooks/
-    ├── useLoreTree.ts      # fetches /admin/lore/tree, groups by type
-    └── useLoreContent.ts   # fetches /admin/lore/file?path=... for the selected path
+├── hooks/
+│   ├── useLoreTree.ts      # fetches /admin/lore/tree, groups by type
+│   └── useLoreContent.ts   # fetches /admin/lore/file?path=... for the selected path
+└── __tests__/
+    └── LoreEditor.test.tsx
 ```
 
-The selected file is **not** in component state — it is the `?path=...` query param. This makes the view bookmarkable and reload-safe.
+The selected file is **not** in component state — it is the `?path=...` query param. This makes the view bookmarkable and reload-safe. `LoreEditor` (wrapping `MarkdownViewer`) handles edit/save/cancel with a dirty-guard, and `NewFileForm` (in `page.tsx`) creates new lore files.
 
 ## Styling contract
 

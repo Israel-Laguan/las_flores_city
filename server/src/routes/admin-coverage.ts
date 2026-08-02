@@ -8,22 +8,15 @@ import { resolveContentDir } from './admin-content.helpers.js';
 import { queryOLTP } from '../database/connection.js';
 import * as matchers from './admin-coverage.matchers.js';
 import { processFileSystem, parseYamlFiles } from './admin-coverage.fs.js';
-import { enrichWithDatabaseResults } from './admin-coverage.enrich.js';
 
 export const adminCoverageRouter = express.Router();
 
 adminCoverageRouter.use(authAndAdminMiddleware);
 
 export type {
-  FigureCoverageItem,
-  DistrictCoverageItem,
-  LandmarkCoverageItem,
   StoryCoverageItem,
 } from './admin-coverage.matchers.js';
 export {
-  matchFiguresToCharacters,
-  matchDistrictsToScenes,
-  matchLandmarksToScenes,
   matchStoriesToMissions,
   figureStem,
   characterStem,
@@ -37,13 +30,9 @@ adminCoverageRouter.get('/', async (_req, res) => {
     const filesData = await processFileSystem(loreDir, contentDir);
     const parsedData = await parseYamlFiles(contentDir, filesData);
     const matchingResults = {
-      figures: matchers.matchFiguresToCharacters(filesData.figurePaths, filesData.characterYamlPaths),
-      districts: matchers.matchDistrictsToScenes(filesData.districtPaths, parsedData.sceneObjects),
-      landmarks: matchers.matchLandmarksToScenes(filesData.landmarkPaths, parsedData.sceneObjects),
       stories: matchers.matchStoriesToMissions(filesData.storyPaths, parsedData.missionObjects),
     };
-    await enrichWithDatabaseResults(matchingResults.figures, matchingResults.districts, matchingResults.landmarks);
-    res.json(assembleResponse(matchingResults.figures, matchingResults.districts, matchingResults.landmarks, matchingResults.stories));
+    res.json(assembleResponse(matchingResults.stories));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('[admin-coverage] GET / error:', error);
@@ -52,14 +41,11 @@ adminCoverageRouter.get('/', async (_req, res) => {
 });
 
 function assembleResponse(
-  figures: matchers.FigureCoverageItem[],
-  districts: matchers.DistrictCoverageItem[],
-  landmarks: matchers.LandmarkCoverageItem[],
   stories: matchers.StoryCoverageItem[],
 ) {
   return {
     success: true,
-    data: { byType: { figures, districts, landmarks, stories } },
+    data: { byType: { stories } },
     timestamp: new Date().toISOString(),
   };
 }

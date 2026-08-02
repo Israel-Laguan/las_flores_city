@@ -51,9 +51,6 @@ export async function processFileSystem(
   loreDir: string,
   contentDir: string,
 ): Promise<{
-  figurePaths: string[];
-  districtPaths: string[];
-  landmarkPaths: string[];
   storyPaths: string[];
   characterYamlPaths: string[];
   sceneYamlPaths: string[];
@@ -63,13 +60,9 @@ export async function processFileSystem(
   // After the lore reorganization, only `stories/` has a corresponding
   // subdirectory under content/lore/. The `figures/`, `districts/`, and
   // `landmarks/` subdirectories were removed when lore moved from docs/lore/
-  // to content/lore/ — listMdFiles gracefully returns [] for missing dirs,
-  // so those coverage types honestly report zero lore documents.
-  const [figurePaths, districtPaths, landmarkPaths, storyPaths, characterYamlPaths, sceneYamlPaths, missionYamlPaths] =
+  // to content/lore/ — those coverage types are no longer supported.
+  const [storyPaths, characterYamlPaths, sceneYamlPaths, missionYamlPaths] =
     await Promise.all([
-      listMdFiles(path.join(loreDir, 'figures')).then(ps => ps.map(p => `figures/${p}`)),
-      listMdFiles(path.join(loreDir, 'districts')).then(ps => ps.map(p => `districts/${p}`)),
-      listMdFiles(path.join(loreDir, 'landmarks')).then(ps => ps.map(p => `landmarks/${p}`)),
       listMdFiles(path.join(loreDir, 'stories')).then(ps => ps.map(p => `stories/${p}`)),
       listYamlFiles(contentDir, 'characters'),
       listYamlFiles(contentDir, 'scenes'),
@@ -77,9 +70,6 @@ export async function processFileSystem(
     ]);
 
   return {
-    figurePaths,
-    districtPaths,
-    landmarkPaths,
     storyPaths,
     characterYamlPaths,
     sceneYamlPaths,

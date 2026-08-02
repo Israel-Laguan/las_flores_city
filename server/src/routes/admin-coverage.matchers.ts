@@ -1,25 +1,3 @@
-export interface FigureCoverageItem {
-  name: string;
-  lorePath: string;
-  hasCharacterYaml: boolean;
-  hasPortraitUrl: boolean;
-  hasDialogue: boolean;
-}
-
-export interface DistrictCoverageItem {
-  name: string;
-  lorePath: string;
-  hasSceneYaml: boolean;
-  hasBackgroundUrl: boolean;
-}
-
-export interface LandmarkCoverageItem {
-  name: string;
-  lorePath: string;
-  hasSceneYaml: boolean;
-  hasBackgroundUrl: boolean;
-}
-
 export interface StoryCoverageItem {
   name: string;
   lorePath: string;
@@ -39,45 +17,6 @@ export function characterStem(characterPath: string): string {
 
 export function normalizeName(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-}
-
-export function matchFiguresToCharacters(
-  figurePaths: string[],
-  characterPaths: string[],
-): FigureCoverageItem[] {
-  const charStems = characterPaths.map(p => characterStem(p).toLowerCase());
-  return figurePaths.map(lorePath => {
-    const stem = figureStem(lorePath);
-    const lowerStem = stem.toLowerCase();
-    const hasCharacterYaml = charStems.some(cs => cs.includes(lowerStem));
-    return { name: stem, lorePath, hasCharacterYaml, hasPortraitUrl: false, hasDialogue: false };
-  });
-}
-
-export function matchDistrictsToScenes(
-  districtPaths: string[],
-  scenes: Array<{ district?: string }>,
-): DistrictCoverageItem[] {
-  const sceneDistricts = scenes.map(s => (s.district ?? '').toLowerCase()).filter(d => d.length > 0);
-  return districtPaths.map(lorePath => {
-    const stem = figureStem(lorePath);
-    const lowerStem = stem.toLowerCase();
-    const hasSceneYaml = sceneDistricts.includes(lowerStem);
-    return { name: stem, lorePath, hasSceneYaml, hasBackgroundUrl: false };
-  });
-}
-
-export function matchLandmarksToScenes(
-  landmarkPaths: string[],
-  scenes: Array<{ name?: string }>,
-): LandmarkCoverageItem[] {
-  const sceneNames = scenes.map(s => normalizeName(s.name ?? '')).filter(n => n.length > 0);
-  return landmarkPaths.map(lorePath => {
-    const stem = figureStem(lorePath);
-    const normalizedStem = normalizeName(stem.replace(/_/g, ' '));
-    const hasSceneYaml = sceneNames.some(sn => sn.includes(normalizedStem) || normalizedStem.includes(sn));
-    return { name: stem, lorePath, hasSceneYaml, hasBackgroundUrl: false };
-  });
 }
 
 export function matchStoriesToMissions(

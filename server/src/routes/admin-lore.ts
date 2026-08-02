@@ -30,6 +30,9 @@ adminLoreRouter.use(authAndAdminMiddleware);
  * page: timeline, geography, communities, organizations, events, media,
  * governance, stories, and top-level overview documents.
  *
+ * Also used by the admin-coverage route (/admin/coverage) for story
+ * scans and legacy figure/district/landmark filesystem matching.
+ *
  * Resolves relative to process.cwd(), accounting for whether the cwd
  * is the server/ subdirectory or the project root.
  */
