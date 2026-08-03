@@ -1,0 +1,611 @@
+id: a0000001-0005-4000-8000-000000000014
+name: "Adeyemi Act 5 - Resolution (Estate Confrontation)"
+description: "Final confrontation at Mayor Vega's estate. The dialogue tree dynamically branches to one of 6 archetypal endings based on the final relationship dimensions and flags set throughout the player's journey."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: estate_confrontation_start
+nodes:
+  # Starting point - the estate confrontation begins
+  estate_confrontation_start:
+    id: estate_confrontation_start
+    type: system
+    text: "The final confrontation begins. You and your allies have infiltrated Mayor Vega's estate. The air is thick with tension as you move through the opulent halls, the sounds of conflict echoing from different parts of the building. And then you see him - Chief Inspector Adeyemi, standing guard outside Vega's private study."
+    thought: "This is it. The moment we've all been building towards. But as I look at Adeyemi, I realize I have no idea what to expect from him. Enemy? Ally? Something in between? After everything we've been through, the answer could be any of those. Or none of them."
+    effects:
+      flag_set:
+        adeyemi_final_confrontation_started: true
+      story_beat: act5_adeyemi_final_confrontation
+    conditions:
+      required_flags:
+        adeyemi_first_contact_made: true
+    choices:
+      - id: approach_adeyemi
+        text: "Approach Adeyemi directly"
+        next_node_id: adeyemi_estate_approach
+        time_block_cost:
+          amount: 3
+          description: "Final confrontation approach"
+
+  # Adeyemi's initial response based on relationship state
+  adeyemi_estate_approach:
+    id: adeyemi_estate_approach
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Alex. I was wondering if I'd see you here. Or if you'd still be running in the other direction after... everything."
+    thought: "His voice is calm. Measured. But there's an intensity in his eyes that I haven't seen before. This isn't the conflicted Adeyemi I've known. This is a man who has made his choice, one way or another."
+    choices:
+      - id: assess_situation
+        text: "What's your play, Adeyemi? You with us or against us?"
+        next_node_id: adeyemi_final_assessment
+        effects:
+          flag_set:
+            adeyemi_final_choice_demanded: true
+
+  # Final assessment - this is where the branching to different endings happens
+  adeyemi_final_assessment:
+    id: adeyemi_final_assessment
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "That depends. What's my alternative, Alex? Stand here and get shot when you and your friends storm past? Or join you and finally do what Daniel would have wanted?"
+    thought: "He's not giving a direct answer. But the way he phrases it... it's not a no. It's a question. A test. And I think the answer might depend on what I say next. But more importantly, it depends on everything that's happened between us up to this point."
+    conditions:
+      # The Mirror ending conditions (highest tier relationship)
+      required_stats:
+        adeyemi_familiarity: "gte:80"
+        adeyemi_trust: "gte:80"
+        adeyemi_alignment: "gte:60"
+      required_flags:
+        adeyemi_partnership_forged: true
+      hidden_if_flags:
+        adeyemi_publicly_denounced: true
+        adeyemi_relationship_terminated: true
+    choices:
+      - id: mirror_acceptance
+        text: "Then stand with us. Help us end this."
+        next_node_id: adeyemi_mirror_ending_start
+        effects:
+          flag_set:
+            adeyemi_mirror_ending_triggered: true
+
+  # Fallback assessment for other endings
+  adeyemi_final_assessment_fallback:
+    id: adeyemi_final_assessment_fallback
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "That depends. What's my alternative, Alex? Stand here and get shot when you and your friends storm past? Or join you and finally do what Daniel would have wanted?"
+    thought: "He's not giving a direct answer. But the way he phrases it... it's not a no. It's a question. A test. And I think the answer depends on the path we've walked together."
+    conditions:
+      # This node is the fallback when Mirror conditions aren't met
+      hidden_if_flags:
+        adeyemi_mirror_ending_triggered: true
+    choices:
+      - id: general_acceptance
+        text: "Then stand with us. Help us end this."
+        next_node_id: adeyemi_branch_to_endings
+        effects:
+          flag_set:
+            adeyemi_final_alliance_attempted: true
+
+  # The Mirror Ending (Best possible outcome)
+  adeyemi_mirror_ending_start:
+    id: adeyemi_mirror_ending_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...You always did have a way of cutting through the bullshit, didn't you? Alright. But we do this my way. I go in first. Draw their fire. You and your team follow behind and hit them from the flank. Deal?"
+    thought: "This is it. The Mirror. He's not just joining us - he's taking point. Leading the charge. The man who was once Vega's most trusted enforcer is now leading the assault on his former master. And he's doing it for Daniel. For me. For justice."
+    choices:
+      - id: accept_mirror_plan
+        text: "Deal. But you watch your back. I need you alive for this to work."
+        next_node_id: adeyemi_mirror_execution
+        effects:
+          flag_set:
+            adeyemi_mirror_ending_confirmed: true
+          stat_set:
+            adeyemi_familiarity: 100
+            adeyemi_trust: 100
+            adeyemi_alignment: 100
+
+  # Mirror ending execution
+  adeyemi_mirror_execution:
+    id: adeyemi_mirror_execution
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You've got it. But remember, Alex - when this is over, we're square. No more debts. No more secrets. Just two men who did what needed to be done."
+    thought: "The finality in his voice is profound. This isn't just about the mission. This is about closure. About redemption. About two broken men finding their way back to something like wholeness through the crucible of this final act."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_mirror: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_mirror_ending
+
+  # Branch node that determines which specific ending to show
+  adeyemi_branch_to_endings:
+    id: adeyemi_branch_to_endings
+    type: system
+    text: "Adeyemi considers your offer, his expression unreadable. Then, slowly, he nods. But the nature of his response will be determined by the relationship you've built with him throughout your journey."
+    thought: "The moment of truth. All the choices, all the conversations, all the trust and tension and alignment - it all comes down to this. Who is Adeyemi to me? And who am I to him?"
+    conditions:
+      # Check for The Mirror ending first (highest priority)
+      required_stats:
+        adeyemi_familiarity: "gte:80"
+        adeyemi_trust: "gte:80"
+        adeyemi_alignment: "gte:60"
+      required_flags:
+        adeyemi_partnership_forged: true
+      hidden_if_flags:
+        adeyemi_publicly_denounced: true
+        adeyemi_relationship_terminated: true
+        adeyemi_mirror_ending_confirmed: true
+    choices:
+      - id: check_mirror_ending
+        text: "Confirm The Mirror ending"
+        next_node_id: adeyemi_mirror_ending_start
+        hidden_if_flags:
+          adeyemi_publicly_denounced: true
+          adeyemi_relationship_terminated: true
+          adeyemi_mirror_ending_confirmed: true
+
+  # Alternative branch point for other endings
+  adeyemi_branch_to_endings_alt:
+    id: adeyemi_branch_to_endings_alt
+    type: system
+    text: "Adeyemi's decision hangs in the balance, determined by the path you've walked together."
+    thought: "The relationship we've built will determine which version of Adeyemi stands beside me in this final moment."
+    conditions:
+      hidden_if_flags:
+        adeyemi_mirror_ending_triggered: true
+        adeyemi_mirror_ending_confirmed: true
+    choices:
+      - id: check_other_endings
+        text: "Determine the ending"
+        next_node_id: adeyemi_determine_ending_type
+
+  # Determine ending type based on relationship dimensions
+  adeyemi_determine_ending_type:
+    id: adeyemi_determine_ending_type
+    type: system
+    text: "The final relationship state will be evaluated based on all accumulated dimensions and flags."
+    conditions:
+      # Opponent ending conditions
+      required_stats:
+        adeyemi_alignment: "lte:-20"
+        adeyemi_tension: "gte:60"
+        adeyemi_trust: "gte:10"
+      required_flags:
+        adeyemi_publicly_denounced: false  # If they publicly denounced, they get a different path
+    choices:
+      - id: opponent_ending_path
+        text: "Opponent ending path"
+        next_node_id: adeyemi_opponent_ending_start
+        conditions:
+          required_stats:
+            adeyemi_alignment: "lte:-20"
+            adeyemi_tension: "gte:60"
+            adeyemi_trust: "gte:10"
+
+  # The Opponent Ending
+  adeyemi_opponent_ending_start:
+    id: adeyemi_opponent_ending_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I respect that you're here. I respect your courage. But I can't join you. My oath... my duty... it's not to you or your cause. But I won't stop you either. Go. Before it's too late."
+    thought: "The respect in his voice is genuine. But so is the finality. This is Adeyemi the Opponent - a man who remains on the other side, but with mutual respect. He won't help us, but he won't stop us either. And sometimes, in this broken world, that's the best you can hope for from a man of principle."
+    choices:
+      - id: accept_opponent_stance
+        text: "I understand. But know this - when this is over, I'm coming for you and your system next."
+        next_node_id: adeyemi_opponent_final
+        effects:
+          flag_set:
+            adeyemi_ending_opponent: true
+      - id: try_one_last_time
+        text: "Adeyemi, please. This is your chance to do what's right."
+        next_node_id: adeyemi_opponent_last_chance
+        effects:
+          stat_set:
+            adeyemi_tension: 5
+
+  # Opponent final
+  adeyemi_opponent_final:
+    id: adeyemi_opponent_final
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...I know. And I won't try to stop you. But I also won't make it easy. That's my duty. And it's yours to try. Good luck, Alex."
+    thought: "There's a strange kind of honor in his position. And I respect that, even if I disagree with it. This isn't how I wanted things to end between us. But it's an ending I can live with. An ending with respect, even if there's no reconciliation."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_opponent: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_opponent_ending
+      stat_set:
+        adeyemi_familiarity: 70
+        adeyemi_trust: 20
+        adeyemi_alignment: -10
+        adeyemi_tension: 60
+
+  # Opponent last chance
+  adeyemi_opponent_last_chance:
+    id: adeyemi_opponent_last_chance
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "And I've made my choice. The system needs men like me, Alex. Men who understand the cost of order. The cost of duty. Someone has to be willing to make the hard decisions. Even if... even if they're the wrong ones sometimes."
+    thought: "There's a sadness in his voice. Not regret, exactly. But acknowledgment. He knows the cost. And he's accepted it. And in that moment, I realize that Adeyemi the Opponent might be the most tragic of all the possible Adeyemis - the man who sees the truth but chooses duty over justice anyway."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_opponent: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_opponent_ending
+      stat_set:
+        adeyemi_familiarity: 75
+        adeyemi_trust: 25
+        adeyemi_alignment: -5
+        adeyemi_tension: 55
+
+  # Reluctant Ally conditions and path
+  adeyemi_reluctant_ally_check:
+    id: adeyemi_reluctant_ally_check
+    type: system
+    text: "Checking if Reluctant Ally conditions are met..."
+    conditions:
+      required_stats:
+        adeyemi_trust: "gte:50"
+        adeyemi_alignment: "gte:30"
+        adeyemi_familiarity: "gte:40"
+        adeyemi_tension: "lte:40"
+      hidden_if_flags:
+        adeyemi_mirror_ending_confirmed: true
+        adeyemi_ending_opponent: true
+    choices:
+      - id: reluctant_ally_path
+        text: "Reluctant Ally ending"
+        next_node_id: adeyemi_reluctant_ally_start
+
+  # Reluctant Ally Ending
+  adeyemi_reluctant_ally_start:
+    id: adeyemi_reluctant_ally_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Alright. Fine. But we do this quiet. And we do it clean. No unnecessary bloodshed. No grand speeches. Just... justice. And then we part ways. Understood?"
+    thought: "This is Adeyemi the Reluctant Ally. He's with us, but he's not of us. He'll help, but on his terms. And when it's over, he'll fade back into the shadows, the way he's always preferred it. But for now, he's here. And that's enough."
+    choices:
+      - id: accept_reluctant_terms
+        text: "Understood. And thank you. This means more than you know."
+        next_node_id: adeyemi_reluctant_ally_execution
+        effects:
+          flag_set:
+            adeyemi_ending_reluctant_ally: true
+
+  # Reluctant Ally execution
+  adeyemi_reluctant_ally_execution:
+    id: adeyemi_reluctant_ally_execution
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Don't thank me. Just... let's get this over with. And Alex? When this is done, we never speak of this again. You go your way, I go mine. That's the only way this works."
+    thought: "The terms are clear. And I accept them. Because Adeyemi the Reluctant Ally is better than no Adeyemi at all. And sometimes, the most powerful alliances are the ones that no one ever knows existed."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_reluctant_ally: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_reluctant_ally_ending
+      stat_set:
+        adeyemi_familiarity: 85
+        adeyemi_trust: 70
+        adeyemi_alignment: 50
+        adeyemi_tension: 20
+
+  # Failed Friend conditions and path
+  adeyemi_failed_friend_check:
+    id: adeyemi_failed_friend_check
+    type: system
+    text: "Checking if Failed Friend conditions are met..."
+    conditions:
+      required_stats:
+        adeyemi_familiarity: "gte:70"
+        adeyemi_trust: "gte:60"
+        adeyemi_alignment: "lte:0"
+        adeyemi_tension: "gte:50"
+      hidden_if_flags:
+        adeyemi_mirror_ending_confirmed: true
+        adeyemi_ending_opponent: true
+        adeyemi_ending_reluctant_ally: true
+    choices:
+      - id: failed_friend_path
+        text: "Failed Friend ending"
+        next_node_id: adeyemi_failed_friend_start
+
+  # Failed Friend Ending
+  adeyemi_failed_friend_start:
+    id: adeyemi_failed_friend_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Alex. You're here. I... I knew you would be. But I can't. I can't cross this line. Not even for you. Not even for Daniel. My duty... it's all I have left."
+    thought: "This is Adeyemi the Failed Friend. The man who is close to me, who trusts me, who might even love me in his way - but who can't overcome the fundamental conflict between his duty and his heart. It's heartbreaking. And I understand it. But that doesn't make it hurt any less."
+    choices:
+      - id: plead_one_more_time
+        text: "Adeyemi, please. This is the moment. This is what Daniel would have wanted."
+        next_node_id: adeyemi_failed_friend_plea
+        effects:
+          stat_set:
+            adeyemi_tension: 10
+      - id: accept_failed_alliance
+        text: "I understand. But I'll always regret that you couldn't be with us for this."
+        next_node_id: adeyemi_failed_friend_acceptance
+        effects:
+          flag_set:
+            adeyemi_ending_failed_friend: true
+
+  # Failed Friend plea
+  adeyemi_failed_friend_plea:
+    id: adeyemi_failed_friend_plea
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Don't. Don't you dare bring Daniel into this again. You think I don't think about him every day? You think I don't ask myself what he would have done? But the answer doesn't change, Alex. He would have done his duty. Just like I'm doing mine."
+    thought: "The pain in his voice is devastating. And I realize that for Adeyemi the Failed Friend, the conflict isn't just between us - it's within him. A war between the man he wants to be and the man he feels he has to be. And it's a war that I can't win for him."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_failed_friend: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_failed_friend_ending
+      stat_set:
+        adeyemi_familiarity: 90
+        adeyemi_trust: 70
+        adeyemi_alignment: 0
+        adeyemi_tension: 50
+
+  # Failed Friend acceptance
+  adeyemi_failed_friend_acceptance:
+    id: adeyemi_failed_friend_acceptance
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...I know. And I... I'll regret it too. But this is how it has to be. Go. Do what you need to do. And Alex? Try to understand. Even if you can't forgive."
+    thought: "The regret is mutual. The understanding is there. But the alliance is broken. And that's the tragedy of Adeyemi the Failed Friend - the man who could have been my closest ally, but who chose duty over destiny."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_failed_friend: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_failed_friend_ending
+
+  # Failed Lover conditions and path
+  adeyemi_failed_lover_check:
+    id: adeyemi_failed_lover_check
+    type: system
+    text: "Checking if Failed Lover conditions are met..."
+    conditions:
+      required_stats:
+        adeyemi_familiarity: "gte:80"
+        adeyemi_trust: "gte:70"
+        adeyemi_alignment: "gte:20"
+        adeyemi_tension: "gte:40"
+        adeyemi_debt: "gte:20"
+      hidden_if_flags:
+        adeyemi_mirror_ending_confirmed: true
+        adeyemi_ending_opponent: true
+        adeyemi_ending_reluctant_ally: true
+        adeyemi_ending_failed_friend: true
+    choices:
+      - id: failed_lover_path
+        text: "Failed Lover ending"
+        next_node_id: adeyemi_failed_lover_start
+
+  # Failed Lover Ending
+  adeyemi_failed_lover_start:
+    id: adeyemi_failed_lover_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Alex... there's something I need to say. Something I should have said a long time ago. But the timing... it was never right. And now... now it might be too late."
+    thought: "This is Adeyemi the Failed Lover. The man who shares a deep, intimate connection with me, but who can't express it. Who can't act on it. Because duty, because circumstances, because the world is what it is. And as he speaks, I realize that the greatest love stories aren't always the ones that end with 'happily ever after.' Sometimes, they're the ones that end with 'what might have been.'"
+    choices:
+      - id: listen_to_confession
+        text: "Say it. Whatever it is, I need to hear it."
+        next_node_id: adeyemi_failed_lover_confession
+        effects:
+          flag_set:
+            adeyemi_ending_failed_lover: true
+
+  # Failed Lover confession
+  adeyemi_failed_lover_confession:
+    id: adeyemi_failed_lover_confession
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I... I love you, Alex. Not in the way of comrades, not in the way of friends. In the way that... in the way that terrifies me. In the way that I can never act on. Not here. Not now. Maybe not ever."
+    thought: "The words hang between us, heavy with meaning, heavy with regret. This is the confession of a man who loves but cannot have. Who wants but cannot take. And it's beautiful and tragic all at once. Because in this moment, I understand that Adeyemi the Failed Lover loves me as deeply as I love him. And that's both the greatest gift and the greatest loss."
+    choices:
+      - id: reciprocate_feelings
+        text: "I love you too, Adeyemi. And I always will. No matter what happens next."
+        next_node_id: adeyemi_failed_lover_reciprocated
+        effects:
+          stat_set:
+            adeyemi_familiarity: 95
+            adeyemi_trust: 80
+            adeyemi_alignment: 30
+            adeyemi_debt: 30
+      - id: respect_boundaries
+        text: "I love you too. But I understand. And I respect that."
+        next_node_id: adeyemi_failed_lover_respected
+        effects:
+          stat_set:
+            adeyemi_familiarity: 90
+            adeyemi_trust: 75
+            adeyemi_alignment: 25
+            adeyemi_debt: 25
+
+  # Failed Lover reciprocated
+  adeyemi_failed_lover_reciprocated:
+    id: adeyemi_failed_lover_reciprocated
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Thank you. That... that's all I needed to hear. And it's enough. More than enough. Now go. Before I change my mind. Before I throw everything away for you."
+    thought: "The sacrifice in his voice is heartbreaking. He loves me, but he won't give up his duty, his honor, for that love. And I respect that, even as it breaks my heart. This is Adeyemi the Failed Lover - the man who loves too deeply to give up what he also loves: his sense of right and wrong."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_failed_lover: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_failed_lover_ending
+      stat_set:
+        adeyemi_familiarity: 95
+        adeyemi_trust: 85
+        adeyemi_alignment: 35
+        adeyemi_tension: 40
+        adeyemi_debt: 35
+
+  # Failed Lover respected
+  adeyemi_failed_lover_respected:
+    id: adeyemi_failed_lover_respected
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...That's the problem, isn't it? You do understand. And that's why this hurts so much. Because we both know what we want. And we both know we can't have it. Not without giving up everything else."
+    thought: "The understanding between us is complete. And that's both our greatest strength and our greatest weakness. Because we understand each other perfectly, we know exactly what we're losing. And that knowledge is almost unbearable."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_failed_lover: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_failed_lover_ending
+      stat_set:
+        adeyemi_familiarity: 92
+        adeyemi_trust: 80
+        adeyemi_alignment: 30
+        adeyemi_tension: 45
+        adeyemi_debt: 30
+
+  # Always Distant conditions and path
+  adeyemi_always_distant_check:
+    id: adeyemi_always_distant_check
+    type: system
+    text: "Checking if Always Distant conditions are met..."
+    conditions:
+      required_stats:
+        adeyemi_familiarity: "lte:20"
+        adeyemi_trust: "gte:-10"
+        adeyemi_trust: "lte:30"
+      hidden_if_flags:
+        adeyemi_mirror_ending_confirmed: true
+        adeyemi_ending_opponent: true
+        adeyemi_ending_reluctant_ally: true
+        adeyemi_ending_failed_friend: true
+        adeyemi_ending_failed_lover: true
+    choices:
+      - id: always_distant_path
+        text: "Always Distant ending"
+        next_node_id: adeyemi_always_distant_start
+
+  # Always Distant Ending
+  adeyemi_always_distant_start:
+    id: adeyemi_always_distant_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Alex. I didn't expect to see you here. But I suppose it was inevitable. You've always had a knack for being in the wrong place at the right time."
+    thought: "This is Adeyemi the Always Distant. The professional. The man who has maintained his distance from me throughout our entire relationship. He's not cold, not hostile. But he's not warm either. He's... Adeyemi. Just Adeyemi. The Chief Inspector. And that's all he'll ever be to me."
+    choices:
+      - id: try_to_connect
+        text: "Adeyemi, we've been through too much. You don't have to be distant anymore."
+        next_node_id: adeyemi_always_distant_rejection
+        effects:
+          stat_set:
+            adeyemi_tension: 5
+      - id: accept_distance
+        text: "I guess some things never change. Even at the end of the world."
+        next_node_id: adeyemi_always_distant_acceptance
+        effects:
+          flag_set:
+            adeyemi_ending_always_distant: true
+
+  # Always Distant rejection
+  adeyemi_always_distant_rejection:
+    id: adeyemi_always_distant_rejection
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Some things do change, Alex. But not this. Not between us. We were always going to end up here - on opposite sides. It was written the first time we met."
+    thought: "The finality in his voice is absolute. This isn't sadness, isn't regret. It's acceptance. And I realize that for Adeyemi the Always Distant, the distance between us was never about me. It was about him. About the man he is, the role he plays. And that man doesn't allow for close connections. Doesn't allow for vulnerability. And that's his tragedy, and mine."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_always_distant: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_always_distant_ending
+      stat_set:
+        adeyemi_familiarity: 15
+        adeyemi_trust: 10
+        adeyemi_alignment: -5
+        adeyemi_tension: 25
+
+  # Always Distant acceptance
+  adeyemi_always_distant_acceptance:
+    id: adeyemi_always_distant_acceptance
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...No. I suppose they don't. But that's alright, Alex. Really. It's better this way. Cleaner. No messy goodbyes. No false promises. Just... duty."
+    thought: "The distance remains. And I accept it. Because some people are like stars - beautiful to look at from afar, but impossible to touch. And that's their nature. Their essence. And Adeyemi the Always Distant is one of those untouchable stars."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_always_distant: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_always_distant_ending
+
+  # Publicly Denounced special case
+  adeyemi_publicly_denounced_check:
+    id: adeyemi_publicly_denounced_check
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Alex. I have to admit, I'm surprised to see you here. After your... public performance. But I suppose even traitors have their uses in the final reckoning."
+    thought: "This is Adeyemi after public denouncement. The respect is gone. The trust is gone. All that's left is the professional. And the knowledge of what I took from him, what I cost him. And that's a burden I'll carry."
+    conditions:
+      required_flags:
+        adeyemi_publicly_denounced: true
+    choices:
+      - id: accept_consequences
+        text: "I did what I had to do. And I'd do it again."
+        next_node_id: adeyemi_denounced_consequences
+        effects:
+          flag_set:
+            adeyemi_ending_opponent: true
+
+  # Denounced consequences
+  adeyemi_denounced_consequences:
+    id: adeyemi_denounced_consequences
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I'm sure you would. And that's what makes this so easy. Because I know exactly where you stand. And exactly where I stand. And that, at least, is a kind of clarity."
+    thought: "The clarity he speaks of is the clarity of enemies. Of opposites. And I hate that we've ended up here. But I can't deny that I understand it. And that I earned it."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_ending_opponent: true
+        adeyemi_relationship_resolved: true
+      story_beat: act5_adeyemi_denounced_ending
+      stat_set:
+        adeyemi_familiarity: 60
+        adeyemi_trust: -60
+        adeyemi_alignment: -50
+        adeyemi_tension: 80
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "adeyemi"
+    - "relationship_building"
+    - "act5"
+    - "resolution"
+    - "endings"
+    - "final_confrontation"
+  notes: |
+    This dialogue implements Phase 5.2 of the Adeyemi relationship plan:
+    - Final confrontation at the estate that reads derived relationship state
+    - 6 archetypal endings determined by final relationship dimensions:
+      1. The Mirror: adeyemi_familiarity >= 80, adeyemi_trust >= 80, adeyemi_alignment >= 60
+      2. Reluctant Ally: adeyemi_trust >= 50, adeyemi_alignment >= 30, adeyemi_familiarity >= 40, adeyemi_tension <= 40
+      3. Opponent: adeyemi_alignment <= -20, adeyemi_tension >= 60, adeyemi_trust >= 10
+      4. Failed Friend: adeyemi_familiarity >= 70, adeyemi_trust >= 60, adeyemi_alignment <= 0, adeyemi_tension >= 50
+      5. Failed Lover: adeyemi_familiarity >= 80, adeyemi_trust >= 70, adeyemi_alignment >= 20, adeyemi_tension >= 40, adeyemi_debt >= 20
+      6. Always Distant: adeyemi_familiarity <= 20, adeyemi_trust >= -10, adeyemi_trust <= 30
+    - Special case: If player publicly denounced Adeyemi, forces Opponent ending regardless of other dimensions
+    - Each ending has unique dialogue that reflects the nature of the relationship built
+    - Final resolution sets appropriate flags and completes the relationship arc

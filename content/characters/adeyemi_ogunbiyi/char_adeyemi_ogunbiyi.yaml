@@ -8,6 +8,87 @@ metadata:
   role: npc
   faction: police
   personality: imposing_compromised
+  # Relationship Dimensions - Initial State (before player meets him)
+  relationship_dimensions:
+    # Trust: How much Adeyemi trusts the player (-100 to 100)
+    # Initial: Slightly negative due to his role as enforcer for corrupt establishment
+    adeyemi_trust: -20
+    
+    # Familiarity: How well Adeyemi knows the player (0 to 100)
+    # Initial: Unknown/stranger status
+    adeyemi_familiarity: 0
+    
+    # Alignment: How aligned Adeyemi's goals are with the player's (-100 to 100)
+    # Initial: Negative due to opposing roles (enforcer vs potential dissident)
+    adeyemi_alignment: -40
+    
+    # Tension: Current tension level in the relationship (0 to 100)
+    # Initial: Moderate tension due to inherent role conflict
+    adeyemi_tension: 30
+    
+    # Debt: Outstanding obligations/indebtedness (-100 to 100, negative = player owes Adeyemi)
+    # Initial: No debt
+    adeyemi_debt: 0
+    
+    # Visibility: How visible/known the relationship is to others (0 to 100)
+    # Initial: No visibility (first meeting hasn't happened)
+    adeyemi_visibility: 0
+  
+  # Ending Thresholds for Adeyemi's 6 Archetypal Endings
+  relationship_endings:
+    # Reluctant Ally: High trust and alignment, moderate familiarity, low tension
+    reluctant_ally:
+      conditions:
+        adeyemi_trust: ">= 50"
+        adeyemi_alignment: ">= 30"
+        adeyemi_familiarity: ">= 40"
+        adeyemi_tension: "<= 40"
+      description: "Adeyemi becomes a reluctant but valuable ally, helping from the shadows"
+    
+    # Opponent: Low alignment, high tension, moderate trust (respects but opposes)
+    opponent:
+      conditions:
+        adeyemi_alignment: "<= -20"
+        adeyemi_tension: ">= 60"
+        adeyemi_trust: ">= 10"
+      description: "Adeyemi remains a formidable opponent, but with mutual respect"
+    
+    # Failed Friend: High familiarity and trust, but low alignment and high tension
+    failed_friend:
+      conditions:
+        adeyemi_familiarity: ">= 70"
+        adeyemi_trust: ">= 60"
+        adeyemi_alignment: "<= 0"
+        adeyemi_tension: ">= 50"
+      description: "Close personal bond, but fundamental ideological conflict prevents true alliance"
+    
+    # Failed Lover: High intimacy dimensions but unresolved conflict
+    failed_lover:
+      conditions:
+        adeyemi_familiarity: ">= 80"
+        adeyemi_trust: ">= 70"
+        adeyemi_alignment: ">= 20"
+        adeyemi_tension: ">= 40"
+        adeyemi_debt: ">= 20"
+      description: "Deep emotional connection, but circumstances and duty prevent romantic fulfillment"
+    
+    # Always Distant: Low familiarity, neutral/mixed other dimensions
+    always_distant:
+      conditions:
+        adeyemi_familiarity: "<= 20"
+        adeyemi_trust: ">= -10"
+        adeyemi_trust: "<= 30"
+      description: "Adeyemi remains a distant, professional figure - no real personal connection formed"
+    
+    # The Mirror: High across most dimensions, representing the player's potential
+    the_mirror:
+      conditions:
+        adeyemi_familiarity: ">= 80"
+        adeyemi_trust: ">= 80"
+        adeyemi_alignment: ">= 60"
+        adeyemi_tension: "<= 30"
+      description: "Adeyemi sees the player as what he could have been - a mirror of his lost idealism"
+
 lore_path: adeyemi_ogunbiyi.md
 narrative_path: adeyemi_ogunbiyi.md
 asset_paths:
