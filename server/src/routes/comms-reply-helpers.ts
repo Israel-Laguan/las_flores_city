@@ -231,6 +231,7 @@ export async function performReplyTransaction(
 
     if (chosen.relationship_change) {
       await processRelationshipChange(
+        client,
         userId,
         characterId,
         chosen.relationship_change.stat,
