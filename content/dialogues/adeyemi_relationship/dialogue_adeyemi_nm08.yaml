@@ -1,0 +1,75 @@
+id: a0000001-0003-4000-8000-000000000016
+name: "Adeyemi NM-08 - The Vending Machine"
+description: "A normal moment encounter. Genuinely funny."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_nm08_start
+nodes:
+  adeyemi_nm08_start:
+    id: adeyemi_nm08_start
+    type: system
+    text: "Adeyemi wants something from a vending machine. The machine takes his money, clunks, and delivers nothing. He presses the button again. Nothing. He presses it a third time with a slightly different amount of pressure. Nothing."
+    choices:
+      - id: watch_him
+        text: "Watch him."
+        next_node_id: adeyemi_nm08_reaction
+        
+  adeyemi_nm08_reaction:
+    id: adeyemi_nm08_reaction
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Give it back."
+    thought: "He speaks to the machine quietly, with complete sincerity. The machine does not give it back."
+    choices:
+      - id: kick_machine
+        text: "[Kick the machine]"
+        next_node_id: adeyemi_nm08_kick
+      - id: offer_buy
+        text: "I'll buy you something else."
+        next_node_id: adeyemi_nm08_buy
+      - id: say_nothing
+        text: "[Say nothing and watch]"
+        next_node_id: adeyemi_nm08_watch
+
+  adeyemi_nm08_kick:
+    id: adeyemi_nm08_kick
+    type: system
+    text: "You kick the machine. It dispenses the snack."
+    choices:
+      - id: continue_kick
+        text: "Continue."
+        next_node_id: adeyemi_nm08_kick_response
+
+  adeyemi_nm08_kick_response:
+    id: adeyemi_nm08_kick_response
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Thank you."
+    thought: "He looks at you. At the snack. At you. He means it."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_familiarity: 12
+
+  adeyemi_nm08_buy:
+    id: adeyemi_nm08_buy
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "That's not the point."
+    thought: "He presses the button one more time. Walks away."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_familiarity: 5
+
+  adeyemi_nm08_watch:
+    id: adeyemi_nm08_watch
+    type: system
+    text: "He eventually walks away without the snack or his money, with the dignity of a man who will never speak of this again."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_familiarity: 8
+
+metadata:
+  version: "1.0"

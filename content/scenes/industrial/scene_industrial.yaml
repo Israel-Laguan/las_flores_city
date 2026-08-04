@@ -5,8 +5,13 @@ district: Industrial
 district_lore: industrial
 district_subzone: Industrial
 mood: gritty
-available_dialogues: []
+available_dialogues:
+  - a0000001-0004-4000-8000-000000000013
+  - a0000001-0003-4000-8000-000000000014
+  - a0000001-0003-4000-8000-000000000015
 metadata:
+  npcs:
+    - a0000001-0000-4000-8000-000000000003
   idle_thoughts:
     - Machine hum dominates the soundscape. Shift change is approaching.
     - The air carries traces of industrial compounds. Filtration systems are operational.

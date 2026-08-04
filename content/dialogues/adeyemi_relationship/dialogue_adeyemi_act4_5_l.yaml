@@ -1,0 +1,108 @@
+id: a0000001-0003-4000-8000-000000000015
+name: "Adeyemi Act 4.5-L - The Meridian File"
+description: "Lover Path Encounter. Sets DEEPENED, LOVER_PATH_ACTIVE, and potentially ROMANTIC_TENSION_CONFIRMED."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_meridian_file_start
+nodes:
+  adeyemi_meridian_file_start:
+    id: adeyemi_meridian_file_start
+    type: system
+    text: "You arrive at Adeyemi's apartment late in the evening. He asked you to come. His apartment is functional, almost impersonal, except for one wall covered in Daniel's things. Drafts, maps, a printed photograph."
+    choices:
+      - id: look_at_wall
+        text: "Look at the wall."
+        next_node_id: adeyemi_meridian_file_intro
+        time_block_cost:
+          amount: 1
+          description: "Visiting Adeyemi's apartment"
+        
+  adeyemi_meridian_file_intro:
+    id: adeyemi_meridian_file_intro
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "He was trying to name the people in the Meridian compound chain. He got four of them. The fifth one is — I think you've met her."
+    thought: "Solis. He means Solis. He already knew she was involved."
+    choices:
+      - id: ask_about_photo
+        text: "Look at the photograph. Who is the woman with him?"
+        next_node_id: adeyemi_meridian_file_photo
+      - id: ask_why
+        text: "Why are you showing me this now?"
+        next_node_id: adeyemi_meridian_file_why
+
+  adeyemi_meridian_file_photo:
+    id: adeyemi_meridian_file_photo
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "His fiancée. She left after. I don't blame her."
+    choices:
+      - id: ask_why_from_photo
+        text: "Why are you showing me this now?"
+        next_node_id: adeyemi_meridian_file_why
+    effects:
+      stat_set:
+        adeyemi_trust: 10
+        adeyemi_tension: 8
+
+  adeyemi_meridian_file_why:
+    id: adeyemi_meridian_file_why
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Because if something goes wrong at Vega's estate, someone else should know where this is.\n\nAnd because I trust you. Which I should probably stop finding surprising."
+    choices:
+      - id: hold_gaze
+        text: "[Look at him]"
+        next_node_id: adeyemi_meridian_file_moment
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+
+  adeyemi_meridian_file_moment:
+    id: adeyemi_meridian_file_moment
+    type: system
+    text: "There is a natural pause. You are both close. The scene holds for a beat longer than necessary."
+    choices:
+      - id: move_closer
+        text: "[Move closer]"
+        next_node_id: adeyemi_meridian_file_door
+        effects:
+          flag_set:
+            ROMANTIC_TENSION_CONFIRMED: true
+          stat_set:
+            adeyemi_tension: 15
+      - id: say_name
+        text: "Adeyemi."
+        next_node_id: adeyemi_meridian_file_door
+        effects:
+          flag_set:
+            ROMANTIC_TENSION_CONFIRMED: true
+          stat_set:
+            adeyemi_tension: 15
+      - id: step_back
+        text: "[Step back]"
+        next_node_id: adeyemi_meridian_file_door
+      - id: say_nothing
+        text: "[Say nothing]"
+        next_node_id: adeyemi_meridian_file_door
+
+  adeyemi_meridian_file_door:
+    id: adeyemi_meridian_file_door
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Be careful out there."
+    thought: "He walks me to the door and holds it open a moment after I've passed through. He speaks quietly, to the door frame as much as to me."
+    is_end: true
+    effects:
+      flag_set:
+        DEEPENED: true
+        LOVER_PATH_ACTIVE: true
+        DANIEL_REPORT_FLAG: true
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "1.0"
+  required_flags:
+    ANSWERED: true
+    COVERED: true

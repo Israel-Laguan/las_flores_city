@@ -44,6 +44,7 @@ import { runAllMigrations } from './database/migrate.js';
 import { seedPlayers } from './database/seedPlayers.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
+import { RelationshipDecayWorker } from './workers/RelationshipDecayWorker.js';
 import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
 import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 
@@ -234,6 +235,15 @@ async function initializeServer() {
     );
   }, LEADERBOARD_INTERVAL_MS);
   console.log(`🏆 LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
+
+  // Relationship decay worker — decay relationship stats daily
+  const DECAY_INTERVAL_MS = 24 * 60 * 60 * 1000; // Once per day
+  setInterval(() => {
+    RelationshipDecayWorker.processDecay().catch((err) =>
+      console.error('[RelationshipDecayWorker] cron tick error:', err)
+    );
+  }, DECAY_INTERVAL_MS);
+  console.log(`💔 RelationshipDecayWorker scheduled every ${DECAY_INTERVAL_MS / 1000 / 60 / 60}h`);
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;

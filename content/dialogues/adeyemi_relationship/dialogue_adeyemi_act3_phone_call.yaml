@@ -14,20 +14,13 @@ nodes:
     effects:
       flag_set:
         adeyemi_phone_call_received: true
-    conditions:
-      # Gate logic: Only unlock if player didn't publicly denounce Adeyemi in Act 2
-      hidden_if_flags:
-        adeyemi_publicly_denounced: true
-      # Require sufficient relationship dimensions
-      required_stats:
-        adeyemi_familiarity: "gte:25"
-        adeyemi_trust: "gte:20"
-      required_flags:
-        adeyemi_first_contact_made: true
     choices:
       - id: answer_call
         text: "Answer the call"
         next_node_id: adeyemi_phone_call_opening
+        time_block_cost:
+          amount: 1
+          description: "Answering Adeyemi's late-night phone call"
         effects:
           flag_set:
             adeyemi_phone_call_answered: true
@@ -46,6 +39,9 @@ nodes:
       - id: confirm_private
         text: "Yes, we're private. What's going on?"
         next_node_id: adeyemi_disclosure_begin
+        time_block_cost:
+          amount: 1
+          description: "Engaging in phone call with Adeyemi"
         effects:
           stat_set:
             adeyemi_familiarity: 10
@@ -53,6 +49,9 @@ nodes:
       - id: cautious_verify
         text: "How do I know it's really you?"
         next_node_id: adeyemi_verify_identity
+        time_block_cost:
+          amount: 1
+          description: "Engaging in phone call with Adeyemi"
         effects:
           stat_set:
             adeyemi_familiarity: 5
@@ -60,6 +59,9 @@ nodes:
       - id: deflect_call
         text: "This isn't a good time. Call me tomorrow."
         next_node_id: adeyemi_deflection_response
+        time_block_cost:
+          amount: 1
+          description: "Engaging in phone call with Adeyemi"
         effects:
           stat_set:
             adeyemi_familiarity: 3
@@ -217,6 +219,8 @@ nodes:
       stat_set:
         adeyemi_tension: 20
         adeyemi_trust: -10
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Sympathy received
   adeyemi_sympathy_received:
@@ -741,6 +745,13 @@ nodes:
 metadata:
   version: "1.0"
   author: "Las Flores Team"
+  required_flags:
+    adeyemi_first_contact_made: true
+  required_stats:
+    adeyemi_familiarity: "gte:25"
+    adeyemi_trust: "gte:20"
+  hidden_if:
+    adeyemi_publicly_denounced: true
   tags:
     - "adeyemi"
     - "relationship_building"

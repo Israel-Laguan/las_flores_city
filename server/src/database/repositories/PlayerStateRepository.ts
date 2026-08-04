@@ -78,6 +78,7 @@ export {
   mergeFlags,
   mergeState,
   mergeStats,
+  mergeStatsClamped,
   partialUpdate,
   createForNewUser,
 } from './PlayerStateRepository.write.js';
@@ -110,6 +111,7 @@ export class PlayerStateRepository {
   static mergeFlags = writeMethods.mergeFlags;
   static mergeState = writeMethods.mergeState;
   static mergeStats = writeMethods.mergeStats;
+  static mergeStatsClamped = writeMethods.mergeStatsClamped;
   static partialUpdate = writeMethods.partialUpdate;
   static createForNewUser = writeMethods.createForNewUser;
 }

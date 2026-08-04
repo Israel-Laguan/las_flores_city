@@ -1,393 +1,220 @@
 id: a0000001-0001-4000-8000-000000000010
-name: "Adeyemi Act 1 - Apartment Visit"
-description: "First contact: Adeyemi visits the player's apartment to investigate the strange occurrences at Residencial Las Estrellas. Player choices reflect different styles of approach."
+name: "Adeyemi Act 1 - The Residue"
+description: "First contact. Chief Inspector Adeyemi investigates an incident at the player's apartment."
 character_id: a0000001-0000-4000-8000-000000000003
 dialogue_scope: character
-start_node_id: adeyemi_apartment_intro
+start_node_id: adeyemi_act1_start
 nodes:
-  # Introduction - Adeyemi arrives at the apartment
-  adeyemi_apartment_intro:
-    id: adeyemi_apartment_intro
+  adeyemi_act1_start:
+    id: adeyemi_act1_start
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Chief Inspector Adeyemi knocks on your door with a firm, authoritative rap. When you open it, he stands there in his trench coat, his imposing frame filling most of the doorway. His dark eyes scan the room briefly before settling on you."
-    thought: "This is the enforcer I've heard about. The man who makes Mayor Vega's problems disappear. But his expression... there's something more there. A calculation, an assessment."
+    text: "Chief Inspector Adeyemi Ogunbiyi. You reported an incident."
+    thought: "He stands at the precise angle of someone who has done this enough times that the stance is no longer performed: warrant card visible, enough space in his posture to be non-threatening, enough stillness to be unreadable."
+    effects:
+      stat_set:
+        adeyemi_trust: -20
+        adeyemi_alignment: -40
+        adeyemi_tension: 30
     choices:
-      - id: cautious_approach
-        text: "Uh, Chief Inspector... I wasn't expecting company. What can I do for you?"
-        next_node_id: adeyemi_response_cautious
+      - id: act1_invite_in
+        text: "Come in."
+        next_node_id: adeyemi_act1_enter
         time_block_cost:
-          amount: 2
-          description: "Cautious response to unexpected authority figure"
-        effects:
-          flag_set:
-            adeyemi_first_contact_made: true
-            adeyemi_apartment_visit_complete: true
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: -5
-            adeyemi_tension: 5
-            adeyemi_visibility: 10
-          state_set:
-            adeyemi_player_style: "cautious"
-          story_beat: act1_adeyemi_first_contact
-      - id: direct_approach
-        text: "Chief Inspector Adeyemi, right? I was wondering when you'd show up. Come in."
-        next_node_id: adeyemi_response_direct
+          amount: 1
+          description: "Engaging with Adeyemi at the apartment"
+      - id: act1_ask_why
+        text: "Why is a Chief Inspector answering a routine call?"
+        next_node_id: adeyemi_act1_enter
         time_block_cost:
-          amount: 2
-          description: "Direct and confident approach"
-        effects:
-          flag_set:
-            adeyemi_first_contact_made: true
-            adeyemi_apartment_visit_complete: true
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: 5
-            adeyemi_tension: -5
-            adeyemi_visibility: 15
-          state_set:
-            adeyemi_player_style: "direct"
-          story_beat: act1_adeyemi_first_contact
-      - id: deflecting_approach
-        text: "Oh, sorry, I'm in the middle of something. Can this wait?"
-        next_node_id: adeyemi_response_deflecting
+          amount: 1
+          description: "Engaging with Adeyemi at the apartment"
+      - id: act1_refuse
+        text: "I changed my mind. I don't want to talk about it."
+        next_node_id: adeyemi_act1_refuse_entry
         time_block_cost:
-          amount: 2
-          description: "Deflecting approach, trying to avoid engagement"
+          amount: 1
+          description: "Engaging with Adeyemi at the apartment"
+
+  adeyemi_act1_refuse_entry:
+    id: adeyemi_act1_refuse_entry
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "That's your right. I'll leave a contact number. The incident was more significant than the initial report suggests. That's information you may want to have."
+    thought: "He nods once and hands me a card before leaving."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_apartment_visit_complete: true
+      stat_set:
+        adeyemi_trust: 5
+        adeyemi_familiarity: -5
+
+  adeyemi_act1_enter:
+    id: adeyemi_act1_enter
+    type: system
+    text: "Adeyemi moves through the apartment slowly, without touching anything. A cup sits precariously near the edge of the counter. As he passes, he catches it instinctively and pushes it back without breaking his gaze or commenting."
+    choices:
+      - id: act1_watch
+        text: "[Watch him]"
+        next_node_id: adeyemi_act1_q1
+
+  adeyemi_act1_q1:
+    id: adeyemi_act1_q1
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "When did you last leave this apartment before the incident?"
+    choices:
+      - id: q1_honest
+        text: "Yesterday morning, around 8 AM."
+        next_node_id: adeyemi_act1_q2
         effects:
-          flag_set:
-            adeyemi_first_contact_made: true
-            adeyemi_apartment_visit_complete: true
           stat_set:
             adeyemi_familiarity: 3
-            adeyemi_trust: -10
-            adeyemi_tension: 10
-            adeyemi_visibility: 5
-          state_set:
-            adeyemi_player_style: "deflecting"
-          story_beat: act1_adeyemi_first_contact
+      - id: q1_deflect
+        text: "I don't remember exactly."
+        next_node_id: adeyemi_act1_q2
+      - id: q1_ask_why
+        text: "Why do you want to know?"
+        next_node_id: adeyemi_act1_q1_answer
+        effects:
+          stat_set:
+            adeyemi_trust: 5
 
-  # Adeyemi's responses based on player approach style
-  adeyemi_response_cautious:
-    id: adeyemi_response_cautious
+  adeyemi_act1_q1_answer:
+    id: adeyemi_act1_q1_answer
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "I won't take much of your time. I'm investigating some... unusual activity at Residencial Las Estrellas. You reported seeing things up on the roof?"
-    thought: "He's being professional, but I can sense he's evaluating me as closely as I'm evaluating him. There's an intelligence there, a caution that comes from experience."
+    text: "Because the timeline matters and yours doesn't match the neighbor's."
     choices:
-      - id: cautious_confirm
-        text: "Yes, I did. There was... someone, or something, up there. And then there was this utility knife left behind."
-        next_node_id: adeyemi_followup_cautious
+      - id: q1_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_q2
+
+  adeyemi_act1_q2:
+    id: adeyemi_act1_q2
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You work with some... independent organizations in this city. Do they know you live here?"
+    thought: "He already knows more than a routine investigator would."
+    choices:
+      - id: q2_confirm
+        text: "Yes, they do."
+        next_node_id: adeyemi_act1_q3
+      - id: q2_deny
+        text: "I don't know what you're talking about."
+        next_node_id: adeyemi_act1_q3
         effects:
           stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: 2
-      - id: cautious_deny
-        text: "I may have... overreacted. It was dark, I might have imagined things."
-        next_node_id: adeyemi_followup_defensive
-        effects:
-          stat_set:
-            adeyemi_trust: -8
             adeyemi_tension: 8
+      - id: q2_ask_how
+        text: "How do you know that?"
+        next_node_id: adeyemi_act1_q2_answer
 
-  adeyemi_response_direct:
-    id: adeyemi_response_direct
+  adeyemi_act1_q2_answer:
+    id: adeyemi_act1_q2_answer
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Straight to the point. I like that. Save us both some time. Yes, I'm here about Residencial Las Estrellas. You're the one who saw something on the roof?"
-    thought: "There's a flicker of something in his eyes. Respect? Or maybe just surprise that I'm not cowering. Either way, he's taking me more seriously now."
+    text: "It's my job to know things."
     choices:
-      - id: direct_confirm
-        text: "That's right. Utility knife, electrical apparatus that appeared and vanished. The whole thing stinks if you ask me."
-        next_node_id: adeyemi_followup_direct
+      - id: q2_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_q3
         effects:
           stat_set:
-            adeyemi_familiarity: 8
+            adeyemi_trust: 3
+
+  adeyemi_act1_q3:
+    id: adeyemi_act1_q3
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Is there anything in the apartment you'd like me not to document?"
+    thought: "This is an unusual question for a by-the-book investigator."
+    choices:
+      - id: q3_document_all
+        text: "No, document everything."
+        next_node_id: adeyemi_act1_q4
+        effects:
+          stat_set:
             adeyemi_trust: 8
             adeyemi_alignment: 5
-      - id: direct_challenge
-        text: "Why are you asking me? Shouldn't the police already know what's going on in their own city?"
-        next_node_id: adeyemi_followup_challenged
+      - id: q3_hide_things
+        text: "Yes, leave the bedroom out of it."
+        next_node_id: adeyemi_act1_q4
         effects:
           stat_set:
-            adeyemi_trust: -3
-            adeyemi_tension: 12
-            adeyemi_alignment: -5
-
-  adeyemi_response_deflecting:
-    id: adeyemi_response_deflecting
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "This will only take a minute. You're Alex Garcia, yes? You filed the report about the incidents at Residencial Las Estrellas."
-    thought: "He's not backing down. There's a determination there that I haven't seen in most officers. But there's also... a weariness. Like he's seen this movie before."
-    choices:
-      - id: deflecting_accept
-        text: "Fine, fine. Yes, I reported it. What do you want to know?"
-        next_node_id: adeyemi_followup_reluctant
-        effects:
-          stat_set:
-            adeyemi_familiarity: 4
-            adeyemi_trust: -2
-      - id: deflecting_continue
-        text: "Actually, I really do need to go. Can we do this another time?"
-        next_node_id: adeyemi_followup_persistent
-        effects:
-          stat_set:
-            adeyemi_trust: -7
             adeyemi_tension: 10
+      - id: q3_ask_why
+        text: "Why are you asking me that?"
+        next_node_id: adeyemi_act1_q3_answer
 
-  # Follow-up nodes for cautious path
-  adeyemi_followup_cautious:
-    id: adeyemi_followup_cautious
+  adeyemi_act1_q3_answer:
+    id: adeyemi_act1_q3_answer
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "A utility knife, you say? That's... specific. And the electrical apparatus? Any idea what it was for?"
-    thought: "He's listening carefully, weighing every word. Not the reaction I expected from a police enforcer. There's genuine investigation happening here."
+    text: "Because sometimes what people protect tells me more than what they reveal."
     choices:
-      - id: cautious_honest
-        text: "No, but it was sophisticated. Not the kind of thing some random burglar would have. And it was gone when I went back up."
-        next_node_id: adeyemi_warning_cautious
+      - id: q3_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_q4
         effects:
           stat_set:
-            adeyemi_familiarity: 7
-            adeyemi_trust: 10
-            adeyemi_alignment: 3
-      - id: cautious_vague
-        text: "I don't know. It was dark, I didn't get a good look."
-        next_node_id: adeyemi_warning_vague
+            adeyemi_trust: 12
+            adeyemi_familiarity: 8
+
+  adeyemi_act1_q4:
+    id: adeyemi_act1_q4
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "One more thing. You're not in any danger you haven't already accounted for, are you?"
+    thought: "He's at the door, leaving. Is this a professional courtesy or a warning?"
+    choices:
+      - id: q4_no
+        text: "No."
+        next_node_id: adeyemi_act1_end
         effects:
           stat_set:
             adeyemi_familiarity: 3
-            adeyemi_trust: -5
+      - id: q4_ask
+        text: "Should I be?"
+        next_node_id: adeyemi_act1_q4_answer
+      - id: q4_silent
+        text: "[Say nothing]"
+        next_node_id: adeyemi_act1_end
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
 
-  adeyemi_followup_defensive:
-    id: adeyemi_followup_defensive
+  adeyemi_act1_q4_answer:
+    id: adeyemi_act1_q4_answer
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "I see. Well, if you change your mind about what you saw or didn't see, you know where to find me. But this isn't the first incident at that building, Alex. And you're the only one who's seen anything."
-    thought: "That last part hits hard. He's studying me now with a different kind of intensity. Like he's trying to decide if I'm a liability or an asset."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-      stat_set:
-        adeyemi_tension: 5
-
-  # Follow-up nodes for direct path
-  adeyemi_followup_direct:
-    id: adeyemi_followup_direct
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Sophisticated equipment, appearing and vanishing... That's not standard criminal behavior. You went up to investigate alone?"
-    thought: "He's impressed. I can see it in the slight raise of his eyebrow. But there's also concern. Like he knows what kind of danger that represents."
+    text: "That depends on things I'm not at liberty to discuss yet."
     choices:
-      - id: direct_curious
-        text: "Someone had to. The police weren't exactly rushing to the scene."
-        next_node_id: adeyemi_acknowledgment_direct
+      - id: q4_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_end
         effects:
           stat_set:
-            adeyemi_familiarity: 8
-            adeyemi_trust: 12
-            adeyemi_alignment: 8
-      - id: direct_arrogant
-        text: "I don't need a babysitter, Inspector. I can handle myself."
-        next_node_id: adeyemi_challenge_direct
-        effects:
-          stat_set:
-            adeyemi_familiarity: 6
-            adeyemi_trust: 2
-            adeyemi_tension: 8
-
-  adeyemi_followup_challenged:
-    id: adeyemi_followup_challenged
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "You're not wrong. But the system is... complicated. Sometimes the easiest way to get answers is to work within it, not against it."
-    thought: "There it is again. That flicker of something other than blind loyalty. A man caught between what he knows is right and what he has to do."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-        adeyemi_player_challenged_authority: true
-      stat_set:
-        adeyemi_alignment: 3
-        adeyemi_tension: 5
-
-  # Follow-up nodes for deflecting path
-  adeyemi_followup_reluctant:
-    id: adeyemi_followup_reluctant
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Good. Now, about Residencial Las Estrellas. You were the first to report the strange occurrences. Tell me exactly what you saw."
-    thought: "He's not giving me an inch. Professional to the core. But I notice he doesn't push harder on my reluctance. Like he understands it, even respects it."
-    choices:
-      - id: reluctant_cooperate
-        text: "Alright. There was a figure on the roof. Then this utility knife appeared on my windowsill. And later, this electrical thing that was there and then gone."
-        next_node_id: adeyemi_understanding
-        effects:
-          stat_set:
-            adeyemi_familiarity: 6
+            adeyemi_tension: 5
             adeyemi_trust: 5
-      - id: reluctant_still_deflect
-        text: "Look, I told you what I know. Which isn't much."
-        next_node_id: adeyemi_closed
-        effects:
-          stat_set:
-            adeyemi_trust: -4
-            adeyemi_tension: 8
 
-  adeyemi_followup_persistent:
-    id: adeyemi_followup_persistent
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "This is important, Alex. There have been other incidents. This isn't just about your report."
-    thought: "There's a gravity to his voice now. The professional mask has slipped just a fraction. He believes there's something serious happening."
-    choices:
-      - id: persistent_yield
-        text: "Other incidents? What do you mean?"
-        next_node_id: adeyemi_reveal_context
-        effects:
-          stat_set:
-            adeyemi_familiarity: 7
-            adeyemi_trust: 8
-      - id: persistent_resist
-        text: "I really can't. I have to go."
-        next_node_id: adeyemi_final_warning
-        effects:
-          stat_set:
-            adeyemi_trust: -6
-            adeyemi_tension: 12
-
-  # Secondary follow-ups
-  adeyemi_warning_cautious:
-    id: adeyemi_warning_cautious
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Be careful, Alex. If someone left that knife for you to find, they know you're watching. And they might not like that."
-    thought: "He said my name. Not 'Mr. Garcia' or 'citizen.' There's a personal note there, a concern that goes beyond professional duty."
+  adeyemi_act1_end:
+    id: adeyemi_act1_end
+    type: system
+    text: "He leaves. You look at the contact card he handed you. There is a handwritten addition at the bottom — a secondary number, not a department line."
     is_end: true
     effects:
       flag_set:
-        adeyemi_conversation_ended: true
-        adeyemi_warning_given: true
-      stat_set:
-        adeyemi_trust: 5
-        adeyemi_tension: 3
-
-  adeyemi_warning_vague:
-    id: adeyemi_warning_vague
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "I see. Well, keep your eyes open. And if you see anything else, anything at all, you call me. Got it?"
-    thought: "He's giving me an out, but I can tell he's not satisfied with my answers. The inspection is over, but I have a feeling this isn't the last I'll see of Chief Inspector Adeyemi."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-      stat_set:
-        adeyemi_tension: 5
-
-  adeyemi_acknowledgment_direct:
-    id: adeyemi_acknowledgment_direct
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Fair point. And you're right about the police response. But if you're going to keep investigating, do me a favor? Check in with me first. I might be able to... facilitate things."
-    thought: "Facilitate things. That's not the language of someone who's just following orders. There's an offer there, a potential bridge between the establishment and whatever's really happening."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-        adeyemi_offered_help: true
-      stat_set:
-        adeyemi_trust: 10
-        adeyemi_alignment: 10
-        adeyemi_visibility: 5
-
-  adeyemi_challenge_direct:
-    id: adeyemi_challenge_direct
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "I don't doubt that. But Las Flores has a way of chewing up people who think they can handle themselves. Be careful."
-    thought: "There's a warning there, but also a challenge. Like he's testing me. And I think I just passed some kind of test."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-      stat_set:
-        adeyemi_familiarity: 5
-        adeyemi_trust: 5
-
-  adeyemi_understanding:
-    id: adeyemi_understanding
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Thank you for your cooperation. I'll look into it. And Alex? Try not to go investigating alone again. Some things... some things are better handled with backup."
-    thought: "The advice feels genuine. Like it comes from experience rather than procedure. I'm starting to think there's more to Chief Inspector Adeyemi than the official narrative."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-      stat_set:
-        adeyemi_trust: 8
-
-  adeyemi_closed:
-    id: adeyemi_closed
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Alright. If you change your mind, you know where to find me. But be warned - this city has a way of punishing curiosity."
-    thought: "He's shutting down, closing off. The professional mask is back in place. But I caught something in his eyes before it went completely cold. Concern? Or maybe just disappointment."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-      stat_set:
-        adeyemi_tension: 8
-
-  adeyemi_reveal_context:
-    id: adeyemi_reveal_context
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Let's just say there are patterns. Patterns that suggest this might be bigger than a simple break-in. And you being the only witness... that might make you a target."
-    thought: "Patterns. He's seen this before. And now he's worried about me. There's definitely more going on here than I realized."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-        adeyemi_hinted_at_conspiracy: true
-      stat_set:
-        adeyemi_familiarity: 10
-        adeyemi_trust: 15
-        adeyemi_alignment: 5
-
-  adeyemi_final_warning:
-    id: adeyemi_final_warning
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Alright. But remember what I said - if you see anything, call me. This isn't just about you anymore."
-    thought: "The finality in his voice tells me I've missed an opportunity. He wanted to share more, I could tell. But my deflection cost me that chance."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_conversation_ended: true
-      stat_set:
-        adeyemi_tension: 10
-        adeyemi_trust: -3
+        adeyemi_first_contact_made: true
+        adeyemi_apartment_visit_complete: true
+      state_set:
+        adeyemi_act: "1_done"
+        last_adeyemi_encounter_at: NOW
 
 metadata:
-  version: "1.0"
-  author: "Las Flores Team"
+  version: "2.0"
   tags:
     - "adeyemi"
-    - "relationship_building"
     - "act1"
     - "first_contact"
-    - "apartment_visit"
-  notes: |
-    This dialogue implements Phase 2.1-2.3 of the Adeyemi relationship plan:
-    - Different player approach styles (cautious, direct, deflecting) map to different choices
-    - Each choice affects relationship dimensions differently
-    - The encounter pushes to the encounter stack and sets initial relationship state
-    - Direct approach increases Familiarity but may affect Trust differently
-    - Cautious approach has more balanced but smaller changes
-    - Deflecting approach tends to decrease Trust and increase Tension

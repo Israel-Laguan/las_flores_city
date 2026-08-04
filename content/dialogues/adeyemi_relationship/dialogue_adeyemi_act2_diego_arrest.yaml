@@ -1,608 +1,178 @@
 id: a0000001-0002-4000-8000-000000000011
-name: "Adeyemi Act 2 - World Event (Diego's Arrest)"
-description: "Unavoidable world event: Diego Reyes is falsely arrested by Adeyemi for the Residencial Las Estrellas murders. Player must react, with massive relationship dimension shifts."
+name: "Adeyemi Act 2 - The Reyes Incident"
+description: "Adeyemi arrests labour activist Diego Reyes in public. Player reacts to this event."
 character_id: a0000001-0000-4000-8000-000000000003
-mission_id: c2000013-e29b-41d4-a716-446655440013
-dialogue_scope: scene
-start_node_id: diego_arrest_witness
+dialogue_scope: character
+start_node_id: adeyemi_act2_start
 nodes:
-  # World event - Diego's arrest
-  diego_arrest_witness:
-    id: diego_arrest_witness
+  adeyemi_act2_start:
+    id: adeyemi_act2_start
     type: system
-    text: "BREAKING NEWS ALERT: Chief Inspector Adeyemi has just arrested community activist Diego Reyes in connection with the Residencial Las Estrellas murders. The arrest took place outside the Las Flores Community Center during a protest rally."
-    thought: "Diego? Arrested for the murders? That doesn't make sense. I saw him just yesterday. He was organizing the next community meeting. This has to be a setup. But why would Adeyemi...? Unless he's not acting on his own."
-    effects:
-      flag_set:
-        diego_reyes_arrested: true
-        adeyemi_arrested_diego: true
-        world_event_diego_arrest_witnessed: true
-      stat_set:
-        adeyemi_visibility: 50  # This becomes very public
-      story_beat: act2_diego_arrest_event
+    text: "At the protest outside the Meridian-adjacent facility, the crowd is dense. You watch as Chief Inspector Adeyemi moves through the people without force. Someone stumbles near you in the crowd surge; Adeyemi's arm extends automatically to brace them, then drops immediately. He reaches labor activist Diego Reyes and speaks quietly. Reyes doesn't resist. He is cuffed. Two officers take Reyes away, but Adeyemi stays at the edge of the scene."
     choices:
-      - id: go_to_scene
-        text: "Go to the arrest scene"
-        next_node_id: diego_arrest_scene_confrontation
+      - id: act2_confront
+        text: "Confront Adeyemi directly. Reyes did nothing wrong."
+        next_node_id: adeyemi_act2_confront
         time_block_cost:
           amount: 1
-          description: "Travel to arrest scene"
-        effects:
-          flag_set:
-            adeyemi_encounter_stack_diego_arrest: true
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_watch
+        text: "[Say nothing. Watch]"
+        next_node_id: adeyemi_act2_watch
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_intervene
+        text: "[Try to intervene and step toward Reyes]"
+        next_node_id: adeyemi_act2_intervene
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_help_after
+        text: "[Walk away, but resolve to help Reyes find a lawyer later]"
+        next_node_id: adeyemi_act2_help_after
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_public_statement
+        text: "Make a public statement denouncing Adeyemi's arrest of Reyes"
+        next_node_id: adeyemi_act2_public_statement
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_do_nothing
+        text: "[Do nothing and move on]"
+        next_node_id: adeyemi_act2_do_nothing
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
 
-  # Player arrives at the scene
-  diego_arrest_scene_confrontation:
-    id: diego_arrest_scene_confrontation
-    type: system
-    text: "You arrive at the scene to see Diego being roughly placed into a police cruiser by several officers. Adeyemi stands nearby, overseeing the operation. A small crowd has gathered, murmuring in shock and anger."
-    thought: "This is worse than I thought. Diego looks terrified, but also defiant. And Adeyemi... he looks like he's doing his duty, but there's something in his eyes. A flicker of... regret? Or am I just hoping to see that?"
-    choices:
-      - id: confront_adeyemi_private
-        text: "Approach Adeyemi privately when he steps away from the crowd"
-        next_node_id: adeyemi_confrontation_private
-        effects:
-          flag_set:
-            adeyemi_player_confronted_about_diego: true
-            adeyemi_confrontation_approach: "private"
-      - id: publicly_denounce_adeyemi
-        text: "Step forward and publicly denounce Adeyemi for this arrest"
-        next_node_id: adeyemi_public_denouncement
-        effects:
-          flag_set:
-            adeyemi_publicly_denounced: true
-            adeyemi_player_denounced_authority: true
-            adeyemi_encounter_stack_diego_arrest_confrontation: true
-          stat_set:
-            adeyemi_tension: 30
-            adeyemi_visibility: 80
-      - id: ignore_situation
-        text: "Hang back, observe quietly, and leave without intervening"
-        next_node_id: adeyemi_ignore_arrest
-        effects:
-          flag_set:
-            adeyemi_player_ignored_diego_arrest: true
-          stat_set:
-            adeyemi_visibility: 20
-
-  # Private confrontation
-  adeyemi_confrontation_private:
-    id: adeyemi_confrontation_private
+  adeyemi_act2_confront:
+    id: adeyemi_act2_confront
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Alex. I was wondering when you'd show up. Look, I know this looks bad, but you need to trust me. There are things at play here that you don't understand."
-    thought: "There it is. The same line as before. 'Things you don't understand.' But this time, it sounds less like an excuse and more like a plea. Or maybe that's just what I want to hear."
-    choices:
-      - id: demand_explanation
-        text: "I don't understand? Diego was helping us expose the truth. How can you arrest him for murder?"
-        next_node_id: adeyemi_defend_arrest
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: -10
-            adeyemi_tension: 25
-            adeyemi_alignment: -15
-      - id: challenge_motivation
-        text: "You're Vega's enforcer. Is this about silencing Diego before he can expose the truth?"
-        next_node_id: adeyemi_motivation_challenged
-        effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: -15
-            adeyemi_tension: 30
-            adeyemi_alignment: -20
-      - id: seek_common_ground
-        text: "There has to be something we can do. This isn't right, and you know it."
-        next_node_id: adeyemi_seek_compromise
-        effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: 5
-            adeyemi_tension: 15
-            adeyemi_alignment: -5
-
-  # Public denouncement
-  adeyemi_public_denouncement:
-    id: adeyemi_public_denouncement
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Alex, no. You don't understand what you're doing. This isn't the time or place for this. Think about what you're risking."
-    thought: "The crowd is turning. People are listening. Some look hopeful, others terrified. Adeyemi's face is a mask of professional composure, but I can see the tension in his jaw. He's not expecting this. And he's not happy about it."
-    choices:
-      - id: continue_denouncement
-        text: "I understand perfectly. You're arresting an innocent man to cover up for the real criminals. And I won't stand for it!"
-        next_node_id: adeyemi_denouncement_continued
-        effects:
-          flag_set:
-            adeyemi_major_relationship_rupture: true
-          stat_set:
-            adeyemi_familiarity: 20  # He gets to know you very well through this
-            adeyemi_trust: -40
-            adeyemi_tension: 60
-            adeyemi_alignment: -50
-            adeyemi_visibility: 100
-      - id: back_down
-        text: "Wait... maybe we should talk about this somewhere more private."
-        next_node_id: adeyemi_denouncement_backdown
-        effects:
-          stat_set:
-            adeyemi_familiarity: 8
-            adeyemi_trust: -5
-            adeyemi_tension: 20
-            adeyemi_visibility: 40
-
-  # Ignore the arrest
-  adeyemi_ignore_arrest:
-    id: adeyemi_ignore_arrest
-    type: system
-    text: "You decide to stay out of it. Whatever's happening, it's clearly above your pay grade. As you're turning to leave, you catch Adeyemi's eye for just a moment. There's something there - disappointment? Relief? It's hard to tell."
-    thought: "Sometimes the smartest thing to do is nothing. But that doesn't mean it's the right thing. And it doesn't mean it won't have consequences."
+    text: "I know."
+    thought: "He says 'I know' and walks away. Does he mean he knows Reyes is innocent? Or he knows I'm upset? Or he knows more than I do?"
     is_end: true
     effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_ignored: true
+      stat_set:
+        adeyemi_tension: 15
+        adeyemi_alignment: -10
+        adeyemi_familiarity: 3
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_watch:
+    id: adeyemi_act2_watch
+    type: system
+    text: "Adeyemi sees you watching. He doesn't acknowledge it, but he definitely clocked you."
+    is_end: true
+    effects:
       stat_set:
         adeyemi_familiarity: 5
-        adeyemi_trust: -3
-        adeyemi_alignment: -8
+        adeyemi_tension: 5
+        adeyemi_trust: 3
 
-  # Adeyemi defends the arrest
-  adeyemi_defend_arrest:
-    id: adeyemi_defend_arrest
+  adeyemi_act2_intervene:
+    id: adeyemi_act2_intervene
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Because the evidence points to him, Alex. Security footage, witness statements. I didn't want to believe it either, but the case is solid. Or at least, it looks that way to anyone who doesn't know him like we do."
-    thought: "'Like we do.' There's an inclusion there. A suggestion that he and I share knowledge, share understanding. But that doesn't change the fact that he's still arresting Diego."
+    text: "Don't. Not here."
+    thought: "He moves to intercept me. Not a physical block, but he's suddenly between me and the arrest."
     choices:
-      - id: press_evidence
-        text: "What evidence? Diego has been with me and Evelyn. We know he couldn't have done this."
-        next_node_id: adeyemi_evidence_explanation
-        effects:
-          stat_set:
-            adeyemi_familiarity: 18
-            adeyemi_trust: -8
-            adeyemi_tension: 22
-      - id: ask_what_to_do
-        text: "Then what do we do? We can't let him go through with this."
-        next_node_id: adeyemi_suggest_action
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: 2
-            adeyemi_tension: 18
-            adeyemi_alignment: -3
+      - id: act2_intervene_stop
+        text: "[Stop]"
+        next_node_id: adeyemi_act2_intervene_stop
+      - id: act2_intervene_push
+        text: "[Push through anyway]"
+        next_node_id: adeyemi_act2_intervene_push
 
-  # Motivation challenged
-  adeyemi_motivation_challenged:
-    id: adeyemi_motivation_challenged
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "You think I don't know what this looks like? That I'm just following orders? But some orders... some orders you have to follow, Alex. Or people get hurt. People like Daniel."
-    thought: "Daniel. He's using his brother's name as a shield, as a justification. But I don't think it's working. Not on him, and certainly not on me. There's a break in his voice when he says the name. A crack in the armor."
-    choices:
-      - id: invoke_daniel_memory
-        text: "Daniel wouldn't want this. He'd want you to do what's right, not what's easy."
-        next_node_id: adeyemi_daniel_invoked
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 15
-            adeyemi_tension: 28
-            adeyemi_alignment: 10
-      - id: call_bluff
-        text: "That's a convenient excuse. But I think you're better than that."
-        next_node_id: adeyemi_bluff_called
-        effects:
-          stat_set:
-            adeyemi_familiarity: 12
-            adeyemi_trust: -12
-            adeyemi_tension: 30
-            adeyemi_alignment: -10
-
-  # Seek compromise
-  adeyemi_seek_compromise:
-    id: adeyemi_seek_compromise
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Alex, I wish it were that simple. But this... this is bigger than Diego, bigger than you or me. If I don't do this, if I don't play the game... then I can't be in a position to make things right later."
-    thought: "The compromise argument again. The greater good. It's a logic I can almost respect. Almost. But it's still logic that leads to Diego going to jail for something he didn't do."
-    choices:
-      - id: accept_logic
-        text: "I don't like it, but... I understand. What can I do to help Diego?"
-        next_node_id: adeyemi_compromise_accepted
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 15
-            adeyemi_tension: 12
-            adeyemi_alignment: 5
-            adeyemi_debt: 10
-      - id: reject_compromise
-        text: "No. I don't accept that. There's always a choice. And you're making the wrong one."
-        next_node_id: adeyemi_compromise_rejected
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: -15
-            adeyemi_tension: 30
-            adeyemi_alignment: -20
-
-  # Denouncement continued
-  adeyemi_denouncement_continued:
-    id: adeyemi_denouncement_continued
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Alex, stop. You're making this worse for both of us. The officers will have to contain the crowd. And if you keep this up... I won't be able to protect you from the consequences."
-    thought: "The threat is subtle but clear. He's warning me. And there's something almost... pleading in his eyes. Like he's trying to save me from myself. But it's too late. The crowd is worked up, the moment has taken on its own energy."
+  adeyemi_act2_intervene_stop:
+    id: adeyemi_act2_intervene_stop
+    type: system
+    text: "You stop. He nods slightly, then walks away."
     is_end: true
     effects:
-      flag_set:
-        adeyemi_major_relationship_rupture: true
-        adeyemi_player_burned_bridges: true
-        adeyemi_encounter_stack_diego_arrest_public_denouncement: true
       stat_set:
-        adeyemi_familiarity: 25
-        adeyemi_trust: -50
-        adeyemi_tension: 70
-        adeyemi_alignment: -60
-        adeyemi_visibility: 100
-        adeyemi_debt: -10  # Negative debt means Adeyemi owes player, but in this case it's a rupture
-
-  # Denouncement backdown
-  adeyemi_denouncement_backdown:
-    id: adeyemi_denouncement_backdown
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Good choice. Sometimes knowing when to back down is the smartest move. But Alex... this isn't over. Not by a long shot."
-    thought: "He's giving me an out. A way to save face while still maintaining some control over the situation. But there's a warning there too. This situation is far from resolved."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_confrontation_resolved: true
-      stat_set:
-        adeyemi_familiarity: 12
-        adeyemi_trust: -2
-        adeyemi_tension: 15
-        adeyemi_visibility: 30
-
-  # Evidence explanation
-  adeyemi_evidence_explanation:
-    id: adeyemi_evidence_explanation
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Footage from the building that night. A witness who claims to have seen Diego near the scene. And then there are the messages on his phone. Messages that suggest he knew more than he was letting on."
-    thought: "Messages on his phone. That sounds planted. Or at least, convenient. But Adeyemi seems to genuinely believe this. Or at least, he's committed to the story."
-    choices:
-      - id: request_phone_evidence
-        text: "Can I see these messages? Maybe I can help make sense of them."
-        next_node_id: adeyemi_phone_evidence_offer
-        effects:
-          stat_set:
-            adeyemi_familiarity: 18
-            adeyemi_trust: 5
-            adeyemi_alignment: -2
-      - id: call_out_plant
-        text: "That sounds like it was planted. Diego would never send messages like that."
-        next_node_id: adeyemi_plant_accusation
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: -10
-            adeyemi_tension: 25
-
-  # Suggest action
-  adeyemi_suggest_action:
-    id: adeyemi_suggest_action
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "There's not much you can do right now. But you can help me build a case. Off the books. Meet me at the usual place tonight. We'll talk."
-    thought: "The usual place. He's creating a pattern, a routine. And he's trusting me with information, even if it's just crumbs. But it's something."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_secret_meeting_arranged: true
-        adeyemi_encounter_stack_diego_arrest_private_conversation: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: 15
-        adeyemi_alignment: 8
-        adeyemi_debt: 10
-        adeyemi_visibility: 5  # Secret meetings are private
-
-  # Daniel invoked
-  adeyemi_daniel_invoked:
-    id: adeyemi_daniel_invoked
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...Don't. Don't you dare bring Daniel into this. You don't know what you're asking. You don't know what it cost me to get to where I am."
-    thought: "I hit a nerve. A raw, exposed nerve. And suddenly I understand - this isn't about Diego, not really. It's about Daniel. It's about the choices Adeyemi made, the compromises he accepted. And I've just forced him to face that."
-    choices:
-      - id: apologize
-        text: "I'm sorry. I didn't mean to... I just don't understand how you can do this."
-        next_node_id: adeyemi_apology_accepted
-        effects:
-          stat_set:
-            adeyemi_familiarity: 22
-            adeyemi_trust: 10
-            adeyemi_tension: 20
-      - id: press_point
-        text: "Then help me understand. If Daniel matters so much, how can you arrest an innocent man?"
-        next_node_id: adeyemi_point_pressed
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 0
-            adeyemi_tension: 35
-            adeyemi_alignment: -5
-
-  # Bluff called
-  adeyemi_bluff_called:
-    id: adeyemi_bluff_called
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "You think I haven't asked myself that same question every day for the past decade? You think I don't look in the mirror and see the choices I've made?"
-    thought: "The rawness in his voice takes me aback. This isn't the composed, authoritative Chief Inspector. This is a man who's been carrying a weight for a long time, and it's crushing him."
-    choices:
-      - id: offer_support
-        text: "Then let me help you. Let me help you be better than the choices you've made."
-        next_node_id: adeyemi_support_offered
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 20
-            adeyemi_alignment: 15
-            adeyemi_debt: 15
-      - id: challenge_credibility
-        text: "If that's true, then prove it. Let Diego go."
-        next_node_id: adeyemi_credibility_challenged
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: -18
-            adeyemi_tension: 38
-
-  # Compromise accepted
-  adeyemi_compromise_accepted:
-    id: adeyemi_compromise_accepted
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Good. That's... that's the right answer. Look, I'll do what I can to make sure Diego gets a fair trial. But in the meantime, I need you to trust me. Can you do that?"
-    thought: "He's offering a lifeline. A way to still help Diego, even if it's not the way I want. And he's asking for my trust. After everything, he still wants my trust."
-    choices:
-      - id: grant_trust
-        text: "Yes. I'll trust you. But I'm holding you to that promise about Diego."
-        next_node_id: adeyemi_trust_granted
-        effects:
-          stat_set:
-            adeyemi_familiarity: 22
-            adeyemi_trust: 25
-            adeyemi_alignment: 10
-            adeyemi_debt: 15
-      - id: conditional_trust
-        text: "I'll trust you when Diego walks free. Not before."
-        next_node_id: adeyemi_trust_conditional
-        effects:
-          stat_set:
-            adeyemi_familiarity: 18
-            adeyemi_trust: 5
-            adeyemi_alignment: 2
-
-  # Compromise rejected
-  adeyemi_compromise_rejected:
-    id: adeyemi_compromise_rejected
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Then you're as naive as Daniel was. And look where that got him. But fine. If that's how you want to play it. Don't come crying to me when you realize that the world isn't as black and white as you think it is."
-    thought: "The coldness in his voice is chilling. But I think it's a defense mechanism. I think I've touched something real, something raw. And he's lashing out because of it."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_relationship_strained: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: -20
-        adeyemi_tension: 40
-        adeyemi_alignment: -25
-
-  # Phone evidence offer
-  adeyemi_phone_evidence_offer:
-    id: adeyemi_phone_evidence_offer
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "I can't show you the phone itself. But I can get you copies of the messages. If you're willing to look at them with an open mind."
-    thought: "He's testing me. He's giving me a chance to prove that I'm not just blindly loyal to Diego, that I can look at evidence objectively. But can I?"
-    choices:
-      - id: accept_evidence
-        text: "Fine. I'll look at them. But I reserve the right to call bullshit if it doesn't add up."
-        next_node_id: adeyemi_evidence_accepted
-        effects:
-          flag_set:
-            adeyemi_shared_evidence: true
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 12
-            adeyemi_alignment: -2
-      - id: refuse_evidence
-        text: "No thanks. I know Diego. I don't need to see planted evidence to know he didn't do this."
-        next_node_id: adeyemi_evidence_refused
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: -8
-            adeyemi_tension: 20
-
-  # Plant accusation
-  adeyemi_plant_accusation:
-    id: adeyemi_plant_accusation
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Planted by whom, Alex? And why would they plant it on Diego's phone specifically? No, the evidence is what it is. I wish it were different, but we have to work with the facts."
-    thought: "He's doubling down. But there's no conviction in his voice. It's like he's trying to convince himself as much as me. And failing at both."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_plant_accusation_made: true
-      stat_set:
-        adeyemi_familiarity: 18
-        adeyemi_trust: -15
-        adeyemi_tension: 28
-
-  # Apology accepted
-  adeyemi_apology_accepted:
-    id: adeyemi_apology_accepted
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...It's fine. I get it. You're trying to do the right thing. And I... I appreciate that you care enough to challenge me. Not many people do anymore."
-    thought: "The gratitude in his voice is genuine. And so is the pain. I think I've just seen the real Adeyemi, the one behind the Chief Inspector persona. And it's a man who's deeply conflicted, deeply hurt, and desperately trying to do the right thing, even if he doesn't always know what that is."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_private_resolved: true
-      stat_set:
-        adeyemi_familiarity: 25
-        adeyemi_trust: 18
-        adeyemi_tension: 12
-        adeyemi_alignment: 8
-
-  # Point pressed
-  adeyemi_point_pressed:
-    id: adeyemi_point_pressed
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Maybe you're right. Maybe I'm not the man I thought I was. But that doesn't change the fact that my hands are tied. I have orders, Alex. And I have to follow them."
-    thought: "He's giving in to the inevitability of it all. The system, the orders, the compromises. And I can see it breaking him. But it's still not enough to make him do the right thing."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_private_resolved: true
-      stat_set:
-        adeyemi_familiarity: 22
-        adeyemi_trust: -5
-        adeyemi_tension: 25
-        adeyemi_alignment: -10
-
-  # Support offered
-  adeyemi_support_offered:
-    id: adeyemi_support_offered
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...Thank you. I... I need that. More than you know. Meet me at the safe house tonight. We'll talk. And Alex... be careful. If they find out you're helping me..."
-    thought: "He's opening up. Really opening up. And he's warning me. This feels like a turning point. But I can't shake the feeling that we're both still playing with fire."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_support_accepted: true
-        adeyemi_secret_meeting_arranged: true
-      stat_set:
-        adeyemi_familiarity: 25
-        adeyemi_trust: 25
-        adeyemi_alignment: 18
-        adeyemi_debt: 20
-        adeyemi_visibility: 3
-
-  # Credibility challenged
-  adeyemi_credibility_challenged:
-    id: adeyemi_credibility_challenged
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "You think it's that simple? That I can just let him go and walk away? You have no idea what's at stake here, Alex. None."
-    thought: "The anger is real. But I think it's anger at himself as much as at me. He's trapped, and he hates that I can see it. And he hates that I'm right."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_private_resolved: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: -20
-        adeyemi_tension: 40
-        adeyemi_alignment: -20
-
-  # Trust granted
-  adeyemi_trust_granted:
-    id: adeyemi_trust_granted
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "I won't let you down. But you have to understand - this has to look real. For now. I need time to work the angles. But I promise you, Alex, Diego will be alright."
-    thought: "The promise feels genuine. And the relief I feel is real. But there's still that nagging doubt. What if he can't deliver? What if the system is too strong, too corrupt?"
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_private_resolved: true
-        adeyemi_trust_granted_for_diego: true
-      stat_set:
-        adeyemi_familiarity: 28
-        adeyemi_trust: 30
-        adeyemi_alignment: 15
-        adeyemi_debt: 20
-        adeyemi_visibility: 8
-
-  # Trust conditional
-  adeyemi_trust_conditional:
-    id: adeyemi_trust_conditional
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "That's fair. I respect that. I just hope you don't regret it. Now, if you'll excuse me, I have work to do."
-    thought: "The formality has returned. But it's different now. There's an understanding between us. A tension, but also a connection. And I think that might be the most important thing that's happened today."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_encounter_stack_diego_arrest_private_resolved: true
-      stat_set:
-        adeyemi_familiarity: 20
+        adeyemi_tension: 10
         adeyemi_trust: 8
-        adeyemi_alignment: 5
+        adeyemi_familiarity: 8
+        adeyemi_alignment: -5
 
-  # Evidence accepted
-  adeyemi_evidence_accepted:
-    id: adeyemi_evidence_accepted
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Good. I'll have the messages sent to your secure line. Look them over. And Alex... try to keep an open mind. The truth is sometimes stranger than we want to believe."
-    thought: "He's asking me to doubt Diego. And I can't do that. But I also can't deny that Adeyemi seems genuinely conflicted. Maybe there's something I'm missing."
+  adeyemi_act2_intervene_push:
+    id: adeyemi_act2_intervene_push
+    type: system
+    text: "You push past him. His expression tightens. The other officers warn you to step back, and Adeyemi watches you with a hard look before leaving."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_tension: 20
+        adeyemi_alignment: -15
+        adeyemi_trust: -5
+        adeyemi_familiarity: 5
+
+  adeyemi_act2_help_after:
+    id: adeyemi_act2_help_after
+    type: system
+    text: "You decide not to make a scene now, but you start making calls to find legal representation for Reyes."
     is_end: true
     effects:
       flag_set:
-        adeyemi_evidence_review_arranged: true
+        adeyemi_helped_reyes: true
       stat_set:
-        adeyemi_familiarity: 22
-        adeyemi_trust: 15
-        adeyemi_alignment: 0
+        adeyemi_alignment: 10
+        adeyemi_tension: 8
+        adeyemi_trust: 5
+        adeyemi_familiarity: 3
 
-  # Evidence refused
-  adeyemi_evidence_refused:
-    id: adeyemi_evidence_refused
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Suit yourself. But don't come to me later saying I didn't give you a chance to see the full picture. The choice is yours, Alex. But so are the consequences."
-    thought: "He's frustrated. And he's warning me. But I stand by my decision. Some 'evidence' is too convenient to be real."
+  adeyemi_act2_public_statement:
+    id: adeyemi_act2_public_statement
+    type: system
+    text: "You take to the public channels and denounce Adeyemi's arrest of Reyes as unjust. Your statement gains traction, putting pressure on the police department."
     is_end: true
     effects:
       flag_set:
-        adeyemi_evidence_refused: true
+        adeyemi_publicly_denounced: true
       stat_set:
-        adeyemi_familiarity: 18
-        adeyemi_trust: -10
-        adeyemi_tension: 22
+        adeyemi_alignment: -20
+        adeyemi_tension: 25
+        adeyemi_trust: -15
+        adeyemi_familiarity: 5
+
+  adeyemi_act2_do_nothing:
+    id: adeyemi_act2_do_nothing
+    type: system
+    text: "You treat it as background noise and move on with your day."
+    is_end: true
+
+  # Optional Secondary Number call logic - this would likely be a separate trigger in-game, but added here for the sequence
+  adeyemi_act2_secondary_call:
+    id: adeyemi_act2_secondary_call
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I wasn't expecting you to use that number."
+    choices:
+      - id: call_ask_why
+        text: "Why did you arrest him?"
+        next_node_id: adeyemi_act2_secondary_call_answer
+
+  adeyemi_act2_secondary_call_answer:
+    id: adeyemi_act2_secondary_call_answer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You want to know why. Most people do. The answer is more complicated than you probably want it to be."
+    thought: "He doesn't explain further, but he acknowledges the complexity without defending himself."
+    is_end: true
+    effects:
+      flag_set:
+        SECONDARY_NUMBER_USED: true
+      stat_set:
+        adeyemi_trust: 12
+        adeyemi_familiarity: 5
 
 metadata:
-  version: "1.0"
-  author: "Las Flores Team"
+  version: "2.0"
   tags:
     - "adeyemi"
-    - "relationship_building"
     - "act2"
-    - "world_event"
-    - "diego_reyes"
-    - "arrest"
-    - "major_choices"
-  notes: |
-    This dialogue implements Phase 3.1-3.3 of the Adeyemi relationship plan:
-    - Unavoidable world event: Diego Reyes falsely arrested by Adeyemi
-    - Player has three main reaction choices with massively different outcomes:
-      1. Confront Adeyemi privately - increases Tension and Familiarity, moderate Trust impact
-      2. Publicly denounce Adeyemi - massive negative impact on Trust and Alignment, but high Familiarity
-      3. Ignore the situation - smaller impacts but missed opportunity
-    - Within private confrontation: options to challenge, seek compromise, or accept his logic
-    - Public denouncement path: can continue denouncement or back down
-    - Gates Act 3 phone call: public denouncement sets adeyemi_publicly_denounced flag which prevents Act 3
-    - Massive relationship dimension shifts based on player's moral stance vs pragmatic understanding
+    - "reyes_arrest"

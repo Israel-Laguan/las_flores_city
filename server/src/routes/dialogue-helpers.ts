@@ -255,10 +255,19 @@ export async function recordChoiceAndEffects(
     await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
   }
   if (effects?.state_set) {
-    await PlayerStateRepository.mergeState(client, userId, effects.state_set);
+    // Replace special "NOW" marker with current ISO timestamp for relationship tracking
+    const stateWithTimestamps: Record<string, string> = Object.fromEntries(
+      Object.entries(effects.state_set ?? {}).map(([key, value]) => [
+        key,
+        // EffectsSchema guarantees string values; coerce so the tuple stays [string, string]
+        // instead of widening to unknown (which previously broke the build).
+        value === 'NOW' ? new Date().toISOString() : String(value),
+      ])
+    );
+    await PlayerStateRepository.mergeState(client, userId, stateWithTimestamps);
   }
   if (effects?.stat_set) {
-    await PlayerStateRepository.mergeStats(client, userId, effects.stat_set);
+    await PlayerStateRepository.mergeStatsClamped(client, userId, effects.stat_set);
   }
   if (effects?.story_beat) {
     await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);

@@ -1,678 +1,142 @@
 id: a0000001-0004-4000-8000-000000000013
-name: "Adeyemi Act 4 - Pressure Point (Discovery)"
-description: "Late-game pressure point: Player discovers damning information about Adeyemi and must choose to publish, hide, or confront him. Their choice determines final relationship trajectory."
+name: "Adeyemi Act 4 - The Crane"
+description: "The pressure point. Solis reveals her connection to the player, forcing a physical choice."
 character_id: a0000001-0000-4000-8000-000000000003
 dialogue_scope: character
-start_node_id: adeyemi_discovery_moment
+start_node_id: adeyemi_crane_start
 nodes:
-  # Discovery moment - player finds incriminating evidence
-  adeyemi_discovery_moment:
-    id: adeyemi_discovery_moment
+  adeyemi_crane_start:
+    id: adeyemi_crane_start
     type: system
-    text: "While investigating files from the retirement complex cover-up, you uncover a disturbing document. It's a police internal memo signed by Chief Inspector Adeyemi himself, detailing the 'neutralization' of a witness who was getting too close to the truth. The date matches when Daniel Ogunbiyi died."
-    thought: "This is it. The smoking gun. Adeyemi didn't just arrest innocent people - he orchestrated Daniel's murder. And he's been lying to me this whole time. But... there's something else. The memo seems incomplete, like there are pages missing. And the signature... it doesn't look quite right."
-    effects:
-      flag_set:
-        adeyemi_incriminating_evidence_discovered: true
-        adeyemi_pressure_point_activated: true
-      stat_set:
-        adeyemi_tension: 25
-      story_beat: act4_adeyemi_discovery
+    text: "The industrial crane yard is dead quiet at this hour. You told Adeyemi to meet you here. He steps out from the shadows of a container, hands visible but tense."
+    thought: "We're completely exposed."
     choices:
-      - id: publish_evidence
-        text: "Publish the document immediately. The world needs to know what Adeyemi did."
-        next_node_id: adeyemi_publish_choice
-        time_block_cost:
-          amount: 4
-          description: "Publish incriminating evidence about Adeyemi"
-        effects:
-          flag_set:
-            adeyemi_player_published_evidence: true
-            adeyemi_encounter_stack_pressure_point_publish: true
-          stat_set:
-            adeyemi_visibility: 100
-            adeyemi_trust: -60
-            adeyemi_alignment: -40
-            adeyemi_tension: 80
-      - id: hide_evidence
-        text: "Hide the evidence. Confront Adeyemi privately first - give him a chance to explain."
-        next_node_id: adeyemi_confront_choice
-        time_block_cost:
-          amount: 2
-          description: "Investigate further before acting"
-        effects:
-          flag_set:
-            adeyemi_evidence_hidden: true
-            adeyemi_encounter_stack_pressure_point_investigate: true
-          stat_set:
-            adeyemi_visibility: 10
-            adeyemi_tension: 15
-      - id: destroy_evidence
-        text: "Destroy the evidence. Some truths are too dangerous, even if they're true."
-        next_node_id: adeyemi_destroy_choice
+      - id: approach_adeyemi
+        text: "I got the Meridian file."
+        next_node_id: adeyemi_crane_adeyemi_speaks
         time_block_cost:
           amount: 1
-          description: "Destroy the incriminating document"
+          description: "Meeting Adeyemi at the industrial crane yard"
+        
+  adeyemi_crane_adeyemi_speaks:
+    id: adeyemi_crane_adeyemi_speaks
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You shouldn't have brought it here. Vega knows we're looking. We need to—"
+    thought: "He stops. His eyes dart to the catwalk above me."
+    choices:
+      - id: look_up
+        text: "[Look behind you]"
+        next_node_id: adeyemi_crane_solis_arrives
+
+  adeyemi_crane_solis_arrives:
+    id: adeyemi_crane_solis_arrives
+    type: system
+    text: "Councilwoman Petra Solis descends the metal stairs. She is flanked by two private security contractors. She smiles warmly at you."
+    choices:
+      - id: react_solis
+        text: "Petra? What are you doing here?"
+        next_node_id: adeyemi_crane_solis_speaks
+
+  adeyemi_crane_solis_speaks:
+    id: adeyemi_crane_solis_speaks
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000004
+    text: "Collecting our hard work. You've done brilliantly, getting him to trust you. I'll take the file now."
+    thought: "Adeyemi freezes. The betrayal hits him like a physical blow. He looks at me, calculating."
+    choices:
+      - id: defend_self
+        text: "Adeyemi, it's a lie. I didn't set you up."
+        next_node_id: adeyemi_crane_adeyemi_reaction
+      - id: stay_silent
+        text: "[Say nothing]"
+        next_node_id: adeyemi_crane_adeyemi_reaction
+
+  adeyemi_crane_adeyemi_reaction:
+    id: adeyemi_crane_adeyemi_reaction
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Did you tell her where we were meeting?"
+    choices:
+      - id: admit_truth
+        text: "Yes, but—"
+        next_node_id: adeyemi_crane_choice
+      - id: deny
+        text: "No!"
+        next_node_id: adeyemi_crane_choice
+
+  adeyemi_crane_choice:
+    id: adeyemi_crane_choice
+    type: system
+    text: "Solis's guards raise their weapons toward Adeyemi. The standoff is perfectly balanced. You are in the middle."
+    choices:
+      - id: step_to_adeyemi
+        text: "[Step toward Adeyemi]"
+        next_node_id: adeyemi_crane_covered
         effects:
           flag_set:
-            adeyemi_evidence_destroyed: true
-            adeyemi_encounter_stack_pressure_point_destroy: true
+            COVERED: true
           stat_set:
-            adeyemi_visibility: 0
-            adeyemi_tension: 5
-            adeyemi_trust: 10
-
-  # Publish choice consequences
-  adeyemi_publish_choice:
-    id: adeyemi_publish_choice
-    type: system
-    text: "Within hours, the document goes viral across Las Flores. News outlets pick it up, activists share it, and within a day, there are protests outside police headquarters. Adeyemi's face is on every screen, his name on every tongue."
-    thought: "The public reaction is swift and brutal. Adeyemi is being pilloried as a murderer, a traitor to justice. But I'm starting to wonder... did I do the right thing? There were those missing pages, the odd signature..."
-    choices:
-      - id: stand_by_decision
-        text: "Stand by your decision. Adeyemi got what he deserved."
-        next_node_id: adeyemi_stand_by_publish
-        effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_trust: -70
-            adeyemi_alignment: -50
-            adeyemi_visibility: 100
-      - id: express_doubt
-        text: "Express doubt publicly. Maybe there's more to the story."
-        next_node_id: adeyemi_doubt_publish
-        effects:
-          stat_set:
-            adeyemi_familiarity: 10
-            adeyemi_trust: -40
-            adeyemi_alignment: -30
-            adeyemi_visibility: 80
-
-  # Confront choice
-  adeyemi_confront_choice:
-    id: adeyemi_confront_choice
-    type: system
-    text: "You track down Adeyemi at a discreet location - an abandoned warehouse on the outskirts of the city. When he sees you, his face darkens. 'You found it, didn't you?' he asks, his voice barely above a whisper."
-    thought: "He knows. Of course he knows. And he looks... not angry, not defensive. Resigned. Like he's been expecting this moment for a long time."
-    choices:
-      - id: confront_accuse
-        text: "Yes, I found it. The memo about Daniel. How could you?"
-        next_node_id: adeyemi_accusation_confrontation
-        effects:
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_tension: 40
-            adeyemi_visibility: 5
-      - id: confront_ask_explanation
-        text: "I found something. But I don't understand it. What really happened with Daniel?"
-        next_node_id: adeyemi_explanation_confrontation
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_tension: 25
-            adeyemi_trust: 5
-            adeyemi_visibility: 3
-      - id: confront_offer_help
-        text: "I found it. And I want to help you make this right."
-        next_node_id: adeyemi_help_confrontation
-        effects:
-          stat_set:
-            adeyemi_familiarity: 18
-            adeyemi_tension: 20
-            adeyemi_trust: 15
-            adeyemi_alignment: 10
-
-  # Destroy choice consequences
-  adeyemi_destroy_choice:
-    id: adeyemi_destroy_choice
-    type: system
-    text: "The document burns to ash in your sink. As you watch the last embers disappear, you feel a strange mix of relief and guilt. But the next morning, you wake to a news alert: Chief Inspector Adeyemi has been called to an emergency meeting with Mayor Vega."
-    thought: "Did I just protect a murderer? Or did I prevent a witch hunt? The uncertainty gnaws at me. But I know one thing - the truth, whatever it is, deserves to be known."
-    effects:
-      flag_set:
-        adeyemi_evidence_gone: true
-      stat_set:
-        adeyemi_trust: 15
-        adeyemi_visibility: 0
-    choices:
-      - id: accept_consequences
-        text: "Accept the consequences. The truth was too dangerous."
-        next_node_id: adeyemi_accept_destroy
-        effects:
-          stat_set:
-            adeyemi_familiarity: 5
-            adeyemi_alignment: -5
-      - id: regret_decision
-        text: "Regret the decision. You should have done something."
-        next_node_id: adeyemi_regret_destroy
-        effects:
-          stat_set:
-            adeyemi_familiarity: 8
-            adeyemi_trust: -5
-            adeyemi_tension: 15
-
-  # Stand by publish
-  adeyemi_stand_by_publish:
-    id: adeyemi_stand_by_publish
-    type: system
-    text: "Your public stance solidifies your reputation as someone who won't compromise with corruption. But it also burns bridges permanently. Adeyemi's career is in tatters, and he knows exactly who to blame."
-    thought: "The cost was high. But some truths are worth any price. Even if it means Adeyemi will never speak to me again. Even if it means I've made an enemy for life."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_relationship_terminated: true
-        adeyemi_final_ending_opponent: true
-      stat_set:
-        adeyemi_familiarity: 10
-        adeyemi_trust: -80
-        adeyemi_alignment: -70
-        adeyemi_tension: 90
-        adeyemi_visibility: 100
-
-  # Doubt publish
-  adeyemi_doubt_publish:
-    id: adeyemi_doubt_publish
-    type: system
-    text: "Your public expression of doubt creates confusion and division among your supporters. Some call you brave for questioning the narrative, others call you a coward for not standing by your convictions. Adeyemi watches from the sidelines, his expression unreadable."
-    thought: "I wanted to be fair. To consider all possibilities. But in doing so, have I just muddied the waters when clarity was most needed?"
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_relationship_complicated: true
-      stat_set:
-        adeyemi_familiarity: 15
-        adeyemi_trust: -30
-        adeyemi_alignment: -20
-        adeyemi_tension: 60
-        adeyemi_visibility: 70
-
-  # Accusation confrontation
-  adeyemi_accusation_confrontation:
-    id: adeyemi_accusation_confrontation
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...I was wondering when you'd find it. That memo was... insurance. A way to make sure that if anything happened to me, the truth would get out. But it wasn't supposed to be found like this. Not by you."
-    thought: "Insurance. So it was real. But why would he want the truth to get out? Unless... unless he wasn't the one who wrote it?"
-    choices:
-      - id: press_for_truth
-        text: "Don't give me riddles. Did you kill Daniel or not?"
-        next_node_id: adeyemi_truth_pressed
-        effects:
-          stat_set:
-            adeyemi_familiarity: 30
-            adeyemi_trust: -20
-            adeyemi_tension: 50
-      - id: demand_full_confession
-        text: "Tell me everything. From the beginning."
-        next_node_id: adeyemi_full_confession
-        effects:
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_trust: -10
-            adeyemi_tension: 45
-      - id: walk_away
-        text: "I can't. I can't hear this from you."
-        next_node_id: adeyemi_walk_away_confrontation
-        effects:
-          stat_set:
-            adeyemi_familiarity: 15
-            adeyemi_trust: -5
-            adeyemi_tension: 30
-
-  # Explanation confrontation
-  adeyemi_explanation_confrontation:
-    id: adeyemi_explanation_confrontation
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "That document... it's not what it seems. Daniel's death wasn't... simple. And my role in it wasn't... direct. But I can't explain it here. Not now. There are people who would kill to keep this secret. People who are still watching."
-    thought: "His voice is strained. Not defensive, not evasive. Terrified. And there's something in his eyes - a plea for understanding, for patience. But after everything, can I give him that?"
-    choices:
-      - id: grant_trust_again
-        text: "I don't know if I can trust you anymore. But I'll give you one more chance to explain."
-        next_node_id: adeyemi_trust_granted_again
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 10
-            adeyemi_tension: 20
-            adeyemi_alignment: 5
-      - id: insist_on_answer
-        text: "No more secrets. No more half-truths. What. Happened?"
-        next_node_id: adeyemi_insist_answer
-        effects:
-          stat_set:
-            adeyemi_familiarity: 22
-            adeyemi_trust: 5
-            adeyemi_tension: 35
-
-  # Help confrontation
-  adeyemi_help_confrontation:
-    id: adeyemi_help_confrontation
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...You'd still help me? After everything? Why?"
-    thought: "There's a break in his voice. A vulnerability I haven't heard since that phone call. And I realize - I do still want to help him. Not because he deserves it, but because... because I think there's still good in him. And because Daniel would want someone to believe in him."
-    choices:
-      - id: explain_belief
-        text: "Because I believe in redemption. And because I think you're still in there, somewhere."
-        next_node_id: adeyemi_redemption_offered
-        effects:
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_trust: 20
-            adeyemi_alignment: 20
-            adeyemi_debt: 25
-      - id: explain_pragmatism
-        text: "Because you're still useful. And because the world needs you to be better, not gone."
-        next_node_id: adeyemi_pragmatism_explained
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 10
-            adeyemi_alignment: 5
-            adeyemi_debt: 10
-
-  # Accept destroy
-  adeyemi_accept_destroy:
-    id: adeyemi_accept_destroy
-    type: system
-    text: "You rationalize your decision as a necessary compromise. The city is unstable enough without adding fuel to the fire. But the choice leaves a mark on you, a question that lingers: what else are you willing to hide for the sake of peace?"
-    thought: "Sometimes the right decision is the one you can live with. But this one might haunt me. And I suspect it will haunt Adeyemi too, if he ever finds out."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_secret_keeper: true
-      stat_set:
-        adeyemi_familiarity: 8
-        adeyemi_trust: 10
-        adeyemi_alignment: -10
-        adeyemi_visibility: 0
-
-  # Regret destroy
-  adeyemi_regret_destroy:
-    id: adeyemi_regret_destroy
-    type: system
-    text: "The guilt eats at you. You should have done something. Said something. The truth deserved to be known, consequences be damned. But it's too late now. The evidence is gone."
-    thought: "I had a chance to make a real difference. And I squandered it. Adeyemi will continue his work, continue his compromises. And Daniel's memory will never get the justice it deserves."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_regret_evidence: true
-      stat_set:
-        adeyemi_familiarity: 10
-        adeyemi_trust: -10
-        adeyemi_alignment: -15
-        adeyemi_tension: 20
-
-  # Truth pressed
-  adeyemi_truth_pressed:
-    id: adeyemi_truth_pressed
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "No. I didn't kill Daniel. But I didn't save him either. And that memo... that memo was supposed to be my confession. My way of ensuring that if I died, the truth would still come out. But it was taken from me, twisted. Someone wanted it to look like I was the one who gave the order."
-    thought: "The revelation hits me like a physical blow. Adeyemi didn't kill Daniel. He was framed. Set up. And he's been carrying that burden, that lie, this whole time. The anger I felt begins to dissolve, replaced by a different kind of fury - at whoever did this to him. To both of them."
-    choices:
-      - id: believe_story
-        text: "I believe you. So who did frame you?"
-        next_node_id: adeyemi_frame_up_revealed
-        effects:
-          stat_set:
-            adeyemi_familiarity: 35
             adeyemi_trust: 30
-            adeyemi_alignment: 25
-            adeyemi_tension: 15
-      - id: demand_proof
-        text: "Prove it. Give me something I can believe."
-        next_node_id: adeyemi_proof_demanded
-        effects:
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_trust: 5
-            adeyemi_tension: 30
-
-  # Full confession
-  adeyemi_full_confession:
-    id: adeyemi_full_confession
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Daniel was getting too close to the lithium leak cover-up. He had evidence that implicated Senator Chen directly. I tried to warn him, to get him to back off. But he wouldn't listen. And then... one night, he called me. Scared. Said he was being followed. I told him to come to me, that I'd protect him. But by the time I got there... it was too late."
-    thought: "The guilt in his voice is overwhelming. He's not just confessing to a crime - he's confessing to a failure. To not being there when his brother needed him most. And in that moment, I understand that whatever else he's done, this is the wound that defines him."
-    choices:
-      - id: offer_forgiveness
-        text: "You couldn't have known. You can't blame yourself forever."
-        next_node_id: adeyemi_forgiveness_offered
-        effects:
-          stat_set:
-            adeyemi_familiarity: 40
-            adeyemi_trust: 40
-            adeyemi_alignment: 30
-            adeyemi_tension: -10
-            adeyemi_debt: 15
-      - id: focus_on_justice
-        text: "Then we make them pay. Whoever did this to Daniel, whoever framed you - we make them pay."
-        next_node_id: adeyemi_justice_focused
-        effects:
-          stat_set:
-            adeyemi_familiarity: 30
-            adeyemi_trust: 25
-            adeyemi_alignment: 25
-            adeyemi_tension: 20
-            adeyemi_debt: 20
-
-  # Walk away confrontation
-  adeyemi_walk_away_confrontation:
-    id: adeyemi_walk_away_confrontation
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...I understand. I really do. Some truths are too heavy to carry. But Alex... if you walk away now, you'll never know. And I think... I think you need to know. For Daniel's sake."
-    thought: "The way he says Daniel's name... it's not a manipulation. It's a genuine plea. He wants me to understand. To help. But I don't know if I can. Not after this."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_relationship_fractured: true
-      stat_set:
-        adeyemi_familiarity: 20
-        adeyemi_trust: -15
-        adeyemi_alignment: -10
-        adeyemi_tension: 35
-
-  # Trust granted again
-  adeyemi_trust_granted_again:
-    id: adeyemi_trust_granted_again
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Thank you. That... that means more than you know. Meet me tomorrow. There's a place... a place where we can talk safely. And I'll tell you everything. But Alex... be very, very careful. If they know you've found that document, they know you're a threat."
-    thought: "The warning in his voice is genuine. And so is the gratitude. I'm giving him one more chance. And for the first time, I think... I think he might actually deserve it."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_final_meeting_arranged: true
-        adeyemi_encounter_stack_pressure_point_resolved: true
-      stat_set:
-        adeyemi_familiarity: 28
-        adeyemi_trust: 20
-        adeyemi_alignment: 10
-        adeyemi_tension: 15
-        adeyemi_debt: 15
-
-  # Insist answer
-  adeyemi_insist_answer:
-    id: adeyemi_insist_answer
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "You want the truth? Fine. But not here. Not now. There are ears everywhere, Alex. Including, I suspect, yours. Meet me at the old church. Midnight. And come alone."
-    thought: "He's not backing down from giving me answers. But he's also not giving them here. The old church again. That's where he wanted to meet me before, when he offered Daniel's notes. There's something about that place..."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_final_meeting_arranged: true
-        adeyemi_encounter_stack_pressure_point_resolved: true
-      stat_set:
-        adeyemi_familiarity: 25
-        adeyemi_trust: 10
-        adeyemi_tension: 20
-
-  # Redemption offered
-  adeyemi_redemption_offered:
-    id: adeyemi_redemption_offered
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...Redemption. You still believe in that? After everything I've done? After the compromises, the lies... Daniel..."
-    thought: "There's a catch in his voice. A mixture of hope and despair. And I realize - he's not just asking if I believe in redemption for him. He's asking if I believe in it for the world. For all of us."
-    choices:
-      - id: affirm_belief
-        text: "Yes. I believe in redemption. And I believe in you."
-        next_node_id: adeyemi_belief_affirmed
-        effects:
-          stat_set:
-            adeyemi_familiarity: 35
-            adeyemi_trust: 35
-            adeyemi_alignment: 25
-            adeyemi_debt: 20
-      - id: qualify_belief
-        text: "Redemption has to be earned. And I'm not sure you've earned it yet."
-        next_node_id: adeyemi_belief_qualified
-        effects:
-          stat_set:
-            adeyemi_familiarity: 25
-            adeyemi_trust: 10
-            adeyemi_alignment: 5
-
-  # Pragmatism explained
-  adeyemi_pragmatism_explained:
-    id: adeyemi_pragmatism_explained
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...Useful. That's... that's probably the most honest thing anyone's said to me in years. But tell me, Alex - is that all I am to you? A tool? A means to an end?"
-    thought: "He's testing me. Not angry, not defensive. Thoughtful. And I think he already knows the answer. Or at least, he knows what he wants the answer to be."
-    choices:
-      - id: clarify_feelings
-        text: "No. You're... you're a friend. Or at least, you could be. If you let yourself."
-        next_node_id: adeyemi_friendship_offered
-        effects:
-          stat_set:
-            adeyemi_familiarity: 30
-            adeyemi_trust: 25
-            adeyemi_alignment: 15
-            adeyemi_debt: 10
-      - id: stand_by_pragmatism
-        text: "Sometimes that's all anyone is. We all have our roles to play."
-        next_node_id: adeyemi_pragmatism_stand_by
-        effects:
-          stat_set:
-            adeyemi_familiarity: 20
-            adeyemi_trust: 5
-            adeyemi_alignment: 0
-
-  # Frame up revealed
-  adeyemi_frame_up_revealed:
-    id: adeyemi_frame_up_revealed
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Mayor Vega. And Senator Chen. They... they were the ones who ordered Daniel's elimination. And when they couldn't control me after that, they planted that memo. Made it look like I was the one who gave the order. A way to keep me in line. To make sure I'd never talk."
-    thought: "Vega and Chen. The highest levels of power in this city. And they've been manipulating Adeyemi, using his brother's death as a weapon against him. The scale of the corruption is breathtaking. And so is Adeyemi's courage in still fighting from within."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_frame_up_revealed: true
-        adeyemi_vega_chen_conspiracy_known: true
-      stat_set:
-        adeyemi_familiarity: 40
-        adeyemi_trust: 40
-        adeyemi_alignment: 35
-        adeyemi_tension: 10
-        adeyemi_visibility: 5
-
-  # Proof demanded
-  adeyemi_proof_demanded:
-    id: adeyemi_proof_demanded
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Proof? You want proof? Look at the dates, Alex. Look at the signature. That's not my handwriting. And the paper... that's not police issue. Someone went to a lot of trouble to make it look real. And they did a good job. Too good. Someone with resources. Someone with access."
-    thought: "He's not wrong. Looking at it again, the details do seem off. The paper stock, the ink, the formatting. It's almost like... like someone tried too hard to make it look authentic. And in doing so, made it look fake."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_proof_doubt_cast: true
-      stat_set:
-        adeyemi_familiarity: 30
-        adeyemi_trust: 15
-        adeyemi_alignment: 10
-        adeyemi_tension: 20
-
-  # Forgiveness offered
-  adeyemi_forgiveness_offered:
-    id: adeyemi_forgiveness_offered
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...I don't know if I can ever forgive myself. But hearing you say that... it helps. More than you can know. And it gives me... hope. That maybe, just maybe, there's a way out of this. For both of us."
-    thought: "The hope in his voice is fragile, but it's real. And in that moment, I feel something shift between us. The weight of the past is still there, but so is the possibility of a future. Of redemption. Of justice. Of something better."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_forgiveness_received: true
-        adeyemi_relationship_transformed: true
-      stat_set:
-        adeyemi_familiarity: 45
-        adeyemi_trust: 45
-        adeyemi_alignment: 35
-        adeyemi_tension: -15
-        adeyemi_debt: 20
-
-  # Justice focused
-  adeyemi_justice_focused:
-    id: adeyemi_justice_focused
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...You're right. And I think... I think I've been waiting for someone to say that. Daniel would have... he would have liked you. Now, are you with me? Really with me? Because if we do this, there's no going back. For either of us."
-    thought: "This is it. The final commitment. If I say yes, I'm not just helping Adeyemi - I'm joining his fight. His war. And there won't be any middle ground after this. No going back to being just an observer."
-    choices:
-      - id: commit_fully
-        text: "I'm with you. All the way. Whatever it takes."
-        next_node_id: adeyemi_full_commitment
+            adeyemi_alignment: 20
+      - id: step_to_solis
+        text: "[Step toward Solis]"
+        next_node_id: adeyemi_crane_witnessed
         effects:
           flag_set:
-            adeyemi_full_partnership_forged: true
+            WITNESSED: true
           stat_set:
-            adeyemi_familiarity: 45
-            adeyemi_trust: 40
-            adeyemi_alignment: 40
-            adeyemi_debt: 30
-      - id: commit_cautiously
-        text: "I'm with you. But we do this smart. No unnecessary risks."
-        next_node_id: adeyemi_cautious_commitment
+            adeyemi_trust: -50
+            adeyemi_tension: 40
+      - id: stand_still
+        text: "[Stand perfectly still]"
+        next_node_id: adeyemi_crane_deflected
         effects:
+          flag_set:
+            DEFLECTED: true
           stat_set:
-            adeyemi_familiarity: 35
-            adeyemi_trust: 25
-            adeyemi_alignment: 20
-            adeyemi_debt: 15
+            adeyemi_familiarity: -10
+            adeyemi_tension: 20
 
-  # Belief affirmed
-  adeyemi_belief_affirmed:
-    id: adeyemi_belief_affirmed
+  adeyemi_crane_covered:
+    id: adeyemi_crane_covered
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...Thank you. I... I needed to hear that. More than I realized. And I promise you, Alex. I won't let you down. Not again."
-    thought: "The promise feels different this time. More solid. More real. And I believe him. After everything - the lies, the compromises, the frame-up - I still believe in him. And maybe, just maybe, that's the most important thing any of us can offer each other in this broken world."
+    text: "Get down!"
+    thought: "You move toward him. He grabs your arm, pulling you behind the container as the first shots ring out. He's protecting you."
     is_end: true
     effects:
-      flag_set:
-        adeyemi_belief_received: true
-        adeyemi_relationship_deepened: true
-      stat_set:
-        adeyemi_familiarity: 40
-        adeyemi_trust: 40
-        adeyemi_alignment: 30
-        adeyemi_debt: 25
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
-  # Belief qualified
-  adeyemi_belief_qualified:
-    id: adeyemi_belief_qualified
+  adeyemi_crane_witnessed:
+    id: adeyemi_crane_witnessed
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...Earned. Yeah. That's fair. And you're right. I haven't. Not yet. But maybe... maybe I can. If you give me the chance."
-    thought: "The acceptance in his voice is genuine. He's not arguing, not defending. He's acknowledging. And that, more than anything else, gives me hope that change is possible."
+    text: "I see."
+    thought: "You back away toward Solis. Adeyemi's expression goes completely blank. He drops a flashbang and vanishes into the yard."
     is_end: true
     effects:
-      flag_set:
-        adeyemi_redemption_path_begun: true
-      stat_set:
-        adeyemi_familiarity: 30
-        adeyemi_trust: 15
-        adeyemi_alignment: 10
-        adeyemi_debt: 10
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
-  # Friendship offered
-  adeyemi_friendship_offered:
-    id: adeyemi_friendship_offered
+  adeyemi_crane_deflected:
+    id: adeyemi_crane_deflected
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "...A friend. That's... that's more than I deserve. But I want that. More than I've wanted anything in a long time. Friends... that's something I haven't had in a while. Maybe because I haven't let myself."
-    thought: "The admission is simple but profound. And I realize that in this city, in this world, friendship might be the most radical, the most dangerous thing of all. Because it means you have something to lose. Someone to protect. A reason to keep fighting."
+    text: "You can't have both."
+    thought: "You freeze. Adeyemi doesn't wait for you to decide. He fires at the floodlights, plunging the yard into darkness, and disappears."
     is_end: true
     effects:
-      flag_set:
-        adeyemi_friendship_accepted: true
-        adeyemi_relationship_level_friend: true
-      stat_set:
-        adeyemi_familiarity: 35
-        adeyemi_trust: 30
-        adeyemi_alignment: 20
-        adeyemi_debt: 15
-
-  # Pragmatism stand by
-  adeyemi_pragmatism_stand_by:
-    id: adeyemi_pragmatism_stand_by
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Roles. Yeah. We all have them. But tell me, Alex - when was the last time you played a role that you actually wanted to play?"
-    thought: "The question hangs in the air. And I realize he's not just talking about himself. He's talking about me too. About all of us. About the masks we wear, the parts we perform. And about the rare, precious moments when we get to be real."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_pragmatism_discussed: true
-      stat_set:
-        adeyemi_familiarity: 25
-        adeyemi_trust: 10
-        adeyemi_alignment: 5
-
-  # Full commitment
-  adeyemi_full_commitment:
-    id: adeyemi_full_commitment
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Then it's settled. We'll take them down. All of them. Vega, Chen, the whole corrupt structure. But we have to be smart. We have to... we have to give them enough rope to hang themselves. Can you do that? Can you play the long game with me?"
-    thought: "The question is a test. And the answer is yes. Yes, I can play the long game. Yes, I can be patient. Yes, I can work with him, even after everything. Because the prize - real justice, real change - is worth it."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_full_alliance_forged: true
-        adeyemi_final_ending_mirror: true
-      stat_set:
-        adeyemi_familiarity: 50
-        adeyemi_trust: 50
-        adeyemi_alignment: 45
-        adeyemi_tension: 10
-        adeyemi_debt: 35
-
-  # Cautious commitment
-  adeyemi_cautious_commitment:
-    id: adeyemi_cautious_commitment
-    type: character
-    speaker_id: a0000001-0000-4000-8000-000000000003
-    text: "Smart. I like smart. The world needs more smart people. And fewer heroes. Heroes have a tendency to... not survive. So yes. We'll do this smart. And careful. And together."
-    thought: "The acceptance feels right. Not grand, not dramatic. But solid. Real. We're not heroes. We're just two people trying to do the right thing in a world that makes it very hard. And maybe that's enough."
-    is_end: true
-    effects:
-      flag_set:
-        adeyemi_cautious_alliance_forged: true
-        adeyemi_final_ending_reluctant_ally: true
-      stat_set:
-        adeyemi_familiarity: 40
-        adeyemi_trust: 30
-        adeyemi_alignment: 25
-        adeyemi_tension: 5
-        adeyemi_debt: 20
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
 metadata:
-  version: "1.0"
-  author: "Las Flores Team"
+  version: "2.0"
+  required_flags:
+    ANSWERED: true
   tags:
     - "adeyemi"
-    - "relationship_building"
     - "act4"
-    - "pressure_point"
-    - "discovery"
-    - "moral_choices"
-    - "consequences"
-  notes: |
-    This dialogue implements Phase 5.1 of the Adeyemi relationship plan:
-    - Late-game pressure point where player discovers damning information about Adeyemi
-    - Three main action choices with different narrative and relationship consequences:
-      1. Publish evidence - massive visibility, destroys relationship, leads to Opponent ending
-      2. Hide evidence - private confrontation, preserves possibility of redemption, leads to various endings based on follow-up
-      3. Destroy evidence - compromise position, complicated moral consequences
-    - Each path leads to different final relationship states and possible Act 5 endings
-    - The discovery moment is a major turning point that determines the final trajectory of the relationship
-    - Key flags set here determine which Act 5 resolution scenes are available
+    - "the_crane"
+    - "solis"
