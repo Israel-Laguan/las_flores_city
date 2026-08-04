@@ -299,11 +299,17 @@ export async function grantDialogueRewards(
         grantedCredits = effects.grant_credits;
       }
       if (effects.grant_item) {
-        await client.query(
-          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+        // RETURNING distinguishes a real insert from an ON CONFLICT no-op:
+        // the player may already own this item (granted via vault_unlock or
+        // another node), in which case nothing was actually granted and the
+        // response/telemetry must not claim otherwise.
+        const vaultResult = await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING RETURNING item_id`,
           [userId, effects.grant_item]
         );
-        grantedItem = { itemId: effects.grant_item };
+        if (vaultResult.rows.length > 0) {
+          grantedItem = { itemId: effects.grant_item };
+        }
       }
     }
   }

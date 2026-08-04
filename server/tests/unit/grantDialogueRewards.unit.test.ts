@@ -30,7 +30,7 @@ import { grantDialogueRewards } from '../../src/routes/dialogue-helpers.js';
 // paths (the gap flagged by the review).
 // ============================================================
 
-function makeFakeClient(alreadyClaimedKeys: Set<string>) {
+function makeFakeClient(alreadyClaimedKeys: Set<string>, ownedItems: Set<string> = new Set()) {
   const vaultInserts: any[] = [];
   const client = {
     async query(sql: string, params: any[]) {
@@ -44,9 +44,13 @@ function makeFakeClient(alreadyClaimedKeys: Set<string>) {
         return { rows: [{ id: 'claim-' + claimKey }] }; // first claim
       }
       // grant_item: INSERT INTO player_vault ... ON CONFLICT DO NOTHING
+      //             RETURNING item_id → empty rows when already owned.
       if (sql.includes('player_vault')) {
-        vaultInserts.push({ userId: params[0], itemId: params[1] });
-        return { rows: [] };
+        const itemId = params[1];
+        vaultInserts.push({ userId: params[0], itemId });
+        if (ownedItems.has(itemId)) return { rows: [] }; // no-op insert
+        ownedItems.add(itemId);
+        return { rows: [{ item_id: itemId }] };
       }
       return { rows: [] };
     },
@@ -121,6 +125,20 @@ describe('grantDialogueRewards — idempotent grant + distinct claim keys', () =
     expect(r1.grantedItem).toEqual({ itemId: '550e8400-e29b-41d4-a716-446655440000' });
     expect(r2.grantedItem).toBeUndefined();
     // Vault insert attempted only on first claim.
+    expect(client._vaultInserts).toHaveLength(1);
+  });
+
+  it('does not report a grant when the player already owns the item', async () => {
+    const claimed = new Set<string>();
+    const itemId = '550e8400-e29b-41d4-a716-446655440000';
+    // Player already owns the item (e.g. granted earlier via vault_unlock),
+    // so the ON CONFLICT insert is a no-op and nothing is actually granted.
+    const client = makeFakeClient(claimed, new Set([itemId])) as any;
+
+    const r = await grantDialogueRewards(client, 'u1', 'd1', 'n1', { grant_item: itemId }, 'grant');
+
+    expect(r.grantedItem).toBeUndefined();
+    // The insert is still attempted (it is the atomic ownership check).
     expect(client._vaultInserts).toHaveLength(1);
   });
 

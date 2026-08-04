@@ -55,6 +55,7 @@ export {
   getForChoiceFilter,
   getCurrentLocation,
   getDialogueCursor,
+  lockDialogueCursor,
   getBalancesForLedger,
 } from './PlayerStateRepository.read.js';
 
@@ -93,6 +94,7 @@ export class PlayerStateRepository {
   static getForChoiceFilter = readMethods.getForChoiceFilter;
   static getCurrentLocation = readMethods.getCurrentLocation;
   static getDialogueCursor = readMethods.getDialogueCursor;
+  static lockDialogueCursor = readMethods.lockDialogueCursor;
   static getBalancesForLedger = readMethods.getBalancesForLedger;
   static getBalances = writeMethods.getBalances;
   static modifyBalance = writeMethods.modifyBalance;

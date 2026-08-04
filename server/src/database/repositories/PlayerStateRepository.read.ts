@@ -95,6 +95,29 @@ export async function getDialogueCursor(userId: string): Promise<{
   return result.rows[0];
 }
 
+/**
+ * Lock the player's row and read the active dialogue cursor from INSIDE a
+ * transaction (`SELECT ... FOR UPDATE`).
+ *
+ * `/dialogue/start` uses this to decide whether a start is a NEW run (root
+ * effects apply) or a mid-dialogue restart (root effects are skipped). Doing
+ * that read non-transactionally races: two concurrent first starts would both
+ * observe a pre-start cursor and both apply the root stat deltas. Taking the
+ * row lock serializes them, so the second transaction blocks until the first
+ * commits and then sees the winner's `active_dialogue_id`.
+ */
+export async function lockDialogueCursor(
+  client: pg.PoolClient,
+  userId: string
+): Promise<{ active_dialogue_id: string | null } | null> {
+  const result = await client.query(
+    `SELECT active_dialogue_id FROM player_states WHERE user_id = $1 FOR UPDATE`,
+    [userId]
+  );
+  if (result.rows.length === 0) return null;
+  return result.rows[0];
+}
+
 export async function getBalancesForLedger(userId: string): Promise<{
   credits: number; gold_credits: number;
 } | null> {

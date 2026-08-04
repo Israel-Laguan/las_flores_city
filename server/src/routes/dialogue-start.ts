@@ -93,10 +93,16 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
   // ENDS, `clearDialogueAndSimulation` nulls `active_dialogue_id`, so
   // re-entering a finished dialogue is treated as a fresh run and root
   // effects apply once — exactly as before.
-  const existingCursor = await PlayerStateRepository.getDialogueCursor(userId);
-  const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
-
+  //
+  // The cursor is read with `FOR UPDATE` INSIDE the transaction so the
+  // check and the cursor write are one atomic claim: two concurrent
+  // first starts serialize on the player row, and the loser observes
+  // the winner's committed `active_dialogue_id` instead of a stale
+  // pre-start snapshot (which would double-apply the root deltas).
   await withOLTPTransaction(async (client) => {
+    const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
+    const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
+
     await initializeDialogueState(client, userId, dialogue.id, rootNodeId);
     if (isRestart) {
       // Mid-dialogue restart: root stat_set already applied on the first
@@ -162,11 +168,13 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
 
   // Gate root-effect application to NEW dialogue runs only (see
   // handleStartFallback for the rationale: a mid-dialogue restart would
-  // otherwise re-apply additive root stat_set deltas).
-  const existingCursor = await PlayerStateRepository.getDialogueCursor(userId);
-  const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
-
+  // otherwise re-apply additive root stat_set deltas). The cursor is read
+  // with `FOR UPDATE` inside the transaction so concurrent first starts
+  // serialize on the player row and only one applies the root effects.
   await withOLTPTransaction(async (client) => {
+    const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
+    const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
+
     await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
     await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId);
     if (isRestart) {

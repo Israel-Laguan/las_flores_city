@@ -36,14 +36,20 @@ function doesNotSatisfyEnding(endings: typeof ADEYEMI_ENDINGS, endingName: Endin
 // If satisfiesEnding ever returns the wrong boolean for a generated vector,
 // this oracle catches it. Parses each "op:number" constraint directly and
 // applies the comparison with a hand-rolled switch (no shared evaluator).
+//
+// Missing-stat semantics deliberately MIRROR production
+// (`requiredPasses` in shared/src/conditions.ts): an unset stat is
+// treated as 0, not as an automatic failure. Keeping the oracle faithful
+// means an ending that gates on a stat outside `statsVectorArb` is still
+// checked correctly, and a regression in the gate's 0-default handling is
+// actually detected instead of being masked by a fail-closed oracle.
 function expectedSatisfies(requiredStats: Record<string, string>, stats: Record<string, number>): boolean {
   for (const [stat, constraint] of Object.entries(requiredStats)) {
     const match = /^(gt|lt|gte|lte|eq|ne):(-?\d+)$/.exec(constraint);
-    if (!match) return false; // fail closed on malformed constraints
+    if (!match) return false; // fail closed on malformed constraints (matches production)
     const op = match[1];
     const n = parseInt(match[2], 10);
-    const actual = stats[stat];
-    if (actual === undefined) return false; // missing stat fails closed
+    const actual = typeof stats[stat] === 'number' ? stats[stat] : 0; // missing stat → 0
     let ok: boolean;
     switch (op) {
       case 'gt': ok = actual > n; break;
