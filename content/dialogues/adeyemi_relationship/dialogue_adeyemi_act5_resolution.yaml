@@ -78,6 +78,9 @@ nodes:
         next_node_id: adeyemi_act5_ally
         required_flags:
           ANSWERED: true
+        hidden_if:
+          LOVER_PATH_ACTIVE: true
+          FRIEND_PATH_ACTIVE: true
         required_stats:
           adeyemi_trust: "gte:50"
       - id: covered_default

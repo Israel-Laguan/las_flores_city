@@ -123,6 +123,40 @@ describe('computeRelationshipDecay — linear decay (not compounding)', () => {
     expect(secondResult.newStats.adeyemi_trust).toBe(24);
     expect(secondResult.hasChanges).toBe(true);
   });
+
+  it('does not charge pre-engagement decay when the player re-engaged after a decay tick', () => {
+    // Scenario:
+    //   Day 0: encounter (last_encounter_at = Day 0)
+    //   Day 5: worker ticks, decays 5 days, sets last_decay_at = Day 5
+    //   Day 6: player re-engages (last_encounter_at = Day 6)
+    //   Day 8: worker ticks again.
+    //
+    // Bug (pre-fix): referenceDate = last_decay_at (Day 5), so daysElapsed = 3
+    //   → decays 3 days, but 1 of those days the player was actively engaged.
+    //
+    // Fix: last_encounter_at (Day 6) is NEWER than last_decay_at (Day 5),
+    //   so referenceDate = Day 6, daysElapsed = 2 → only 2 days of decay.
+    const day0 = daysAgo(8, new Date('2026-01-15T00:00:00Z'));
+    const day5 = daysAgo(3, new Date('2026-01-15T00:00:00Z'));
+    const day6 = daysAgo(2, new Date('2026-01-15T00:00:00Z'));
+    const day8 = new Date('2026-01-15T00:00:00Z');
+
+    const input: DecayInput = {
+      stats: { adeyemi_trust: 40 },
+      state: {
+        last_adeyemi_encounter_at: day6.toISOString(), // re-engaged on Day 6
+        last_adeyemi_decay_at: day5.toISOString(),     // prior decay on Day 5
+      },
+      prefix: 'adeyemi_',
+      now: day8,
+    };
+
+    const result = computeRelationshipDecay(input, DEFAULT_RATES, DEFAULT_BOUNDS);
+
+    // 2 days of decay (Day 6 → Day 8), not 3 (Day 5 → Day 8): 40 - (2 * 2) = 36
+    expect(result.newStats.adeyemi_trust).toBe(36);
+    expect(result.hasChanges).toBe(true);
+  });
 });
 
 describe('computeRelationshipDecay — clamping', () => {

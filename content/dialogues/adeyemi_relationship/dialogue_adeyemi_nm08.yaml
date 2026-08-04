@@ -50,6 +50,8 @@ nodes:
     effects:
       stat_set:
         adeyemi_familiarity: 12
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_nm08_buy:
     id: adeyemi_nm08_buy
@@ -61,6 +63,8 @@ nodes:
     effects:
       stat_set:
         adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_nm08_watch:
     id: adeyemi_nm08_watch
@@ -70,6 +74,8 @@ nodes:
     effects:
       stat_set:
         adeyemi_familiarity: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
 metadata:
   version: "1.0"

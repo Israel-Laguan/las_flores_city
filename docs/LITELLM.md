@@ -55,7 +55,7 @@ When starting the server container, add these env vars:
 |---|---|---|
 | `LLM_PROVIDER` | `mock` | Backend: `mock`, `litellm`, `gemini`, or `groq`. All real providers use the LiteLLM proxy. |
 | `LITELLM_BASE_URL` | `http://host.containers.internal:4000` | LiteLLM gateway URL. Required when `LLM_PROVIDER=litellm`. |
-| `LITELLM_API_KEY` | `local-key` | API key for LiteLLM proxy auth (must match `master_key` in config). |
+| `LITELLM_API_KEY` | *(empty; compose defaults to `local-key`)* | API key for LiteLLM proxy auth (must match `master_key` in config). The code falls back to `''` when unset; docker-compose sets `${LITELLM_API_KEY:-local-key}`. |
 | `LLM_MODEL` | `poolside/laguna-m.1` | Model alias from `config.yaml`. |
 | `LLM_TIMEOUT_MS` | `60000` | Base timeout for LLM calls (ms). |
 | `LLM_MAX_TIMEOUT_MS` | `300000` | Cap for escalating timeout retries (ms). |

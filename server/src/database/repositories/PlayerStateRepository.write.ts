@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { queryOLTP } from '../connection.js';
+import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 export type MoveResultOk = {
   success: true;
@@ -354,7 +355,6 @@ const RELATIONSHIP_BOUNDS: Record<string, { min: number; max: number }> = {
   debt: { min: -100, max: 100 },
   visibility: { min: 0, max: 100 },
 };
-const RELATIONSHIP_STAT_PREFIXES = ['adeyemi_', 'aisha_', 'petra_'];
 
 /**
  * Atomically merge stat deltas with per-dimension clamping in one UPDATE.

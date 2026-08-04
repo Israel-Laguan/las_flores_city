@@ -1,4 +1,5 @@
 import { oltpPool } from '../database/connection.js';
+import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 /**
  * RelationshipDecayWorker
@@ -90,8 +91,20 @@ export function computeRelationshipDecay(
   const lastDecayTime = state[lastDecayKey];
   const lastEncounterDate = new Date(lastEncounterTime);
 
-  // Use last_decay_at if available (for incremental decay), otherwise fall back to last_encounter_at
-  const referenceDate = lastDecayTime ? new Date(lastDecayTime) : lastEncounterDate;
+  // Use last_decay_at if available (for incremental decay), otherwise fall back to last_encounter_at.
+  // However, if the player re-engaged after the last decay tick (last_encounter_at is
+  // newer than last_decay_at), use the encounter time as the reference so we don't
+  // charge decay for the period the player was actively engaged.
+  const lastDecayDate = lastDecayTime ? new Date(lastDecayTime) : null;
+  let referenceDate: Date;
+  if (lastDecayDate && lastDecayDate.getTime() > lastEncounterDate.getTime()) {
+    // Decay marker is newer than the last encounter — incremental decay.
+    referenceDate = lastDecayDate;
+  } else {
+    // Either no prior decay, or the player re-engaged after the last decay tick.
+    // Use the encounter time so decay starts from the most recent interaction.
+    referenceDate = lastEncounterDate;
+  }
 
   // An unparsable timestamp would make daysElapsed NaN and persist NaN stats.
   if (Number.isNaN(referenceDate.getTime())) {
@@ -151,12 +164,9 @@ export function computeRelationshipDecay(
   return result;
 }
 
-// Relationship stat prefixes for identification
-export const RELATIONSHIP_STAT_PREFIXES = [
-  'adeyemi_',
-  'aisha_',
-  'petra_',
-];
+// Re-export for backward compatibility (tests import from here).
+// The canonical source is shared/src/conditions.ts.
+export { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 /**
  * RelationshipDecayWorker

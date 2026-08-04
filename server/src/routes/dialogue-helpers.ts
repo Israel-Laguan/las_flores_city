@@ -500,6 +500,15 @@ export async function processChoice(
 
   const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
 
+  // Apply the choice's own effects (choice-level stat_set/flag_set/state_set)
+  // BEFORE the destination node's effects. Both go through the shared
+  // applyEffects pipeline so NOW handling + clamping are identical.
+  // stat_set deltas accumulate from both; flag_set/state_set follow
+  // overwrite semantics (node effects applied last take precedence).
+  if (chosenOption.effects) {
+    await applyEffects(client, userId, chosenOption.effects);
+  }
+
   let unlockedVaultItem: { id: string; title: string } | undefined;
   if (chosenOption.vault_unlock) {
     const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);

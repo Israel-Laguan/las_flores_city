@@ -198,6 +198,17 @@ Goal: the ending is earned from accumulated dimensions, not a binary Act-4 flag.
 **Verify:** integration test: two playthroughs (one min-maxes trust via cautious/honest choices; one antagonizes) reach **different** Act-5 endings from the same Act-4 flag. Property test: for each ending, there exists a dimension-vector satisfying its thresholds *and* a vector that doesn't.
 
 
+#### Phase 2 — Mechanical teeth (decay + clamping)
+
+Goal: neglect has consequences (Rule 2) and stats stay in bounds.
+
+10. **Build the decay worker:** `server/src/workers/RelationshipDecayWorker.ts` — a daily cron that reads `last_<prefix>encounter_at` from `player_states.state` and decays `trust`/`familiarity` while growing `tension`. The worker uses a pure `computeRelationshipDecay()` function (no I/O) so it is unit-testable. Decay is **linear** (not compounding) via `last_<prefix>decay_at`; it is capped at 30 days per tick to prevent huge catch-up spikes.
+11. **Wire stat clamping:** `mergeStatsClamped()` in `PlayerStateRepository.write.ts` — an atomic SQL `UPDATE` that uses `jsonb_set` with `GREATEST(LEAST(...))` to clamp relationship stats to per-dimension bounds (`trust: -100..100`, `familiarity: 0..100`, etc.) in a single statement. This is called from the shared `applyEffects()` pipeline used by both the dialogue-choice path and `IronGateValidator`.
+12. **Centralize prefix config:** `RELATIONSHIP_STAT_PREFIXES` lives in `shared/src/conditions.ts` (single source of truth) and is imported by both the decay worker and the clamping repository so they can never drift.
+
+**Verify:** unit test `relationship_decay.unit.test.ts` — decay is linear, floored, and capped; `metadataConditionsPass` evaluates `hidden_if` at tree level; `mergeStatsClamped` clamps to per-dimension bounds.
+
+
 #### Phase 3 — Reusable template + port
 
 Goal: the pattern generalizes.

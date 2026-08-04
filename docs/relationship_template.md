@@ -65,6 +65,8 @@ effects:
 
 Lift thresholds into Act 5 `required_stats` gates. Use `gte:`/`lte:` grammar.
 
+> **Note:** `relationship_endings` in the character YAML is **documentation-only** — it is not consumed by the engine. The actual Act 5 gating is enforced by `required_stats` / `required_flags` on the dialogue tree's Act 5 choices. Keep the char-YAML block as a reference map of thresholds, then copy the values into the dialogue choice gates where they are actually evaluated.
+
 ```yaml
 # In the character's char_<slug>.yaml metadata:
 relationship_endings:
@@ -196,7 +198,7 @@ choices:
       description: "Engaging with <Character>"
 ```
 
-Keep "normal moment" (NM) encounters free (amount: 0 or omitted).
+Keep "normal moment" (NM) encounters free by omitting `time_block_cost` (the schema rejects `amount: 0`).
 
 ---
 

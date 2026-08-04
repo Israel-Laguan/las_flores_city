@@ -46,6 +46,9 @@ nodes:
     effects:
       flag_set:
         adeyemi_apartment_visit_complete: true
+        adeyemi_first_contact_made: true
+      state_set:
+        last_adeyemi_encounter_at: NOW
       stat_set:
         adeyemi_trust: 5
         adeyemi_familiarity: -5

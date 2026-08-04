@@ -2,6 +2,7 @@ import { queryOLTP, withOLTPTransaction, closeConnections } from '../../src/data
 import { closeRedis } from '../../src/database/redis.js';
 import { computeRelationshipDecay, RELATIONSHIP_STAT_PREFIXES } from '../../src/workers/RelationshipDecayWorker.js';
 import { choicePassesFilters, metadataConditionsPass, PlayerConditionState } from '@las-flores/shared';
+import { ADEYEMI_ENDINGS as ACT_5_ENDINGS } from '../fixtures/adeyemi_endings.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -107,70 +108,17 @@ const ACT_3_METADATA = {
   required_stats: { adeyemi_familiarity: 'gte:25' },
 };
 
-// Act 5 endings from char_adeyemi_ogunbiyi.yaml
-const ACT_5_ENDINGS = {
-  friend: {
-    required_stats: {
-      adeyemi_trust: 'gte:70',
-      adeyemi_familiarity: 'gte:75',
-      adeyemi_alignment: 'gte:65',
-      adeyemi_tension: 'lte:40',
-    },
-  },
-  lover: {
-    required_stats: {
-      adeyemi_trust: 'gte:75',
-      adeyemi_familiarity: 'gte:80',
-      adeyemi_alignment: 'gte:60',
-      adeyemi_tension: 'gte:30',
-    },
-  },
-  the_mirror: {
-    required_stats: {
-      adeyemi_trust: 'gte:60',
-      adeyemi_familiarity: 'gte:65',
-      adeyemi_alignment: 'gte:40',
-      adeyemi_tension: 'gte:50',
-    },
-  },
-  reluctant_ally: {
-    required_stats: {
-      adeyemi_trust: 'gte:50',
-    },
-  },
-  failed_friend: {
-    required_stats: {
-      adeyemi_trust: 'gte:40',
-      adeyemi_familiarity: 'gte:60',
-      adeyemi_tension: 'gte:50',
-    },
-  },
-  failed_lover: {
-    required_stats: {
-      adeyemi_trust: 'gte:60',
-      adeyemi_familiarity: 'gte:70',
-      adeyemi_tension: 'gte:65',
-    },
-  },
-  always_distant: {
-    required_stats: {
-      adeyemi_trust: 'lte:50',
-      adeyemi_familiarity: 'lte:50',
-    },
-  },
-  opponent: {
-    required_stats: {
-      adeyemi_alignment: 'lte:30',
-      adeyemi_tension: 'gte:70',
-    },
-  },
-} as const;
+// Act 5 endings imported from shared fixture (../fixtures/adeyemi_endings.ts)
+// to stay in sync with char_adeyemi_ogunbiyi.yaml and the unit property tests.
 
 describe('Adeyemi Relationship Arc Integration Tests', () => {
   beforeAll(async () => {
-    // Apply schema migrations
+    // Apply schema migrations (029 adds time_blocks/credits/etc to player_states;
+    // 056 adds the typed state/stats JSONB columns createTestUser writes)
     await applyMigration('001_initial_schema.sql');
     await applyMigration('005_dialogue_service.sql');
+    await applyMigration('029_player_state_decoupling.sql');
+    await applyMigration('056_player_state_and_stats.sql');
 
     // Create test user
     await createTestUser();

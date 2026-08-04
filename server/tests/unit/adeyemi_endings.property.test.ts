@@ -1,6 +1,7 @@
-import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 import fc from 'fast-check';
 import { choicePassesFilters } from '@las-flores/shared';
+import { ADEYEMI_ENDINGS, type EndingName } from '../fixtures/adeyemi_endings.js';
 
 // ============================================================
 // Property-Based Tests for Adeyemi Endings
@@ -13,75 +14,6 @@ import { choicePassesFilters } from '@las-flores/shared';
 // This catches dead endings (no vector can reach them) and
 // trivial endings (every vector reaches them).
 // ============================================================
-
-// Mock database/redis to prevent real connections
-jestGlobals.mock('../../src/database/redis.js', () => ({
-  getCache: jestGlobals.fn(async () => null),
-  setCache: jestGlobals.fn(async () => undefined),
-  closeRedis: jestGlobals.fn(async () => undefined),
-}));
-
-// The 8 Adeyemi endings with their required_stats from char_adeyemi_ogunbiyi.yaml
-// Note: these are the stat thresholds only; flags are secondary gates
-const ADEYEMI_ENDINGS = {
-  friend: {
-    required_stats: {
-      adeyemi_trust: 'gte:70',
-      adeyemi_familiarity: 'gte:75',
-      adeyemi_alignment: 'gte:65',
-      adeyemi_tension: 'lte:40',
-    },
-  },
-  lover: {
-    required_stats: {
-      adeyemi_trust: 'gte:75',
-      adeyemi_familiarity: 'gte:80',
-      adeyemi_alignment: 'gte:60',
-      adeyemi_tension: 'gte:30',
-    },
-  },
-  the_mirror: {
-    required_stats: {
-      adeyemi_trust: 'gte:60',
-      adeyemi_familiarity: 'gte:65',
-      adeyemi_alignment: 'gte:40',
-      adeyemi_tension: 'gte:50',
-    },
-  },
-  reluctant_ally: {
-    required_stats: {
-      adeyemi_trust: 'gte:50',
-    },
-  },
-  failed_friend: {
-    required_stats: {
-      adeyemi_trust: 'gte:40',
-      adeyemi_familiarity: 'gte:60',
-      adeyemi_tension: 'gte:50',
-    },
-  },
-  failed_lover: {
-    required_stats: {
-      adeyemi_trust: 'gte:60',
-      adeyemi_familiarity: 'gte:70',
-      adeyemi_tension: 'gte:65',
-    },
-  },
-  always_distant: {
-    required_stats: {
-      adeyemi_trust: 'lte:50',
-      adeyemi_familiarity: 'lte:50',
-    },
-  },
-  opponent: {
-    required_stats: {
-      adeyemi_alignment: 'lte:30',
-      adeyemi_tension: 'gte:70',
-    },
-  },
-} as const;
-
-type EndingName = keyof typeof ADEYEMI_ENDINGS;
 
 // Helper to check if a stats vector satisfies an ending's required_stats
 function satisfiesEnding(endings: typeof ADEYEMI_ENDINGS, endingName: EndingName, stats: Record<string, number>): boolean {
@@ -144,9 +76,21 @@ describe('Adeyemi endings property tests — reachability and excludability', ()
       it(`ending "${endingName}" is neither dead nor trivial`, () => {
         const reachable = buildSatisfyingVector(endingName as EndingName);
         const excludable = buildNonSatisfyingVector(endingName as EndingName);
-        
+
         expect(satisfiesEnding(ADEYEMI_ENDINGS, endingName as EndingName, reachable)).toBe(true);
         expect(doesNotSatisfyEnding(ADEYEMI_ENDINGS, endingName as EndingName, excludable)).toBe(true);
+
+        // The gate must always return a boolean for any in-range vector
+        // and must never be trivially true for every vector (the excludable
+        // vector already proves non-triviality, but fc.assert adds random
+        // coverage that catches edge cases the hand-built vectors miss).
+        fc.assert(
+          fc.property(statsVectorArb, (stats) => {
+            const passes = satisfiesEnding(ADEYEMI_ENDINGS, endingName as EndingName, stats);
+            return typeof passes === 'boolean';
+          }),
+          { numRuns: 200 }
+        );
       });
     }
   });
@@ -254,22 +198,22 @@ function buildNonSatisfyingVector(endingName: EndingName): Record<string, number
     adeyemi_visibility: 0,
   };
 
-  // Pick the first constraint and violate it
-  const firstStat = Object.keys(ending.required_stats)[0] as keyof typeof ending.required_stats;
-  const firstConstraint = ending.required_stats[firstStat];
-
-  if (firstConstraint.startsWith('gte:')) {
-    const threshold = parseInt(firstConstraint.replace('gte:', ''));
-    stats[firstStat as keyof typeof stats] = threshold - 1;
-  } else if (firstConstraint.startsWith('lte:')) {
-    const threshold = parseInt(firstConstraint.replace('lte:', ''));
-    stats[firstStat as keyof typeof stats] = threshold + 1;
-  } else if (firstConstraint.startsWith('gt:')) {
-    const threshold = parseInt(firstConstraint.replace('gt:', ''));
-    stats[firstStat as keyof typeof stats] = threshold;
-  } else if (firstConstraint.startsWith('lt:')) {
-    const threshold = parseInt(firstConstraint.replace('lt:', ''));
-    stats[firstStat as keyof typeof stats] = threshold;
+  // Violate EVERY constraint so the vector cannot satisfy the gate
+  // regardless of declaration order.
+  for (const [stat, constraint] of Object.entries(ending.required_stats)) {
+    if (constraint.startsWith('gte:')) {
+      const threshold = parseInt(constraint.replace('gte:', ''));
+      stats[stat] = threshold - 1;
+    } else if (constraint.startsWith('lte:')) {
+      const threshold = parseInt(constraint.replace('lte:', ''));
+      stats[stat] = threshold + 1;
+    } else if (constraint.startsWith('gt:')) {
+      const threshold = parseInt(constraint.replace('gt:', ''));
+      stats[stat] = threshold;
+    } else if (constraint.startsWith('lt:')) {
+      const threshold = parseInt(constraint.replace('lt:', ''));
+      stats[stat] = threshold;
+    }
   }
 
   return stats;

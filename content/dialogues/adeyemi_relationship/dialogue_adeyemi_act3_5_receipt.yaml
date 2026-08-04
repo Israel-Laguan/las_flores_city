@@ -1,6 +1,6 @@
 id: a0000001-0003-4000-8000-000000000013
 name: "Adeyemi Act 3.5 - Receipt (Micro-Beat)"
-description: "An encrypted text exchange, initiated by Adeyemi unprompted. Sets the ANSWERED flag."
+description: "An encrypted text exchange, initiated by Adeyemi unprompted. Replying sets the ANSWERED flag; ignoring it does not."
 character_id: a0000001-0000-4000-8000-000000000003
 dialogue_scope: character
 start_node_id: adeyemi_receipt_start

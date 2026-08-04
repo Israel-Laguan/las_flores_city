@@ -272,3 +272,51 @@ describe('metadataConditionsPass — required_flags list form with multiple flag
     expect(metadataConditionsPass(listFormRequiredFlags, EMPTY)).toBe(false);
   });
 });
+
+describe('metadataConditionsPass — tree-level hidden_if', () => {
+  it('hides the tree when hidden_if flag matches', () => {
+    // Simulates the act3 phone call metadata.hidden_if: adeyemi_publicly_denounced: true
+    const player = { ...EMPTY, flags: { adeyemi_publicly_denounced: true } };
+    expect(
+      metadataConditionsPass(
+        { hidden_if: { adeyemi_publicly_denounced: true } },
+        player
+      )
+    ).toBe(false);
+  });
+
+  it('shows the tree when hidden_if flag does not match', () => {
+    const player = { ...EMPTY, flags: { adeyemi_publicly_denounced: false } };
+    expect(
+      metadataConditionsPass(
+        { hidden_if: { adeyemi_publicly_denounced: true } },
+        player
+      )
+    ).toBe(true);
+  });
+
+  it('shows the tree when hidden_if is absent', () => {
+    expect(metadataConditionsPass({ required_flags: {} }, EMPTY)).toBe(true);
+  });
+
+  it('hides the tree when both required_stats pass but hidden_if matches', () => {
+    // A player who has enough familiarity/trust but publicly denounced Adeyemi
+    // should NOT see the phone call tree.
+    const player: PlayerConditionState = {
+      flags: { adeyemi_publicly_denounced: true, adeyemi_first_contact_made: true },
+      state: {},
+      stats: { adeyemi_familiarity: 30, adeyemi_trust: 25 },
+      timeBlocks: 100,
+    };
+    expect(
+      metadataConditionsPass(
+        {
+          required_flags: { adeyemi_first_contact_made: true },
+          required_stats: { adeyemi_familiarity: 'gte:25', adeyemi_trust: 'gte:20' },
+          hidden_if: { adeyemi_publicly_denounced: true },
+        },
+        player
+      )
+    ).toBe(false);
+  });
+});

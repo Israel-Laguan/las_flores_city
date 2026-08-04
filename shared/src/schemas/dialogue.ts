@@ -40,39 +40,10 @@ export const NumericComparisonSchema = z
 
 export type NumericComparison = z.infer<typeof NumericComparisonSchema>;
 
-export const DialogueChoiceSchema = z.object({
-  id: z.string(),
-  text: z.string().max(500),
-  next_node_id: z.string(),
-  time_block_cost: z
-    .object({
-      amount: z.number().int().min(1).max(24),
-      description: z.string().max(200),
-    })
-    .optional(),
-  relationship_change: RelationshipChangeSchema.optional(),
-  vault_unlock: zodUuidOptional(),
-  mystery_solve: zodUuidOptional(),
-  // Boolean flag gates (presence check). Backwards-compatible.
-  required_flags: z.record(z.string(), z.boolean()).optional(),
-  hidden_if: z.record(z.string(), z.boolean()).optional(),
-  // Categorical state gates (string equality).
-  required_state: z.record(z.string(), z.string()).optional(),
-  hidden_if_state: z.record(z.string(), z.string()).optional(),
-  // Numeric stat gates (op:number comparison, e.g. "gt:50").
-  required_stats: z.record(z.string(), NumericComparisonSchema).optional(),
-  hidden_if_stats: z.record(z.string(), NumericComparisonSchema).optional(),
-  // Meta-plot finale alignment directive. When set,
-  // /dialogue/choose flips the user into this faction (and emits
-  // an `alignment_locked` OLAP event). Authors should only attach
-  // this to one choice per tree — the finale branch.
-  alignment_change: z.enum(['loyalist', 'fugitive']).optional(),
-});
-
-export type DialogueChoice = z.infer<typeof DialogueChoiceSchema>;
-
 // Strict effects schema: reject undocumented properties during content
 // migration so YAML authors get feedback immediately.
+// Defined before DialogueChoiceSchema because choices can carry their own
+// effects (applied at choice time, in addition to the destination node).
 export const EffectsSchema = z.object({
   // Established pattern: nested flag bag (see recordChoiceAndEffects).
   // Boolean on/off flags — overwrite-merged via mergeFlags().
@@ -102,6 +73,43 @@ export const EffectsSchema = z.object({
 }).strict();
 
 export type Effects = z.infer<typeof EffectsSchema>;
+
+export const DialogueChoiceSchema = z.object({
+  id: z.string(),
+  text: z.string().max(500),
+  next_node_id: z.string(),
+  time_block_cost: z
+    .object({
+      amount: z.number().int().min(1).max(24),
+      description: z.string().max(200),
+    })
+    .optional(),
+  relationship_change: RelationshipChangeSchema.optional(),
+  vault_unlock: zodUuidOptional(),
+  mystery_solve: zodUuidOptional(),
+  // Boolean flag gates (presence check). Backwards-compatible.
+  required_flags: z.record(z.string(), z.boolean()).optional(),
+  hidden_if: z.record(z.string(), z.boolean()).optional(),
+  // Categorical state gates (string equality).
+  required_state: z.record(z.string(), z.string()).optional(),
+  hidden_if_state: z.record(z.string(), z.string()).optional(),
+  // Numeric stat gates (op:number comparison, e.g. "gt:50").
+  required_stats: z.record(z.string(), NumericComparisonSchema).optional(),
+  hidden_if_stats: z.record(z.string(), NumericComparisonSchema).optional(),
+  // Meta-plot finale alignment directive. When set,
+  // /dialogue/choose flips the user into this faction (and emits
+  // an `alignment_locked` OLAP event). Authors should only attach
+  // this to one choice per tree — the finale branch.
+  alignment_change: z.enum(['loyalist', 'fugitive']).optional(),
+  // Choice-level effects applied when the player selects this choice,
+  // in addition to the destination node's effects. Applied BEFORE
+  // the node's effects so node-level flag_set/state_set take
+  // precedence (overwrite semantics), while stat_set deltas
+  // accumulate from both.
+  effects: EffectsSchema.optional(),
+});
+
+export type DialogueChoice = z.infer<typeof DialogueChoiceSchema>;
 
 export const DialogueNodeSchema = z.object({
   id: z.string(),
