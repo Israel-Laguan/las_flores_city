@@ -355,8 +355,8 @@ describe('Adeyemi Relationship Arc Integration Tests', () => {
       // Act 3 requires adeyemi_familiarity >= 25
       // But with decay, 30 - 8 = 22, which is below 25
 
-      const eightDaysAgo = daysAgo(8);
       const now = new Date();
+      const eightDaysAgo = daysAgo(8, now);
 
       // Initial state: familiarity = 30, last encounter 8 days ago
       await updatePlayerState(
@@ -429,8 +429,8 @@ describe('Adeyemi Relationship Arc Integration Tests', () => {
     });
 
     it('Act 3 gate fails after decay but passes after re-engagement', async () => {
-      const eightDaysAgo = daysAgo(8);
       const now = new Date();
+      const eightDaysAgo = daysAgo(8, now);
 
       // Step 1: Seed with familiarity = 30, last encounter 8 days ago
       await updatePlayerState(
@@ -534,7 +534,7 @@ describe('Adeyemi Relationship Arc Integration Tests', () => {
   describe('Decay worker pure function behavior', () => {
     it('computeRelationshipDecay produces consistent results', () => {
       const now = new Date();
-      const sevenDaysAgo = daysAgo(7);
+      const sevenDaysAgo = daysAgo(7, now);
 
       const input = {
         stats: { adeyemi_trust: 40, adeyemi_familiarity: 30 },
@@ -554,7 +554,7 @@ describe('Adeyemi Relationship Arc Integration Tests', () => {
 
     it('decay is capped at MAX_DAYS_PER_TICK', () => {
       const now = new Date();
-      const sixtyDaysAgo = daysAgo(60);
+      const sixtyDaysAgo = daysAgo(60, now);
 
       const input = {
         stats: { adeyemi_trust: 100 },

@@ -25,9 +25,13 @@ const DEFAULT_BOUNDS: DecayBounds = {
 };
 
 // Helper to create a date in the past — DST-safe because it subtracts
-// exact milliseconds from Date.now() rather than wall-clock day arithmetic.
-export function daysAgo(days: number): Date {
-  return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+// exact milliseconds from `from` (default: now) rather than wall-clock day
+// arithmetic. Accepts a `from` anchor so tests can pass the SAME `now` they
+// feed to computeRelationshipDecay, guaranteeing an exact integer-day delta
+// (re-reading Date.now() independently of `now` creates a sub-millisecond
+// skew that Math.floor() can truncate to N-1 days — the original flake).
+export function daysAgo(days: number, from: Date = new Date()): Date {
+  return new Date(from.getTime() - days * 24 * 60 * 60 * 1000);
 }
 
 describe('computeRelationshipDecay — basic functionality', () => {
@@ -66,7 +70,7 @@ describe('computeRelationshipDecay — basic functionality', () => {
 describe('computeRelationshipDecay — linear decay (not compounding)', () => {
   it('decays trust by exactly 7 days * 2 = 14 on first run', () => {
     const now = new Date();
-    const sevenDaysAgo = daysAgo(7);
+    const sevenDaysAgo = daysAgo(7, now);
 
     const input: DecayInput = {
       stats: { adeyemi_trust: 40 },
@@ -86,8 +90,8 @@ describe('computeRelationshipDecay — linear decay (not compounding)', () => {
 
   it('decays by exactly 2 more on second run with 1 day elapsed since last decay', () => {
     const now = new Date();
-    const sevenDaysAgo = daysAgo(7);
-    const oneDayAgo = daysAgo(1);
+    const sevenDaysAgo = daysAgo(7, now);
+    const oneDayAgo = daysAgo(1, now);
 
     // First run: 7 days since encounter
     const firstInput: DecayInput = {
@@ -124,7 +128,7 @@ describe('computeRelationshipDecay — linear decay (not compounding)', () => {
 describe('computeRelationshipDecay — clamping', () => {
   it('clamps trust to minTrust (-100)', () => {
     const now = new Date();
-    const tenDaysAgo = daysAgo(10);
+    const tenDaysAgo = daysAgo(10, now);
 
     const input: DecayInput = {
       stats: { adeyemi_trust: -95 },
@@ -142,7 +146,7 @@ describe('computeRelationshipDecay — clamping', () => {
 
   it('clamps familiarity to minFamiliarity (0)', () => {
     const now = new Date();
-    const fiveDaysAgo = daysAgo(5);
+    const fiveDaysAgo = daysAgo(5, now);
 
     const input: DecayInput = {
       stats: { adeyemi_familiarity: 3 },
@@ -160,7 +164,7 @@ describe('computeRelationshipDecay — clamping', () => {
 
   it('clamps tension to maxTension (100)', () => {
     const now = new Date();
-    const fiftyDaysAgo = daysAgo(50);
+    const fiftyDaysAgo = daysAgo(50, now);
 
     // A starting value that would exceed maxTension must clamp to 100.
     const highTensionInput: DecayInput = {
@@ -180,7 +184,7 @@ describe('computeRelationshipDecay — clamping', () => {
 describe('computeRelationshipDecay — floor protection', () => {
   it('does not auto-create floor stats on first decay after encounter', () => {
     const now = new Date();
-    const sevenDaysAgo = daysAgo(7);
+    const sevenDaysAgo = daysAgo(7, now);
 
     const input: DecayInput = {
       stats: { adeyemi_trust: 40, adeyemi_familiarity: 50 },
@@ -202,7 +206,7 @@ describe('computeRelationshipDecay — floor protection', () => {
 
   it('does not decay below trust floor', () => {
     const now = new Date();
-    const sevenDaysAgo = daysAgo(7);
+    const sevenDaysAgo = daysAgo(7, now);
 
     // Start at trust=25 with floor at 20
     const input: DecayInput = {
@@ -214,7 +218,7 @@ describe('computeRelationshipDecay — floor protection', () => {
       },
       state: {
         last_adeyemi_encounter_at: sevenDaysAgo.toISOString(),
-        last_adeyemi_decay_at: daysAgo(3).toISOString(),
+        last_adeyemi_decay_at: daysAgo(3, now).toISOString(),
       },
       prefix: 'adeyemi_',
       now,
@@ -230,7 +234,7 @@ describe('computeRelationshipDecay — floor protection', () => {
 
   it('does not decay below familiarity floor', () => {
     const now = new Date();
-    const fiveDaysAgo = daysAgo(5);
+    const fiveDaysAgo = daysAgo(5, now);
 
     const input: DecayInput = {
       stats: { 
@@ -239,7 +243,7 @@ describe('computeRelationshipDecay — floor protection', () => {
       },
       state: {
         last_adeyemi_encounter_at: fiveDaysAgo.toISOString(),
-        last_adeyemi_decay_at: daysAgo(2).toISOString(),
+        last_adeyemi_decay_at: daysAgo(2, now).toISOString(),
       },
       prefix: 'adeyemi_',
       now,
@@ -255,7 +259,7 @@ describe('computeRelationshipDecay — floor protection', () => {
 describe('computeRelationshipDecay — tension growth', () => {
   it('increases tension over time', () => {
     const now = new Date();
-    const fiveDaysAgo = daysAgo(5);
+    const fiveDaysAgo = daysAgo(5, now);
 
     const input: DecayInput = {
       stats: { adeyemi_tension: 30 },
@@ -275,7 +279,7 @@ describe('computeRelationshipDecay — tension growth', () => {
 describe('computeRelationshipDecay — max days per tick cap', () => {
   it('caps decay at MAX_DAYS_PER_TICK (30) to prevent huge catch-up spikes', () => {
     const now = new Date();
-    const sixtyDaysAgo = daysAgo(60); // Worker was down for 60 days
+    const sixtyDaysAgo = daysAgo(60, now); // Worker was down for 60 days
 
     const input: DecayInput = {
       stats: { adeyemi_trust: 100 },
@@ -296,7 +300,7 @@ describe('computeRelationshipDecay — max days per tick cap', () => {
 describe('computeRelationshipDecay — all relationship prefixes', () => {
   it('works for all configured prefixes', () => {
     const now = new Date();
-    const threeDaysAgo = daysAgo(3);
+    const threeDaysAgo = daysAgo(3, now);
 
     for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
       const input: DecayInput = {
