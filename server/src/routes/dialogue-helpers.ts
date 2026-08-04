@@ -224,6 +224,7 @@ export async function processTimeBlockCost(
 }
 
 export async function processRelationshipChange(
+  client: any,
   userId: string,
   speakerId: string,
   stat: string,
@@ -232,7 +233,8 @@ export async function processRelationshipChange(
   const friendshipDelta = stat === 'friendship' ? amount : 0;
   const romanceDelta = stat === 'romance' ? amount : 0;
 
-  await queryOLTP(
+  const db = client || { query: queryOLTP };
+  await db.query(
     'SELECT upsert_user_relationship($1, $2, $3, $4)',
     [userId, speakerId, friendshipDelta, romanceDelta]
   );
@@ -500,6 +502,7 @@ async function processAlignmentChange(
 }
 
 async function processRelationshipAndCheckEnd(
+  client: any,
   userId: string,
   nextNode: any,
   chosenOption: DialogueChoice
@@ -508,6 +511,7 @@ async function processRelationshipAndCheckEnd(
     const speakerId = nextNode.speaker_id;
     if (speakerId) {
       await processRelationshipChange(
+        client,
         userId,
         speakerId,
         chosenOption.relationship_change.stat,
@@ -639,7 +643,7 @@ export async function processChoice(
     timeBlocksSpent = tbResult.spent ?? 0;
   }
 
-  const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
+  const { isEnd } = await processRelationshipAndCheckEnd(client, userId, nextNode, chosenOption);
 
   // Apply the choice's own effects (choice-level stat_set/flag_set/state_set)
   // BEFORE the destination node's effects. Both go through the shared
