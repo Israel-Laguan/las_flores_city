@@ -54,9 +54,9 @@ When starting the server container, add these env vars:
 | Variable | Default | Description |
 |---|---|---|
 | `LLM_PROVIDER` | `mock` | Backend: `mock`, `litellm`, `gemini`, or `groq`. All real providers use the LiteLLM proxy. |
-| `LITELLM_BASE_URL` | `http://litellm:4000` | LiteLLM gateway URL. Use `http://host.containers.internal:4000` when running on the host. |
+| `LITELLM_BASE_URL` | `http://host.containers.internal:4000` | LiteLLM gateway URL. Required when `LLM_PROVIDER=litellm`. |
 | `LITELLM_API_KEY` | `local-key` | API key for LiteLLM proxy auth (must match `master_key` in config). |
-| `LLM_MODEL` | `poolside/laguna-m.1` | Model alias from `litellm-config.yaml`. |
+| `LLM_MODEL` | `poolside/laguna-m.1` | Model alias from `config.yaml`. |
 | `LLM_TIMEOUT_MS` | `60000` | Base timeout for LLM calls (ms). |
 | `LLM_MAX_TIMEOUT_MS` | `300000` | Cap for escalating timeout retries (ms). |
 | `LLM_OUTLINE_MODEL` | *(empty)* | Optional separate model for outline step (defaults to `LLM_MODEL`). |

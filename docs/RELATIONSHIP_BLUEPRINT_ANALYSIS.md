@@ -131,7 +131,7 @@ This part is a build plan / brainstorm for taking the current (non-functional) v
 #### Decision B — Scale: -3..+3 vs -100..100
 
 - The blueprint says -3..+3; the generated files use -100..100.
-- **Recommendation:** keep **-100..100** (finer granularity for accumulation; the deltas +5/+12/-50 need headroom). Update the blueprint's dimension table to match and **clamp** in the engine: extend `mergeStats` (or a thin wrapper) to clamp relationship-*prefixed* stats to [-100, 100]. Add a `relationship_stat_prefix` convention (e.g. `<slug>_trust`) so the clamp is opt-in and doesn't affect other stats.
+- **Recommendation:** keep **-100..100** (finer granularity for accumulation; the deltas +5/+12/-50 need headroom). Update the blueprint's dimension table to match and **clamp** in the engine per-dimension: signed dimensions (trust, alignment, debt) clamp to [-100, 100], non-negative dimensions (familiarity, tension, visibility) clamp to [0, 100]. Non-relationship stats pass through unchanged. Add a `relationship_stat_prefix` convention (e.g. `<slug>_trust`) so the clamp is opt-in and doesn't affect other stats.
 
 #### Decision C — 6 vs 8 endings
 
@@ -316,11 +316,14 @@ The other chat executed the phases. Verified against the working tree:
 - **Phase 2 mechanical teeth:** `server/src/workers/RelationshipDecayWorker.ts` created and cron-scheduled in `server/src/index.ts:242`. `mergeStatsClamped` (prefix-based [-100,100] clamp) wired into the effect path (`dialogue-helpers.ts:269` → `PlayerStateRepository.write.ts:376-399`).
 - **Phase 3:** `docs/relationship_template.md` created.
 
-**❌ Not done / broken (must fix before any validation)**
-- **Build is BROKEN.** `npm run build --workspace=server` fails: `dialogue-helpers.ts:267` TS2345 — the `NOW`-marker transform (`Object.fromEntries(...).map(...)`) widens the type to `{ [k:string]: unknown }`, which isn't assignable to `mergeState`'s `Record<string,string>`. **The server does not compile.** Nothing ships until this is fixed (type the map callback to return `string`, or cast).
-- **Zero tests added.** No unit (decay/conditions), no property (endings), no integration (arc walk). The phases' "Verify" steps were skipped, so there is **no evidence the system works** — only that the YAML passes schema validation (which doesn't catch runtime defects, per §1.5).
-- **Decay worker has a compounding-decay bug.** `RelationshipDecayWorker.processUserDecay` computes `daysElapsed` from the fixed `last_<slug>_encounter_at` (set only on encounter) and re-decays from the *current* (already-decayed) value each tick without updating the timestamp. So repeated cron ticks over-decay: day-1 (5 days since encounter) → -10; day-2 (6 days since encounter) → -22 from the already-decayed value. This is compounding, not linear. The blueprint's "floor = post-last-encounter value" (can't collapse below where the last encounter left it) is **not implemented** — stats decay toward -100/0 indefinitely. Fix: either update `last_<slug>_encounter_at` to "now" after each decay tick, or track a separate `last_<slug>_decay_at` and decay only the delta since the last tick.
-- **Cross-character friction (Rule 3) not wired.** `adeyemi_publicly_defended`-style flags aren't set; no Evelyn (or other) choice carries the matching `hidden_if`. Rule 3 is still narrative-only.
+**✅ Fixed**
+- **Build is green.** `npm run build --workspace=server` passes.
+- **Tests added.** Unit tests for decay (`relationship_decay.unit.test.ts`) and conditions (`conditions.unit.test.ts`); property tests for endings (`adeyemi_endings.property.test.ts`); integration tests for arc walk and neglect (`adeyemi_arc.test.ts`).
+- **Decay worker is linear.** `computeRelationshipDecay` uses `last_<prefix>decay_at` to decay only the delta since the last tick. Floors are content-authored only, defaulting to hard minimums.
+- **Cross-character friction (Rule 3) wired.** `adeyemi_publicly_defended` is set on the Act-4 `step_to_adeyemi` choice. Aisha's `ask_about_challenges` choices carry `hidden_if: adeyemi_publicly_defended: true`, closing a trust path when the player sides with Adeyemi at the crane yard. Integration test added.
+
+**Remaining actions**
+- **Step 4 — Comparative playtest (C5/C6, qualitative).** Human playtest comparing old vs new system.
 
 ### 3.2 What "better" means (success criteria)
 
@@ -389,5 +392,6 @@ The most likely failure mode is **C5 regression**: even with 6 dimensions, if th
 
 ---
 
-*End of analysis. Re-run `npm run validate:content` and `npm run build --workspace=server` after any change to this feature; both must be green before the Step 4 playtest.*
 - **REVERT** (not better): C1 fails (endings don't actually diverge from history — e.g. the stat deltas are too small to cross thresholds, so Act-4 flags still dominate). → The `required_stats` approach (Decision A1) is insufficient; this is the trigger to build the **real encounter stack** (Decision A2: `player_encounters` table + `deriveRelationshipState()`). The `required_stats` thresholds become A2's output contract, so the work isn't wasted.
+
+*End of analysis. Re-run `npm run validate:content` and `npm run build --workspace=server` after any change to this feature; both must be green before the Step 4 playtest.*

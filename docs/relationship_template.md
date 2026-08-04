@@ -172,10 +172,13 @@ effects:
     last_adeyemi_encounter_at: NOW
 ```
 
-The decay worker (`RelationshipDecayWorker`) reads this to compute elapsed days and applies:
-- Trust: -2 per day (floor: -100)
-- Familiarity: -1 per day (floor: 0)
-- Tension: +1 per day (ceiling: 100)
+The decay worker (`RelationshipDecayWorker`) reads the encounter timestamp to compute elapsed days. After applying decay it advances `last_<slug>_decay_at` so repeated ticks do not re-apply the same interval. Per-dimension bounds:
+
+- Trust: -2 per day, floored at -100
+- Familiarity: -1 per day, floored at 0
+- Tension: +1 per day, ceiling at 100
+
+The floor only limits how far decay can go — decay never raises a stat.
 
 ---
 
@@ -213,7 +216,9 @@ Use the three player-state channels correctly:
 
 ### Stats (`stat_set` / `required_stats` / `hidden_if_stats`)
 - Numeric, additive
-- Clamped to [-100, 100] for relationship stats
+- Per-dimension bounds:
+  - Signed dims (trust, alignment, debt): -100..100
+  - Non-negative dims (familiarity, tension, visibility): 0..100
 - Use `op:number` grammar: `gte:70`, `lte:50`, `gt:40`, `lt:30`, `eq:0`, `ne:0`
 - Example: `adeyemi_trust: 15`
 
@@ -272,9 +277,9 @@ The following engine components support this template:
 1. **Three state channels**: flags, state, stats (see `shared/src/schemas/dialogue.ts`)
 2. **Gating**: `required_flags`, `required_state`, `required_stats` on choices and metadata
 3. **Numeric comparisons**: `gte:`, `lte:`, `gt:`, `lt:`, `eq:`, `ne:` grammar
-4. **Decay worker**: `RelationshipDecayWorker` (daily cron)
-5. **Stat clamping**: `mergeStatsClamped` for relationship prefixes
-6. **Timestamp support**: `NOW` marker in state_set values
+4. **Decay worker**: `RelationshipDecayWorker` (daily cron with re-entrancy guard + initial tick)
+5. **Stat clamping**: `mergeStatsClamped` with per-dimension bounds and atomic SQL UPDATE
+6. **Timestamp support**: `NOW` marker in state_set values (resolved via `applyEffects` pipeline)
 
 ---
 
