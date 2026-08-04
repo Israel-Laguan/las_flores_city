@@ -89,14 +89,20 @@ export function computeRelationshipDecay(
 
   const lastDecayTime = state[lastDecayKey];
   const lastEncounterDate = new Date(lastEncounterTime);
-  
+
   // Use last_decay_at if available (for incremental decay), otherwise fall back to last_encounter_at
   const referenceDate = lastDecayTime ? new Date(lastDecayTime) : lastEncounterDate;
+
+  // An unparsable timestamp would make daysElapsed NaN and persist NaN stats.
+  if (Number.isNaN(referenceDate.getTime())) {
+    return result;
+  }
+
   const daysElapsed = Math.floor((now.getTime() - referenceDate.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   // Cap to prevent huge catch-up spikes
   const cappedDays = Math.min(daysElapsed, MAX_DAYS_PER_TICK);
-  
+
   // If no time has passed, nothing to do
   if (cappedDays <= 0) {
     return result;
@@ -121,9 +127,9 @@ export function computeRelationshipDecay(
   const newFamiliarity = Math.max(bounds.minFamiliarity, currentFamiliarity - (rates.familiarityDecayPerDay * cappedDays));
   const newTension = Math.min(bounds.maxTension, currentTension + (rates.tensionGrowthPerDay * cappedDays));
 
-  // Apply floor protection: don't decay below the floor
-  const flooredTrust = Math.max(newTrust, trustFloor);
-  const flooredFamiliarity = Math.max(newFamiliarity, familiarityFloor);
+  // Apply floor protection: don't decay below the floor, but never raise a stat.
+  const flooredTrust = Math.min(currentTrust, Math.max(newTrust, trustFloor));
+  const flooredFamiliarity = Math.min(currentFamiliarity, Math.max(newFamiliarity, familiarityFloor));
 
   // Update stats if changed
   if (flooredTrust !== currentTrust) {
@@ -178,13 +184,26 @@ export class RelationshipDecayWorker {
     }
 
     try {
-      // Get all users with relationship state
+      // Get all users with relationship state, filtered to those that
+      // actually carry a relationship last-encounter key and paged to
+      // avoid unbounded scans on the users table.
       const { rows: users } = await selectClient.query<{ id: string }>(
-        `SELECT id FROM users WHERE id IN (
-           SELECT DISTINCT user_id FROM player_states 
-           WHERE state IS NOT NULL AND state != '{}'::jsonb
-         )`
+        `SELECT DISTINCT ps.user_id AS id
+           FROM player_states ps
+          WHERE ps.state IS NOT NULL
+            AND ps.state != '{}'::jsonb
+            AND EXISTS (
+              SELECT 1 FROM jsonb_object_keys(ps.state) AS k(key)
+              WHERE key LIKE 'last_\\_%\\_encounter_at' ESCAPE '\\'
+            )
+          ORDER BY ps.user_id
+          LIMIT 500`
       );
+
+      // Release the select client before per-user transactions so we
+      // don't hold two connections per user simultaneously.
+      selectClient.release();
+      selectClient = undefined as any;
 
       // Process each user
       for (const user of users) {
@@ -207,7 +226,9 @@ export class RelationshipDecayWorker {
     } catch (err) {
       console.error('[RelationshipDecayWorker] processDecay error:', err);
     } finally {
-      selectClient.release();
+      if (selectClient) {
+        selectClient.release();
+      }
     }
   }
 
@@ -251,8 +272,8 @@ export class RelationshipDecayWorker {
       for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
         const result = computeRelationshipDecay(
           {
-            stats: currentStats,
-            state: currentState,
+            stats: updatedStats,
+            state: updatedState,
             prefix,
             now,
           },
@@ -262,8 +283,8 @@ export class RelationshipDecayWorker {
 
         // Merge results
         if (result.hasChanges) {
-          Object.assign(updatedStats, result.newStats);
-          Object.assign(updatedState, result.newState);
+          updatedStats = result.newStats;
+          updatedState = result.newState;
           hasChanges = true;
         }
       }

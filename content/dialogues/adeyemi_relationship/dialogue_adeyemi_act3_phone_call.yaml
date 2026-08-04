@@ -324,6 +324,8 @@ nodes:
         adeyemi_alignment: 25
         adeyemi_debt: 15
         adeyemi_tension: -10
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Offer proof
   adeyemi_offer_proof:
@@ -368,6 +370,8 @@ nodes:
       stat_set:
         adeyemi_trust: 8
         adeyemi_tension: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Justice question
   adeyemi_justice_question:
@@ -464,6 +468,8 @@ nodes:
         adeyemi_trust: 18
         adeyemi_alignment: 15
         adeyemi_tension: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Horror acknowledged
   adeyemi_horror_acknowledged:
@@ -509,6 +515,8 @@ nodes:
         adeyemi_trust: 35
         adeyemi_alignment: 25
         adeyemi_debt: 15
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Protection explanation
   adeyemi_protection_explanation:
@@ -525,6 +533,8 @@ nodes:
         adeyemi_familiarity: 15
         adeyemi_trust: 18
         adeyemi_alignment: 10
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Proof accepted
   adeyemi_proof_accepted:
@@ -544,6 +554,8 @@ nodes:
         adeyemi_alignment: 35
         adeyemi_debt: 30
         adeyemi_visibility: 15
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Proof declined
   adeyemi_proof_declined:
@@ -560,6 +572,8 @@ nodes:
       stat_set:
         adeyemi_familiarity: 12
         adeyemi_trust: 25
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Complicit question
   adeyemi_complicit_question:
@@ -602,6 +616,8 @@ nodes:
         adeyemi_familiarity: 15
         adeyemi_trust: 25
         adeyemi_alignment: 18
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Partnership forged
   adeyemi_partnership_forged:
@@ -621,6 +637,8 @@ nodes:
         adeyemi_alignment: 35
         adeyemi_debt: 30
         adeyemi_visibility: 10
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Cautious acceptance
   adeyemi_cautious_acceptance:
@@ -638,6 +656,8 @@ nodes:
         adeyemi_familiarity: 18
         adeyemi_trust: 25
         adeyemi_alignment: 12
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Danger explanation
   adeyemi_danger_explanation:
@@ -656,6 +676,8 @@ nodes:
         adeyemi_trust: 22
         adeyemi_alignment: 18
         adeyemi_tension: 12
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Warning dismissed
   adeyemi_warning_dismissed:
@@ -671,6 +693,8 @@ nodes:
       stat_set:
         adeyemi_trust: 5
         adeyemi_tension: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Backup accepted
   adeyemi_backup_accepted:
@@ -689,6 +713,8 @@ nodes:
         adeyemi_trust: 35
         adeyemi_alignment: 25
         adeyemi_debt: 20
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Evidence sharing
   adeyemi_evidence_sharing:
@@ -707,6 +733,8 @@ nodes:
         adeyemi_trust: 30
         adeyemi_alignment: 22
         adeyemi_visibility: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Absolution received
   adeyemi_absolution_received:
@@ -723,6 +751,8 @@ nodes:
         adeyemi_familiarity: 20
         adeyemi_trust: 25
         adeyemi_alignment: 15
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Logic challenged
   adeyemi_logic_challenged:
@@ -741,6 +771,8 @@ nodes:
         adeyemi_trust: 8
         adeyemi_alignment: -5
         adeyemi_tension: 20
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
 metadata:
   version: "1.0"

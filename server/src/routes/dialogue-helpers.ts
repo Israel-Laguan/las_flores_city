@@ -8,6 +8,43 @@ import { PlayerStateRepository } from '../database/repositories/PlayerStateRepos
 import type { DialogueChoice, PlayerConditionState } from '@las-flores/shared';
 import { choicePassesFilters, metadataConditionsPass } from '@las-flores/shared';
 
+// ============================================================
+// Shared effect application pipeline
+// ============================================================
+
+/**
+ * Apply EffectsSchema-validated effects to player_states atomically.
+ * Reused by both the dialogue-choice path (recordChoiceAndEffects)
+ * and the guarded-leaf path (IronGateValidator._validateEffects).
+ */
+export async function applyEffects(
+  client: any,
+  userId: string,
+  effects: any
+): Promise<void> {
+  if (!effects) return;
+
+  if (effects.flag_set && Object.keys(effects.flag_set).length > 0) {
+    await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
+  }
+  if (effects.state_set && Object.keys(effects.state_set).length > 0) {
+    // Replace special "NOW" marker with current ISO timestamp for relationship tracking.
+    const stateWithTimestamps: Record<string, string> = Object.fromEntries(
+      Object.entries(effects.state_set).map(([key, value]) => [
+        key,
+        value === 'NOW' ? new Date().toISOString() : String(value),
+      ])
+    );
+    await PlayerStateRepository.mergeState(client, userId, stateWithTimestamps);
+  }
+  if (effects.stat_set && Object.keys(effects.stat_set).length > 0) {
+    await PlayerStateRepository.mergeStatsClamped(client, userId, effects.stat_set);
+  }
+  if (effects.story_beat) {
+    await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
+  }
+}
+
 /* eslint-disable max-lines -- dialogue route helpers are cohesively grouped in one module */
 
 export async function getSpeaker(speakerId: string) {
@@ -91,6 +128,9 @@ export async function resolveDialogueTree(
     }
   }
 
+  // Fetch all scene-scoped candidates first (no LIMIT 1), then
+  // evaluate gates in Node so an ineligible LIMIT-1 row cannot
+  // prevent an eligible alternative from being considered.
   const sceneResult = await queryOLTP(
     `SELECT dt.id, dt.name, dt.description, dt.start_node_id, dt.nodes, dt.metadata
      FROM dialogue_trees dt
@@ -99,21 +139,19 @@ export async function resolveDialogueTree(
        AND EXISTS (
          SELECT 1 FROM jsonb_each(dt.nodes) AS node(key, value)
          WHERE (node.value->>'speaker_id') = $2
-       )
-     LIMIT 1`,
+       )`,
     [sceneId, characterId]
   );
 
-  if (sceneResult.rows.length > 0) {
-    const tree = sceneResult.rows[0];
+  for (const tree of sceneResult.rows) {
     if (
       isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
       metadataConditionsPass(tree.metadata, playerCondition)
     ) {
       return tree;
     }
-    // Gated: fall through to the fallback so a beat-unlocked
-    // alternative tree can still serve the same character.
+    // Gated: continue to the next candidate; only fall through
+    // to the fallback if no scene-scoped tree passes all gates.
   }
 
   const fallbackResult = await queryOLTP(
@@ -249,29 +287,10 @@ export async function recordChoiceAndEffects(
   );
 
   // Apply EffectsSchema-validated effects to player_states.
-  // No gating logic here — story progression is a deferred feature.
+  // Reuses the shared pipeline so NOW handling + clamping are
+  // identical between the dialogue-choice path and IronGateValidator.
   const effects = nextNode.effects;
-  if (effects?.flag_set) {
-    await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
-  }
-  if (effects?.state_set) {
-    // Replace special "NOW" marker with current ISO timestamp for relationship tracking
-    const stateWithTimestamps: Record<string, string> = Object.fromEntries(
-      Object.entries(effects.state_set ?? {}).map(([key, value]) => [
-        key,
-        // EffectsSchema guarantees string values; coerce so the tuple stays [string, string]
-        // instead of widening to unknown (which previously broke the build).
-        value === 'NOW' ? new Date().toISOString() : String(value),
-      ])
-    );
-    await PlayerStateRepository.mergeState(client, userId, stateWithTimestamps);
-  }
-  if (effects?.stat_set) {
-    await PlayerStateRepository.mergeStatsClamped(client, userId, effects.stat_set);
-  }
-  if (effects?.story_beat) {
-    await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
-  }
+  await applyEffects(client, userId, effects);
   // M15: grant rewards with idempotency check
   let grantedCredits: { amount: number; currency: string } | undefined;
   let grantedItem: { itemId: string } | undefined;

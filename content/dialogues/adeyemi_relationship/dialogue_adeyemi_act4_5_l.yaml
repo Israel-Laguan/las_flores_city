@@ -36,14 +36,14 @@ nodes:
     type: character
     speaker_id: a0000001-0000-4000-8000-000000000003
     text: "His fiancée. She left after. I don't blame her."
-    choices:
-      - id: ask_why_from_photo
-        text: "Why are you showing me this now?"
-        next_node_id: adeyemi_meridian_file_why
     effects:
       stat_set:
         adeyemi_trust: 10
         adeyemi_tension: 8
+    choices:
+      - id: ask_why_from_photo
+        text: "Why are you showing me this now?"
+        next_node_id: adeyemi_meridian_file_why
 
   adeyemi_meridian_file_why:
     id: adeyemi_meridian_file_why
@@ -105,4 +105,3 @@ metadata:
   version: "1.0"
   required_flags:
     ANSWERED: true
-    COVERED: true

@@ -245,6 +245,24 @@ describe('metadataConditionsPass — required_flags as list (B1 regression)', ()
       )
     ).toBe(false);
   });
+
+  it('fails when required_state is missing from player', () => {
+    expect(
+      metadataConditionsPass(
+        { required_state: { adeyemi_act: '1_done' } },
+        { ...EMPTY, state: {} }
+      )
+    ).toBe(false);
+  });
+
+  it('passes required_state when value matches', () => {
+    expect(
+      metadataConditionsPass(
+        { required_state: { adeyemi_act: '1_done' } },
+        { ...EMPTY, state: { adeyemi_act: '1_done' } }
+      )
+    ).toBe(true);
+  });
 });
 
 describe('metadataConditionsPass — required_flags list form with multiple flags (B1 regression)', () => {

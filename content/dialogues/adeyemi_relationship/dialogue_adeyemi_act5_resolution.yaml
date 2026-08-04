@@ -25,6 +25,9 @@ nodes:
         next_node_id: adeyemi_act5_deflected_branch
         required_flags:
           DEFLECTED: true
+      - id: assess_default
+        text: "[Move forward]"
+        next_node_id: adeyemi_act5_distant
 
   # COVERED BRANCH (Friend, Lover, Mirror, Reluctant Ally)
   adeyemi_act5_covered_branch:
@@ -77,6 +80,9 @@ nodes:
           ANSWERED: true
         required_stats:
           adeyemi_trust: "gte:50"
+      - id: covered_default
+        text: "[Take the drive and go]"
+        next_node_id: adeyemi_act5_distant
 
   adeyemi_act5_lover:
     id: adeyemi_act5_lover
@@ -156,6 +162,9 @@ nodes:
         required_stats:
           adeyemi_alignment: "lte:30"
           adeyemi_tension: "gte:70"
+      - id: witnessed_default
+        text: "[Grab the drive and run]"
+        next_node_id: adeyemi_act5_distant
 
   adeyemi_act5_failed_lover:
     id: adeyemi_act5_failed_lover
@@ -207,6 +216,9 @@ nodes:
         required_stats:
           adeyemi_trust: "lte:50"
           adeyemi_familiarity: "lte:50"
+      - id: deflected_default
+        text: "[Take the drive alone]"
+        next_node_id: adeyemi_act5_distant
 
   adeyemi_act5_failed_friend:
     id: adeyemi_act5_failed_friend

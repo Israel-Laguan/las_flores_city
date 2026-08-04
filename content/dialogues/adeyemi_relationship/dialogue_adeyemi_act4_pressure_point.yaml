@@ -76,6 +76,7 @@ nodes:
         effects:
           flag_set:
             COVERED: true
+            adeyemi_publicly_defended: true
           stat_set:
             adeyemi_trust: 30
             adeyemi_alignment: 20
@@ -135,6 +136,7 @@ metadata:
   version: "2.0"
   required_flags:
     ANSWERED: true
+    DANIEL_REPORT_FLAG: true
   tags:
     - "adeyemi"
     - "act4"

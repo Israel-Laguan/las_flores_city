@@ -46,6 +46,12 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_secondary_call
+        text: "[Use the secondary number]"
+        next_node_id: adeyemi_act2_secondary_call
+        time_block_cost:
+          amount: 1
+          description: "Calling Adeyemi's secondary number after the arrest"
 
   adeyemi_act2_confront:
     id: adeyemi_act2_confront
@@ -72,6 +78,8 @@ nodes:
         adeyemi_familiarity: 5
         adeyemi_tension: 5
         adeyemi_trust: 3
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_act2_intervene:
     id: adeyemi_act2_intervene
@@ -98,6 +106,8 @@ nodes:
         adeyemi_trust: 8
         adeyemi_familiarity: 8
         adeyemi_alignment: -5
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_act2_intervene_push:
     id: adeyemi_act2_intervene_push
@@ -110,6 +120,8 @@ nodes:
         adeyemi_alignment: -15
         adeyemi_trust: -5
         adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_act2_help_after:
     id: adeyemi_act2_help_after
@@ -124,6 +136,8 @@ nodes:
         adeyemi_tension: 8
         adeyemi_trust: 5
         adeyemi_familiarity: 3
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_act2_public_statement:
     id: adeyemi_act2_public_statement
@@ -138,12 +152,17 @@ nodes:
         adeyemi_tension: 25
         adeyemi_trust: -15
         adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   adeyemi_act2_do_nothing:
     id: adeyemi_act2_do_nothing
     type: system
     text: "You treat it as background noise and move on with your day."
     is_end: true
+    effects:
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
   # Optional Secondary Number call logic - this would likely be a separate trigger in-game, but added here for the sequence
   adeyemi_act2_secondary_call:
@@ -176,3 +195,5 @@ metadata:
     - "adeyemi"
     - "act2"
     - "reyes_arrest"
+  required_state:
+    adeyemi_act: "1_done"

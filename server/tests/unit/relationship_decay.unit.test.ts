@@ -24,11 +24,10 @@ const DEFAULT_BOUNDS: DecayBounds = {
   maxTension: 100,
 };
 
-// Helper to create a date in the past
-function daysAgo(days: number): Date {
-  const result = new Date();
-  result.setDate(result.getDate() - days);
-  return result;
+// Helper to create a date in the past — DST-safe because it subtracts
+// exact milliseconds from Date.now() rather than wall-clock day arithmetic.
+export function daysAgo(days: number): Date {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 }
 
 describe('computeRelationshipDecay — basic functionality', () => {
@@ -163,18 +162,7 @@ describe('computeRelationshipDecay — clamping', () => {
     const now = new Date();
     const fiftyDaysAgo = daysAgo(50);
 
-    const input: DecayInput = {
-      stats: { adeyemi_tension: 30 },
-      state: { last_adeyemi_encounter_at: fiftyDaysAgo.toISOString() },
-      prefix: 'adeyemi_',
-      now,
-    };
-
-    const result = computeRelationshipDecay(input, DEFAULT_RATES, DEFAULT_BOUNDS);
-
-    // 30 + (30 * 1) = 60 (capped at MAX_DAYS_PER_TICK=30)
-    // 30 + 30 = 60, which is < 100, so no clamping needed in this case
-    // Let's try with a value that would exceed 100
+    // A starting value that would exceed maxTension must clamp to 100.
     const highTensionInput: DecayInput = {
       stats: { adeyemi_tension: 95 },
       state: { last_adeyemi_encounter_at: fiftyDaysAgo.toISOString() },
@@ -234,7 +222,8 @@ describe('computeRelationshipDecay — floor protection', () => {
 
     const result = computeRelationshipDecay(input, DEFAULT_RATES, DEFAULT_BOUNDS);
 
-    // 25 - (4 * 2) = 17, but floor is 20, so should stay at 20
+    // Reference is last_adeyemi_decay_at (3 days ago): 25 - (3 * 2) = 19,
+    // but the floor is 20, so the result stays at 20.
     expect(result.newStats.adeyemi_trust).toBe(20);
     expect(result.hasChanges).toBe(true);
   });

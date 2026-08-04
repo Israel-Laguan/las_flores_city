@@ -103,5 +103,4 @@ metadata:
   required_flags:
     ANSWERED: true
   hidden_if:
-    COVERED: true
     WITNESSED: true

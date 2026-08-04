@@ -345,67 +345,55 @@ export async function createForNewUser(
   );
 }
 
-// ── Relationship Stat Clamping ───────────────────────────────────────
-
+/** Per-dimension bounds for relationship stats. */
+const RELATIONSHIP_BOUNDS: Record<string, { min: number; max: number }> = {
+  trust: { min: -100, max: 100 },
+  familiarity: { min: 0, max: 100 },
+  alignment: { min: -100, max: 100 },
+  tension: { min: 0, max: 100 },
+  debt: { min: -100, max: 100 },
+  visibility: { min: 0, max: 100 },
+};
 const RELATIONSHIP_STAT_PREFIXES = ['adeyemi_', 'aisha_', 'petra_'];
-const MIN_RELATIONSHIP_STAT = -100;
-const MAX_RELATIONSHIP_STAT = 100;
 
 /**
- * Check if a stat key is a relationship stat (starts with a known character prefix)
- */
-function isRelationshipStat(key: string): boolean {
-  return RELATIONSHIP_STAT_PREFIXES.some(prefix => key.startsWith(prefix));
-}
-
-/**
- * Clamp a single stat value to the relationship bounds
- */
-function clampStat(key: string, value: number): number {
-  if (!isRelationshipStat(key)) {
-    return value;
-  }
-  return Math.max(MIN_RELATIONSHIP_STAT, Math.min(MAX_RELATIONSHIP_STAT, value));
-}
-
-/**
- * Merge stats with clamping for relationship stats.
- * Relationship stats (with character prefixes) are clamped to [-100, 100].
- * Non-relationship stats pass through unchanged.
+ * Atomically merge stat deltas with per-dimension clamping in one UPDATE.
  */
 export async function mergeStatsClamped(
   client: pg.PoolClient,
   userId: string,
   stats: Record<string, number>
 ): Promise<void> {
-  // First, get current stats
-  const { rows } = await client.query<{ stats: Record<string, number> | null }>(
-    `SELECT stats FROM player_states WHERE user_id = $1`,
-    [userId]
-  );
-
-  const currentStats = rows[0]?.stats || {};
-
-  // Apply deltas and clamp relationship stats
-  const newStats = { ...currentStats };
-  let hasChanges = false;
+  const setClauses: string[] = [];
+  const params: any[] = [userId];
+  let i = 2;
 
   for (const [key, delta] of Object.entries(stats)) {
-    const currentValue = newStats[key] ?? 0;
-    const newValue = currentValue + delta;
-    const clampedValue = clampStat(key, newValue);
-    
-    if (newValue !== currentValue || clampedValue !== newValue) {
-      newStats[key] = clampedValue;
-      hasChanges = true;
+    let bounds: { min: number; max: number } | null = null;
+    for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
+      if (key.startsWith(prefix)) {
+        const dim = key.slice(prefix.length);
+        bounds = RELATIONSHIP_BOUNDS[dim] ?? null;
+        break;
+      }
     }
+    if (bounds) {
+      setClauses.push(
+        `stats = jsonb_set(COALESCE(stats, '{}'::jsonb), '{${key}}', to_jsonb(GREATEST(LEAST(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric, ${bounds.max}), ${bounds.min})::numeric))`
+      );
+    } else {
+      setClauses.push(
+        `stats = jsonb_set(COALESCE(stats, '{}'::jsonb), '{${key}}', to_jsonb(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric))`
+      );
+    }
+    params.push(delta);
+    i++;
   }
 
-  // Only update if there are changes
-  if (hasChanges) {
-    await client.query(
-      `UPDATE player_states SET stats = $1, updated_at = NOW() WHERE user_id = $2`,
-      [newStats, userId]
-    );
-  }
+  if (setClauses.length === 0) return;
+
+  await client.query(
+    `UPDATE player_states SET stats = ${setClauses.join(', ')}, updated_at = NOW() WHERE user_id = $1`,
+    params
+  );
 }

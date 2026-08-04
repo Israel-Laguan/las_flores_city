@@ -3,6 +3,7 @@ import {
   resolveDialogueTree,
   filterChoices,
   initializeDialogueState,
+  applyEffects,
 } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
@@ -86,6 +87,10 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
 
   await withOLTPTransaction(async (client) => {
     await initializeDialogueState(client, userId, dialogue.id, rootNodeId);
+    // Apply the root node's stat_set / flag_set / state_set exactly once,
+    // before returning choices. Subsequent choice effects go through
+    // recordChoiceAndEffects which reuses the same shared pipeline.
+    await applyEffects(client, userId, rootNode.effects);
   });
 
   const availableChoices = await filterChoices(rootNode.choices || [], userId);
@@ -130,6 +135,8 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
   await withOLTPTransaction(async (client) => {
     await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
     await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId);
+    // Apply the root node's stat_set / flag_set / state_set exactly once.
+    await applyEffects(client, userId, rootNode.effects);
   });
 
   const availableChoices = await filterChoices(rootNode.choices || [], userId);

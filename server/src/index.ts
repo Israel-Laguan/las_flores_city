@@ -245,11 +245,20 @@ async function initializeServer() {
 
   // Relationship decay worker — decay relationship stats daily
   const DECAY_INTERVAL_MS = 24 * 60 * 60 * 1000; // Once per day
-  setInterval(() => {
-    RelationshipDecayWorker.processDecay().catch((err) =>
-      console.error('[RelationshipDecayWorker] cron tick error:', err)
-    );
-  }, DECAY_INTERVAL_MS);
+  let isDecayWorkerRunning = false;
+  const runDecayTick = async () => {
+    if (isDecayWorkerRunning) return;
+    isDecayWorkerRunning = true;
+    try {
+      await RelationshipDecayWorker.processDecay();
+    } catch (err) {
+      console.error('[RelationshipDecayWorker] cron tick error:', err);
+    } finally {
+      isDecayWorkerRunning = false;
+    }
+  };
+  void runDecayTick();
+  setInterval(runDecayTick, DECAY_INTERVAL_MS);
   console.log(`💔 RelationshipDecayWorker scheduled every ${DECAY_INTERVAL_MS / 1000 / 60 / 60}h`);
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds

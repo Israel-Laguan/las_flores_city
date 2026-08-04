@@ -5,6 +5,7 @@ import {
   processBreakthroughSolve,
   type BreakthroughResult,
 } from '../routes/dialogue-breakthrough-helpers.js';
+import { applyEffects } from '../routes/dialogue-helpers.js';
 import type { Leaf, GuardedLeaf } from '@las-flores/shared';
 
 // ============================================================
@@ -232,28 +233,16 @@ export class IronGateValidator {
 
     const applied: Record<string, unknown> = {};
 
-    if (effects.flag_set && Object.keys(effects.flag_set).length > 0) {
-      await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
-      applied['flag_set'] = effects.flag_set;
-    }
-
-    if (effects.state_set && Object.keys(effects.state_set).length > 0) {
-      await PlayerStateRepository.mergeState(client, userId, effects.state_set);
-      applied['state_set'] = effects.state_set;
-    }
-
-    if (effects.stat_set && Object.keys(effects.stat_set).length > 0) {
-      await PlayerStateRepository.mergeStats(client, userId, effects.stat_set);
-      applied['stat_set'] = effects.stat_set;
-    }
-
-    if (effects.story_beat) {
-      await PlayerStateRepository.setStoryBeat(
-        client,
-        userId,
-        effects.story_beat
-      );
-      applied['story_beat'] = effects.story_beat;
+    // Use the shared effect pipeline so state_set NOW handling and
+    // mergeStatsClamped are identical to the dialogue-choice path.
+    await applyEffects(client, userId, effects);
+    if (effects) {
+      applied['effects'] = {
+        flag_set: effects.flag_set,
+        state_set: effects.state_set,
+        stat_set: effects.stat_set,
+        story_beat: effects.story_beat,
+      };
     }
 
     // M15: grant credits as mission reward (idempotent)
