@@ -31,6 +31,34 @@ function doesNotSatisfyEnding(endings: typeof ADEYEMI_ENDINGS, endingName: Endin
   return !satisfiesEnding(endings, endingName, stats);
 }
 
+// Independent oracle: evaluates every required_stats constraint WITHOUT
+// reusing choicePassesFilters (the function exercised by satisfiesEnding).
+// If satisfiesEnding ever returns the wrong boolean for a generated vector,
+// this oracle catches it. Parses each "op:number" constraint directly and
+// applies the comparison with a hand-rolled switch (no shared evaluator).
+function expectedSatisfies(requiredStats: Record<string, string>, stats: Record<string, number>): boolean {
+  for (const [stat, constraint] of Object.entries(requiredStats)) {
+    const match = /^(gt|lt|gte|lte|eq|ne):(-?\d+)$/.exec(constraint);
+    if (!match) return false; // fail closed on malformed constraints
+    const op = match[1];
+    const n = parseInt(match[2], 10);
+    const actual = stats[stat];
+    if (actual === undefined) return false; // missing stat fails closed
+    let ok: boolean;
+    switch (op) {
+      case 'gt': ok = actual > n; break;
+      case 'lt': ok = actual < n; break;
+      case 'gte': ok = actual >= n; break;
+      case 'lte': ok = actual <= n; break;
+      case 'eq': ok = actual === n; break;
+      case 'ne': ok = actual !== n; break;
+      default: return false;
+    }
+    if (!ok) return false;
+  }
+  return true;
+}
+
 // Arbitrary for relationship stats within the valid range [-100, 100]
 // But for familiarity, the valid range is [0, 100]
 const relationshipStatArb = fc.integer({ min: -100, max: 100 });
@@ -80,14 +108,17 @@ describe('Adeyemi endings property tests — reachability and excludability', ()
         expect(satisfiesEnding(ADEYEMI_ENDINGS, endingName as EndingName, reachable)).toBe(true);
         expect(doesNotSatisfyEnding(ADEYEMI_ENDINGS, endingName as EndingName, excludable)).toBe(true);
 
-        // The gate must always return a boolean for any in-range vector
-        // and must never be trivially true for every vector (the excludable
-        // vector already proves non-triviality, but fc.assert adds random
-        // coverage that catches edge cases the hand-built vectors miss).
+        // Semantic property: for every random in-range vector, satisfiesEnding
+        // must agree with an INDEPENDENT evaluation of every required_stats
+        // constraint. The prior type-only check (`typeof passes === 'boolean'`)
+        // passed even when the gate returned the wrong boolean for every vector;
+        // this oracle catches such regressions while preserving the randomized
+        // coverage and the hand-built non-triviality checks above.
         fc.assert(
           fc.property(statsVectorArb, (stats) => {
-            const passes = satisfiesEnding(ADEYEMI_ENDINGS, endingName as EndingName, stats);
-            return typeof passes === 'boolean';
+            const actual = satisfiesEnding(ADEYEMI_ENDINGS, endingName as EndingName, stats);
+            const expected = expectedSatisfies(ending.required_stats, stats);
+            return actual === expected;
           }),
           { numRuns: 200 }
         );

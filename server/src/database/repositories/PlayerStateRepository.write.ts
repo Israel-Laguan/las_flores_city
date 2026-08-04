@@ -358,17 +358,33 @@ const RELATIONSHIP_BOUNDS: Record<string, { min: number; max: number }> = {
 
 /**
  * Atomically merge stat deltas with per-dimension clamping in one UPDATE.
+ *
+ * Composes all stat-key changes into a SINGLE nested `jsonb_set`
+ * expression so the UPDATE assigns the `stats` column exactly once.
+ * PostgreSQL rejects multiple assignments to the same target column
+ * in one UPDATE (`ERROR: multiple assignments to "stats" column`),
+ * which the previous `setClauses.join(', ')` approach triggered
+ * whenever an effect carried two or more stat keys.
+ *
+ * Each `stats->>'key'` reference reads the pre-update column value
+ * (PostgreSQL evaluates every SET expression against the original
+ * row), so every delta is applied to the original stat — preserving
+ * the additive-merge semantics.
  */
 export async function mergeStatsClamped(
   client: pg.PoolClient,
   userId: string,
   stats: Record<string, number>
 ): Promise<void> {
-  const setClauses: string[] = [];
+  const entries = Object.entries(stats);
+  if (entries.length === 0) return;
+
   const params: any[] = [userId];
   let i = 2;
-
-  for (const [key, delta] of Object.entries(stats)) {
+  // Build one nested jsonb_set chain: the outermost call is the only
+  // `stats =` assignment in the generated UPDATE.
+  let expr = `COALESCE(stats, '{}'::jsonb)`;
+  for (const [key, delta] of entries) {
     let bounds: { min: number; max: number } | null = null;
     for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
       if (key.startsWith(prefix)) {
@@ -378,22 +394,16 @@ export async function mergeStatsClamped(
       }
     }
     if (bounds) {
-      setClauses.push(
-        `stats = jsonb_set(COALESCE(stats, '{}'::jsonb), '{${key}}', to_jsonb(GREATEST(LEAST(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric, ${bounds.max}), ${bounds.min})::numeric))`
-      );
+      expr = `jsonb_set(${expr}, '{${key}}', to_jsonb(GREATEST(LEAST(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric, ${bounds.max}), ${bounds.min})::numeric))`;
     } else {
-      setClauses.push(
-        `stats = jsonb_set(COALESCE(stats, '{}'::jsonb), '{${key}}', to_jsonb(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric))`
-      );
+      expr = `jsonb_set(${expr}, '{${key}}', to_jsonb(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric))`;
     }
     params.push(delta);
     i++;
   }
 
-  if (setClauses.length === 0) return;
-
   await client.query(
-    `UPDATE player_states SET stats = ${setClauses.join(', ')}, updated_at = NOW() WHERE user_id = $1`,
+    `UPDATE player_states SET stats = ${expr}, updated_at = NOW() WHERE user_id = $1`,
     params
   );
 }

@@ -345,7 +345,7 @@ The old system (e.g. `dialogue_aisha_al_sayed.yaml`): one encounter → `stat_se
 | C1 | **Endings diverge from history, not one binary choice** | ending = last flag | ending = accumulated dimensions (Act 1–3 choices change Act 5) | Two playthroughs with the **same Act-4 choice** but different Act 1–3 behavior reach **different** endings |
 | C2 | **No "relationship as a meter"** | player maxes one stat | 6 independent dimensions; high one axis ≠ high another | A playthrough can reach "failed friend" (high familiarity, low trust) — impossible with one stat |
 | C3 | **Neglect has consequences (Rule 2)** | no effect | phone-call gate `adeyemi_familiarity: "gte:25"` fails after 7+ days of neglect | Advance the clock 7 days without contacting Adeyemi → Act 3 becomes unreachable until re-engaged |
-| C4 | **Intimacy has a cost (Rule 3)** | none | going deep with Adeyemi closes an Evelyn path | Defend Adeyemi publicly → an Evelyn trust choice is `hidden_if`-hidden |
+| C4 | **Intimacy has a cost (Rule 3)** | none | going deep with Adeyemi closes an Aisha path | Defend Adeyemi publicly → an Aisha trust choice is `hidden_if`-hidden |
 | C5 | **Player can't see/optimze the system** | a visible +5 | no meter shown; player observes Adeyemi acting differently | (qualitative — playtest) player can't name the "trust number" |
 | C6 | **Choices aren't symmetric** | both options ~equal | one option clearly harder, often closes the interesting path | (qualitative — design review against the anti-patterns checklist) |
 
@@ -354,31 +354,20 @@ C1–C4 are **mechanically testable**; C5–C6 are **qualitative** (playtest + d
 
 ### 3.3 Validation steps (in order)
 
-**Step 0 — Unblock the build (P0, ~15 min).**
-Fix `dialogue-helpers.ts:267` TS2345: type the `NOW`-transform map callback to return `string`, e.g.
-```ts
-const stateWithTimestamps: Record<string, string> = Object.fromEntries(
-  Object.entries(effects.state_set).map(([key, value]) =>
-    [key, value === 'NOW' ? new Date().toISOString() : value]
-  )
-);
-```
-Verify: `npm run build --workspace=server` succeeds; `npm run lint --workspace=server` clean; rebuild container + health check (`docker exec las-flores-server wget -qO- http://localhost:3000/health`).
+**Step 0 — Verify the build is unblocked (done).**
+The `NOW`-transform map callback is typed to return `string` in `dialogue-helpers.ts` (`applyEffects`), so `npm run build --workspace=server` compiles. Verify: `npm run build --workspace=server` succeeds; `npm run lint --workspace=server` is clean; rebuild container + health check (`docker exec las-flores-server wget -qO- http://localhost:3000/health`).
 
-**Step 1 — Fix the decay compounding bug (P0).**
-In `RelationshipDecayWorker.processUserDecay`, decay only the **delta since the last decay tick**, not the total elapsed-since-encounter. Two acceptable fixes:
-- (a) After applying decay, set `last_<slug>_encounter_at` (or a new `last_<slug>_decay_at`) to now, so the next tick only covers new days; **or**
-- (b) store `last_<slug>_decay_at` and compute `daysElapsed = now − last_decay_at` (1 per tick), decaying linearly.
-Also implement the **floor**: capture the post-encounter value and don't decay below it (the blueprint's "can't collapse below the point set by the encounter stack"). Simplest: floor = the value as of `last_encounter_at`; snapshot it into a `<slug>_trust_floor` stat on encounter.
-> **SUPERSEDED (resolved in the floor-semantics decision):** Auto-initializing the floor to the post-encounter value is self-contradictory — it sets `floor = currentTrust`, then `Math.max(newTrust, floor)` clamps decay straight back to the starting value, making trust/familiarity un-decayable. Implemented instead: floors are **content-authored only**, defaulting to the hard minimums (`bounds.minTrust` / `bounds.minFamiliarity`). A content author may still set an explicit `<slug>_trust_floor`/`<slug>_familiarity_floor` stat to protect a higher baseline.
+**Step 1 — Verify the decay is linear and floored (done).**
+`RelationshipDecayWorker.processUserDecay` decays only the **delta since the last decay tick** (not the total elapsed-since-encounter) via `last_<slug>_decay_at`, decaying linearly. Floors are **content-authored only**, defaulting to the hard minimums (`bounds.minTrust` / `bounds.minFamiliarity`); a content author may still set an explicit `<slug>_trust_floor`/`<slug>_familiarity_floor` stat to protect a higher baseline. Auto-initializing the floor to the post-encounter value was rejected as self-contradictory (it sets `floor = currentTrust`, then clamps decay straight back to the starting value, making trust/familiarity un-decayable). Verify: `server/tests/unit/relationship_decay.unit.test.ts` — decay is linear, floored, and capped to `[-100,100]`.
 
-**Step 2 — Add the tests (the actual evidence).** Without these, "is it better?" is unanswerable.
-- **Unit (conditions, C1/C2):** extend `server/tests/unit/conditions.unit.test.ts` — assert `required_stats: { adeyemi_trust: "gte:70" }` passes with `{adeyemi_trust:70}` and fails with `{adeyemi_trust:69}`; assert a list-form `required_flags` (the B1 regression) fails closed.
-- **Unit (decay, C3):** new `server/tests/unit/relationship_decay.unit.test.ts` with a mocked clock — set `adeyemi_trust: 40`, `last_adeyemi_encounter_at` 7 days ago; run `processDecay`; assert trust dropped by `7 × TRUST_DECAY_PER_DAY` **exactly once** (no compounding), floored above the baseline, clamped to [-100,100].
-- **Property (endings, C2):** for each of the 8 endings, assert (a) a dimension-vector satisfying its `required_stats` exists and (b) a vector that doesn't — so no ending is unreachable or trivially reachable. Use `fast-check`.
-- **Integration (arc walk, C1/C3):** new `server/tests/integration/adeyemi_arc.test.ts` — dedicated test user (private UUID, `afterAll` cleanup), real Postgres. Walk Act 1→5 twice (trust-max vs. antagonize) with the **same Act-4 choice**; assert **different** endings (C1). Then a second test: neglect 7 days → Act-3 gate fails (C3). Run `npm run test:integration -- tests/integration/adeyemi_arc.test.ts`.
+**Step 2 — Verify the tests exist (done).**
+- **Unit (conditions, C1/C2):** `server/tests/unit/conditions.unit.test.ts` asserts `required_stats: { adeyemi_trust: "gte:70" }` passes with `{adeyemi_trust:70}` and fails with `{adeyemi_trust:69}`; list-form `required_flags` fails closed.
+- **Unit (decay, C3):** `server/tests/unit/relationship_decay.unit.test.ts` with a mocked clock — `adeyemi_trust: 40`, `last_adeyemi_encounter_at` 7 days ago; trust drops by `7 × TRUST_DECAY_PER_DAY` **exactly once** (no compounding), floored, clamped to [-100,100].
+- **Property (endings, C2):** `server/tests/unit/adeyemi_endings.property.test.ts` — for each of the 8 endings, a satisfying vector and an excludable vector both exist.
+- **Integration (arc walk, C1/C3):** `server/tests/integration/adeyemi_arc.test.ts` — dedicated test user, real Postgres. Run `npm run test:integration -- tests/integration/adeyemi_arc.test.ts`.
 
-**Step 3 — Wire Rule 3 (C4).** Add the `adeyemi_publicly_defended` flag to an Act-4 choice and a matching `hidden_if` on another character's trust choice; add a friction integration test (defend Adeyemi → other choice hidden).
+**Step 3 — Verify Rule 3 friction is wired (done).**
+The `adeyemi_publicly_defended` flag is set on the Act-4 `step_to_adeyemi` choice, and Aisha's `ask_about_challenges` choices carry `hidden_if: adeyemi_publicly_defended: true`. The C4 integration test asserts against the loaded production dialogue data.
 
 **Step 4 — Comparative playtest (C5/C6, qualitative).**
 - Build a side-by-side: the **old** Aisha single-stat tree vs. the **new** Adeyemi arc. Have 1–2 testers (or the author) play both.

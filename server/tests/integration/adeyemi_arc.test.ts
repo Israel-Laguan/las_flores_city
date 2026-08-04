@@ -5,6 +5,7 @@ import { choicePassesFilters, metadataConditionsPass, PlayerConditionState } fro
 import { ADEYEMI_ENDINGS as ACT_5_ENDINGS } from '../fixtures/adeyemi_endings.js';
 import fs from 'fs';
 import path from 'path';
+import * as yaml from 'js-yaml';
 
 // ============================================================
 // Adeyemi Relationship Arc Integration Tests
@@ -19,7 +20,29 @@ import path from 'path';
 // Dedicated test user UUID — private to this test file
 const TEST_USER_ID = 'f1000000-0000-4000-8000-000000000099';
 
-import { daysAgo } from '../unit/relationship_decay.unit.test.js';
+import { daysAgo } from '../fixtures/timeHelpers.js';
+
+// process.cwd() is the server/ directory when Jest runs; content/ lives
+// one level above. Used to load production dialogue YAML so C4 assertions
+// fail when the hidden_if gate or adeyemi_publicly_defended effect is
+// removed from the actual content (rather than duplicating literals).
+const CONTENT_DIR = path.resolve(process.cwd(), '..', 'content');
+
+function loadDialogueYaml(relativePath: string): any {
+  const raw = fs.readFileSync(path.resolve(CONTENT_DIR, relativePath), 'utf-8');
+  return yaml.load(raw);
+}
+
+// Collect every choice with a given id across all nodes of a dialogue tree.
+function findChoicesById(dialogue: any, choiceId: string): any[] {
+  const found: any[] = [];
+  for (const node of Object.values(dialogue.nodes ?? {}) as any[]) {
+    for (const choice of node.choices ?? []) {
+      if (choice.id === choiceId) found.push(choice);
+    }
+  }
+  return found;
+}
 
 async function applyMigration(filename: string): Promise<void> {
   const sql = fs.readFileSync(
@@ -437,45 +460,43 @@ describe('Adeyemi Relationship Arc Integration Tests', () => {
 
   describe('C4: Intimacy has a cost (cross-character friction)', () => {
     it('Aisha trust-building choice is hidden after publicly defending Adeyemi', async () => {
-      // The "ask_about_challenges" choice in Aisha's dialogue is gated with
-      // hidden_if: adeyemi_publicly_defended: true. This verifies that
-      // defending Adeyemi at the crane yard closes an Aisha path.
+      // Load the PRODUCTION Aisha dialogue so the assertion fails if the
+      // hidden_if gate is removed from content (rather than passing against
+      // a test-owned literal that duplicates the expected fields).
+      const aishaDialogue = loadDialogueYaml('dialogues/dialogue_aisha_al_sayed.yaml');
+      const askChoices = findChoicesById(aishaDialogue, 'ask_about_challenges');
 
-      const aishaChoice = {
-        id: 'ask_about_challenges',
-        required_flags: {},
-        hidden_if: { adeyemi_publicly_defended: true },
-      };
+      expect(askChoices.length).toBeGreaterThan(0);
+      for (const choice of askChoices) {
+        expect(choice.hidden_if?.adeyemi_publicly_defended).toBe(true);
+      }
 
-      // Without the flag: choice is visible
-      const withoutFlag: PlayerConditionState = {
-        flags: {},
-        state: {},
-        stats: {},
-        timeBlocks: 100,
-      };
-      expect(choicePassesFilters(aishaChoice, withoutFlag)).toBe(true);
-
-      // With the flag set (publicly defended Adeyemi): choice is hidden
-      const withFlag: PlayerConditionState = {
-        flags: { adeyemi_publicly_defended: true },
-        state: {},
-        stats: {},
-        timeBlocks: 100,
-      };
-      expect(choicePassesFilters(aishaChoice, withFlag)).toBe(false);
+      // Verify the gate behavior against a loaded choice shape.
+      const sample = askChoices[0];
+      expect(
+        choicePassesFilters(sample, { flags: {}, state: {}, stats: {}, timeBlocks: 100 })
+      ).toBe(true);
+      expect(
+        choicePassesFilters(sample, {
+          flags: { adeyemi_publicly_defended: true },
+          state: {},
+          stats: {},
+          timeBlocks: 100,
+        })
+      ).toBe(false);
     });
 
     it('Act-4 step_to_adeyemi sets adeyemi_publicly_defended flag', async () => {
-      // Verify the content change: stepping toward Adeyemi at the crane
-      // now emits adeyemi_publicly_defended: true in flag_set.
-      const flagSet = {
-        COVERED: true,
-        adeyemi_publicly_defended: true,
-      };
+      // Load the PRODUCTION Act-4 dialogue so the assertion fails if the
+      // adeyemi_publicly_defended effect is removed from content.
+      const act4 = loadDialogueYaml(
+        'dialogues/adeyemi_relationship/dialogue_adeyemi_act4_pressure_point.yaml'
+      );
+      const stepChoices = findChoicesById(act4, 'step_to_adeyemi');
 
-      // The flag should be present after the choice
-      expect(flagSet.adeyemi_publicly_defended).toBe(true);
+      expect(stepChoices.length).toBe(1);
+      const stepChoice = stepChoices[0];
+      expect(stepChoice.effects?.flag_set?.adeyemi_publicly_defended).toBe(true);
     });
   });
 

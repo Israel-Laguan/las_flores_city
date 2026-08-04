@@ -131,15 +131,23 @@ export async function resolveDialogueTree(
   // Fetch all scene-scoped candidates first (no LIMIT 1), then
   // evaluate gates in Node so an ineligible LIMIT-1 row cannot
   // prevent an eligible alternative from being considered.
+  // Preserve the scene's configured ordering by joining
+  // `s.available_dialogues` WITH ORDINALITY and ordering by that
+  // position — PostgreSQL does not guarantee row order without an
+  // explicit ORDER BY, so without this identical player state could
+  // start different trees when a scene lists multiple eligible
+  // dialogues for the same character.
   const sceneResult = await queryOLTP(
     `SELECT dt.id, dt.name, dt.description, dt.start_node_id, dt.nodes, dt.metadata
-     FROM dialogue_trees dt
-     JOIN scenes s ON dt.id = ANY(s.available_dialogues)
+     FROM scenes s
+     JOIN LATERAL unnest(s.available_dialogues) WITH ORDINALITY AS ad(dialogue_id, ord) ON true
+     JOIN dialogue_trees dt ON dt.id = ad.dialogue_id
      WHERE s.id = $1
        AND EXISTS (
          SELECT 1 FROM jsonb_each(dt.nodes) AS node(key, value)
          WHERE (node.value->>'speaker_id') = $2
-       )`,
+       )
+     ORDER BY ad.ord`,
     [sceneId, characterId]
   );
 
@@ -228,14 +236,19 @@ export async function processRelationshipChange(
  * Atomically claim a reward for a dialogue node. Returns true if this
  * is the first claim (grants should proceed), false if already claimed
  * (grants should be skipped).
+ *
+ * The full `claimKey` is passed by the caller so each effect path can
+ * use a distinct, collision-free key (node-rewards, choice-rewards,
+ * root-rewards) WITHOUT changing existing keys — preserving the
+ * idempotency of already-claimed rewards for production users.
  */
 async function tryClaimReward(
   client: any,
   userId: string,
+  claimKey: string,
   dialogueId: string,
   nodeId: string
 ): Promise<boolean> {
-  const claimKey = `grant_${userId}_${dialogueId}_${nodeId}`;
   const result = await client.query(
     `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
      VALUES ($1, $2, $3, $4)
@@ -244,6 +257,58 @@ async function tryClaimReward(
     [userId, claimKey, dialogueId, nodeId]
   );
   return result.rows.length > 0;
+}
+
+/**
+ * Apply M15 reward grants (grant_credits / grant_item) idempotently.
+ *
+ * Centralized here so every effect path — selected-choice effects,
+ * fallback-root effects, chunk-root effects, and destination-node
+ * effects — flows rewards through ONE mechanism instead of each call
+ * site duplicating the grant logic (which previously left choice-level
+ * and root-level reward effects silently dropped, since `applyEffects`
+ * only handles flag/state/stat/story_beat mutations).
+ *
+ * Each caller passes a unique `claimKeyPrefix` + `nodeId` so the claim
+ * key never collides across paths:
+ *   - destination-node rewards: `grant`     → `grant_<u>_<d>_<nextNodeId>`  (unchanged)
+ *   - choice-level rewards:     `grant_choice` → `grant_choice_<u>_<d>_<choiceId>`  (new)
+ *   - root-level rewards:       `grant_root`  → `grant_root_<u>_<d>_<rootNodeId>`   (new)
+ * The destination-node key is byte-for-byte identical to the previous
+ * inline key, so already-claimed node rewards stay idempotent.
+ */
+export async function grantDialogueRewards(
+  client: any,
+  userId: string,
+  dialogueId: string,
+  nodeId: string,
+  effects: any,
+  claimKeyPrefix: string = 'grant'
+): Promise<{ grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } }> {
+  let grantedCredits: { amount: number; currency: string } | undefined;
+  let grantedItem: { itemId: string } | undefined;
+
+  if (effects?.grant_credits || effects?.grant_item) {
+    const claimKey = `${claimKeyPrefix}_${userId}_${dialogueId}_${nodeId}`;
+    const isFirstClaim = await tryClaimReward(client, userId, claimKey, dialogueId, nodeId);
+    if (isFirstClaim) {
+      if (effects.grant_credits) {
+        const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
+        const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
+        await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
+        grantedCredits = effects.grant_credits;
+      }
+      if (effects.grant_item) {
+        await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+          [userId, effects.grant_item]
+        );
+        grantedItem = { itemId: effects.grant_item };
+      }
+    }
+  }
+
+  return { grantedCredits, grantedItem };
 }
 
 export async function recordChoiceAndEffects(
@@ -291,30 +356,9 @@ export async function recordChoiceAndEffects(
   // identical between the dialogue-choice path and IronGateValidator.
   const effects = nextNode.effects;
   await applyEffects(client, userId, effects);
-  // M15: grant rewards with idempotency check
-  let grantedCredits: { amount: number; currency: string } | undefined;
-  let grantedItem: { itemId: string } | undefined;
-
-  if (effects?.grant_credits || effects?.grant_item) {
-    const isFirstClaim = await tryClaimReward(client, userId, dialogueId, nextNodeId);
-    if (isFirstClaim) {
-      if (effects.grant_credits) {
-        const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
-        const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
-        await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
-        grantedCredits = effects.grant_credits;
-      }
-      if (effects.grant_item) {
-        await client.query(
-          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
-          [userId, effects.grant_item]
-        );
-        grantedItem = { itemId: effects.grant_item };
-      }
-    }
-  }
-
-  return { grantedCredits, grantedItem };
+  // M15: grant destination-node rewards idempotently via the shared
+  // helper (claim key `grant_<u>_<d>_<nextNodeId>` is unchanged).
+  return grantDialogueRewards(client, userId, dialogueId, nextNodeId, effects, 'grant');
 }
 
 export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string) {
@@ -505,8 +549,20 @@ export async function processChoice(
   // applyEffects pipeline so NOW handling + clamping are identical.
   // stat_set deltas accumulate from both; flag_set/state_set follow
   // overwrite semantics (node effects applied last take precedence).
+  // Choice-level grant_credits / grant_item also flow through the shared
+  // idempotent reward helper (distinct `grant_choice` claim key) so they
+  // are no longer silently dropped when a choice carries reward effects.
+  let choiceRewards: { grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } } = {};
   if (chosenOption.effects) {
     await applyEffects(client, userId, chosenOption.effects);
+    choiceRewards = await grantDialogueRewards(
+      client,
+      userId,
+      dialogueId,
+      chosenOption.id,
+      chosenOption.effects,
+      'grant_choice'
+    );
   }
 
   let unlockedVaultItem: { id: string; title: string } | undefined;
@@ -518,7 +574,7 @@ export async function processChoice(
     unlockedVaultItem = result;
   }
 
-  const { grantedCredits, grantedItem } = await recordChoiceAndEffects(
+  const { grantedCredits: nodeCredits, grantedItem: nodeItem } = await recordChoiceAndEffects(
     client,
     userId,
     dialogueId,
@@ -539,14 +595,18 @@ export async function processChoice(
     alignmentChange = chosenOption.alignment_change;
   }
 
-return {
+  // Surface whichever rewards were granted (choice-level rewards take
+  // precedence if the choice carried them; otherwise the destination
+  // node's rewards). In practice content authors attach grants to one
+  // of the two, not both.
+  return {
     success: true,
     timeBlocksSpent,
     unlockedVaultItem,
     mysterySolveStatus,
     breakthrough,
     alignmentChange,
-    grantedCredits,
-    grantedItem,
+    grantedCredits: choiceRewards.grantedCredits ?? nodeCredits,
+    grantedItem: choiceRewards.grantedItem ?? nodeItem,
   };
 }

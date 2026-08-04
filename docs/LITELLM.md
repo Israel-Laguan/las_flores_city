@@ -14,8 +14,8 @@ The LiteLLM container cannot reach external APIs (poolside.ai, openrouter.ai) be
 # Start LiteLLM on the host (background)
 litellm --config ~/litellm_config/config.yaml --port 4000 &
 
-# Verify it's running
-sleep 3 && curl -s http://localhost:4000/health
+# Verify it's running (LiteLLM /health requires the master_key)
+sleep 3 && curl -s -H "Authorization: Bearer local-key" http://localhost:4000/health
 ```
 
 ## Configuration
