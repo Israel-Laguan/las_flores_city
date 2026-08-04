@@ -216,8 +216,15 @@ async function initializeServer() {
   // Startup recovery: reset orphaned fill jobs to failed.
   await resetOrphanedFillJobs();
 
-  // Seed player accounts in non-production environments
-  await seedPlayers();
+  // Seed player accounts in non-production environments.
+  // Seeding is an optional dev convenience — a refusal (e.g. NODE_ENV unset or
+  // production) or a DB hiccup must never abort server boot, otherwise the
+  // process stays alive but never reaches app.listen() below.
+  try {
+    await seedPlayers();
+  } catch (err) {
+    console.warn('[seed:players] skipped:', (err as Error).message || err);
+  }
 
   // Start server
   app.listen(PORT, () => {
