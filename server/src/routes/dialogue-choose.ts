@@ -1,7 +1,8 @@
 import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
 import {
   filterChoices,
-  processChoice,
+  processChoiceInTransaction,
+  type ProcessChoiceResult,
 } from './dialogue-helpers.js';
 import { buildChooseResponse, buildChoiceTelemetryEventData, type ChunkPayload } from './dialogue-response-helpers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
@@ -84,11 +85,12 @@ async function handleIntraChunkChoice(
   const cursor = await PlayerStateRepository.getDialogueCursor(userId);
   const currentNodeId = cursor?.current_node_id ?? matchedFromNodeId;
 
-  let choiceResult: Awaited<ReturnType<typeof processChoice>>;
-  await withOLTPTransaction(async (client) => {
-    choiceResult = await processChoice(client, userId, dialogueId, 0, matchedChoice, currentNodeId, chunkNodes);
-  });
-  choiceResult = choiceResult!;
+  // processChoiceInTransaction owns the transaction: a rejected choice
+  // (e.g. insufficient TB on a choice that also unlocks a vault item)
+  // rolls back every mutation instead of committing the partial ones.
+  const choiceResult: ProcessChoiceResult = await processChoiceInTransaction(
+    userId, dialogueId, 0, matchedChoice, currentNodeId, chunkNodes
+  );
 
   if (!choiceResult.success) {
     return sendChoiceError(res, choiceResult.error);
@@ -156,7 +158,7 @@ function sendChoiceError(res: any, error: string | undefined) {
 
 function emitIntraChunkTelemetry(
   userId: string, dialogueId: string, choiceId: string,
-  currentChunkId: string, choiceResult: Awaited<ReturnType<typeof processChoice>>
+  currentChunkId: string, choiceResult: ProcessChoiceResult
 ) {
   if (choiceResult.timeBlocksSpent && choiceResult.timeBlocksSpent > 0) {
     queryOLAP(
@@ -204,7 +206,7 @@ function emitIntraChunkTelemetry(
 
 async function emitIntraChunkSideEffects(
   userId: string, dialogueId: string, choiceId: string,
-  choiceResult: Awaited<ReturnType<typeof processChoice>>
+  choiceResult: ProcessChoiceResult
 ) {
   if (choiceResult.alignmentChange) {
     await handleAlignmentSideEffects(userId, choiceResult.alignmentChange, choiceId, dialogueId);

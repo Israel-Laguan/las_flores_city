@@ -202,19 +202,25 @@ export async function filterChoices(choices: any[], userId: string) {
   return choices.filter((choice: any) => choicePassesFilters(choice, playerState));
 }
 
+/**
+ * Deduct time blocks INSIDE the caller's open transaction.
+ *
+ * The `client` is mandatory: spending TB on a separate pooled
+ * connection would commit the deduction independently of the
+ * surrounding choice transaction, so a later rollback could not
+ * refund it (and, symmetrically, a rejected choice could keep
+ * state the same transaction already wrote).
+ */
 export async function processTimeBlockCost(
+  client: any,
   userId: string,
   amount: number
 ): Promise<{ success: boolean; error?: string; spent?: number }> {
-  const tbResult = await withOLTPTransaction(async (client) => {
-    const result = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
-    if (!result.success) {
-      return { success: false as const, error: 'insufficient_blocks' as const };
-    }
-    return { success: true as const, spent: amount };
-  });
-
-  return tbResult;
+  const result = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
+  if (!result.success) {
+    return { success: false, error: 'insufficient_blocks' };
+  }
+  return { success: true, spent: amount };
 }
 
 export async function processRelationshipChange(
@@ -513,15 +519,34 @@ async function processRelationshipAndCheckEnd(
   return { isEnd };
 }
 
-export async function processChoice(
-  client: any,
-  userId: string,
-  dialogueId: string,
-  choiceIndex: number,
-  chosenOption: DialogueChoice,
-  currentNodeId: string,
-  nodes: any
-): Promise<{
+// ============================================================
+// ChoiceFailureError
+//
+// Thrown when a choice is rejected mid-processing (bad next node,
+// stale vault reference, insufficient time blocks). `processChoice`
+// mutates player state as it goes — the vault insert, the TB
+// deduction, choice/node effects — so returning `{ success: false }`
+// from inside `withOLTPTransaction` would COMMIT everything applied
+// before the rejection (e.g. handing over a vault item on a choice
+// the player could not afford). Throwing makes the transaction roll
+// back; `processChoiceInTransaction` catches it and maps it back to
+// a `{ success: false, error }` result for the route handlers.
+//
+// Mirrors GuardFailureError in IronGateValidator (chunk-boundary path).
+// ============================================================
+export class ChoiceFailureError extends Error {
+  constructor(public errorCode: ChoiceFailureCode) {
+    super(`Choice rejected: ${errorCode}`);
+    this.name = 'ChoiceFailureError';
+  }
+}
+
+export type ChoiceFailureCode =
+  | 'invalid_next_node'
+  | 'invalid_vault_item'
+  | 'insufficient_time_blocks';
+
+export interface ProcessChoiceResult {
   success: boolean;
   timeBlocksSpent?: number;
   error?: string;
@@ -535,33 +560,81 @@ export async function processChoice(
   alignmentChange?: 'loyalist' | 'fugitive';
   grantedCredits?: { amount: number; currency: string };
   grantedItem?: { itemId: string };
-}> {
+}
+
+/**
+ * Run `processChoice` in a single OLTP transaction with all-or-nothing
+ * semantics: every mutation it performs (vault unlock, TB deduction,
+ * choice + node effects, reward claims, cursor advance) either commits
+ * together or is rolled back together.
+ *
+ * Route handlers must use this instead of wrapping `processChoice` in
+ * their own `withOLTPTransaction`, because a plain callback return
+ * commits — which is exactly how a rejected choice used to keep its
+ * already-applied side effects.
+ */
+export async function processChoiceInTransaction(
+  userId: string,
+  dialogueId: string,
+  choiceIndex: number,
+  chosenOption: DialogueChoice,
+  currentNodeId: string,
+  nodes: any
+): Promise<ProcessChoiceResult> {
+  try {
+    return await withOLTPTransaction((client) =>
+      processChoice(client, userId, dialogueId, choiceIndex, chosenOption, currentNodeId, nodes)
+    );
+  } catch (err) {
+    if (err instanceof ChoiceFailureError) {
+      return { success: false, error: err.errorCode };
+    }
+    throw err;
+  }
+}
+
+export async function processChoice(
+  client: any,
+  userId: string,
+  dialogueId: string,
+  choiceIndex: number,
+  chosenOption: DialogueChoice,
+  currentNodeId: string,
+  nodes: any
+): Promise<ProcessChoiceResult> {
   let timeBlocksSpent = 0;
 
   const nextNodeId = chosenOption.next_node_id;
   const nextNode = nodes[nextNodeId];
 
   if (!nextNode) {
-    return { success: false, error: 'invalid_next_node' };
+    throw new ChoiceFailureError('invalid_next_node');
   }
 
   // Validate + unlock the vault BEFORE charging time blocks or mutating
   // relationship state. A stale or missing vault reference must fail fast
   // so retrying the rejected choice cannot repeatedly consume time blocks
   // or accumulate relationship deltas.
+  //
+  // The insert is safe to run first ONLY because every rejection below
+  // throws: a failed TB guard rolls this transaction back, so the player
+  // never keeps a gated item they did not pay for.
   let unlockedVaultItem: { id: string; title: string } | undefined;
   if (chosenOption.vault_unlock) {
     const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);
     if (!result) {
-      return { success: false, error: 'invalid_vault_item' };
+      throw new ChoiceFailureError('invalid_vault_item');
     }
     unlockedVaultItem = result;
   }
 
   if (chosenOption.time_block_cost && chosenOption.time_block_cost.amount > 0) {
-    const tbResult = await processTimeBlockCost(userId, chosenOption.time_block_cost.amount);
+    // Deducted on the SAME client/transaction as the vault insert above,
+    // so the two can never diverge (item granted but TB never charged, or
+    // TB charged but the choice rolled back).
+    const tbResult = await processTimeBlockCost(client, userId, chosenOption.time_block_cost.amount);
     if (!tbResult.success) {
-      return { success: false, error: 'insufficient_time_blocks' };
+      throw new ChoiceFailureError('insufficient_time_blocks');
     }
     timeBlocksSpent = tbResult.spent ?? 0;
   }
