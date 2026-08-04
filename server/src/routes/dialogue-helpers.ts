@@ -233,8 +233,7 @@ export async function processRelationshipChange(
   const friendshipDelta = stat === 'friendship' ? amount : 0;
   const romanceDelta = stat === 'romance' ? amount : 0;
 
-  const db = client || { query: queryOLTP };
-  await db.query(
+  await client.query(
     'SELECT upsert_user_relationship($1, $2, $3, $4)',
     [userId, speakerId, friendshipDelta, romanceDelta]
   );

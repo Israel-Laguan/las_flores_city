@@ -27,16 +27,18 @@ const tx = { commitCalled: false, rollbackCalled: false };
 const statements: Array<{ sql: string; params: any[] }> = [];
 
 const fakePgClient = {
-  query: jest.fn(async (sql: string, params: any[] = []) => {
-    statements.push({ sql, params });
-    if (sql.includes('FROM vault_items')) {
-      return params[0] === VALID_ITEM_ID
-        ? { rows: [{ id: VALID_ITEM_ID, title: 'Sealed Dossier' }] }
-        : { rows: [] };
-    }
-    return { rows: [] };
-  }),
+  query: jest.fn(),
 } as any;
+
+const defaultQueryImpl = async (sql: string, params: any[] = []) => {
+  statements.push({ sql, params });
+  if (sql.includes('FROM vault_items')) {
+    return params[0] === VALID_ITEM_ID
+      ? { rows: [{ id: VALID_ITEM_ID, title: 'Sealed Dossier' }] }
+      : { rows: [] };
+  }
+  return { rows: [] };
+};
 
 jest.mock('../../src/database/connection.js', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [] })),
@@ -106,6 +108,7 @@ beforeEach(() => {
   tx.rollbackCalled = false;
   statements.length = 0;
   spendTimeBlocksMock.mockReset();
+  fakePgClient.query.mockImplementation(defaultQueryImpl);
 });
 
 describe('processChoiceInTransaction — rejected choice rolls back partial mutations', () => {
@@ -235,13 +238,7 @@ describe('processChoiceInTransaction — rejected choice rolls back partial muta
     expect(result.success).toBe(false);
     expect(result.error).toBe('insufficient_time_blocks');
 
-    // The relationship query was attempted before the TB cost failed or vice versa depending on execution
-    // Actually, processRelationshipAndCheckEnd runs BEFORE choice effects, but wait:
-    // processChoice has the following order:
-    // 1. processVaultUnlock (success)
-    // 2. processTimeBlockCost (this fails/throws choiceFailureError)
-    // So processRelationshipAndCheckEnd is never even reached if processTimeBlockCost throws!
-    // That means relationshipChanges() should be 0. Let's make sure.
+    // Flow order: vault unlock (success) -> time-block cost guard throws -> relationship processing is never reached
     expect(relationshipChanges()).toHaveLength(0);
     expect(tx.rollbackCalled).toBe(true);
     expect(tx.commitCalled).toBe(false);
@@ -274,5 +271,50 @@ describe('processChoiceInTransaction — rejected choice rolls back partial muta
     });
     expect(tx.commitCalled).toBe(true);
     expect(tx.rollbackCalled).toBe(false);
+  });
+
+  it('rolls back relationship changes if a subsequent database query throws an error', async () => {
+    spendTimeBlocksMock.mockResolvedValue({ success: true, remaining: 10 });
+
+    const nodesWithSpeaker = {
+      'node-2': { id: 'node-2', text: 'You take the dossier.', speaker_id: 'speaker-1', is_end: true, choices: [] },
+    };
+
+    // Make the subsequent database query fail (e.g. during player_dialogue_states insert)
+    fakePgClient.query.mockImplementation(async (sql: string, params: any[] = []) => {
+      statements.push({ sql, params });
+      if (sql.includes('FROM vault_items')) {
+        return { rows: [] };
+      }
+      if (sql.includes('player_dialogue_states')) {
+        throw new Error('Database connection lost');
+      }
+      return { rows: [] };
+    });
+
+    await expect(
+      processChoiceInTransaction(
+        'user-1',
+        'dialogue-1',
+        0,
+        makeChoice({
+          relationship_change: { stat: 'friendship', amount: 5 },
+          time_block_cost: { amount: 5 },
+        }),
+        'node-1',
+        nodesWithSpeaker
+      )
+    ).rejects.toThrow('Database connection lost');
+
+    // The relationship query was actually issued...
+    expect(relationshipChanges()).toHaveLength(1);
+    expect(relationshipChanges()[0]).toEqual({
+      sql: 'SELECT upsert_user_relationship($1, $2, $3, $4)',
+      params: ['user-1', 'speaker-1', 5, 0],
+    });
+
+    // ...but the transaction rolled back!
+    expect(tx.rollbackCalled).toBe(true);
+    expect(tx.commitCalled).toBe(false);
   });
 });
