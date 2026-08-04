@@ -185,60 +185,79 @@ export class RelationshipDecayWorker {
    * time since last encounter with each character.
    */
   public static async processDecay(): Promise<void> {
-    let selectClient: import('pg').PoolClient;
-    try {
-      selectClient = await oltpPool.connect();
-    } catch (err) {
-      console.error('[RelationshipDecayWorker] processDecay connection error:', err);
-      return;
-    }
+    // Page through all eligible users in batches so players beyond the
+    // first 500 also receive decay. The LIMIT is a batch size, not a cap.
+    let cursor: string | null = null;
+    let totalProcessed = 0;
 
     try {
-      // Get all users with relationship state, filtered to those that
-      // actually carry a relationship last-encounter key and paged to
-      // avoid unbounded scans on the users table.
-      const { rows: users } = await selectClient.query<{ id: string }>(
-        `SELECT DISTINCT ps.user_id AS id
-           FROM player_states ps
-          WHERE ps.state IS NOT NULL
-            AND ps.state != '{}'::jsonb
-            AND EXISTS (
-              SELECT 1 FROM jsonb_object_keys(ps.state) AS k(key)
-              WHERE key LIKE 'last_\\_%\\_encounter_at' ESCAPE '\\'
-            )
-          ORDER BY ps.user_id
-          LIMIT 500`
-      );
-
-      // Release the select client before per-user transactions so we
-      // don't hold two connections per user simultaneously.
-      selectClient.release();
-      selectClient = undefined as any;
-
-      // Process each user
-      for (const user of users) {
-        let client: import('pg').PoolClient;
+      for (;;) {
+        // Acquire a fresh select client each iteration — release it before
+        // per-user transactions so we don't hold two connections at once.
+        let selectClient: import('pg').PoolClient;
         try {
-          client = await oltpPool.connect();
+          selectClient = await oltpPool.connect();
         } catch (err) {
-          console.error(`[RelationshipDecayWorker] failed to connect for user=${user.id}:`, err);
-          continue;
+          console.error('[RelationshipDecayWorker] processDecay connection error:', err);
+          return;
         }
 
+        let batch: { id: string }[];
         try {
-          await this.processUserDecay(client, user.id);
-        } catch (err) {
-          console.error(`[RelationshipDecayWorker] decay failed for user=${user.id}:`, err);
+          const { rows } = await selectClient.query<{ id: string }>(
+            `SELECT DISTINCT ps.user_id AS id
+               FROM player_states ps
+              WHERE ps.state IS NOT NULL
+                AND ps.state != '{}'::jsonb
+                AND EXISTS (
+                  SELECT 1 FROM jsonb_object_keys(ps.state) AS k(key)
+                  WHERE key LIKE 'last_\\_%\\_encounter_at' ESCAPE '\\'
+                )
+                ${cursor ? 'AND ps.user_id > $2' : ''}
+              ORDER BY ps.user_id
+              LIMIT 500`,
+            cursor ? [cursor] : []
+          );
+          batch = rows;
         } finally {
-          client.release();
+          selectClient.release();
         }
+
+        if (batch.length === 0) {
+          break; // no more eligible users
+        }
+
+        // Process each user in this batch
+        for (const user of batch) {
+          let client: import('pg').PoolClient;
+          try {
+            client = await oltpPool.connect();
+          } catch (err) {
+            console.error(`[RelationshipDecayWorker] failed to connect for user=${user.id}:`, err);
+            continue;
+          }
+
+          try {
+            await this.processUserDecay(client, user.id);
+          } catch (err) {
+            console.error(`[RelationshipDecayWorker] decay failed for user=${user.id}:`, err);
+          } finally {
+            client.release();
+          }
+        }
+
+        totalProcessed += batch.length;
+
+        if (batch.length < 500) {
+          break; // last page — no more users to process
+        }
+
+        cursor = batch[batch.length - 1].id;
       }
     } catch (err) {
       console.error('[RelationshipDecayWorker] processDecay error:', err);
     } finally {
-      if (selectClient) {
-        selectClient.release();
-      }
+      console.log(`[RelationshipDecayWorker] processed ${totalProcessed} user(s) this tick`);
     }
   }
 

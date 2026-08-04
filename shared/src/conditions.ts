@@ -99,6 +99,7 @@ export const RELATIONSHIP_STAT_PREFIXES = [
   'adeyemi_',
   'aisha_',
   'petra_',
+  'sofia_',
 ];
 
 /** Evaluate a hidden_if_* map (ANY match hides the choice). */

@@ -188,6 +188,8 @@ nodes:
       stat_set:
         adeyemi_trust: 12
         adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
 
 metadata:
   version: "2.0"

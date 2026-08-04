@@ -38,6 +38,12 @@ export const GuardedLeafSchema = z.object({
   reasons: z.array(BoundaryReasonSchema).min(1),
   tb_cost: z.number().int().min(1).max(24).optional(),
   effects: EffectsSchema.optional(),
+  // Choice-level effects (from DialogueChoice.effects) applied when the
+  // player selects this choice at a chunk boundary. Stored separately from
+  // `effects` (which carries the TARGET NODE's effects) so the validator can
+  // apply choice effects BEFORE node effects — mirroring the intra-chunk
+  // processChoice path where choice effects precede destination-node effects.
+  choice_effects: EffectsSchema.optional(),
 }).strict();
 
 export type GuardedLeaf = z.infer<typeof GuardedLeafSchema>;
@@ -73,6 +79,11 @@ export interface BoundaryResult {
   reasons: BoundaryReason[];
   tbCost?: number;
   effects?: z.infer<typeof EffectsSchema>;
+  // Choice-level effects (DialogueChoice.effects). Carried into the
+  // GUARDED leaf so the IronGateValidator can apply them at the
+  // boundary — without this, choice.effects are silently dropped
+  // when the edge crosses a chunk boundary.
+  choiceEffects?: z.infer<typeof EffectsSchema>;
 }
 
 export function evaluateBoundary(
@@ -90,6 +101,8 @@ export function evaluateBoundary(
     mystery_solve?: string;
     vault_unlock?: string;
     relationship_change?: { stat: string; amount: number };
+    // Choice-level effects applied when the player selects this choice.
+    effects?: z.infer<typeof EffectsSchema>;
   },
   targetNode: {
     effects?: z.infer<typeof EffectsSchema>;
@@ -100,6 +113,7 @@ export function evaluateBoundary(
   const reasons: BoundaryReason[] = [];
   let tbCost: number | undefined;
   let effects: z.infer<typeof EffectsSchema> | undefined;
+  let choiceEffects: z.infer<typeof EffectsSchema> | undefined;
 
   // Rule 1: Economy — time_block_cost.amount > 0
   if (choice.time_block_cost && choice.time_block_cost.amount > 0) {
@@ -115,6 +129,25 @@ export function evaluateBoundary(
     if (effectKeys.length > 0) {
       reasons.push('effects');
       effects = targetNode.effects;
+    }
+  }
+
+  // Capture choice-level effects so they are carried into the GUARDED
+  // leaf and applied at the boundary. If the choice has effects but no
+  // other boundary reason exists, we force a GUARDED cut so the
+  // choice effects are not silently dropped.
+  if (choice.effects) {
+    const choiceEffectKeys = Object.keys(choice.effects).filter(
+      (k) => choice.effects![k as keyof typeof choice.effects] !== undefined
+    );
+    if (choiceEffectKeys.length > 0) {
+      choiceEffects = choice.effects;
+      // Only add 'effects' reason if target-node effects didn't already
+      // add it — we don't want duplicate reasons. The validator applies
+      // choice_effects separately from leaf.effects.
+      if (!reasons.includes('effects')) {
+        reasons.push('effects');
+      }
     }
   }
 
@@ -153,7 +186,7 @@ export function evaluateBoundary(
   }
 
   if (reasons.length > 0) {
-    return { isCut: true, type: 'GUARDED', reasons, tbCost, effects };
+    return { isCut: true, type: 'GUARDED', reasons, tbCost, effects, choiceEffects };
   }
 
   return { isCut: false, type: undefined, reasons: [] };

@@ -136,7 +136,6 @@ metadata:
   version: "2.0"
   required_flags:
     ANSWERED: true
-    DANIEL_REPORT_FLAG: true
   tags:
     - "adeyemi"
     - "act4"

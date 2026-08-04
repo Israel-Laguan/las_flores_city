@@ -385,6 +385,9 @@ export async function mergeStatsClamped(
   // `stats =` assignment in the generated UPDATE.
   let expr = `COALESCE(stats, '{}'::jsonb)`;
   for (const [key, delta] of entries) {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
+      throw new Error(`Unsafe stat key rejected: ${key}`);
+    }
     let bounds: { min: number; max: number } | null = null;
     for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
       if (key.startsWith(prefix)) {

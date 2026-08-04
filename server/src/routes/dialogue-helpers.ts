@@ -544,6 +544,17 @@ export async function processChoice(
 
   const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
 
+  // Validate vault unlock BEFORE applying any choice/node effects so a
+  // stale or missing vault reference never partially mutates player state.
+  let unlockedVaultItem: { id: string; title: string } | undefined;
+  if (chosenOption.vault_unlock) {
+    const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);
+    if (!result) {
+      return { success: false, error: 'invalid_vault_item' };
+    }
+    unlockedVaultItem = result;
+  }
+
   // Apply the choice's own effects (choice-level stat_set/flag_set/state_set)
   // BEFORE the destination node's effects. Both go through the shared
   // applyEffects pipeline so NOW handling + clamping are identical.
@@ -563,15 +574,6 @@ export async function processChoice(
       chosenOption.effects,
       'grant_choice'
     );
-  }
-
-  let unlockedVaultItem: { id: string; title: string } | undefined;
-  if (chosenOption.vault_unlock) {
-    const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);
-    if (!result) {
-      return { success: false, error: 'invalid_vault_item' };
-    }
-    unlockedVaultItem = result;
   }
 
   const { grantedCredits: nodeCredits, grantedItem: nodeItem } = await recordChoiceAndEffects(

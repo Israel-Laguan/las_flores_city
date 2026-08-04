@@ -94,6 +94,23 @@ export class IronGateValidator {
   ): Promise<ValidationResult> {
     return withOLTPTransaction(async (client: pg.PoolClient) => {
       const result: ValidationResult = { success: true };
+
+      // Apply choice-level effects BEFORE iterating boundary reasons.
+      // This mirrors the intra-chunk processChoice path where choice
+      // effects precede destination-node effects. Without this, choices
+      // such as answer_call never set their relationship flags and stats
+      // when the edge crosses a chunk boundary.
+      if (leaf.choice_effects) {
+        const choiceEffectsResult = await IronGateValidator._validateEffects(
+          client, userId, chunkId, choiceId, leaf.choice_effects
+        );
+        if (!choiceEffectsResult.success) {
+          return { success: false, error: choiceEffectsResult.error as ValidationResult['error'] };
+        }
+        // Merge the applied choice-effects map into the result.
+        result.effectsApplied = { ...result.effectsApplied, ...choiceEffectsResult.applied };
+      }
+
       for (const reason of leaf.reasons) {
         const failure = await IronGateValidator._applyReason(client, userId, chunkId, choiceId, reason, leaf, result);
         if (failure) return failure;
@@ -126,14 +143,16 @@ export class IronGateValidator {
         return null;
       }
       case 'effects': {
-        // Requirement 3.6: Apply effects to player state atomically
+        // Requirement 3.6: Apply target-node effects to player state atomically
         const effectsResult = await IronGateValidator._validateEffects(
           client, userId, chunkId, choiceId, leaf.effects
         );
         if (!effectsResult.success) {
           return { success: false, error: effectsResult.error as ValidationResult['error'] };
         }
-        result.effectsApplied = effectsResult.applied;
+        // Merge — choice effects may have been applied earlier in
+        // _validateGuardedLeaf; don't overwrite them.
+        result.effectsApplied = { ...result.effectsApplied, ...effectsResult.applied };
         return null;
       }
       case 'mystery_solve': {
@@ -237,12 +256,18 @@ export class IronGateValidator {
     // mergeStatsClamped are identical to the dialogue-choice path.
     await applyEffects(client, userId, effects);
     if (effects) {
-      applied['effects'] = {
-        flag_set: effects.flag_set,
-        state_set: effects.state_set,
-        stat_set: effects.stat_set,
-        story_beat: effects.story_beat,
-      };
+      if (effects.flag_set && Object.keys(effects.flag_set).length > 0) {
+        applied['flag_set'] = effects.flag_set;
+      }
+      if (effects.state_set && Object.keys(effects.state_set).length > 0) {
+        applied['state_set'] = effects.state_set;
+      }
+      if (effects.stat_set && Object.keys(effects.stat_set).length > 0) {
+        applied['stat_set'] = effects.stat_set;
+      }
+      if (effects.story_beat) {
+        applied['story_beat'] = effects.story_beat;
+      }
     }
 
     // M15: grant credits as mission reward (idempotent)
