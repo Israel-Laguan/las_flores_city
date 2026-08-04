@@ -241,8 +241,14 @@ This is the scaffold Phase 3 extracts. It is character-agnostic; `<slug>` and `<
 **The 6 dimensions + ending→threshold map (lift thresholds into Act-5 `required_stats`):**
 
 ```yaml
-# In the character's char_<slug>.yaml metadata (source of truth; op:number grammar):
-relationship_dimensions:        # initial baseline (applied once at Act 1)
+# REFERENCE MAP ONLY — documentation scaffold, NOT a runtime contract.
+# relationship_dimensions / relationship_endings have NO engine consumers
+# (see §2.3 "Inert" findings, above). Initial values are never applied, and
+# these threshold blocks are never evaluated by the engine. Act-5 endings are
+# actually gated by `required_stats` / `required_flags` on the dialogue tree's
+# Act-5 choices, where authors must copy these threshold values.
+# Stored in the character's char_<slug>.yaml metadata (op:number grammar):
+relationship_dimensions:        # reference baseline (inert — never auto-applied)
   <slug>_trust: <int>            # -100..100
   <slug>_familiarity: <int>
   <slug>_alignment: <int>

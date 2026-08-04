@@ -2,6 +2,13 @@ import { oltpPool } from '../database/connection.js';
 import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 /**
+ * Batch size for paginating eligible users in processDecay. Used for the
+ * query LIMIT, the short-page (last page) check, and the loop contract —
+ * changing one without the others would silently break pagination.
+ */
+const DECAY_BATCH_SIZE = 500;
+
+/**
  * RelationshipDecayWorker
  *
  * Implements Rule 2: Missed encounters are data. Decays relationship stats
@@ -211,11 +218,11 @@ export class RelationshipDecayWorker {
                 AND ps.state != '{}'::jsonb
                 AND EXISTS (
                   SELECT 1 FROM jsonb_object_keys(ps.state) AS k(key)
-                  WHERE key LIKE 'last_\\_%\\_encounter_at' ESCAPE '\\'
+                  WHERE key LIKE 'last_\\_%\\_encounter\\_at' ESCAPE '\\'
                 )
-                ${cursor ? 'AND ps.user_id > $2' : ''}
+                ${cursor ? 'AND ps.user_id > $1' : ''}
               ORDER BY ps.user_id
-              LIMIT 500`,
+              LIMIT ${DECAY_BATCH_SIZE}`,
             cursor ? [cursor] : []
           );
           batch = rows;
@@ -248,7 +255,7 @@ export class RelationshipDecayWorker {
 
         totalProcessed += batch.length;
 
-        if (batch.length < 500) {
+        if (batch.length < DECAY_BATCH_SIZE) {
           break; // last page — no more users to process
         }
 

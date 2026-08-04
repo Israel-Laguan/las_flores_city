@@ -272,10 +272,13 @@ async function tryClaimReward(
  * Each caller passes a unique `claimKeyPrefix` + `nodeId` so the claim
  * key never collides across paths:
  *   - destination-node rewards: `grant`     → `grant_<u>_<d>_<nextNodeId>`  (unchanged)
- *   - choice-level rewards:     `grant_choice` → `grant_choice_<u>_<d>_<choiceId>`  (new)
+ *   - choice-level rewards:     `grant_choice` → `grant_choice_<u>_<d>_<choiceId>[_<currentNodeId>]`  (new)
  *   - root-level rewards:       `grant_root`  → `grant_root_<u>_<d>_<rootNodeId>`   (new)
- * The destination-node key is byte-for-byte identical to the previous
- * inline key, so already-claimed node rewards stay idempotent.
+ * The optional `claimScope` appends a suffix to disambiguate otherwise
+ * identical keys — e.g. the same choice id reused on multiple nodes — so
+ * their rewards stay independently claimable. The destination-node key is
+ * byte-for-byte identical to the previous inline key, so already-claimed
+ * node rewards stay idempotent.
  */
 export async function grantDialogueRewards(
   client: any,
@@ -283,13 +286,15 @@ export async function grantDialogueRewards(
   dialogueId: string,
   nodeId: string,
   effects: any,
-  claimKeyPrefix: string = 'grant'
+  claimKeyPrefix: string = 'grant',
+  claimScope?: string
 ): Promise<{ grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } }> {
   let grantedCredits: { amount: number; currency: string } | undefined;
   let grantedItem: { itemId: string } | undefined;
 
   if (effects?.grant_credits || effects?.grant_item) {
-    const claimKey = `${claimKeyPrefix}_${userId}_${dialogueId}_${nodeId}`;
+    const scopeSuffix = claimScope ? `_${claimScope}` : '';
+    const claimKey = `${claimKeyPrefix}_${userId}_${dialogueId}_${nodeId}${scopeSuffix}`;
     const isFirstClaim = await tryClaimReward(client, userId, claimKey, dialogueId, nodeId);
     if (isFirstClaim) {
       if (effects.grant_credits) {
@@ -533,14 +538,6 @@ export async function processChoice(
 }> {
   let timeBlocksSpent = 0;
 
-  if (chosenOption.time_block_cost && chosenOption.time_block_cost.amount > 0) {
-    const tbResult = await processTimeBlockCost(userId, chosenOption.time_block_cost.amount);
-    if (!tbResult.success) {
-      return { success: false, error: 'insufficient_time_blocks' };
-    }
-    timeBlocksSpent = tbResult.spent ?? 0;
-  }
-
   const nextNodeId = chosenOption.next_node_id;
   const nextNode = nodes[nextNodeId];
 
@@ -548,10 +545,10 @@ export async function processChoice(
     return { success: false, error: 'invalid_next_node' };
   }
 
-  const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
-
-  // Validate vault unlock BEFORE applying any choice/node effects so a
-  // stale or missing vault reference never partially mutates player state.
+  // Validate + unlock the vault BEFORE charging time blocks or mutating
+  // relationship state. A stale or missing vault reference must fail fast
+  // so retrying the rejected choice cannot repeatedly consume time blocks
+  // or accumulate relationship deltas.
   let unlockedVaultItem: { id: string; title: string } | undefined;
   if (chosenOption.vault_unlock) {
     const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);
@@ -560,6 +557,16 @@ export async function processChoice(
     }
     unlockedVaultItem = result;
   }
+
+  if (chosenOption.time_block_cost && chosenOption.time_block_cost.amount > 0) {
+    const tbResult = await processTimeBlockCost(userId, chosenOption.time_block_cost.amount);
+    if (!tbResult.success) {
+      return { success: false, error: 'insufficient_time_blocks' };
+    }
+    timeBlocksSpent = tbResult.spent ?? 0;
+  }
+
+  const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
 
   // Apply the choice's own effects (choice-level stat_set/flag_set/state_set)
   // BEFORE the destination node's effects. Both go through the shared
@@ -578,7 +585,8 @@ export async function processChoice(
       dialogueId,
       chosenOption.id,
       chosenOption.effects,
-      'grant_choice'
+      'grant_choice',
+      currentNodeId
     );
   }
 

@@ -44,6 +44,22 @@ export interface ValidationResult {
 }
 
 // ============================================================
+// GuardFailureError
+//
+// Thrown when a boundary guard rejects a choice. withOLTPTransaction
+// rolls back on a thrown error (it commits on a normal return), so
+// rejecting via throw guarantees already-applied choice effects are
+// NOT committed. validateChoice() catches this and maps it back to a
+// { success: false, error } ValidationResult for the route.
+// ============================================================
+class GuardFailureError extends Error {
+  constructor(public errorCode: ValidationResult['error']) {
+    super(`Boundary guard failed: ${errorCode}`);
+    this.name = 'GuardFailureError';
+  }
+}
+
+// ============================================================
 // IronGateValidator
 //
 // Validates a player's choice at a chunk boundary (the "Iron Gate").
@@ -76,9 +92,20 @@ export class IronGateValidator {
       return { success: true };
     }
 
-    // Requirement 3.4: GUARDED leaf — validate all reasons atomically
+    // Requirement 3.4: GUARDED leaf — validate all reasons atomically.
+    // Guard failures are thrown as GuardFailureError so the OLTP
+    // transaction rolls back (withOLTPTransaction commits only on a
+    // normal return). We catch it here and map it back to a
+    // { success: false, error } result for the route handler.
     const guardedLeaf = leaf as GuardedLeaf;
-    return IronGateValidator._validateGuardedLeaf(userId, chunkId, choiceId, guardedLeaf);
+    try {
+      return await IronGateValidator._validateGuardedLeaf(userId, chunkId, choiceId, guardedLeaf);
+    } catch (err) {
+      if (err instanceof GuardFailureError) {
+        return { success: false, error: err.errorCode };
+      }
+      throw err;
+    }
   }
 
   // ────────────────────────────────────────────────────────────
@@ -100,12 +127,20 @@ export class IronGateValidator {
       // effects precede destination-node effects. Without this, choices
       // such as answer_call never set their relationship flags and stats
       // when the edge crosses a chunk boundary.
+      //
+      // NOTE: a guard failure below THROWS (GuardFailureError) so
+      // withOLTPTransaction rolls back the whole transaction. That way
+      // already-applied choice effects are UNDONE on a rejected choice
+      // (e.g. insufficient time blocks) instead of being committed on a
+      // `{ success: false }` return. Choice-level rewards use the distinct
+      // `grant_boundary_choice` claim-key prefix so they never collide
+      // with the destination-node rewards' `grant_boundary` key.
       if (leaf.choice_effects) {
         const choiceEffectsResult = await IronGateValidator._validateEffects(
-          client, userId, chunkId, choiceId, leaf.choice_effects
+          client, userId, chunkId, choiceId, leaf.choice_effects, 'grant_boundary_choice'
         );
         if (!choiceEffectsResult.success) {
-          return { success: false, error: choiceEffectsResult.error as ValidationResult['error'] };
+          throw new GuardFailureError(choiceEffectsResult.error as ValidationResult['error']);
         }
         // Merge the applied choice-effects map into the result.
         result.effectsApplied = { ...result.effectsApplied, ...choiceEffectsResult.applied };
@@ -113,7 +148,7 @@ export class IronGateValidator {
 
       for (const reason of leaf.reasons) {
         const failure = await IronGateValidator._applyReason(client, userId, chunkId, choiceId, reason, leaf, result);
-        if (failure) return failure;
+        if (failure) throw new GuardFailureError(failure.error as ValidationResult['error']);
       }
       return result;
     });
@@ -143,7 +178,10 @@ export class IronGateValidator {
         return null;
       }
       case 'effects': {
-        // Requirement 3.6: Apply target-node effects to player state atomically
+        // Requirement 3.6: Apply target-node effects to player state atomically.
+        // Uses the default `grant_boundary` claim-key prefix (unchanged) so
+        // already-claimed node rewards stay idempotent, while remaining
+        // distinct from the choice-level `grant_boundary_choice` key.
         const effectsResult = await IronGateValidator._validateEffects(
           client, userId, chunkId, choiceId, leaf.effects
         );
@@ -241,7 +279,8 @@ export class IronGateValidator {
     userId: string,
     chunkId: string,
     choiceId: string,
-    effects: GuardedLeaf['effects'] | undefined
+    effects: GuardedLeaf['effects'] | undefined,
+    claimKeyPrefix: string = 'grant_boundary'
   ): Promise<
     | { success: true; applied: Record<string, unknown> }
     | { success: false; error: string }
@@ -270,9 +309,12 @@ export class IronGateValidator {
       }
     }
 
-    // M15: grant credits as mission reward (idempotent)
+    // M15: grant credits as mission reward (idempotent).
+    // The claim-key prefix differentiates choice-level (`grant_boundary_choice`)
+    // from destination-node (`grant_boundary`) effects so both can grant
+    // credits independently without one silently shadowing the other.
     if (effects.grant_credits) {
-      const claimKey = `grant_boundary_${userId}_${chunkId}_${choiceId}`;
+      const claimKey = `${claimKeyPrefix}_${userId}_${chunkId}_${choiceId}`;
       const claimResult = await client.query(
         `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
          VALUES ($1, $2, $3, $4)

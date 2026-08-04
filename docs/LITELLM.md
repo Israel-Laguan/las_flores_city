@@ -14,8 +14,9 @@ The LiteLLM container cannot reach external APIs (poolside.ai, openrouter.ai) be
 # Start LiteLLM on the host (background)
 litellm --config ~/litellm_config/config.yaml --port 4000 &
 
-# Verify it's running (LiteLLM /health requires the master_key)
-sleep 3 && curl -s -H "Authorization: Bearer local-key" http://localhost:4000/health
+# Verify it's running (/health/liveliness is unauthenticated — matches the
+# docker-compose healthcheck for the disabled litellm service)
+sleep 3 && curl -fsS --connect-timeout 5 http://localhost:4000/health/liveliness
 ```
 
 ## Configuration
@@ -93,7 +94,7 @@ litellm:
 
 ### LiteLLM not responding
 1. Ensure LiteLLM is running: `litellm --config ~/litellm_config/config.yaml --port 4000`
-2. Verify LiteLLM is reachable: `curl -s -H "Authorization: Bearer local-key" http://localhost:4000/health`
+2. Verify LiteLLM is reachable: `curl -fsS --connect-timeout 5 http://localhost:4000/health/liveliness`
 3. Test connectivity from server container: `podman exec las-flores-server wget -qO- --header="Authorization: Bearer local-key" http://host.containers.internal:4000/v1/models`
 4. If DNS resolution fails, use the host's actual IP address in `LITELLM_BASE_URL`.
 
