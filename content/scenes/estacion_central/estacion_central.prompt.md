@@ -27,11 +27,11 @@ The main interchange platform of Estación Central in Las Flores 2077, where mul
 ## Variants (image-to-image)
 
 ### `night` — Late-night platform
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the platform as a late-night scene: the station dimmer, tunnel mouths glowing, neon signage brighter, track lights streaking in the dark, cooler blue palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour above the tracks
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the platform with warm golden-hour light slanting in from the street entrances: amber shafts across the platform, softer ceiling light, warm reflections on the rails. Same layout, same graphic novel style, no people.

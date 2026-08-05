@@ -16,7 +16,7 @@ consumer: background
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)
-The classroom's windows stream rain-streaked neon from corporate billboards, casting electric shadows across desks wired with biometric scanners that track every keystroke. Holographic projectors flicker with corporate-curated lesson plans while the ventilation system hums with filtered air. Students in smart-uniforms tap augmented reality interfaces. Universidad del Valle. No people, no text, no logos. Cyberpunk, neon-lit urban environment.
+The classroom's windows stream rain-streaked neon from corporate billboards, casting electric shadows across desks wired with biometric scanners that track every keystroke. Holographic projectors flicker with corporate-curated lesson plans while the ventilation system hums with filtered air. Empty desks sit beneath inactive augmented-reality interfaces. Universidad del Valle. No people, no text, no logos. Cyberpunk, neon-lit urban environment.
 
 ## Prompt
 School Classroom in Las Flores 2077. Cyberpunk aesthetic, neon-lit urban environment, rain-streaked windows casting electric shadows across desks wired with biometric scanners, holographic projectors flickering above. Surveillance-grade tension in the humid, filtered air. No people, no text, no logos.

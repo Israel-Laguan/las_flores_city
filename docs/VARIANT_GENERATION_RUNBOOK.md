@@ -49,7 +49,7 @@ is available as the final fallback.
 
 Each variant must be saved **locally** into the scene's flat assets folder:
 
-```
+```text
 content/scenes/<slug>/assets/<slug>__<variant>.png
 ```
 

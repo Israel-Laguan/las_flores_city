@@ -230,6 +230,7 @@ export class DialogueUI {
           this.handleDialogueResult(result.data);
 
           if (result.data.is_end) {
+            if (result.data.speakers) this.currentDialogue.speakers = result.data.speakers;
             this.handleDialogueEnd(result.data.next_chunk.nodes[result.data.current_node_id]);
             return;
           }
@@ -246,6 +247,7 @@ export class DialogueUI {
           this.handleDialogueResult(result.data);
 
           if (result.data.is_end) {
+            if (result.data.speakers) this.currentDialogue.speakers = result.data.speakers;
             this.handleDialogueEnd(result.data.next_node);
             return;
           }

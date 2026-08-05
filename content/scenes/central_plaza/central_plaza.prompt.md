@@ -27,11 +27,11 @@ The Central Plaza of Las Flores 2077: a broad public square where colonial faça
 ## Variants (image-to-image)
 
 ### `night` — Plaza bathed in neon
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the plaza as a night scene: the fountain glowing, neon signs and holographic billboards blazing brighter, colonial façades in shadow, wet reflective pavement, cooler blue and magenta palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour plaza
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the plaza with golden-hour sun: long warm shadows across the square, amber rays between the buildings, the fountain catching warm light, neon just beginning to glow. Same layout, same graphic novel style, no people.

@@ -27,11 +27,11 @@ A vibrant residential street in the Southeast Barrio of Las Flores 2077. Murals 
 ## Variants (image-to-image)
 
 ### `night` — Murals under streetlights
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the barrio as a night scene: warm streetlights and a few neon accents lighting the murals, the painted walls glowing in the dark, cool shadows on the street. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour on the murals
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the barrio with a golden sunset: warm amber light raking across the murals, long shadows, the painted colors deepened and glowing. Same layout, same graphic novel style, no people.

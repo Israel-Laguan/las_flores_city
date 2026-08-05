@@ -27,11 +27,11 @@ Secondary City Sunset in Las Flores 2077. Cyberpunk aesthetic, neon-lit agrarian
 ## Variants (image-to-image)
 
 ### `night` — Night fields
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the scene as a night version: the sun gone, smog and dark sky, neon agribusiness signs and holographic ads blazing brighter, reflections stronger in the wet furrows, cooler palette. Same layout, same graphic novel style, no people.
 
 ### `day` — Clear dry daylight
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the scene as a clear dry day: bright flat daylight through thin smog, dry terraced fields, muted neon, harsher tropical light on the irrigation systems. Same layout, same graphic novel style, no people.

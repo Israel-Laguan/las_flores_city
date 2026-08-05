@@ -160,7 +160,6 @@ when the game-driven environment chain matched nothing:
 
 ```yaml
 visual:
-  background: central_plaza
   mood: rain       # soft hint: prefers background_urls[expression=rain],
                    # but only if the game clock/weather didn't already match
 ```

@@ -65,7 +65,7 @@
 - ✅ Ethnicity accurately stated
 
 **Example (Aisha Al-Sayed):**
-```
+```text
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman in her late 30s. Lean angular frame, deep amber-brown eyes sharp and focused, stern expression with steady bearing. Dark brown wavy hair in practical low bun, slight widow's peak, wire-rimmed glasses, sport earbud clipped to earlobe. Wears minimalist work clothing with high-visibility safety vest over blouse, warm olive complexion. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, East Asian features, Chinese aesthetics
 ```
 
@@ -100,12 +100,12 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 **Fix:** Add rich visual details to guide genAI effectively.
 
 **Before (Too Sparse):**
-```
+```text
 She is in thoughtful expression, looking at the camera, 3/4 take. Deep amber-brown eyes gazing into distance, calculating.
 ```
 
 **After (Visually Rich):**
-```
+```text
 She is in deep thought, looking thoughtfully at the camera with a 3/4 take. Deep amber-brown eyes gazing softly into middle distance, calculating and weighing options. Slight downward tilt to her head, wire-rimmed glasses resting naturally, mouth relaxed but thoughtful. Warm olive complexion glows under soft industrial facility lighting, creating gentle shadows.
 ```
 
@@ -216,7 +216,7 @@ Before generating any character assets, verify:
 
 ## 📚 Related Documentation
 
-- [ASSET_EXPRESSION_VOCABULARY.md](../ASSET_EXPRESSION_VOCABULARY.md) - Expression tag conventions
-- [PROMPT_GUIDELINES.md](../lore/PROMPT_GUIDELINES.md) - NVIDIA NIM FLUX.2 Klein specific guidelines
-- [content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md](../../content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md) - Reference implementation
-- [content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md](../../content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md) - Reference implementation
+- [ASSET_EXPRESSION_VOCABULARY.md](ASSET_EXPRESSION_VOCABULARY.md) - Expression tag conventions
+- [PROMPT_GUIDELINES.md](lore/PROMPT_GUIDELINES.md) - NVIDIA NIM FLUX.2 Klein specific guidelines
+- [content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md](../content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md) - Reference implementation
+- [content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md](../content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md) - Reference implementation

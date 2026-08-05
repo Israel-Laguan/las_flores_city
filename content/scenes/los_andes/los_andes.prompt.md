@@ -22,7 +22,7 @@ Wide view of the elevated Los Andes Heights in Las Flores 2077, wealthy neighbor
 The elevated heights of Los Andes in Las Flores 2077: a sweeping terrace overlooking the city far below. Pristine modernist residences with clean angular architecture, clear mountain air, bright daylight, the glittering valley stretching to the coast. Exclusive and serene. Premium graphic novel realism, no people, no text, no logos.
 
 ## Negative Prompt
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
+--no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
 
 ## Variants (image-to-image)
 

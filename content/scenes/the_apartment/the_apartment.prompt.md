@@ -27,16 +27,16 @@ A small, sterile apartment in the N&M LTD residential block of Las Flores 2077. 
 ## Variants (image-to-image)
 
 ### `night` — Deep neon night
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the apartment as a deep night scene: the room darker, neon streetlight through the rain-streaked window much brighter and cooler, sharp shadows on the white walls. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour on the white walls
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the apartment with golden-hour light through the window: warm amber washes across the white walls and minimal furniture, the rain catching afternoon light. Same layout, same graphic novel style, no people.
 
 ### `day` — Clear dry daylight interior
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the apartment as a clear dry day: bright natural daylight through the window, no rain on the glass, muted white interior with crisp shadows. Same layout, same graphic novel style, no people.

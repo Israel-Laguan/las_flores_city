@@ -77,11 +77,22 @@ function replacePortraitUrlsBlock(raw: string, blockBody: string): string {
     .filter((line) => line.length > 0)
     .map((line) => `  ${line}`);
 
-  const keyIdx = lines.findIndex((line) => /^portrait_urls:\s*$/.test(line));
+  const keyIdx = lines.findIndex((line) => /^portrait_urls:/.test(line));
   if (keyIdx === -1) {
     const trimmed = raw.endsWith('\n') ? raw : `${raw}\n`;
     return `${trimmed}portrait_urls:\n${dumpLines.join('\n')}\n`;
   }
+
+  // Normalize the matched header so the dumped block becomes its value.
+  // This recognizes declarations with an inline empty value (`portrait_urls: []`)
+  // or an inline comment (`portrait_urls: # ...`) that the old exact-match regex
+  // missed (which would have appended a duplicate top-level key). A trailing
+  // inline comment is preserved for author context; an inline value is dropped
+  // because a block sequence cannot follow a flow value on the same line.
+  const headerComment = lines[keyIdx].match(/(\s+#.*)$/);
+  lines[keyIdx] = headerComment
+    ? `portrait_urls: ${headerComment[1].trim()}`
+    : 'portrait_urls:';
 
   let endIdx = keyIdx + 1;
   while (endIdx < lines.length) {

@@ -69,6 +69,26 @@ describe('resolveBackgroundUrl', () => {
       expect(url).toBe('https://cdn.test/plaza__default.png');
     });
 
+    it('skips expression-tagged entries in the fallback (untagged default only)', () => {
+      // Stage ordering can place a themed (rain) variant before the untagged
+      // default. When no hint matches, the fallback must NOT return the rain
+      // asset — that would render rain without a matching game hint.
+      const pool = [
+        { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, expression: 'rain' },
+        { url: 'https://cdn.test/plaza__default.png', label: 'dev' as const },
+      ];
+      expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'day', pool))
+        .toBe('https://cdn.test/plaza__default.png');
+    });
+
+    it('falls back to the scene backdrop when the pool has only expression-tagged entries', () => {
+      const pool = [
+        { url: 'https://cdn.test/plaza__rain.png', label: 'dev' as const, expression: 'rain' },
+      ];
+      expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'day', pool))
+        .toBe('https://cdn.test/scene.png');
+    });
+
     it('falls back to the scene backdrop when the pool has no usable urls', () => {
       const pool = [{ url: '', label: 'dev' as const, expression: 'night' }];
       expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'night', pool))

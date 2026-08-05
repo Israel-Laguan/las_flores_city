@@ -62,7 +62,7 @@ export interface ResolvableAssetEntry {
  *      A single string is treated as a one-element list (backward
  *      compatible). The caller builds precedence via `buildBackgroundHints`
  *      (game environment: weather > time-of-day > node mood).
- *   3. First usable URL in `backgroundUrls[]` (the default variant).
+ *   3. First usable, untagged URL in `backgroundUrls[]` (the default variant).
  *   4. `sceneBackground` — the current scene backdrop fallback.
  */
 export function resolveBackgroundUrl(
@@ -88,8 +88,11 @@ export function resolveBackgroundUrl(
       );
       if (match) return match.url;
     }
-    // 3. Fall back to the first usable variant (the default).
-    const fallback = backgroundUrls.find((e) => e && usable(e.url));
+    // 3. Fall back to the first usable, untagged entry (the default variant).
+    //    An entry carrying an `expression` tag is a specific themed variant
+    //    (e.g. rain/night/sunset), never a general fallback — using it here
+    //    could render a themed backdrop without a matching game hint.
+    const fallback = backgroundUrls.find((e) => e && !e.expression && usable(e.url));
     if (fallback) return fallback.url;
   }
 

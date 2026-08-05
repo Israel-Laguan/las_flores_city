@@ -21,6 +21,7 @@
 }
 
 .validationBox {
+  /* stylelint-disable-next-line value-keyword-case -- CSS Modules local class */
   composes: errorBox;
   font-size: 0.85rem;
 }

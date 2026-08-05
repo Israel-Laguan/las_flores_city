@@ -106,8 +106,12 @@ export class MainMenu {
   }
 
   private handleAbout(): void {
-    const url = import.meta.env.VITE_ABOUT_US_URL || 'https://example.com/about-us';
-    window.open(url, '_blank', 'noopener,noreferrer');
+    // Only open the external About Us page when a product URL is configured;
+    // otherwise do nothing (no placeholder/new-window when it is absent).
+    const url = import.meta.env.VITE_ABOUT_US_URL;
+    if (typeof url === 'string' && url.trim().length > 0) {
+      window.open(url.trim(), '_blank', 'noopener,noreferrer');
+    }
   }
 
   private async handleLogout(): Promise<void> {
