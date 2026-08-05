@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 // Module-level dirty flag so other components (e.g. TopBar) can guard
@@ -12,6 +12,8 @@ export function isDialogueDirty(): boolean {
 export function setDialogueDirty(value: boolean): void {
   __dialogueDirty = value;
 }
+
+const GUARD_MESSAGE = 'You have unsaved changes. Leave anyway?';
 
 /**
  * Absolute index of the current history entry when the Navigation API is
@@ -26,12 +28,53 @@ function getHistoryIndex(): number {
 }
 
 /**
+ * Shared guarded navigation helper for the App Router.
+ *
+ * `useUnsafeNavigationGuard` intercepts browser Back/Forward (popstate), reload,
+ * and `<Link>`/anchor clicks at the document level, but the App Router does not
+ * expose the Pages Router's `router.events`/`routeChangeStart` API, so there is
+ * no global hook for imperative `router.push`/`router.replace` calls. Every such
+ * call should go through this helper instead: it consults the shared dirty flag
+ * and asks for confirmation before handing off to the real router with the
+ * caller's exact destination.
+ *
+ * Outside the dialogue editor the shared flag is false, so the helper behaves
+ * exactly like the underlying `router.push`/`router.replace`.
+ */
+export function useGuardedNavigation(): {
+  push: (href: string) => void;
+  replace: (href: string) => void;
+} {
+  const router = useRouter();
+
+  const confirmIfDirty = useCallback((): boolean => {
+    return !isDialogueDirty() || window.confirm(GUARD_MESSAGE);
+  }, []);
+
+  const push = useCallback(
+    (href: string) => {
+      if (confirmIfDirty()) router.push(href);
+    },
+    [router, confirmIfDirty],
+  );
+
+  const replace = useCallback(
+    (href: string) => {
+      if (confirmIfDirty()) router.replace(href);
+    },
+    [router, confirmIfDirty],
+  );
+
+  return { push, replace };
+}
+
+/**
  * Guards against losing unsaved edits on ANY client-side navigation away from
  * the current page, not just a single back link:
  *  - native reload / tab close (beforeunload)
  *  - browser back / forward (popstate)
  *  - in-app anchors including Next `<Link>` (capture-phase click handler)
- *  - programmatic router navigations (Next.js routeChangeStart)
+ *  - imperative router navigations (via the `useGuardedNavigation` helper)
  *
  * When the page is dirty, each transition asks for confirmation and is blocked
  * (or reverted, for popstate) unless the user confirms. Pass `dirty` from the
@@ -40,14 +83,9 @@ function getHistoryIndex(): number {
 export function useUnsafeNavigationGuard(dirty: boolean): void {
   const dirtyRef = useRef(dirty);
   dirtyRef.current = dirty;
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Track the current editor URL so we can restore it when the user declines navigation.
-  // This must be updated on route changes because the App Router reuses the same
-  // component instance when navigating between different [id] pages.
-  const currentEditorHrefRef = useRef<string>('');
   // Last observed history entry index, kept in sync on every route change and
   // popstate so a declined Back/Forward can be compensated in the opposite
   // direction.
@@ -62,14 +100,13 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
     return () => setDialogueDirty(false);
   }, [dirty]);
 
-  // Update the current editor URL + history index whenever the route changes.
+  // Update the observed history index whenever the route changes.
   useEffect(() => {
-    currentEditorHrefRef.current = window.location.href;
     historyIndexRef.current = getHistoryIndex();
   }, [pathname, searchParams]);
 
   useEffect(() => {
-    const message = 'You have unsaved changes. Leave anyway?';
+    const message = GUARD_MESSAGE;
 
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
       if (dirtyRef.current) {
@@ -107,12 +144,6 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
       window.history.go(goingForward ? -1 : 1);
     };
 
-    const onRouteChangeStart = (_url: string) => {
-      if (dirtyRef.current && !window.confirm(message)) {
-        router.replace(currentEditorHrefRef.current);
-      }
-    };
-
     // Intercept internal anchor/<Link> navigations before Next/router handle
     // them. This covers the sidebar, breadcrumbs, back links, etc.
     const onClick = (e: MouseEvent) => {
@@ -140,22 +171,11 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
 
     window.addEventListener('beforeunload', onBeforeUnload);
     window.addEventListener('popstate', onPopState);
-    // App Router does not expose a reliable synchronous `beforePopState`
-    // interceptor in all versions, so browser back/forward is handled via
-    // the `popstate` listener above. Programmatic router navigations are
-    // intercepted via the click handler + `routeChangeStart` listener below.
-    const routeChangeStart = (router as any)?.events?.on?.bind((router as any).events);
-    if (typeof routeChangeStart === 'function') {
-      routeChangeStart('routeChangeStart', onRouteChangeStart);
-    }
     document.addEventListener('click', onClick, true);
     return () => {
       window.removeEventListener('beforeunload', onBeforeUnload);
       window.removeEventListener('popstate', onPopState);
       document.removeEventListener('click', onClick, true);
-      if (typeof routeChangeStart === 'function') {
-        (router as any).events.off?.('routeChangeStart', onRouteChangeStart);
-      }
     };
-  }, [router]);
+  }, []);
 }

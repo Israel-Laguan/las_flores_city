@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 
@@ -14,6 +14,7 @@ import '@testing-library/jest-dom';
 
 let mockPathname = '/dialogues/1';
 const routerReplace = vi.fn();
+const routerPush = vi.fn();
 const routeEvents = {
   on: vi.fn(),
   off: vi.fn(),
@@ -21,10 +22,10 @@ const routeEvents = {
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
   useSearchParams: () => new URLSearchParams(),
-  useRouter: () => ({ replace: routerReplace, push: vi.fn(), refresh: vi.fn(), events: routeEvents }),
+  useRouter: () => ({ replace: routerReplace, push: routerPush, refresh: vi.fn(), events: routeEvents }),
 }));
 
-import { useUnsafeNavigationGuard, isDialogueDirty, setDialogueDirty } from '../useUnsafeNavigationGuard';
+import { useUnsafeNavigationGuard, useGuardedNavigation, isDialogueDirty, setDialogueDirty } from '../useUnsafeNavigationGuard';
 
 function Editor({ dirty }: { dirty: boolean }) {
   useUnsafeNavigationGuard(dirty);
@@ -42,15 +43,10 @@ function withNavigationIndex(index: number): void {
   });
 }
 
-/** The handler the hook registered for Next's `routeChangeStart` event. */
-function routeChangeStartHandler(): ((url: string) => void) | undefined {
-  const call = routeEvents.on.mock.calls.find(([event]) => event === 'routeChangeStart');
-  return call ? (call[1] as (url: string) => void) : undefined;
-}
-
 beforeEach(() => {
   mockPathname = '/dialogues/1';
   routerReplace.mockClear();
+  routerPush.mockClear();
   routeEvents.on.mockClear();
   routeEvents.off.mockClear();
   setDialogueDirty(false);
@@ -190,31 +186,56 @@ describe('useUnsafeNavigationGuard', () => {
     });
   });
 
-  describe('programmatic router navigation (logout, router.replace)', () => {
-    it('confirms and reverts to the editor when the user declines', () => {
+  describe('useGuardedNavigation (imperative router navigations)', () => {
+    // The App Router exposes no router.events/routeChangeStart, so imperative
+    // programmatic navigations must flow through useGuardedNavigation, which
+    // checks the shared dirty flag before invoking the real router.
+    function GuardedFixture() {
+      const { push, replace } = useGuardedNavigation();
+      return (
+        <>
+          <button type="button" onClick={() => push('/dialogues/3')}>Push</button>
+          <button type="button" onClick={() => replace('/dialogues/4')}>Replace</button>
+        </>
+      );
+    }
+
+    it('does not rely on router.events (unavailable in the App Router)', () => {
       render(<Editor dirty />);
-      const handler = routeChangeStartHandler();
-      expect(handler).toBeTypeOf('function');
 
-      act(() => {
-        handler!('/login');
-      });
-
-      expect(confirmSpy).toHaveBeenCalledTimes(1);
-      expect(routerReplace).toHaveBeenCalledWith(window.location.href);
-      expect(screen.getByRole('link', { name: 'Back to Dialogues' })).toBeInTheDocument();
+      expect(routeEvents.on).not.toHaveBeenCalled();
+      expect(routeEvents.off).not.toHaveBeenCalled();
     });
 
-    it('lets the navigation through when the user confirms', () => {
+    it('navigates immediately while the shared flag is clean', () => {
+      setDialogueDirty(false);
+      render(<GuardedFixture />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Push' }));
+
+      expect(confirmSpy).not.toHaveBeenCalled();
+      expect(routerPush).toHaveBeenCalledWith('/dialogues/3');
+    });
+
+    it('blocks the navigation when dirty and the user declines', () => {
+      setDialogueDirty(true);
+      render(<GuardedFixture />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Push' }));
+
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      expect(routerPush).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'Push' })).toBeInTheDocument();
+    });
+
+    it('proceeds when dirty and the user confirms', () => {
       confirmSpy.mockReturnValue(true);
-      render(<Editor dirty />);
-      const handler = routeChangeStartHandler();
+      setDialogueDirty(true);
+      render(<GuardedFixture />);
 
-      act(() => {
-        handler!('/login');
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Replace' }));
 
-      expect(routerReplace).not.toHaveBeenCalled();
+      expect(routerReplace).toHaveBeenCalledWith('/dialogues/4');
     });
   });
 

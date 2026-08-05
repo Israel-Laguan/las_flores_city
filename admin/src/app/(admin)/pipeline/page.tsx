@@ -1,8 +1,9 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 import { cn } from '@las-flores/ui';
+import { useGuardedNavigation } from '@/hooks/useUnsafeNavigationGuard';
 import Stepper from './components/Stepper';
 import EditStep from './components/steps/EditStep';
 import ValidateStep from './components/steps/ValidateStep';
@@ -67,7 +68,7 @@ function StepContent({ pipeline }: { pipeline: ReturnType<typeof usePipeline> })
 
 export default function PipelinePage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const { push: guardedPush } = useGuardedNavigation();
 
   const stepParam = searchParams.get('step');
   const urlStepIdx = stepParam !== null ? parseInt(stepParam, 10) : 0;
@@ -83,8 +84,8 @@ export default function PipelinePage() {
 
   const handleStepClick = useCallback((idx: number) => {
     pipeline.goToStep(idx);
-    router.push(`/pipeline?step=${idx}`);
-  }, [pipeline, router]);
+    guardedPush(`/pipeline?step=${idx}`);
+  }, [pipeline, guardedPush]);
 
   const steps = ALL_STEPS.map((step, i) => ({
     order: i,
@@ -118,7 +119,7 @@ export default function PipelinePage() {
           <button
             onClick={() => {
               pipeline.goBack();
-              router.push(`/pipeline?step=${pipeline.currentStepIdx - 1}`);
+              guardedPush(`/pipeline?step=${pipeline.currentStepIdx - 1}`);
             }}
             className={cn(styles.button, styles.secondaryButton)}
           >
@@ -129,7 +130,7 @@ export default function PipelinePage() {
           <button
             onClick={() => {
               pipeline.goNext();
-              router.push(`/pipeline?step=${pipeline.currentStepIdx + 1}`);
+              guardedPush(`/pipeline?step=${pipeline.currentStepIdx + 1}`);
             }}
             className={cn(
               styles.button,

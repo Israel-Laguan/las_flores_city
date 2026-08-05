@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
+import { useGuardedNavigation } from '@/hooks/useUnsafeNavigationGuard';
 import { useLoreTree } from './hooks/useLoreTree';
 import { useLoreContent } from './hooks/useLoreContent';
 import SearchBar from './components/SearchBar';
@@ -64,7 +65,7 @@ function NewFileForm({
 
 export default function LoreBrowserPage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const { push: guardedPush } = useGuardedNavigation();
   const selectedPath = searchParams.get('path') || null;
 
   const { tree, treeLoading, treeError, expandedTypes, toggleType, groupByType, refetch: refetchTree } = useLoreTree();
@@ -94,7 +95,7 @@ export default function LoreBrowserPage() {
     : grouped;
 
   const selectFile = (path: string) => {
-    router.push(`/lore?path=${encodeURIComponent(path)}`);
+    guardedPush(`/lore?path=${encodeURIComponent(path)}`);
   };
 
   const handleNewFile = useCallback(async () => {
@@ -111,13 +112,13 @@ export default function LoreBrowserPage() {
       if (data.success) {
         setNewFilePath('');
         await refetchTree();
-        router.push(`/lore?path=${encodeURIComponent(path)}`);
+        guardedPush(`/lore?path=${encodeURIComponent(path)}`);
       } else {
         setNewFileError(data.error || 'Failed to create file');
       }
     } catch { setNewFileError('Network error'); }
     finally { setCreating(false); }
-  }, [creating, newFilePath, router, refetchTree]);
+  }, [creating, newFilePath, guardedPush, refetchTree]);
 
   return (
     <main className={styles.main}>
