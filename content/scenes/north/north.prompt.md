@@ -27,11 +27,11 @@ A residential avenue in the Northern District of Las Flores 2077: mixed-use bloc
 ## Variants (image-to-image)
 
 ### `night` — Warm evening storefronts
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the avenue as an evening scene: storefront windows glowing warm, neat streetlights, a few neon accents, the residential windows lit, calm night palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour avenue
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the avenue with golden-hour sun: long warm shadows, amber light on the building façades, the street glowing in the last daylight. Same layout, same graphic novel style, no people.

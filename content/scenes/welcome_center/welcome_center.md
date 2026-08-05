@@ -14,4 +14,4 @@ The official welcome center for new arrivals in Las Flores. A sleek, modern faci
 
 ## Related Lore
 
-- [[districts/urban_core/urban_core]]
+- [[districts/city/city]]

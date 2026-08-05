@@ -14,4 +14,4 @@ A sterile, low-rent apartment in the Old Town suburbs of Las Flores. Standard ch
 
 ## Related Lore
 
-- [[districts/old_las_flores/old_las_flores]]
+- [[districts/south/south]]

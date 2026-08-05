@@ -27,16 +27,16 @@ The official welcome center of Las Flores 2077: a sleek, modern processing hall.
 ## Variants (image-to-image)
 
 ### `night` — Night arrivals hall
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the hall as a night scene: the glass walls dark, the holographic map and monorail lights brighter, rain streaks glowing with city neon, cooler palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour through the glass
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the hall with golden-hour light through the glass walls: warm amber over the floor and kiosks, the holographic map catching soft light, long reflections. Same layout, same graphic novel style, no people.
 
 ### `day` — Clear dry arrivals
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the hall as a clear dry day: bright daylight through the glass, no rain streaks, crisp clean light on the desks and map. Same layout, same graphic novel style, no people.

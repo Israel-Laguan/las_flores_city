@@ -27,11 +27,11 @@ The public arrivals and departures concourse of a Las Flores 2077 airport termin
 ## Variants (image-to-image)
 
 ### `night` — Terminal at night
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the terminal as a night scene: darken the concourse, brighten the holographic departures board and neon accents, glass walls glow with runway lights and distant city lights, cooler blue palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour departures
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the terminal with warm golden-hour sun pouring through the glass walls: amber highlights on the floor and kiosks, softer cool ceiling light, long sunbeams across the concourse. Same layout, same graphic novel style, no people.

@@ -27,11 +27,11 @@ The industrial backbone of Las Flores 2077: factories and warehouses line the st
 ## Variants (image-to-image)
 
 ### `night` — Factories lit in the dark
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the district as a night scene: dark sky, smokestacks silhouetted, warm industrial lamps and neon yard lights glowing, steam lit from below, cooler blue-black palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Orange haze over the stacks
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the district with a golden-orange sunset: the haze glowing amber around the smokestacks, long shadows across the loading bays, warm light on the wet pavement. Same layout, same graphic novel style, no people.

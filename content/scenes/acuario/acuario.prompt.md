@@ -27,11 +27,11 @@ A vast aquarium gallery floor in Las Flores 2077, dim and contemplative. Hologra
 ## Variants (image-to-image)
 
 ### `night` — Deeper night gallery
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the aquarium as a near-dark night gallery: dim the overheads, brighten the bioluminescent teal and blue tank glow, deepen the shadows between the glass, stronger wet-floor reflections. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden evening glow
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the aquarium with warm golden-hour light spilling in from the gallery windows: amber highlights on the glass tanks, softer teal, warm reflections on the walkway. Same layout, same graphic novel style, no people.

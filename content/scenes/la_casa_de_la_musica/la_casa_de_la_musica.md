@@ -14,4 +14,4 @@ The main performance floor of La Casa de la Música, where the holographic light
 
 ## Related Lore
 
-- [[districts/urban_core/urban_core]]
+- [[districts/city/city]]

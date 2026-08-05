@@ -27,11 +27,11 @@ The Pacific edge of Las Flores 2077: fishing boats moored in a working harbour, 
 ## Variants (image-to-image)
 
 ### `night` — Harbour lights on the water
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the coast as a night scene: the harbour lit by mooring lamps and neon from the market stalls, reflections shimmering on the dark water, the fishing fleet at rest. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden waves and masts
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the coast with a golden-hour sunset: warm amber over the water and boat hulls, long shadows on the docks, the market stalls catching the last light. Same layout, same graphic novel style, no people.

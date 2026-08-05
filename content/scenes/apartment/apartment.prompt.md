@@ -27,11 +27,17 @@ A small, sterile apartment interior in the Old Town suburbs of Las Flores 2077. 
 
 ## Variants (image-to-image)
 
-## Prompt — night
+### `night` — Apartment after dark
+**Scale:** 5:3
+**Edit prompt:**
 Re-light the apartment as a deep night scene: the room darker, neon street glow brighter through the rain-streaked window, cooler blue palette, warm lamp the only interior light. Same layout, same graphic novel style, no people.
 
-## Prompt — sunset
+### `sunset` — Golden hour interior
+**Scale:** 5:3
+**Edit prompt:**
 Re-light the apartment with warm golden-hour light through the window: amber tones across the walls and floor, softer interior, the rain on the glass catching golden light. Same layout, same graphic novel style, no people.
 
-## Prompt — day
+### `day` — Clear dry daylight
+**Scale:** 5:3
+**Edit prompt:**
 Re-light the apartment as a clear dry day: bright natural daylight floods through the window, no rain on the glass, muted cool interior, crisp shadows. Same layout, same graphic novel style, no people.

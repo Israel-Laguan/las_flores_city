@@ -27,11 +27,11 @@ A cozy, slightly worn coffee shop interior in the Old Town district of Las Flore
 ## Variants (image-to-image)
 
 ### `night` — Evening café glow
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the café as an evening scene: dim the room, warm golden overhead lamps, neon streetlight glowing through the front window, deeper shadows on the brick. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour café
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the café with golden-hour sun through the window: warm amber washes over the brick and counter, soft highlights on the espresso machine. Same layout, same graphic novel style, no people.

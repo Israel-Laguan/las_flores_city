@@ -1,12 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { YAMLDialogueSchema } from '@las-flores/shared';
-import { useEntityYaml } from '@/components/entity/useEntityYaml';
-import { useEntityYamlSave } from '@/components/entity/useEntityYamlSave';
 import DialogueVisualEditor from '@/components/dialogue/DialogueVisualEditor';
+import { useDialogueDraft } from '@/components/dialogue/useDialogueDraft';
 import { useUnsafeNavigationGuard } from '@/hooks/useUnsafeNavigationGuard';
 import styles from './dialogue-detail.module.css';
 
@@ -14,77 +11,25 @@ export default function DialogueDetailPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { yaml, path, loading, error } = useEntityYaml<Record<string, unknown>>('dialogue', id);
-  const { saving, error: saveError, success: saveSuccess, save, reset: resetSave } = useEntityYamlSave();
-
-  const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
-  const [validationErrors, setValidationErrors] = useState<string[] | null>(null);
-  // Tracks whether the in-memory draft differs from the last loaded/saved YAML
-  // so we can warn before an unsaved edit is discarded (in-app nav / reload).
-  const [dirty, setDirty] = useState(false);
-  // Records when edits land while a PUT save is still in flight, so the
-  // completion handler can re-arm dirty/success correctly for those edits.
-  const dirtyDuringSaveRef = useRef(false);
+  const {
+    draft,
+    path,
+    loading,
+    error,
+    saving,
+    saveError,
+    saveSuccess,
+    validationErrors,
+    dirty,
+    onDraftChange,
+    onSave,
+  } = useDialogueDraft(id);
 
   // Warn before losing unsaved edits across ANY navigation (sidebar, breadcrumbs,
-  // back button, browser back, reload) — see hook for the full coverage.
+  // back link, browser back, reload, logout) — see hook for the full coverage.
   useUnsafeNavigationGuard(dirty);
 
-  useEffect(() => {
-    if (!yaml) return;
-    setDraft((prev) => (prev === null || prev.id !== yaml.id ? (yaml as Record<string, unknown>) : prev));
-    setDirty(false);
-  }, [yaml]);
-
-  useEffect(() => {
-    if (saveSuccess) {
-      setValidationErrors(null);
-      if (dirtyDuringSaveRef.current) {
-        // Edits landed while the PUT was in flight; they are NOT part of the
-        // YAML that was just written, so the page stays dirty.
-        dirtyDuringSaveRef.current = false;
-        setDirty(true);
-      } else {
-        setDirty(false);
-      }
-    }
-  }, [saveSuccess]);
-
-  const handleDraftChange = (next: Record<string, unknown>) => {
-    setDraft(next);
-    setDirty(true);
-    if (saving) {
-      // A PUT is still in flight: keep the Save button disabled (the button is
-      // `disabled={saving}`) so it cannot start an overlapping write. Mark the
-      // draft so the completion handler re-arms dirty/success correctly.
-      dirtyDuringSaveRef.current = true;
-    } else {
-      resetSave();
-    }
-  };
-
-  const handleSave = async () => {
-    if (!draft) return;
-    if (!path) {
-      setValidationErrors(['(root): missing content file path; cannot save']);
-      return;
-    }
-    // Start a fresh save scope: any edit made while THIS PUT is in flight is
-    // what dirtyDuringSaveRef should track. Resetting here means a successful
-    // retry after a failed save is not wrongly marked dirty from the prior run.
-    dirtyDuringSaveRef.current = false;
-    const parsed = YAMLDialogueSchema.safeParse(draft);
-    if (!parsed.success) {
-      const issues = parsed.error?.issues ?? [];
-      const messages = issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`);
-      setValidationErrors(
-        messages.length > 0 ? messages : ['(root): the dialogue does not match the schema']
-      );
-      return;
-    }
-    setValidationErrors(null);
-    await save(path, draft);
-  };
+  const ready = !loading && !error;
 
   return (
     <main className={styles.main}>
@@ -100,7 +45,7 @@ export default function DialogueDetailPage() {
           <Link href="/editor" className={styles.editorLink}>Open raw editor</Link>
         </div>
       )}
-      {!loading && !error && validationErrors && (
+      {ready && validationErrors && (
         <div className={styles.validationBox}>
           <strong>Validation failed:</strong>
           <ul>
@@ -108,20 +53,20 @@ export default function DialogueDetailPage() {
           </ul>
         </div>
       )}
-      {!loading && !error && saveError && <div className={styles.errorBox}>{saveError}</div>}
-      {!loading && !error && saveSuccess && (
+      {ready && saveError && <div className={styles.errorBox}>{saveError}</div>}
+      {ready && saveSuccess && (
         <div className={styles.successBox}>
           Saved to YAML. Run the migration (Content → Migrate) to sync the DB.
         </div>
       )}
 
-      {!loading && !error && draft && (
+      {ready && draft && (
         <section className={styles.editorSection}>
-          <DialogueVisualEditor record={draft} onChange={handleDraftChange} />
+          <DialogueVisualEditor record={draft} onChange={onDraftChange} />
           <div className={styles.actions}>
             <button
               type="button"
-              onClick={handleSave}
+              onClick={onSave}
               disabled={saving}
               className="btn btn--primary"
             >
@@ -135,7 +80,7 @@ export default function DialogueDetailPage() {
         </section>
       )}
 
-      {!loading && !error && draft && (
+      {ready && draft && (
         <details className={styles.jsonDetails}>
           <summary>Raw YAML/JSON</summary>
           <pre className={styles.json}>{JSON.stringify(draft, null, 2)}</pre>

@@ -27,11 +27,11 @@ A street in the rapidly developing Northeast Quarter of Las Flores 2077. New tow
 ## Variants (image-to-image)
 
 ### `night` — Construction site lights
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the quarter as a night scene: cranes silhouetted against a dark sky, work-site floodlights and glowing new façades, the older buildings in shadow, cooler blue palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden rise of glass
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the quarter with a golden sunset: amber light reflecting off the new glass towers, long shadows from the scaffolding, warm glow on the raw concrete. Same layout, same graphic novel style, no people.

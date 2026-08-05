@@ -27,11 +27,11 @@ The main performance floor of La Casa de la Música in Las Flores 2077, a conver
 ## Variants (image-to-image)
 
 ### `night` — Club in full swing
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the venue as an active night club: the holographic light rig blazing with volumetric beams, deep shadows in the rafters, pulsing neon accent lights, richer color contrast. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden rehearsal glow
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the venue with warm golden-hour light through the warehouse windows: amber washes across the floor and rafters, the light rig softly glowing, dust in the sunbeams. Same layout, same graphic novel style, no people.

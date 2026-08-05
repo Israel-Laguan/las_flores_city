@@ -27,16 +27,16 @@ Rainy Street Motorcycle in Las Flores 2077. Cyberpunk aesthetic, neon-lit urban 
 ## Variants (image-to-image)
 
 ### `night` — Night version
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the scene as a deeper night: neon bleeding brighter, wet-asphalt reflections stronger, darker sky, the motorcycle's underglow more electric, cooler blue-magenta palette. Same motorcycle, same street, same graphic novel style, no people.
 
 ### `sunset` — Golden hour
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the scene as golden hour: long shadows across the wet asphalt, amber underglow and warm neon, the motorcycle chrome catching orange light, the rain still falling. Same motorcycle, same street, same graphic novel style, no people.
 
 ### `day` — Clear day, dry
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the scene as a clear dry day: dry asphalt, muted neon during daytime, harsher tropical light, the parked motorcycle with chrome catching white sun. Same motorcycle, same street, same graphic novel style, no people.

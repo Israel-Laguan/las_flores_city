@@ -1,7 +1,7 @@
 ---
 name: Los Andes Heights
 type: background
-size: 1280x720
+size: 1280x768
 source: los_andes.md
 target: `background_urls[]` / `asset_paths.background` in content/scenes/los_andes/scene_los_andes.yaml
 consumer: background
@@ -27,11 +27,11 @@ The elevated heights of Los Andes in Las Flores 2077: a sweeping terrace overloo
 ## Variants (image-to-image)
 
 ### `night` — City lights below
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the heights as a night scene: the residential terraces softly lit, the entire city below glittering with neon and streetlights, a wide starry mountain sky above. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden valley view
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the heights with a golden-hour sunset: warm amber washing over the modernist residences and the valley below, long mountain shadows, the city catching the last light. Same layout, same graphic novel style, no people.

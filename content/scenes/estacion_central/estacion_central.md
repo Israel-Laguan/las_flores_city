@@ -14,4 +14,4 @@ The main interchange platform of Estación Central, the hub where Líneas 1, 2, 
 
 ## Related Lore
 
-- [[districts/urban_core/urban_core]]
+- [[districts/city/city]]

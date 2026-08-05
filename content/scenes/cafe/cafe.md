@@ -14,4 +14,4 @@ A warm, slightly worn coffee shop in the historic district of Las Flores. Smells
 
 ## Related Lore
 
-- [[districts/old_las_flores/old_las_flores]]
+- [[districts/south/south]]

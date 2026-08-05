@@ -146,7 +146,7 @@ describe('resolvePortraitUrl', () => {
     expect(resolvePortraitUrl(speaker, 'calculating')).toBe('https://cdn.test/a__calculating.png');
   });
 
-  it('falls back to the first usable url when no expression matches', () => {
+  it('falls back to the untagged default entry when no expression matches', () => {
     const speaker = {
       name: 'A',
       portrait_urls: [
@@ -154,6 +154,43 @@ describe('resolvePortraitUrl', () => {
       ],
     };
     expect(resolvePortraitUrl(speaker, 'smirk')).toBe('https://cdn.test/a__default.png');
+  });
+
+  it('never promotes an expression variant to the default portrait', () => {
+    // A partial publish that ships only mood variants must not make e.g.
+    // `shocked` the character's resting portrait — the untagged entry wins
+    // even when it is listed after the tagged ones.
+    const speaker = {
+      name: 'A',
+      portrait_urls: [
+        { url: 'https://cdn.test/a__shocked.png', label: 'dev' as const, expression: 'shocked' },
+        { url: 'https://cdn.test/a__default.png', label: 'dev' as const },
+      ],
+    };
+    expect(resolvePortraitUrl(speaker, 'smirk')).toBe('https://cdn.test/a__default.png');
+    expect(resolvePortraitUrl(speaker)).toBe('https://cdn.test/a__default.png');
+  });
+
+  it('prefers the expression-neutral avatar_url over a mood variant when no default exists', () => {
+    const speaker = {
+      name: 'A',
+      portrait_urls: [
+        { url: 'https://cdn.test/a__shocked.png', label: 'dev' as const, expression: 'shocked' },
+      ],
+      avatar_url: 'https://cdn.test/avatar.png',
+    };
+    expect(resolvePortraitUrl(speaker, 'smirk')).toBe('https://cdn.test/avatar.png');
+  });
+
+  it('degrades to any usable entry when neither a default nor an avatar exists', () => {
+    // Last resort: showing a mood variant beats rendering an empty portrait slot.
+    const speaker = {
+      name: 'A',
+      portrait_urls: [
+        { url: 'https://cdn.test/a__shocked.png', label: 'dev' as const, expression: 'shocked' },
+      ],
+    };
+    expect(resolvePortraitUrl(speaker, 'smirk')).toBe('https://cdn.test/a__shocked.png');
   });
 
   it('falls back to avatar_url when portrait_urls is empty', () => {

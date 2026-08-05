@@ -27,11 +27,11 @@ The central midway of the Parque de Atracciones in Las Flores 2077. Holographic 
 ## Variants (image-to-image)
 
 ### `night` — Carnival blazing at night
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the midway as a night scene: carnival lights and holographic projections blazing bright against a dark sky, saturated neon, the ride frames glowing, deep shadows between stalls. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden fairground dusk
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the midway with a warm dusk sky: golden light mixing with the first neon, soft amber over the stalls and projections, long evening shadows. Same layout, same graphic novel style, no people.

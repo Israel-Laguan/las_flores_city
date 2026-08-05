@@ -183,15 +183,30 @@ async function main() {
     ...existing.filter((entry) => !uploadedKeys.has(`${stageOf(entry)}:${entryExpression(entry)}`)),
   ].sort(
     // Keep the `default` (fallback) portrait first so a partial upload that
-    // omits the default never promotes an expression variant to the fallback,
-    // which the client's first-usable fallback lookup would then pick.
+    // omits the default never promotes an expression variant to the fallback.
+    // The client resolver also refuses to use an expression-tagged entry as the
+    // resting portrait (see client/src/utils/resolvePortraitUrl.ts), so this
+    // ordering is belt-and-braces rather than the sole guarantee.
     (a, b) => Number(entryExpression(a) !== 'default') - Number(entryExpression(b) !== 'default')
   );
 
-  const hasDefault = mergedPortraitUrls.some((entry) => entryExpression(entry) === 'default');
-  if (!hasDefault) {
+  const defaults = mergedPortraitUrls.filter((entry) => entryExpression(entry) === 'default');
+  if (defaults.length === 0) {
     throw new Error(
       'Refusing to write portrait_urls with no default entry; partial dev uploads must include a default portrait.'
+    );
+  }
+
+  // Stage-aware check: the server orders the pool by the running environment's
+  // stage priority, so a `dev` batch of expression variants with no `dev`
+  // default resolves its resting portrait from another stage's default. That
+  // still renders a correct (expression-neutral) portrait, but the mixed stages
+  // are worth flagging so the author can publish a matching default.
+  const publishedStage = stageOf(portraitUrls[0]);
+  if (!defaults.some((entry) => stageOf(entry) === publishedStage)) {
+    console.warn(
+      `\n⚠ No '${publishedStage}' default portrait: the resting portrait will resolve to the ` +
+        `'${stageOf(defaults[0]) || 'untagged'}' default. Publish a '${publishedStage}' default to keep stages consistent.`
     );
   }
 

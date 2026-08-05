@@ -3,7 +3,7 @@
 //
 // Mirrors the server's AssetStageResolver.resolveAssetUrl filter
 // semantics (expression-tagged `portrait_urls` entries with a
-// fallback to the first usable URL) for the VN viewport. The
+// fallback to the untagged default entry) for the VN viewport. The
 // browser does not have NODE_ENV stage priority — stage-tagged
 // URLs in the payload are already the env-appropriate set served
 // by the server — so stage ranking is intentionally omitted.
@@ -33,12 +33,22 @@ export function resolvePortraitUrl(
     if (match) return match.url;
   }
 
-  // 2. Fallback: the first usable URL in the array (default portrait).
-  const fallback = entries.find((e) => e && usable(e.url));
-  if (fallback) return fallback.url;
+  // 2. Fallback: the first usable UNTAGGED entry (the default portrait).
+  //    An entry carrying an `expression` tag is a specific mood variant, never
+  //    a general fallback — mirrors resolveBackgroundUrl. Without this, a
+  //    partial publish that ships only tagged variants (e.g. `shocked`) would
+  //    promote that mood to the character's resting portrait.
+  const defaultEntry = entries.find((e) => e && !e.expression && usable(e.url));
+  if (defaultEntry) return defaultEntry.url;
 
-  // 3. Last resort: the legacy avatar_url.
-  return usable(speaker.avatar_url ?? undefined) ? speaker.avatar_url! : null;
+  // 3. No default variant: the legacy avatar_url is expression-neutral, so it
+  //    is a better resting portrait than an arbitrary mood variant.
+  if (usable(speaker.avatar_url ?? undefined)) return speaker.avatar_url!;
+
+  // 4. Last resort: any usable entry, so the viewport never renders an empty
+  //    portrait slot when a mood variant is all that was published.
+  const anyEntry = entries.find((e) => e && usable(e.url));
+  return anyEntry ? anyEntry.url : null;
 }
 
 /**
