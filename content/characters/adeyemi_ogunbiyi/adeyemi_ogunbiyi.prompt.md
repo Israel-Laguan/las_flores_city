@@ -32,3 +32,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Man in trench coat at a desk, focused on paperwork, office setting with urban backdrop
 - [ ] Man in trench coat in a moment of reflection, looking out over a city skyline at dusk
 - [ ] Man in trench coat in conversation with another person, professional indoor setting
+
+## Expression Variants
+
+Authored expressions (each as `assets/adeyemi_ogunbiyi__<tag>.png`, referenced in
+`portrait_urls[]` with an `expression` tag — see
+[docs/ASSET_EXPRESSION_VOCABULARY.md](../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- [x] `__default.png` — Neutral / resting face (always required)
+- [x] `__vulnerable.png` — Guard down, soft; the weight behind the badge
+- [x] `__shocked.png` — Sudden revelation; caught mid-exposure
+- [x] `__calculating.png` — Cold focus, thinking; the inspector's read on you
+- [x] `__tender.png` — Intimate warmth; the rare genuine moment

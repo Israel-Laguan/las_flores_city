@@ -44,6 +44,13 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
       id: row.id,
       title: row.name,
       backgroundUrl: fromCascade || row.background_url || '/assets/scenes/default/background.png',
+      // Full expression-tagged variant array for VN-layer selection. The
+      // resolved `backgroundUrl` above stays the map-view default; the
+      // DialogueVisualLayer uses this array to pick rain/night/sunset
+      // pre-painted variants when a node's visual.mood asks for them.
+      backgroundUrls: Array.isArray(row.background_urls)
+        ? (row.background_urls as Array<{ url: string; label?: string; expression?: string }>)
+        : undefined,
       ambientSoundUrl: row.ambient_sound_url || null,
       mood: row.mood || 'neutral',
     };

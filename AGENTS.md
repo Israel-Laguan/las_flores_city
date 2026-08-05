@@ -33,6 +33,7 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 - **Backup**: `bash scripts/backup-content-assets.sh` — tarball backup of `content/**/assets/` before destructive operations.
 - **Docker**: `docker compose down --volumes` destroys named volumes. MinIO uses a host-bind mount (`.minio-data/`) so it survives, but always run the backup script first.
 - **Asset publish workflow**: Local `content/**/assets/` is the staging area, not canonical. `asset_paths.portrait` = relative filename (`<slug>__default.png`); `portrait_urls` = published MinIO URL. The authoring loop: (1) generate images into `assets/`, (2) pick the best as `<slug>__default.png`, (3) run `AssetPublishService` which uploads to MinIO and writes `portrait_urls`/`background_urls` back to YAML + DB. `LocalDraftService.ts` sorts `__default.png` first when listing assets.
+- **Asset expressions & variants**: See [docs/ASSET_EXPRESSION_VOCABULARY.md](docs/ASSET_EXPRESSION_VOCABULARY.md) for the expression vocabulary, file naming (`<slug>__<expression>.png`), and the `portrait_urls[]` / `background_urls[]` `expression` tag convention. Assets/folders are flat — no sub-folders. Expression variants are referenced by an `expression` tag on an `AssetEntry`; the `default` entry is the fallback and may omit the tag. Scene `background_urls[]` entries use environment tags (`night`, `rain`, `sunset`); the VN layer resolves them via `resolveBackgroundUrl(visualBackground, sceneBackground, visual?.mood, backgroundUrls)`.
 
 ## OLAP and leaderboard rules
 

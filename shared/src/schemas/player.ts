@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { zodUuid, zodUuidOptional, zodUuidNullable } from './uuid.js';
+import { AssetEntrySchema } from './yaml-content.js';
 
 export const PlayerFlagsSchema = z.record(z.string(), z.boolean());
 
@@ -43,6 +44,10 @@ export const ScenePayloadSchema = z.object({
     id: zodUuid(),
     title: z.string(),
     backgroundUrl: z.string(),
+    // Expression-tagged background variants (`background_urls[]` from the
+    // scene YAML) passed through to the VN layer so the dialogue viewport can
+    // select a pre-painted variant (rain/night/sunset) before applying mood.
+    backgroundUrls: z.array(AssetEntrySchema).optional(),
     ambientSoundUrl: z.string().nullable(),
     mood: z.string(),
   }),

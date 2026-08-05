@@ -39,17 +39,55 @@ export function resolvePortraitUrl(
 }
 
 /**
- * Resolve a dialogue backdrop: node.visual.background is authoritative
- * when present (URL or plain filename). Otherwise fall back to the
- * current scene background URL captured on the VN layer.
+ * A single asset entry (mirrors shared `AssetEntry` / `AssetEntrySchema`).
+ */
+export interface ResolvableAssetEntry {
+  url: string;
+  label?: string;
+  expression?: string;
+}
+
+/**
+ * Resolve a dialogue backdrop from the node's `visual.background`, the
+ * scene's expression-tagged variant pool, or the current scene backdrop.
+ *
+ * Resolution priority:
+ *   1. `visualBackground` — when present (a URL or plain filename) it is
+ *      authoritative and returned directly.
+ *   2. `expression` + `backgroundUrls[]` — a variant whose `expression` tag
+ *      matches (case-insensitive) is preferred over the default.
+ *   3. First usable URL in `backgroundUrls[]` (the default variant).
+ *   4. `sceneBackground` — the current scene backdrop fallback.
  */
 export function resolveBackgroundUrl(
   visualBackground: string | undefined,
-  sceneBackground: string | undefined
+  sceneBackground: string | undefined,
+  expression?: string,
+  backgroundUrls?: ResolvableAssetEntry[],
 ): string | null {
   if (typeof visualBackground === 'string' && visualBackground.trim().length > 0) {
     return visualBackground.trim();
   }
+
+  const usable = (url: string | undefined): url is string =>
+    typeof url === 'string' && url.length > 0;
+
+  if (Array.isArray(backgroundUrls) && backgroundUrls.length > 0) {
+    // 2. Prefer a variant whose expression tag matches the hint.
+    if (expression) {
+      const match = backgroundUrls.find(
+        (e) => e && typeof e.expression === 'string' &&
+          e.expression.toLowerCase() === expression.toLowerCase() &&
+          usable(e.url),
+      );
+      if (match) return match.url;
+    }
+    // 3. Fall back to the first usable variant (the default).
+    const fallback = backgroundUrls.find((e) => e && usable(e.url));
+    if (fallback) return fallback.url;
+  }
+
+  // 4. Last resort: the current scene backdrop.
   return typeof sceneBackground === 'string' && sceneBackground.trim().length > 0
     ? sceneBackground.trim()
     : null;

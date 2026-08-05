@@ -17,6 +17,9 @@ interface SceneData {
   id: string;
   title: string;
   backgroundUrl: string;
+  // Expression-tagged background variants (scene YAML `background_urls[]`)
+  // passed through to the VN layer (`location:background` event).
+  backgroundUrls?: Array<{ url: string; label?: string; expression?: string }>;
   ambientSoundUrl: string | null;
   mood: string;
 }
@@ -205,8 +208,11 @@ export class LocationScene extends Phaser.Scene {
 
     if (payload.scene.backgroundUrl) {
       this.renderBackground(payload.scene.backgroundUrl, payload.scene.id);
-      // Expose the backdrop to the VN layer as its scene fallback.
-      eventBus.emit('location:background', { backgroundUrl: payload.scene.backgroundUrl });
+      // Expose the backdrop + variant pool to the VN layer as its scene fallback.
+      eventBus.emit('location:background', {
+        backgroundUrl: payload.scene.backgroundUrl,
+        backgroundUrls: payload.scene.backgroundUrls,
+      });
     }
 
     this.clearMoodEffects();

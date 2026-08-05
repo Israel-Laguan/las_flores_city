@@ -11,3 +11,14 @@ Rainy Street Motorcycle in Las Flores 2077. Cyberpunk aesthetic, neon-lit urban 
 
 ## Negative Prompt
 --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
+
+## Variants
+
+Environment variants (each as `assets/rainy_street_motorcycle__<tag>.png`, referenced in
+`background_urls[]` with an `expression` tag — see
+[docs/ASSET_EXPRESSION_VOCABULARY.md](../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- [x] `__default.png` — Rain-soaked, neon-lit street with the parked motorcycle (base)
+- [ ] `__night.png` — Night, neon bleeding brighter, deeper wet-asphalt reflections
+- [ ] `__sunset.png` — Golden hour, long shadows across the wet asphalt, amber underglow
+- [ ] `__dry.png` — Clear day, dry asphalt, muted neon, harsher tropical light

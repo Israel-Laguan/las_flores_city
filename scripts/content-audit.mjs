@@ -11,6 +11,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { load as loadYaml } from 'js-yaml';
 
 const CONTENT_DIR = path.resolve('content');
 const DRY_RUN = process.argv.includes('--dry-run');
@@ -28,6 +29,57 @@ const FOLDER_TYPES = [
   { dir: 'story_beats', prefix: 'story_beat_', expectMd: false },
   { dir: 'dialogues', prefix: 'dialogue_', expectMd: true },
 ];
+
+// Which YAML array field carries expression-tagged asset entries per type.
+// Convention: `portrait_urls[].expression` (characters) and
+// `background_urls[].expression` (scenes) tag image variants whose local
+// staging file must be `<slug>__<expression>.png` in assets/.
+// See docs/ASSET_EXPRESSION_VOCABULARY.md.
+const EXPRESSION_FIELD = {
+  characters: 'portrait_urls',
+  scenes: 'background_urls',
+};
+
+/**
+ * Cross-reference expression-tagged asset entries (portrait_urls /
+ * background_urls) against local staging files in assets/.
+ *
+ * Returns warning messages for any entry that has an `expression` tag but
+ * no matching `<slug>__<expression>.png` file. The untagged default entry
+ * maps to `<slug>__default.png` (already checked separately).
+ */
+function checkExpressionAssets(typeDef, folder, slug, displayPath) {
+  const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
+  const field = EXPRESSION_FIELD[typeDef.dir];
+  if (!field || !fs.existsSync(yamlFile)) return [];
+
+  let data;
+  try {
+    data = loadYaml(fs.readFileSync(yamlFile, 'utf-8'));
+  } catch (err) {
+    return [`${displayPath}: unparseable YAML (${err.message})`];
+  }
+
+  const entries = Array.isArray(data && data[field]) ? data[field] : [];
+  if (entries.length === 0) return [];
+
+  const assetsDir = path.join(folder, 'assets');
+  const warnings = [];
+  for (const entry of entries) {
+    const expression = entry && typeof entry.expression === 'string' && entry.expression.trim()
+      ? entry.expression.trim()
+      : null;
+    if (!expression) continue; // default entry — covered by `<slug>__default.png`
+
+    const variantPng = path.join(assetsDir, `${slug}__${expression}.png`);
+    if (!fs.existsSync(variantPng)) {
+      warnings.push(
+        `${displayPath}: ${field}[] expression "${expression}" has no asset assets/${slug}__${expression}.png`
+      );
+    }
+  }
+  return warnings;
+}
 
 function scanFolder(typeDef, folder, slug, displayPath) {
   const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
@@ -62,6 +114,8 @@ function scanFolder(typeDef, folder, slug, displayPath) {
   if (!hasAssets) {
     warnings.push(`${displayPath}: missing assets/`);
   }
+
+  warnings.push(...checkExpressionAssets(typeDef, folder, slug, displayPath));
 
   return { counts, errors, warnings };
 }

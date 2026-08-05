@@ -22,6 +22,7 @@ import { eventBus } from '../utils/EventBus';
 import {
   resolvePortraitUrl,
   resolveBackgroundUrl,
+  type ResolvableAssetEntry,
 } from '../utils/resolvePortraitUrl';
 import type { DialogueNodeVisual, DialogueSpeakers } from '../types/dialogue';
 import '../styles/dialogue-visual.css';
@@ -48,6 +49,7 @@ export class DialogueVisualLayer {
   private portraitImg: HTMLImageElement;
 
   private sceneBackground: string | null = null;
+  private sceneBackgroundUrls: ResolvableAssetEntry[] = [];
   private currentBackground = '';
   private rainRaf: number | null = null;
   private visible = false;
@@ -93,8 +95,9 @@ export class DialogueVisualLayer {
     eventBus.on('dialogue:opened', () => this.show());
     eventBus.on('dialogue:node_rendered', (payload: NodeRenderedPayload) => this.renderNode(payload));
     eventBus.on('dialogue:closed', () => this.hide());
-    eventBus.on('location:background', (data: { backgroundUrl?: string }) => {
+    eventBus.on('location:background', (data: { backgroundUrl?: string; backgroundUrls?: ResolvableAssetEntry[] }) => {
       if (data && typeof data.backgroundUrl === 'string') this.sceneBackground = data.backgroundUrl;
+      if (data && Array.isArray(data.backgroundUrls)) this.sceneBackgroundUrls = data.backgroundUrls;
     });
   }
 
@@ -119,14 +122,24 @@ export class DialogueVisualLayer {
 
   private renderNode(payload: NodeRenderedPayload): void {
     const visual = payload.visual;
-    this.renderBackground(visual?.background);
+    this.renderBackground(visual);
     this.renderPortrait(payload.speakerId, payload.speakers?.[payload.speakerId ?? ''], visual);
     this.renderMood(visual?.mood);
     this.toggleCinematic(visual?.cinematic === true);
   }
 
-  private renderBackground(visualBackground: string | undefined): void {
-    const url = resolveBackgroundUrl(visualBackground, this.sceneBackground ?? undefined);
+  private renderBackground(visual: DialogueNodeVisual | undefined): void {
+    // `visual.mood` doubles as a soft background-expression hint: when the
+    // scene has a pre-painted variant tagged `expression: rain|night|...`
+    // and the node asks for that mood, resolveBackgroundUrl prefers the
+    // variant over the dry default. CSS-only moods (tense/soft_bloom/alert)
+    // simply fail to match and fall back to the default variant.
+    const url = resolveBackgroundUrl(
+      visual?.background,
+      this.sceneBackground ?? undefined,
+      visual?.mood && visual.mood !== 'none' ? visual.mood : undefined,
+      this.sceneBackgroundUrls,
+    );
     if (url && url !== this.currentBackground) {
       this.currentBackground = url;
       this.bg.style.backgroundImage = `url("${cssEscapeUrl(url)}")`;
