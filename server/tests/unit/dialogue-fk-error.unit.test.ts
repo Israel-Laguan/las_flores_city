@@ -37,7 +37,21 @@ describe('mapDialogueWriteError', () => {
     expect(mapDialogueWriteError(error)).toBeNull();
   });
 
-  it('returns null when the FK lacks a constraint name', () => {
+  it('returns null when the FK lacks a constraint name and detail', () => {
     expect(mapDialogueWriteError({ code: '23503' })).toBeNull();
+  });
+
+  it('maps a 23503 with no constraint name when detail references dialogue_trees', () => {
+    const error = {
+      code: '23503',
+      detail: 'Key (active_dialogue_id)=(...) is not present in table "dialogue_trees".',
+    };
+    expect(mapDialogueWriteError(error)).toEqual({ status: 404, code: 'dialogue_not_found' });
+  });
+
+  it('returns null for a 23503 with no constraint name and unrelated detail', () => {
+    expect(
+      mapDialogueWriteError({ code: '23503', detail: 'Key (...) is not present in table "other_table".' })
+    ).toBeNull();
   });
 });

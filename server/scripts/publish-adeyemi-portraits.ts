@@ -188,6 +188,13 @@ async function main() {
     (a, b) => Number(entryExpression(a) !== 'default') - Number(entryExpression(b) !== 'default')
   );
 
+  const hasDefault = mergedPortraitUrls.some((entry) => entryExpression(entry) === 'default');
+  if (!hasDefault) {
+    throw new Error(
+      'Refusing to write portrait_urls with no default entry; partial dev uploads must include a default portrait.'
+    );
+  }
+
   // Serialize ONLY the merged array (not the whole document) and splice it
   // into the original file text at the `portrait_urls:` block, keeping all
   // author comments and formatting elsewhere intact.

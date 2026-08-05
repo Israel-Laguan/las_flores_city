@@ -11,7 +11,7 @@ consumer: background
 
 [CONSUMER: background]
 **Type:** background
-**Dimensions:** 1280x720
+**Dimensions:** 1280x768
 **Source:** apartment.md
 **Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_apartment.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
