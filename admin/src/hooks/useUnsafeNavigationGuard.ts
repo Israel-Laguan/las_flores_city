@@ -1,6 +1,17 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+
+// Module-level dirty flag so other components (e.g. TopBar) can guard
+// router-driven navigations like logout without coupling to this hook.
+let __dialogueDirty = false;
+export function isDialogueDirty(): boolean {
+  return __dialogueDirty;
+}
+export function setDialogueDirty(value: boolean): void {
+  __dialogueDirty = value;
+}
 
 /**
  * Guards against losing unsaved edits on ANY client-side navigation away from
@@ -8,6 +19,7 @@ import { useEffect, useRef } from 'react';
  *  - native reload / tab close (beforeunload)
  *  - browser back / forward (popstate)
  *  - in-app anchors including Next `<Link>` (capture-phase click handler)
+ *  - programmatic router navigations (Next.js routeChangeStart)
  *
  * When the page is dirty, each transition asks for confirmation and is blocked
  * (or reverted, for popstate) unless the user confirms. Pass `dirty` from the
@@ -16,6 +28,23 @@ import { useEffect, useRef } from 'react';
 export function useUnsafeNavigationGuard(dirty: boolean): void {
   const dirtyRef = useRef(dirty);
   dirtyRef.current = dirty;
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Track the current editor URL so we can restore it when the user declines navigation.
+  // This must be updated on route changes because the App Router reuses the same
+  // component instance when navigating between different [id] pages.
+  const currentEditorHrefRef = useRef<string>('');
+
+  useEffect(() => {
+    setDialogueDirty(dirty);
+  }, [dirty]);
+
+  // Update the current editor URL whenever the route changes
+  useEffect(() => {
+    currentEditorHrefRef.current = window.location.href;
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     const message = 'You have unsaved changes. Leave anyway?';
@@ -27,15 +56,24 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
       }
     };
 
-    // popstate fires AFTER the address has already changed to the previous
-    // history entry and cannot be prevented, so on a dirtied page we restore the
-    // prior editor route if the user declines. We must push the editor's own URL
-    // (captured at mount), NOT `window.location.href` — by the time this handler
-    // runs the address already points at the page we navigated away to.
-    const editorHref = window.location.href;
+    const isReturningRef = { current: false };
+
     const onPopState = () => {
+      if (isReturningRef.current) {
+        isReturningRef.current = false;
+        return;
+      }
       if (dirtyRef.current && !window.confirm(message)) {
-        window.history.pushState(history.state, '', editorHref);
+        // `history.go(1)` returns to the forward entry without appending a
+        // fresh history entry, so repeated Back presses do not pile up history.
+        isReturningRef.current = true;
+        window.history.go(1);
+      }
+    };
+
+    const onRouteChangeStart = (_url: string) => {
+      if (dirtyRef.current && !window.confirm(message)) {
+        router.replace(currentEditorHrefRef.current);
       }
     };
 
@@ -66,11 +104,22 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
 
     window.addEventListener('beforeunload', onBeforeUnload);
     window.addEventListener('popstate', onPopState);
+    // App Router does not expose a reliable synchronous `beforePopState`
+    // interceptor in all versions, so browser back/forward is handled via
+    // the `popstate` listener above. Programmatic router navigations are
+    // intercepted via the click handler + `routeChangeStart` listener below.
+    const routeChangeStart = (router as any)?.events?.on?.bind((router as any).events);
+    if (typeof routeChangeStart === 'function') {
+      routeChangeStart('routeChangeStart', onRouteChangeStart);
+    }
     document.addEventListener('click', onClick, true);
     return () => {
       window.removeEventListener('beforeunload', onBeforeUnload);
       window.removeEventListener('popstate', onPopState);
       document.removeEventListener('click', onClick, true);
+      if (typeof routeChangeStart === 'function') {
+        (router as any).events.off?.('routeChangeStart', onRouteChangeStart);
+      }
     };
-  }, []);
+  }, [router]);
 }

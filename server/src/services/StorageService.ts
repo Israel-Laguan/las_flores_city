@@ -19,6 +19,7 @@ const CDN_SIGNING_SECRET = process.env.CDN_SIGNING_SECRET || process.env.JWT_SEC
 const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
 
 let s3Client: S3Client | null = null;
+let publicS3Client: S3Client | null = null;
 
 function getMinioEndpointUrl(): string {
   const endpoint = MINIO_ENDPOINT.match(/^https?:\/\//) ? MINIO_ENDPOINT : `http://${MINIO_ENDPOINT}`;
@@ -90,18 +91,21 @@ function parseS3Location(mediaUrl: string): { bucket: string; key: string } | nu
  * SignatureDoesNotMatch). Server-side operations keep using `getS3Client()`.
  */
 function getPublicS3Client(): S3Client {
-  const endpoint = MINIO_PUBLIC_URL
-    ? MINIO_PUBLIC_URL.replace(/\/$/, '')
-    : getMinioEndpointUrl();
-  return new S3Client({
-    endpoint,
-    region: 'us-east-1',
-    credentials: {
-      accessKeyId: MINIO_ACCESS_KEY,
-      secretAccessKey: MINIO_SECRET_KEY,
-    },
-    forcePathStyle: true,
-  });
+  if (!publicS3Client) {
+    const endpoint = MINIO_PUBLIC_URL
+      ? MINIO_PUBLIC_URL.replace(/\/$/, '')
+      : getMinioEndpointUrl();
+    publicS3Client = new S3Client({
+      endpoint,
+      region: 'us-east-1',
+      credentials: {
+        accessKeyId: MINIO_ACCESS_KEY,
+        secretAccessKey: MINIO_SECRET_KEY,
+      },
+      forcePathStyle: true,
+    });
+  }
+  return publicS3Client;
 }
 
 export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_TTL_SECONDS): Promise<string> {
