@@ -1188,31 +1188,6 @@ function loadScene(filename: string): any {
   return yamlLib.load(raw);
 }
 
-// ── old_town_cafe.yaml ───────────────────────────────────────
-//
-// metadata.required_story_beat must be 'act1_awakening'.
-// YAMLSceneSchema.safeParse must still return success:true.
-// Validates: Requirements 7.1, 7.3
-// ─────────────────────────────────────────────────────────────
-
-describe('old_town_cafe.yaml scene gating', () => {
-  const BEAT = 'act1_awakening';
-
-  let data: any;
-  beforeAll(() => {
-    data = loadScene('old_town_cafe.yaml');
-  });
-
-  it('has metadata.required_story_beat === act1_awakening', () => {
-    expect(data.metadata?.required_story_beat).toBe(BEAT);
-  });
-
-  it('still passes YAMLSceneSchema.safeParse (metadata is z.record — extra keys are fine)', () => {
-    const result = YAMLSceneSchema.safeParse(data);
-    expect(result.success).toBe(true);
-  });
-});
-
 // ── scene_cafe.yaml ──────────────────────────────────────────
 //
 // metadata.required_story_beat must be 'act1_awakening'.

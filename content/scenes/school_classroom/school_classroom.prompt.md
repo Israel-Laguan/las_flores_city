@@ -27,16 +27,16 @@ School Classroom in Las Flores 2077. Cyberpunk aesthetic, neon-lit urban environ
 ## Variants (image-to-image)
 
 ### `night` — Night classroom
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the classroom as a night scene: outside darkness, corporate billboard neon through the rain-streaked windows much brighter, electric shadows deeper across the desks, cool blue palette. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour class
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the classroom with golden-hour sun through the windows: warm amber mixing with the neon streaks, long soft shadows across the scanner desks. Same layout, same graphic novel style, no people.
 
 ### `day` — Clear dry daylight
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the classroom as a clear dry day: bright natural daylight through the windows, no rain streaks, muted cooler light on the desks and holographic displays. Same layout, same graphic novel style, no people.

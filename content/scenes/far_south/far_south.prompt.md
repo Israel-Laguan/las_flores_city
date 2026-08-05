@@ -1,7 +1,7 @@
 ---
 name: Far South Outskirts
 type: background
-size: 1280x720
+size: 1280x768
 source: far_south.md
 target: `background_urls[]` / `asset_paths.background` in content/scenes/far_south/scene_far_south.yaml
 consumer: background
@@ -27,11 +27,11 @@ The rural edge of Las Flores 2077: open farmland and scattered homesteads where 
 ## Variants (image-to-image)
 
 ### `night` — Isolated night fields
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the farmland as a night scene: dark fields under a wide starry sky, the city's glow on the horizon, homestead windows and a single security light dotting the dark. Same layout, same graphic novel style, no people.
 
 ### `sunset` — Golden hour crops
-**Scale:** 16:9
+**Scale:** 5:3
 **Edit prompt:**
 Re-light the farmland with golden-hour sun: long warm shadows across the crops, amber sky, solar panels catching the last light. Same layout, same graphic novel style, no people.

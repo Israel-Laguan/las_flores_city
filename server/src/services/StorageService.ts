@@ -82,23 +82,26 @@ function parseS3Location(mediaUrl: string): { bucket: string; key: string } | nu
 }
 
 /**
- * Rewrite a presigned URL's origin to the browser-reachable MinIO endpoint
- * (`MINIO_PUBLIC_URL`) when one is configured. Presigned S3 URLs sign the
- * path + query, not the host, so swapping the origin keeps the signature valid
- * while making the URL resolvable from a browser (the S3 client still talks to
- * the server-side `MINIO_ENDPOINT`).
+ * Browser-reachable S3 client used ONLY for signing presigned URLs. The
+ * internal `getS3Client()` signs against `MINIO_ENDPOINT` (the container host),
+ * which browsers can't reach; a presigned URL is tied to the Host header it was
+ * signed with, so we must sign against the public origin when one is configured
+ * (otherwise rewriting the host afterward invalidates the signature →
+ * SignatureDoesNotMatch). Server-side operations keep using `getS3Client()`.
  */
-function rewriteToPublicMinioUrl(signedUrl: string): string {
-  if (!MINIO_PUBLIC_URL) return signedUrl;
-  try {
-    const signed = new URL(signedUrl);
-    const pub = new URL(MINIO_PUBLIC_URL);
-    signed.protocol = pub.protocol;
-    signed.host = pub.host;
-    return signed.toString();
-  } catch {
-    return signedUrl;
-  }
+function getPublicS3Client(): S3Client {
+  const endpoint = MINIO_PUBLIC_URL
+    ? MINIO_PUBLIC_URL.replace(/\/$/, '')
+    : getMinioEndpointUrl();
+  return new S3Client({
+    endpoint,
+    region: 'us-east-1',
+    credentials: {
+      accessKeyId: MINIO_ACCESS_KEY,
+      secretAccessKey: MINIO_SECRET_KEY,
+    },
+    forcePathStyle: true,
+  });
 }
 
 export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_TTL_SECONDS): Promise<string> {
@@ -110,8 +113,8 @@ export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_
     Key: location.key,
   });
 
-  const signedUrl = await getSignedUrl(getS3Client(), command, { expiresIn: expiresInSeconds });
-  return rewriteToPublicMinioUrl(signedUrl);
+  const signedUrl = await getSignedUrl(getPublicS3Client(), command, { expiresIn: expiresInSeconds });
+  return signedUrl;
 }
 
 export function createCdnProxyUrl(itemId: string, userId: string, expiresInSeconds = DEFAULT_TTL_SECONDS): string {
