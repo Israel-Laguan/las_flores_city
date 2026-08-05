@@ -21,11 +21,7 @@
 }
 
 .validationBox {
-  background: var(--danger-bg);
-  border: 1px solid var(--danger);
-  padding: 1rem;
-  border-radius: 5px;
-  margin-top: 1rem;
+  composes: errorBox;
   font-size: 0.85rem;
 }
 

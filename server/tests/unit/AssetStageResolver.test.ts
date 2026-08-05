@@ -4,6 +4,7 @@ import {
   getEnv,
   resolveAssetUrl,
   resolveAssetStage,
+  resolveStageOrderedPool,
   type AssetEntry,
 } from '../../src/services/AssetStageResolver.js';
 
@@ -151,6 +152,73 @@ describe('AssetStageResolver', () => {
       ];
       const result = resolveAssetStage(entries);
       expect(result).toEqual({ url: 'https://example.com/a.png', stage: 'unknown' });
+    });
+  });
+
+  describe('resolveStageOrderedPool()', () => {
+    const entries: AssetEntry[] = [
+      { url: 'https://dev.example.com/rain.png', label: 'dev', expression: 'rain' },
+      { url: 'https://prod.example.com/rain.png', label: 'production', expression: 'rain' },
+      { url: 'https://dev.example.com/base.png', label: 'dev' },
+      { url: 'https://prod.example.com/base.png', label: 'production' },
+      { url: 'https://staging.example.com/rain.png', label: 'staging', expression: 'rain' },
+    ];
+
+    it('in production: production entries come first, then staging, then dev', () => {
+      process.env.NODE_ENV = 'production';
+      const ordered = resolveStageOrderedPool(entries)!;
+      expect(ordered.map(e => e.label)).toEqual([
+        'production', 'production', 'staging', 'dev', 'dev',
+      ]);
+      // First-match expression lookup lands on the production rain variant.
+      expect(ordered.find(e => e.expression === 'rain')).toBe(entries[1]);
+    });
+
+    it('in development: dev entries come first', () => {
+      process.env.NODE_ENV = 'development';
+      const ordered = resolveStageOrderedPool(entries)!;
+      expect(ordered.map(e => e.label)).toEqual([
+        'dev', 'dev', 'staging', 'production', 'production',
+      ]);
+    });
+
+    it('is stable within the same stage (original order preserved)', () => {
+      process.env.NODE_ENV = 'production';
+      const stable: AssetEntry[] = [
+        { url: 'https://a.example.com/x.png', label: 'production' },
+        { url: 'https://b.example.com/x.png', label: 'dev' },
+        { url: 'https://c.example.com/x.png', label: 'production' },
+      ];
+      const ordered = resolveStageOrderedPool(stable)!;
+      expect(ordered.map(e => e.url)).toEqual([
+        'https://a.example.com/x.png',
+        'https://c.example.com/x.png',
+        'https://b.example.com/x.png',
+      ]);
+    });
+
+    it('sorts untagged entries after staged ones', () => {
+      process.env.NODE_ENV = 'production';
+      const mixed: AssetEntry[] = [
+        { url: 'https://untagged.example.com/x.png' },
+        { url: 'https://prod.example.com/x.png', label: 'production' },
+        { url: 'https://dev.example.com/x.png', label: 'dev' },
+      ];
+      const ordered = resolveStageOrderedPool(mixed)!;
+      expect(ordered.map(e => e.label)).toEqual(['production', 'dev', undefined]);
+    });
+
+    it('returns null for null/empty inputs', () => {
+      expect(resolveStageOrderedPool(null)).toBeNull();
+      expect(resolveStageOrderedPool(undefined)).toBeNull();
+      expect(resolveStageOrderedPool([])).toEqual([]);
+    });
+
+    it('does not mutate the input array', () => {
+      process.env.NODE_ENV = 'production';
+      const original = [...entries];
+      resolveStageOrderedPool(entries);
+      expect(entries).toEqual(original);
     });
   });
 });

@@ -52,6 +52,31 @@ export function resolveAssetUrl(
   return pool.find(e => e && typeof e.url === 'string' && e.url.length > 0)?.url ?? null;
 }
 
+/**
+ * Reorder a stage-tagged asset pool (e.g. `portrait_urls[]` /
+ * `background_urls[]`) so entries for the current environment's stage come
+ * first (stable sort — original order is preserved within the same stage).
+ *
+ * Client-side resolvers (resolvePortraitUrl / resolveBackgroundUrl) pick the
+ * FIRST entry whose expression tag matches and fall back to the first usable
+ * URL, and the browser does not know the server's stage priority. Ordering the
+ * pool on the server before sending it guarantees those first-match and
+ * fallback picks land on the env-appropriate variant without leaking stage
+ * logic to the client.
+ */
+export function resolveStageOrderedPool(entries: any): AssetEntry[] | null {
+  const parsed = parseEntries(entries);
+  if (!parsed || parsed.length === 0) return parsed;
+  const env = getEnv();
+  const priority = STAGE_PRIORITY[env];
+  const rank = (label: string | undefined): number => {
+    if (!label) return priority.length; // untagged entries sort after staged ones
+    const idx = priority.indexOf(label as Stage);
+    return idx === -1 ? priority.length : idx;
+  };
+  return [...parsed].sort((a, b) => rank(a?.label) - rank(b?.label));
+}
+
 // Companion that returns the resolved URL and which stage it came from.
 export function resolveAssetStage(
   entries: any,

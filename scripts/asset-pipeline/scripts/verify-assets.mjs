@@ -287,6 +287,37 @@ function parseCharacterExpressionMap(yamlFiles) {
   return charMap;
 }
 
+/**
+ * Collect dialogue/overlay node entries from a parsed YAML document.
+ * Top-level `nodes` maps apply to both dialogue files and flat overlay
+ * files. Bundled overlay files may instead carry a top-level `overlays`
+ * array, where each member has its own `nodes` map (node ids are labeled
+ * `overlays[<i>].nodes.<id>`).
+ */
+function collectNodeEntries(data) {
+  const entries = [];
+  if (!data || typeof data !== 'object') return entries;
+
+  if (data.nodes && typeof data.nodes === 'object') {
+    for (const [nodeId, node] of Object.entries(data.nodes)) {
+      entries.push({ nodeId, node });
+    }
+  }
+
+  if (Array.isArray(data.overlays)) {
+    data.overlays.forEach((overlay, i) => {
+      if (!overlay || typeof overlay !== 'object') return;
+      const nodes = overlay.nodes;
+      if (!nodes || typeof nodes !== 'object') return;
+      for (const [nodeId, node] of Object.entries(nodes)) {
+        entries.push({ nodeId: `overlays[${i}].nodes.${nodeId}`, node });
+      }
+    });
+  }
+
+  return entries;
+}
+
 function checkExpressionCrossRefs(yamlFiles, charMap) {
   if (typeof yamlLoad !== 'function' || !charMap || charMap.size === 0) {
     return { checked: 0, warnings: [] };
@@ -297,7 +328,7 @@ function checkExpressionCrossRefs(yamlFiles, charMap) {
 
   for (const file of yamlFiles) {
     const base = path.basename(file);
-    if (!/^(dialogue_|char_)/.test(base) && !file.includes('/dialogues/')) continue;
+    if (!/^(dialogue_|char_|overlay_)/.test(base) && !file.includes('/dialogues/') && !file.includes('/overlays/')) continue;
 
     let data;
     try {
@@ -305,10 +336,10 @@ function checkExpressionCrossRefs(yamlFiles, charMap) {
     } catch {
       continue;
     }
-    const nodes = data && typeof data === 'object' ? (data.nodes || data.overlays) : null;
-    if (!nodes || typeof nodes !== 'object') continue;
+    const nodeEntries = collectNodeEntries(data);
+    if (nodeEntries.length === 0) continue;
 
-    for (const [nodeId, node] of Object.entries(nodes)) {
+    for (const { nodeId, node } of nodeEntries) {
       if (!node || typeof node !== 'object') continue;
       const visual = node.visual;
       if (!visual || typeof visual !== 'object') continue;
@@ -320,7 +351,7 @@ function checkExpressionCrossRefs(yamlFiles, charMap) {
       if (!char) continue; // unknown/other-character speaker — can't verify
 
       checked++;
-      if (char.expressions.size > 0 && !char.expressions.has(expression.toLowerCase())) {
+      if (!char.expressions.has(expression.toLowerCase())) {
         warnings.push(
           `${path.relative(process.cwd(), file)} node "${nodeId}" uses visual.expression "${expression}" ` +
           `but ${char.name} only tags: ${[...char.expressions].join(', ') || '(none)'}`
@@ -432,7 +463,9 @@ async function main() {
   // Dialogue node `visual.expression` cross-check against character
   // portrait_urls expression tags (VN visual metadata).
   console.log(`\n🗣  Checking dialogue visual.expression cross-references...`);
-  const charMap = parseCharacterExpressionMap(yamlFiles);
+  // Build the character expression map from the characters directory
+  // regardless of `--source`, so a dialogue-only source still cross-checks.
+  const charMap = parseCharacterExpressionMap(findAllYamlFiles(path.join(CONTENT_DIR, 'characters')));
   const exprCheck = checkExpressionCrossRefs(yamlFiles, charMap);
   let exprWarningCount = 0;
   if (exprCheck.warnings.length > 0) {

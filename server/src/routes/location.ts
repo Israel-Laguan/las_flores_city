@@ -9,7 +9,7 @@ import {
   buildNpcPayload,
   getSceneRelationships,
 } from './location.npcs.js';
-import { resolveAssetUrl } from '../services/AssetStageResolver.js';
+import { resolveAssetUrl, resolveStageOrderedPool } from '../services/AssetStageResolver.js';
 
 export const locationRouter = express.Router();
 
@@ -48,9 +48,12 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
       // resolved `backgroundUrl` above stays the map-view default; the
       // DialogueVisualLayer uses this array to pick rain/night/sunset
       // pre-painted variants when a node's visual.mood asks for them.
-      backgroundUrls: Array.isArray(row.background_urls)
-        ? (row.background_urls as Array<{ url: string; label?: string; expression?: string }>)
-        : undefined,
+      //
+      // The pool is reordered by the current env's stage priority so the
+      // client's first-match/first-usable selection lands on an env-appropriate
+      // variant (mirroring resolveAssetUrl's stage ranking) instead of the
+      // first raw entry, which may be a dev/staging URL in production.
+      backgroundUrls: resolveStageOrderedPool(row.background_urls) ?? undefined,
       ambientSoundUrl: row.ambient_sound_url || null,
       mood: row.mood || 'neutral',
     };

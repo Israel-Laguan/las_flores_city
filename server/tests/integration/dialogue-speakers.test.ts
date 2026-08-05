@@ -22,7 +22,6 @@ const TEST_USER_ID = 'd1000000-0000-4000-8000-000000000101';
 const TEST_CHARACTER_ID = 'd1000000-0000-4000-8000-000000000102';
 const TEST_TREE_ID = 'd1000000-0000-4000-8000-000000000103';
 const TEST_CHUNK_ID = 'd1000000-0000-4000-8000-000000000104';
-const TEST_OVERLAY_ID = 'd1000000-0000-4000-8000-000000000105';
 
 const TEST_PORTRAIT_URLS = [
   { url: 'http://minio.test/las-flores/characters/speaker-test/speaker-test__neutral.png', label: 'dev', expression: 'neutral' },
@@ -127,7 +126,6 @@ describe('Dialogue speakers enrichment', () => {
   });
   afterAll(async () => {
     try {
-      await queryOLTP(`DELETE FROM dialogue_overlays WHERE id = $1 OR target_tree_id = $1`, [TEST_OVERLAY_ID]);
       await queryOLTP(`DELETE FROM player_dialogue_states WHERE dialogue_tree_id = $1`, [TEST_TREE_ID]);
       await queryOLTP(`DELETE FROM player_states WHERE user_id = $1`, [TEST_USER_ID]);
       await queryOLTP(`DELETE FROM dialogue_chunks WHERE tree_id = $1`, [TEST_TREE_ID]);

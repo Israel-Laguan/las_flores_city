@@ -44,6 +44,8 @@ function isMinioUrl(mediaUrl: string): boolean {
   return mediaUrl.includes(minioHost) || mediaUrl.includes('minio');
 }
 
+export { isMinioUrl };
+
 function parseS3Location(mediaUrl: string): { bucket: string; key: string } | null {
   if (mediaUrl.startsWith('s3://')) {
     const withoutScheme = mediaUrl.slice(5);

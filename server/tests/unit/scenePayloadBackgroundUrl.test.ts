@@ -13,7 +13,7 @@ const cacheStore = new Map<string, any>();
 
 jest.mock('../../src/database/connection.js', () => ({
   queryOLTP: jest.fn(async (text: string) => {
-    if (text.includes('background_urls')) {
+    if (text.includes('FROM scenes WHERE id = $1')) {
       // Main scene query (SELECT id, name, background_url, background_urls, ...).
       return {
         rows: [(globalThis as any).__sceneRow],
@@ -82,6 +82,35 @@ describe('assembleScenePayload — backgroundUrls passthrough', () => {
     expect(payload!.scene.backgroundUrls).toEqual(VARIANT_POOL);
     // The resolved default still targets the env-appropriate entry.
     expect(payload!.scene.backgroundUrl).toBe('https://cdn.test/plaza__default.png');
+  });
+
+  it('orders the pool by the current env stage so the VN layer picks the right variant', async () => {
+    // Test NODE_ENV resolves to the `production` priority (production > staging > dev),
+    // so the raw dev-first pool must be reordered with the production entry first.
+    (globalThis as any).__sceneRow = {
+      id: SCENE_ID,
+      name: 'Mixed Pool Parking Lot',
+      background_url: null,
+      background_urls: [
+        { url: 'https://cdn.test/dev__rain.png', label: 'dev', expression: 'rain' },
+        { url: 'https://cdn.test/prod__rain.png', label: 'production', expression: 'rain' },
+        { url: 'https://cdn.test/dev__default.png', label: 'dev' },
+      ],
+      ambient_sound_url: null,
+      mood: 'neutral',
+    };
+
+    const payload = await assembleScenePayload(SCENE_ID, '00000000-0000-0000-0000-000000000001');
+
+    expect(payload).not.toBeNull();
+    // Map view default resolves the production entry.
+    expect(payload!.scene.backgroundUrl).toBe('https://cdn.test/prod__rain.png');
+    // VN layer pool is env-ordered: production first, dev last.
+    expect(payload!.scene.backgroundUrls).toEqual([
+      { url: 'https://cdn.test/prod__rain.png', label: 'production', expression: 'rain' },
+      { url: 'https://cdn.test/dev__rain.png', label: 'dev', expression: 'rain' },
+      { url: 'https://cdn.test/dev__default.png', label: 'dev' },
+    ]);
   });
 
   it('leaves backgroundUrls undefined when the scene has no background_urls', async () => {

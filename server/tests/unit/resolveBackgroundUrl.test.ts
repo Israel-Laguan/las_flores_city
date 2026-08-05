@@ -11,7 +11,7 @@
 //   4. the current scene backdrop fallback
 // ============================================================
 
-import { resolveBackgroundUrl } from '../../../client/src/utils/resolvePortraitUrl.js';
+import { resolveBackgroundUrl, resolvePortraitUrl } from '../../../client/src/utils/resolvePortraitUrl.js';
 
 describe('resolveBackgroundUrl', () => {
   const VARIANTS = [
@@ -69,7 +69,7 @@ describe('resolveBackgroundUrl', () => {
       expect(url).toBe('https://cdn.test/plaza__default.png');
     });
 
-    it('returns null when the pool has no usable urls', () => {
+    it('falls back to the scene backdrop when the pool has no usable urls', () => {
       const pool = [{ url: '', label: 'dev' as const, expression: 'night' }];
       expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'night', pool))
         .toBe('https://cdn.test/scene.png');
@@ -92,5 +92,52 @@ describe('resolveBackgroundUrl', () => {
       expect(resolveBackgroundUrl(undefined, 'https://cdn.test/scene.png', 'night', []))
         .toBe('https://cdn.test/scene.png');
     });
+  });
+});
+
+describe('resolvePortraitUrl', () => {
+  it('returns null when there is no speaker', () => {
+    expect(resolvePortraitUrl(undefined)).toBeNull();
+    expect(resolvePortraitUrl(null)).toBeNull();
+  });
+
+  it('returns the expression-tagged portrait url', () => {
+    const speaker = {
+      name: 'A',
+      portrait_urls: [
+        { url: 'https://cdn.test/a__default.png', label: 'dev' as const },
+        { url: 'https://cdn.test/a__neutral.png', label: 'dev' as const, expression: 'neutral' },
+      ],
+    };
+    expect(resolvePortraitUrl(speaker, 'neutral')).toBe('https://cdn.test/a__neutral.png');
+  });
+
+  it('skips a malformed (empty-url) expression entry and uses the next matching one', () => {
+    // A first entry tagged `calculating` with an empty URL must not hide the
+    // valid later entry for the same expression.
+    const speaker = {
+      name: 'A',
+      portrait_urls: [
+        { url: '', label: 'dev' as const, expression: 'calculating' },
+        { url: 'https://cdn.test/a__calculating.png', label: 'dev' as const, expression: 'calculating' },
+        { url: 'https://cdn.test/a__default.png', label: 'dev' as const },
+      ],
+    };
+    expect(resolvePortraitUrl(speaker, 'calculating')).toBe('https://cdn.test/a__calculating.png');
+  });
+
+  it('falls back to the first usable url when no expression matches', () => {
+    const speaker = {
+      name: 'A',
+      portrait_urls: [
+        { url: 'https://cdn.test/a__default.png', label: 'dev' as const },
+      ],
+    };
+    expect(resolvePortraitUrl(speaker, 'smirk')).toBe('https://cdn.test/a__default.png');
+  });
+
+  it('falls back to avatar_url when portrait_urls is empty', () => {
+    const speaker = { name: 'A', portrait_urls: [], avatar_url: 'https://cdn.test/avatar.png' };
+    expect(resolvePortraitUrl(speaker, 'neutral')).toBe('https://cdn.test/avatar.png');
   });
 });

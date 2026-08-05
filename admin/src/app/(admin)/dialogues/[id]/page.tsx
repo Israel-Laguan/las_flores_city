@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { YAMLDialogueSchema } from '@las-flores/shared';
@@ -21,6 +21,9 @@ export default function DialogueDetailPage() {
   // Tracks whether the in-memory draft differs from the last loaded/saved YAML
   // so we can warn before an unsaved edit is discarded (in-app nav / reload).
   const [dirty, setDirty] = useState(false);
+  // Records when edits land while a PUT save is still in flight, so the
+  // completion handler can re-arm dirty/success correctly for those edits.
+  const dirtyDuringSaveRef = useRef(false);
 
   useEffect(() => {
     if (!yaml) return;
@@ -31,7 +34,14 @@ export default function DialogueDetailPage() {
   useEffect(() => {
     if (saveSuccess) {
       setValidationErrors(null);
-      setDirty(false);
+      if (dirtyDuringSaveRef.current) {
+        // Edits landed while the PUT was in flight; they are NOT part of the
+        // YAML that was just written, so the page stays dirty.
+        dirtyDuringSaveRef.current = false;
+        setDirty(true);
+      } else {
+        setDirty(false);
+      }
     }
   }, [saveSuccess]);
 
@@ -49,7 +59,14 @@ export default function DialogueDetailPage() {
   const handleDraftChange = (next: Record<string, unknown>) => {
     setDraft(next);
     setDirty(true);
-    resetSave();
+    if (saving) {
+      // A PUT is still in flight: keep the Save button disabled (the button is
+      // `disabled={saving}`) so it cannot start an overlapping write. Mark the
+      // draft so the completion handler re-arms dirty/success correctly.
+      dirtyDuringSaveRef.current = true;
+    } else {
+      resetSave();
+    }
   };
 
   const handleSave = async () => {
@@ -119,6 +136,9 @@ export default function DialogueDetailPage() {
               {saving ? 'Saving...' : 'Save Visuals'}
             </button>
             {path && <span className={styles.pathHint}>Saving to: {path}</span>}
+            <span className={styles.pathHint}>
+              Note: saving rewrites the YAML from this form; authored comments/formatting in the file are normalized on save.
+            </span>
           </div>
         </section>
       )}

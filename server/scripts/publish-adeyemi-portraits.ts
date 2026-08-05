@@ -61,6 +61,45 @@ async function download(url: string, dest: string): Promise<{ bytes: number }> {
   return { bytes: buf.length };
 }
 
+/**
+ * Replaces the top-level `portrait_urls:` block in the raw YAML text with
+ * `blockBody` (the dumped array's lines). The rest of the file — including
+ * all author comments and formatting — is preserved byte-for-byte.
+ *
+ * The block begins at the first top-level `portrait_urls:` line and ends at
+ * the next non-indented, non-empty line (or EOF). If the key is not found,
+ * the new block is appended at the end of the file.
+ */
+function replacePortraitUrlsBlock(raw: string, blockBody: string): string {
+  const lines = raw.split('\n');
+  const dumpLines = blockBody
+    .split('\n')
+    .filter((line) => line.length > 0)
+    .map((line) => `  ${line}`);
+
+  const keyIdx = lines.findIndex((line) => /^portrait_urls:\s*$/.test(line));
+  if (keyIdx === -1) {
+    const trimmed = raw.endsWith('\n') ? raw : `${raw}\n`;
+    return `${trimmed}portrait_urls:\n${dumpLines.join('\n')}\n`;
+  }
+
+  let endIdx = keyIdx + 1;
+  while (endIdx < lines.length) {
+    const line = lines[endIdx];
+    if (line.trim().length === 0 || /^\s/.test(line)) {
+      endIdx++;
+      continue;
+    }
+    break;
+  }
+
+  return [
+    ...lines.slice(0, keyIdx + 1),
+    ...dumpLines,
+    ...lines.slice(endIdx),
+  ].join('\n');
+}
+
 async function main() {
   const entries = await readUrlEntries();
   if (entries.length === 0) {
@@ -83,6 +122,10 @@ async function main() {
 
     const objectKey = `portraits/${SLUG}/${filename}`;
     const buf = await fs.readFile(localPath);
+    // NOTE: intentional one-off dev-tool upload that bypasses the coordinated
+    // AssetPublishService workflow (which requires a publish plan + DB
+    // bookkeeping via markPublished). The merge logic below preserves the
+    // existing canonical portrait_urls entries not included in this upload.
     const minioUrl = await uploadToMinio(buf, objectKey, 'image/png');
     console.log(`  uploaded → ${minioUrl}`);
 
@@ -93,7 +136,9 @@ async function main() {
     });
   }
 
-  // Write portrait_urls back to the character YAML (preserving other fields).
+  // Write portrait_urls back to the character YAML, preserving other fields
+  // AND the original author comments/formatting: only the top-level
+  // `portrait_urls:` block is replaced (see replacePortraitUrlsBlock).
   // Merge by expression so a partial upload cannot discard the required
   // default portrait or existing variants: uploaded entries replace their
   // expression, while entries not included in this upload are preserved.
@@ -114,12 +159,18 @@ async function main() {
       ? entry.expression.toLowerCase()
       : 'default';
 
-  data.portrait_urls = [
+  const mergedPortraitUrls = [
     ...portraitUrls,
     ...existing.filter((entry) => !uploadedExpressions.has(entryExpression(entry))),
   ];
 
-  await fs.writeFile(CHARACTER_YAML, yaml.dump(data, { lineWidth: -1, noRefs: true }), 'utf8');
+  // Serialize ONLY the merged array (not the whole document) and splice it
+  // into the original file text at the `portrait_urls:` block, keeping all
+  // author comments and formatting elsewhere intact.
+  const blockBody = yaml.dump(mergedPortraitUrls, { lineWidth: -1, noRefs: true });
+  const updatedRaw = replacePortraitUrlsBlock(raw, blockBody);
+
+  await fs.writeFile(CHARACTER_YAML, updatedRaw, 'utf8');
   console.log(`\nYAML updated: ${CHARACTER_YAML}`);
   console.log(JSON.stringify(portraitUrls, null, 2));
 }

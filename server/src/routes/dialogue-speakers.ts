@@ -1,5 +1,6 @@
 import { queryOLTP } from '../database/connection.js';
-import { signMinioUrl } from '../services/StorageService.js';
+import { signMinioUrl, isMinioUrl } from '../services/StorageService.js';
+import { resolveStageOrderedPool } from '../services/AssetStageResolver.js';
 
 // ============================================================
 // Dialogue speaker resolution (VN visual metadata)
@@ -47,9 +48,19 @@ export function collectSpeakerIds(nodes: Record<string, any>): string[] {
   return [...ids];
 }
 
-/** Sign a MinIO s3:// portrait URL into a browser-reachable presigned URL. */
+/**
+ * Sign a MinIO portrait URL into a browser-reachable presigned URL.
+ *
+ * Recognizes both `s3://` references and existing HTTP(S) URLs that point at
+ * the MinIO bucket (e.g. the Docker-only `http://minio:9000/...` URLs found in
+ * content YAML). Without this, HTTP-form MinIO portraits pass through on the
+ * `minio` hostname, which browsers cannot resolve, and dialogue portraits fail
+ * to load. `signMinioUrl` resolves the object by bucket/key regardless of the
+ * URL's host, so signing an HTTP-form URL yields a browser-reachable presigned
+ * URL against the configured endpoint.
+ */
 async function signPortraitUrl(url: string): Promise<string> {
-  if (typeof url === 'string' && url.startsWith('s3://')) {
+  if (typeof url === 'string' && isMinioUrl(url)) {
     return signMinioUrl(url, PORTRAIT_URL_TTL);
   }
   return url;
@@ -70,22 +81,25 @@ async function trySignPortraitUrl(url: string): Promise<string> {
 }
 
 /**
- * Sign every entry in a portrait_urls array. A signing failure on one entry
- * omits that entry (so the route never rejects) while preserving the rest.
+ * Sign every entry in a portrait_urls array in parallel. A signing failure on
+ * one entry omits that entry (so the route never rejects) while preserving the
+ * rest.
  */
 async function signPortraitUrls(
   entries: Array<{ url: string; label?: string; expression?: string }> | null
 ): Promise<Array<{ url: string; label?: string; expression?: string }> | null> {
   if (!Array.isArray(entries) || entries.length === 0) return entries;
-  const signed: Array<{ url: string; label?: string; expression?: string }> = [];
-  for (const e of entries) {
-    try {
-      signed.push({ ...e, url: await signPortraitUrl(e.url) });
-    } catch (err) {
-      console.warn(`[dialogue-speakers] failed to sign portrait URL, omitting: ${e.url}`, err);
-    }
-  }
-  return signed;
+  const signed = await Promise.all(
+    entries.map(async (e) => {
+      try {
+        return { ...e, url: await signPortraitUrl(e.url) };
+      } catch (err) {
+        console.warn(`[dialogue-speakers] failed to sign portrait URL, omitting: ${e.url}`, err);
+        return null;
+      }
+    })
+  );
+  return signed.filter((e): e is NonNullable<typeof e> => e !== null);
 }
 
 /** Matches canonical UUIDs so we can use the characters.id uuid index. */
@@ -122,13 +136,22 @@ export async function resolveChunkSpeakers(
   );
 
   const speakers: DialogueSpeakers = {};
-  for (const row of result.rows) {
-    speakers[row.id] = {
-      name: row.name,
-      title: row.title,
-      avatar_url: row.avatar_url ? await trySignPortraitUrl(row.avatar_url) : row.avatar_url,
-      portrait_urls: await signPortraitUrls(row.portrait_urls),
-    };
-  }
+  // Resolve each row in parallel; per-row signing is also parallelized (see
+  // signPortraitUrls) so many-node chunks don't serialize DB + signing work.
+  await Promise.all(
+    result.rows.map(async (row) => {
+      speakers[row.id] = {
+        name: row.name,
+        title: row.title,
+        avatar_url: row.avatar_url ? await trySignPortraitUrl(row.avatar_url) : row.avatar_url,
+        // Order the pool by the current env's stage priority (production
+        // entries first in production, dev first in dev) so the client's
+        // first-match expression lookup and first-usable fallback select the
+        // env-appropriate URL rather than whichever stage happens to be first
+        // in the canonical YAML.
+        portrait_urls: await signPortraitUrls(resolveStageOrderedPool(row.portrait_urls)),
+      };
+    })
+  );
   return speakers;
 }

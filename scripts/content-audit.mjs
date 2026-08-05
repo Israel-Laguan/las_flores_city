@@ -64,6 +64,7 @@ function checkExpressionAssets(typeDef, folder, slug, displayPath) {
   if (entries.length === 0) return [];
 
   const assetsDir = path.join(folder, 'assets');
+  const defaultPng = path.join(assetsDir, `${slug}__default.png`);
   const warnings = [];
   for (const entry of entries) {
     const expression = entry && typeof entry.expression === 'string' && entry.expression.trim()
@@ -72,7 +73,9 @@ function checkExpressionAssets(typeDef, folder, slug, displayPath) {
     if (!expression) continue; // default entry — covered by `<slug>__default.png`
 
     const variantPng = path.join(assetsDir, `${slug}__${expression}.png`);
-    if (!fs.existsSync(variantPng)) {
+    // A `neutral` expression is satisfied by the base image staged as
+    // `<slug>__default.png` when no dedicated `<slug>__neutral.png` exists.
+    if (!fs.existsSync(variantPng) && !(expression.toLowerCase() === 'neutral' && fs.existsSync(defaultPng))) {
       warnings.push(
         `${displayPath}: ${field}[] expression "${expression}" has no asset assets/${slug}__${expression}.png`
       );
@@ -97,6 +100,7 @@ function scanFolder(typeDef, folder, slug, displayPath) {
   const counts = { yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
   const errors = [];
   const warnings = [];
+  const expressionWarnings = [];
 
   if (hasYaml) counts.yaml++;
   if (hasMd) counts.md++;
@@ -115,9 +119,9 @@ function scanFolder(typeDef, folder, slug, displayPath) {
     warnings.push(`${displayPath}: missing assets/`);
   }
 
-  warnings.push(...checkExpressionAssets(typeDef, folder, slug, displayPath));
+  expressionWarnings.push(...checkExpressionAssets(typeDef, folder, slug, displayPath));
 
-  return { counts, errors, warnings };
+  return { counts, errors, warnings, expressionWarnings };
 }
 
 function scanType(typeDef) {
@@ -128,6 +132,7 @@ function scanType(typeDef) {
     const totalCounts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
     const allErrors = [];
     const allWarnings = [];
+    const allExpressionWarnings = [];
 
     const districtEntries = fs.readdirSync(districtsDir, { withFileTypes: true })
       .filter(e => e.isDirectory());
@@ -143,7 +148,7 @@ function scanType(typeDef) {
       for (const slug of entries) {
         totalCounts.folders++;
         const folder = path.join(typeDir, slug);
-        const { counts, errors, warnings } = scanFolder(typeDef, folder, slug, `districts/${d.name}/locations/${slug}`);
+        const { counts, errors, warnings, expressionWarnings } = scanFolder(typeDef, folder, slug, `districts/${d.name}/locations/${slug}`);
         totalCounts.yaml += counts.yaml;
         totalCounts.md += counts.md;
         totalCounts.promptMd += counts.promptMd;
@@ -151,9 +156,10 @@ function scanType(typeDef) {
         totalCounts.defaultPng += counts.defaultPng;
         allErrors.push(...errors);
         allWarnings.push(...warnings);
+        allExpressionWarnings.push(...expressionWarnings);
       }
     }
-    return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings };
+    return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings, expressionWarnings: allExpressionWarnings };
   }
 
   const typeDir = path.join(CONTENT_DIR, typeDef.dir);
@@ -166,11 +172,12 @@ function scanType(typeDef) {
   const totalCounts = { folders: 0, yaml: 0, md: 0, promptMd: 0, assets: 0, defaultPng: 0 };
   const allErrors = [];
   const allWarnings = [];
+  const allExpressionWarnings = [];
 
   for (const slug of entries) {
     totalCounts.folders++;
     const folder = path.join(typeDir, slug);
-    const { counts, errors, warnings } = scanFolder(typeDef, folder, slug, `${typeDef.dir}/${slug}`);
+    const { counts, errors, warnings, expressionWarnings } = scanFolder(typeDef, folder, slug, `${typeDef.dir}/${slug}`);
     totalCounts.yaml += counts.yaml;
     totalCounts.md += counts.md;
     totalCounts.promptMd += counts.promptMd;
@@ -178,9 +185,10 @@ function scanType(typeDef) {
     totalCounts.defaultPng += counts.defaultPng;
     allErrors.push(...errors);
     allWarnings.push(...warnings);
+    allExpressionWarnings.push(...expressionWarnings);
   }
 
-  return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings };
+  return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings, expressionWarnings: allExpressionWarnings };
 }
 
 function printTable(results) {
@@ -223,6 +231,7 @@ console.log('================\n');
 const results = [];
 let totalErrors = 0;
 let totalWarnings = 0;
+let totalExpressionWarnings = 0;
 
 for (const typeDef of FOLDER_TYPES) {
   const result = scanType(typeDef);
@@ -230,6 +239,7 @@ for (const typeDef of FOLDER_TYPES) {
     results.push(result);
     totalErrors += result.errors.length;
     totalWarnings += result.warnings.length;
+    totalExpressionWarnings += result.expressionWarnings.length;
   }
 }
 
@@ -254,8 +264,16 @@ if (totalErrors > 0) {
   console.log('✅ No errors — all expected files present.');
 }
 
-if (totalWarnings > 0) {
-  console.log(`⚠️  Warnings: ${totalWarnings} folders missing assets/`);
+if (totalWarnings > 0 || totalExpressionWarnings > 0) {
+  console.log('⚠️  Warnings:');
+  if (totalWarnings > 0) {
+    console.log(`  ${totalWarnings} folder(s) missing assets/`);
+    for (const r of results) for (const w of r.warnings) console.log(`   ${w}`);
+  }
+  if (totalExpressionWarnings > 0) {
+    console.log(`  ${totalExpressionWarnings} tagged asset(s) missing a matching staging file`);
+    for (const r of results) for (const w of r.expressionWarnings) console.log(`   ${w}`);
+  }
 } else {
-  console.log('✅ All folders have assets/');
+  console.log('✅ No warnings — assets/ present and expression files match.');
 }

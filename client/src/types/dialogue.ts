@@ -1,3 +1,14 @@
+// ============================================================
+// This module mirrors types defined in the shared schema package
+// (`DialogueNodeVisualSchema` in shared/src/schemas/dialogue.ts)
+// and in the server route (server/src/routes/dialogue-speakers.ts:
+// `DialogueSpeakerInfo` / `DialogueSpeakers`). The client has no
+// dependency on the @las-flores/shared package, so these are
+// intentionally mirrored copies that must be kept in sync with
+// their sources — the client cannot import the shared schema
+// package directly.
+// ============================================================
+
 export interface DialogueNode {
   id: string;
   type: string;

@@ -40,14 +40,28 @@ const wordArb = (max = 50): fc.Arbitrary<string> =>
 
 /** Generates a valid DialogueNodeVisual. */
 const visualArb = (): fc.Arbitrary<Record<string, unknown>> =>
-  fc.record({
-    expression: fc.option(wordArb(50), { nil: undefined }),
-    background: fc.option(wordArb(255), { nil: undefined }),
-    mood: fc.option(fc.constantFrom(...MOODS), { nil: undefined }),
-    position: fc.option(fc.constantFrom(...POSITIONS), { nil: undefined }),
-    transition: fc.option(fc.constantFrom(...TRANSITIONS), { nil: undefined }),
-    cinematic: fc.option(fc.boolean(), { nil: undefined }),
-  });
+  fc
+    .record({
+      expression: fc.option(wordArb(50), { nil: undefined }),
+      background: fc.option(wordArb(255), { nil: undefined }),
+      mood: fc.option(fc.constantFrom(...MOODS), { nil: undefined }),
+      position: fc.option(fc.constantFrom(...POSITIONS), { nil: undefined }),
+      transition: fc.option(fc.constantFrom(...TRANSITIONS), { nil: undefined }),
+      cinematic: fc.option(fc.boolean(), { nil: undefined }),
+    })
+    // fc.record emits every key even when a field is nil (undefined), so
+    // without this filter the generated objects never exercise the realistic
+    // missing-key case. JSON.stringify drops undefined keys and toEqual treats
+    // undefined as equal to absent, so a regression that drops an absent
+    // optional field would otherwise slip through. Drop the nil keys to mirror
+    // what actually reaches the schema over the wire.
+    .map((record) => {
+      const present: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(record)) {
+        if (value !== undefined) present[key] = value;
+      }
+      return present;
+    });
 
 // ── Tests ─────────────────────────────────────────────────────
 

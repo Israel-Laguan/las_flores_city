@@ -26,9 +26,11 @@ export function resolvePortraitUrl(
   // 1. Prefer an entry whose expression tag matches (case-insensitive).
   if (expression) {
     const match = entries.find(
-      (e) => e && typeof e.expression === 'string' && e.expression.toLowerCase() === expression.toLowerCase()
+      (e) => e && typeof e.expression === 'string' &&
+        e.expression.toLowerCase() === expression.toLowerCase() &&
+        usable(e.url)
     );
-    if (match && usable(match.url)) return match.url;
+    if (match) return match.url;
   }
 
   // 2. Fallback: the first usable URL in the array (default portrait).
