@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { zodUuid, zodUuidArray } from './uuid.js';
 import { AssetListResponseSchema } from './assets.js';
+import { AssetEntrySchema } from './yaml-content.js';
 import { DialogueTreeSchema, DialogueNodeSchema, DialogueChoiceSchema } from './dialogue.js';
 import { PlayerStateSchema } from './player.js';
 import { MoveResponseSchema } from './player.js';
@@ -67,6 +68,16 @@ export const DialogueResponseSchema = ApiResponseSchema.extend({
     current_node: DialogueNodeSchema,
     available_choices: z.array(DialogueChoiceSchema),
     is_end: z.boolean().optional(),
+    // VN visual layer: speaker lookup for the chunk/tree nodes, keyed
+    // by character id. Each entry exposes the character's title and
+    // expression-tagged portrait_urls so the client can resolve
+    // node.visual.expression without extra round-trips.
+    speakers: z.record(z.string(), z.object({
+      name: z.string(),
+      title: z.string().nullable().optional(),
+      avatar_url: z.string().nullable().optional(),
+      portrait_urls: z.array(AssetEntrySchema).optional(),
+    })).optional(),
   }).optional(),
 });
 

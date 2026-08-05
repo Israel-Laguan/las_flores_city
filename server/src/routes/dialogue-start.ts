@@ -7,6 +7,7 @@ import {
   grantDialogueRewards,
 } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
+import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
@@ -137,7 +138,11 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
     leaves: {},
   };
 
-  return res.status(201).json(buildDialogueResponse(chunkPayload, dialogue.id, rootNodeId, availableChoices, isEnd, 0, 0));
+  const speakers = await resolveChunkSpeakers(resolved.nodes);
+
+  return res.status(201).json(
+    buildDialogueResponse(chunkPayload, dialogue.id, rootNodeId, availableChoices, isEnd, 0, 0, undefined, speakers)
+  );
 }
 
 async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, res: any) {
@@ -206,6 +211,8 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     leaves: resolvedChunk.chunk.leaves,
   };
 
+  const speakers = await resolveChunkSpeakers(resolvedChunk.mergedNodes);
+
   return res.status(201).json(
     buildDialogueResponse(
       chunkPayload,
@@ -215,7 +222,8 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       isEnd,
       0,
       tbCursor?.time_blocks ?? 0,
-      dialogue.id
+      dialogue.id,
+      speakers
     )
   );
 }

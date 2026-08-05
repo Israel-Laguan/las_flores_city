@@ -205,6 +205,8 @@ export class LocationScene extends Phaser.Scene {
 
     if (payload.scene.backgroundUrl) {
       this.renderBackground(payload.scene.backgroundUrl, payload.scene.id);
+      // Expose the backdrop to the VN layer as its scene fallback.
+      eventBus.emit('location:background', { backgroundUrl: payload.scene.backgroundUrl });
     }
 
     this.clearMoodEffects();

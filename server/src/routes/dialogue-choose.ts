@@ -5,6 +5,7 @@ import {
   type ProcessChoiceResult,
 } from './dialogue-helpers.js';
 import { buildChooseResponse, buildChoiceTelemetryEventData, type ChunkPayload } from './dialogue-response-helpers.js';
+import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { IronGateValidator } from '../services/IronGateValidator.js';
 import { appendTBReceipt } from '../services/ReceiptRenderer.js';
@@ -112,6 +113,8 @@ async function handleIntraChunkChoice(
     leaves,
   };
 
+  const speakers = await resolveChunkSpeakers(chunkNodes);
+
   return res.json(
     buildChooseResponse(
       dialogueId, choiceId, intraChunkPayload, currentChunkId, nextNodeId,
@@ -119,7 +122,8 @@ async function handleIntraChunkChoice(
       tbCursor?.time_blocks ?? 0, null,
       choiceResult.unlockedVaultItem ?? null,
       choiceResult.mysterySolveStatus ?? null,
-      choiceResult.alignmentChange ?? null, false
+      choiceResult.alignmentChange ?? null, false,
+      speakers
     )
   );
 }
@@ -287,13 +291,15 @@ async function handleChunkBoundaryChoice(
     leaves: resolvedNextChunk.chunk.leaves,
   };
 
+  const speakers = await resolveChunkSpeakers(finalNodes);
+
   return res.json(
     buildChooseResponse(
       dialogueId, choiceId, nextChunkPayload, nextChunkId, nextNodeId,
       nextChoices, isEnd, tbDeducted,
       tbCursor?.time_blocks ?? 0, receiptString, null,
       mysterySolveStatus, validationResult.alignmentChange ?? null,
-      isChunkBoundaryCrossing
+      isChunkBoundaryCrossing, speakers
     )
   );
 }

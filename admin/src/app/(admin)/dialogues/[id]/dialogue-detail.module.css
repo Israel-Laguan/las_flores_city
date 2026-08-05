@@ -20,6 +20,58 @@
   margin-top: 1rem;
 }
 
+.validationBox {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.validationBox ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.successBox {
+  background: var(--success-bg);
+  border: 1px solid var(--success);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.editorSection {
+  margin-top: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.pathHint {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.editorLink {
+  margin-left: 8px;
+}
+
+.jsonDetails {
+  margin-top: 2rem;
+}
+
+.jsonDetails summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .json {
   background: var(--panel-bg);
   border: 1px solid var(--border);

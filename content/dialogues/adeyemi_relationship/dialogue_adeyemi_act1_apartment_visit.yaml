@@ -11,6 +11,11 @@ nodes:
     speaker_id: a0000001-0000-4000-8000-000000000003
     text: "Chief Inspector Adeyemi Ogunbiyi. You reported an incident."
     thought: "He stands at the precise angle of someone who has done this enough times that the stance is no longer performed: warrant card visible, enough space in his posture to be non-threatening, enough stillness to be unreadable."
+    visual:
+      expression: calculating
+      mood: tense
+      position: right
+      transition: fade
     effects:
       stat_set:
         adeyemi_trust: -20

@@ -6,6 +6,7 @@ import './styles/comms.css';
 import './styles/vault.css';
 import './styles/banco.css';
 import { DialogueUI } from './components/DialogueUI';
+import { DialogueVisualLayer } from './components/DialogueVisualLayer';
 import { MonologueFeed } from './components/MonologueFeed';
 import { BreakthroughAlert } from './components/effects/BreakthroughAlert';
 import { TerminalModal } from './components/TerminalModal';
@@ -208,6 +209,7 @@ async function initOnce() {
   const viewportManager = new ViewportManager();
   (window as any).__viewportManager = viewportManager;
   new DialogueUI();
+  new DialogueVisualLayer();
   new MonologueFeed();
   new BreakthroughAlert();
   new TerminalModal();

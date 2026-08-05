@@ -18,6 +18,17 @@ import path from 'node:path';
 import http from 'node:http';
 import https from 'node:https';
 
+// js-yaml is a project dependency (shared/admin/server). Used only for
+// the dialogue `visual.expression` cross-check; the URL checker above
+// remains dependency-free.
+let yamlLoad = null;
+try {
+  // eslint-disable-next-line import/no-unresolved -- verified devDependency
+  yamlLoad = (await import('js-yaml')).load;
+} catch {
+  yamlLoad = null;
+}
+
 // ── Config ──────────────────────────────────────────────────────────────────
 
 const DEFAULT_MINIO_BASE = process.env.MINIO_URL || 'http://localhost:9000';
@@ -212,6 +223,93 @@ function estimateDimensionMismatch(url, targetUrl) {
   return null;
 }
 
+// ── Expression cross-check (VN visual metadata) ─────────────────────────────
+//
+// For every dialogue node carrying `visual.expression`, verify the
+// referenced speaker character actually tags that expression in its
+// `portrait_urls`. Missing expressions still fall back to the default
+// portrait at runtime, so mismatches are WARNINGS, not errors.
+
+function parseCharacterExpressionMap(yamlFiles) {
+  if (typeof yamlLoad !== 'function') return null;
+
+  const charMap = new Map(); // id -> { name, expressions:Set<string> }
+
+  for (const file of yamlFiles) {
+    const base = path.basename(file);
+    if (!/^char_.+\.ya?ml$/.test(base)) continue;
+
+    let data;
+    try {
+      data = yamlLoad(fs.readFileSync(file, 'utf8'));
+    } catch {
+      continue;
+    }
+    if (!data || typeof data !== 'object') continue;
+    if (typeof data.id !== 'string') continue;
+
+    const expressions = new Set();
+    if (Array.isArray(data.portrait_urls)) {
+      for (const entry of data.portrait_urls) {
+        if (entry && typeof entry.expression === 'string' && entry.expression.length > 0) {
+          expressions.add(entry.expression.toLowerCase());
+        }
+      }
+    }
+    charMap.set(data.id, {
+      name: typeof data.name === 'string' ? data.name : data.id,
+      expressions,
+    });
+  }
+
+  return charMap;
+}
+
+function checkExpressionCrossRefs(yamlFiles, charMap) {
+  if (typeof yamlLoad !== 'function' || !charMap || charMap.size === 0) {
+    return { checked: 0, warnings: [] };
+  }
+
+  const warnings = [];
+  let checked = 0;
+
+  for (const file of yamlFiles) {
+    const base = path.basename(file);
+    if (!/^(dialogue_|char_)/.test(base) && !file.includes('/dialogues/')) continue;
+
+    let data;
+    try {
+      data = yamlLoad(fs.readFileSync(file, 'utf8'));
+    } catch {
+      continue;
+    }
+    const nodes = data && typeof data === 'object' ? (data.nodes || data.overlays) : null;
+    if (!nodes || typeof nodes !== 'object') continue;
+
+    for (const [nodeId, node] of Object.entries(nodes)) {
+      if (!node || typeof node !== 'object') continue;
+      const visual = node.visual;
+      if (!visual || typeof visual !== 'object') continue;
+      const expression = typeof visual.expression === 'string' ? visual.expression.trim() : '';
+      if (!expression) continue;
+
+      const speakerId = typeof node.speaker_id === 'string' ? node.speaker_id : '';
+      const char = speakerId ? charMap.get(speakerId) : null;
+      if (!char) continue; // unknown/other-character speaker — can't verify
+
+      checked++;
+      if (char.expressions.size > 0 && !char.expressions.has(expression.toLowerCase())) {
+        warnings.push(
+          `${path.relative(process.cwd(), file)} node "${nodeId}" uses visual.expression "${expression}" ` +
+          `but ${char.name} only tags: ${[...char.expressions].join(', ') || '(none)'}`
+        );
+      }
+    }
+  }
+
+  return { checked, warnings };
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -307,6 +405,26 @@ async function main() {
     console.log(`  No orphaned .prompt.md files found.`);
   }
 
+  // Dialogue node `visual.expression` cross-check against character
+  // portrait_urls expression tags (VN visual metadata).
+  console.log(`\n🗣  Checking dialogue visual.expression cross-references...`);
+  const charMap = parseCharacterExpressionMap(yamlFiles);
+  const exprCheck = checkExpressionCrossRefs(yamlFiles, charMap);
+  let exprWarningCount = 0;
+  if (exprCheck.warnings.length > 0) {
+    console.log(`  Found ${exprCheck.warnings.length} warning(s):`);
+    for (const w of exprCheck.warnings) {
+      console.log(`  ⚠️  ${w}`);
+    }
+    exprWarningCount = exprCheck.warnings.length;
+  } else {
+    console.log(
+      typeof yamlLoad === 'function'
+        ? `  No expression cross-reference warnings (${exprCheck.checked} checked).`
+        : '  Skipped (js-yaml unavailable).'
+    );
+  }
+
   // Summary
   console.log(`\n${'='.repeat(50)}`);
   console.log(`📊 Summary`);
@@ -316,6 +434,7 @@ async function main() {
   console.log(`  ✅ Present:       ${okCount}`);
   console.log(`  ❌ Missing:       ${missingCount}`);
   console.log(`  ⚠️  Errors:       ${errorCount}`);
+  console.log(`  🗣  Visual expr:  ${exprWarningCount} warning(s)`);
   console.log(`  📝 Prompts:       ${allPromptFiles.length}`);
   console.log();
 

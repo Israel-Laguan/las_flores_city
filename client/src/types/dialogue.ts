@@ -19,4 +19,24 @@ export interface DialogueNode {
   }>;
   effects?: any;
   is_end?: boolean;
+  // Visual Novel staging metadata (DialogueNodeVisualSchema from shared).
+  visual?: DialogueNodeVisual;
 }
+
+export interface DialogueNodeVisual {
+  expression?: string;
+  background?: string;
+  mood?: 'rain' | 'tense' | 'night' | 'soft_bloom' | 'alert' | 'none';
+  position?: 'left' | 'center' | 'right';
+  transition?: 'fade' | 'slide' | 'flash' | 'none';
+  cinematic?: boolean;
+}
+
+export interface DialogueSpeakerInfo {
+  name: string;
+  title?: string | null;
+  avatar_url?: string | null;
+  portrait_urls?: Array<{ url: string; label?: string; expression?: string }> | null;
+}
+
+export type DialogueSpeakers = Record<string, DialogueSpeakerInfo>;
