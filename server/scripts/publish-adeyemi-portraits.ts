@@ -61,6 +61,66 @@ async function download(url: string, dest: string): Promise<{ bytes: number }> {
   return { bytes: buf.length };
 }
 
+interface PortraitEntryLike {
+  url?: string;
+  label?: unknown;
+  expression?: unknown;
+}
+
+type PortraitUrlEntry = { url: string; label: string; expression?: string };
+
+/**
+ * An entry's expression key: the `expression` tag when present, else the
+ * implicit `default` (the fallback entry may omit the tag).
+ */
+function entryExpression(entry: PortraitEntryLike): string {
+  return typeof entry.expression === 'string' && entry.expression
+    ? entry.expression.toLowerCase()
+    : 'default';
+}
+
+function stageOf(entry: PortraitEntryLike): string {
+  return typeof entry.label === 'string' && entry.label ? entry.label.toLowerCase() : '';
+}
+
+/**
+ * The client/server resolvers only treat UNTAGGED URLs as the resting default
+ * (see client/src/utils/resolvePortraitUrl.ts), so an explicit
+ * `expression: default` tag is normalized to the untagged fallback form the
+ * resolver expects.
+ */
+function normalizeDefaultToUntagged(entry: PortraitEntryLike): PortraitEntryLike {
+  if (typeof entry.expression === 'string' && entry.expression.toLowerCase() === 'default') {
+    const { expression: _expression, ...rest } = entry;
+    return rest;
+  }
+  return entry;
+}
+
+/**
+ * Merge a batch of uploaded entries with the YAML's existing `portrait_urls`.
+ * Uploaded entries replace only the existing entry with the same
+ * (label, expression) pair — publishing a `dev` variant must never remove a
+ * `production`/`staging` variant of the same expression. `default` (fallback)
+ * entries are kept first so a partial upload that omits the default never
+ * promotes an expression variant to the fallback.
+ */
+function buildMergedPortraitUrls(
+  uploaded: PortraitUrlEntry[],
+  existing: Array<Record<string, unknown>>,
+): Array<PortraitEntryLike> {
+  const uploadedKeys = new Set(uploaded.map((e) => `${stageOf(e)}:${entryExpression(e)}`));
+  return [
+    ...uploaded,
+    ...existing.filter((entry) => !uploadedKeys.has(`${stageOf(entry)}:${entryExpression(entry)}`)),
+  ]
+    .map((entry) => normalizeDefaultToUntagged(entry as PortraitEntryLike))
+    .sort(
+      (a, b) =>
+        Number(entryExpression(a) !== 'default') - Number(entryExpression(b) !== 'default')
+    );
+}
+
 /**
  * Replaces the top-level `portrait_urls:` block in the raw YAML text with
  * `blockBody` (the dumped array's lines). The rest of the file — including
@@ -121,9 +181,55 @@ async function main() {
   }
   console.log(`Publishing ${entries.length} portraits for ${SLUG}`);
 
+  // Preflight the batch BEFORE any download/upload: read the current YAML and
+  // validate the merged (upload + existing) portrait pool. A validation
+  // failure now aborts with nothing written to MinIO or disk, so repeated
+  // failed runs cannot orphan already-uploaded objects (previously the YAML
+  // write was the only step that could fail, after every portrait was pushed).
+  const raw = await fs.readFile(CHARACTER_YAML, 'utf8');
+  const data = (yaml.load(raw) as Record<string, unknown>) || {};
+
+  const existing = Array.isArray(data.portrait_urls)
+    ? (data.portrait_urls as Array<Record<string, unknown>>)
+    : [];
+
+  // Structural plan for this batch — real MinIO URLs are only known after the
+  // uploads, but the (label, expression) shape is fixed, which is all the
+  // default/stage validation below needs.
+  const plannedUploads: PortraitUrlEntry[] = entries.map((entry) => ({
+    url: '',
+    label: 'dev',
+    ...(entry.expression !== 'default' ? { expression: entry.expression } : {}),
+  }));
+
+  const mergedPlan = buildMergedPortraitUrls(plannedUploads, existing);
+  const defaults = mergedPlan.filter((entry) => !entry.expression);
+  if (defaults.length === 0) {
+    throw new Error(
+      'Refusing to write portrait_urls with no usable default entry; partial dev uploads must include an untagged default portrait.'
+    );
+  }
+
+  // Stage-aware check: the server orders the pool by the running environment's
+  // stage priority, so a `dev` batch of expression variants with no `dev`
+  // default resolves its resting portrait from another stage's default. That
+  // still renders a correct (expression-neutral) portrait, but the mixed stages
+  // are worth flagging so the author can publish a matching default. The
+  // message lists every available default instead of claiming which one the
+  // server selects — that selection follows stage priority, not YAML/merge
+  // order.
+  const publishedStage = stageOf(plannedUploads[0]);
+  if (!defaults.some((entry) => stageOf(entry) === publishedStage)) {
+    console.warn(
+      `\n⚠ No '${publishedStage}' default portrait: available defaults: ${defaults
+        .map((entry) => `'${stageOf(entry) || 'untagged'}'`)
+        .join(', ')}. Publish a '${publishedStage}' default to keep stages consistent.`
+    );
+  }
+
   await fs.mkdir(ASSETS_DIR, { recursive: true });
 
-  const portraitUrls: Array<{ url: string; label: string; expression?: string }> = [];
+  const portraitUrls: PortraitUrlEntry[] = [];
 
   for (const entry of entries) {
     const filename = FILENAMES[entry.expression]!;
@@ -152,63 +258,9 @@ async function main() {
   // Write portrait_urls back to the character YAML, preserving other fields
   // AND the original author comments/formatting: only the top-level
   // `portrait_urls:` block is replaced (see replacePortraitUrlsBlock).
-  // Merge by expression so a partial upload cannot discard the required
-  // default portrait or existing variants: uploaded entries replace their
-  // expression, while entries not included in this upload are preserved.
-  const raw = await fs.readFile(CHARACTER_YAML, 'utf8');
-  const data = (yaml.load(raw) as Record<string, unknown>) || {};
-
-  const existing = Array.isArray(data.portrait_urls)
-    ? (data.portrait_urls as Array<Record<string, unknown>>)
-    : [];
-  // An entry's expression key: the `expression` tag when present, else the
-  // implicit `default` (the fallback entry may omit the tag).
-  interface PortraitEntryLike { expression?: unknown; label?: unknown }
-  const entryExpression = (entry: PortraitEntryLike): string =>
-    typeof entry.expression === 'string' && entry.expression
-      ? entry.expression.toLowerCase()
-      : 'default';
-  const stageOf = (entry: PortraitEntryLike): string =>
-    typeof entry.label === 'string' && entry.label ? entry.label.toLowerCase() : '';
-
-  // An uploaded entry replaces only the existing entry with the same
-  // (label, expression) pair — publishing a `dev` variant must never remove a
-  // `production`/`staging` variant of the same expression.
-  const uploadedKeys = new Set(
-    portraitUrls.map((e) => `${stageOf(e)}:${entryExpression(e)}`)
-  );
-
-  const mergedPortraitUrls = [
-    ...portraitUrls,
-    ...existing.filter((entry) => !uploadedKeys.has(`${stageOf(entry)}:${entryExpression(entry)}`)),
-  ].sort(
-    // Keep the `default` (fallback) portrait first so a partial upload that
-    // omits the default never promotes an expression variant to the fallback.
-    // The client resolver also refuses to use an expression-tagged entry as the
-    // resting portrait (see client/src/utils/resolvePortraitUrl.ts), so this
-    // ordering is belt-and-braces rather than the sole guarantee.
-    (a, b) => Number(entryExpression(a) !== 'default') - Number(entryExpression(b) !== 'default')
-  );
-
-  const defaults = mergedPortraitUrls.filter((entry) => entryExpression(entry) === 'default');
-  if (defaults.length === 0) {
-    throw new Error(
-      'Refusing to write portrait_urls with no default entry; partial dev uploads must include a default portrait.'
-    );
-  }
-
-  // Stage-aware check: the server orders the pool by the running environment's
-  // stage priority, so a `dev` batch of expression variants with no `dev`
-  // default resolves its resting portrait from another stage's default. That
-  // still renders a correct (expression-neutral) portrait, but the mixed stages
-  // are worth flagging so the author can publish a matching default.
-  const publishedStage = stageOf(portraitUrls[0]);
-  if (!defaults.some((entry) => stageOf(entry) === publishedStage)) {
-    console.warn(
-      `\n⚠ No '${publishedStage}' default portrait: the resting portrait will resolve to the ` +
-        `'${stageOf(defaults[0]) || 'untagged'}' default. Publish a '${publishedStage}' default to keep stages consistent.`
-    );
-  }
+  // Rebuild the merge with the real upload URLs — same dedupe/normalization/
+  // ordering as the preflighted plan.
+  const mergedPortraitUrls = buildMergedPortraitUrls(portraitUrls, existing);
 
   // Serialize ONLY the merged array (not the whole document) and splice it
   // into the original file text at the `portrait_urls:` block, keeping all

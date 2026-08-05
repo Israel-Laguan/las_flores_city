@@ -54,7 +54,7 @@ export default function DialogueDetailPage() {
         </div>
       )}
       {ready && saveError && <div className={styles.errorBox}>{saveError}</div>}
-      {ready && saveSuccess && (
+      {ready && saveSuccess && !dirty && (
         <div className={styles.successBox}>
           Saved to YAML. Run the migration (Content → Migrate) to sync the DB.
         </div>

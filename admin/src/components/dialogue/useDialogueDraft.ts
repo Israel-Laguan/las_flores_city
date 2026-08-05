@@ -40,6 +40,18 @@ export function useDialogueDraft(id: string): DialogueDraft {
   // completion handler can re-arm dirty/success correctly for those edits.
   const dirtyDuringSaveRef = useRef(false);
 
+  // Reset ALL editor state when the entity changes: the previous dialogue's
+  // draft, path, and save flag must never render (or be saved) under a new
+  // /dialogues/[id]. `useEntityYaml` also aborts/scopes its own in-flight
+  // fetch to the current id, so the only `yaml` emission that can arrive here
+  // after a reset belongs to the current id.
+  useEffect(() => {
+    setDraft(null);
+    setValidationErrors(null);
+    setDirty(false);
+    resetSave();
+  }, [id, resetSave]);
+
   useEffect(() => {
     if (!yaml) return;
     setDraft((prev) => (prev === null || prev.id !== yaml.id ? (yaml as DialogueRecord) : prev));

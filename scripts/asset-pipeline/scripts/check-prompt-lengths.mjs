@@ -5,7 +5,10 @@
  * 
  * Scans all .prompt.md files and reports prompts that exceed NVIDIA NIM's
  * 800-character limit. Checks the ## Prompt (Draft) section preferentially;
- * falls back to ## Prompt if no draft section exists.
+ * falls back to ## Prompt if no draft section exists. Also validates named
+ * variants (`## Prompt — <name>`) and image-to-image background variants
+ * (`### \`night\` — <name>` + `**Edit prompt:**`), whose edit prompt is
+ * combined with the file-level negative prompt.
  * 
  * Usage:
  *   node check-prompt-lengths.mjs
@@ -119,24 +122,54 @@ function parsePromptFile(filePath) {
       results.push({ variantName, promptText, negativeText, type, section: 'named' });
     }
   }
+  // Track separately from `results.length` below: image-to-image variants add
+  // entries, but they must NOT suppress the primary prompt fallbacks.
+  const hasNamedVariants = results.some((r) => r.section === 'named');
 
-  if (results.length === 0 && hasDraftSection(content)) {
-    const draftText = extractDraftPrompt(content);
-    const negMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
-    const negativeText = negMatch ? negMatch[1].trim() : '';
-    if (draftText) {
-      results.push({ variantName: 'default (draft)', promptText: draftText, negativeText, type, section: 'draft' });
+  // Image-to-image variants used by scene/background prompt files:
+  //   ### `night` — Deeper night gallery
+  //   **Scale:** 5:3
+  //   **Edit prompt:**
+  //   Re-light the aquarium as a near-dark night gallery: ...
+  // The edit prompt inherits the file-level negative prompt so the combined
+  // length reflects what actually gets sent to the model.
+  const fileNegativeMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
+  const fileNegative = fileNegativeMatch ? fileNegativeMatch[1].trim() : '';
+
+  const i2iRegex = /^### `([^`]+)`[^\n]*\n([\s\S]*?)(?=^### `|^#{1,3} |(?![\s\S]))/gm;
+  while ((match = i2iRegex.exec(content)) !== null) {
+    const variantName = match[1].trim();
+    const editMatch = match[2].match(/\*\*Edit prompt:\*\*[^\S\n]*\n([\s\S]*)$/);
+    const promptText = editMatch ? editMatch[1].trim() : '';
+
+    if (promptText) {
+      results.push({ variantName, promptText, negativeText: fileNegative, type, section: 'variant' });
     }
   }
 
-  if (results.length === 0) {
-    const singlePromptMatch = content.match(/## Prompt\n([\s\S]*?)(?=## Negative Prompt|$)/);
-    if (singlePromptMatch) {
-      const promptText = singlePromptMatch[1].trim();
-      const negMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=## |$)/);
+  // Primary prompt fallbacks. These must not be suppressed by the i2i variant
+  // entries above. Mirrors the original two-step dispatch: try the draft
+  // section first, then fall back to a bare `## Prompt` when no draft was
+  // extracted (e.g. a draft header whose body starts on a blank line).
+  if (!hasNamedVariants) {
+    if (hasDraftSection(content)) {
+      const draftText = extractDraftPrompt(content);
+      const negMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
       const negativeText = negMatch ? negMatch[1].trim() : '';
-      if (promptText) {
-        results.push({ variantName: 'default', promptText, negativeText, type, section: 'full' });
+      if (draftText) {
+        results.push({ variantName: 'default (draft)', promptText: draftText, negativeText, type, section: 'draft' });
+      }
+    }
+
+    if (!results.some((r) => r.section === 'draft')) {
+      const singlePromptMatch = content.match(/## Prompt\n([\s\S]*?)(?=## Negative Prompt|$)/);
+      if (singlePromptMatch) {
+        const promptText = singlePromptMatch[1].trim();
+        const negMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=## |$)/);
+        const negativeText = negMatch ? negMatch[1].trim() : '';
+        if (promptText) {
+          results.push({ variantName: 'default', promptText, negativeText, type, section: 'full' });
+        }
       }
     }
   }
@@ -235,7 +268,9 @@ function main() {
     issues.forEach(issue => {
       const marker = issue.severity === 'ERROR' ? '❌' : '⚠️';
       const color = issue.severity === 'ERROR' ? '31' : '33';
-      const sectionTag = issue.section === 'draft' ? ' (draft)' : issue.section === 'named' ? ' (named)' : '';
+      const sectionTag = issue.section === 'draft' ? ' (draft)'
+        : issue.section === 'named' ? ' (named)'
+        : issue.section === 'variant' ? ' (i2i variant)' : '';
       console.log(`\x1b[${color}m${marker} ${issue.file} [${issue.variant}]${sectionTag} (${issue.type})`);
       console.log(`   Length: ${issue.length}/${MAX_NIM_LENGTH} chars`);
       if (issue.severity === 'ERROR') {

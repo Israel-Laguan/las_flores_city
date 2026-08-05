@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 
@@ -14,10 +14,14 @@ import '@testing-library/jest-dom';
 
 let mockPathname = '/dialogues/1';
 const routerReplace = vi.fn();
+const routeEvents = {
+  on: vi.fn(),
+  off: vi.fn(),
+};
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
   useSearchParams: () => new URLSearchParams(),
-  useRouter: () => ({ replace: routerReplace, push: vi.fn(), refresh: vi.fn() }),
+  useRouter: () => ({ replace: routerReplace, push: vi.fn(), refresh: vi.fn(), events: routeEvents }),
 }));
 
 import { useUnsafeNavigationGuard, isDialogueDirty, setDialogueDirty } from '../useUnsafeNavigationGuard';
@@ -30,9 +34,25 @@ function Editor({ dirty }: { dirty: boolean }) {
 let confirmSpy: ReturnType<typeof vi.spyOn>;
 let goSpy: ReturnType<typeof vi.spyOn>;
 
+/** Simulate the Navigation API's current-entry index (used for Back/Forward direction). */
+function withNavigationIndex(index: number): void {
+  Object.defineProperty(window, 'navigation', {
+    configurable: true,
+    value: { currentEntry: { index } },
+  });
+}
+
+/** The handler the hook registered for Next's `routeChangeStart` event. */
+function routeChangeStartHandler(): ((url: string) => void) | undefined {
+  const call = routeEvents.on.mock.calls.find(([event]) => event === 'routeChangeStart');
+  return call ? (call[1] as (url: string) => void) : undefined;
+}
+
 beforeEach(() => {
   mockPathname = '/dialogues/1';
   routerReplace.mockClear();
+  routeEvents.on.mockClear();
+  routeEvents.off.mockClear();
   setDialogueDirty(false);
   confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
   goSpy = vi.spyOn(window.history, 'go').mockImplementation(() => {});
@@ -40,11 +60,50 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  delete (window as { navigation?: unknown }).navigation;
 });
 
+// eslint-disable-next-line max-lines-per-function -- the suite spans many guards
 describe('useUnsafeNavigationGuard', () => {
   describe('browser back/forward', () => {
-    it('returns to the editor entry when the user declines', () => {
+    // jsdom's history.go is a no-op, so this is a mechanism-level assertion:
+    // a DECLINED Back is compensated with history.go(1), which returns to the
+    // editor's forward entry without appending a fresh history entry. The
+    // state-level guarantee (editor stays mounted, draft preserved) is asserted
+    // by the DOM checks below.
+    it('compensates a declined Back with a forward navigation', () => {
+      withNavigationIndex(2);
+      render(<Editor dirty />);
+
+      act(() => {
+        withNavigationIndex(1);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      // popstate cannot be cancelled, so the guard navigates forward again
+      // rather than pushing a new entry (which would pile up history).
+      expect(goSpy).toHaveBeenCalledWith(1);
+      // The editor is still mounted with its draft — nothing was re-rendered away.
+      expect(screen.getByRole('link', { name: 'Back to Dialogues' })).toBeInTheDocument();
+    });
+
+    it('compensates a declined Forward by navigating back again', () => {
+      withNavigationIndex(2);
+      render(<Editor dirty />);
+
+      act(() => {
+        withNavigationIndex(3);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      // go(-1) returns to the editor entry after a declined Forward — go(1)
+      // would move farther forward (or do nothing), leaving the dirty page.
+      expect(goSpy).toHaveBeenCalledWith(-1);
+    });
+
+    it('defaults to Back compensation when the Navigation API is unavailable', () => {
       render(<Editor dirty />);
 
       act(() => {
@@ -52,8 +111,6 @@ describe('useUnsafeNavigationGuard', () => {
       });
 
       expect(confirmSpy).toHaveBeenCalledTimes(1);
-      // popstate cannot be cancelled, so the guard navigates forward again
-      // rather than pushing a new entry (which would pile up history).
       expect(goSpy).toHaveBeenCalledWith(1);
     });
 
@@ -124,9 +181,40 @@ describe('useUnsafeNavigationGuard', () => {
     it('ignores clicks while the editor is clean', () => {
       render(<Editor dirty={false} />);
 
-      fireEvent.click(screen.getByRole('link', { name: 'Back to Dialogues' }));
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      act(() => {
+        screen.getByRole('link', { name: 'Back to Dialogues' }).dispatchEvent(clickEvent);
+      });
 
       expect(confirmSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('programmatic router navigation (logout, router.replace)', () => {
+    it('confirms and reverts to the editor when the user declines', () => {
+      render(<Editor dirty />);
+      const handler = routeChangeStartHandler();
+      expect(handler).toBeTypeOf('function');
+
+      act(() => {
+        handler!('/login');
+      });
+
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      expect(routerReplace).toHaveBeenCalledWith(window.location.href);
+      expect(screen.getByRole('link', { name: 'Back to Dialogues' })).toBeInTheDocument();
+    });
+
+    it('lets the navigation through when the user confirms', () => {
+      confirmSpy.mockReturnValue(true);
+      render(<Editor dirty />);
+      const handler = routeChangeStartHandler();
+
+      act(() => {
+        handler!('/login');
+      });
+
+      expect(routerReplace).not.toHaveBeenCalled();
     });
   });
 
@@ -163,6 +251,14 @@ describe('useUnsafeNavigationGuard', () => {
       expect(isDialogueDirty()).toBe(false);
 
       unmount();
+    });
+
+    it('clears the shared flag when the editor unmounts', () => {
+      const { unmount } = render(<Editor dirty />);
+      expect(isDialogueDirty()).toBe(true);
+
+      unmount();
+      expect(isDialogueDirty()).toBe(false);
     });
   });
 });

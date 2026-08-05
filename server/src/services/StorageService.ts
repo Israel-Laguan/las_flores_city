@@ -89,9 +89,41 @@ function parseS3Location(mediaUrl: string): { bucket: string; key: string } | nu
  * signed with, so we must sign against the public origin when one is configured
  * (otherwise rewriting the host afterward invalidates the signature →
  * SignatureDoesNotMatch). Server-side operations keep using `getS3Client()`.
+ *
+ * This endpoint is handed to the browser inside presigned URLs, so it must be
+ * served over https: outside local development — http: is only accepted for
+ * loopback (localhost / 127.0.0.1 / ::1) endpoints, otherwise the signed S3
+ * credentials would travel in cleartext until they expire.
  */
+function assertSecurePublicEndpoint(publicUrl: string): void {
+  let url: URL;
+  try {
+    url = new URL(publicUrl);
+  } catch {
+    throw new Error(
+      `MINIO_PUBLIC_URL is not a valid URL: "${publicUrl}". It must be a full http(s) origin browsers can reach.`
+    );
+  }
+  const hostname = url.hostname.toLowerCase();
+  const isLoopback =
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '[::1]' ||
+    hostname === '::1';
+  if (url.protocol === 'http:' && !isLoopback) {
+    throw new Error(
+      `MINIO_PUBLIC_URL "${publicUrl}" uses insecure http: for a non-loopback host. ` +
+        'Presigned URLs carry S3 credentials in the query string, so they must be ' +
+        'served over https: outside local development. Use http: only for localhost/127.0.0.1 endpoints.'
+    );
+  }
+}
+
 function getPublicS3Client(): S3Client {
   if (!publicS3Client) {
+    if (MINIO_PUBLIC_URL) {
+      assertSecurePublicEndpoint(MINIO_PUBLIC_URL);
+    }
     const endpoint = MINIO_PUBLIC_URL
       ? MINIO_PUBLIC_URL.replace(/\/$/, '')
       : getMinioEndpointUrl();
