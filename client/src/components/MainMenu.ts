@@ -106,10 +106,8 @@ export class MainMenu {
   }
 
   private handleAbout(): void {
-    const url = import.meta.env.VITE_ABOUT_US_URL as string;
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
+    const url = import.meta.env.VITE_ABOUT_US_URL || 'https://example.com/about-us';
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   private async handleLogout(): Promise<void> {

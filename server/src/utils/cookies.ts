@@ -45,6 +45,7 @@ export function setSessionCookie(res: Response, token: string): void {
     sameSite: sameSiteValue(),
     maxAge: MAX_AGE_MS,
     path: '/',
+    domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost',
   });
 }
 
@@ -54,5 +55,6 @@ export function clearSessionCookie(res: Response): void {
     secure: process.env.NODE_ENV === 'production',
     sameSite: sameSiteValue(),
     path: '/',
+    domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost',
   });
 }

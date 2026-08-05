@@ -305,17 +305,20 @@ run_e2e() {
     log_info "Building E2E image..."
     podman build -f client/Dockerfile.e2e -t las-flores-e2e .
     
-    # Get server IP
-    SERVER_IP=$(podman inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' las-flores-server)
-    
     # Run E2E tests
+    #
+    # API_URL must point at the Vite dev server (http://localhost:5173), NOT the
+    # raw server container IP. The browser page lives on localhost:5173, and the
+    # auth cookie is host-scoped: a cookie set against the server IP would never
+    # be sent for localhost:5173 requests, leaving every test stuck on the login
+    # screen. Routing API_URL through the proxy keeps cookie + page on the same host.
     log_info "Running E2E tests..."
     podman run --rm \
         --network las-flores-net \
         -v "$(pwd)/client:/app/client" \
         -v "$(pwd)/shared:/app/shared" \
         -v /app/client/node_modules \
-        -e API_URL="http://${SERVER_IP}:3000" \
+        -e API_URL="http://localhost:5173" \
         -w /app/client \
         las-flores-e2e \
         npx playwright test --config playwright.docker.config.ts

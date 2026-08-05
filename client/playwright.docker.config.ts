@@ -15,11 +15,11 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'VITE_API_PROXY_TARGET=http://server:3000 npm run dev',
+    command: 'VITE_API_PROXY_TARGET=http://las-flores-server:3000 npm run dev',
     port: 5173,
     reuseExistingServer: !process.env.CI,
     env: {
-      VITE_API_PROXY_TARGET: 'http://server:3000',
+      VITE_API_PROXY_TARGET: 'http://las-flores-server:3000',
     },
   },
 });
