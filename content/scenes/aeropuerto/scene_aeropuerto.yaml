@@ -29,5 +29,6 @@ metadata:
     - The autonomous loading vehicles in the cargo processing wing run on a seventeen-minute cycle timed for the overnight Asian market cargo windows. From the public concourse the cargo wing is invisible. Its operational hum is audible as a sub-bass frequency that passengers register as airport ambiance and do not investigate.
     - A child is sleeping across two seats near gate 7. Their parent is monitoring the holographic departures board. The board updates every ninety seconds. The child's breathing rate is approximately fourteen cycles per minute. Both are accurate.
     - The public address system just announced a delay on the 14:20 departure. The automated voice tone is calibrated to convey information without provoking anxiety. I find the calibration successful and the calibration itself informative about what the airport expects passenger anxiety to cost.
+lore_path: aeropuerto.md
 asset_paths:
-  background: scenes/scene_aeropuerto/background.jpg
+  background: aeropuerto__default.png

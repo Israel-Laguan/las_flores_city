@@ -29,5 +29,6 @@ metadata:
     - The chronically delayed lines on the route map are the Red Line's southern section and the Green Line's dock loop. These are the sections serving the working-class and Port Area populations respectively. The routes serving North Las Flores and the commercial district run within 90 seconds of schedule. The map displays all routes in the same formatting. The delay patterns are legible only to people who take the same train every day.
     - The emergency broadcast screen at the platform's northern end last displayed an emergency message 11 months ago — a fire in a commercial building two blocks north. Since then it has displayed a rotating sequence of public health messages. The messages rotate every 4 minutes. I have now seen each message 3 times.
     - The crowd footstep acoustic signature on this platform is statistically measurable as a commuter population — purpose-directed, consistent pace, minimal lateral deviation. Tourists move differently. Station staff move differently again. I can identify all three categories by gait pattern without using facial recognition. The surveillance array above me is using facial recognition.
+lore_path: estacion_central.md
 asset_paths:
-  background: scenes/scene_estacion_central/background.jpg
+  background: estacion_central__default.png

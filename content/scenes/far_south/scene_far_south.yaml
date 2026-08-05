@@ -11,5 +11,6 @@ metadata:
     - Wind moves through the crops. The air quality is significantly better than the city center.
     - Solar panels on distant rooftops catch the afternoon light. Energy independence is increasing.
     - The road ahead is unpaved. Vehicle traffic is minimal.
+lore_path: far_south.md
 asset_paths:
-  background: scenes/scene_far_south/background.jpg
+  background: far_south__default.png

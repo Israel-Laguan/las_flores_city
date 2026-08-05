@@ -9,7 +9,7 @@ working Adeyemi Ogunbiyi pipeline (5 expression variants live in
 
 ### File naming
 
-```
+```text
 content/characters/<slug>/assets/
   <slug>__default.png          ← neutral / base (always required)
   <slug>__<expression>.png     ← expression variants
@@ -67,7 +67,7 @@ Selection happens in `resolvePortraitUrl(speaker, expression)`
 
 ### File naming
 
-```
+```text
 content/scenes/<slug>/assets/
   <slug>__default.png          ← required day / neutral shot
   <slug>__night.png            ← night version (darker palette, neon glow)
@@ -132,7 +132,7 @@ time-of-day band participates. When a real weather source lands (server → game
 state), pass it first — it outranks time-of-day by construction of the ordered
 hint list.
 
-```
+```text
 getTimeOfDay(phoneStore.getState().timeBlocks)   // real game clock
   → buildBackgroundHints(timeOfDay, weather?, visual?.mood)
   → [weather?, timeOfDayTag?, mood?]             // ordered, de-duped
@@ -170,7 +170,7 @@ fall back gracefully.
 
 ## 3. Data flow (server → client)
 
-```
+```text
 scenes.background_urls (JSONB)
   → assembleScenePayload()  (server/src/routes/location.ts)
       ├─ scene.backgroundUrl   ← resolveAssetUrl(pool)  — map-view default

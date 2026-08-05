@@ -14,5 +14,6 @@ metadata:
     - Pedestrians flow through the plaza in rhythmic patterns. The crowd density is moderate.
     - Holographic advertisements flicker above the fountain. Consumer optimism is high.
     - The plaza's power grid shows minor fluctuations. Likely due to the afternoon heat.
+lore_path: central_plaza.md
 asset_paths:
-  background: scenes/scene_central_plaza/background.jpg
+  background: central_plaza__default.png

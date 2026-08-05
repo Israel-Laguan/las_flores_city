@@ -27,5 +27,6 @@ metadata:
     - "Sponsor kiosk density: one unit per forty metres of midway. Each kiosk logs visitor proximity dwell-time and face-direction via passive biometric read. I am currently being logged by three kiosks simultaneously."
     - The park's perimeter drones are making their twelfth circuit since I arrived. Navigation lights at 1.2-second intervals. The children have stopped noticing them. Most adults have not started.
     - The sound system output is calibrated at 82dB across the midway. Human cognitive processing of environmental detail declines measurably above 75dB. The park is engineered to inhibit the kind of attention that would notice what it is doing.
+lore_path: parque_atracciones.md
 asset_paths:
-  background: scenes/scene_parque_atracciones/background.jpg
+  background: parque_atracciones__default.png

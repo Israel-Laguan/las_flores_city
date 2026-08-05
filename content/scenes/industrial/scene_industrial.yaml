@@ -17,5 +17,6 @@ metadata:
     - Machine hum dominates the soundscape. Shift change is approaching.
     - The air carries traces of industrial compounds. Filtration systems are operational.
     - Workers move between buildings with practiced efficiency. The pace is relentless.
+lore_path: industrial.md
 asset_paths:
-  background: scenes/scene_industrial/background.jpg
+  background: industrial__default.png

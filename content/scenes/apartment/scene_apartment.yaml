@@ -31,5 +31,6 @@ metadata:
     - The bed is functional. Not comfortable. Comfort was not in the N&M contract.
     - Running background diagnostics. Everything nominal. Everything hollow.
     - The rain outside sounds like static on a dead channel.
+lore_path: apartment.md
 asset_paths:
-  background: scenes/scene_apartment/background.jpg
+  background: apartment__default.png

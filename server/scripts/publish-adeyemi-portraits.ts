@@ -94,9 +94,31 @@ async function main() {
   }
 
   // Write portrait_urls back to the character YAML (preserving other fields).
+  // Merge by expression so a partial upload cannot discard the required
+  // default portrait or existing variants: uploaded entries replace their
+  // expression, while entries not included in this upload are preserved.
   const raw = await fs.readFile(CHARACTER_YAML, 'utf8');
   const data = (yaml.load(raw) as Record<string, unknown>) || {};
-  data.portrait_urls = portraitUrls;
+
+  const existing = Array.isArray(data.portrait_urls)
+    ? (data.portrait_urls as Array<Record<string, unknown>>)
+    : [];
+  const uploadedExpressions = new Set(
+    portraitUrls
+      .map((e) => (e.expression ?? 'default').toLowerCase())
+  );
+  // An entry's expression key: the `expression` tag when present, else the
+  // implicit `default` (the fallback entry may omit the tag).
+  const entryExpression = (entry: Record<string, unknown>): string =>
+    typeof entry.expression === 'string' && entry.expression
+      ? entry.expression.toLowerCase()
+      : 'default';
+
+  data.portrait_urls = [
+    ...portraitUrls,
+    ...existing.filter((entry) => !uploadedExpressions.has(entryExpression(entry))),
+  ];
+
   await fs.writeFile(CHARACTER_YAML, yaml.dump(data, { lineWidth: -1, noRefs: true }), 'utf8');
   console.log(`\nYAML updated: ${CHARACTER_YAML}`);
   console.log(JSON.stringify(portraitUrls, null, 2));

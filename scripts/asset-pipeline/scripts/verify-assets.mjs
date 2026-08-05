@@ -122,6 +122,30 @@ function findAllPromptFiles(dir) {
   return results;
 }
 
+function isAssetUrl(value) {
+  return typeof value === 'string' && (
+    value.startsWith('http://') || value.startsWith('https://') || value.startsWith('s3://')
+  );
+}
+
+/**
+ * Resolve an asset reference to an HTTP(S) URL that can be HEAD-checked.
+ * - Full http(s) URLs pass through unchanged.
+ * - `s3://<bucket>/<key>` URIs (the published format written by
+ *   `uploadToMinio`) resolve to `<minioBase>/<bucket>/<key>`.
+ * - Otherwise it is treated as a relative MinIO path.
+ */
+function toCheckUrl(url, minioBase) {
+  if (url.startsWith('s3://')) {
+    const rest = url.slice('s3://'.length);
+    const slashIdx = rest.indexOf('/');
+    const bucket = slashIdx === -1 ? rest : rest.slice(0, slashIdx);
+    const key = slashIdx === -1 ? '' : rest.slice(slashIdx + 1);
+    return `${minioBase}/${bucket}/${key}`;
+  }
+  return url.startsWith('http') ? url : `${minioBase}/${url.replace(/^\//, '')}`;
+}
+
 function extractUrls(obj, results = []) {
   if (!obj || typeof obj !== 'object') return results;
 
@@ -131,9 +155,9 @@ function extractUrls(obj, results = []) {
   }
 
   for (const [key, value] of Object.entries(obj)) {
-    if (key === 'url' && typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+    if (key === 'url' && isAssetUrl(value)) {
       results.push(value);
-    } else if (key.endsWith('_url') && typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+    } else if (key.endsWith('_url') && isAssetUrl(value)) {
       results.push(value);
     } else if (typeof value === 'object' && value !== null) {
       extractUrls(value, results);
@@ -145,9 +169,7 @@ function extractUrls(obj, results = []) {
 
 function checkUrl(url, minioBase, checkMime, checkDimensions) {
   return new Promise((resolve) => {
-    // If it's already a full MinIO URL, check it directly
-    // Otherwise, assume it's a relative MinIO path
-    const targetUrl = url.startsWith('http') ? url : `${minioBase}/${url.replace(/^\//, '')}`;
+    const targetUrl = toCheckUrl(url, minioBase);
 
     const parsed = new URL(targetUrl);
     const lib = parsed.protocol === 'https:' ? https : http;
@@ -346,8 +368,10 @@ async function main() {
       // Parse YAML manually to avoid needing a YAML library
       const raw = fs.readFileSync(yamlFile, 'utf-8');
       
-      // Simple YAML URL extraction pattern: look for *_url: "http..." (including nested list items)
-      const urlPattern = /(?:^|\n)\s*(?:-\s*)?(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?(https?:\/\/[^"'\s]+)["']?/g;
+      // Simple YAML URL extraction pattern: look for `*_url:` / `url:` values
+      // (including nested list items). Accepts http(s): and the `s3://`
+      // published URI format written by uploadToMinio.
+      const urlPattern = /(?:^|\n)\s*(?:-\s*)?(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?((?:https?:\/\/|s3:\/\/)[^"'\s]+)["']?/g;
       const urls = [];
       let match;
       while ((match = urlPattern.exec(raw)) !== null) {

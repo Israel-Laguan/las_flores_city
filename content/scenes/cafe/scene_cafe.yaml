@@ -14,5 +14,6 @@ metadata:
     - The espresso machine is releasing pressurized steam. The local grid is stable.
     - The music playing over the speakers is a slow, synthesized Andean melody.
     - I detect fine coffee grounds on the counter. The environment is highly organic.
+lore_path: cafe.md
 asset_paths:
-  background: scenes/scene_cafe/background.jpg
+  background: cafe__default.png

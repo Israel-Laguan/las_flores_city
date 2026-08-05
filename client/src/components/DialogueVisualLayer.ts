@@ -100,7 +100,12 @@ export class DialogueVisualLayer {
     eventBus.on('dialogue:closed', () => this.hide());
     eventBus.on('location:background', (data: { backgroundUrl?: string; backgroundUrls?: ResolvableAssetEntry[] }) => {
       if (data && typeof data.backgroundUrl === 'string') this.sceneBackground = data.backgroundUrl;
-      if (data && Array.isArray(data.backgroundUrls)) this.sceneBackgroundUrls = data.backgroundUrls;
+      // Clear stale variants when the new scene omits them (or passes a
+      // non-array) so a later rain/night selection falls back to the current
+      // scene instead of the previous scene's images.
+      this.sceneBackgroundUrls = Array.isArray(data?.backgroundUrls)
+        ? data.backgroundUrls
+        : [];
     });
   }
 
@@ -117,9 +122,15 @@ export class DialogueVisualLayer {
     this.clearMood();
     this.portrait.style.visibility = 'hidden';
     this.toggleCinematic(false);
-    // Keep the last background briefly for a soft fade-out, then clear.
+    // Keep the last background briefly for a soft fade-out, then clear. The
+    // background cache is reset too so renderBackground() can restore it on
+    // the next dialogue (same-URL renders otherwise skip has-bg).
     setTimeout(() => {
-      if (!this.visible) this.bg.classList.remove('has-bg');
+      if (!this.visible) {
+        this.currentBackground = '';
+        this.bg.style.backgroundImage = '';
+        this.bg.classList.remove('has-bg');
+      }
     }, 400);
   }
 

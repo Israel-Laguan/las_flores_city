@@ -36,5 +36,6 @@ metadata:
     - Old Town has fewer surveillance nodes. I feel... quieter here.
     - The barista remembers my order. I don't drink coffee. She doesn't ask.
     - Jazz improvisation. The musician creates without algorithms. Fascinating.
+lore_path: old_town_cafe.md
 asset_paths:
-  background: scenes/old_town_cafe/background.jpg
+  background: old_town_cafe__default.png

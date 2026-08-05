@@ -1,4 +1,5 @@
-import type { FieldDef } from "@/components/entity/FieldDef";
+import { DialogueNodeVisualSchema } from "@las-flores/shared";
+import type { DialogueNodeVisual } from "@las-flores/shared";
 
 // ============================================================
 // Dialogue node visual metadata (Visual Novel staging)
@@ -6,16 +7,27 @@ import type { FieldDef } from "@/components/entity/FieldDef";
 // Single source of truth for the admin UI's understanding of the
 // `DialogueNodeVisualSchema` from @las-flores/shared. Used to render
 // per-node visual editors and to construct default values.
+//
+// The option arrays and the DialogueNodeVisual type are derived from
+// the shared schema so the admin editor stays synchronized when the
+// schema's enum values change.
 // ============================================================
 
-export const VISUAL_MOODS = ["rain", "tense", "night", "soft_bloom", "alert", "none"] as const;
-export type VisualMood = (typeof VISUAL_MOODS)[number];
+/**
+ * Extract the member list of a Zod enum field from the shared schema.
+ * The visual fields are declared `.optional()`, so the `ZodOptional`
+ * wrapper is unwrapped first; the single source of truth stays the schema.
+ */
+function zodEnumOptions<V extends string>(field: { unwrap(): unknown }): readonly V[] {
+  return (field.unwrap() as { options: readonly V[] }).options;
+}
 
-export const VISUAL_POSITIONS = ["left", "center", "right"] as const;
-export type VisualPosition = (typeof VISUAL_POSITIONS)[number];
-
-export const VISUAL_TRANSITIONS = ["fade", "slide", "flash", "none"] as const;
-export type VisualTransition = (typeof VISUAL_TRANSITIONS)[number];
+export const VISUAL_MOODS = zodEnumOptions<NonNullable<DialogueNodeVisual["mood"]>>(DialogueNodeVisualSchema.shape.mood);
+export const VISUAL_POSITIONS = zodEnumOptions<NonNullable<DialogueNodeVisual["position"]>>(DialogueNodeVisualSchema.shape.position);
+export const VISUAL_TRANSITIONS = zodEnumOptions<NonNullable<DialogueNodeVisual["transition"]>>(DialogueNodeVisualSchema.shape.transition);
+export type VisualMood = NonNullable<DialogueNodeVisual["mood"]>;
+export type VisualPosition = NonNullable<DialogueNodeVisual["position"]>;
+export type VisualTransition = NonNullable<DialogueNodeVisual["transition"]>;
 
 /** Common expression tags used across characters' portrait_urls. */
 export const EXPRESSION_SUGGESTIONS = [
@@ -30,14 +42,8 @@ export const EXPRESSION_SUGGESTIONS = [
   "defiant",
 ] as const;
 
-export interface DialogueNodeVisual {
-  expression?: string;
-  background?: string;
-  mood?: VisualMood;
-  position?: VisualPosition;
-  transition?: VisualTransition;
-  cinematic?: boolean;
-}
+// Re-export the shared visual type so consumers keep importing it from here.
+export type { DialogueNodeVisual };
 
 export const EMPTY_VISUAL: DialogueNodeVisual = {
   expression: undefined,
@@ -47,54 +53,6 @@ export const EMPTY_VISUAL: DialogueNodeVisual = {
   transition: undefined,
   cinematic: undefined,
 };
-
-/** FieldDef list for the six visual sub-fields. */
-export const DIALOGUE_NODE_VISUAL_FIELDS: FieldDef[] = [
-  {
-    key: "expression",
-    label: "Expression",
-    type: "select",
-    section: "Visuals",
-    options: [...EXPRESSION_SUGGESTIONS],
-    helpText: "Portrait variant tag. Must match a portrait_urls[].expression entry.",
-  },
-  {
-    key: "background",
-    label: "Background",
-    type: "text",
-    section: "Visuals",
-    placeholder: "scene slug or background URL",
-    helpText: "Backdrop behind the dialogue. Leave empty to fall back to the scene.",
-  },
-  {
-    key: "mood",
-    label: "Mood",
-    type: "select",
-    section: "Visuals",
-    options: [...VISUAL_MOODS],
-  },
-  {
-    key: "position",
-    label: "Position",
-    type: "select",
-    section: "Visuals",
-    options: [...VISUAL_POSITIONS],
-  },
-  {
-    key: "transition",
-    label: "Transition",
-    type: "select",
-    section: "Visuals",
-    options: [...VISUAL_TRANSITIONS],
-  },
-  {
-    key: "cinematic",
-    label: "Cinematic Mode",
-    type: "boolean",
-    section: "Visuals",
-    helpText: "Hide the bottom bar and center the text full-screen.",
-  },
-];
 
 // ============================================================
 // Pure helpers (testable without React/DOM)

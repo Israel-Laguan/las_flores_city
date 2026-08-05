@@ -11,5 +11,6 @@ metadata:
     - Residents move through their daily routines. Predictability is a form of comfort.
     - Small shops line the main avenue. Commerce is steady, not spectacular.
     - The neighborhood watch app shows normal activity levels. All quiet.
+lore_path: north.md
 asset_paths:
-  background: scenes/scene_north/background.jpg
+  background: north__default.png

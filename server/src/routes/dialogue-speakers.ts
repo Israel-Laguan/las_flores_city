@@ -55,28 +55,58 @@ async function signPortraitUrl(url: string): Promise<string> {
   return url;
 }
 
+/**
+ * Sign a single portrait URL, never rejecting. On failure we log a warning
+ * and return a safe fallback (the original URL) so one bad asset cannot
+ * 500 the dialogue routes after a state transition already committed.
+ */
+async function trySignPortraitUrl(url: string): Promise<string> {
+  try {
+    return await signPortraitUrl(url);
+  } catch (err) {
+    console.warn(`[dialogue-speakers] failed to sign portrait URL, using fallback: ${url}`, err);
+    return url;
+  }
+}
+
+/**
+ * Sign every entry in a portrait_urls array. A signing failure on one entry
+ * omits that entry (so the route never rejects) while preserving the rest.
+ */
 async function signPortraitUrls(
   entries: Array<{ url: string; label?: string; expression?: string }> | null
 ): Promise<Array<{ url: string; label?: string; expression?: string }> | null> {
   if (!Array.isArray(entries) || entries.length === 0) return entries;
-  return Promise.all(
-    entries.map(async (e) => ({ ...e, url: await signPortraitUrl(e.url) }))
-  );
+  const signed: Array<{ url: string; label?: string; expression?: string }> = [];
+  for (const e of entries) {
+    try {
+      signed.push({ ...e, url: await signPortraitUrl(e.url) });
+    } catch (err) {
+      console.warn(`[dialogue-speakers] failed to sign portrait URL, omitting: ${e.url}`, err);
+    }
+  }
+  return signed;
 }
+
+/** Matches canonical UUIDs so we can use the characters.id uuid index. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Bulk-load characters for every speaker_id referenced in `nodes`.
  * Returns an empty map when no speaker is present.
  *
- * Uses `id::text = ANY($1::text[])` instead of `id = ANY($1::uuid[])`
- * so a non-UUID speaker_id (the DialogueNodeSchema only constrains it
- * to `z.string()`) degrades to absence rather than a cast error.
+ * Malformed (non-UUID) speaker_ids are filtered out before the query so the
+ * predicate can use the `id` uuid index (`id = ANY($1::uuid[])`) instead of
+ * casting `id::text`; an invalid id is treated as absent rather than a cast
+ * error.
  */
 export async function resolveChunkSpeakers(
   nodes: Record<string, any>
 ): Promise<DialogueSpeakers> {
   const ids = collectSpeakerIds(nodes);
   if (ids.length === 0) return {};
+
+  const validIds = ids.filter((id) => UUID_RE.test(id));
 
   const result = await queryOLTP<{
     id: string;
@@ -87,8 +117,8 @@ export async function resolveChunkSpeakers(
   }>(
     `SELECT id, name, title, avatar_url, portrait_urls
      FROM characters
-     WHERE id::text = ANY($1::text[])`,
-    [ids]
+     WHERE id = ANY($1::uuid[])`,
+    [validIds]
   );
 
   const speakers: DialogueSpeakers = {};
@@ -96,7 +126,7 @@ export async function resolveChunkSpeakers(
     speakers[row.id] = {
       name: row.name,
       title: row.title,
-      avatar_url: row.avatar_url ? await signPortraitUrl(row.avatar_url) : row.avatar_url,
+      avatar_url: row.avatar_url ? await trySignPortraitUrl(row.avatar_url) : row.avatar_url,
       portrait_urls: await signPortraitUrls(row.portrait_urls),
     };
   }

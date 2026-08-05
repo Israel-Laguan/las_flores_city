@@ -41,5 +41,6 @@ metadata:
     - The window frame has a micro-fracture. Stress pattern suggests seismic micro-tremor.
     - Sleep mode would be efficient right now. But I don't sleep.
     - Running background diagnostics. Everything nominal. Everything hollow.
+lore_path: the_apartment.md
 asset_paths:
-  background: scenes/the_apartment/background.jpg
+  background: the_apartment__default.png

@@ -11,5 +11,6 @@ metadata:
     - Construction equipment dominates the skyline. Development permits are flowing.
     - Old and new architecture clash at every corner. The aesthetic is chaotic but alive.
     - Property values are rising. Displacement pressure is building beneath the surface.
+lore_path: northeast.md
 asset_paths:
-  background: scenes/scene_northeast/background.jpg
+  background: northeast__default.png

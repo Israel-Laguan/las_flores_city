@@ -61,8 +61,12 @@ describe('Dialogue speakers enrichment', () => {
       );
       try {
         await queryOLTP(sql);
-      } catch {
-        // Already applied
+      } catch (err: any) {
+        // Swallow only the already-applied SQLSTATEs (duplicate table/object),
+        // not real migration failures (syntax, permission, connection) —
+        // those must surface so the suite does not run on a broken schema.
+        const code = err?.code;
+        if (code !== '42P07' && code !== '42710') throw err;
       }
     };
     await applyMigration('001_initial_schema.sql');

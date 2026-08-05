@@ -27,5 +27,6 @@ metadata:
     - The bass frequencies from the sub-bass cabinets are leaking through the converted warehouse walls into the Central City street. I can measure them at forty-three metres from the building exterior. This is, technically, a noise ordinance violation. The ordinance has been logged fourteen times against this venue. It has never been enforced.
     - The bar counter is running at full capacity. Sliding-scale pricing is still in effect for the house ferments. Someone ordered the synthetic protein-malt without asking the price. Someone else checked before ordering. The venue does not make them feel different about this.
     - The ventilation scrubbers are cycling audibly above the crowd noise as body heat and exhalation push the atmospheric sensors into the yellow range. The scrubbers are working. The crowd is not concerned. This is the correct relationship to have with functional infrastructure.
+lore_path: la_casa_de_la_musica.md
 asset_paths:
-  background: scenes/scene_la_casa_de_la_musica/background.jpg
+  background: la_casa_de_la_musica__default.png

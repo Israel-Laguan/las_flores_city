@@ -66,6 +66,7 @@ function NodeList({
         <button
           key={n.id}
           type="button"
+          aria-pressed={n.id === selectedId}
           onClick={() => onSelect(n.id)}
           className={cn(
             styles.nodeButton,
@@ -98,13 +99,25 @@ function NodeVisualForm({
     <div className={styles.editor}>
       <div className={styles.editorHeader}>
         <strong>Node: {selected.id}</strong>
-        <span className={styles.editorText}>{selected.text.slice(0, 90)}…</span>
+        <span className={styles.editorText}>{selected.text}</span>
       </div>
 
       <div className={styles.controlsGrid}>
-        {selectControl("Expression", visual?.expression, EXPRESSION_SUGGESTIONS, (expression) =>
-          onPatch({ expression })
-        )}
+        <label className={styles.control}>
+          <span className={styles.controlLabel}>Expression</span>
+          <input
+            className={cn("input", styles.input)}
+            list="visual-expression-suggestions"
+            value={visual?.expression ?? ""}
+            placeholder="e.g. calculating"
+            onChange={(e) => onPatch({ expression: e.target.value || undefined })}
+          />
+          <datalist id="visual-expression-suggestions">
+            {EXPRESSION_SUGGESTIONS.map((opt) => (
+              <option key={opt} value={opt} />
+            ))}
+          </datalist>
+        </label>
         <label className={styles.control}>
           <span className={styles.controlLabel}>Background</span>
           <input
@@ -128,7 +141,7 @@ function NodeVisualForm({
           <input
             type="checkbox"
             checked={visual?.cinematic === true}
-            onChange={(e) => onPatch({ cinematic: e.target.checked })}
+            onChange={(e) => onPatch({ cinematic: e.target.checked || undefined })}
           />
         </label>
       </div>

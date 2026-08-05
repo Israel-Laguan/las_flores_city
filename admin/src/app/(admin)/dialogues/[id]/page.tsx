@@ -18,41 +18,70 @@ export default function DialogueDetailPage() {
 
   const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[] | null>(null);
+  // Tracks whether the in-memory draft differs from the last loaded/saved YAML
+  // so we can warn before an unsaved edit is discarded (in-app nav / reload).
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    if (yaml && (draft === null || (yaml as any).id !== draft.id)) {
-      setDraft(yaml as Record<string, unknown>);
-    }
+    if (!yaml) return;
+    setDraft((prev) => (prev === null || prev.id !== yaml.id ? (yaml as Record<string, unknown>) : prev));
+    setDirty(false);
   }, [yaml]);
 
   useEffect(() => {
-    if (saveSuccess) setValidationErrors(null);
+    if (saveSuccess) {
+      setValidationErrors(null);
+      setDirty(false);
+    }
   }, [saveSuccess]);
+
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (dirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [dirty]);
 
   const handleDraftChange = (next: Record<string, unknown>) => {
     setDraft(next);
+    setDirty(true);
     resetSave();
   };
 
   const handleSave = async () => {
     if (!draft) return;
-    const parsed = YAMLDialogueSchema.safeParse(draft);
-    if (!parsed.success) {
-      const issues = parsed.error?.issues ?? [];
-      setValidationErrors(issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`));
-      return;
-    }
-    setValidationErrors(null);
     if (!path) {
       setValidationErrors(['(root): missing content file path; cannot save']);
       return;
     }
+    const parsed = YAMLDialogueSchema.safeParse(draft);
+    if (!parsed.success) {
+      const issues = parsed.error?.issues ?? [];
+      const messages = issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`);
+      setValidationErrors(
+        messages.length > 0 ? messages : ['(root): the dialogue does not match the schema']
+      );
+      return;
+    }
+    setValidationErrors(null);
     await save(path, draft);
   };
 
   return (
     <main className={styles.main}>
-      <Link href="/dialogues" className={styles.backLink}>&larr; Back to Dialogues</Link>
+      <Link
+        href="/dialogues"
+        className={styles.backLink}
+        onClick={(e) => {
+          if (dirty && !window.confirm('You have unsaved changes. Leave anyway?')) {
+            e.preventDefault();
+          }
+        }}
+      >&larr; Back to Dialogues</Link>
       <h1>Dialogue: {typeof draft?.name === 'string' ? draft.name : id}</h1>
 
       {loading && <p className={styles.muted}>Loading...</p>}

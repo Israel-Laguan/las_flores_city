@@ -158,6 +158,16 @@ export class DialogueUI {
     }
   }
 
+  /** Distinct speaker_ids referenced by a chunk's nodes. */
+  private chunkSpeakerIds(chunk: any): string[] {
+    const ids = new Set<string>();
+    for (const node of Object.values(chunk?.nodes ?? {}) as any[]) {
+      const sid = node?.speaker_id;
+      if (typeof sid === 'string' && sid.length > 0) ids.add(sid);
+    }
+    return [...ids];
+  }
+
   private renderChunk(chunk: any, currentNodeId: string, availableChoices: any[], speakers?: DialogueSpeakers) {
     this.currentDialogue = {
       chunk,
@@ -192,17 +202,25 @@ export class DialogueUI {
             const nextNode = cached.nodes[nextNodeId];
             const isEnd = !nextNode || nextNode.is_end === true || !nextNode.choices?.length;
 
-            this.handleDialogueResult({ time_blocks_remaining: undefined });
+            // The cached chunk carries no speaker metadata. If it introduces a
+            // speaker whose info isn't in the current map, fall through to the
+            // server round-trip so its portraits/metadata resolve correctly.
+            const hasAllSpeakers = this.chunkSpeakerIds(cached)
+              .every((id) => Boolean(this.currentDialogue?.speakers?.[id]));
 
-            if (isEnd) {
-              this.handleDialogueEnd(nextNode);
+            if (hasAllSpeakers) {
+              this.handleDialogueResult({ time_blocks_remaining: undefined });
+
+              if (isEnd) {
+                this.handleDialogueEnd(nextNode);
+                api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
+                return;
+              }
+
+              this.renderChunk(cached, nextNodeId, nextNode.choices || []);
               api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
               return;
             }
-
-            this.renderChunk(cached, nextNodeId, nextNode.choices || []);
-            api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
-            return;
           }
         }
 
