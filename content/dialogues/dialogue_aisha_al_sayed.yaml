@@ -151,6 +151,8 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about challenges"
+        hidden_if:
+          adeyemi_publicly_defended: true
       - id: "ask_about_minera_estrella"
         text: "What's it like working at Minera Estrella?"
         next_node_id: "aisha_minera_estrella"
@@ -180,6 +182,8 @@ nodes:
         time_block_cost:
           amount: 1
           description: "Asking about challenges"
+        hidden_if:
+          adeyemi_publicly_defended: true
       - id: "ask_about_goals"
         text: "What are your long-term goals at the company?"
         next_node_id: "aisha_goals"

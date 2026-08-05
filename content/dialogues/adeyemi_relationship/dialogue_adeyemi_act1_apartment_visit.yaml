@@ -1,0 +1,223 @@
+id: a0000001-0001-4000-8000-000000000010
+name: "Adeyemi Act 1 - The Residue"
+description: "First contact. Chief Inspector Adeyemi investigates an incident at the player's apartment."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_act1_start
+nodes:
+  adeyemi_act1_start:
+    id: adeyemi_act1_start
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Chief Inspector Adeyemi Ogunbiyi. You reported an incident."
+    thought: "He stands at the precise angle of someone who has done this enough times that the stance is no longer performed: warrant card visible, enough space in his posture to be non-threatening, enough stillness to be unreadable."
+    effects:
+      stat_set:
+        adeyemi_trust: -20
+        adeyemi_alignment: -40
+        adeyemi_tension: 30
+    choices:
+      - id: act1_invite_in
+        text: "Come in."
+        next_node_id: adeyemi_act1_enter
+        time_block_cost:
+          amount: 1
+          description: "Engaging with Adeyemi at the apartment"
+      - id: act1_ask_why
+        text: "Why is a Chief Inspector answering a routine call?"
+        next_node_id: adeyemi_act1_enter
+        time_block_cost:
+          amount: 1
+          description: "Engaging with Adeyemi at the apartment"
+      - id: act1_refuse
+        text: "I changed my mind. I don't want to talk about it."
+        next_node_id: adeyemi_act1_refuse_entry
+        time_block_cost:
+          amount: 1
+          description: "Engaging with Adeyemi at the apartment"
+
+  adeyemi_act1_refuse_entry:
+    id: adeyemi_act1_refuse_entry
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "That's your right. I'll leave a contact number. The incident was more significant than the initial report suggests. That's information you may want to have."
+    thought: "He nods once and hands me a card before leaving."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_apartment_visit_complete: true
+        adeyemi_first_contact_made: true
+      state_set:
+        last_adeyemi_encounter_at: NOW
+      stat_set:
+        adeyemi_trust: 5
+        adeyemi_familiarity: -5
+
+  adeyemi_act1_enter:
+    id: adeyemi_act1_enter
+    type: system
+    text: "Adeyemi moves through the apartment slowly, without touching anything. A cup sits precariously near the edge of the counter. As he passes, he catches it instinctively and pushes it back without breaking his gaze or commenting."
+    choices:
+      - id: act1_watch
+        text: "[Watch him]"
+        next_node_id: adeyemi_act1_q1
+
+  adeyemi_act1_q1:
+    id: adeyemi_act1_q1
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "When did you last leave this apartment before the incident?"
+    choices:
+      - id: q1_honest
+        text: "Yesterday morning, around 8 AM."
+        next_node_id: adeyemi_act1_q2
+        effects:
+          stat_set:
+            adeyemi_familiarity: 3
+      - id: q1_deflect
+        text: "I don't remember exactly."
+        next_node_id: adeyemi_act1_q2
+      - id: q1_ask_why
+        text: "Why do you want to know?"
+        next_node_id: adeyemi_act1_q1_answer
+        effects:
+          stat_set:
+            adeyemi_trust: 5
+
+  adeyemi_act1_q1_answer:
+    id: adeyemi_act1_q1_answer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Because the timeline matters and yours doesn't match the neighbor's."
+    choices:
+      - id: q1_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_q2
+
+  adeyemi_act1_q2:
+    id: adeyemi_act1_q2
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You work with some... independent organizations in this city. Do they know you live here?"
+    thought: "He already knows more than a routine investigator would."
+    choices:
+      - id: q2_confirm
+        text: "Yes, they do."
+        next_node_id: adeyemi_act1_q3
+      - id: q2_deny
+        text: "I don't know what you're talking about."
+        next_node_id: adeyemi_act1_q3
+        effects:
+          stat_set:
+            adeyemi_tension: 8
+      - id: q2_ask_how
+        text: "How do you know that?"
+        next_node_id: adeyemi_act1_q2_answer
+
+  adeyemi_act1_q2_answer:
+    id: adeyemi_act1_q2_answer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "It's my job to know things."
+    choices:
+      - id: q2_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_q3
+        effects:
+          stat_set:
+            adeyemi_trust: 3
+
+  adeyemi_act1_q3:
+    id: adeyemi_act1_q3
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Is there anything in the apartment you'd like me not to document?"
+    thought: "This is an unusual question for a by-the-book investigator."
+    choices:
+      - id: q3_document_all
+        text: "No, document everything."
+        next_node_id: adeyemi_act1_q4
+        effects:
+          stat_set:
+            adeyemi_trust: 8
+            adeyemi_alignment: 5
+      - id: q3_hide_things
+        text: "Yes, leave the bedroom out of it."
+        next_node_id: adeyemi_act1_q4
+        effects:
+          stat_set:
+            adeyemi_tension: 10
+      - id: q3_ask_why
+        text: "Why are you asking me that?"
+        next_node_id: adeyemi_act1_q3_answer
+
+  adeyemi_act1_q3_answer:
+    id: adeyemi_act1_q3_answer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Because sometimes what people protect tells me more than what they reveal."
+    choices:
+      - id: q3_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_q4
+        effects:
+          stat_set:
+            adeyemi_trust: 12
+            adeyemi_familiarity: 8
+
+  adeyemi_act1_q4:
+    id: adeyemi_act1_q4
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "One more thing. You're not in any danger you haven't already accounted for, are you?"
+    thought: "He's at the door, leaving. Is this a professional courtesy or a warning?"
+    choices:
+      - id: q4_no
+        text: "No."
+        next_node_id: adeyemi_act1_end
+        effects:
+          stat_set:
+            adeyemi_familiarity: 3
+      - id: q4_ask
+        text: "Should I be?"
+        next_node_id: adeyemi_act1_q4_answer
+      - id: q4_silent
+        text: "[Say nothing]"
+        next_node_id: adeyemi_act1_end
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+
+  adeyemi_act1_q4_answer:
+    id: adeyemi_act1_q4_answer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "That depends on things I'm not at liberty to discuss yet."
+    choices:
+      - id: q4_continue
+        text: "[Listen]"
+        next_node_id: adeyemi_act1_end
+        effects:
+          stat_set:
+            adeyemi_tension: 5
+            adeyemi_trust: 5
+
+  adeyemi_act1_end:
+    id: adeyemi_act1_end
+    type: system
+    text: "He leaves. You look at the contact card he handed you. There is a handwritten addition at the bottom — a secondary number, not a department line."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_first_contact_made: true
+        adeyemi_apartment_visit_complete: true
+      state_set:
+        adeyemi_act: "1_done"
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "2.0"
+  tags:
+    - "adeyemi"
+    - "act1"
+    - "first_contact"

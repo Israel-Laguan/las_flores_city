@@ -182,3 +182,141 @@ describe('metadataConditionsPass — tree-level gating', () => {
     ).toBe(true);
   });
 });
+
+// ============================================================
+// Relationship system tests (Adeyemi blueprint)
+// ============================================================
+
+describe('choicePassesFilters — required_stats for relationship system', () => {
+  it('passes required_stats gte:70 when stat equals 70', () => {
+    const player = { ...EMPTY, stats: { adeyemi_trust: 70 } };
+    expect(choicePassesFilters({ required_stats: { adeyemi_trust: 'gte:70' } }, player)).toBe(true);
+  });
+
+  it('passes required_stats gte:70 when stat is 90 (above threshold)', () => {
+    const player = { ...EMPTY, stats: { adeyemi_trust: 90 } };
+    expect(choicePassesFilters({ required_stats: { adeyemi_trust: 'gte:70' } }, player)).toBe(true);
+  });
+
+  it('fails required_stats gte:70 when stat is 69 (below threshold)', () => {
+    const player = { ...EMPTY, stats: { adeyemi_trust: 69 } };
+    expect(choicePassesFilters({ required_stats: { adeyemi_trust: 'gte:70' } }, player)).toBe(false);
+  });
+
+  it('fails required_stats gte:70 when stat is missing (treated as 0)', () => {
+    expect(choicePassesFilters({ required_stats: { adeyemi_trust: 'gte:70' } }, EMPTY)).toBe(false);
+  });
+
+  it('passes required_stats lte:50 when stat equals 50', () => {
+    const player = { ...EMPTY, stats: { adeyemi_alignment: 50 } };
+    expect(choicePassesFilters({ required_stats: { adeyemi_alignment: 'lte:50' } }, player)).toBe(true);
+  });
+
+  it('fails required_stats lte:50 when stat is 51 (above threshold)', () => {
+    const player = { ...EMPTY, stats: { adeyemi_alignment: 51 } };
+    expect(choicePassesFilters({ required_stats: { adeyemi_alignment: 'lte:50' } }, player)).toBe(false);
+  });
+});
+
+describe('metadataConditionsPass — required_flags as list (B1 regression)', () => {
+  it('fails closed when required_flags is a list (not a record)', () => {
+    // This simulates the B1 bug where YAML list form becomes ["key"] in JS
+    const listFormRequiredFlags: any = { required_flags: ['adeyemi_first_contact_made'] };
+    // The metadataConditionsPass function will call Object.entries on this
+    // which for a list gives [['0', 'adeyemi_first_contact_made']]
+    // so it checks player.flags['0'] which doesn't exist -> fails closed
+    expect(metadataConditionsPass(listFormRequiredFlags, EMPTY)).toBe(false);
+  });
+
+  it('passes when required_flags is properly a record', () => {
+    expect(
+      metadataConditionsPass(
+        { required_flags: { adeyemi_first_contact_made: true } },
+        { ...EMPTY, flags: { adeyemi_first_contact_made: true } }
+      )
+    ).toBe(true);
+  });
+
+  it('fails when required_flags record key is missing from player', () => {
+    expect(
+      metadataConditionsPass(
+        { required_flags: { adeyemi_first_contact_made: true } },
+        EMPTY
+      )
+    ).toBe(false);
+  });
+
+  it('fails when required_state is missing from player', () => {
+    expect(
+      metadataConditionsPass(
+        { required_state: { adeyemi_act: '1_done' } },
+        { ...EMPTY, state: {} }
+      )
+    ).toBe(false);
+  });
+
+  it('passes required_state when value matches', () => {
+    expect(
+      metadataConditionsPass(
+        { required_state: { adeyemi_act: '1_done' } },
+        { ...EMPTY, state: { adeyemi_act: '1_done' } }
+      )
+    ).toBe(true);
+  });
+});
+
+describe('metadataConditionsPass — required_flags list form with multiple flags (B1 regression)', () => {
+  it('fails closed when required_flags is a list with multiple items', () => {
+    // Multiple items in list form: ["flag1", "flag2"]
+    const listFormRequiredFlags: any = { required_flags: ['adeyemi_first_contact_made', 'ANSWERED'] };
+    expect(metadataConditionsPass(listFormRequiredFlags, EMPTY)).toBe(false);
+  });
+});
+
+describe('metadataConditionsPass — tree-level hidden_if', () => {
+  it('hides the tree when hidden_if flag matches', () => {
+    // Simulates the act3 phone call metadata.hidden_if: adeyemi_publicly_denounced: true
+    const player = { ...EMPTY, flags: { adeyemi_publicly_denounced: true } };
+    expect(
+      metadataConditionsPass(
+        { hidden_if: { adeyemi_publicly_denounced: true } },
+        player
+      )
+    ).toBe(false);
+  });
+
+  it('shows the tree when hidden_if flag does not match', () => {
+    const player = { ...EMPTY, flags: { adeyemi_publicly_denounced: false } };
+    expect(
+      metadataConditionsPass(
+        { hidden_if: { adeyemi_publicly_denounced: true } },
+        player
+      )
+    ).toBe(true);
+  });
+
+  it('shows the tree when hidden_if is absent', () => {
+    expect(metadataConditionsPass({ required_flags: {} }, EMPTY)).toBe(true);
+  });
+
+  it('hides the tree when both required_stats pass but hidden_if matches', () => {
+    // A player who has enough familiarity/trust but publicly denounced Adeyemi
+    // should NOT see the phone call tree.
+    const player: PlayerConditionState = {
+      flags: { adeyemi_publicly_denounced: true, adeyemi_first_contact_made: true },
+      state: {},
+      stats: { adeyemi_familiarity: 30, adeyemi_trust: 25 },
+      timeBlocks: 100,
+    };
+    expect(
+      metadataConditionsPass(
+        {
+          required_flags: { adeyemi_first_contact_made: true },
+          required_stats: { adeyemi_familiarity: 'gte:25', adeyemi_trust: 'gte:20' },
+          hidden_if: { adeyemi_publicly_denounced: true },
+        },
+        player
+      )
+    ).toBe(false);
+  });
+});

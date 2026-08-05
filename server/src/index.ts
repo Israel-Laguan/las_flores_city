@@ -44,6 +44,7 @@ import { runAllMigrations } from './database/migrate.js';
 import { seedPlayers } from './database/seedPlayers.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
+import { RelationshipDecayWorker } from './workers/RelationshipDecayWorker.js';
 import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
 import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 
@@ -215,8 +216,15 @@ async function initializeServer() {
   // Startup recovery: reset orphaned fill jobs to failed.
   await resetOrphanedFillJobs();
 
-  // Seed player accounts in non-production environments
-  await seedPlayers();
+  // Seed player accounts in non-production environments.
+  // Seeding is an optional dev convenience — a refusal (e.g. NODE_ENV unset or
+  // production) or a DB hiccup must never abort server boot, otherwise the
+  // process stays alive but never reaches app.listen() below.
+  try {
+    await seedPlayers();
+  } catch (err) {
+    console.warn('[seed:players] skipped:', (err as Error).message || err);
+  }
 
   // Start server
   app.listen(PORT, () => {
@@ -234,6 +242,24 @@ async function initializeServer() {
     );
   }, LEADERBOARD_INTERVAL_MS);
   console.log(`🏆 LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
+
+  // Relationship decay worker — decay relationship stats daily
+  const DECAY_INTERVAL_MS = 24 * 60 * 60 * 1000; // Once per day
+  let isDecayWorkerRunning = false;
+  const runDecayTick = async () => {
+    if (isDecayWorkerRunning) return;
+    isDecayWorkerRunning = true;
+    try {
+      await RelationshipDecayWorker.processDecay();
+    } catch (err) {
+      console.error('[RelationshipDecayWorker] cron tick error:', err);
+    } finally {
+      isDecayWorkerRunning = false;
+    }
+  };
+  void runDecayTick();
+  setInterval(runDecayTick, DECAY_INTERVAL_MS);
+  console.log(`💔 RelationshipDecayWorker scheduled every ${DECAY_INTERVAL_MS / 1000 / 60 / 60}h`);
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;

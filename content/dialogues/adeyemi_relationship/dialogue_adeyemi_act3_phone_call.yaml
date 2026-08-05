@@ -1,0 +1,804 @@
+id: a0000001-0003-4000-8000-000000000012
+name: "Adeyemi Act 3 - Voluntary Disclosure (The Phone Call)"
+description: "Highest leverage scene: Adeyemi calls the player to share information about his brother Daniel. Only unlocks if player didn't publicly denounce him in Act 2 and has sufficient Familiarity/Trust."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_phone_call_start
+nodes:
+  # Gate node - this scene is only accessible under specific conditions
+  adeyemi_phone_call_start:
+    id: adeyemi_phone_call_start
+    type: system
+    text: "Your phone rings late at night. Unknown number. You hesitate, then answer."
+    thought: "It's been weeks since the apartment visit. I haven't seen or spoken to Adeyemi since. But something tells me this is him."
+    effects:
+      flag_set:
+        adeyemi_phone_call_received: true
+    choices:
+      - id: answer_call
+        text: "Answer the call"
+        next_node_id: adeyemi_phone_call_opening
+        time_block_cost:
+          amount: 1
+          description: "Answering Adeyemi's late-night phone call"
+        effects:
+          flag_set:
+            adeyemi_phone_call_answered: true
+            adeyemi_encounter_stack_phone_call: true
+          stat_set:
+            adeyemi_visibility: 5  # Phone calls are private
+
+  # The phone call begins - Adeyemi's disclosure
+  adeyemi_phone_call_opening:
+    id: adeyemi_phone_call_opening
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Alex? It's Adeyemi. I... I need to talk to you. But not on any official channel. Can we speak freely?"
+    thought: "His voice is different. Softer. More vulnerable than I've ever heard it. The authoritative Chief Inspector seems... uncertain."
+    choices:
+      - id: confirm_private
+        text: "Yes, we're private. What's going on?"
+        next_node_id: adeyemi_disclosure_begin
+        time_block_cost:
+          amount: 1
+          description: "Engaging in phone call with Adeyemi"
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 15
+      - id: cautious_verify
+        text: "How do I know it's really you?"
+        next_node_id: adeyemi_verify_identity
+        time_block_cost:
+          amount: 1
+          description: "Engaging in phone call with Adeyemi"
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+            adeyemi_trust: 5
+      - id: deflect_call
+        text: "This isn't a good time. Call me tomorrow."
+        next_node_id: adeyemi_deflection_response
+        time_block_cost:
+          amount: 1
+          description: "Engaging in phone call with Adeyemi"
+        effects:
+          stat_set:
+            adeyemi_familiarity: 3
+            adeyemi_trust: -5
+            adeyemi_tension: 8
+
+  # Identity verification path
+  adeyemi_verify_identity:
+    id: adeyemi_verify_identity
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I understand your caution. The utility knife from your windowsill - it had a serial number. LW-2077-0042. You remember that?"
+    thought: "The serial number. He's using a detail from our first conversation to prove it's really him. That's... specific. And it confirms he's been thinking about me, about that conversation."
+    choices:
+      - id: verify_success
+        text: "...Yeah, I remember. LW-2077-0042. What do you want, Adeyemi?"
+        next_node_id: adeyemi_disclosure_begin
+        effects:
+          stat_set:
+            adeyemi_familiarity: 8
+            adeyemi_trust: 12
+      - id: verify_fail
+        text: "I don't... I'm not sure. Maybe this isn't such a good idea."
+        next_node_id: adeyemi_deflection_response
+        effects:
+          stat_set:
+            adeyemi_trust: -8
+            adeyemi_tension: 10
+
+  # Deflection response
+  adeyemi_deflection_response:
+    id: adeyemi_deflection_response
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I see. Well... perhaps tomorrow is better then. But Alex, be careful tonight. There are things moving in this city that you don't understand."
+    thought: "He's backing off, but there's still that concern in his voice. Like he knows something I don't, and it's weighing on him."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_phone_call_declined: true
+      stat_set:
+        adeyemi_tension: 10
+
+  # Main disclosure - Daniel's story begins
+  adeyemi_disclosure_begin:
+    id: adeyemi_disclosure_begin
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I wasn't always Vega's enforcer. I used to believe in justice, in protecting the people of this city. But then... something happened. Something that changed everything."
+    thought: "This is it. The vulnerability. The real Adeyemi, not the Chief Inspector. I need to be careful here. This moment could define our relationship."
+    choices:
+      - id: encourage_continue
+        text: "What happened, Adeyemi?"
+        next_node_id: adeyemi_reveal_daniel
+        effects:
+          stat_set:
+            adeyemi_familiarity: 12
+            adeyemi_trust: 20
+            adeyemi_alignment: 8
+      - id: push_details
+        text: "Tell me everything. I need to understand."
+        next_node_id: adeyemi_full_disclosure
+        effects:
+          stat_set:
+            adeyemi_familiarity: 15
+            adeyemi_trust: 25
+            adeyemi_alignment: 10
+      - id: deflect_vulnerability
+        text: "Look, I appreciate you reaching out, but I don't know if I want to get involved in... whatever this is."
+        next_node_id: adeyemi_vulnerability_rejected
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+            adeyemi_trust: -15
+            adeyemi_tension: 15
+
+  # Daniel's story - the heart of Adeyemi's vulnerability
+  adeyemi_reveal_daniel:
+    id: adeyemi_reveal_daniel
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "My brother. Daniel. He was younger, idealistic. A law student. He was investigating the same things you are now - the corruption, the cover-ups. And then one day... he was gone. Officially, it was a traffic accident. But I know better."
+    thought: "Daniel. His brother. The weight in his voice... this isn't just professional history. This is personal trauma. And he's sharing it with me. That's huge."
+    choices:
+      - id: express_sympathy
+        text: "I'm so sorry, Adeyemi. That must have been... unbearable."
+        next_node_id: adeyemi_sympathy_received
+        effects:
+          stat_set:
+            adeyemi_familiarity: 15
+            adeyemi_trust: 25
+            adeyemi_alignment: 15
+      - id: ask_what_happened
+        text: "What really happened to Daniel?"
+        next_node_id: adeyemi_explain_daniels_fate
+        effects:
+          stat_set:
+            adeyemi_familiarity: 12
+            adeyemi_trust: 18
+            adeyemi_alignment: 12
+      - id: ask_why_telling_me
+        text: "Why are you telling me this now?"
+        next_node_id: adeyemi_explain_why_now
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 20
+            adeyemi_alignment: 10
+
+  # Full disclosure path
+  adeyemi_full_disclosure:
+    id: adeyemi_full_disclosure
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "My brother Daniel was killed. Murdered. Because he was getting too close to the truth about what really happened at that retirement complex. The lithium leak, Alex. It wasn't an accident. And the people who covered it up... they made sure Daniel paid for knowing too much."
+    thought: "The retirement complex. The lithium leak. This connects to everything. And he's giving me the pieces, trusting me with the truth that got his brother killed. This changes everything."
+    choices:
+      - id: full_understand
+        text: "I understand. And I won't let his death be for nothing. I promise you that."
+        next_node_id: adeyemi_promise_received
+        effects:
+          stat_set:
+            adeyemi_familiarity: 20
+            adeyemi_trust: 30
+            adeyemi_alignment: 25
+      - id: full_ask_proof
+        text: "Do you have proof of what happened to Daniel?"
+        next_node_id: adeyemi_offer_proof
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 15
+            adeyemi_alignment: 10
+      - id: full_retreat
+        text: "This is... this is a lot to take in. I need to think."
+        next_node_id: adeyemi_retreat_response
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+            adeyemi_trust: 5
+            adeyemi_tension: 10
+
+  # Vulnerability rejected path
+  adeyemi_vulnerability_rejected:
+    id: adeyemi_vulnerability_rejected
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...I understand. I shouldn't have called. Forget I said anything."
+    thought: "The hurt in his voice is palpable. I can almost hear the withdrawal, the walls going back up. I might have just lost the most important chance to build real trust with him."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: false
+        adeyemi_vulnerability_rejected: true
+      stat_set:
+        adeyemi_tension: 20
+        adeyemi_trust: -10
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Sympathy received
+  adeyemi_sympathy_received:
+    id: adeyemi_sympathy_received
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Thank you. That... means more than you know. Most people don't even remember his name. But I do. Every day."
+    thought: "There's a catch in his voice. For the first time since I've known him, Adeyemi sounds like a man carrying a burden, not just a man enforcing authority."
+    choices:
+      - id: ask_about_justice
+        text: "Have you ever thought about... I don't know, getting justice for Daniel?"
+        next_node_id: adeyemi_justice_question
+        effects:
+          stat_set:
+            adeyemi_familiarity: 12
+            adeyemi_trust: 20
+            adeyemi_alignment: 12
+      - id: offer_help
+        text: "If there's anything I can do to help find out what happened... just tell me."
+        next_node_id: adeyemi_help_offer
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 25
+            adeyemi_alignment: 15
+            adeyemi_debt: 10  # Player now owes Adeyemi
+      - id: change_subject
+        text: "So what does this have to do with why you called me tonight?"
+        next_node_id: adeyemi_back_to_business
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+            adeyemi_trust: 10
+
+  # Daniel's fate explained
+  adeyemi_explain_daniels_fate:
+    id: adeyemi_explain_daniels_fate
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "They staged it as an accident. Brake failure. But the coroner's report showed traces of a paralytic agent in his system. Someone made sure he couldn't react, couldn't fight back. And then they covered it up like it was nothing."
+    thought: "Paralytic agent. This was planned, cold-blooded murder. And the system he's part of is the same system that covered it up. No wonder he's conflicted."
+    choices:
+      - id: react_horror
+        text: "That's... that's terrible. And you've had to live with that knowledge."
+        next_node_id: adeyemi_horror_acknowledged
+        effects:
+          stat_set:
+            adeyemi_familiarity: 15
+            adeyemi_trust: 22
+            adeyemi_alignment: 18
+      - id: react_anger
+        text: "Those bastards. We need to make them pay for what they did."
+        next_node_id: adeyemi_anger_response
+        effects:
+          stat_set:
+            adeyemi_familiarity: 12
+            adeyemi_trust: 15
+            adeyemi_alignment: 20
+            adeyemi_tension: 8
+
+  # Why he's telling me now
+  adeyemi_explain_why_now:
+    id: adeyemi_explain_why_now
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Because you remind me of him. Daniel, I mean. The way you look at the world. The questions you ask. You have that same... fire. And I don't want to see you end up like him."
+    thought: "He sees Daniel in me. That's both an honor and a terrifying responsibility. If Daniel was killed for knowing too much, what does that mean for me?"
+    choices:
+      - id: accept_responsibility
+        text: "I appreciate that, Adeyemi. And I won't let you down. Or Daniel."
+        next_node_id: adeyemi_responsibility_accepted
+        effects:
+          stat_set:
+            adeyemi_familiarity: 18
+            adeyemi_trust: 28
+            adeyemi_alignment: 22
+      - id: ask_about_protection
+        text: "So what, you're trying to protect me? After everything?"
+        next_node_id: adeyemi_protection_explanation
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 15
+            adeyemi_alignment: 8
+
+  # Promise received
+  adeyemi_promise_received:
+    id: adeyemi_promise_received
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Thank you. Daniel would have... he would have liked you. Just promise me you'll be more careful than he was. He was reckless. Brave, but reckless."
+    thought: "There's a mixture of emotions in his voice - gratitude, but also fear. He's entrusting me with Daniel's legacy. And his own hope for something better."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_daniels_story_revealed: true
+      stat_set:
+        adeyemi_familiarity: 20
+        adeyemi_trust: 35
+        adeyemi_alignment: 25
+        adeyemi_debt: 15
+        adeyemi_tension: -10
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Offer proof
+  adeyemi_offer_proof:
+    id: adeyemi_offer_proof
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I have his notes. His research. I couldn't bring myself to destroy them, even when they told me to. They're hidden, but if you're serious... I could show them to you."
+    thought: "His brother's notes. That would be a goldmine. But it would also put me squarely in the crosshairs of whoever killed Daniel. And it would mean Adeyemi trusts me implicitly."
+    choices:
+      - id: accept_proof
+        text: "Yes. Yes, I want to see them. And I'll be careful, I promise."
+        next_node_id: adeyemi_proof_accepted
+        effects:
+          flag_set:
+            adeyemi_offered_daniels_notes: true
+          stat_set:
+            adeyemi_familiarity: 25
+            adeyemi_trust: 40
+            adeyemi_alignment: 30
+            adeyemi_debt: 20
+      - id: decline_proof
+        text: "I appreciate the offer, but I don't want to put you at risk. You've already done enough by telling me this much."
+        next_node_id: adeyemi_proof_declined
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 20
+            adeyemi_alignment: 15
+
+  # Retreat response
+  adeyemi_retreat_response:
+    id: adeyemi_retreat_response
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Of course. It's a lot to process. But remember what I said - be careful. And if you decide you do want to know more... you know how to reach me."
+    thought: "He's giving me space. But there's a tension there - he wants to say more, but he's respecting my boundaries. It's... considerate. Not what I expected."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_daniels_story_heard: true
+      stat_set:
+        adeyemi_trust: 8
+        adeyemi_tension: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Justice question
+  adeyemi_justice_question:
+    id: adeyemi_justice_question
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Every day. But justice... justice is complicated when the people you're supposed to serve are the ones who did the killing. That's why I'm still here, in this position. I can do more good from the inside than I could from the outside."
+    thought: "There's the conflict. The compromise. He's still working within the system because he thinks that's the way to honor Daniel's memory. But I wonder if he's starting to question that."
+    choices:
+      - id: question_approach
+        text: "But doesn't that make you complicit? Working for the people who covered it up?"
+        next_node_id: adeyemi_complicit_question
+        effects:
+          stat_set:
+            adeyemi_familiarity: 15
+            adeyemi_trust: 12
+            adeyemi_alignment: -5
+            adeyemi_tension: 15
+      - id: respect_choice
+        text: "I can respect that. Sometimes the hard choices are the right ones."
+        next_node_id: adeyemi_choice_respected
+        effects:
+          stat_set:
+            adeyemi_familiarity: 12
+            adeyemi_trust: 20
+            adeyemi_alignment: 15
+
+  # Help offer
+  adeyemi_help_offer:
+    id: adeyemi_help_offer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Thank you. Just having someone else know... it helps. And maybe... maybe together we could find out what really happened. But we'd both be putting targets on our backs."
+    thought: "This is it. The opening. He's considering working with me. But the warning is clear - this won't be without risk. For both of us."
+    choices:
+      - id: accept_partnership
+        text: "I'm in. Whatever it takes. Daniel deserves justice."
+        next_node_id: adeyemi_partnership_forged
+        effects:
+          flag_set:
+            adeyemi_partnership_offered: true
+          stat_set:
+            adeyemi_familiarity: 25
+            adeyemi_trust: 40
+            adeyemi_alignment: 30
+            adeyemi_debt: 25
+      - id: cautious_partnership
+        text: "Let me think about it. This is a big step for both of us."
+        next_node_id: adeyemi_cautious_acceptance
+        effects:
+          stat_set:
+            adeyemi_familiarity: 15
+            adeyemi_trust: 20
+            adeyemi_alignment: 10
+
+  # Back to business
+  adeyemi_back_to_business:
+    id: adeyemi_back_to_business
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You're right. I didn't call you just to unburden myself. There's something happening. Something related to what Daniel was investigating. And I think... I think you might be in danger."
+    thought: "Back to business. The Chief Inspector is returning, but the vulnerability is still there. He's warning me. Protecting me, in his own way."
+    choices:
+      - id: ask_danger_details
+        text: "What kind of danger? And why me?"
+        next_node_id: adeyemi_danger_explanation
+        effects:
+          stat_set:
+            adeyemi_familiarity: 8
+            adeyemi_trust: 15
+      - id: dismiss_warning
+        text: "I can handle myself. But thanks for the heads up."
+        next_node_id: adeyemi_warning_dismissed
+        effects:
+          stat_set:
+            adeyemi_familiarity: 5
+            adeyemi_trust: 5
+            adeyemi_tension: 5
+
+  # Anger response
+  adeyemi_anger_response:
+    id: adeyemi_anger_response
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I know. And I want to. But we can't rush into this. The people who did this to Daniel... they're still out there. And they're more powerful than you realize."
+    thought: "He's tempering my anger with caution. Not dismissing it, but redirecting it. He wants justice too, but he knows the cost."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_shared_anger: true
+      stat_set:
+        adeyemi_familiarity: 12
+        adeyemi_trust: 18
+        adeyemi_alignment: 15
+        adeyemi_tension: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Horror acknowledged
+  adeyemi_horror_acknowledged:
+    id: adeyemi_horror_acknowledged
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "It was. And I have. Every day since. That's... that's part of why I'm calling you. Because I think I'm close to finding out who did it. And I need someone I can trust to have my back."
+    thought: "He's opening up more. The vulnerability is becoming reciprocity. He's not just sharing his pain - he's asking for my help, my trust."
+    choices:
+      - id: offer_backup
+        text: "You can count on me, Adeyemi. Whatever you need."
+        next_node_id: adeyemi_backup_accepted
+        effects:
+          stat_set:
+            adeyemi_familiarity: 20
+            adeyemi_trust: 30
+            adeyemi_alignment: 22
+            adeyemi_debt: 20
+      - id: ask_about_evidence
+        text: "What have you found? Who do you think did this?"
+        next_node_id: adeyemi_evidence_sharing
+        effects:
+          stat_set:
+            adeyemi_familiarity: 15
+            adeyemi_trust: 25
+            adeyemi_alignment: 18
+
+  # Responsibility accepted
+  adeyemi_responsibility_accepted:
+    id: adeyemi_responsibility_accepted
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Good. That's... that's good to hear. Daniel would be proud. And so am I. Now, let me tell you what I know about the lithium leak cover-up..."
+    thought: "This is the moment. The real partnership begins here. The trust is established, the connection is made. Whatever happens next, our relationship has fundamentally changed."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_daniels_story_revealed: true
+        adeyemi_partnership_implied: true
+      stat_set:
+        adeyemi_familiarity: 25
+        adeyemi_trust: 35
+        adeyemi_alignment: 25
+        adeyemi_debt: 15
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Protection explanation
+  adeyemi_protection_explanation:
+    id: adeyemi_protection_explanation
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Because you don't understand. Not really. If they killed Daniel for what he knew, what do you think they'd do to someone who's actively working against them? I'm trying to keep you from becoming another body in the morgue."
+    thought: "The fear in his voice is real. And it's not just for me - it's for himself too. He's risking his position, his safety, by even making this call."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+      stat_set:
+        adeyemi_familiarity: 15
+        adeyemi_trust: 18
+        adeyemi_alignment: 10
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Proof accepted
+  adeyemi_proof_accepted:
+    id: adeyemi_proof_accepted
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Then it's settled. Meet me tomorrow at the old church on 7th Street. Midnight. And Alex? Don't tell anyone about this. Not anyone."
+    thought: "Midnight at the old church. This is real. This is happening. I'm about to step into Daniel's investigation. And Adeyemi is trusting me with his brother's legacy."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_daniels_notes_meeting_set: true
+      stat_set:
+        adeyemi_familiarity: 30
+        adeyemi_trust: 45
+        adeyemi_alignment: 35
+        adeyemi_debt: 30
+        adeyemi_visibility: 15
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Proof declined
+  adeyemi_proof_declined:
+    id: adeyemi_proof_declined
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I understand. And I respect that. But the offer stands. If you change your mind... you know how to reach me."
+    thought: "He's not pushing. He's respecting my boundaries. But I can tell he's also relieved. There's less risk for both of us this way."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_daniels_notes_offered: true
+      stat_set:
+        adeyemi_familiarity: 12
+        adeyemi_trust: 25
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Complicit question
+  adeyemi_complicit_question:
+    id: adeyemi_complicit_question
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Yes. I am. And that's a question I ask myself every day. But I tell myself that I'm doing more good than harm. That I'm protecting more people than I'm hurting."
+    thought: "There it is. The raw honesty. The self-doubt. This is the most real I've ever seen him. And it's terrifying, because I realize that the line between complicity and heroism might be thinner than any of us realize."
+    choices:
+      - id: offer_absolution
+        text: "I can't answer that for you, Adeyemi. But I know you're trying to do the right thing. That counts for something."
+        next_node_id: adeyemi_absolution_received
+        effects:
+          stat_set:
+            adeyemi_familiarity: 18
+            adeyemi_trust: 22
+            adeyemi_alignment: 12
+      - id: challenge_logic
+        text: "But how many people have to die while you figure that out?"
+        next_node_id: adeyemi_logic_challenged
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_trust: 5
+            adeyemi_tension: 18
+            adeyemi_alignment: -10
+
+  # Choice respected
+  adeyemi_choice_respected:
+    id: adeyemi_choice_respected
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Thank you for that. It's... it's been a long time since someone understood. Most people just see the uniform and assume they know what that means."
+    thought: "The gratitude in his voice is genuine. I think I've just passed another test. Not of loyalty, but of empathy."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+      stat_set:
+        adeyemi_familiarity: 15
+        adeyemi_trust: 25
+        adeyemi_alignment: 18
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Partnership forged
+  adeyemi_partnership_forged:
+    id: adeyemi_partnership_forged
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Then we have an understanding. But we need to be smart. We can't tip our hands. Not yet. There are still people I have to answer to, appearances I have to maintain."
+    thought: "This is it. The partnership is real. But so are the constraints. Adeyemi is still Chief Inspector, still has to play his role. But now I'm in his confidence. And that might be the most powerful position of all."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_partnership_forged: true
+      stat_set:
+        adeyemi_familiarity: 35
+        adeyemi_trust: 45
+        adeyemi_alignment: 35
+        adeyemi_debt: 30
+        adeyemi_visibility: 10
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Cautious acceptance
+  adeyemi_cautious_acceptance:
+    id: adeyemi_cautious_acceptance
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Of course. Think it over. But don't take too long. The window for action might not stay open forever."
+    thought: "He's giving me time. But there's urgency there too. Like he knows that the opportunity for real change, for real justice, might be slipping away."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_partnership_considering: true
+      stat_set:
+        adeyemi_familiarity: 18
+        adeyemi_trust: 25
+        adeyemi_alignment: 12
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Danger explanation
+  adeyemi_danger_explanation:
+    id: adeyemi_danger_explanation
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "The people who covered up the lithium leak - they're the same ones who... handled Daniel. And they know you're looking into things. The utility knife, the electrical equipment - those weren't random. Someone's watching you."
+    thought: "This is serious. More serious than I realized. If they killed Daniel for knowing too much, and they're watching me... I need to be more careful. We both do."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_warning_serious_danger: true
+      stat_set:
+        adeyemi_familiarity: 15
+        adeyemi_trust: 22
+        adeyemi_alignment: 18
+        adeyemi_tension: 12
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Warning dismissed
+  adeyemi_warning_dismissed:
+    id: adeyemi_warning_dismissed
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I see. Well, the offer of help stands. But don't say I didn't warn you. Some things in this city... they have a way of finding you, whether you're looking for them or not."
+    thought: "He's frustrated, but not angry. More... disappointed. Like he expected more from me. But the concern is still there."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+      stat_set:
+        adeyemi_trust: 5
+        adeyemi_tension: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Backup accepted
+  adeyemi_backup_accepted:
+    id: adeyemi_backup_accepted
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Thank you, Alex. That... that means a lot. More than I can say. I'll be in touch. And be careful. Please."
+    thought: "The emotion in his voice is overwhelming. This is the first time I've really felt the weight of what he's carrying. And now I'm carrying some of it too."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_partnership_implied: true
+      stat_set:
+        adeyemi_familiarity: 22
+        adeyemi_trust: 35
+        adeyemi_alignment: 25
+        adeyemi_debt: 20
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Evidence sharing
+  adeyemi_evidence_sharing:
+    id: adeyemi_evidence_sharing
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "The evidence points to someone high up. Someone with access to police resources, to coroner's reports. Someone who could make a death look like an accident. I think... I think it might be Senator Chen."
+    thought: "Senator Chen. That's a name I've heard before. A powerful name. If Adeyemi is right, this goes way higher than I thought. This isn't just about the police department - this is about the political establishment."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_shared_senator_chen_theory: true
+      stat_set:
+        adeyemi_familiarity: 20
+        adeyemi_trust: 30
+        adeyemi_alignment: 22
+        adeyemi_visibility: 8
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Absolution received
+  adeyemi_absolution_received:
+    id: adeyemi_absolution_received
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...Thank you. That's... that's more than I deserve. But I'll take it. And I'll try to be worthy of it."
+    thought: "The relief in his voice is almost palpable. Like I've given him permission to forgive himself, or at least to keep trying. It's a heavy responsibility, but I'm glad I could offer it."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+      stat_set:
+        adeyemi_familiarity: 20
+        adeyemi_trust: 25
+        adeyemi_alignment: 15
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Logic challenged
+  adeyemi_logic_challenged:
+    id: adeyemi_logic_challenged
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "...I don't know. I really don't. But I do know that if I walk away now, more people will die. And I can't... I can't live with that."
+    thought: "The pain in his voice cuts deep. He's questioning everything, and I think my challenge might have hit closer to home than I intended. But it's also making him think, making him face the real cost of his position."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_vulnerability_shared: true
+        adeyemi_logic_challenged: true
+      stat_set:
+        adeyemi_familiarity: 12
+        adeyemi_trust: 8
+        adeyemi_alignment: -5
+        adeyemi_tension: 20
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  required_flags:
+    adeyemi_first_contact_made: true
+  required_stats:
+    adeyemi_familiarity: "gte:25"
+    adeyemi_trust: "gte:20"
+  hidden_if:
+    adeyemi_publicly_denounced: true
+  tags:
+    - "adeyemi"
+    - "relationship_building"
+    - "act3"
+    - "vulnerability"
+    - "daniel_ogunbiyi"
+    - "phone_call"
+    - "gate_logic"
+  notes: |
+    This dialogue implements Phase 4.1-4.3 of the Adeyemi relationship plan:
+    - Gate logic: Only accessible if player didn't publicly denounce Adeyemi in Act 2
+    - Requires adeyemi_familiarity >= 25 and adeyemi_trust >= 20
+    - Requires adeyemi_first_contact_made flag to be true
+    - Hidden if adeyemi_publicly_denounced flag is true
+    - Player can reciprocate vulnerability or close off
+    - Massive relationship dimension shifts based on reciprocation level
+    - Establishes debt (player owes Adeyemi) for deeper connections
+    - This scene can unlock The Mirror ending if relationship gets strong enough

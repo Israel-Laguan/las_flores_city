@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { queryOLTP } from '../connection.js';
+import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 export type MoveResultOk = {
   success: true;
@@ -342,5 +343,70 @@ export async function createForNewUser(
     `INSERT INTO player_states (user_id, current_location_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
      VALUES ($1, $2, 48, 100, 0, 1, 'prologue', '{}'::jsonb, 'neutral')`,
     [userId, startLocationId]
+  );
+}
+
+/** Per-dimension bounds for relationship stats. */
+const RELATIONSHIP_BOUNDS: Record<string, { min: number; max: number }> = {
+  trust: { min: -100, max: 100 },
+  familiarity: { min: 0, max: 100 },
+  alignment: { min: -100, max: 100 },
+  tension: { min: 0, max: 100 },
+  debt: { min: -100, max: 100 },
+  visibility: { min: 0, max: 100 },
+};
+
+/**
+ * Atomically merge stat deltas with per-dimension clamping in one UPDATE.
+ *
+ * Composes all stat-key changes into a SINGLE nested `jsonb_set`
+ * expression so the UPDATE assigns the `stats` column exactly once.
+ * PostgreSQL rejects multiple assignments to the same target column
+ * in one UPDATE (`ERROR: multiple assignments to "stats" column`),
+ * which the previous `setClauses.join(', ')` approach triggered
+ * whenever an effect carried two or more stat keys.
+ *
+ * Each `stats->>'key'` reference reads the pre-update column value
+ * (PostgreSQL evaluates every SET expression against the original
+ * row), so every delta is applied to the original stat — preserving
+ * the additive-merge semantics.
+ */
+export async function mergeStatsClamped(
+  client: pg.PoolClient,
+  userId: string,
+  stats: Record<string, number>
+): Promise<void> {
+  const entries = Object.entries(stats);
+  if (entries.length === 0) return;
+
+  const params: any[] = [userId];
+  let i = 2;
+  // Build one nested jsonb_set chain: the outermost call is the only
+  // `stats =` assignment in the generated UPDATE.
+  let expr = `COALESCE(stats, '{}'::jsonb)`;
+  for (const [key, delta] of entries) {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)) {
+      throw new Error(`Unsafe stat key rejected: ${key}`);
+    }
+    let bounds: { min: number; max: number } | null = null;
+    for (const prefix of RELATIONSHIP_STAT_PREFIXES) {
+      if (key.startsWith(prefix)) {
+        const dim = key.slice(prefix.length);
+        bounds = RELATIONSHIP_BOUNDS[dim] ?? null;
+        break;
+      }
+    }
+    if (bounds) {
+      expr = `jsonb_set(${expr}, '{${key}}', to_jsonb(GREATEST(LEAST(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric, ${bounds.max}), ${bounds.min})::numeric))`;
+    } else {
+      expr = `jsonb_set(${expr}, '{${key}}', to_jsonb(COALESCE((stats->>'${key}')::numeric, 0) + $${i}::numeric))`;
+    }
+    params.push(delta);
+    i++;
+  }
+
+  await client.query(
+    `UPDATE player_states SET stats = ${expr}, updated_at = NOW() WHERE user_id = $1`,
+    params
   );
 }

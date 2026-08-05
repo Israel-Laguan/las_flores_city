@@ -8,6 +8,7 @@ background_url: /assets/scenes/apartment/background.png
 ambient_sound_url: /assets/scenes/apartment/ambient.mp3
 mood: tense
 available_dialogues:
+  - a0000001-0001-4000-8000-000000000010
   - d4e5f6a7-b8c9-4123-9efa-234567890123
   - 5f4a3b2c-1d0e-4f9a-8b7c-6d5e4f3a2b1c
   - 6e5f4a3b-2c1d-4f9a-9b7c-5d5e4f3a2b1d
@@ -19,6 +20,7 @@ metadata:
   accessible: true
   is_sleep_location: true
   npcs:
+    - a0000001-0000-4000-8000-000000000003
     - 550e8400-e29b-41d4-a716-446655440004
   features:
     - bed

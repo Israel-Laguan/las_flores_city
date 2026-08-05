@@ -5,8 +5,11 @@ district: Central
 district_lore: central
 district_subzone: Central
 mood: vibrant
-available_dialogues: []
+available_dialogues:
+  - a0000001-0002-4000-8000-000000000011
 metadata:
+  npcs:
+    - a0000001-0000-4000-8000-000000000003
   idle_thoughts:
     - Pedestrians flow through the plaza in rhythmic patterns. The crowd density is moderate.
     - Holographic advertisements flicker above the fountain. Consumer optimism is high.

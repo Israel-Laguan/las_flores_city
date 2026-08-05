@@ -3,6 +3,8 @@ import {
   resolveDialogueTree,
   filterChoices,
   initializeDialogueState,
+  applyEffects,
+  grantDialogueRewards,
 } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
@@ -84,8 +86,45 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
     });
   }
 
+  // Gate root-effect application to NEW dialogue runs only. Repeated
+  // /dialogue/start calls while a dialogue is already active would
+  // otherwise re-apply additive root stat_set deltas on every restart
+  // (e.g. a player could farm trust by re-starting). After a dialogue
+  // ENDS, `clearDialogueAndSimulation` nulls `active_dialogue_id`, so
+  // re-entering a finished dialogue is treated as a fresh run and root
+  // effects apply once — exactly as before.
+  //
+  // The cursor is read with `FOR UPDATE` INSIDE the transaction so the
+  // check and the cursor write are one atomic claim: two concurrent
+  // first starts serialize on the player row, and the loser observes
+  // the winner's committed `active_dialogue_id` instead of a stale
+  // pre-start snapshot (which would double-apply the root deltas).
   await withOLTPTransaction(async (client) => {
+    const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
+    const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
+
     await initializeDialogueState(client, userId, dialogue.id, rootNodeId);
+    if (isRestart) {
+      // Mid-dialogue restart: root stat_set already applied on the first
+      // start and persists (initializeDialogueState resets the cursor +
+      // choices_made, not stats). Skip re-applying root effects to avoid
+      // additive stat accumulation.
+      return;
+    }
+    // Apply the root node's stat_set / flag_set / state_set exactly once,
+    // before returning choices. Subsequent choice effects go through
+    // recordChoiceAndEffects which reuses the same shared pipeline.
+    await applyEffects(client, userId, rootNode.effects);
+    // Root-level grant_credits / grant_item flow through the shared
+    // idempotent reward helper (distinct `grant_root` claim key).
+    await grantDialogueRewards(
+      client,
+      userId,
+      dialogue.id,
+      rootNodeId,
+      rootNode.effects,
+      'grant_root'
+    );
   });
 
   const availableChoices = await filterChoices(rootNode.choices || [], userId);
@@ -127,9 +166,33 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     });
   }
 
+  // Gate root-effect application to NEW dialogue runs only (see
+  // handleStartFallback for the rationale: a mid-dialogue restart would
+  // otherwise re-apply additive root stat_set deltas). The cursor is read
+  // with `FOR UPDATE` inside the transaction so concurrent first starts
+  // serialize on the player row and only one applies the root effects.
   await withOLTPTransaction(async (client) => {
+    const existingCursor = await PlayerStateRepository.lockDialogueCursor(client, userId);
+    const isRestart = existingCursor?.active_dialogue_id === dialogue.id;
+
     await PlayerStateRepository.setDialogueCursor(client, userId, rootNodeId, dialogue.id);
     await PlayerStateRepository.initDialogueChunkState(client, userId, dialogue.id, rootNodeId, startChunkId);
+    if (isRestart) {
+      // Mid-dialogue restart: skip re-applying root effects.
+      return;
+    }
+    // Apply the root node's stat_set / flag_set / state_set exactly once.
+    await applyEffects(client, userId, rootNode.effects);
+    // Root-level grant_credits / grant_item flow through the shared
+    // idempotent reward helper (distinct `grant_root` claim key).
+    await grantDialogueRewards(
+      client,
+      userId,
+      dialogue.id,
+      rootNodeId,
+      rootNode.effects,
+      'grant_root'
+    );
   });
 
   const availableChoices = await filterChoices(rootNode.choices || [], userId);

@@ -1,0 +1,83 @@
+id: a0000001-0003-4000-8000-000000000013
+name: "Adeyemi Act 3.5 - Receipt (Micro-Beat)"
+description: "An encrypted text exchange, initiated by Adeyemi unprompted. Replying sets the ANSWERED flag; ignoring it does not."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_receipt_start
+nodes:
+  adeyemi_receipt_start:
+    id: adeyemi_receipt_start
+    type: system
+    text: "Your phone buzzes. 2:14 AM. Encrypted text from an unknown number."
+    thought: "Who is messaging me at this hour?"
+    choices:
+      - id: open_message
+        text: "Read the message"
+        next_node_id: adeyemi_receipt_msg1
+        time_block_cost:
+          amount: 1
+          description: "Reading Adeyemi's encrypted message"
+        
+  adeyemi_receipt_msg1:
+    id: adeyemi_receipt_msg1
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You awake?"
+    thought: "It's Adeyemi."
+    choices:
+      - id: reply_awake
+        text: "Yes. What's wrong?"
+        next_node_id: adeyemi_receipt_msg2
+        effects:
+          flag_set:
+            ANSWERED: true
+      - id: reply_joke
+        text: "I am now."
+        next_node_id: adeyemi_receipt_msg2
+        effects:
+          flag_set:
+            ANSWERED: true
+      - id: leave_on_read
+        text: "[Leave it on read]"
+        next_node_id: adeyemi_receipt_end_ignored
+        
+  adeyemi_receipt_msg2:
+    id: adeyemi_receipt_msg2
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "My brother used to do that thing where he'd call at 2am and then act surprised when I picked up. Like he wasn't hoping I would.\n\nI found one of his old report drafts this week. He was better at this than I am."
+    choices:
+      - id: reply_fine
+        text: "You're doing fine."
+        next_node_id: adeyemi_receipt_end
+      - id: reply_draft
+        text: "What happened to the draft?"
+        next_node_id: adeyemi_receipt_end
+      - id: reply_why
+        text: "Why are you telling me this?"
+        next_node_id: adeyemi_receipt_end
+      - id: reply_nothing
+        text: "[Say nothing]"
+        next_node_id: adeyemi_receipt_end
+        
+  adeyemi_receipt_end:
+    id: adeyemi_receipt_end
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Never mind. Get some sleep."
+    thought: "He's retreating again. But he reached out."
+    is_end: true
+    effects:
+      state_set:
+        last_adeyemi_encounter_at: NOW
+    
+  adeyemi_receipt_end_ignored:
+    id: adeyemi_receipt_end_ignored
+    type: system
+    text: "You put the phone down and go back to sleep. There are no further messages."
+    is_end: true
+
+metadata:
+  version: "1.0"
+  required_flags:
+    adeyemi_daniels_story_revealed: true

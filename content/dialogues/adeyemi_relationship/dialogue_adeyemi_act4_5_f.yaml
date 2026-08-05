@@ -1,0 +1,106 @@
+id: a0000001-0003-4000-8000-000000000014
+name: "Adeyemi Act 4.5-F - Ordinary Hours"
+description: "Friend Path Encounter. Sets DEEPENED and FRIEND_PATH_ACTIVE."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_ord_hours_start
+nodes:
+  adeyemi_ord_hours_start:
+    id: adeyemi_ord_hours_start
+    type: system
+    text: "You walk into a small, low-key noodle counter near the district office. You spot Adeyemi sitting alone, eating."
+    choices:
+      - id: approach_adeyemi
+        text: "Approach him."
+        next_node_id: adeyemi_ord_hours_intro
+        time_block_cost:
+          amount: 1
+          description: "Sharing a meal with Adeyemi"
+        
+  adeyemi_ord_hours_intro:
+    id: adeyemi_ord_hours_intro
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You look like you haven't eaten."
+    thought: "He didn't invite me, but he's not dismissing me either."
+    choices:
+      - id: sit_down
+        text: "Sit down."
+        next_node_id: adeyemi_ord_hours_order
+
+  adeyemi_ord_hours_order:
+    id: adeyemi_ord_hours_order
+    type: system
+    text: "Adeyemi orders a second bowl without asking you what you want. He mentions a small theft case from years ago. A kid who got out."
+    choices:
+      - id: ask_about_case
+        text: "What happened to the kid?"
+        next_node_id: adeyemi_ord_hours_kid
+        effects:
+          stat_set:
+            adeyemi_trust: 5
+      - id: let_pass
+        text: "[Listen silently]"
+        next_node_id: adeyemi_ord_hours_question
+
+  adeyemi_ord_hours_kid:
+    id: adeyemi_ord_hours_kid
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "He stayed out. That's all."
+    choices:
+      - id: continue_kid
+        text: "Continue listening."
+        next_node_id: adeyemi_ord_hours_question
+
+  adeyemi_ord_hours_question:
+    id: adeyemi_ord_hours_question
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "What do you do when you're not doing... this?"
+    thought: "It's an awkward question for him. He knows it."
+    choices:
+      - id: answer_honestly
+        text: "[Answer honestly about your life]"
+        next_node_id: adeyemi_ord_hours_end
+      - id: deflect
+        text: "This and that."
+        next_node_id: adeyemi_ord_hours_end
+      - id: ask_back
+        text: "What about you?"
+        next_node_id: adeyemi_ord_hours_answer_back
+        effects:
+          stat_set:
+            adeyemi_familiarity: 10
+            adeyemi_alignment: 5
+
+  adeyemi_ord_hours_answer_back:
+    id: adeyemi_ord_hours_answer_back
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I used to run. I don't anymore."
+    choices:
+      - id: nod
+        text: "Nod."
+        next_node_id: adeyemi_ord_hours_end
+
+  adeyemi_ord_hours_end:
+    id: adeyemi_ord_hours_end
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Same time next week doesn't have to mean anything."
+    thought: "He paid for the food before I could even reach for my credits. He's standing up now."
+    is_end: true
+    effects:
+      flag_set:
+        DEEPENED: true
+        FRIEND_PATH_ACTIVE: true
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "1.0"
+  required_flags:
+    ANSWERED: true
+  hidden_if:
+    WITNESSED: true

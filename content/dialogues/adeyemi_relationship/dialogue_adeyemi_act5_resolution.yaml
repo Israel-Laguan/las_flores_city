@@ -1,0 +1,260 @@
+id: a0000001-0005-4000-8000-000000000014
+name: "Adeyemi Act 5 - The Estate"
+description: "Final confrontation at Mayor Vega's estate. The dialogue tree dynamically branches to one of 8 archetypal endings based on Act 4 flags."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_act5_start
+nodes:
+  adeyemi_act5_start:
+    id: adeyemi_act5_start
+    type: system
+    text: "The server room is cooling rapidly. Adeyemi stands by the terminal, the master drive in his hand. He looks at you."
+    choices:
+      - id: assess_covered
+        text: "[If he protected you at the Crane]"
+        next_node_id: adeyemi_act5_covered_branch
+        required_flags:
+          COVERED: true
+      - id: assess_witnessed
+        text: "[If you stepped toward Solis at the Crane]"
+        next_node_id: adeyemi_act5_witnessed_branch
+        required_flags:
+          WITNESSED: true
+      - id: assess_deflected
+        text: "[If you stood still at the Crane]"
+        next_node_id: adeyemi_act5_deflected_branch
+        required_flags:
+          DEFLECTED: true
+      - id: assess_default
+        text: "[Move forward]"
+        next_node_id: adeyemi_act5_distant
+
+  # COVERED BRANCH (Friend, Lover, Mirror, Reluctant Ally)
+  adeyemi_act5_covered_branch:
+    id: adeyemi_act5_covered_branch
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I have it. But Vega's men are coming down the hall."
+    choices:
+      - id: covered_lover
+        text: "[LOVER PATH]"
+        next_node_id: adeyemi_act5_lover
+        required_flags:
+          ANSWERED: true
+          COVERED: true
+          DEEPENED: true
+          ROMANTIC_TENSION_CONFIRMED: true
+          LOVER_PATH_ACTIVE: true
+        required_stats:
+          adeyemi_trust: "gte:75"
+          adeyemi_familiarity: "gte:80"
+          adeyemi_alignment: "gte:60"
+          adeyemi_tension: "gte:30"
+      - id: covered_friend
+        text: "[FRIEND PATH]"
+        next_node_id: adeyemi_act5_friend
+        required_flags:
+          ANSWERED: true
+          DEEPENED: true
+          FRIEND_PATH_ACTIVE: true
+        required_stats:
+          adeyemi_trust: "gte:70"
+          adeyemi_familiarity: "gte:75"
+          adeyemi_alignment: "gte:65"
+          adeyemi_tension: "lte:40"
+      - id: covered_mirror
+        text: "[MIRROR PATH]"
+        next_node_id: adeyemi_act5_mirror
+        required_flags:
+          ANSWERED: true
+          COVERED: true
+        required_stats:
+          adeyemi_trust: "gte:60"
+          adeyemi_familiarity: "gte:65"
+          adeyemi_alignment: "gte:40"
+          adeyemi_tension: "gte:50"
+      - id: covered_ally
+        text: "[RELUCTANT ALLY PATH]"
+        next_node_id: adeyemi_act5_ally
+        required_flags:
+          ANSWERED: true
+        hidden_if:
+          LOVER_PATH_ACTIVE: true
+          FRIEND_PATH_ACTIVE: true
+        required_stats:
+          adeyemi_trust: "gte:50"
+      - id: covered_default
+        text: "[Take the drive and go]"
+        next_node_id: adeyemi_act5_distant
+
+  adeyemi_act5_lover:
+    id: adeyemi_act5_lover
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Take the drive. I'll hold the door."
+    thought: "He touches your face, briefly, before turning to the door. 'Tender, careful, slightly afraid.' The Lover ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "lover"
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act5_friend:
+    id: adeyemi_act5_friend
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I'll cover you. Get out of here. And text me when you're safe."
+    thought: "He hands you the drive. 'Warmth without sentimentality.' The Friend ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "friend"
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act5_mirror:
+    id: adeyemi_act5_mirror
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "We split up. They won't know who has the drive."
+    thought: "Mutual recognition. Both compromised. The Mirror ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "mirror"
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act5_ally:
+    id: adeyemi_act5_ally
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Take it. I'll secure the perimeter. We're done after this."
+    thought: "Functional and affectless. The Reluctant Ally ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "reluctant_ally"
+        last_adeyemi_encounter_at: NOW
+
+  # WITNESSED BRANCH (Failed Lover, Opponent)
+  adeyemi_act5_witnessed_branch:
+    id: adeyemi_act5_witnessed_branch
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You shouldn't be here."
+    choices:
+      - id: witnessed_failed_lover
+        text: "[FAILED LOVER PATH]"
+        next_node_id: adeyemi_act5_failed_lover
+        required_flags:
+          ANSWERED: true
+          WITNESSED: true
+          LOVER_PATH_ACTIVE: true
+        required_stats:
+          adeyemi_trust: "gte:60"
+          adeyemi_familiarity: "gte:70"
+          adeyemi_tension: "gte:65"
+      - id: witnessed_opponent
+        text: "[OPPONENT PATH]"
+        next_node_id: adeyemi_act5_opponent
+        required_flags:
+          WITNESSED: true
+        required_stats:
+          adeyemi_alignment: "lte:30"
+          adeyemi_tension: "gte:70"
+      - id: witnessed_default
+        text: "[Grab the drive and run]"
+        next_node_id: adeyemi_act5_distant
+
+  adeyemi_act5_failed_lover:
+    id: adeyemi_act5_failed_lover
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I thought you were different. You have the drive. Go to Solis. I won't stop you."
+    thought: "Too close for distance and too fractured for closeness. The Failed Lover ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "failed_lover"
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act5_opponent:
+    id: adeyemi_act5_opponent
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Put your hands up. You're under arrest."
+    thought: "Professional threat assessment. The Opponent ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "opponent"
+        last_adeyemi_encounter_at: NOW
+
+  # DEFLECTED BRANCH (Failed Friend, Always Distant)
+  adeyemi_act5_deflected_branch:
+    id: adeyemi_act5_deflected_branch
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You."
+    choices:
+      - id: deflected_failed_friend
+        text: "[FAILED FRIEND PATH]"
+        next_node_id: adeyemi_act5_failed_friend
+        required_flags:
+          ANSWERED: true
+          DEFLECTED: true
+          FRIEND_PATH_ACTIVE: true
+        required_stats:
+          adeyemi_trust: "gte:40"
+          adeyemi_familiarity: "gte:60"
+          adeyemi_tension: "gte:50"
+      - id: deflected_distant
+        text: "[ALWAYS DISTANT PATH]"
+        next_node_id: adeyemi_act5_distant
+        required_stats:
+          adeyemi_trust: "lte:50"
+          adeyemi_familiarity: "lte:50"
+      - id: deflected_default
+        text: "[Take the drive alone]"
+        next_node_id: adeyemi_act5_distant
+
+  adeyemi_act5_failed_friend:
+    id: adeyemi_act5_failed_friend
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Take the drive. But don't ever contact me again."
+    thought: "Some people you almost knew. The Failed Friend ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "failed_friend"
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act5_distant:
+    id: adeyemi_act5_distant
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I have the drive. I'll deliver it to the authorities. Stay out of my way."
+    thought: "Parallel action. No personal dimension. The Always Distant ending."
+    is_end: true
+    effects:
+      state_set:
+        adeyemi_act: "5_done"
+        adeyemi_ending: "always_distant"
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "2.0"
+  required_flags:
+    adeyemi_first_contact_made: true
+  tags:
+    - "adeyemi"
+    - "act5"
+    - "resolution"
+    - "endings"

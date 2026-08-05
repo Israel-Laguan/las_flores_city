@@ -121,6 +121,7 @@ export function compileTree(
             reasons: boundary.reasons,
             tb_cost: boundary.tbCost,
             effects: boundary.effects,
+            choice_effects: boundary.choiceEffects,
           };
           // Rewrite the choice in the chunk's copy (safe — it's our copy)
           choice.next_node_id = id;

@@ -8,6 +8,43 @@ import { PlayerStateRepository } from '../database/repositories/PlayerStateRepos
 import type { DialogueChoice, PlayerConditionState } from '@las-flores/shared';
 import { choicePassesFilters, metadataConditionsPass } from '@las-flores/shared';
 
+// ============================================================
+// Shared effect application pipeline
+// ============================================================
+
+/**
+ * Apply EffectsSchema-validated effects to player_states atomically.
+ * Reused by both the dialogue-choice path (recordChoiceAndEffects)
+ * and the guarded-leaf path (IronGateValidator._validateEffects).
+ */
+export async function applyEffects(
+  client: any,
+  userId: string,
+  effects: any
+): Promise<void> {
+  if (!effects) return;
+
+  if (effects.flag_set && Object.keys(effects.flag_set).length > 0) {
+    await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
+  }
+  if (effects.state_set && Object.keys(effects.state_set).length > 0) {
+    // Replace special "NOW" marker with current ISO timestamp for relationship tracking.
+    const stateWithTimestamps: Record<string, string> = Object.fromEntries(
+      Object.entries(effects.state_set).map(([key, value]) => [
+        key,
+        value === 'NOW' ? new Date().toISOString() : String(value),
+      ])
+    );
+    await PlayerStateRepository.mergeState(client, userId, stateWithTimestamps);
+  }
+  if (effects.stat_set && Object.keys(effects.stat_set).length > 0) {
+    await PlayerStateRepository.mergeStatsClamped(client, userId, effects.stat_set);
+  }
+  if (effects.story_beat) {
+    await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
+  }
+}
+
 /* eslint-disable max-lines -- dialogue route helpers are cohesively grouped in one module */
 
 export async function getSpeaker(speakerId: string) {
@@ -91,29 +128,38 @@ export async function resolveDialogueTree(
     }
   }
 
+  // Fetch all scene-scoped candidates first (no LIMIT 1), then
+  // evaluate gates in Node so an ineligible LIMIT-1 row cannot
+  // prevent an eligible alternative from being considered.
+  // Preserve the scene's configured ordering by joining
+  // `s.available_dialogues` WITH ORDINALITY and ordering by that
+  // position — PostgreSQL does not guarantee row order without an
+  // explicit ORDER BY, so without this identical player state could
+  // start different trees when a scene lists multiple eligible
+  // dialogues for the same character.
   const sceneResult = await queryOLTP(
     `SELECT dt.id, dt.name, dt.description, dt.start_node_id, dt.nodes, dt.metadata
-     FROM dialogue_trees dt
-     JOIN scenes s ON dt.id = ANY(s.available_dialogues)
+     FROM scenes s
+     JOIN LATERAL unnest(s.available_dialogues) WITH ORDINALITY AS ad(dialogue_id, ord) ON true
+     JOIN dialogue_trees dt ON dt.id = ad.dialogue_id
      WHERE s.id = $1
        AND EXISTS (
          SELECT 1 FROM jsonb_each(dt.nodes) AS node(key, value)
          WHERE (node.value->>'speaker_id') = $2
        )
-     LIMIT 1`,
+     ORDER BY ad.ord`,
     [sceneId, characterId]
   );
 
-  if (sceneResult.rows.length > 0) {
-    const tree = sceneResult.rows[0];
+  for (const tree of sceneResult.rows) {
     if (
       isStoryBeatAllowed(tree.metadata?.required_story_beat, storyBeat) &&
       metadataConditionsPass(tree.metadata, playerCondition)
     ) {
       return tree;
     }
-    // Gated: fall through to the fallback so a beat-unlocked
-    // alternative tree can still serve the same character.
+    // Gated: continue to the next candidate; only fall through
+    // to the fallback if no scene-scoped tree passes all gates.
   }
 
   const fallbackResult = await queryOLTP(
@@ -156,22 +202,29 @@ export async function filterChoices(choices: any[], userId: string) {
   return choices.filter((choice: any) => choicePassesFilters(choice, playerState));
 }
 
+/**
+ * Deduct time blocks INSIDE the caller's open transaction.
+ *
+ * The `client` is mandatory: spending TB on a separate pooled
+ * connection would commit the deduction independently of the
+ * surrounding choice transaction, so a later rollback could not
+ * refund it (and, symmetrically, a rejected choice could keep
+ * state the same transaction already wrote).
+ */
 export async function processTimeBlockCost(
+  client: any,
   userId: string,
   amount: number
 ): Promise<{ success: boolean; error?: string; spent?: number }> {
-  const tbResult = await withOLTPTransaction(async (client) => {
-    const result = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
-    if (!result.success) {
-      return { success: false as const, error: 'insufficient_blocks' as const };
-    }
-    return { success: true as const, spent: amount };
-  });
-
-  return tbResult;
+  const result = await PlayerStateRepository.spendTimeBlocks(client, userId, amount);
+  if (!result.success) {
+    return { success: false, error: 'insufficient_blocks' };
+  }
+  return { success: true, spent: amount };
 }
 
 export async function processRelationshipChange(
+  client: any,
   userId: string,
   speakerId: string,
   stat: string,
@@ -180,7 +233,7 @@ export async function processRelationshipChange(
   const friendshipDelta = stat === 'friendship' ? amount : 0;
   const romanceDelta = stat === 'romance' ? amount : 0;
 
-  await queryOLTP(
+  await client.query(
     'SELECT upsert_user_relationship($1, $2, $3, $4)',
     [userId, speakerId, friendshipDelta, romanceDelta]
   );
@@ -190,14 +243,19 @@ export async function processRelationshipChange(
  * Atomically claim a reward for a dialogue node. Returns true if this
  * is the first claim (grants should proceed), false if already claimed
  * (grants should be skipped).
+ *
+ * The full `claimKey` is passed by the caller so each effect path can
+ * use a distinct, collision-free key (node-rewards, choice-rewards,
+ * root-rewards) WITHOUT changing existing keys — preserving the
+ * idempotency of already-claimed rewards for production users.
  */
 async function tryClaimReward(
   client: any,
   userId: string,
+  claimKey: string,
   dialogueId: string,
   nodeId: string
 ): Promise<boolean> {
-  const claimKey = `grant_${userId}_${dialogueId}_${nodeId}`;
   const result = await client.query(
     `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
      VALUES ($1, $2, $3, $4)
@@ -206,6 +264,69 @@ async function tryClaimReward(
     [userId, claimKey, dialogueId, nodeId]
   );
   return result.rows.length > 0;
+}
+
+/**
+ * Apply M15 reward grants (grant_credits / grant_item) idempotently.
+ *
+ * Centralized here so every effect path — selected-choice effects,
+ * fallback-root effects, chunk-root effects, and destination-node
+ * effects — flows rewards through ONE mechanism instead of each call
+ * site duplicating the grant logic (which previously left choice-level
+ * and root-level reward effects silently dropped, since `applyEffects`
+ * only handles flag/state/stat/story_beat mutations).
+ *
+ * Each caller passes a unique `claimKeyPrefix` + `nodeId` so the claim
+ * key never collides across paths:
+ *   - destination-node rewards: `grant`     → `grant_<u>_<d>_<nextNodeId>`  (unchanged)
+ *   - choice-level rewards:     `grant_choice` → `grant_choice_<u>_<d>_<choiceId>[_<currentNodeId>]`  (new)
+ *   - root-level rewards:       `grant_root`  → `grant_root_<u>_<d>_<rootNodeId>`   (new)
+ * The optional `claimScope` appends a suffix to disambiguate otherwise
+ * identical keys — e.g. the same choice id reused on multiple nodes — so
+ * their rewards stay independently claimable. The destination-node key is
+ * byte-for-byte identical to the previous inline key, so already-claimed
+ * node rewards stay idempotent.
+ */
+export async function grantDialogueRewards(
+  client: any,
+  userId: string,
+  dialogueId: string,
+  nodeId: string,
+  effects: any,
+  claimKeyPrefix: string = 'grant',
+  claimScope?: string
+): Promise<{ grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } }> {
+  let grantedCredits: { amount: number; currency: string } | undefined;
+  let grantedItem: { itemId: string } | undefined;
+
+  if (effects?.grant_credits || effects?.grant_item) {
+    const scopeSuffix = claimScope ? `_${claimScope}` : '';
+    const claimKey = `${claimKeyPrefix}_${userId}_${dialogueId}_${nodeId}${scopeSuffix}`;
+    const isFirstClaim = await tryClaimReward(client, userId, claimKey, dialogueId, nodeId);
+    if (isFirstClaim) {
+      if (effects.grant_credits) {
+        const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
+        const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
+        await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
+        grantedCredits = effects.grant_credits;
+      }
+      if (effects.grant_item) {
+        // RETURNING distinguishes a real insert from an ON CONFLICT no-op:
+        // the player may already own this item (granted via vault_unlock or
+        // another node), in which case nothing was actually granted and the
+        // response/telemetry must not claim otherwise.
+        const vaultResult = await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING RETURNING item_id`,
+          [userId, effects.grant_item]
+        );
+        if (vaultResult.rows.length > 0) {
+          grantedItem = { itemId: effects.grant_item };
+        }
+      }
+    }
+  }
+
+  return { grantedCredits, grantedItem };
 }
 
 export async function recordChoiceAndEffects(
@@ -249,44 +370,13 @@ export async function recordChoiceAndEffects(
   );
 
   // Apply EffectsSchema-validated effects to player_states.
-  // No gating logic here — story progression is a deferred feature.
+  // Reuses the shared pipeline so NOW handling + clamping are
+  // identical between the dialogue-choice path and IronGateValidator.
   const effects = nextNode.effects;
-  if (effects?.flag_set) {
-    await PlayerStateRepository.mergeFlags(client, userId, effects.flag_set);
-  }
-  if (effects?.state_set) {
-    await PlayerStateRepository.mergeState(client, userId, effects.state_set);
-  }
-  if (effects?.stat_set) {
-    await PlayerStateRepository.mergeStats(client, userId, effects.stat_set);
-  }
-  if (effects?.story_beat) {
-    await PlayerStateRepository.setStoryBeat(client, userId, effects.story_beat);
-  }
-  // M15: grant rewards with idempotency check
-  let grantedCredits: { amount: number; currency: string } | undefined;
-  let grantedItem: { itemId: string } | undefined;
-
-  if (effects?.grant_credits || effects?.grant_item) {
-    const isFirstClaim = await tryClaimReward(client, userId, dialogueId, nextNodeId);
-    if (isFirstClaim) {
-      if (effects.grant_credits) {
-        const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
-        const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
-        await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
-        grantedCredits = effects.grant_credits;
-      }
-      if (effects.grant_item) {
-        await client.query(
-          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
-          [userId, effects.grant_item]
-        );
-        grantedItem = { itemId: effects.grant_item };
-      }
-    }
-  }
-
-  return { grantedCredits, grantedItem };
+  await applyEffects(client, userId, effects);
+  // M15: grant destination-node rewards idempotently via the shared
+  // helper (claim key `grant_<u>_<d>_<nextNodeId>` is unchanged).
+  return grantDialogueRewards(client, userId, dialogueId, nextNodeId, effects, 'grant');
 }
 
 export async function initializeDialogueState(client: any, userId: string, dialogueId: string, rootNodeId: string) {
@@ -411,6 +501,7 @@ async function processAlignmentChange(
 }
 
 async function processRelationshipAndCheckEnd(
+  client: any,
   userId: string,
   nextNode: any,
   chosenOption: DialogueChoice
@@ -419,6 +510,7 @@ async function processRelationshipAndCheckEnd(
     const speakerId = nextNode.speaker_id;
     if (speakerId) {
       await processRelationshipChange(
+        client,
         userId,
         speakerId,
         chosenOption.relationship_change.stat,
@@ -430,15 +522,34 @@ async function processRelationshipAndCheckEnd(
   return { isEnd };
 }
 
-export async function processChoice(
-  client: any,
-  userId: string,
-  dialogueId: string,
-  choiceIndex: number,
-  chosenOption: DialogueChoice,
-  currentNodeId: string,
-  nodes: any
-): Promise<{
+// ============================================================
+// ChoiceFailureError
+//
+// Thrown when a choice is rejected mid-processing (bad next node,
+// stale vault reference, insufficient time blocks). `processChoice`
+// mutates player state as it goes — the vault insert, the TB
+// deduction, choice/node effects — so returning `{ success: false }`
+// from inside `withOLTPTransaction` would COMMIT everything applied
+// before the rejection (e.g. handing over a vault item on a choice
+// the player could not afford). Throwing makes the transaction roll
+// back; `processChoiceInTransaction` catches it and maps it back to
+// a `{ success: false, error }` result for the route handlers.
+//
+// Mirrors GuardFailureError in IronGateValidator (chunk-boundary path).
+// ============================================================
+export class ChoiceFailureError extends Error {
+  constructor(public errorCode: ChoiceFailureCode) {
+    super(`Choice rejected: ${errorCode}`);
+    this.name = 'ChoiceFailureError';
+  }
+}
+
+export type ChoiceFailureCode =
+  | 'invalid_next_node'
+  | 'invalid_vault_item'
+  | 'insufficient_time_blocks';
+
+export interface ProcessChoiceResult {
   success: boolean;
   timeBlocksSpent?: number;
   error?: string;
@@ -452,36 +563,110 @@ export async function processChoice(
   alignmentChange?: 'loyalist' | 'fugitive';
   grantedCredits?: { amount: number; currency: string };
   grantedItem?: { itemId: string };
-}> {
-  let timeBlocksSpent = 0;
+}
 
-  if (chosenOption.time_block_cost && chosenOption.time_block_cost.amount > 0) {
-    const tbResult = await processTimeBlockCost(userId, chosenOption.time_block_cost.amount);
-    if (!tbResult.success) {
-      return { success: false, error: 'insufficient_time_blocks' };
+/**
+ * Run `processChoice` in a single OLTP transaction with all-or-nothing
+ * semantics: every mutation it performs (vault unlock, TB deduction,
+ * choice + node effects, reward claims, cursor advance) either commits
+ * together or is rolled back together.
+ *
+ * Route handlers must use this instead of wrapping `processChoice` in
+ * their own `withOLTPTransaction`, because a plain callback return
+ * commits — which is exactly how a rejected choice used to keep its
+ * already-applied side effects.
+ */
+export async function processChoiceInTransaction(
+  userId: string,
+  dialogueId: string,
+  choiceIndex: number,
+  chosenOption: DialogueChoice,
+  currentNodeId: string,
+  nodes: any
+): Promise<ProcessChoiceResult> {
+  try {
+    return await withOLTPTransaction((client) =>
+      processChoice(client, userId, dialogueId, choiceIndex, chosenOption, currentNodeId, nodes)
+    );
+  } catch (err) {
+    if (err instanceof ChoiceFailureError) {
+      return { success: false, error: err.errorCode };
     }
-    timeBlocksSpent = tbResult.spent ?? 0;
+    throw err;
   }
+}
+
+export async function processChoice(
+  client: any,
+  userId: string,
+  dialogueId: string,
+  choiceIndex: number,
+  chosenOption: DialogueChoice,
+  currentNodeId: string,
+  nodes: any
+): Promise<ProcessChoiceResult> {
+  let timeBlocksSpent = 0;
 
   const nextNodeId = chosenOption.next_node_id;
   const nextNode = nodes[nextNodeId];
 
   if (!nextNode) {
-    return { success: false, error: 'invalid_next_node' };
+    throw new ChoiceFailureError('invalid_next_node');
   }
 
-  const { isEnd } = await processRelationshipAndCheckEnd(userId, nextNode, chosenOption);
-
+  // Validate + unlock the vault BEFORE charging time blocks or mutating
+  // relationship state. A stale or missing vault reference must fail fast
+  // so retrying the rejected choice cannot repeatedly consume time blocks
+  // or accumulate relationship deltas.
+  //
+  // The insert is safe to run first ONLY because every rejection below
+  // throws: a failed TB guard rolls this transaction back, so the player
+  // never keeps a gated item they did not pay for.
   let unlockedVaultItem: { id: string; title: string } | undefined;
   if (chosenOption.vault_unlock) {
     const result = await processVaultUnlock(client, userId, chosenOption.vault_unlock);
     if (!result) {
-      return { success: false, error: 'invalid_vault_item' };
+      throw new ChoiceFailureError('invalid_vault_item');
     }
     unlockedVaultItem = result;
   }
 
-  const { grantedCredits, grantedItem } = await recordChoiceAndEffects(
+  if (chosenOption.time_block_cost && chosenOption.time_block_cost.amount > 0) {
+    // Deducted on the SAME client/transaction as the vault insert above,
+    // so the two can never diverge (item granted but TB never charged, or
+    // TB charged but the choice rolled back).
+    const tbResult = await processTimeBlockCost(client, userId, chosenOption.time_block_cost.amount);
+    if (!tbResult.success) {
+      throw new ChoiceFailureError('insufficient_time_blocks');
+    }
+    timeBlocksSpent = tbResult.spent ?? 0;
+  }
+
+  const { isEnd } = await processRelationshipAndCheckEnd(client, userId, nextNode, chosenOption);
+
+  // Apply the choice's own effects (choice-level stat_set/flag_set/state_set)
+  // BEFORE the destination node's effects. Both go through the shared
+  // applyEffects pipeline so NOW handling + clamping are identical.
+  // stat_set deltas accumulate from both; flag_set/state_set follow
+  // overwrite semantics (node effects applied last take precedence).
+  // Choice-level grant_credits / grant_item also flow through the shared
+  // idempotent reward helper (distinct `grant_choice` claim key) so they
+  // are no longer silently dropped when a choice carries reward effects.
+  let choiceRewards: { grantedCredits?: { amount: number; currency: string }; grantedItem?: { itemId: string } } = {};
+  if (chosenOption.effects) {
+    await applyEffects(client, userId, chosenOption.effects);
+    choiceRewards = await grantDialogueRewards(
+      client,
+      userId,
+      dialogueId,
+      chosenOption.id,
+      chosenOption.effects,
+      'grant_choice',
+      currentNodeId
+    );
+  }
+
+  const { grantedCredits: nodeCredits, grantedItem: nodeItem } = await recordChoiceAndEffects(
     client,
     userId,
     dialogueId,
@@ -502,14 +687,18 @@ export async function processChoice(
     alignmentChange = chosenOption.alignment_change;
   }
 
-return {
+  // Surface whichever rewards were granted (choice-level rewards take
+  // precedence if the choice carried them; otherwise the destination
+  // node's rewards). In practice content authors attach grants to one
+  // of the two, not both.
+  return {
     success: true,
     timeBlocksSpent,
     unlockedVaultItem,
     mysterySolveStatus,
     breakthrough,
     alignmentChange,
-    grantedCredits,
-    grantedItem,
+    grantedCredits: choiceRewards.grantedCredits ?? nodeCredits,
+    grantedItem: choiceRewards.grantedItem ?? nodeItem,
   };
 }

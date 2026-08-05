@@ -2,8 +2,9 @@ import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connectio
 import {
   filterChoices,
   getDialogState,
-  processChoice,
+  processChoiceInTransaction,
   joinMystery,
+  type ProcessChoiceResult,
 } from './dialogue-helpers.js';
 import { deleteCache, invalidatePattern } from '../database/redis.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
@@ -66,13 +67,13 @@ export async function handleLegacyChoiceIndex(
   }
 
   const chosenOption = availableChoices[choiceIndex];
-  let choiceResult: Awaited<ReturnType<typeof processChoice>>;
 
-  await withOLTPTransaction(async (client) => {
-    choiceResult = await processChoice(client, userId, dialogueId, choiceIndex, chosenOption, currentNodeId, nodes);
-  });
-
-  choiceResult = choiceResult!;
+  // The transaction lives inside processChoiceInTransaction so a rejected
+  // choice rolls back its partial mutations (vault unlock, TB spend,
+  // effects) instead of committing them on a `{ success: false }` return.
+  const choiceResult: ProcessChoiceResult = await processChoiceInTransaction(
+    userId, dialogueId, choiceIndex, chosenOption, currentNodeId, nodes
+  );
 
   if (!choiceResult.success) {
     const errorStatusMap: Record<string, number> = {
@@ -94,7 +95,7 @@ async function buildLegacyResponse(
   dialogueId: string,
   choiceIndex: number,
   chosenOption: any,
-  choiceResult: Awaited<ReturnType<typeof processChoice>>,
+  choiceResult: ProcessChoiceResult,
   nodes: any,
   res: any
 ) {

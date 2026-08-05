@@ -90,6 +90,18 @@ function requiredPasses(
   return true;
 }
 
+/**
+ * Relationship stat prefixes for all characters with relationship arcs.
+ * Single source of truth — imported by both the decay worker and the
+ * stat-clamping repository so they can never drift out of sync.
+ */
+export const RELATIONSHIP_STAT_PREFIXES = [
+  'adeyemi_',
+  'aisha_',
+  'petra_',
+  'sofia_',
+];
+
 /** Evaluate a hidden_if_* map (ANY match hides the choice). */
 function hiddenMatches(
   map: Record<string, unknown> | undefined,
@@ -147,5 +159,10 @@ export function metadataConditionsPass(
   if (!requiredPasses(metadata.required_flags, player.flags, 'flags')) return false;
   if (!requiredPasses(metadata.required_state, player.state, 'state')) return false;
   if (!requiredPasses(metadata.required_stats, player.stats, 'stats')) return false;
+  // Tree-level hidden_if: if ANY condition matches, the entire tree is hidden.
+  // Mirrors choice-level hidden_if semantics (choicePassesFilters).
+  if (hiddenMatches(metadata.hidden_if, player.flags, 'flags')) return false;
+  if (hiddenMatches(metadata.hidden_if_state, player.state, 'state')) return false;
+  if (hiddenMatches(metadata.hidden_if_stats, player.stats, 'stats')) return false;
   return true;
 }

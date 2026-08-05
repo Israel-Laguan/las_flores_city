@@ -55,6 +55,7 @@ export {
   getForChoiceFilter,
   getCurrentLocation,
   getDialogueCursor,
+  lockDialogueCursor,
   getBalancesForLedger,
 } from './PlayerStateRepository.read.js';
 
@@ -78,6 +79,7 @@ export {
   mergeFlags,
   mergeState,
   mergeStats,
+  mergeStatsClamped,
   partialUpdate,
   createForNewUser,
 } from './PlayerStateRepository.write.js';
@@ -92,6 +94,7 @@ export class PlayerStateRepository {
   static getForChoiceFilter = readMethods.getForChoiceFilter;
   static getCurrentLocation = readMethods.getCurrentLocation;
   static getDialogueCursor = readMethods.getDialogueCursor;
+  static lockDialogueCursor = readMethods.lockDialogueCursor;
   static getBalancesForLedger = readMethods.getBalancesForLedger;
   static getBalances = writeMethods.getBalances;
   static modifyBalance = writeMethods.modifyBalance;
@@ -110,6 +113,7 @@ export class PlayerStateRepository {
   static mergeFlags = writeMethods.mergeFlags;
   static mergeState = writeMethods.mergeState;
   static mergeStats = writeMethods.mergeStats;
+  static mergeStatsClamped = writeMethods.mergeStatsClamped;
   static partialUpdate = writeMethods.partialUpdate;
   static createForNewUser = writeMethods.createForNewUser;
 }

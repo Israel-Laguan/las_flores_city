@@ -8,6 +8,122 @@ metadata:
   role: npc
   faction: police
   personality: imposing_compromised
+  # Relationship Dimensions - Initial State (before player meets him)
+  relationship_dimensions:
+    # Trust: How much Adeyemi trusts the player (-100 to 100)
+    # Initial: Slightly negative due to his role as enforcer for corrupt establishment
+    adeyemi_trust: -20
+    
+    # Familiarity: How well Adeyemi knows the player (0 to 100)
+    # Initial: Unknown/stranger status
+    adeyemi_familiarity: 0
+    
+    # Alignment: How aligned Adeyemi's goals are with the player's (-100 to 100)
+    # Initial: Negative due to opposing roles (enforcer vs potential dissident)
+    adeyemi_alignment: -40
+    
+    # Tension: Current tension level in the relationship (0 to 100)
+    # Initial: Moderate tension due to inherent role conflict
+    adeyemi_tension: 30
+    
+    # Debt: Outstanding obligations/indebtedness (-100 to 100, negative = player owes Adeyemi)
+    # Initial: No debt
+    adeyemi_debt: 0
+    
+    # Visibility: How visible/known the relationship is to others (0 to 100)
+    # Initial: No visibility (first meeting hasn't happened)
+    adeyemi_visibility: 0
+  
+  # Ending Thresholds for Adeyemi's 8 Archetypal Endings
+  relationship_endings:
+    friend:
+      required_stats:
+        adeyemi_trust: "gte:70"
+        adeyemi_familiarity: "gte:75"
+        adeyemi_alignment: "gte:65"
+        adeyemi_tension: "lte:40"
+      required_flags:
+        ANSWERED: true
+        DEEPENED: true
+        FRIEND_PATH_ACTIVE: true
+      description: "Warmth without sentimentality. Shared dinners, occasional late texts, a specific comfort."
+    
+    lover:
+      required_stats:
+        adeyemi_trust: "gte:75"
+        adeyemi_familiarity: "gte:80"
+        adeyemi_alignment: "gte:60"
+        adeyemi_tension: "gte:30"
+      required_flags:
+        ANSWERED: true
+        COVERED: true
+        DEEPENED: true
+        ROMANTIC_TENSION_CONFIRMED: true
+        LOVER_PATH_ACTIVE: true
+      description: "Tender, careful, slightly afraid. The first page of something."
+      
+    the_mirror:
+      required_stats:
+        adeyemi_trust: "gte:60"
+        adeyemi_familiarity: "gte:65"
+        adeyemi_alignment: "gte:40"
+        adeyemi_tension: "gte:50"
+      required_flags:
+        ANSWERED: true
+        COVERED: true
+      description: "Mutual recognition. Both compromised, both reaching for the same thing."
+      
+    reluctant_ally:
+      required_stats:
+        adeyemi_trust: "gte:50"
+      required_flags:
+        ANSWERED: true
+      description: "Functional and affectless. Two professionals doing what needs doing."
+      
+    failed_friend:
+      required_stats:
+        adeyemi_trust: "gte:40"
+        adeyemi_familiarity: "gte:60"
+        adeyemi_tension: "gte:50"
+      required_flags:
+        ANSWERED: true
+        DEFLECTED: true
+      description: "Some people you almost knew. The almost is the thing that stays."
+      
+    failed_lover:
+      required_stats:
+        adeyemi_trust: "gte:60"
+        adeyemi_familiarity: "gte:70"
+        adeyemi_tension: "gte:65"
+      required_flags:
+        ANSWERED: true
+        WITNESSED: true
+      description: "Too close for distance and too fractured for closeness."
+      
+    always_distant:
+      required_stats:
+        adeyemi_trust: "lte:50"
+        adeyemi_familiarity: "lte:50"
+      description: "Parallel action. No personal dimension."
+      
+    opponent:
+      required_stats:
+        adeyemi_alignment: "lte:30"
+        adeyemi_tension: "gte:70"
+      required_flags:
+        WITNESSED: true
+      description: "Professional threat assessment. Adeyemi decides the player is the threat."
+
+available_dialogues:
+  - a0000001-0001-4000-8000-000000000010
+  - a0000001-0002-4000-8000-000000000011
+  - a0000001-0003-4000-8000-000000000012
+  - a0000001-0003-4000-8000-000000000013
+  - a0000001-0004-4000-8000-000000000013
+  - a0000001-0003-4000-8000-000000000014
+  - a0000001-0003-4000-8000-000000000015
+  - a0000001-0005-4000-8000-000000000014
+  - a0000001-0003-4000-8000-000000000016
 lore_path: adeyemi_ogunbiyi.md
 narrative_path: adeyemi_ogunbiyi.md
 asset_paths:

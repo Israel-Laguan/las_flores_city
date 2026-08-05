@@ -1,0 +1,143 @@
+id: a0000001-0004-4000-8000-000000000013
+name: "Adeyemi Act 4 - The Crane"
+description: "The pressure point. Solis reveals her connection to the player, forcing a physical choice."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_crane_start
+nodes:
+  adeyemi_crane_start:
+    id: adeyemi_crane_start
+    type: system
+    text: "The industrial crane yard is dead quiet at this hour. You told Adeyemi to meet you here. He steps out from the shadows of a container, hands visible but tense."
+    thought: "We're completely exposed."
+    choices:
+      - id: approach_adeyemi
+        text: "I got the Meridian file."
+        next_node_id: adeyemi_crane_adeyemi_speaks
+        time_block_cost:
+          amount: 1
+          description: "Meeting Adeyemi at the industrial crane yard"
+        
+  adeyemi_crane_adeyemi_speaks:
+    id: adeyemi_crane_adeyemi_speaks
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You shouldn't have brought it here. Vega knows we're looking. We need to—"
+    thought: "He stops. His eyes dart to the catwalk above me."
+    choices:
+      - id: look_up
+        text: "[Look behind you]"
+        next_node_id: adeyemi_crane_solis_arrives
+
+  adeyemi_crane_solis_arrives:
+    id: adeyemi_crane_solis_arrives
+    type: system
+    text: "Councilwoman Petra Solis descends the metal stairs. She is flanked by two private security contractors. She smiles warmly at you."
+    choices:
+      - id: react_solis
+        text: "Petra? What are you doing here?"
+        next_node_id: adeyemi_crane_solis_speaks
+
+  adeyemi_crane_solis_speaks:
+    id: adeyemi_crane_solis_speaks
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000004
+    text: "Collecting our hard work. You've done brilliantly, getting him to trust you. I'll take the file now."
+    thought: "Adeyemi freezes. The betrayal hits him like a physical blow. He looks at me, calculating."
+    choices:
+      - id: defend_self
+        text: "Adeyemi, it's a lie. I didn't set you up."
+        next_node_id: adeyemi_crane_adeyemi_reaction
+      - id: stay_silent
+        text: "[Say nothing]"
+        next_node_id: adeyemi_crane_adeyemi_reaction
+
+  adeyemi_crane_adeyemi_reaction:
+    id: adeyemi_crane_adeyemi_reaction
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Did you tell her where we were meeting?"
+    choices:
+      - id: admit_truth
+        text: "Yes, but—"
+        next_node_id: adeyemi_crane_choice
+      - id: deny
+        text: "No!"
+        next_node_id: adeyemi_crane_choice
+
+  adeyemi_crane_choice:
+    id: adeyemi_crane_choice
+    type: system
+    text: "Solis's guards raise their weapons toward Adeyemi. The standoff is perfectly balanced. You are in the middle."
+    choices:
+      - id: step_to_adeyemi
+        text: "[Step toward Adeyemi]"
+        next_node_id: adeyemi_crane_covered
+        effects:
+          flag_set:
+            COVERED: true
+            adeyemi_publicly_defended: true
+          stat_set:
+            adeyemi_trust: 30
+            adeyemi_alignment: 20
+      - id: step_to_solis
+        text: "[Step toward Solis]"
+        next_node_id: adeyemi_crane_witnessed
+        effects:
+          flag_set:
+            WITNESSED: true
+          stat_set:
+            adeyemi_trust: -50
+            adeyemi_tension: 40
+      - id: stand_still
+        text: "[Stand perfectly still]"
+        next_node_id: adeyemi_crane_deflected
+        effects:
+          flag_set:
+            DEFLECTED: true
+          stat_set:
+            adeyemi_familiarity: -10
+            adeyemi_tension: 20
+
+  adeyemi_crane_covered:
+    id: adeyemi_crane_covered
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Get down!"
+    thought: "You move toward him. He grabs your arm, pulling you behind the container as the first shots ring out. He's protecting you."
+    is_end: true
+    effects:
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_crane_witnessed:
+    id: adeyemi_crane_witnessed
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I see."
+    thought: "You back away toward Solis. Adeyemi's expression goes completely blank. He drops a flashbang and vanishes into the yard."
+    is_end: true
+    effects:
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_crane_deflected:
+    id: adeyemi_crane_deflected
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You can't have both."
+    thought: "You freeze. Adeyemi doesn't wait for you to decide. He fires at the floodlights, plunging the yard into darkness, and disappears."
+    is_end: true
+    effects:
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "2.0"
+  required_flags:
+    ANSWERED: true
+  tags:
+    - "adeyemi"
+    - "act4"
+    - "the_crane"
+    - "solis"

@@ -1,0 +1,201 @@
+id: a0000001-0002-4000-8000-000000000011
+name: "Adeyemi Act 2 - The Reyes Incident"
+description: "Adeyemi arrests labour activist Diego Reyes in public. Player reacts to this event."
+character_id: a0000001-0000-4000-8000-000000000003
+dialogue_scope: character
+start_node_id: adeyemi_act2_start
+nodes:
+  adeyemi_act2_start:
+    id: adeyemi_act2_start
+    type: system
+    text: "At the protest outside the Meridian-adjacent facility, the crowd is dense. You watch as Chief Inspector Adeyemi moves through the people without force. Someone stumbles near you in the crowd surge; Adeyemi's arm extends automatically to brace them, then drops immediately. He reaches labor activist Diego Reyes and speaks quietly. Reyes doesn't resist. He is cuffed. Two officers take Reyes away, but Adeyemi stays at the edge of the scene."
+    choices:
+      - id: act2_confront
+        text: "Confront Adeyemi directly. Reyes did nothing wrong."
+        next_node_id: adeyemi_act2_confront
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_watch
+        text: "[Say nothing. Watch]"
+        next_node_id: adeyemi_act2_watch
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_intervene
+        text: "[Try to intervene and step toward Reyes]"
+        next_node_id: adeyemi_act2_intervene
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_help_after
+        text: "[Walk away, but resolve to help Reyes find a lawyer later]"
+        next_node_id: adeyemi_act2_help_after
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_public_statement
+        text: "Make a public statement denouncing Adeyemi's arrest of Reyes"
+        next_node_id: adeyemi_act2_public_statement
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_do_nothing
+        text: "[Do nothing and move on]"
+        next_node_id: adeyemi_act2_do_nothing
+        time_block_cost:
+          amount: 1
+          description: "Witnessing and responding to Diego Reyes' arrest"
+      - id: act2_secondary_call
+        text: "[Use the secondary number]"
+        next_node_id: adeyemi_act2_secondary_call
+        time_block_cost:
+          amount: 1
+          description: "Calling Adeyemi's secondary number after the arrest"
+
+  adeyemi_act2_confront:
+    id: adeyemi_act2_confront
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I know."
+    thought: "He says 'I know' and walks away. Does he mean he knows Reyes is innocent? Or he knows I'm upset? Or he knows more than I do?"
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_tension: 15
+        adeyemi_alignment: -10
+        adeyemi_familiarity: 3
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_watch:
+    id: adeyemi_act2_watch
+    type: system
+    text: "Adeyemi sees you watching. He doesn't acknowledge it, but he definitely clocked you."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_familiarity: 5
+        adeyemi_tension: 5
+        adeyemi_trust: 3
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_intervene:
+    id: adeyemi_act2_intervene
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "Don't. Not here."
+    thought: "He moves to intercept me. Not a physical block, but he's suddenly between me and the arrest."
+    choices:
+      - id: act2_intervene_stop
+        text: "[Stop]"
+        next_node_id: adeyemi_act2_intervene_stop
+      - id: act2_intervene_push
+        text: "[Push through anyway]"
+        next_node_id: adeyemi_act2_intervene_push
+
+  adeyemi_act2_intervene_stop:
+    id: adeyemi_act2_intervene_stop
+    type: system
+    text: "You stop. He nods slightly, then walks away."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_tension: 10
+        adeyemi_trust: 8
+        adeyemi_familiarity: 8
+        adeyemi_alignment: -5
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_intervene_push:
+    id: adeyemi_act2_intervene_push
+    type: system
+    text: "You push past him. His expression tightens. The other officers warn you to step back, and Adeyemi watches you with a hard look before leaving."
+    is_end: true
+    effects:
+      stat_set:
+        adeyemi_tension: 20
+        adeyemi_alignment: -15
+        adeyemi_trust: -5
+        adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_help_after:
+    id: adeyemi_act2_help_after
+    type: system
+    text: "You decide not to make a scene now, but you start making calls to find legal representation for Reyes."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_helped_reyes: true
+      stat_set:
+        adeyemi_alignment: 10
+        adeyemi_tension: 8
+        adeyemi_trust: 5
+        adeyemi_familiarity: 3
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_public_statement:
+    id: adeyemi_act2_public_statement
+    type: system
+    text: "You take to the public channels and denounce Adeyemi's arrest of Reyes as unjust. Your statement gains traction, putting pressure on the police department."
+    is_end: true
+    effects:
+      flag_set:
+        adeyemi_publicly_denounced: true
+      stat_set:
+        adeyemi_alignment: -20
+        adeyemi_tension: 25
+        adeyemi_trust: -15
+        adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  adeyemi_act2_do_nothing:
+    id: adeyemi_act2_do_nothing
+    type: system
+    text: "You treat it as background noise and move on with your day."
+    is_end: true
+    effects:
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+  # Optional Secondary Number call logic - this would likely be a separate trigger in-game, but added here for the sequence
+  adeyemi_act2_secondary_call:
+    id: adeyemi_act2_secondary_call
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "I wasn't expecting you to use that number."
+    choices:
+      - id: call_ask_why
+        text: "Why did you arrest him?"
+        next_node_id: adeyemi_act2_secondary_call_answer
+
+  adeyemi_act2_secondary_call_answer:
+    id: adeyemi_act2_secondary_call_answer
+    type: character
+    speaker_id: a0000001-0000-4000-8000-000000000003
+    text: "You want to know why. Most people do. The answer is more complicated than you probably want it to be."
+    thought: "He doesn't explain further, but he acknowledges the complexity without defending himself."
+    is_end: true
+    effects:
+      flag_set:
+        SECONDARY_NUMBER_USED: true
+      stat_set:
+        adeyemi_trust: 12
+        adeyemi_familiarity: 5
+      state_set:
+        last_adeyemi_encounter_at: NOW
+
+metadata:
+  version: "2.0"
+  tags:
+    - "adeyemi"
+    - "act2"
+    - "reyes_arrest"
+  required_state:
+    adeyemi_act: "1_done"

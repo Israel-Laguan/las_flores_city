@@ -178,6 +178,7 @@ export {
   metadataConditionsPass,
   parseNumericComparison,
   compareNumber,
+  RELATIONSHIP_STAT_PREFIXES,
 } from './conditions.js';
 export type {
   PlayerConditionState,

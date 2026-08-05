@@ -1,0 +1,14 @@
+id: a0000001-0000-4000-8000-000000000004
+name: Petra Solis
+title: City Councilwoman
+description: |
+  Councilwoman Petra Solis is a prominent figure in the reform bloc and a vocal advocate for justice in the Meridian case. She appears to be a champion of the people, but she is secretly part of the corruption network she claims to fight.
+metadata:
+  type: human
+  role: npc
+  faction: politics
+  personality: eloquent_compromised
+lore_path: petra_solis.md
+narrative_path: petra_solis.md
+asset_paths:
+  portrait: petra_solis__default.png
