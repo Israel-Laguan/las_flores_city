@@ -5,6 +5,7 @@ import { DialogueResolver } from '../services/DialogueResolver.js';
 import { initializeDialogueState, filterChoices, getSpeaker } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
+import { mapDialogueWriteError } from './dialogue-errors.js';
 
 // ============================================================
 // Archive Room (Legacy Play)
@@ -60,6 +61,14 @@ archiveRouter.post('/start-simulation', authMiddleware, async (req: AuthRequest,
       .status(201)
       .json(buildDialogueResponse(chunkPayload, result.dialogue.id, result.dialogue.start_node_id, result.choices, result.isEnd, 0, 0));
   } catch (error: any) {
+    const mapped = mapDialogueWriteError(error);
+    if (mapped) {
+      return res.status(mapped.status).json({
+        success: false,
+        error: mapped.code,
+        timestamp: new Date().toISOString(),
+      });
+    }
     console.error('Archive start-simulation error:', error);
     res.status(500).json({
       success: false,

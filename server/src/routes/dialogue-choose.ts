@@ -13,6 +13,7 @@ import { PlayerStateRepository } from '../database/repositories/PlayerStateRepos
 import { deleteCache } from '../database/redis.js';
 import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMystery } from './dialogue-side-effects.js';
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
+import { mapDialogueWriteError } from './dialogue-errors.js';
 
 // ── main handler ────────────────────────────────────────────
 export async function handleChoose(req: any, res: any): Promise<any> {
@@ -57,6 +58,10 @@ export async function handleChoose(req: any, res: any): Promise<any> {
 
     return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, res);
   } catch (error: any) {
+    const mapped = mapDialogueWriteError(error);
+    if (mapped) {
+      return res.status(mapped.status).json({ success: false, error: mapped.code, timestamp: new Date().toISOString() });
+    }
     console.error('Dialogue choose error:', error);
     res.status(500).json({ success: false, error: 'Failed to process choice', timestamp: new Date().toISOString() });
   }

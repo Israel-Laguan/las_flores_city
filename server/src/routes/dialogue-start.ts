@@ -10,6 +10,7 @@ import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-he
 import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
+import { mapDialogueWriteError } from './dialogue-errors.js';
 
 export async function handleStartDialogue(req: any, res: any): Promise<any> {
   try {
@@ -63,6 +64,14 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     const { id: startChunkId, chunk_key: startChunkKey } = startChunkResult.rows[0];
     return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, res);
   } catch (error: any) {
+    const mapped = mapDialogueWriteError(error);
+    if (mapped) {
+      return res.status(mapped.status).json({
+        success: false,
+        error: mapped.code,
+        timestamp: new Date().toISOString(),
+      });
+    }
     console.error('Start dialogue error:', error);
     res.status(500).json({
       success: false,
