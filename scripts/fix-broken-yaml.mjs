@@ -6,7 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 
 const TARGET_DIR = path.resolve('content/characters');
 
@@ -16,7 +16,7 @@ const brokenFiles = [];
 
 for (const f of allFiles) {
   try {
-    yaml.load(fs.readFileSync(path.join(TARGET_DIR, f), 'utf8'));
+    yamlLoad(fs.readFileSync(path.join(TARGET_DIR, f), 'utf8'));
   } catch {
     brokenFiles.push(f);
   }
@@ -116,7 +116,7 @@ for (const f of brokenFiles) {
     fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
     
     // Verify it parses
-    yaml.load(fs.readFileSync(filePath, 'utf8'));
+    yamlLoad(fs.readFileSync(filePath, 'utf8'));
     console.log(`  ✅ ${f}`);
     fixed++;
     
