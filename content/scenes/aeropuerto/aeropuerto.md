@@ -14,4 +14,4 @@ The public arrivals and departures concourse of the Aeropuerto Internacional Las
 
 ## Related Lore
 
-- [[districts/urban_core/urban_core]]
+- [[districts/city/city]]

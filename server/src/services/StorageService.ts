@@ -6,6 +6,12 @@ const DEFAULT_TTL_SECONDS = 300;
 
 const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'localhost';
 const MINIO_PORT = process.env.MINIO_PORT || '9000';
+// Browser-reachable endpoint for MinIO. In Compose deployments MINIO_ENDPOINT
+// is the container hostname (`minio`), which browsers can't resolve, so the
+// signer rewrites presigned URLs to this public origin instead (the S3 client
+// still uses MINIO_ENDPOINT for the actual request). When unset, presigned
+// URLs keep the configured endpoint (legacy behavior).
+const MINIO_PUBLIC_URL = (process.env.MINIO_PUBLIC_URL || '').trim();
 const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';
 const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'minioadmin';
 const MINIO_BUCKET = process.env.MINIO_BUCKET || 'las-flores';
@@ -40,8 +46,16 @@ function getS3Client(): S3Client {
 
 function isMinioUrl(mediaUrl: string): boolean {
   if (mediaUrl.startsWith('s3://')) return true;
-  const minioHost = `${MINIO_ENDPOINT}:${MINIO_PORT}`;
-  return mediaUrl.includes(minioHost) || mediaUrl.includes('minio');
+  // Match only URLs whose host is the configured MinIO endpoint. We deliberately
+  // avoid a loose `includes('minio')` substring test so an already-browser-
+  // reachable public/CDN URL (e.g. https://cdn.example.com/minio-assets/...) is
+  // NOT mistaken for an internal object and rewritten into a presigned URL.
+  const endpointHost = MINIO_ENDPOINT.replace(/^https?:\/\//, '').replace(/:\d+$/, '').toLowerCase();
+  try {
+    return new URL(mediaUrl).hostname.toLowerCase() === endpointHost;
+  } catch {
+    return false;
+  }
 }
 
 export { isMinioUrl };
@@ -67,6 +81,26 @@ function parseS3Location(mediaUrl: string): { bucket: string; key: string } | nu
   }
 }
 
+/**
+ * Rewrite a presigned URL's origin to the browser-reachable MinIO endpoint
+ * (`MINIO_PUBLIC_URL`) when one is configured. Presigned S3 URLs sign the
+ * path + query, not the host, so swapping the origin keeps the signature valid
+ * while making the URL resolvable from a browser (the S3 client still talks to
+ * the server-side `MINIO_ENDPOINT`).
+ */
+function rewriteToPublicMinioUrl(signedUrl: string): string {
+  if (!MINIO_PUBLIC_URL) return signedUrl;
+  try {
+    const signed = new URL(signedUrl);
+    const pub = new URL(MINIO_PUBLIC_URL);
+    signed.protocol = pub.protocol;
+    signed.host = pub.host;
+    return signed.toString();
+  } catch {
+    return signedUrl;
+  }
+}
+
 export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_TTL_SECONDS): Promise<string> {
   const location = parseS3Location(mediaUrl);
   if (!location) return mediaUrl;
@@ -76,7 +110,8 @@ export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_
     Key: location.key,
   });
 
-  return getSignedUrl(getS3Client(), command, { expiresIn: expiresInSeconds });
+  const signedUrl = await getSignedUrl(getS3Client(), command, { expiresIn: expiresInSeconds });
+  return rewriteToPublicMinioUrl(signedUrl);
 }
 
 export function createCdnProxyUrl(itemId: string, userId: string, expiresInSeconds = DEFAULT_TTL_SECONDS): string {

@@ -91,6 +91,11 @@ async function signPortraitUrls(
   if (!Array.isArray(entries) || entries.length === 0) return entries;
   const signed = await Promise.all(
     entries.map(async (e) => {
+      if (!e || typeof e !== 'object' || typeof e.url !== 'string' || !e.url) {
+        // Never let a malformed entry crash the route — log and omit it.
+        console.warn(`[dialogue-speakers] skipped malformed portrait_urls entry: ${e?.url ?? '<invalid entry>'}`);
+        return null;
+      }
       try {
         return { ...e, url: await signPortraitUrl(e.url) };
       } catch (err) {

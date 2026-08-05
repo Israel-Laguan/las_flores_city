@@ -66,7 +66,7 @@ function NodeList({
         <button
           key={n.id}
           type="button"
-          aria-pressed={n.id === selectedId}
+          aria-current={n.id === selectedId ? "true" : undefined}
           onClick={() => onSelect(n.id)}
           className={cn(
             styles.nodeButton,
@@ -108,6 +108,7 @@ function NodeVisualForm({
           <input
             className={cn("input", styles.input)}
             list="visual-expression-suggestions"
+            maxLength={50}
             value={visual?.expression ?? ""}
             placeholder="e.g. calculating"
             onChange={(e) => onPatch({ expression: e.target.value || undefined })}

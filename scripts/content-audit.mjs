@@ -44,24 +44,27 @@ const EXPRESSION_FIELD = {
  * Cross-reference expression-tagged asset entries (portrait_urls /
  * background_urls) against local staging files in assets/.
  *
- * Returns warning messages for any entry that has an `expression` tag but
- * no matching `<slug>__<expression>.png` file. The untagged default entry
- * maps to `<slug>__default.png` (already checked separately).
+ * Returns `{ warnings, parseErrors }`:
+ *  - `warnings` for any expression-tagged entry with no matching
+ *    `<slug>__<expression>.png` file (a genuine missing-asset signal).
+ *  - `parseErrors` for an unparseable YAML file, kept separate so a malformed
+ *    scene/character file is reported as a parse failure (an authoring error)
+ *    rather than as a missing staging image.
  */
 function checkExpressionAssets(typeDef, folder, slug, displayPath) {
   const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
   const field = EXPRESSION_FIELD[typeDef.dir];
-  if (!field || !fs.existsSync(yamlFile)) return [];
+  if (!field || !fs.existsSync(yamlFile)) return { warnings: [], parseErrors: [] };
 
   let data;
   try {
     data = loadYaml(fs.readFileSync(yamlFile, 'utf-8'));
   } catch (err) {
-    return [`${displayPath}: unparseable YAML (${err.message})`];
+    return { warnings: [], parseErrors: [`${displayPath}: unparseable YAML (${err.message})`] };
   }
 
   const entries = Array.isArray(data && data[field]) ? data[field] : [];
-  if (entries.length === 0) return [];
+  if (entries.length === 0) return { warnings: [], parseErrors: [] };
 
   const assetsDir = path.join(folder, 'assets');
   const defaultPng = path.join(assetsDir, `${slug}__default.png`);
@@ -81,7 +84,7 @@ function checkExpressionAssets(typeDef, folder, slug, displayPath) {
       );
     }
   }
-  return warnings;
+  return { warnings, parseErrors: [] };
 }
 
 function scanFolder(typeDef, folder, slug, displayPath) {
@@ -101,6 +104,7 @@ function scanFolder(typeDef, folder, slug, displayPath) {
   const errors = [];
   const warnings = [];
   const expressionWarnings = [];
+  const expressionParseErrors = [];
 
   if (hasYaml) counts.yaml++;
   if (hasMd) counts.md++;
@@ -119,9 +123,11 @@ function scanFolder(typeDef, folder, slug, displayPath) {
     warnings.push(`${displayPath}: missing assets/`);
   }
 
-  expressionWarnings.push(...checkExpressionAssets(typeDef, folder, slug, displayPath));
+  const exprResult = checkExpressionAssets(typeDef, folder, slug, displayPath);
+  expressionWarnings.push(...exprResult.warnings);
+  expressionParseErrors.push(...exprResult.parseErrors);
 
-  return { counts, errors, warnings, expressionWarnings };
+  return { counts, errors, warnings, expressionWarnings, expressionParseErrors };
 }
 
 function scanType(typeDef) {
@@ -133,6 +139,7 @@ function scanType(typeDef) {
     const allErrors = [];
     const allWarnings = [];
     const allExpressionWarnings = [];
+    const allExpressionParseErrors = [];
 
     const districtEntries = fs.readdirSync(districtsDir, { withFileTypes: true })
       .filter(e => e.isDirectory());
@@ -148,7 +155,7 @@ function scanType(typeDef) {
       for (const slug of entries) {
         totalCounts.folders++;
         const folder = path.join(typeDir, slug);
-        const { counts, errors, warnings, expressionWarnings } = scanFolder(typeDef, folder, slug, `districts/${d.name}/locations/${slug}`);
+        const { counts, errors, warnings, expressionWarnings, expressionParseErrors } = scanFolder(typeDef, folder, slug, `districts/${d.name}/locations/${slug}`);
         totalCounts.yaml += counts.yaml;
         totalCounts.md += counts.md;
         totalCounts.promptMd += counts.promptMd;
@@ -157,9 +164,10 @@ function scanType(typeDef) {
         allErrors.push(...errors);
         allWarnings.push(...warnings);
         allExpressionWarnings.push(...expressionWarnings);
+        allExpressionParseErrors.push(...expressionParseErrors);
       }
     }
-    return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings, expressionWarnings: allExpressionWarnings };
+    return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings, expressionWarnings: allExpressionWarnings, expressionParseErrors: allExpressionParseErrors };
   }
 
   const typeDir = path.join(CONTENT_DIR, typeDef.dir);
@@ -173,11 +181,12 @@ function scanType(typeDef) {
   const allErrors = [];
   const allWarnings = [];
   const allExpressionWarnings = [];
+  const allExpressionParseErrors = [];
 
   for (const slug of entries) {
     totalCounts.folders++;
     const folder = path.join(typeDir, slug);
-    const { counts, errors, warnings, expressionWarnings } = scanFolder(typeDef, folder, slug, `${typeDef.dir}/${slug}`);
+    const { counts, errors, warnings, expressionWarnings, expressionParseErrors } = scanFolder(typeDef, folder, slug, `${typeDef.dir}/${slug}`);
     totalCounts.yaml += counts.yaml;
     totalCounts.md += counts.md;
     totalCounts.promptMd += counts.promptMd;
@@ -186,9 +195,10 @@ function scanType(typeDef) {
     allErrors.push(...errors);
     allWarnings.push(...warnings);
     allExpressionWarnings.push(...expressionWarnings);
+    allExpressionParseErrors.push(...expressionParseErrors);
   }
 
-  return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings, expressionWarnings: allExpressionWarnings };
+  return { type: typeDef.dir, counts: totalCounts, errors: allErrors, warnings: allWarnings, expressionWarnings: allExpressionWarnings, expressionParseErrors: allExpressionParseErrors };
 }
 
 function printTable(results) {
@@ -232,6 +242,7 @@ const results = [];
 let totalErrors = 0;
 let totalWarnings = 0;
 let totalExpressionWarnings = 0;
+let totalExpressionParseErrors = 0;
 
 for (const typeDef of FOLDER_TYPES) {
   const result = scanType(typeDef);
@@ -240,6 +251,7 @@ for (const typeDef of FOLDER_TYPES) {
     totalErrors += result.errors.length;
     totalWarnings += result.warnings.length;
     totalExpressionWarnings += result.expressionWarnings.length;
+    totalExpressionParseErrors += result.expressionParseErrors.length;
   }
 }
 
@@ -252,11 +264,21 @@ printTable(results);
 
 console.log('');
 
-if (totalErrors > 0) {
-  console.log(`❌ Errors: ${totalErrors} folders missing .md or .prompt.md`);
-  if (!DRY_RUN) {
-    for (const r of results) {
-      for (const e of r.errors) console.log(`   ${e}`);
+if (totalErrors > 0 || totalExpressionParseErrors > 0) {
+  if (totalErrors > 0) {
+    console.log(`❌ Errors: ${totalErrors} folders missing .md or .prompt.md`);
+    if (!DRY_RUN) {
+      for (const r of results) {
+        for (const e of r.errors) console.log(`   ${e}`);
+      }
+    }
+  }
+  if (totalExpressionParseErrors > 0) {
+    console.log(`❌ Malformed YAML: ${totalExpressionParseErrors} file(s) failed to parse`);
+    if (!DRY_RUN) {
+      for (const r of results) {
+        for (const e of r.expressionParseErrors) console.log(`   ${e}`);
+      }
     }
   }
   process.exitCode = 1;

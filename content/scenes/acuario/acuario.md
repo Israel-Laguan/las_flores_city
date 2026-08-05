@@ -14,4 +14,4 @@ The main gallery floor of the Acuario Las Flores, where holographic coral displa
 
 ## Related Lore
 
-- [[districts/port_area/port_area]]
+- [[districts/port/port]]

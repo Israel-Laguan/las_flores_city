@@ -36,7 +36,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 Authored expressions (each as `assets/aisha_al_sayed__<tag>.png`, referenced in
 `portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
 
 - **`__default.png`**: Use the base portrait as reference. Middle Eastern Arab woman in her late 30s, neutral resting expression, looking at the camera, 3/4 take. Medium height, lean angular frame, deep amber-brown eyes, dark brown wavy hair in practical low bun, slight widow's peak, wire-rimmed glasses, sport earbud clipped to earlobe. Wears minimalist work clothing with high-visibility safety vest over blouse, warm olive complexion, thin scar visible on left forearm. Industrial facility backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 

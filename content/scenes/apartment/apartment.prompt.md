@@ -11,6 +11,7 @@ consumer: background
 
 [CONSUMER: background]
 **Type:** background
+**Dimensions:** 1280x720
 **Source:** apartment.md
 **Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_apartment.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
@@ -26,17 +27,11 @@ A small, sterile apartment interior in the Old Town suburbs of Las Flores 2077. 
 
 ## Variants (image-to-image)
 
-### `night` — Deep night interior
-**Scale:** 16:9
-**Edit prompt:**
+## Prompt — night
 Re-light the apartment as a deep night scene: the room darker, neon street glow brighter through the rain-streaked window, cooler blue palette, warm lamp the only interior light. Same layout, same graphic novel style, no people.
 
-### `sunset` — Golden hour through the window
-**Scale:** 16:9
-**Edit prompt:**
+## Prompt — sunset
 Re-light the apartment with warm golden-hour light through the window: amber tones across the walls and floor, softer interior, the rain on the glass catching golden light. Same layout, same graphic novel style, no people.
 
-### `day` — Clear dry daylight
-**Scale:** 16:9
-**Edit prompt:**
+## Prompt — day
 Re-light the apartment as a clear dry day: bright natural daylight floods through the window, no rain on the glass, muted cool interior, crisp shadows. Same layout, same graphic novel style, no people.

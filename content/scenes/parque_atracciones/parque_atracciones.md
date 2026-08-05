@@ -14,4 +14,4 @@ The central midway of the Parque de Atracciones Las Flores, where holographic ri
 
 ## Related Lore
 
-- [[districts/port_area/port_area]]
+- [[districts/port/port]]

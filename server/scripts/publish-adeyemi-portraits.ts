@@ -104,11 +104,13 @@ function replacePortraitUrlsBlock(raw: string, blockBody: string): string {
     break;
   }
 
-  return [
+  const updated = [
     ...lines.slice(0, keyIdx + 1),
     ...dumpLines,
     ...lines.slice(endIdx),
   ].join('\n');
+  // Preserve the original EOF newline so repeated publishes don't churn the last line.
+  return raw.endsWith('\n') && !updated.endsWith('\n') ? `${updated}\n` : updated;
 }
 
 async function main() {
@@ -159,21 +161,32 @@ async function main() {
   const existing = Array.isArray(data.portrait_urls)
     ? (data.portrait_urls as Array<Record<string, unknown>>)
     : [];
-  const uploadedExpressions = new Set(
-    portraitUrls
-      .map((e) => (e.expression ?? 'default').toLowerCase())
-  );
   // An entry's expression key: the `expression` tag when present, else the
   // implicit `default` (the fallback entry may omit the tag).
-  const entryExpression = (entry: Record<string, unknown>): string =>
+  interface PortraitEntryLike { expression?: unknown; label?: unknown }
+  const entryExpression = (entry: PortraitEntryLike): string =>
     typeof entry.expression === 'string' && entry.expression
       ? entry.expression.toLowerCase()
       : 'default';
+  const stageOf = (entry: PortraitEntryLike): string =>
+    typeof entry.label === 'string' && entry.label ? entry.label.toLowerCase() : '';
+
+  // An uploaded entry replaces only the existing entry with the same
+  // (label, expression) pair — publishing a `dev` variant must never remove a
+  // `production`/`staging` variant of the same expression.
+  const uploadedKeys = new Set(
+    portraitUrls.map((e) => `${stageOf(e)}:${entryExpression(e)}`)
+  );
 
   const mergedPortraitUrls = [
     ...portraitUrls,
-    ...existing.filter((entry) => !uploadedExpressions.has(entryExpression(entry))),
-  ];
+    ...existing.filter((entry) => !uploadedKeys.has(`${stageOf(entry)}:${entryExpression(entry)}`)),
+  ].sort(
+    // Keep the `default` (fallback) portrait first so a partial upload that
+    // omits the default never promotes an expression variant to the fallback,
+    // which the client's first-usable fallback lookup would then pick.
+    (a, b) => Number(entryExpression(a) !== 'default') - Number(entryExpression(b) !== 'default')
+  );
 
   // Serialize ONLY the merged array (not the whole document) and splice it
   // into the original file text at the `portrait_urls:` block, keeping all

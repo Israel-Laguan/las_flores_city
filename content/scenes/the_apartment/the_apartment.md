@@ -14,4 +14,4 @@ A small, sterile apartment in the N&M LTD residential block. The walls are white
 
 ## Related Lore
 
-- [[districts/urban_core/urban_core]]
+- [[districts/city/city]]

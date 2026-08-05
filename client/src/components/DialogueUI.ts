@@ -202,10 +202,13 @@ export class DialogueUI {
             const nextNode = cached.nodes[nextNodeId];
             const isEnd = !nextNode || nextNode.is_end === true || !nextNode.choices?.length;
 
-            // The cached chunk carries no speaker metadata. If it introduces a
-            // speaker whose info isn't in the current map, fall through to the
-            // server round-trip so its portraits/metadata resolve correctly.
-            const hasAllSpeakers = this.chunkSpeakerIds(cached)
+            // The cached chunk carries no speaker metadata. If the node being
+            // displayed now (`nextNode`) introduces a speaker whose info isn't
+            // in the current map, fall through to the server round-trip so its
+            // portraits/metadata resolve correctly. Only the entry node matters
+            // here — future nodes in the chunk won't render yet, so we don't
+            // let them force a network request.
+            const hasAllSpeakers = this.chunkSpeakerIds({ nodes: { [nextNodeId]: nextNode } })
               .every((id) => Boolean(this.currentDialogue?.speakers?.[id]));
 
             if (hasAllSpeakers) {

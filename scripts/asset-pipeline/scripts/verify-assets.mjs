@@ -328,7 +328,9 @@ function checkExpressionCrossRefs(yamlFiles, charMap) {
 
   for (const file of yamlFiles) {
     const base = path.basename(file);
-    if (!/^(dialogue_|char_|overlay_)/.test(base) && !file.includes('/dialogues/') && !file.includes('/overlays/')) continue;
+    // normalize separators so nested-dir checks hold on Windows too
+    const posix = file.split(path.sep).join('/');
+    if (!/^(dialogue_|char_|overlay_)/.test(base) && !posix.includes('/dialogues/') && !posix.includes('/overlays/')) continue;
 
     let data;
     try {

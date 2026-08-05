@@ -7,6 +7,7 @@ import { YAMLDialogueSchema } from '@las-flores/shared';
 import { useEntityYaml } from '@/components/entity/useEntityYaml';
 import { useEntityYamlSave } from '@/components/entity/useEntityYamlSave';
 import DialogueVisualEditor from '@/components/dialogue/DialogueVisualEditor';
+import { useUnsafeNavigationGuard } from '@/hooks/useUnsafeNavigationGuard';
 import styles from './dialogue-detail.module.css';
 
 export default function DialogueDetailPage() {
@@ -24,6 +25,10 @@ export default function DialogueDetailPage() {
   // Records when edits land while a PUT save is still in flight, so the
   // completion handler can re-arm dirty/success correctly for those edits.
   const dirtyDuringSaveRef = useRef(false);
+
+  // Warn before losing unsaved edits across ANY navigation (sidebar, breadcrumbs,
+  // back button, browser back, reload) — see hook for the full coverage.
+  useUnsafeNavigationGuard(dirty);
 
   useEffect(() => {
     if (!yaml) return;
@@ -45,17 +50,6 @@ export default function DialogueDetailPage() {
     }
   }, [saveSuccess]);
 
-  useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => {
-      if (dirty) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
-  }, [dirty]);
-
   const handleDraftChange = (next: Record<string, unknown>) => {
     setDraft(next);
     setDirty(true);
@@ -75,6 +69,10 @@ export default function DialogueDetailPage() {
       setValidationErrors(['(root): missing content file path; cannot save']);
       return;
     }
+    // Start a fresh save scope: any edit made while THIS PUT is in flight is
+    // what dirtyDuringSaveRef should track. Resetting here means a successful
+    // retry after a failed save is not wrongly marked dirty from the prior run.
+    dirtyDuringSaveRef.current = false;
     const parsed = YAMLDialogueSchema.safeParse(draft);
     if (!parsed.success) {
       const issues = parsed.error?.issues ?? [];
@@ -90,15 +88,9 @@ export default function DialogueDetailPage() {
 
   return (
     <main className={styles.main}>
-      <Link
-        href="/dialogues"
-        className={styles.backLink}
-        onClick={(e) => {
-          if (dirty && !window.confirm('You have unsaved changes. Leave anyway?')) {
-            e.preventDefault();
-          }
-        }}
-      >&larr; Back to Dialogues</Link>
+      {/* Unsaved-edit confirmation for this back link is handled by the shared
+          useUnsafeNavigationGuard hook (see above). */}
+      <Link href="/dialogues" className={styles.backLink}>&larr; Back to Dialogues</Link>
       <h1>Dialogue: {typeof draft?.name === 'string' ? draft.name : id}</h1>
 
       {loading && <p className={styles.muted}>Loading...</p>}

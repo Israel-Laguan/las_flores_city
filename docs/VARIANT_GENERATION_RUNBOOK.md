@@ -246,7 +246,7 @@ was produced.
 
 ## After authoring (downstream steps, still automatable)
 
-1. **Publish** bases + variants via `AssetPublishService` (`POST /assets/promote-staging` or a direct
+1. **Publish** bases + variants via `AssetPublishService` (`POST /admin/content/assets/promote-staging` or a direct
    `uploadToMinio` script) so `verify-assets.mjs` passes.
 2. **Wire `background_urls[]`** into each scene YAML with `expression` tags
    (`night`, `sunset`, `day`), then remove the legacy `background_url`.

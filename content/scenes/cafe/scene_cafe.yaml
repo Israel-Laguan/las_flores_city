@@ -8,6 +8,8 @@ background_url: https://cdn.lasflores2077.com/locations/bg_old_town_cafe.png
 mood: cozy
 available_dialogues:
   - 123e4567-e89b-12d3-a456-426614174002
+  - f6a7b8c9-d0e1-4345-babc-456789012345
+  - a1b2c3d4-e5f6-7890-abcd-ef1234567890
 metadata:
   required_story_beat: act1_awakening
   idle_thoughts:

@@ -1,7 +1,7 @@
 ---
 name: Far South Outskirts
 type: background
-size: 1280x768
+size: 1280x720
 source: far_south.md
 target: `background_urls[]` / `asset_paths.background` in content/scenes/far_south/scene_far_south.yaml
 consumer: background
@@ -16,7 +16,7 @@ consumer: background
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)
-Wide rural landscape on the far southern outskirts of Las Flores 2077, where the city gives way to agricultural land and scattered homesteads. Crop fields, a dusty unpaved road, homesteads with rooftop solar panels, clean open sky. Soft natural afternoon light, serene and isolated mood. No people, no text, no logos. Cyberpunk, neon-lit urban environment.
+Wide rural landscape on the far southern outskirts of Las Flores 2077, where the city gives way to agricultural land and scattered homesteads. Crop fields, a dusty unpaved road, homesteads with rooftop solar panels, clean open sky. Soft natural afternoon light, serene and isolated mood. No people, no text, no logos. Premium graphic novel realism, rural sci-fi.
 
 ## Prompt
 The rural edge of Las Flores 2077: open farmland and scattered homesteads where the city yields to agricultural land. An unpaved dusty road winds past crop fields and rooftops fitted with solar panels, a distant haze marking the city. Soft natural afternoon light, serene and isolated. Premium graphic novel realism, no people, no text, no logos.
