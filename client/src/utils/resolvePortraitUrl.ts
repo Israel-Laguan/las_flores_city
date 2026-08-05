@@ -9,7 +9,8 @@
 // by the server — so stage ranking is intentionally omitted.
 // ============================================================
 
-import type { DialogueSpeakerInfo } from '../types/dialogue';
+import type { DialogueNodeVisual, DialogueSpeakerInfo } from '../types/dialogue';
+import type { TimeOfDay } from './time';
 
 export function resolvePortraitUrl(
   speaker: DialogueSpeakerInfo | undefined | null,
@@ -53,16 +54,19 @@ export interface ResolvableAssetEntry {
  *
  * Resolution priority:
  *   1. `visualBackground` — when present (a URL or plain filename) it is
- *      authoritative and returned directly.
- *   2. `expression` + `backgroundUrls[]` — a variant whose `expression` tag
- *      matches (case-insensitive) is preferred over the default.
+ *      authoritative and returned directly (node authoring always wins).
+ *   2. `hints` — an ordered list of expression tags tried in sequence; the
+ *      first variant whose `expression` matches (case-insensitive) wins.
+ *      A single string is treated as a one-element list (backward
+ *      compatible). The caller builds precedence via `buildBackgroundHints`
+ *      (game environment: weather > time-of-day > node mood).
  *   3. First usable URL in `backgroundUrls[]` (the default variant).
  *   4. `sceneBackground` — the current scene backdrop fallback.
  */
 export function resolveBackgroundUrl(
   visualBackground: string | undefined,
   sceneBackground: string | undefined,
-  expression?: string,
+  hints?: string | string[],
   backgroundUrls?: ResolvableAssetEntry[],
 ): string | null {
   if (typeof visualBackground === 'string' && visualBackground.trim().length > 0) {
@@ -73,11 +77,11 @@ export function resolveBackgroundUrl(
     typeof url === 'string' && url.length > 0;
 
   if (Array.isArray(backgroundUrls) && backgroundUrls.length > 0) {
-    // 2. Prefer a variant whose expression tag matches the hint.
-    if (expression) {
+    // 2. Try each hint in order; first expression-tag match wins.
+    for (const hint of normalizeHints(hints)) {
       const match = backgroundUrls.find(
         (e) => e && typeof e.expression === 'string' &&
-          e.expression.toLowerCase() === expression.toLowerCase() &&
+          e.expression.toLowerCase() === hint.toLowerCase() &&
           usable(e.url),
       );
       if (match) return match.url;
@@ -91,4 +95,57 @@ export function resolveBackgroundUrl(
   return typeof sceneBackground === 'string' && sceneBackground.trim().length > 0
     ? sceneBackground.trim()
     : null;
+}
+
+/**
+ * Normalize a hint payload into a trimmed, de-duplicated (case-insensitive),
+ * order-preserving list. Accepts a single tag or an ordered chain.
+ */
+function normalizeHints(hints: string | string[] | undefined): string[] {
+  const raw = Array.isArray(hints) ? hints : hints ? [hints] : [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const hint of raw) {
+    const trimmed = typeof hint === 'string' ? hint.trim() : '';
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+/**
+ * Game-driven environment hint chain for background variants (Phase 4).
+ *
+ * Builds the ordered list the resolver tries against `background_urls[].expression`:
+ *   1. `weather`    — strongest game signal, when it is NOT `'clear'`/absent.
+ *   2. `timeOfDay`  — from the real in-game clock (`getTimeOfDay(timeBlocks)`);
+ *                     `dusk` is mapped to the asset vocabulary tag `sunset`.
+ *   3. `mood`       — soft author hint (Phase 1–3), CSS-canvas `mood` doubles
+ *                     here; `'none'` contributes nothing.
+ *
+ * `weather` intentionally has no live source of truth today, so callers pass
+ * `undefined` (or `'clear'`) and the auto-selection is time-of-day driven.
+ * When a weather source lands, pass it in FIRST so it outranks time-of-day.
+ */
+const TIME_OF_DAY_ENV_TAGS: Record<TimeOfDay, string> = {
+  day: 'day',
+  dusk: 'sunset',
+  night: 'night',
+};
+
+export function buildBackgroundHints(
+  timeOfDay: TimeOfDay | undefined,
+  weather?: string,
+  mood?: DialogueNodeVisual['mood'],
+): string[] {
+  const hints: string[] = [];
+  if (typeof weather === 'string' && weather.trim() && weather.trim().toLowerCase() !== 'clear') {
+    hints.push(weather.trim());
+  }
+  if (timeOfDay) hints.push(TIME_OF_DAY_ENV_TAGS[timeOfDay]);
+  if (mood && mood !== 'none') hints.push(mood);
+  return normalizeHints(hints);
 }

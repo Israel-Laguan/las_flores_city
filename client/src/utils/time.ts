@@ -13,3 +13,24 @@ export function calculateInGameTime(timeBlocks: number): string {
 
   return `${displayHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
 }
+
+/**
+ * Broad time-of-day band derived from the real in-game clock
+ * (`phoneStore.timeBlocks`). Used by the VN viewport as a *game-driven*
+ * background-environment hint (see docs/ASSET_EXPRESSION_VOCABULARY.md).
+ *
+ * The 48-TB day cycle starts at 08:00 (TB=48) and each spent TB adds 30
+ * minutes, so a full 24h cycle is exactly 48 blocks:
+ *   - `day`   08:00–17:59
+ *   - `sunset`/dusk 18:00–19:59
+ *   - `night` 20:00–07:59
+ */
+export type TimeOfDay = 'day' | 'dusk' | 'night';
+
+export function getTimeOfDay(timeBlocks: number): TimeOfDay {
+  const totalMinutes = (8 * 60) + (48 - timeBlocks) * 30;
+  const hour = Math.floor(totalMinutes / 60) % 24;
+  if (hour >= 20 || hour < 8) return 'night';
+  if (hour >= 18) return 'dusk';
+  return 'day';
+}

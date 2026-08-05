@@ -105,25 +105,68 @@ a tense night confrontation.
 
 ### Background selection priority
 
-`resolveBackgroundUrl(visualBackground, sceneBackground, expression, backgroundUrls)`
-(`client/src/utils/resolvePortraitUrl.ts`):
+`resolveBackgroundUrl(visualBackground, sceneBackground, hints, backgroundUrls)`
+(`client/src/utils/resolvePortraitUrl.ts`) rejects by priority:
 
-1. `visual.background` present → authoritative (URL or plain filename), returned directly
-2. A `background_urls[]` entry whose `expression` matches the hint (case-insensitive)
+1. `visual.background` present → **authoritative** (URL or plain filename), returned directly — per-node authoring always wins over auto-suggestions
+2. `hints` — an **ordered** list of expression tags, tried in sequence against
+   `background_urls[].expression` (case-insensitive); first match wins.
+   A single string is treated as a one-element list (backward compatible).
+   The hint chain is built by `buildBackgroundHints(timeOfDay, weather?, mood?)`:
+   **weather > time-of-day > node `mood`** (see below).
 3. First usable entry in `background_urls[]` (the default variant)
 4. Current scene backdrop fallback (`scene.backgroundUrl`)
 
-The dialogue node drives the variant through `visual.mood` (a *soft* hint):
-`mood: rain` prefers a `background_urls[expression=rain]` pre-painted wet
-variant over the dry default with rain particles on top. CSS-only moods
-(`tense`, `soft_bloom`, `alert`) match nothing in the pool and fall back
-gracefully.
+### Game-driven environment hints (Phase 4)
+
+The VN layer derives a *game-driven* auto hint from **real game state** — the
+in-game clock (`phoneStore.timeBlocks → getTimeOfDay()` in
+`client/src/utils/time.ts`), the same source that drives the phone status-bar
+clock. Time-of-day bands: `day` 08:00–17:59, `sunset`/dusk 18:00–19:59,
+`night` 20:00–07:59. `buildBackgroundHints()` maps `dusk` → the asset
+vocabulary tag `sunset` so golden-hour auto-picks a `__sunset.png` variant.
+
+`weather` is a *forward-compatible hook*: there is no weather source of truth
+in the game yet, so callers pass nothing (`undefined`) and only the
+time-of-day band participates. When a real weather source lands (server → game
+state), pass it first — it outranks time-of-day by construction of the ordered
+hint list.
+
+```
+getTimeOfDay(phoneStore.getState().timeBlocks)   // real game clock
+  → buildBackgroundHints(timeOfDay, weather?, visual?.mood)
+  → [weather?, timeOfDayTag?, mood?]             // ordered, de-duped
+  → resolveBackgroundUrl(visual?.background, scene.backgroundUrl, hints, pool)
+```
+
+The chain therefore behaves like:
+
+| Scenario | Resolved variant |
+|---|---|
+| raining at night, `__rain` + `__night` exist | `__rain` (weather ranks first) |
+| clear night, `__night` exists | `__night` (time-of-day) |
+| golden hour (`dusk`), `__sunset` exists | `__sunset` |
+| day, node `mood: rain`, `__rain` exists | `__rain` (mood soft-hint still works) |
+| node sets `visual.background` explicitly | that exact backdrop, always |
+
+### Mood vs environment hint
+
+`mood` values partially overlap with environment tags (`rain`, `night`
+overlap; `tense`/`soft_bloom`/`alert` are CSS-only). The two layers stay
+**separate**: `mood` = CSS/Canvas2D treatment *on top of* the background;
+`expression` = selects a pre-painted variant *below*. The dialogue node drives
+the variant through `visual.mood` as the **last, soft** hint — only consulted
+when the game-driven environment chain matched nothing:
 
 ```yaml
 visual:
   background: central_plaza
-  mood: rain       # prefers background_urls[expression=rain], else dry bg + rain canvas
+  mood: rain       # soft hint: prefers background_urls[expression=rain],
+                   # but only if the game clock/weather didn't already match
 ```
+
+CSS-only moods (`tense`, `soft_bloom`, `alert`) match nothing in the pool and
+fall back gracefully.
 
 ## 3. Data flow (server → client)
 
@@ -135,7 +178,9 @@ scenes.background_urls (JSONB)
   → ScenePayloadSchema.scene.backgroundUrls  (shared/src/schemas/player.ts)
   → LocationScene 'location:background' event  (carries both)
   → DialogueVisualLayer.sceneBackgroundUrls  (client/src/components/DialogueVisualLayer.ts)
-  → resolveBackgroundUrl(visual?.background, sceneBackground, visual?.mood, pool)
+  → phoneStore.timeBlocks → getTimeOfDay()   (client/src/utils/time.ts)  ← real clock
+  → buildBackgroundHints(timeOfDay, weather?, visual?.mood)  (game-driven chain)
+  → resolveBackgroundUrl(visual?.background, sceneBackground, hints, pool)
 ```
 
 ## 4. Content authoring quick reference

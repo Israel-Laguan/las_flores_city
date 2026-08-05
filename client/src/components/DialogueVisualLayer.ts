@@ -22,8 +22,11 @@ import { eventBus } from '../utils/EventBus';
 import {
   resolvePortraitUrl,
   resolveBackgroundUrl,
+  buildBackgroundHints,
   type ResolvableAssetEntry,
 } from '../utils/resolvePortraitUrl';
+import { getTimeOfDay } from '../utils/time';
+import { phoneStore } from '../store/PhoneStore';
 import type { DialogueNodeVisual, DialogueSpeakers } from '../types/dialogue';
 import '../styles/dialogue-visual.css';
 
@@ -129,15 +132,21 @@ export class DialogueVisualLayer {
   }
 
   private renderBackground(visual: DialogueNodeVisual | undefined): void {
-    // `visual.mood` doubles as a soft background-expression hint: when the
-    // scene has a pre-painted variant tagged `expression: rain|night|...`
-    // and the node asks for that mood, resolveBackgroundUrl prefers the
-    // variant over the dry default. CSS-only moods (tense/soft_bloom/alert)
-    // simply fail to match and fall back to the default variant.
+    // Phase 4 — game-driven environment hint: derive time-of-day from the
+    // real in-game clock (phoneStore.timeBlocks → getTimeOfDay). Weather has
+    // no live source of truth yet, so it is not passed (buildBackgroundHints
+    // skips 'clear'/undefined). Precedence inside resolveBackgroundUrl:
+    //   explicit visual.background (authoritative) >
+    //   weather (> time-of-day > visual.mood soft hint, as ordered tags) >
+    //   default variant > scene backdrop.
+    // The env hint re-evaluates at every node render (the clock only moves on
+    // movement/choice — i.e. node boundaries — for an open dialogue).
+    const timeOfDay = getTimeOfDay(phoneStore.getState().timeBlocks);
+    const hints = buildBackgroundHints(timeOfDay, undefined, visual?.mood);
     const url = resolveBackgroundUrl(
       visual?.background,
       this.sceneBackground ?? undefined,
-      visual?.mood && visual.mood !== 'none' ? visual.mood : undefined,
+      hints,
       this.sceneBackgroundUrls,
     );
     if (url && url !== this.currentBackground) {
