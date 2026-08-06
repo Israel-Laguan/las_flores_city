@@ -32,3 +32,19 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Man in trench coat at a desk, focused on paperwork, office setting with urban backdrop
 - [ ] Man in trench coat in a moment of reflection, looking out over a city skyline at dusk
 - [ ] Man in trench coat in conversation with another person, professional indoor setting
+
+## Expression Variants
+
+Authored expressions (each as `assets/adeyemi_ogunbiyi__<tag>.png`, referenced in
+`portrait_urls[]` with an `expression` tag — see
+[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. Afro-Latino man, tall over six feet, lean muscular build with effortless grace, neutral resting expression, looking at the camera, 3/4 take. Deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, strong brow, high cheekbones, chiseled jawline, calm and composed bearing. Dark hair in simple un-styled flowing shapes. Small sport non-in-ear earbud clipped to earlobe. Wearing a minimalist, pocketless trench coat. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. He has a vulnerable expression, looking directly at the camera, 3/4 take. Guard completely down, dark expressive eyes soft and open with visible kohl lining, conveying the weight behind the badge. His tall frame seems slightly less imposing, shoulders relaxed. Strong brow smooth, high cheekbones less pronounced, chiseled jawline softened. Small sport earbud visible at earlobe. Weathered urban Latin American building backdrop with warm, soft atmospheric lighting creating gentle shadows. Keep the same art style as reference, same trench coat and clothing. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__shocked.png`**: Use the base portrait as reference. He is caught mid-exposure, looking at the camera with sudden revelation, 3/4 take. Dark expressive eyes wide open, whites visible around irises, strong brow raised high, mouth slightly open as if about to speak. Tall lean muscular build tense with surprise. Dark hair in simple un-styled flowing shapes catches the light. Small sport earbud at earlobe. Weathered urban Latin American building backdrop with harsh directional lighting. Keep the same art style as reference, same trench coat and clothing. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__calculating.png`**: Use the base portrait as reference. He has a cold, assessing focus, looking sharply at the camera, 3/4 take. Dark expressive eyes narrow and sharp, the inspector's piercing read on you. High cheekbones catch the light, chiseled jawline firm and angular. Tall over six feet frame leaning slightly forward. Small sport earbud clipped to earlobe. Weathered urban Latin American building backdrop under stark industrial lighting. Keep the same art style as reference, same minimalist trench coat. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. He exudes intimate warmth, looking gently at the camera, 3/4 take. Dark expressive eyes soft with rare genuine connection, strong brow relaxed, high cheekbones rounded, chiseled jawline noticeably softened. A subtle, knowing half-smile plays at the corner of his mouth. Tall lean muscular build seems approachable. Small sport earbud at earlobe. Weathered urban Latin American building backdrop with warm golden-hour atmospheric lighting. Keep the same art style as reference, same trench coat. Clean confident linework, painterly soft shading, muted natural palette.

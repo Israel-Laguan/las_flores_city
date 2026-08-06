@@ -11,5 +11,6 @@ metadata:
     - Murals depict scenes of struggle and triumph. Art is a form of collective memory.
     - Community members gather at the local park. Social bonds are visible and tactile.
     - The neighborhood radio plays local music. Cultural identity is actively maintained.
+lore_path: southeast.md
 asset_paths:
-  background: scenes/scene_southeast/background.jpg
+  background: southeast__default.png

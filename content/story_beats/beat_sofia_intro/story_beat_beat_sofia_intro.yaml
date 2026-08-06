@@ -4,7 +4,7 @@ description: "The player spots Sofia in South Las Flores being harassed by low-l
 metadata:
   type: story_beat
   story_slug: real_heroism_in_latam
-  order: 1
+  order: 400
   location: south_las_flores
   characters:
     - sofia_mendoza

@@ -9,3 +9,8 @@ available_dialogues: []
 lore_path: rainy_street_motorcycle.md
 asset_paths:
   background: rainy_street_motorcycle__default.png
+# Phase 4 content-ready state: `background_urls[]` variant entries are NOT
+# listed yet because no variants are authored/published (assets/ is empty —
+# no __night/__sunset/__day PNG). Once variants exist and are published to
+# MinIO, add entries with label + `expression` tags per
+# docs/ASSET_EXPRESSION_VOCABULARY.md (e.g. expression: night / sunset / day).

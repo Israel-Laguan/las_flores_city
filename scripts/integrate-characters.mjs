@@ -11,7 +11,7 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 const SOURCE_ROOT = '/media/israel/DEEP_STORE/2024-10-15 flowers-from-the-red-soil - codex/characters';
@@ -285,7 +285,7 @@ function parseEntryMd(content) {
   if (!match) return { frontmatter: {}, body: content.trim() };
   
   try {
-    const frontmatter = yaml.load(match[1]) || {};
+    const frontmatter = yamlLoad(match[1]) || {};
     return { frontmatter, body: match[2].trim() };
   } catch {
     return { frontmatter: {}, body: content.trim() };
@@ -296,7 +296,7 @@ function parseEntryMd(content) {
 function parseExistingYaml(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    return yaml.load(content);
+    return yamlLoad(content);
   } catch (e) {
     console.error(`  ⚠ Failed to parse existing YAML: ${filePath} — ${e.message}`);
     return null;
@@ -589,7 +589,7 @@ ${flagSection}
   for (const f of allYamlFiles) {
     try {
       const content = fs.readFileSync(path.join(TARGET_DIR, f), 'utf8');
-      yaml.load(content);
+      yamlLoad(content);
       parseOk++;
     } catch (e) {
       console.log(`  ❌ Parse FAIL: ${f} — ${e.message}`);
@@ -607,7 +607,7 @@ ${flagSection}
   for (const f of allYamlFiles) {
     try {
       const content = fs.readFileSync(path.join(TARGET_DIR, f), 'utf8');
-      const doc = yaml.load(content);
+      const doc = yamlLoad(content);
       if (doc?.id) {
         if (uuids.has(doc.id)) {
           console.log(`  ⚠️  Duplicate UUID ${doc.id}: ${f} and ${uuids.get(doc.id)}`);

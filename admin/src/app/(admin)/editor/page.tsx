@@ -4,9 +4,11 @@ import styles from '@/components/editor/editor.module.css';
 import FileTree from '@/components/editor/FileTree';
 import EditorPanel from '@/components/editor/EditorPanel';
 import { useEditor } from '@/components/editor/useEditor';
+import { useUnsafeNavigationGuard } from '@/hooks/useUnsafeNavigationGuard';
 
 export default function EditorPage() {
   const editor = useEditor();
+  useUnsafeNavigationGuard(editor.dirty);
 
   return (
     <main className={styles.main}>

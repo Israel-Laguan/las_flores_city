@@ -139,16 +139,20 @@ describe('Asset cascade resolution', () => {
   });
 
   describe('scene background cascade', () => {
-    it('scene with background_urls returns env-appropriate backgroundUrl', async () => {
+    it('scene with background_urls returns env-appropriate backgroundUrl and the variant pool', async () => {
       process.env.NODE_ENV = 'development';
+
+      const variantPool = [
+        { url: 'https://dev.example.com/scene-bg.png', label: 'dev' },
+        { url: 'https://dev.example.com/scene-bg__rain.png', label: 'dev', expression: 'rain' },
+        { url: 'https://dev.example.com/scene-bg__night.png', label: 'dev', expression: 'night' },
+        { url: 'https://staging.example.com/scene-bg.png', label: 'staging' },
+        { url: 'https://prod.example.com/scene-bg.png', label: 'production' },
+      ];
 
       await queryOLTP(
         `UPDATE scenes SET background_urls = $1::jsonb WHERE id = $2`,
-        [JSON.stringify([
-          { url: 'https://dev.example.com/scene-bg.png', label: 'dev' },
-          { url: 'https://staging.example.com/scene-bg.png', label: 'staging' },
-          { url: 'https://prod.example.com/scene-bg.png', label: 'production' },
-        ]), TEST_SCENE_ID]
+        [JSON.stringify(variantPool), TEST_SCENE_ID]
       );
 
       // Clear cache
@@ -161,6 +165,9 @@ describe('Asset cascade resolution', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.data.scene.backgroundUrl).toBe('https://dev.example.com/scene-bg.png');
+      // The raw expression-tagged variant pool reaches the client for the
+      // VN layer's resolveBackgroundUrl(mood-as-expression) selection.
+      expect(res.body.data.scene.backgroundUrls).toEqual(variantPool);
     });
 
     it('scene with only legacy background_url still resolves', async () => {

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { registerE2EUser } from './e2e-seed';
 
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -10,10 +11,7 @@ test.describe('Settings — Display Name', () => {
   async function createUser(page: any): Promise<string> {
     const email = `dn-e2e-${uid()}@example.com`;
     const username = `dn_e2e_${uid()}`;
-    const res = await page.request.post(`${AUTH_BASE}/api/auth/register`, {
-      data: { email, username, display_name: 'E2E Display User', password: testPassword },
-    });
-    expect(res.ok()).toBeTruthy();
+    await registerE2EUser(page.request, { email, username, display_name: 'E2E Display User', password: testPassword });
     return email;
   }
 
@@ -75,10 +73,7 @@ test.describe('Settings — Password Change', () => {
   async function createUser(page: any): Promise<string> {
     const email = `pw-e2e-${uid()}@example.com`;
     const username = `pw_e2e_${uid()}`;
-    const res = await page.request.post(`${AUTH_BASE}/api/auth/register`, {
-      data: { email, username, display_name: 'E2E Password User', password: testPassword },
-    });
-    expect(res.ok()).toBeTruthy();
+    await registerE2EUser(page.request, { email, username, display_name: 'E2E Password User', password: testPassword });
     return email;
   }
 

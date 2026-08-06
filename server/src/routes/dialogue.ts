@@ -6,6 +6,7 @@ import { PlayerStateRepository } from '../database/repositories/PlayerStateRepos
 import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { buildDialogueResponse, stripGuardedTargetChunks, type ChunkPayload } from './dialogue-response-helpers.js';
+import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { filterChoices } from './dialogue-helpers.js';
 
 export const dialogueRouter = express.Router();
@@ -150,6 +151,8 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
           leaves: resolvedChunk.chunk.leaves,
         };
 
+        const speakers = await resolveChunkSpeakers(resolvedChunk.mergedNodes);
+
         return res.json(
           buildDialogueResponse(
             chunkPayload,
@@ -158,7 +161,9 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
             availableChoices,
             isEnd,
             0,
-            cursor.time_blocks ?? 0
+            cursor.time_blocks ?? 0,
+            undefined,
+            speakers
           )
         );
       }
@@ -182,8 +187,10 @@ dialogueRouter.get('/active', authMiddleware, async (req: AuthRequest, res) => {
       leaves: {},
     };
 
+    const speakers = await resolveChunkSpeakers(resolved.nodes);
+
     return res.json(
-      buildDialogueResponse(chunkPayload, dialogueResult.rows[0].id, current_node_id, availableChoices, isEnd, 0, cursor.time_blocks ?? 0)
+      buildDialogueResponse(chunkPayload, dialogueResult.rows[0].id, current_node_id, availableChoices, isEnd, 0, cursor.time_blocks ?? 0, undefined, speakers)
     );
   } catch (error: any) {
     console.error('Get active dialogue error:', error);

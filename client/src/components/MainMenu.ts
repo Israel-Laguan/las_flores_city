@@ -19,16 +19,27 @@ function hasActivity(state: PlayerState): boolean {
   );
 }
 
+/**
+ * Resolve the configured external About Us URL, or null when absent/blank so
+ * the ABOUT US button can be hidden rather than silently doing nothing.
+ */
+function resolveAboutUrl(): string | null {
+  const url = import.meta.env.VITE_ABOUT_US_URL;
+  return typeof url === 'string' && url.trim().length > 0 ? url.trim() : null;
+}
+
 export class MainMenu {
   private container: HTMLDivElement;
   private boundClick: (e: MouseEvent) => void;
   private buttonLabel: string = 'NEW GAME';
   private startBtn: HTMLButtonElement | null = null;
+  private aboutUrl: string | null;
 
   constructor(container: HTMLDivElement, playerState?: PlayerState) {
     this.container = container;
     this.container.innerHTML = '';
     this.boundClick = this.onClick.bind(this);
+    this.aboutUrl = resolveAboutUrl();
 
     if (playerState) {
       this.buttonLabel = hasActivity(playerState) ? 'CONTINUE' : 'NEW GAME';
@@ -59,7 +70,11 @@ export class MainMenu {
   private buildTerminal(): HTMLDivElement {
     const terminal = document.createElement('div');
     terminal.className = 'main-menu-terminal';
-    const aboutBtn = `<button class="menu-btn" data-action="about">> ABOUT US</button>`;
+    // Only render the ABOUT US button when a product URL is configured; a
+    // button that silently does nothing is worse than no button at all.
+    const aboutBtn = this.aboutUrl
+      ? `<button class="menu-btn" data-action="about">> ABOUT US</button>`
+      : '';
     terminal.innerHTML = `
       <h1>LAS FLORES 2077</h1>
       <div class="menu-subtitle">MAIN TERMINAL v2.0</div>
@@ -106,9 +121,10 @@ export class MainMenu {
   }
 
   private handleAbout(): void {
-    const url = import.meta.env.VITE_ABOUT_US_URL as string;
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
+    // Only open the external About Us page when a product URL is configured;
+    // the button is hidden entirely when it is absent (see buildTerminal).
+    if (this.aboutUrl) {
+      window.open(this.aboutUrl, '_blank', 'noopener,noreferrer');
     }
   }
 

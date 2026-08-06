@@ -1,0 +1,13 @@
+vault_items:
+  - id: "99999999-aaaa-4bbb-8ccc-dddddddd0001"
+    title: "Welcome — NSFW Scene"
+    description: |
+      As you look around the station, your gaze catches on someone leaning against a pillar. They're reading something on their phone, rain-wet hair falling across their face. There's something magnetic about them.
+
+      They look up from their phone, eyes meeting yours. A small smile plays at their lips. 'New here? I can tell. You have that look—like you're seeing the future for the first time.'
+
+      The conversation flows easily, like you've known each other forever. Their hand brushes yours as they point out landmarks in the rain-blurred cityscape. The air between you feels charged with possibility.
+    thumbnail_url: "https://cdn.lasflores2077.com/vault/thumb_welcome_nsfw_scene.png"
+    media_path: "/premium/welcome_nsfw_scene.png"
+    item_type: "premium_cg"
+    requires_signed_url: true

@@ -20,6 +20,7 @@
  */
 import { test, expect } from '@playwright/test';
 import { startNewGame } from './helpers';
+import { registerE2EUser } from './e2e-seed';
 
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -31,15 +32,12 @@ const testUsername = `cookie_${Date.now()}_${Math.random().toString(36).slice(2,
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.beforeAll(async ({ request }) => {
-  const res = await request.post(`${AUTH_BASE}/api/auth/register`, {
-    data: {
-      email: testEmail,
-      username: testUsername,
-      display_name: 'Cookie E2E',
-      password: 'test1234',
-    },
+  await registerE2EUser(request, {
+    email: testEmail,
+    username: testUsername,
+    display_name: 'Cookie E2E',
+    password: 'test1234',
   });
-  expect(res.ok()).toBeTruthy();
 });
 
 test.describe('Auth cookie — register & login shape', () => {

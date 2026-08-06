@@ -11,5 +11,6 @@ metadata:
     - Salt air mixes with fish and diesel. The harbor is active despite the hour.
     - The tide is coming in. Fishermen are securing their vessels for the evening.
     - Ocean sensors detect normal salinity and temperature. The ecosystem is stable.
+lore_path: pacific.md
 asset_paths:
-  background: scenes/scene_pacific/background.jpg
+  background: pacific__default.png

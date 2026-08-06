@@ -17,6 +17,7 @@
  * through the /api proxy, so the cookie is correctly scoped to :5173.
  */
 import { test, expect, APIRequestContext } from '@playwright/test';
+import { registerE2EUser } from './e2e-seed';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
@@ -31,15 +32,12 @@ let apiContext: APIRequestContext;
 test.beforeAll(async ({ playwright }) => {
   // 1. Register the user via a throwaway context through the Vite /api proxy.
   const regContext = await playwright.request.newContext({ baseURL: API_BASE });
-  const regRes = await regContext.post('/api/auth/register', {
-    data: {
-      email: TEST_EMAIL,
-      username: TEST_USERNAME,
-      display_name: 'E2E Player',
-      password: 'password123',
-    },
+  await registerE2EUser(regContext, {
+    email: TEST_EMAIL,
+    username: TEST_USERNAME,
+    display_name: 'E2E Player',
+    password: 'password123',
   });
-  expect(regRes.ok()).toBeTruthy();
   await regContext.dispose();
 
   // 2. Login in a fresh context — Playwright captures the Set-Cookie header

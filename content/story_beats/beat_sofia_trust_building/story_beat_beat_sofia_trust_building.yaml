@@ -4,7 +4,7 @@ description: "A quiet moment at a local food stand. Only unlocks if sofia_trust 
 metadata:
   type: story_beat
   story_slug: real_heroism_in_latam
-  order: 3
+  order: 402
   location: south_las_flores
   characters:
     - sofia_mendoza

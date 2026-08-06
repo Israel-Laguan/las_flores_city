@@ -1,4 +1,7 @@
 import type { DialogueNode, DialogueChoice, Leaf } from '@las-flores/shared';
+// Type-only import: erased at compile time, so this module stays pure
+// (no runtime DB dependency — its property tests rely on that).
+import type { DialogueSpeakers } from './dialogue-speakers.js';
 
 // ============================================================
 // stripGuardedTargetChunks — Payload Stripping (Requirement 9)
@@ -62,7 +65,8 @@ export function buildDialogueResponse(
   isEnd: boolean,
   timeBlocksSpent: number,
   timeBlocksRemaining: number,
-  dialogueId?: string
+  dialogueId?: string,
+  speakers?: DialogueSpeakers
 ) {
   return {
     success: true,
@@ -80,6 +84,9 @@ export function buildDialogueResponse(
       is_end: isEnd,
       time_blocks_spent: timeBlocksSpent,
       time_blocks_remaining: timeBlocksRemaining,
+      // VN visual layer: speaker lookup (name/title/portrait_urls) for
+      // the chunk's nodes, keyed by character id. Omitted when absent.
+      ...(speakers && Object.keys(speakers).length > 0 && { speakers }),
     },
     timestamp: new Date().toISOString(),
   };
@@ -162,7 +169,8 @@ export function buildChooseResponse(
     kind: 'winner' | 'solver' | 'late';
   } | null,
   alignmentChange?: 'loyalist' | 'fugitive' | null,
-  isChunkBoundaryCrossing: boolean = false
+  isChunkBoundaryCrossing: boolean = false,
+  speakers?: DialogueSpeakers
 ) {
   return {
     success: true,
@@ -186,6 +194,8 @@ export function buildChooseResponse(
       ...(mysterySolveStatus != null && { mystery_solve_status: mysterySolveStatus }),
       ...(alignmentChange != null && { alignment_change: alignmentChange }),
       is_chunk_boundary_crossing: isChunkBoundaryCrossing,
+      // VN visual layer: speaker lookup for the next chunk's nodes.
+      ...(speakers && Object.keys(speakers).length > 0 && { speakers }),
     },
     timestamp: new Date().toISOString(),
   };

@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
-import { seedE2EUser, cleanupE2EUser } from './e2e-seed';
+import { seedE2EUser, cleanupE2EUser, registerE2EUser } from './e2e-seed';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -11,16 +11,12 @@ const testUsername = `polish_${Date.now()}_${Math.random().toString(36).slice(2,
 const testPassword = 'test1234';
 
 test.beforeAll(async ({ request }) => {
-  const response = await request.post(`${API_BASE}/api/auth/register`, {
-    data: {
-      email: testEmail,
-      username: testUsername,
-      display_name: 'Interactive Polish',
-      password: testPassword,
-    },
+  await registerE2EUser(request, {
+    email: testEmail,
+    username: testUsername,
+    display_name: 'Interactive Polish',
+    password: testPassword,
   });
-
-  expect(response.ok()).toBeTruthy();
 
   // Seed vault + SMS test data for the registered user
   await seedE2EUser(request, testEmail, testPassword);

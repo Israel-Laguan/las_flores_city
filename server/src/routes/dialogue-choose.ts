@@ -5,6 +5,7 @@ import {
   type ProcessChoiceResult,
 } from './dialogue-helpers.js';
 import { buildChooseResponse, buildChoiceTelemetryEventData, type ChunkPayload } from './dialogue-response-helpers.js';
+import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { IronGateValidator } from '../services/IronGateValidator.js';
 import { appendTBReceipt } from '../services/ReceiptRenderer.js';
@@ -12,6 +13,7 @@ import { PlayerStateRepository } from '../database/repositories/PlayerStateRepos
 import { deleteCache } from '../database/redis.js';
 import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMystery } from './dialogue-side-effects.js';
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
+import { mapDialogueWriteError } from './dialogue-errors.js';
 
 // ── main handler ────────────────────────────────────────────
 export async function handleChoose(req: any, res: any): Promise<any> {
@@ -56,6 +58,10 @@ export async function handleChoose(req: any, res: any): Promise<any> {
 
     return handleChunkBoundaryChoice(id, userId, current_chunk_id, choice_id, currentChunk, leaf, res);
   } catch (error: any) {
+    const mapped = mapDialogueWriteError(error);
+    if (mapped) {
+      return res.status(mapped.status).json({ success: false, error: mapped.code, timestamp: new Date().toISOString() });
+    }
     console.error('Dialogue choose error:', error);
     res.status(500).json({ success: false, error: 'Failed to process choice', timestamp: new Date().toISOString() });
   }
@@ -112,6 +118,8 @@ async function handleIntraChunkChoice(
     leaves,
   };
 
+  const speakers = await resolveChunkSpeakers(chunkNodes);
+
   return res.json(
     buildChooseResponse(
       dialogueId, choiceId, intraChunkPayload, currentChunkId, nextNodeId,
@@ -119,7 +127,8 @@ async function handleIntraChunkChoice(
       tbCursor?.time_blocks ?? 0, null,
       choiceResult.unlockedVaultItem ?? null,
       choiceResult.mysterySolveStatus ?? null,
-      choiceResult.alignmentChange ?? null, false
+      choiceResult.alignmentChange ?? null, false,
+      speakers
     )
   );
 }
@@ -287,13 +296,15 @@ async function handleChunkBoundaryChoice(
     leaves: resolvedNextChunk.chunk.leaves,
   };
 
+  const speakers = await resolveChunkSpeakers(finalNodes);
+
   return res.json(
     buildChooseResponse(
       dialogueId, choiceId, nextChunkPayload, nextChunkId, nextNodeId,
       nextChoices, isEnd, tbDeducted,
       tbCursor?.time_blocks ?? 0, receiptString, null,
       mysterySolveStatus, validationResult.alignmentChange ?? null,
-      isChunkBoundaryCrossing
+      isChunkBoundaryCrossing, speakers
     )
   );
 }

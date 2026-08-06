@@ -1,18 +1,20 @@
-FROM node:20-jammy
+FROM node:20-bookworm
 
 WORKDIR /app
 
 COPY package*.json ./
 COPY client/package*.json ./client/
 COPY shared/package*.json ./shared/
-
+COPY ui/package*.json ./ui/
 RUN npm ci
 
 # Install Playwright browsers matching the version resolved by npm
 RUN npx playwright install --with-deps
 
+# Copy workspace sources (ui is baked in; client/shared are also mounted live at runtime)
 COPY client/ ./client/
 COPY shared/ ./shared/
+COPY ui/ ./ui/
 
 RUN npm run build --workspace=shared
 

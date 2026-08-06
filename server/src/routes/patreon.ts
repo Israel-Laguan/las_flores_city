@@ -122,7 +122,7 @@ patreonRouter.get('/callback', async (req: any, res: Response) => {
     // C. Evaluate tier membership
     const { isNsfwUnlocked, highestTier } = evaluateTiers(identityData);
 
-    // D. Update user_entitlements atomically
+    // D. Update user_entitlements and grant NSFW gallery item atomically
     await withOLTPTransaction(async (client) => {
       await client.query(
         `INSERT INTO user_entitlements (user_id, patreon_id, patreon_access_token, patreon_refresh_token, is_nsfw_unlocked, patreon_tier)
@@ -136,6 +136,20 @@ patreonRouter.get('/callback', async (req: any, res: Response) => {
            patreon_tier = EXCLUDED.patreon_tier`,
         [userId, patreonId, access_token, refresh_token, isNsfwUnlocked, highestTier]
       );
+
+      // Grant or revoke the NSFW gallery vault item to keep the vault
+      // inventory consistent with the current entitlement.
+      if (isNsfwUnlocked) {
+        await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+          [userId, '99999999-aaaa-4bbb-8ccc-dddddddd0001'],
+        );
+      } else {
+        await client.query(
+          `DELETE FROM player_vault WHERE user_id = $1 AND item_id = $2`,
+          [userId, '99999999-aaaa-4bbb-8ccc-dddddddd0001'],
+        );
+      }
     });
 
     // E. Invalidate cached dialogue trees so the resolver picks up the new entitlement
@@ -188,13 +202,21 @@ patreonRouter.get('/status', authMiddleware, async (req: AuthRequest, res: Respo
 patreonRouter.post('/unlink', authMiddleware, async (req: AuthRequest, res: Response) => {
   const userId = req.userId!;
 
-  await queryOLTP(
-    `UPDATE user_entitlements
-     SET patreon_id = NULL, patreon_access_token = NULL, patreon_refresh_token = NULL,
-         is_nsfw_unlocked = FALSE, patreon_tier = 'none'
-     WHERE user_id = $1`,
-    [userId]
-  );
+  await withOLTPTransaction(async (client) => {
+    await client.query(
+      `UPDATE user_entitlements
+       SET patreon_id = NULL, patreon_access_token = NULL, patreon_refresh_token = NULL,
+           is_nsfw_unlocked = FALSE, patreon_tier = 'none'
+       WHERE user_id = $1`,
+      [userId],
+    );
+
+    // Revoke the NSFW gallery item on unlink
+    await client.query(
+      `DELETE FROM player_vault WHERE user_id = $1 AND item_id = $2`,
+      [userId, '99999999-aaaa-4bbb-8ccc-dddddddd0001'],
+    );
+  });
 
   await invalidatePattern('dialogue:resolved:*');
   await invalidatePattern(`user:state:${userId}`);

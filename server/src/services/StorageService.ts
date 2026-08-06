@@ -6,6 +6,12 @@ const DEFAULT_TTL_SECONDS = 300;
 
 const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'localhost';
 const MINIO_PORT = process.env.MINIO_PORT || '9000';
+// Browser-reachable endpoint for MinIO. In Compose deployments MINIO_ENDPOINT
+// is the container hostname (`minio`), which browsers can't resolve, so the
+// signer rewrites presigned URLs to this public origin instead (the S3 client
+// still uses MINIO_ENDPOINT for the actual request). When unset, presigned
+// URLs keep the configured endpoint (legacy behavior).
+const MINIO_PUBLIC_URL = (process.env.MINIO_PUBLIC_URL || '').trim();
 const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';
 const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'minioadmin';
 const MINIO_BUCKET = process.env.MINIO_BUCKET || 'las-flores';
@@ -13,6 +19,7 @@ const CDN_SIGNING_SECRET = process.env.CDN_SIGNING_SECRET || process.env.JWT_SEC
 const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
 
 let s3Client: S3Client | null = null;
+let publicS3Client: S3Client | null = null;
 
 function getMinioEndpointUrl(): string {
   const endpoint = MINIO_ENDPOINT.match(/^https?:\/\//) ? MINIO_ENDPOINT : `http://${MINIO_ENDPOINT}`;
@@ -40,9 +47,19 @@ function getS3Client(): S3Client {
 
 function isMinioUrl(mediaUrl: string): boolean {
   if (mediaUrl.startsWith('s3://')) return true;
-  const minioHost = `${MINIO_ENDPOINT}:${MINIO_PORT}`;
-  return mediaUrl.includes(minioHost) || mediaUrl.includes('minio');
+  // Match only URLs whose host is the configured MinIO endpoint. We deliberately
+  // avoid a loose `includes('minio')` substring test so an already-browser-
+  // reachable public/CDN URL (e.g. https://cdn.example.com/minio-assets/...) is
+  // NOT mistaken for an internal object and rewritten into a presigned URL.
+  const endpointHost = MINIO_ENDPOINT.replace(/^https?:\/\//, '').replace(/:\d+$/, '').toLowerCase();
+  try {
+    return new URL(mediaUrl).hostname.toLowerCase() === endpointHost;
+  } catch {
+    return false;
+  }
 }
+
+export { isMinioUrl };
 
 function parseS3Location(mediaUrl: string): { bucket: string; key: string } | null {
   if (mediaUrl.startsWith('s3://')) {
@@ -65,6 +82,69 @@ function parseS3Location(mediaUrl: string): { bucket: string; key: string } | nu
   }
 }
 
+/**
+ * Browser-reachable S3 client used ONLY for signing presigned URLs. The
+ * internal `getS3Client()` signs against `MINIO_ENDPOINT` (the container host),
+ * which browsers can't reach; a presigned URL is tied to the Host header it was
+ * signed with, so we must sign against the public origin when one is configured
+ * (otherwise rewriting the host afterward invalidates the signature →
+ * SignatureDoesNotMatch). Server-side operations keep using `getS3Client()`.
+ *
+ * This endpoint is handed to the browser inside presigned URLs, so it must be
+ * served over https: outside local development — http: is only accepted for
+ * loopback (localhost / 127.0.0.1 / ::1) endpoints, otherwise the signed S3
+ * credentials would travel in cleartext until they expire.
+ */
+function assertSecurePublicEndpoint(publicUrl: string): void {
+  let url: URL;
+  try {
+    url = new URL(publicUrl);
+  } catch {
+    throw new Error(
+      `MINIO_PUBLIC_URL is not a valid URL: "${publicUrl}". It must be a full http(s) origin browsers can reach.`
+    );
+  }
+  const hostname = url.hostname.toLowerCase();
+  const isLoopback =
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '[::1]' ||
+    hostname === '::1';
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error(
+      `MINIO_PUBLIC_URL "${publicUrl}" must use http: or https:.`,
+    );
+  }
+  if (url.protocol === 'http:' && !isLoopback) {
+    throw new Error(
+      `MINIO_PUBLIC_URL "${publicUrl}" uses insecure http: for a non-loopback host. ` +
+        'Presigned URLs carry S3 credentials in the query string, so they must be ' +
+        'served over https: outside local development. Use http: only for localhost/127.0.0.1 endpoints.'
+    );
+  }
+}
+
+function getPublicS3Client(): S3Client {
+  if (!publicS3Client) {
+    if (MINIO_PUBLIC_URL) {
+      assertSecurePublicEndpoint(MINIO_PUBLIC_URL);
+    }
+    const endpoint = MINIO_PUBLIC_URL
+      ? MINIO_PUBLIC_URL.replace(/\/$/, '')
+      : getMinioEndpointUrl();
+    publicS3Client = new S3Client({
+      endpoint,
+      region: 'us-east-1',
+      credentials: {
+        accessKeyId: MINIO_ACCESS_KEY,
+        secretAccessKey: MINIO_SECRET_KEY,
+      },
+      forcePathStyle: true,
+    });
+  }
+  return publicS3Client;
+}
+
 export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_TTL_SECONDS): Promise<string> {
   const location = parseS3Location(mediaUrl);
   if (!location) return mediaUrl;
@@ -74,7 +154,8 @@ export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_
     Key: location.key,
   });
 
-  return getSignedUrl(getS3Client(), command, { expiresIn: expiresInSeconds });
+  const signedUrl = await getSignedUrl(getPublicS3Client(), command, { expiresIn: expiresInSeconds });
+  return signedUrl;
 }
 
 export function createCdnProxyUrl(itemId: string, userId: string, expiresInSeconds = DEFAULT_TTL_SECONDS): string {

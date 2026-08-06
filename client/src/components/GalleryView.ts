@@ -23,6 +23,13 @@ export class GalleryView {
     view.innerHTML = `
       <h2>GALLERY — VAULT</h2>
       <div class="gallery-grid"></div>
+      <div class="gallery-transcript hidden">
+        <div class="gallery-transcript-header">
+          <span class="gallery-transcript-title"></span>
+          <button class="gallery-transcript-close" data-action="close-transcript">×</button>
+        </div>
+        <div class="gallery-transcript-body"></div>
+      </div>
       <button class="view-back-btn" data-action="back">> BACK</button>
     `;
     return view;
@@ -68,16 +75,71 @@ export class GalleryView {
       if (!btn) return;
       const action = btn.getAttribute('data-action');
       if (action === 'back') {
+        this.closeTranscript();
         navigateTo('/main');
+      }
+      if (action === 'close-transcript') {
+        this.closeTranscript();
+      }
+      if (action === 'view-image') {
+        const itemId = btn.getAttribute('data-item-id');
+        if (itemId) {
+          void this.openVaultMedia(itemId);
+        }
       }
     };
     this.container.addEventListener('click', this.boundClick);
   }
 
-  private async openItem(item: VaultItem): Promise<void> {
+  private closeTranscript(): void {
+    const transcript = this.container.querySelector('.gallery-transcript');
+    if (transcript) {
+      transcript.classList.add('hidden');
+    }
+  }
+
+  private async openVaultMedia(itemId: string): Promise<void> {
+    // Open blank window synchronously within user gesture to avoid popup blocking
+    const newWindow = window.open('about:blank', '_blank');
     try {
-      const url = await api.fetchVaultMediaUrl(item.id);
-      window.open(url, '_blank');
+      const url = await api.fetchVaultMediaUrl(itemId);
+      if (newWindow) {
+        newWindow.location.href = url;
+      }
+    } catch {
+      if (newWindow) {
+        newWindow.close();
+      }
+      console.error('Could not open vault media');
+    }
+  }
+
+  private async openItem(item: VaultItem): Promise<void> {
+    if (item.itemType === 'premium_cg') {
+      const transcript = this.container.querySelector('.gallery-transcript') as HTMLDivElement | null;
+      if (!transcript) return;
+      const title = transcript.querySelector('.gallery-transcript-title') as HTMLSpanElement | null;
+      const body = transcript.querySelector('.gallery-transcript-body') as HTMLDivElement | null;
+      if (title) title.textContent = item.title;
+      if (body) {
+        body.innerHTML = '';
+        const text = document.createElement('div');
+        text.className = 'gallery-transcript-text';
+        text.textContent = item.description || '';
+        body.appendChild(text);
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'view-back-btn';
+        viewBtn.setAttribute('data-action', 'view-image');
+        viewBtn.setAttribute('data-item-id', item.id);
+        viewBtn.textContent = '> VIEW IMAGE';
+        body.appendChild(viewBtn);
+      }
+      transcript.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      await this.openVaultMedia(item.id);
     } catch {
       console.error('Could not open vault item');
     }

@@ -111,6 +111,30 @@ export const DialogueChoiceSchema = z.object({
 
 export type DialogueChoice = z.infer<typeof DialogueChoiceSchema>;
 
+export const DialogueNodeVisualSchema = z.object({
+  // Expression tag used to select a variant from the speaker's
+  // portrait_urls[].expression entries (e.g. neutral, vulnerable,
+  // shocked, calculating, tender). Falls back to the default entry.
+  expression: z.string().max(50).optional(),
+  // Dialogue backdrop URL applied verbatim by the client VN viewport, e.g. a
+  // published scene/overlay background URL. The client does NOT resolve scene
+  // slugs here — a bare slug (e.g. `central_plaza`) would render as a relative
+  // `url("central_plaza")`. Leave empty to fall back to the scene/environment
+  // variant pool resolved from `location:background`.
+  background: z.string().max(255).optional(),
+  // CSS/Canvas2D mood treatment ('night' tints, 'alert' pulses).
+  mood: z.enum(['rain', 'tense', 'night', 'soft_bloom', 'alert', 'none']).optional(),
+  // Portrait placement on the VN stage.
+  position: z.enum(['left', 'center', 'right']).optional(),
+  // Transition applied when entering this node's visual state.
+  transition: z.enum(['fade', 'slide', 'flash', 'none']).optional(),
+  // Cinematic mode: hide the bottom bar and center the text
+  // full-screen over the background/mood layers.
+  cinematic: z.boolean().optional(),
+});
+
+export type DialogueNodeVisual = z.infer<typeof DialogueNodeVisualSchema>;
+
 export const DialogueNodeSchema = z.object({
   id: z.string(),
   type: DialogueNodeTypeSchema,
@@ -122,6 +146,9 @@ export const DialogueNodeSchema = z.object({
   effects: EffectsSchema.optional(),
   conditions: z.record(z.string(), z.any()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  // Visual Novel staging metadata. Optional; when absent the client
+  // falls back to the default portrait + scene backdrop.
+  visual: DialogueNodeVisualSchema.optional(),
 });
 
 export type DialogueNode = z.infer<typeof DialogueNodeSchema>;

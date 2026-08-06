@@ -1,15 +1,17 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 
 let mockPathname = '/';
+const routerPush = vi.fn();
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: routerPush, refresh: vi.fn() }),
 }));
 
 import TopBar from '../TopBar';
 import { SidebarContext, type SidebarContextValue } from '../SidebarContext';
+import { setDialogueDirty } from '@/hooks/useUnsafeNavigationGuard';
 
 const defaultContext: SidebarContextValue = {
   mobileOpen: false,
@@ -32,6 +34,13 @@ function renderTopBar(
 
 beforeEach(() => {
   mockPathname = '/';
+  routerPush.mockClear();
+  setDialogueDirty(false);
+});
+
+afterEach(() => {
+  setDialogueDirty(false);
+  vi.restoreAllMocks();
 });
 
 describe('TopBar', () => {
@@ -80,5 +89,45 @@ describe('TopBar', () => {
   it('reflects the open state on the menu button', () => {
     renderTopBar({ username: 'tester', role: 'admin' }, { mobileOpen: true });
     expect(screen.getByRole('button', { name: 'Close navigation' })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  // Logout navigates via router.push, which no anchor/popstate guard can see,
+  // so it must consult the shared dirty flag itself or unsaved edits are lost.
+  describe('logout with unsaved dialogue edits', () => {
+    it('aborts the logout when the user declines the confirmation', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null));
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+      setDialogueDirty(true);
+      renderTopBar({ username: 'tester', role: 'admin' });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Logout' }));
+
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(routerPush).not.toHaveBeenCalled();
+    });
+
+    it('logs out when the user confirms', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null));
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
+      setDialogueDirty(true);
+      renderTopBar({ username: 'tester', role: 'admin' });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Logout' }));
+
+      await waitFor(() => expect(routerPush).toHaveBeenCalledWith('/login'));
+      expect(fetchSpy).toHaveBeenCalledWith('/api/auth/logout', { method: 'POST' });
+    });
+
+    it('does not prompt when there are no unsaved edits', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null));
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+      renderTopBar({ username: 'tester', role: 'admin' });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Logout' }));
+
+      await waitFor(() => expect(routerPush).toHaveBeenCalledWith('/login'));
+      expect(confirmSpy).not.toHaveBeenCalled();
+    });
   });
 });

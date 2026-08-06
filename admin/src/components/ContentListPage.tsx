@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
+import { useGuardedNavigation } from '@/hooks/useUnsafeNavigationGuard';
 import styles from './ContentListPage.module.css';
 
 interface Column<T> {
@@ -116,7 +116,7 @@ export default function ContentListPage<T extends Record<string, unknown>>({
   detailPath,
   columns,
 }: ContentListPageProps<T>) {
-  const router = useRouter();
+  const { push: guardedPush } = useGuardedNavigation();
   const [items, setItems] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -154,7 +154,7 @@ export default function ContentListPage<T extends Record<string, unknown>>({
     return () => { abortRef.current?.abort(); };
   }, [page, fetchPage]);
 
-  const navigateTo = (id: string) => router.push(`${detailPath}/${id}`);
+  const navigateTo = (id: string) => guardedPush(`${detailPath}/${id}`);
 
   return (
     <main className={styles.main}>

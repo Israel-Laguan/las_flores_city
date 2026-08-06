@@ -9,6 +9,7 @@ import { getLocalKey } from '../utils/crypto';
 
 export type { DialogueNode } from '../types/dialogue';
 import type { DialogueNode } from '../types/dialogue';
+import type { DialogueSpeakers } from '../types/dialogue';
 
 enum DialogueUIState {
   HIDDEN = 'HIDDEN',
@@ -24,6 +25,8 @@ interface DialogueState {
   tree?: any;
   currentNode: DialogueNode;
   availableChoices: any[];
+  // VN speaker lookup (characterId -> { name, title, portrait_urls }).
+  speakers?: DialogueSpeakers;
 }
 
 export class DialogueUI {
@@ -93,7 +96,8 @@ export class DialogueUI {
           chunk: result.data.chunk,
           tree: result.data.tree,
           currentNode,
-          availableChoices: result.data.available_choices
+          availableChoices: result.data.available_choices,
+          speakers: result.data.speakers
         };
         if (this.currentDialogue.chunk) this.prefetchFreeLeaves(this.currentDialogue.chunk);
         this.slideIn();
@@ -154,8 +158,23 @@ export class DialogueUI {
     }
   }
 
-  private renderChunk(chunk: any, currentNodeId: string, availableChoices: any[]) {
-    this.currentDialogue = { chunk, currentNode: chunk.nodes[currentNodeId], availableChoices };
+  /** Distinct speaker_ids referenced by a chunk's nodes. */
+  private chunkSpeakerIds(chunk: any): string[] {
+    const ids = new Set<string>();
+    for (const node of Object.values(chunk?.nodes ?? {}) as any[]) {
+      const sid = node?.speaker_id;
+      if (typeof sid === 'string' && sid.length > 0) ids.add(sid);
+    }
+    return [...ids];
+  }
+
+  private renderChunk(chunk: any, currentNodeId: string, availableChoices: any[], speakers?: DialogueSpeakers) {
+    this.currentDialogue = {
+      chunk,
+      currentNode: chunk.nodes[currentNodeId],
+      availableChoices,
+      speakers: speakers ?? this.currentDialogue?.speakers,
+    };
     this.prefetchFreeLeaves(chunk);
     this.renderDialogue();
   }
@@ -183,17 +202,28 @@ export class DialogueUI {
             const nextNode = cached.nodes[nextNodeId];
             const isEnd = !nextNode || nextNode.is_end === true || !nextNode.choices?.length;
 
-            this.handleDialogueResult({ time_blocks_remaining: undefined });
+            // The cached chunk carries no speaker metadata. If the node being
+            // displayed now (`nextNode`) introduces a speaker whose info isn't
+            // in the current map, fall through to the server round-trip so its
+            // portraits/metadata resolve correctly. Only the entry node matters
+            // here — future nodes in the chunk won't render yet, so we don't
+            // let them force a network request.
+            const hasAllSpeakers = this.chunkSpeakerIds({ nodes: { [nextNodeId]: nextNode } })
+              .every((id) => Boolean(this.currentDialogue?.speakers?.[id]));
 
-            if (isEnd) {
-              this.handleDialogueEnd(nextNode);
+            if (hasAllSpeakers) {
+              this.handleDialogueResult({ time_blocks_remaining: undefined });
+
+              if (isEnd) {
+                this.handleDialogueEnd(nextNode);
+                api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
+                return;
+              }
+
+              this.renderChunk(cached, nextNodeId, nextNode.choices || []);
               api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
               return;
             }
-
-            this.renderChunk(cached, nextNodeId, nextNode.choices || []);
-            api.makeDialogueChoiceBackground(currentChunk.id, choice.id);
-            return;
           }
         }
 
@@ -203,11 +233,12 @@ export class DialogueUI {
           this.handleDialogueResult(result.data);
 
           if (result.data.is_end) {
+            if (result.data.speakers) this.currentDialogue.speakers = result.data.speakers;
             this.handleDialogueEnd(result.data.next_chunk.nodes[result.data.current_node_id]);
             return;
           }
 
-          this.renderChunk(result.data.next_chunk, result.data.current_node_id, result.data.available_choices);
+          this.renderChunk(result.data.next_chunk, result.data.current_node_id, result.data.available_choices, result.data.speakers);
         } else {
           this.state = DialogueUIState.AWAITING_CHOICE;
           enableChoiceButtons(this.choicesContainer);
@@ -219,12 +250,14 @@ export class DialogueUI {
           this.handleDialogueResult(result.data);
 
           if (result.data.is_end) {
+            if (result.data.speakers) this.currentDialogue.speakers = result.data.speakers;
             this.handleDialogueEnd(result.data.next_node);
             return;
           }
 
           this.currentDialogue.currentNode = result.data.next_node;
           this.currentDialogue.availableChoices = result.data.available_choices;
+          if (result.data.speakers) this.currentDialogue.speakers = result.data.speakers;
           this.renderDialogue();
         } else {
           this.state = DialogueUIState.AWAITING_CHOICE;
@@ -307,8 +340,16 @@ export class DialogueUI {
       this.choicesContainer.style.pointerEvents = 'none';
     }
     this.startTypewriter(currentNode.text);
-    eventBus.emit('dialogue:node_loaded', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
-    eventBus.emit('dialogue:node_rendered', { type: currentNode.type, speaker: currentNode.speaker, thought: currentNode.thought });
+    const nodePayload = {
+      type: currentNode.type,
+      speaker: currentNode.speaker,
+      thought: currentNode.thought,
+      visual: currentNode.visual,
+      speakerId: currentNode.speaker_id,
+      speakers: this.currentDialogue?.speakers,
+    };
+    eventBus.emit('dialogue:node_loaded', nodePayload);
+    eventBus.emit('dialogue:node_rendered', nodePayload);
     if (availableChoices?.length) this.applyAiRewrites(availableChoices);
   }
 

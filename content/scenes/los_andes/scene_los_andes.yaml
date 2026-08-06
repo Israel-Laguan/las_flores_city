@@ -11,5 +11,6 @@ metadata:
     - The elevation provides a clear view of the entire city. Perspective is literal and metaphorical.
     - Air quality sensors indicate optimal levels. The wealthy breathe differently.
     - Security drones patrol the perimeter. Access control is discreet but thorough.
+lore_path: los_andes.md
 asset_paths:
-  background: scenes/scene_los_andes/background.jpg
+  background: los_andes__default.png

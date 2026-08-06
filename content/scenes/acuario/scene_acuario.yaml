@@ -27,5 +27,6 @@ metadata:
     - The captive organisms in the bioluminescent gallery have been engineered for the ambient light conditions of this tank. They have no reference point for what their species looked like before the engineering. Neither, now, does anyone who relies on this exhibit for information.
     - Atmospheric scrubbers maintain a salt-air simulation at 68% humidity. The actual air from the delta, admitted for two seconds, would override the simulation entirely. The scrubbers run continuously.
     - A child asks her parent why the coral is so bright. The parent says it is healthy. The holographic narration does not correct this. The narration was reviewed by LW Group's communications department before installation.
+lore_path: acuario.md
 asset_paths:
-  background: scenes/scene_acuario/background.jpg
+  background: acuario__default.png

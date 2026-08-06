@@ -12,8 +12,11 @@ import '@testing-library/jest-dom';
 const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
   useParams: vi.fn(),
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, replace: vi.fn() }),
   usePathname: vi.fn(() => '/'),
+  // The dialogue detail page's unsaved-changes guard reads the current route
+  // (pathname + query) so it can restore it when a navigation is declined.
+  useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 vi.mock('@/lib/client-api', () => ({

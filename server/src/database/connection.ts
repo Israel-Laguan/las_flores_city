@@ -22,7 +22,7 @@ function getOltpPool(): pg.Pool {
       connectionString: process.env.DATABASE_URL,
       max: 50,                  // Max connections in pool
       idleTimeoutMillis: 30000, // Close idle clients after 30s
-      connectionTimeoutMillis: 2000, // Fail if no connection available within 2s
+      connectionTimeoutMillis: 5000, // Fail if no connection available within 5s
     });
   }
   return _oltpPool;

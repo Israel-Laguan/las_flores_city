@@ -18,6 +18,17 @@ import path from 'node:path';
 import http from 'node:http';
 import https from 'node:https';
 
+// js-yaml is a project dependency (shared/admin/server). Used only for
+// the dialogue `visual.expression` cross-check; the URL checker above
+// remains dependency-free.
+let yamlLoad = null;
+try {
+  // eslint-disable-next-line import/no-unresolved -- verified devDependency
+  yamlLoad = (await import('js-yaml')).load;
+} catch {
+  yamlLoad = null;
+}
+
 // ── Config ──────────────────────────────────────────────────────────────────
 
 const DEFAULT_MINIO_BASE = process.env.MINIO_URL || 'http://localhost:9000';
@@ -111,6 +122,30 @@ function findAllPromptFiles(dir) {
   return results;
 }
 
+function isAssetUrl(value) {
+  return typeof value === 'string' && (
+    value.startsWith('http://') || value.startsWith('https://') || value.startsWith('s3://')
+  );
+}
+
+/**
+ * Resolve an asset reference to an HTTP(S) URL that can be HEAD-checked.
+ * - Full http(s) URLs pass through unchanged.
+ * - `s3://<bucket>/<key>` URIs (the published format written by
+ *   `uploadToMinio`) resolve to `<minioBase>/<bucket>/<key>`.
+ * - Otherwise it is treated as a relative MinIO path.
+ */
+function toCheckUrl(url, minioBase) {
+  if (url.startsWith('s3://')) {
+    const rest = url.slice('s3://'.length);
+    const slashIdx = rest.indexOf('/');
+    const bucket = slashIdx === -1 ? rest : rest.slice(0, slashIdx);
+    const key = slashIdx === -1 ? '' : rest.slice(slashIdx + 1);
+    return `${minioBase}/${bucket}/${key}`;
+  }
+  return url.startsWith('http') ? url : `${minioBase}/${url.replace(/^\//, '')}`;
+}
+
 function extractUrls(obj, results = []) {
   if (!obj || typeof obj !== 'object') return results;
 
@@ -120,9 +155,9 @@ function extractUrls(obj, results = []) {
   }
 
   for (const [key, value] of Object.entries(obj)) {
-    if (key === 'url' && typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+    if (key === 'url' && isAssetUrl(value)) {
       results.push(value);
-    } else if (key.endsWith('_url') && typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://'))) {
+    } else if (key.endsWith('_url') && isAssetUrl(value)) {
       results.push(value);
     } else if (typeof value === 'object' && value !== null) {
       extractUrls(value, results);
@@ -134,9 +169,7 @@ function extractUrls(obj, results = []) {
 
 function checkUrl(url, minioBase, checkMime, checkDimensions) {
   return new Promise((resolve) => {
-    // If it's already a full MinIO URL, check it directly
-    // Otherwise, assume it's a relative MinIO path
-    const targetUrl = url.startsWith('http') ? url : `${minioBase}/${url.replace(/^\//, '')}`;
+    const targetUrl = toCheckUrl(url, minioBase);
 
     const parsed = new URL(targetUrl);
     const lib = parsed.protocol === 'https:' ? https : http;
@@ -212,6 +245,126 @@ function estimateDimensionMismatch(url, targetUrl) {
   return null;
 }
 
+// ── Expression cross-check (VN visual metadata) ─────────────────────────────
+//
+// For every dialogue node carrying `visual.expression`, verify the
+// referenced speaker character actually tags that expression in its
+// `portrait_urls`. Missing expressions still fall back to the default
+// portrait at runtime, so mismatches are WARNINGS, not errors.
+
+function parseCharacterExpressionMap(yamlFiles) {
+  if (typeof yamlLoad !== 'function') return null;
+
+  const charMap = new Map(); // id -> { name, expressions:Set<string> }
+
+  for (const file of yamlFiles) {
+    const base = path.basename(file);
+    if (!/^char_.+\.ya?ml$/.test(base)) continue;
+
+    let data;
+    try {
+      data = yamlLoad(fs.readFileSync(file, 'utf8'));
+    } catch {
+      continue;
+    }
+    if (!data || typeof data !== 'object') continue;
+    if (typeof data.id !== 'string') continue;
+
+    const expressions = new Set();
+    if (Array.isArray(data.portrait_urls)) {
+      for (const entry of data.portrait_urls) {
+        if (entry && typeof entry.expression === 'string' && entry.expression.length > 0) {
+          expressions.add(entry.expression.toLowerCase());
+        }
+      }
+    }
+    charMap.set(data.id, {
+      name: typeof data.name === 'string' ? data.name : data.id,
+      expressions,
+    });
+  }
+
+  return charMap;
+}
+
+/**
+ * Collect dialogue/overlay node entries from a parsed YAML document.
+ * Top-level `nodes` maps apply to both dialogue files and flat overlay
+ * files. Bundled overlay files may instead carry a top-level `overlays`
+ * array, where each member has its own `nodes` map (node ids are labeled
+ * `overlays[<i>].nodes.<id>`).
+ */
+function collectNodeEntries(data) {
+  const entries = [];
+  if (!data || typeof data !== 'object') return entries;
+
+  if (data.nodes && typeof data.nodes === 'object') {
+    for (const [nodeId, node] of Object.entries(data.nodes)) {
+      entries.push({ nodeId, node });
+    }
+  }
+
+  if (Array.isArray(data.overlays)) {
+    data.overlays.forEach((overlay, i) => {
+      if (!overlay || typeof overlay !== 'object') return;
+      const nodes = overlay.nodes;
+      if (!nodes || typeof nodes !== 'object') return;
+      for (const [nodeId, node] of Object.entries(nodes)) {
+        entries.push({ nodeId: `overlays[${i}].nodes.${nodeId}`, node });
+      }
+    });
+  }
+
+  return entries;
+}
+
+function checkExpressionCrossRefs(yamlFiles, charMap) {
+  if (typeof yamlLoad !== 'function' || !charMap || charMap.size === 0) {
+    return { checked: 0, warnings: [] };
+  }
+
+  const warnings = [];
+  let checked = 0;
+
+  for (const file of yamlFiles) {
+    const base = path.basename(file);
+    // normalize separators so nested-dir checks hold on Windows too
+    const posix = file.split(path.sep).join('/');
+    if (!/^(dialogue_|char_|overlay_)/.test(base) && !posix.includes('/dialogues/') && !posix.includes('/overlays/')) continue;
+
+    let data;
+    try {
+      data = yamlLoad(fs.readFileSync(file, 'utf8'));
+    } catch {
+      continue;
+    }
+    const nodeEntries = collectNodeEntries(data);
+    if (nodeEntries.length === 0) continue;
+
+    for (const { nodeId, node } of nodeEntries) {
+      if (!node || typeof node !== 'object') continue;
+      const visual = node.visual;
+      if (!visual || typeof visual !== 'object') continue;
+      const expression = typeof visual.expression === 'string' ? visual.expression.trim() : '';
+      if (!expression) continue;
+
+      const speakerId = typeof node.speaker_id === 'string' ? node.speaker_id : '';
+      const char = speakerId ? charMap.get(speakerId) : null;
+      if (!char) continue; // unknown/other-character speaker — can't verify
+
+      checked++;
+      if (!char.expressions.has(expression.toLowerCase())) {
+        warnings.push(
+          `${path.relative(process.cwd(), file)} node "${nodeId}" uses visual.expression "${expression}" ` +
+          `but ${char.name} only tags: ${[...char.expressions].join(', ') || '(none)'}`
+        );
+      }
+    }
+  }
+
+  return { checked, warnings };
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -248,8 +401,10 @@ async function main() {
       // Parse YAML manually to avoid needing a YAML library
       const raw = fs.readFileSync(yamlFile, 'utf-8');
       
-      // Simple YAML URL extraction pattern: look for *_url: "http..." (including nested list items)
-      const urlPattern = /(?:^|\n)\s*(?:-\s*)?(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?(https?:\/\/[^"'\s]+)["']?/g;
+      // Simple YAML URL extraction pattern: look for `*_url:` / `url:` values
+      // (including nested list items). Accepts http(s): and the `s3://`
+      // published URI format written by uploadToMinio.
+      const urlPattern = /(?:^|\n)\s*(?:-\s*)?(?:scene:\s*)?(?:background_url|portrait_url|ambient_sound_url|base_image_url|overlay_image_url|url|audio_url):\s*["']?((?:https?:\/\/|s3:\/\/)[^"'\s]+)["']?/g;
       const urls = [];
       let match;
       while ((match = urlPattern.exec(raw)) !== null) {
@@ -307,6 +462,28 @@ async function main() {
     console.log(`  No orphaned .prompt.md files found.`);
   }
 
+  // Dialogue node `visual.expression` cross-check against character
+  // portrait_urls expression tags (VN visual metadata).
+  console.log(`\n🗣  Checking dialogue visual.expression cross-references...`);
+  // Build the character expression map from the characters directory
+  // regardless of `--source`, so a dialogue-only source still cross-checks.
+  const charMap = parseCharacterExpressionMap(findAllYamlFiles(path.join(CONTENT_DIR, 'characters')));
+  const exprCheck = checkExpressionCrossRefs(yamlFiles, charMap);
+  let exprWarningCount = 0;
+  if (exprCheck.warnings.length > 0) {
+    console.log(`  Found ${exprCheck.warnings.length} warning(s):`);
+    for (const w of exprCheck.warnings) {
+      console.log(`  ⚠️  ${w}`);
+    }
+    exprWarningCount = exprCheck.warnings.length;
+  } else {
+    console.log(
+      typeof yamlLoad === 'function'
+        ? `  No expression cross-reference warnings (${exprCheck.checked} checked).`
+        : '  Skipped (js-yaml unavailable).'
+    );
+  }
+
   // Summary
   console.log(`\n${'='.repeat(50)}`);
   console.log(`📊 Summary`);
@@ -316,6 +493,7 @@ async function main() {
   console.log(`  ✅ Present:       ${okCount}`);
   console.log(`  ❌ Missing:       ${missingCount}`);
   console.log(`  ⚠️  Errors:       ${errorCount}`);
+  console.log(`  🗣  Visual expr:  ${exprWarningCount} warning(s)`);
   console.log(`  📝 Prompts:       ${allPromptFiles.length}`);
   console.log();
 

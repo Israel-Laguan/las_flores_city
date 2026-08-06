@@ -7,6 +7,7 @@
  * Unified client state store: credits + TBs update simultaneously
  */
 import { test, expect, Page } from '@playwright/test';
+import { registerE2EUser } from './e2e-seed';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -14,15 +15,12 @@ const testEmail = `phone-os-${Date.now()}-${Math.random().toString(36).slice(2, 
 const testUsername = `phone_os_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
 test.beforeAll(async ({ request }) => {
-  const res = await request.post(`${API_BASE}/api/auth/register`, {
-    data: {
-      email: testEmail,
-      username: testUsername,
-      display_name: 'Phone OS E2E',
-      password: 'test1234',
-    },
+  await registerE2EUser(request, {
+    email: testEmail,
+    username: testUsername,
+    display_name: 'Phone OS E2E',
+    password: 'test1234',
   });
-  expect(res.ok()).toBeTruthy();
 });
 
 async function injectAuth(page: Page) {

@@ -3,6 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminFetch } from '@/lib/client-api';
 
+// Module-level dirty flag so other components (e.g. PipelinePage) can guard
+// router-driven navigations when the raw editor has unsaved changes.
+let __editorDirty = false;
+export function isEditorDirty(): boolean {
+  return __editorDirty;
+}
+function setEditorDirty(value: boolean): void {
+  __editorDirty = value;
+}
+
 interface FileEntry {
   path: string;
   name: string;
@@ -42,6 +52,7 @@ export function useEditor() {
   useEffect(() => {
     if (!selectedPath) {
       setFileContent(''); setOriginalContent(''); setDirty(false); setSaveError(null); setSaveSuccess(false);
+      setEditorDirty(false);
       return;
     }
     let active = true;
@@ -64,6 +75,11 @@ export function useEditor() {
     const handler = (e: BeforeUnloadEvent) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
+  }, [dirty]);
+
+  useEffect(() => {
+    setEditorDirty(dirty);
+    return () => { if (dirty) setEditorDirty(false); };
   }, [dirty]);
 
   const handleSave = useCallback(async () => {

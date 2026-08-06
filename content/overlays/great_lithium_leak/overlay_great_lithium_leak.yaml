@@ -83,5 +83,6 @@ nodes:
     text: "Decryption successful. The files name names: Míngzé Luo, Zheng Wuhao, the cover-up, the bribes. Your eyes glow blue — an old implant reacting to the truth. You now hold the evidence that could reopen the trial."
     thought: Decryption successful. Downloading manifest...
     is_end: true
+lore_path: great_lithium_leak.md
 asset_paths:
-  background: overlays/overlay_great_lithium_leak/background.jpg
+  background: great_lithium_leak__default.png

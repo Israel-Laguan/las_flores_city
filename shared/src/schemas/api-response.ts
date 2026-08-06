@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { zodUuid, zodUuidArray } from './uuid.js';
 import { AssetListResponseSchema } from './assets.js';
+import { AssetEntrySchema } from './yaml-content.js';
 import { DialogueTreeSchema, DialogueNodeSchema, DialogueChoiceSchema } from './dialogue.js';
 import { PlayerStateSchema } from './player.js';
 import { MoveResponseSchema } from './player.js';
@@ -21,6 +22,10 @@ export const ScenePayloadResponseSchema = ApiResponseSchema.extend({
       id: zodUuid(),
       title: z.string(),
       backgroundUrl: z.string(),
+      // Expression-tagged background variants (`background_urls[]` from the
+      // scene YAML) — kept in sync with ScenePayloadSchema so response
+      // parsing does not strip them from the VN layer.
+      backgroundUrls: z.array(AssetEntrySchema).optional(),
       ambientSoundUrl: z.string().nullable(),
       mood: z.string(),
     }),

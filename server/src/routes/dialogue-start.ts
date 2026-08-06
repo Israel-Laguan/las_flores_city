@@ -7,8 +7,10 @@ import {
   grantDialogueRewards,
 } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';
+import { resolveChunkSpeakers } from './dialogue-speakers.js';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
+import { mapDialogueWriteError } from './dialogue-errors.js';
 
 export async function handleStartDialogue(req: any, res: any): Promise<any> {
   try {
@@ -62,6 +64,14 @@ export async function handleStartDialogue(req: any, res: any): Promise<any> {
     const { id: startChunkId, chunk_key: startChunkKey } = startChunkResult.rows[0];
     return handleStartChunk(userId, dialogue, startChunkId, startChunkKey, res);
   } catch (error: any) {
+    const mapped = mapDialogueWriteError(error);
+    if (mapped) {
+      return res.status(mapped.status).json({
+        success: false,
+        error: mapped.code,
+        timestamp: new Date().toISOString(),
+      });
+    }
     console.error('Start dialogue error:', error);
     res.status(500).json({
       success: false,
@@ -137,7 +147,11 @@ async function handleStartFallback(userId: string, dialogue: any, res: any) {
     leaves: {},
   };
 
-  return res.status(201).json(buildDialogueResponse(chunkPayload, dialogue.id, rootNodeId, availableChoices, isEnd, 0, 0));
+  const speakers = await resolveChunkSpeakers(resolved.nodes);
+
+  return res.status(201).json(
+    buildDialogueResponse(chunkPayload, dialogue.id, rootNodeId, availableChoices, isEnd, 0, 0, undefined, speakers)
+  );
 }
 
 async function handleStartChunk(userId: string, dialogue: any, startChunkId: string, startChunkKey: string, res: any) {
@@ -206,6 +220,8 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
     leaves: resolvedChunk.chunk.leaves,
   };
 
+  const speakers = await resolveChunkSpeakers(resolvedChunk.mergedNodes);
+
   return res.status(201).json(
     buildDialogueResponse(
       chunkPayload,
@@ -215,7 +231,8 @@ async function handleStartChunk(userId: string, dialogue: any, startChunkId: str
       isEnd,
       0,
       tbCursor?.time_blocks ?? 0,
-      dialogue.id
+      dialogue.id,
+      speakers
     )
   );
 }
