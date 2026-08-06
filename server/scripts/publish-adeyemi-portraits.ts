@@ -248,10 +248,7 @@ async function main() {
   // returns.
   const publishedStage = stageOf(plannedUploads[0]);
   if (!defaults.some((entry) => stageOf(entry) === publishedStage)) {
-    const clientFallback = mergedPlan.find(
-      (entry) => !entry.expression && typeof entry.url === 'string' && entry.url.length > 0,
-    );
-    const resolvedStage = clientFallback ? stageOf(clientFallback) || 'untagged' : 'untagged';
+    const resolvedStage = resolveDefaultStage(defaults);
     const available = defaults
       .map((entry) => `'${stageOf(entry) || 'untagged'}'`)
       .join(', ');

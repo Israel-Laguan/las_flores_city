@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useLayoutEffect, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { adminFetch } from '@/lib/client-api';
 
 export interface EntityYamlState<T = Record<string, unknown>> {
@@ -31,10 +31,11 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
   // same entity can only update state if they are the latest request.
   const requestVersionRef = useRef(0);
 
-  // Update the active key in a layout effect (commit-synchronous) so an
-  // interrupted navigation sets the new key before the next paint, closing
-  // the window where the old entity's YAML could still render or save.
-  useLayoutEffect(() => {
+  // Update the active key in an effect so an interrupted navigation sets
+  // the new key before the next fetch, closing the window where the old
+  // entity's YAML could still render or save. Using useEffect instead of
+  // useLayoutEffect avoids SSR warnings while maintaining the race protection.
+  useEffect(() => {
     activeKeyRef.current = `${type}:${id}`;
   }, [type, id]);
 

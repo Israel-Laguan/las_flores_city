@@ -88,7 +88,12 @@ export class GalleryView {
           void (async () => {
             try {
               const url = await api.fetchVaultMediaUrl(itemId);
-              if (tab) tab.location.href = url;
+              if (tab) {
+                tab.location.href = url;
+              } else {
+                // Popup was blocked, fall back to direct open
+                window.open(url, '_blank');
+              }
             } catch {
               console.error('Could not open vault media');
               if (tab) tab.close();

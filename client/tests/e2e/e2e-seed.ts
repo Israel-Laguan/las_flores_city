@@ -53,7 +53,6 @@ export async function registerE2EUser(
     console.warn(`registerE2EUser transient ${response.status()} (${attempt}/${maxAttempts}), retrying in ${150 * attempt}ms`);
     await sleep(150 * attempt);
   }
-  throw new Error('registerE2EUser unreachable');
 }
 
 function sleep(ms: number): Promise<void> {
