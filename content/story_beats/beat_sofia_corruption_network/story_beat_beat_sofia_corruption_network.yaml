@@ -4,7 +4,7 @@ description: "Sofia discovers the gang is funded by a corporate entity (Minera E
 metadata:
   type: story_beat
   story_slug: real_heroism_in_latam
-  order: 4
+  order: 403
   location: south_las_flores
   characters:
     - sofia_mendoza

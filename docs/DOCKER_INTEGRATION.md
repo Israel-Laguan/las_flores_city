@@ -150,7 +150,7 @@ las-flores-dashboard      Up                           0.0.0.0:3001->3000/tcp
 | `content/characters/char_aria_welcome_bot.yaml` | UUIDs, removed `null` fields |
 | `content/scenes/welcome_center.yaml` | UUIDs, removed `null` fields |
 | `content/dialogues/welcome_dialogue.yaml` | UUIDs for all references |
-| `content/overlays/welcome_nsfw_overlay.yaml` | UUIDs for all references |
+| `content/overlays/welcome_nsfw_overlay/overlay_welcome_nsfw_overlay.yaml` | UUIDs for all references |
 
 ---
 

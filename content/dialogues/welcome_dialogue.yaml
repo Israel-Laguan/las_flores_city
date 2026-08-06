@@ -19,7 +19,7 @@ nodes:
       - id: "check_phone"
         text: "Check your phone"
         next_node_id: "phone_introduction"
-        vault_unlock: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        vault_unlock: "11111111-2222-4333-8444-555555550001"
         time_block_cost:
           amount: 1
           description: "Learning your interface"
@@ -33,7 +33,7 @@ nodes:
       - id: "approach_map"
         text: "Examine the holographic map"
         next_node_id: "map_intro"
-        vault_unlock: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+        vault_unlock: "44444444-5555-4666-8777-888888880001"
         time_block_cost:
           amount: 1
           description: "Studying the city layout"
