@@ -84,14 +84,7 @@ export class GalleryView {
       if (action === 'view-image') {
         const itemId = btn.getAttribute('data-item-id');
         if (itemId) {
-          void (async () => {
-            try {
-              const url = await api.fetchVaultMediaUrl(itemId);
-              window.open(url, '_blank');
-            } catch {
-              console.error('Could not open vault media');
-            }
-          })();
+          void this.openVaultMedia(itemId);
         }
       }
     };
@@ -102,6 +95,22 @@ export class GalleryView {
     const transcript = this.container.querySelector('.gallery-transcript');
     if (transcript) {
       transcript.classList.add('hidden');
+    }
+  }
+
+  private async openVaultMedia(itemId: string): Promise<void> {
+    // Open blank window synchronously within user gesture to avoid popup blocking
+    const newWindow = window.open('about:blank', '_blank');
+    try {
+      const url = await api.fetchVaultMediaUrl(itemId);
+      if (newWindow) {
+        newWindow.location.href = url;
+      }
+    } catch {
+      if (newWindow) {
+        newWindow.close();
+      }
+      console.error('Could not open vault media');
     }
   }
 
@@ -130,8 +139,7 @@ export class GalleryView {
     }
 
     try {
-      const url = await api.fetchVaultMediaUrl(item.id);
-      window.open(url, '_blank');
+      await this.openVaultMedia(item.id);
     } catch {
       console.error('Could not open vault item');
     }
