@@ -99,7 +99,7 @@ describe('useUnsafeNavigationGuard', () => {
       expect(goSpy).toHaveBeenCalledWith(-1);
     });
 
-    it('defaults to Back compensation when the Navigation API is unavailable', () => {
+    it('defaults to forward compensation when no prior direction is known', () => {
       render(<Editor dirty />);
 
       act(() => {
@@ -107,7 +107,10 @@ describe('useUnsafeNavigationGuard', () => {
       });
 
       expect(confirmSpy).toHaveBeenCalledTimes(1);
-      expect(goSpy).toHaveBeenCalledWith(1);
+      // Without the Navigation API and no prior direction sentinel, the guard
+      // defaults to forward compensation so a declined Forward traversal
+      // returns to the editor.
+      expect(goSpy).toHaveBeenCalledWith(-1);
     });
 
     it('does not re-prompt for the compensating navigation it triggered', () => {
@@ -183,6 +186,49 @@ describe('useUnsafeNavigationGuard', () => {
       });
 
       expect(confirmSpy).not.toHaveBeenCalled();
+    });
+
+    it('skips confirmation for ctrl/meta/shift/alt clicks', () => {
+      render(<Editor dirty />);
+
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true });
+      act(() => {
+        screen.getByRole('link', { name: 'Back to Dialogues' }).dispatchEvent(clickEvent);
+      });
+
+      expect(confirmSpy).not.toHaveBeenCalled();
+      expect(clickEvent.defaultPrevented).toBe(false);
+    });
+
+    it('skips confirmation for non-primary mouse buttons', () => {
+      render(<Editor dirty />);
+
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true, button: 1 });
+      act(() => {
+        screen.getByRole('link', { name: 'Back to Dialogues' }).dispatchEvent(clickEvent);
+      });
+
+      expect(confirmSpy).not.toHaveBeenCalled();
+      expect(clickEvent.defaultPrevented).toBe(false);
+    });
+
+    it('skips confirmation for download links', () => {
+      render(
+        <>
+          <Editor dirty />
+          <a href="/download" download>
+            Download
+          </a>
+        </>,
+      );
+
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      act(() => {
+        screen.getByRole('link', { name: 'Download' }).dispatchEvent(clickEvent);
+      });
+
+      expect(confirmSpy).not.toHaveBeenCalled();
+      expect(clickEvent.defaultPrevented).toBe(false);
     });
   });
 

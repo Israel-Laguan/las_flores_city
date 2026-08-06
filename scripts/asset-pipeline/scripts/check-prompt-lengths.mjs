@@ -131,8 +131,8 @@ function parsePromptFile(filePath) {
   //   **Scale:** 5:3
   //   **Edit prompt:**
   //   Re-light the aquarium as a near-dark night gallery: ...
-  // The edit prompt inherits the file-level negative prompt so the combined
-  // length reflects what actually gets sent to the model.
+  // The edit prompt length is checked standalone; the variant runner sends
+  // only `edit_prompt` without the file-level negative prompt.
   const fileNegativeMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
   const fileNegative = fileNegativeMatch ? fileNegativeMatch[1].trim() : '';
 
@@ -143,7 +143,7 @@ function parsePromptFile(filePath) {
     const promptText = editMatch ? editMatch[1].trim() : '';
 
     if (promptText) {
-      results.push({ variantName, promptText, negativeText: fileNegative, type, section: 'variant' });
+      results.push({ variantName, promptText, negativeText: '', type, section: 'variant' });
     }
   }
 

@@ -81,14 +81,24 @@ describe('useDialogueDraft', () => {
   });
 
   it('loads the new dialogue after an id change', () => {
+    // Mount with dialogue 1.
+    entityMock.yaml = { id: '1', name: 'Dialogue 1' };
+    entityMock.path = 'dialogues/1/story.yaml';
+    entityMock.loading = false;
+
+    const { result, rerender } = renderHook(
+      ({ id }) => useDialogueDraft(id),
+      { initialProps: { id: '1' } },
+    );
+
+    expect(result.current.draft?.id).toBe('1');
+
+    // Switch the mock to dialogue 2 and rerender with id '2' to exercise the
+    // post-navigation load path.
     entityMock.yaml = { id: '2', name: 'Dialogue 2' };
     entityMock.path = 'dialogues/2/story.yaml';
     entityMock.loading = false;
-
-    const { result } = renderHook(
-      ({ id }) => useDialogueDraft(id),
-      { initialProps: { id: '2' } },
-    );
+    rerender({ id: '2' });
 
     expect(result.current.draft?.id).toBe('2');
     expect(result.current.dirty).toBe(false);

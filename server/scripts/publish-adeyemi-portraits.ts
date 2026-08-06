@@ -3,6 +3,7 @@ import path from 'node:path';
 import * as yaml from 'js-yaml';
 import dotenv from 'dotenv';
 import { uploadToMinio } from '../src/services/StorageService.js';
+import { resolveAssetStage } from '../src/services/AssetStageResolver.js';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
@@ -95,6 +96,28 @@ function normalizeDefaultToUntagged(entry: PortraitEntryLike): PortraitEntryLike
     return rest;
   }
   return entry;
+}
+
+/**
+ * Which default the server would actually pick, using the same
+ * stage-priority resolver the runtime uses (so the warning can never name a
+ * different stage than the one that wins).
+ *
+ * `resolveAssetStage` returns a URL, so each default gets a placeholder URL
+ * encoding its index; the winner is mapped back to its stage label. Entries
+ * are passed untagged (they already are — defaults carry no `expression`), so
+ * only stage priority decides.
+ */
+function resolveDefaultStage(defaults: PortraitEntryLike[]): string {
+  const probe = defaults.map((entry, idx) => ({
+    url: `probe://${idx}`,
+    ...(stageOf(entry) ? { label: stageOf(entry) } : {}),
+  }));
+  const resolved = resolveAssetStage(probe);
+  if (!resolved) return 'untagged';
+  const idx = Number(resolved.url.replace('probe://', ''));
+  const winner = defaults[idx];
+  return winner ? stageOf(winner) || 'untagged' : 'untagged';
 }
 
 /**
@@ -203,10 +226,12 @@ async function main() {
   }));
 
   const mergedPlan = buildMergedPortraitUrls(plannedUploads, existing);
-  const defaults = mergedPlan.filter((entry) => !entry.expression);
+  const defaults = mergedPlan.filter(
+    (entry) => typeof entry.expression === 'undefined',
+  );
   if (defaults.length === 0) {
     throw new Error(
-      'Refusing to write portrait_urls with no usable default entry; partial dev uploads must include an untagged default portrait.'
+      'Refusing to write portrait_urls with no usable default entry; partial dev uploads must include an untagged default portrait.',
     );
   }
 
@@ -214,16 +239,24 @@ async function main() {
   // stage priority, so a `dev` batch of expression variants with no `dev`
   // default resolves its resting portrait from another stage's default. That
   // still renders a correct (expression-neutral) portrait, but the mixed stages
-  // are worth flagging so the author can publish a matching default. The
-  // message lists every available default instead of claiming which one the
-  // server selects — that selection follows stage priority, not YAML/merge
-  // order.
+  // are worth flagging so the author can publish a matching default.
+  //
+  // The stage that actually wins is computed with the SAME resolver the server
+  // uses (resolveAssetStage), not by guessing from YAML/merge order — merge
+  // order would name the wrong stage and send the author off to publish a
+  // redundant default while the real gap stayed open. Each default is given a
+  // placeholder URL keyed by its stage so the resolver's pick can be mapped
+  // back to a stage label for the message.
   const publishedStage = stageOf(plannedUploads[0]);
   if (!defaults.some((entry) => stageOf(entry) === publishedStage)) {
+    const resolvedStage = resolveDefaultStage(defaults);
+    const available = defaults
+      .map((entry) => `'${stageOf(entry) || 'untagged'}'`)
+      .join(', ');
     console.warn(
-      `\n⚠ No '${publishedStage}' default portrait: available defaults: ${defaults
-        .map((entry) => `'${stageOf(entry) || 'untagged'}'`)
-        .join(', ')}. Publish a '${publishedStage}' default to keep stages consistent.`
+      `\n⚠ No '${publishedStage}' default portrait: the resting portrait will resolve to the ` +
+        `'${resolvedStage}' default (available: ${available}). ` +
+        `Publish a '${publishedStage}' default to keep stages consistent.`
     );
   }
 
@@ -239,7 +272,7 @@ async function main() {
     const { bytes } = await download(entry.url, localPath);
     console.log(`  saved ${localPath} (${(bytes / 1024).toFixed(1)} KiB)`);
 
-    const objectKey = `portraits/${SLUG}/${filename}`;
+    const objectKey = `portraits/dev/${SLUG}/${filename}`;
     const buf = await fs.readFile(localPath);
     // NOTE: intentional one-off dev-tool upload that bypasses the coordinated
     // AssetPublishService workflow (which requires a publish plan + DB

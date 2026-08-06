@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { isEditorDirty } from '@/components/editor/useEditor';
 
 // Module-level dirty flag so other components (e.g. TopBar) can guard
 // router-driven navigations like logout without coupling to this hook.
@@ -48,7 +49,7 @@ export function useGuardedNavigation(): {
   const router = useRouter();
 
   const confirmIfDirty = useCallback((): boolean => {
-    return !isDialogueDirty() || window.confirm(GUARD_MESSAGE);
+    return !isDialogueDirty() && !isEditorDirty() || window.confirm(GUARD_MESSAGE);
   }, []);
 
   const push = useCallback(
@@ -90,6 +91,12 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
   // popstate so a declined Back/Forward can be compensated in the opposite
   // direction.
   const historyIndexRef = useRef<number>(-1);
+
+  // Direction sentinel for browsers without the Navigation API. When both
+  // indices are -1 we record whether the last observed transition moved the
+  // index forward or backward so a declined Forward still compensates with
+  // history.go(-1).
+  const directionRef = useRef<'forward' | 'back'>('forward');
 
   // Publish the shared dirty flag so other components (e.g. TopBar) can guard
   // router-driven exits such as logout — and clear it when this editor
@@ -139,7 +146,11 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
       // direction: +1 after a Back, -1 after a Forward. The compensating go()
       // returns to the editor entry without appending a fresh history entry,
       // so repeated Back presses do not pile up history.
-      const goingForward = prevIndex >= 0 && index >= 0 && index > prevIndex;
+      const hasNavIndex = prevIndex >= 0 && index >= 0;
+      const goingForward = hasNavIndex
+        ? index > prevIndex
+        : directionRef.current === 'forward';
+      directionRef.current = goingForward ? 'back' : 'forward';
       isReturningRef.current = true;
       window.history.go(goingForward ? -1 : 1);
     };
@@ -148,10 +159,15 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
     // them. This covers the sidebar, breadcrumbs, back links, etc.
     const onClick = (e: MouseEvent) => {
       if (!dirtyRef.current) return;
+      // Modified clicks (Ctrl/Meta/Shift/Alt) and non-primary buttons open a
+      // new browsing context or trigger OS-level actions; they do not discard
+      // the current draft, so skip the confirmation.
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const target = e.target as Element | null;
       const anchor = target?.closest?.('a[href]') as HTMLAnchorElement | null;
       if (!anchor) return;
       if (anchor.getAttribute('target') === '_blank') return;
+      if (anchor.hasAttribute('download')) return;
       if (e.defaultPrevented) return;
 
       const href = anchor.getAttribute('href') || '';

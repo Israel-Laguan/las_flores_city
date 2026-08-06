@@ -26,13 +26,24 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
   // that resolve after the caller navigated to a different entity are
   // discarded so a stale payload can never overwrite the new entity's content.
   const activeKeyRef = useRef(`${type}:${id}`);
-  activeKeyRef.current = `${type}:${id}`;
+
+  // Monotonically increasing counter so overlapping refetch() calls for the
+  // same entity can only update state if they are the latest request.
+  const requestVersionRef = useRef(0);
+
+  // Update the active key in a committed effect rather than during render so
+  // an interrupted navigation never mutates shared request state while the
+  // prior entity's pending response is still in flight.
+  useEffect(() => {
+    activeKeyRef.current = `${type}:${id}`;
+  }, [type, id]);
 
   const fetchYaml = useCallback(async (signal?: AbortSignal) => {
     if (!type || !id) {
       setState((prev) => ({ ...prev, loading: false }));
       return;
     }
+    const requestVersion = ++requestVersionRef.current;
     const key = `${type}:${id}`;
     // Clear previous content immediately: a stale draft/path from the prior
     // entity must never render (or save) under the new (type, id) while the
@@ -43,14 +54,24 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
         `/admin/content/by-id?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`,
         signal ? { signal } : {},
       );
-      if (signal?.aborted || activeKeyRef.current !== key) return; // stale response
+      if (
+        signal?.aborted ||
+        activeKeyRef.current !== key ||
+        requestVersion !== requestVersionRef.current
+      )
+        return;
       if (data.success && data.data) {
         setState({ yaml: data.data.yaml, path: data.data.path, loading: false, error: null });
       } else {
         setState({ yaml: null, path: null, loading: false, error: data.error || 'Failed to load content' });
       }
     } catch (err: any) {
-      if (signal?.aborted || activeKeyRef.current !== key) return;
+      if (
+        signal?.aborted ||
+        activeKeyRef.current !== key ||
+        requestVersion !== requestVersionRef.current
+      )
+        return;
       setState({ yaml: null, path: null, loading: false, error: err?.status === 404 ? 'Not found' : 'Failed to load content' });
     }
   }, [type, id]);

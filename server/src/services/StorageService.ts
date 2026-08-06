@@ -110,6 +110,11 @@ function assertSecurePublicEndpoint(publicUrl: string): void {
     hostname === '127.0.0.1' ||
     hostname === '[::1]' ||
     hostname === '::1';
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error(
+      `MINIO_PUBLIC_URL "${publicUrl}" must use http: or https:.`,
+    );
+  }
   if (url.protocol === 'http:' && !isLoopback) {
     throw new Error(
       `MINIO_PUBLIC_URL "${publicUrl}" uses insecure http: for a non-loopback host. ` +
