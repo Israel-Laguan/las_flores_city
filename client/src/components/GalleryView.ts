@@ -84,20 +84,14 @@ export class GalleryView {
       if (action === 'view-image') {
         const itemId = btn.getAttribute('data-item-id');
         if (itemId) {
-          const tab = window.open('about:blank', '_blank');
-          if (tab) {
-            void (async () => {
-              try {
-                const url = await api.fetchVaultMediaUrl(itemId);
-                tab.location.href = url;
-              } catch {
-                console.error('Could not open vault media');
-                tab.close();
-              }
-            })();
-          } else {
-            console.error('Popup blocked. Please allow popups for this site to view vault media.');
-          }
+          void (async () => {
+            try {
+              const url = await api.fetchVaultMediaUrl(itemId);
+              window.open(url, '_blank');
+            } catch {
+              console.error('Could not open vault media');
+            }
+          })();
         }
       }
     };

@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useLayoutEffect, useCallback, useRef } from 'react';
+import { useState, useLayoutEffect, useCallback, useRef, useEffect } from 'react';
 import { adminFetch } from '@/lib/client-api';
+
+// Isomorphic layout effect: useLayoutEffect in browser, useEffect during SSR
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export interface EntityYamlState<T = Record<string, unknown>> {
   yaml: T | null;
@@ -31,10 +34,11 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
   // same entity can only update state if they are the latest request.
   const requestVersionRef = useRef(0);
 
-  // Update the active key in a layout effect so an interrupted navigation
-  // sets the new key synchronously before paint, closing the race window
-  // where a late response from the old entity could still render.
-  useLayoutEffect(() => {
+  // Update the active key in an isomorphic layout effect so an interrupted
+  // navigation sets the new key synchronously before paint (browser) or
+  // asynchronously after paint (SSR), closing the race window where a late
+  // response from the old entity could still render.
+  useIsomorphicLayoutEffect(() => {
     activeKeyRef.current = `${type}:${id}`;
   }, [type, id]);
 
