@@ -30,7 +30,7 @@ async function applyMigration(filename: string): Promise<void> {
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 const WELCOME_SCENE_ID = '550e8400-e29b-41d4-a716-446655440002';
-const APARTMENT_SCENE_ID = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
+const APARTMENT_SCENE_ID = '55555555-6666-4777-8888-999999990001';
 const TEST_CHARACTER_ID = '3b2b8000-e29b-41d4-a716-446655440001'; // Vance — speaker in The Awakening
 const HANDLER_CHARACTER_ID = '550e8400-e29b-41d4-a716-446655440004'; // The Handler — has dialogue at Welcome Center
 const DISTRICT_ID = 'd2000000-0000-0000-0000-000000000004';

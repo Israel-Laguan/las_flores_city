@@ -29,8 +29,8 @@ export class GalleryView {
           <button class="gallery-transcript-close" data-action="close-transcript">×</button>
         </div>
         <div class="gallery-transcript-body"></div>
-        <button class="view-back-btn" data-action="back">> BACK</button>
       </div>
+      <button class="view-back-btn" data-action="back">> BACK</button>
     `;
     return view;
   }
@@ -84,12 +84,14 @@ export class GalleryView {
       if (action === 'view-image') {
         const itemId = btn.getAttribute('data-item-id');
         if (itemId) {
+          const tab = window.open('about:blank', '_blank');
           void (async () => {
             try {
               const url = await api.fetchVaultMediaUrl(itemId);
-              window.open(url, '_blank');
+              if (tab) tab.location.href = url;
             } catch {
               console.error('Could not open vault media');
+              if (tab) tab.close();
             }
           })();
         }

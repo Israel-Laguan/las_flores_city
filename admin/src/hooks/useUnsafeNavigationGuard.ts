@@ -151,6 +151,13 @@ export function useUnsafeNavigationGuard(dirty: boolean): void {
         ? index > prevIndex
         : directionRef.current === 'forward';
       directionRef.current = goingForward ? 'back' : 'forward';
+
+      if (!hasNavIndex) {
+        // Without the Navigation API we cannot determine whether popstate
+        // was Back or Forward, so we do not attempt compensation.
+        return;
+      }
+
       isReturningRef.current = true;
       window.history.go(goingForward ? -1 : 1);
     };

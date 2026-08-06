@@ -1,5 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
+import { registerE2EUser } from './e2e-seed';
 
 const API_BASE = process.env.API_URL ?? 'http://localhost:3000';
 
@@ -13,16 +14,12 @@ test.beforeAll(async ({ request }) => {
   testEmail = `event-bus-${rand()}@example.com`;
   testUsername = `event_bus_${rand()}`;
 
-  const response = await request.post(`${API_BASE}/api/auth/register`, {
-    data: {
-      email: testEmail,
-      username: testUsername,
-      display_name: 'Event Bus E2E',
-      password: 'test1234',
-    },
+  await registerE2EUser(request, {
+    email: testEmail,
+    username: testUsername,
+    display_name: 'Event Bus E2E',
+    password: 'test1234',
   });
-
-  expect(response.ok()).toBeTruthy();
 });
 
 /**

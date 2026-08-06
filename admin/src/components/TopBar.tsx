@@ -7,6 +7,7 @@ import { useSidebar } from './SidebarContext';
 import { getPageTitle } from './nav-config';
 import { restorePersistedTheme, subscribeTheme, toggleTheme } from '@/lib/themeEngine';
 import { isDialogueDirty } from '@/hooks/useUnsafeNavigationGuard';
+import { isEditorDirty } from '@/components/editor/useEditor';
 import type { AdminUser } from './AdminShell';
 import styles from './TopBar.module.css';
 
@@ -29,7 +30,7 @@ export default function TopBar({ user }: TopBarProps) {
   }, []);
 
   const handleLogout = async () => {
-    if (isDialogueDirty() && !window.confirm('You have unsaved changes. Leave anyway?')) {
+    if ((isDialogueDirty() || isEditorDirty()) && !window.confirm('You have unsaved changes. Leave anyway?')) {
       return;
     }
     try {

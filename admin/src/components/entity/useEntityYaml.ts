@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useLayoutEffect, useEffect, useCallback, useRef } from 'react';
 import { adminFetch } from '@/lib/client-api';
 
 export interface EntityYamlState<T = Record<string, unknown>> {
@@ -31,10 +31,10 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
   // same entity can only update state if they are the latest request.
   const requestVersionRef = useRef(0);
 
-  // Update the active key in a committed effect rather than during render so
-  // an interrupted navigation never mutates shared request state while the
-  // prior entity's pending response is still in flight.
-  useEffect(() => {
+  // Update the active key in a layout effect (commit-synchronous) so an
+  // interrupted navigation sets the new key before the next paint, closing
+  // the window where the old entity's YAML could still render or save.
+  useLayoutEffect(() => {
     activeKeyRef.current = `${type}:${id}`;
   }, [type, id]);
 
@@ -43,8 +43,9 @@ export function useEntityYaml<T = Record<string, unknown>>(type: string, id: str
       setState((prev) => ({ ...prev, loading: false }));
       return;
     }
-    const requestVersion = ++requestVersionRef.current;
     const key = `${type}:${id}`;
+    if (activeKeyRef.current !== key) return;
+    const requestVersion = ++requestVersionRef.current;
     // Clear previous content immediately: a stale draft/path from the prior
     // entity must never render (or save) under the new (type, id) while the
     // fresh fetch is in flight.

@@ -227,7 +227,7 @@ async function main() {
 
   const mergedPlan = buildMergedPortraitUrls(plannedUploads, existing);
   const defaults = mergedPlan.filter(
-    (entry) => typeof entry.expression === 'undefined',
+    (entry) => !entry.expression,
   );
   if (defaults.length === 0) {
     throw new Error(
@@ -241,15 +241,17 @@ async function main() {
   // still renders a correct (expression-neutral) portrait, but the mixed stages
   // are worth flagging so the author can publish a matching default.
   //
-  // The stage that actually wins is computed with the SAME resolver the server
-  // uses (resolveAssetStage), not by guessing from YAML/merge order — merge
-  // order would name the wrong stage and send the author off to publish a
-  // redundant default while the real gap stayed open. Each default is given a
-  // placeholder URL keyed by its stage so the resolver's pick can be mapped
-  // back to a stage label for the message.
+  // The resting portrait the game actually renders is the client-side untagged
+  // fallback: the first entry in the full merged pool with no `expression` tag
+  // and a usable URL. We scope the warning to that same full-pool fallback so
+  // the message cannot claim a different portrait wins than the one the client
+  // returns.
   const publishedStage = stageOf(plannedUploads[0]);
   if (!defaults.some((entry) => stageOf(entry) === publishedStage)) {
-    const resolvedStage = resolveDefaultStage(defaults);
+    const clientFallback = mergedPlan.find(
+      (entry) => !entry.expression && typeof entry.url === 'string' && entry.url.length > 0,
+    );
+    const resolvedStage = clientFallback ? stageOf(clientFallback) || 'untagged' : 'untagged';
     const available = defaults
       .map((entry) => `'${stageOf(entry) || 'untagged'}'`)
       .join(', ');

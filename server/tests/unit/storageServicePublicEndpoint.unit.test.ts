@@ -119,7 +119,7 @@ describe('MINIO_PUBLIC_URL validation for presigned URLs', () => {
     });
   });
 
-  test('caches the client so validation does not re-run per signature', async () => {
+  test('signs concurrently with a shared public-URL origin', async () => {
     const signMinioUrl = await loadSignerWith('https://cdn.example.com');
 
     const [first, second] = await Promise.all([

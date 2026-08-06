@@ -137,10 +137,16 @@ patreonRouter.get('/callback', async (req: any, res: Response) => {
         [userId, patreonId, access_token, refresh_token, isNsfwUnlocked, highestTier]
       );
 
-      // Grant the NSFW gallery vault item when entitlement is unlocked
+      // Grant or revoke the NSFW gallery vault item to keep the vault
+      // inventory consistent with the current entitlement.
       if (isNsfwUnlocked) {
         await client.query(
           `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+          [userId, '99999999-aaaa-4bbb-8ccc-dddddddd0001'],
+        );
+      } else {
+        await client.query(
+          `DELETE FROM player_vault WHERE user_id = $1 AND item_id = $2`,
           [userId, '99999999-aaaa-4bbb-8ccc-dddddddd0001'],
         );
       }
@@ -213,9 +219,9 @@ patreonRouter.post('/unlink', authMiddleware, async (req: AuthRequest, res: Resp
   });
 
   await invalidatePattern('dialogue:resolved:*');
-  await invalidatePattern(`user:state:\${userId}`);
+  await invalidatePattern(`user:state:${userId}`);
   // Drop vault list cache so premium_cg metadata is no longer served after revocation.
-  await invalidatePattern(`user:vault:\${userId}:nsfw:*`);
+  await invalidatePattern(`user:vault:${userId}:nsfw:*`);
 
   res.json({
     success: true,

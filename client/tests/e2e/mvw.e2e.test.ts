@@ -8,6 +8,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 import { startNewGame } from './helpers';
+import { registerE2EUser } from './e2e-seed';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 const CAFE_SCENE_ID = '123e4567-e89b-12d3-a456-426614174001';
@@ -20,10 +21,7 @@ const testUsername = `mvw_${Date.now()}_${Math.random().toString(36).slice(2, 6)
 test.beforeAll(async ({ request }) => {
   // Register creates the user. We don't need the cookie from this call to
   // persist — injectAuth() logs in per-page below to scope the cookie to :5173.
-  const res = await request.post(`${API_URL}/api/auth/register`, {
-    data: { email: testEmail, username: testUsername, display_name: 'MVW E2E', password: 'test1234' },
-  });
-  expect(res.ok()).toBeTruthy();
+  await registerE2EUser(request, { email: testEmail, username: testUsername, display_name: 'MVW E2E', password: 'test1234' });
 });
 
 /**
@@ -233,10 +231,7 @@ test.describe('Full First Hour Loop', () => {
   const loopTestUsername = `mvw_loop_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
   test.beforeAll(async ({ request }) => {
-    const res = await request.post(`${API_URL}/api/auth/register`, {
-      data: { email: loopTestEmail, username: loopTestUsername, display_name: 'MVW Loop E2E', password: 'test1234' },
-    });
-    expect(res.ok()).toBeTruthy();
+    await registerE2EUser(request, { email: loopTestEmail, username: loopTestUsername, display_name: 'MVW Loop E2E', password: 'test1234' });
   });
 
   test('Apartment → Move → Dialogue → Sleep completes without crash', async ({ page }) => {

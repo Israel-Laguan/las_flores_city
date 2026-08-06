@@ -79,6 +79,7 @@ export function useEditor() {
 
   useEffect(() => {
     setEditorDirty(dirty);
+    return () => { if (dirty) setEditorDirty(false); };
   }, [dirty]);
 
   const handleSave = useCallback(async () => {

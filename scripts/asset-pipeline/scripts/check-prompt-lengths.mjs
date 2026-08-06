@@ -132,10 +132,7 @@ function parsePromptFile(filePath) {
   //   **Edit prompt:**
   //   Re-light the aquarium as a near-dark night gallery: ...
   // The edit prompt length is checked standalone; the variant runner sends
-  // only `edit_prompt` without the file-level negative prompt.
-  const fileNegativeMatch = content.match(/^#{1,2}\s+Negative Prompt\s*\n([\s\S]*?)(?=^#{1,2}\s+|$)/m);
-  const fileNegative = fileNegativeMatch ? fileNegativeMatch[1].trim() : '';
-
+  // only `edit_prompt`.
   const i2iRegex = /^### `([^`]+)`[^\n]*\n([\s\S]*?)(?=^### `|^#{1,3} |(?![\s\S]))/gm;
   while ((match = i2iRegex.exec(content)) !== null) {
     const variantName = match[1].trim();

@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { registerE2EUser } from './e2e-seed';
 
 const AUTH_BASE = process.env.API_URL ?? 'http://localhost:3000';
 const ABOUT_US_URL = process.env.VITE_ABOUT_US_URL ?? 'https://example.com/about-us';
@@ -8,15 +9,12 @@ const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 async function registerAndLogin(page: Page): Promise<void> {
   const email = `menu-${uid()}@example.com`;
   const username = `menu_${uid()}`;
-  const res = await page.request.post(`${AUTH_BASE}/api/auth/register`, {
-    data: {
-      email,
-      username,
-      display_name: 'Main Menu E2E',
-      password: 'test1234',
-    },
+  await registerE2EUser(page.request, {
+    email,
+    username,
+    display_name: 'Main Menu E2E',
+    password: 'test1234',
   });
-  expect(res.ok()).toBeTruthy();
   const loginRes = await page.request.post(`${AUTH_BASE}/api/auth/login`, {
     data: { email, password: 'test1234' },
   });
