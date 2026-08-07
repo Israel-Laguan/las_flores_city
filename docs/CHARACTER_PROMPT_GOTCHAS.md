@@ -217,6 +217,6 @@ Before generating any character assets, verify:
 ## 📚 Related Documentation
 
 - [ASSET_EXPRESSION_VOCABULARY.md](ASSET_EXPRESSION_VOCABULARY.md) - Expression tag conventions
-- [PROMPT_GUIDELINES.md](lore/PROMPT_GUIDELINES.md) - NVIDIA NIM FLUX.2 Klein specific guidelines
+- [PROMPT_AUTHORING_SPEC.md](PROMPT_AUTHORING_SPEC.md) - Canonical character prompt authoring spec (template, static map, AI contract, quality gate)
 - [content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md](../content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md) - Reference implementation
 - [content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md](../content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md) - Reference implementation
