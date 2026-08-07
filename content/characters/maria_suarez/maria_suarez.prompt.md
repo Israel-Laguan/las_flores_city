@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] María Suárez reviewing interview notes at their desk, thoughtfully considering story angles
 - [ ] María Suárez with colleagues in the newsroom, collaborating on a breaking story
 
+## Expression Variants
+
+- **`maria_suarez__default.png`**: Use the base portrait as reference. Medium-height Latin American woman in her late 50s, sturdy slight frame, calm determined resting expression, looking at the camera, 3/4 take. Dark brown sharp, analytical eyes, dark brown hair in simple flowing shapes, small sport earbud, professional blazer over blouse. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`maria_suarez__focused.png`**: Use the base portrait as reference. Sharp journalistic attention, looking at the camera, 3/4 take. Dark brown eyes narrowed and intent, brows drawn, lips firm. Keep the same art style as reference, same earbud and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_suarez__contemplative.png`**: Use the base portrait as reference. Weighing a story angle, looking thoughtfully at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_suarez__determined.png`**: Use the base portrait as reference. Quiet conviction, looking directly at the camera, 3/4 take. Dark brown eyes sharp and fixed, jaw set, brow firm. Keep the same art style as reference, same earbud and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_suarez__happy.png`**: Use the base portrait as reference. A warm, experienced smile, looking at the camera, 3/4 take. Dark brown eyes crinkling with warmth, lips curving up, the analytical bearing softening. Keep the same art style as reference, same earbud and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

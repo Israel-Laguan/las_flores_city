@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Martín López reviewing interview notes at their desk, thoughtfully considering story angles
 - [ ] Martín López with colleagues in the newsroom, collaborating on a breaking story
 
+## Expression Variants
+
+- **`martin_lopez__default.png`**: Use the base portrait as reference. Medium-build 55-year-old Latin American man, slight sturdy frame, weary but steady resting expression, looking at the camera, 3/4 take. Dark brown weary, sharp eyes, thin gray hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`martin_lopez__focused.png`**: Use the base portrait as reference. Seasoned journalistic attention, looking at the camera, 3/4 take. Dark brown eyes narrowed and sharp beneath the weariness, brows drawn, lips firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`martin_lopez__contemplative.png`**: Use the base portrait as reference. A weary, reflective pause, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head bowed slightly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`martin_lopez__happy.png`**: Use the base portrait as reference. A tired but genuine smile, looking at the camera, 3/4 take. Dark brown eyes warming, the weariness lifting at the corners of his mouth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`martin_lopez__determined.png`**: Use the base portrait as reference. Quiet resolve beneath the weariness, looking directly at the camera, 3/4 take. Dark brown eyes fixed and sharp, jaw set, brow firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Mia Chen-Rojas in a moment of reflection, considering their next steps
 - [ ] Mia Chen-Rojas with colleagues in a professional setting, engaged in discussion
 
+## Expression Variants
+
+- **`mia_chen_rojas__default.png`**: Use the base portrait as reference. Medium-height Chinese woman, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`mia_chen_rojas__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`mia_chen_rojas__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Dark eyes narrowed, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`mia_chen_rojas__contemplative.png`**: Use the base portrait as reference. A reflective pause, looking at the camera, 3/4 take. Dark eyes softening into the middle distance, jaw relaxed, lips set thoughtfully. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`mia_chen_rojas__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark eyes brightening, lips curving up, the composed bearing warming. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

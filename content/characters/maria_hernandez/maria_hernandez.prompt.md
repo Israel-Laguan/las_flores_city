@@ -26,3 +26,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Dr. Maria Hernandez reviewing water sample data at her university desk
 - [ ] Dr. Maria Hernandez presenting environmental findings to concerned community members
 - [ ] Dr. Maria Hernandez collaborating with colleagues on water quality research
+
+## Expression Variants
+
+- **`maria_hernandez__default.png`**: Use the base portrait as reference. Medium-built Latin American woman in her late 50s, sturdy scholarly frame, calm determined resting expression behind wire-rimmed glasses, looking at the camera, 3/4 take. Dark brown thoughtful, scholarly eyes, dark brown shoulder-length hair in un-styled flowing shapes, professional blazer over blouse. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`maria_hernandez__focused.png`**: Use the base portrait as reference. Absorbed in reviewing water sample data, looking at the camera, 3/4 take. Dark brown eyes intent behind her glasses, brows drawn, lips pressed in quiet concentration. Lab charts and data edge the frame. Keep the same art style as reference, same glasses and blazer. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_hernandez__contemplative.png`**: Use the base portrait as reference. A scholarly, reflective pause, looking at the camera, 3/4 take. Dark brown eyes softening behind her glasses into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same glasses and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_hernandez__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark brown eyes crinkling warmly behind her glasses, lips curving up with kindness. Keep the same art style as reference, same glasses and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_hernandez__determined.png`**: Use the base portrait as reference. Quiet conviction, looking directly at the camera, 3/4 take. Dark brown eyes sharp and fixed behind her glasses, jaw set, brow firm. The scientist standing by her findings. Keep the same art style as reference, same glasses and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
