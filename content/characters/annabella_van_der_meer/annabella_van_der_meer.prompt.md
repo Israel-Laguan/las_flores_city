@@ -2,32 +2,47 @@
 name: Annabella van der Meer
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/annabella_van_der_meer/annabella_van_der_meer.md
-target: `portrait_urls[].url` in `content/characters/char_annabella_van_der_meer.yaml`
+source: content/characters/annabella_van_der_meer/annabella_van_der_meer.md
+target: `asset_paths.portrait` in `content/characters/annabella_van_der_meer/char_annabella_van_der_meer.yaml`
 consumer: portrait
 ---
-
 
 # Prompt: Annabella van der Meer
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/annabella_van_der_meer.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_annabella_van_der_meer.yaml`
+**Source:** content/characters/annabella_van_der_meer/annabella_van_der_meer.md
+**Target field:** `asset_paths.portrait` in `content/characters/annabella_van_der_meer/char_annabella_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a tall in her early 80s dutch Photorealistic portrait of Annabella van der Meer. Her frame is sturdy, slight. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, pale blue-green, bright scholarly. Her expression is weathered, as she holds a steady, weathered composure. Her silver-white bob hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a rugged field jacket over a button. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-80s Dutch female. Tall sturdy build, silver-white bob haircut, pale blue-green bright scholarly eyes, fair freckled weathered skin, strong capable hands with dirt under nails, reading glasses on head, faded field notebook in jacket pocket, rugged field jacket over button-down shirt, mining survey backdrop, no Latin American features
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a tall  in her early 80s dutch Photorealistic portrait of Annabella van der Meer. Her frame is sturdy, slight. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, pale blue-green, bright scholarly. Her expression is weathered, as she holds a steady, weathered composure. Her silver-white bob hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a rugged field jacket over a button-down shirt. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch geologist in her early 80s who discovered the major lithium vein near Las Flores in 2029. Tall and sturdy, slightly stooped from decades of fieldwork. Silver-white hair, once strawberry blond, cut in a practical bob that frames a face bright with scholarly curiosity. Pale blue-green eyes — still bright, still examining. Fair skin, freckled and weathered from sun exposure on mining surveys across three continents. Strong capable hands, dirt habitually under the nails even here in the office. Reading glasses perpetually perched on top of her head. A faded field notebook always tucked into her jacket pocket. She wears a rugged field jacket over a plaid button-down shirt, cuffs rolled. Her expression is the scientist's quiet satisfaction — a woman who found what others said was not there, and then carried the consequences of that finding for fifty years. The backdrop is a Global Lithium Corp / Van der Meer Mining research office. Geological maps pinned to corkboard, core sample trays, a window looking out over the Las Flores valley. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latin American features
 
 ## Variations
 
-- [ ] Annabella van der Meer at work in their professional environment, focused on their tasks
-- [ ] Annabella van der Meer in a moment of reflection, considering their next steps
-- [ ] Annabella van der Meer with colleagues in a professional setting, engaged in discussion
+- [ ] Annabella in the field at the abandoned mine in 2029, notebook in hand, testing the water with a look of dawning realization
+- [ ] Annabella at a conference table presenting her findings, white-haired head held high, the weight of the discovery in the room
+- [ ] Annabella in the research office years later, glasses on her head, field notebook on the desk, the finder still working
 
+## Expression Variants
+
+Authored expressions (each as `assets/annabella_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. Early-80s Dutch geologist, neutral warm expression, looking at the camera, 3/4 take. Tall sturdy build, silver-white bob haircut, pale blue-green bright scholarly eyes, fair freckled weathered skin, strong capable hands with dirt under nails, reading glasses on head, faded field notebook in jacket pocket, rugged field jacket over button-down shirt. Van der Meer Mining research office backdrop, geological maps pinned to corkboard. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__focused.png`**: Use the base portrait as reference. She is in intense concentration, looking directly at the camera, 3/4 take. Pale blue-green eyes sharp behind the reading glasses on her head, lean forward with scientist's intensity. Silver-white bob neat, rugged field jacket, faded field notebook tucked in pocket. Research office backdrop under bright overhead light, geological maps spread before her. Keep the same art style as reference, same field jacket and glasses. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. She has a resolved, firm expression, looking unflinchingly at the camera, 3/4 take. Pale blue-green eyes steady with quiet resolve, jaw set. Silver-white bob, reading glasses on head, field notebook held in strong capable hand. Rugged field jacket buttoned. Research office backdrop with strong directional light. Keep the same art style as reference, same button-down shirt and field jacket. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__contemplative.png`**: Use the base portrait as reference. She is in quiet reflection, looking thoughtfully at the camera with a 3/4 take. Pale blue-green eyes soft and distant, looking at something fifty years behind her. Silver-white bob loose, reading glasses hanging low. Strong capable hands resting open, dirt still under the nails. Faded field notebook on the desk before her. Research office backdrop under warm lamplight. Keep the same art style as reference, same field jacket. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. She has a soft, slightly nostalgic expression, looking gently at the camera, 3/4 take. Pale blue-green eyes warm, faint smile of someone remembering. Silver-white bob in gentle disarray, reading glasses perched at the wrong angle. Strong capable hands relaxed, faded field notebook tucked away. Rugged field jacket open. Research office backdrop under warm golden-hour glow through the window. Keep the same art style as reference, same plaid shirt and field jacket. Clean confident linework, painterly soft shading, muted natural palette.

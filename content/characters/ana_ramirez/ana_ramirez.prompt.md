@@ -2,32 +2,47 @@
 name: Ana Ramirez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/ana_ramirez/ana_ramirez.md
-target: `portrait_urls[].url` in `content/characters/char_ana_ramirez.yaml`
+source: content/characters/ana_ramirez/ana_ramirez.md
+target: `asset_paths.portrait` in `content/characters/ana_ramirez/char_ana_ramirez.yaml`
 consumer: portrait
 ---
-
 
 # Prompt: Ana Ramirez
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/ana_ramirez.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_ana_ramirez.yaml`
+**Source:** content/characters/ana_ramirez/ana_ramirez.md
+**Target field:** `asset_paths.portrait` in `content/characters/ana_ramirez/char_ana_ramirez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a athletic in her early 30s indigenous Photorealistic portrait of Ana Ramirez. Her frame is athletic, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, deep amber, warm fierce with conviction, and a strong jaw. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark brown thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 32-year-old indigenous female. Thick dark brown hair with copper highlights in a long braid, deep amber warm fierce eyes, athletic toned arms, warm copper-brown weathered skin, high cheekbones, strong jaw, small scar on chin from childhood fall, traditional woven bracelet on left wrist, practical cotton blouse and field vest with CJS logo, forest edge backdrop, no European features
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a athletic  in her early 30s indigenous Photorealistic portrait of Ana Ramirez. Her frame is athletic, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, deep amber, warm fierce with conviction, and a strong jaw. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark brown thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a practical cotton blouse and field vest with cjs logo. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 32-year-old indigenous environmental activist and founder of La Coalición por la Justicia Social. Thick dark brown hair with natural copper highlights, worn in a long braid down her back. Deep amber eyes, warm and fierce with conviction. Athletic and strong build, toned arms from outdoor fieldwork and direct action. Warm copper-brown complexion, weathered slightly from sun exposure on the land she defends. High cheekbones, strong jaw. A small scar on her chin from a childhood fall. A traditional woven bracelet on her left wrist. She wears a practical cream cotton blouse and a worn field vest with a small CJS logo on the chest. Her expression is passionate intelligence — someone who speaks with her whole body, who believes what she says before she says it. The backdrop is a forest edge in Las Flores' rural outskirts. Tree trunks, native undergrowth, the green blur of the land she is protecting. Late afternoon light filtering through leaves. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
 
 ## Variations
 
-- [ ] Ana Ramirez giving a speech, addressing an audience with conviction
-- [ ] Ana Ramirez in a moment of quiet contemplation, reflecting on the impact of their work
-- [ ] Ana Ramirez with constituents at a community event, listening attentively to concerns
+- [ ] Ana speaking at a CJS community gathering, hand raised, the forest behind her, voice carrying across the crowd
+- [ ] Ana with a small group of CJS organizers, huddled over a strategy map in a borrowed room
+- [ ] Ana planting native saplings on restored mining land, dirt on her hands, the work visible on her face
 
+## Expression Variants
+
+Authored expressions (each as `assets/ana_ramirez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. 32-year-old indigenous environmental activist, neutral composed expression, looking at the camera, 3/4 take. Thick dark brown hair with copper highlights in a long braid, deep amber warm fierce eyes, athletic toned arms, warm copper-brown weathered skin, high cheekbones, strong jaw, small scar on chin from childhood fall, traditional woven bracelet on left wrist, practical cotton blouse and field vest with CJS logo. Forest edge backdrop, native undergrowth. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__determined.png`**: Use the base portrait as reference. She has a fierce, resolved expression, looking unflinchingly at the camera, 3/4 take. Deep amber eyes blazing with conviction, strong jaw squared, chin scar standing out. Thick dark brown hair whipping slightly in the wind, woven bracelet prominent. Athletic frame squared, field vest crisp with CJS logo. Forest edge backdrop under bright midday light. Keep the same art style as reference, same cotton blouse and vest. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Deep amber eyes narrowed, brow furrowed in strategic thought, mouth pressed in focus. Thick dark brown hair in its braid, traditional woven bracelet catching light. Practical cotton blouse, field vest buttoned. Forest edge backdrop, late afternoon light through trees. Keep the same art style as reference, same CJS vest. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. She has a quietly worn, open expression, looking gently at the camera, 3/4 take. Deep amber eyes softening, the passion momentarily resting, strong jaw relaxed. Thick dark brown hair loose around her shoulders, chin scar faint. Woven bracelet warm on her wrist. Field vest open. Forest edge backdrop under soft golden-hour light. Keep the same art style as reference, same cotton blouse and bracelet. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. She has a fiery, confrontational expression, looking at the camera, 3/4 take. Deep amber eyes blazing, strong jaw set with outrage, chin scar sharp. Thick dark brown hair whipping, woven bracelet prominent. Athletic frame squared, field vest with CJS logo prominent. Forest edge backdrop under harsh directional light. Keep the same art style as reference, same blouse and vest. Clean confident linework, painterly soft shading, muted natural palette.
