@@ -2,32 +2,47 @@
 name: Carlos Hernandez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/carlos_hernandez/carlos_hernandez.md
-target: `portrait_urls[].url` in `content/characters/char_carlos_hernandez.yaml`
+source: content/characters/carlos_hernandez/carlos_hernandez.md
+target: `asset_paths.portrait` in `content/characters/carlos_hernandez/char_carlos_hernandez.yaml`
 consumer: portrait
 ---
-
 
 # Prompt: Carlos Hernandez
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/carlos_hernandez.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_carlos_hernandez.yaml`
+**Source:** content/characters/carlos_hernandez/carlos_hernandez.md
+**Target field:** `asset_paths.portrait` in `content/characters/carlos_hernandez/char_carlos_hernandez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Slight 25-year-old Chinese Photorealistic portrait of Carlos Hernandez. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, ** dark brown, warm engaging. His expression is warm, as he offers a subtle, knowing half-smile. His black receding hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless guayaberas, symbolizing his local herita. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 102-year-old Latino male. Round friendly face, warm engaging dark brown eyes, distinctive mole on right cheek, receding black hair graying to white, slightly overweight build, white guayabera shirt with loose sleeves, warm approachable expression, government building backdrop, no European features
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Slight 25-year-old Chinese Photorealistic portrait of Carlos Hernandez. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, ** dark brown, warm engaging. His expression is warm, as he offers a subtle, knowing half-smile. His black receding hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless guayaberas, symbolizing his local heritage and his connection to the people; preference for loose-fitting, comfortable clothing reflecting his laid-back demeanor. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of Carlos Hernandez at 102 — the man who shaped Las Flores for nearly forty years and now sits in quiet retirement, his legacy complicated and indelible. Round, friendly face with a distinctive mole on his right cheek. Warm, engaging dark brown eyes. Receding black hair, gray-white by now, neatly groomed. Slightly overweight build. He wears a white guayabera — the shirt that became his symbol, representing his connection to the people of Las Flores and his laid-back, approachable demeanor. His expression is warm and knowing, a faint smile at the corner of his mouth — the smile of a politician who built a city and carries the weight of what it cost. The backdrop is the Old Las Flores government building. Weathered institutional paint, the Free City seal on the wall, a wooden chair worn by decades of constituents. Afternoon light through tall windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
 
 ## Variations
 
-- [ ] Carlos Hernandez with notebook in hand, interviewing a local source for a cultural feature story
-- [ ] Carlos Hernandez reviewing interview notes at their desk, thoughtfully considering story angles
-- [ ] Carlos Hernandez with colleagues in the newsroom, collaborating on a breaking story
+- [ ] Carlos Hernandez at a community town hall in Old Las Flores, leaning on the podium, white guayabera sleeves rolled, speaking with practiced warmth
+- [ ] Carlos Hernandez walking through a Las Flores neighborhood, stopping to greet residents by name, the builder still visible
+- [ ] Carlos Hernandez in quiet retirement, seated on a porch, white guayabera unbuttoned, a photo album on his lap
 
+## Expression Variants
+
+Authored expressions (each as `assets/carlos_hernandez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. 102-year-old former mayor, neutral warm knowing expression, looking at the camera, 3/4 take. Round friendly face, warm engaging dark brown eyes, distinctive mole on right cheek, receding black hair gray-white and neatly groomed, slightly overweight build, white guayabera with loose sleeves. Old Las Flores government building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__contemplative.png`**: Use the base portrait as reference. He is in quiet reflection, looking thoughtfully at the camera with a 3/4 take. Warm dark brown eyes soft and distant, mouth relaxed in a faint, private smile. Gray-white receding hair, round face softened, mole on right cheek catching light. Slightly overweight build, white guayabera open at the collar. Government building backdrop under warm golden-hour glow. Keep the same art style as reference, same guayabera. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. He has a warm, affectionate expression, looking gently at the camera, 3/4 take. Warm dark brown eyes open and sincere, friendly smile deepened, round face softened. Gray-white hair, mole on right cheek prominent. Slightly overweight build, white guayabera sleeves rolled. Government building backdrop under warm, forgiving light. Keep the same art style as reference, same guayabera. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__calculating.png`**: Use the base portrait as reference. He has a shrewd, assessing look, looking at the camera, 3/4 take. Warm dark brown eyes narrowed behind decades of political calculation, the warmth narrowing to precision. Round jaw set, gray-white hair neat. White guayabera crisp, gold signet ring visible. Slightly overweight build squared. Government building backdrop under bright overhead light. Keep the same art style as reference, same guayabera. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. He wears a faint, knowing half-smile, looking at the camera, 3/4 take. Warm dark brown eyes glinting with private amusement, mole on right cheek shifting with his smile. Gray-white hair neat, white guayabera sleeves rolled. Slightly overweight build relaxed. Government building backdrop under warm afternoon light. Keep the same art style as reference, same guayabera. Clean confident linework, painterly soft shading, muted natural palette.
