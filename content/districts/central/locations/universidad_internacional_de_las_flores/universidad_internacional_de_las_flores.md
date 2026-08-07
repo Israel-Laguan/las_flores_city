@@ -1,15 +1,17 @@
 # Universidad Internacional de Las Flores
 
-> Tags: `#landmark` `#education` `#university` `#engineering` `#science` `#research`
+> Tags: `#landmark` `#education` `#university` `#engineering` `#science` `#research` `#private` `#chinese-owned`
 
 **Aliases:** UILF
 **Location:** Central District (main campus), Cultural Zone (senior campus)
-**Type:** University, Research institution
+**Type:** Private University, Research institution
+**Ownership:** Chinese investors
 **Academic Focus:** Engineering, Scientific disciplines
+**Student Body:** Wealthy international students (predominantly Chinese)
 
 ## Overview
 
-Situated in the northern part of the Central district, with an additional campus dedicated to senior students, doctoral candidates, and postdocs in the Cultural Zone of the city center, **Universidad Internacional de Las Flores** stands as a testament to academic rigor and scientific advancement. With an evolving focus on engineering and scientific disciplines, this institution is a cornerstone of educational excellence, often juxtaposed with the Universidad Nacional in a healthy rivalry for supremacy.
+Situated in the northern part of the Central district, with an additional campus dedicated to senior students, doctoral candidates, and postdocs in the Cultural Zone of the city center, **Universidad Internacional de Las Flores** stands as a testament to academic rigor and scientific advancement. As a private university owned by Chinese investors, it serves an elite student body of wealthy international students and is recognized as one of the twin pillars of higher education in Las Flores, alongside its sister institution Universidad del Valle. With an evolving focus on engineering and scientific disciplines, this institution is a cornerstone of educational excellence, often juxtaposed with the Universidad Nacional in a healthy rivalry for supremacy.
 
 ## Legacy and Evolution
 
@@ -23,9 +25,13 @@ The university's dual-campus system caters to students at different academic lev
 
 - **Cultural Zone Campus:** Located in the vibrant Cultural Zone of the city center, this additional campus provides an immersive setting for senior students, doctoral candidates, and postdocs. It facilitates their engagement with the broader cultural and intellectual life of the city while pursuing advanced studies and research.
 
-## Chinese Influence and Competitive Spirit
+## Chinese Ownership and Elite Culture
 
-The influence of Chinese stakeholders is palpable in Universidad Internacional's operations, contributing to its global outlook and fostering a competitive academic environment. The university takes pride in its fierce internal competition and its spirited rivalry with Universidad Nacional, which fuels a collective drive for excellence among students and faculty alike.
+Universidad Internacional is a private institution owned by Chinese investors, which shapes its global outlook and fosters a highly competitive academic environment. The university is known for its exclusive clubs and social events catering to high-net-worth international students. The university takes pride in its fierce internal competition and its spirited rivalry with Universidad Nacional, which fuels a collective drive for excellence among its privileged student body.
+
+## Twin Pillars of Private Education
+
+Together with Universidad del Valle, these two Chinese-owned institutions form the twin pillars of private higher education in Las Flores. While Universidad Internacional specializes in engineering and scientific disciplines, Universidad del Valle focuses on humanities and social sciences, creating a complementary educational ecosystem under shared Chinese investment.
 
 ## Academic Culture and Traditions
 
