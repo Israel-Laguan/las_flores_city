@@ -1,4 +1,4 @@
-id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+id: d9927cf6-cc6c-42d3-b39c-023e6252b453
 name: Layla Al-Rashid
 title: University Student, Double Life
 description: |
@@ -34,10 +34,10 @@ metadata:
   quote: Wanting to be free is halal. But what if I only want to want it?
 lore_path: layla_al_rashid.md
 available_dialogues:
-  - d79383778-a887-402b-b7ff-e121d8935c7e
-  - dac54bc7c-f1cf-4026-be82-ba86ea7d927c
-  - df9bd13e8-0625-4273-8999-3123d0f7d19d
-  - d75f1a08b-935b-4fa1-a584-df79629df66b
+  - d7938377-a887-402b-b7ff-e121d8935c7e
+  - dac54bc7-f1cf-4026-be82-ba86ea7d927c
+  - df9bd13e-0625-4273-8999-3123d0f7d19d
+  - d75f1a08-935b-4fa1-a584-df79629df66b
   - e8f4a9c2-5d1e-47b8-9c3d-6ef8e2b7c3d1
 asset_paths:
   portrait: layla_al_rashid__default.png

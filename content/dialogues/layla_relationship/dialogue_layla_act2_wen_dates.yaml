@@ -1,14 +1,14 @@
-id: df9bd13e8-0625-4273-8999-3123d0f7d19d
+id: df9bd13e-0625-4273-8999-3123d0f7d19d
 name: "Layla Act 2 - Wen & The Date Problem"
 description: "Layla (Arabic-inflected Spanglish, hums) introduces her friend Wen Zhao and struggles with the reality of being a 'girlfriend': she wants dates and public affection, but can't be seen with him — and part of her likes that Wen sees her with him. Wen eggs her on, unaware she's part of the performance. The ritual of their interactions feels safe, but the wanting beneath it is starting to feel real."
-character_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
 dialogue_scope: character
 start_node_id: layla_act2_start
 nodes:
   layla_act2_start:
     id: layla_act2_start
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "R! Over here. This is Wen — she's the only one who knows. Wen, this is R. R, my partner in crime. Sort of. Don't scare her, eh. ...See? I have one too."
     thought: "She says it proudly, like showing him off to her friend is the proof the relationship is real. Wen watches with a knowing, sharp little smile. There's a flicker of something in Layla's eyes — satisfaction, maybe, that Wen can see she's keeping up. She's not just the sheltered princess anymore. She has a boyfriend. Just like Wen."
     visual:
@@ -42,7 +42,7 @@ nodes:
   layla_act2_wen_intro:
     id: layla_act2_wen_intro
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "So you're R. She won't shut up about you. I told her, finally, a boyfriend — act like you mean it. My parents are the same, I get it. We hide ours too. It's freeing, isn't it? The secret."
     thought: "Wen's confidence is a costume too, but she wears it better. She's already decided Layla's rebellion is a success story. She'll push Layla further than Layla is ready for."
     choices:
@@ -62,7 +62,7 @@ nodes:
   layla_act2_date_trouble:
     id: layla_act2_date_trouble
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "Okay so here's the thing. I'm your girlfriend now, ¿right? So I want... I want a date. Like a real one. But I cant be seen with you. My dad would — y la comunidad, everyone watches. Y I can't hold your hand. Or post anything. So how is it even a date, mm? ...Wen says it's about the feeling. I just... I want to feel it the right way, no?"
     thought: "The fantasy hits the wall of her actual life. She wanted the title, not the logistics. The gap between the movie version and her locked-down reality is opening in front of her and she doesn't know how to close it. She glances at Wen — who has her own guy, her own stories. Layla's dates need to be real enough to count, but not so real they can't be hidden. It's all part of the performance."
     visual:
@@ -95,7 +95,7 @@ nodes:
   layla_act2_quiet_date:
     id: layla_act2_quiet_date
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "Quiet places. Okay. Okay that's — that's something. Wen says couples do la library, or the east steps after dark, places the aunties don't go. I could be your girlfriend there. Just... not everywhere else. Is that enough? For now? ...It's like a ritual, no? Same place, same time. Feels... safe."
     thought: "She's negotiating with reality the same way she negotiates with her faith. 'Enough for now' is the cope that lets her keep both the boyfriend and the good-daughter life. And she likes the ritual of it — predictable, repeatable, a script she can follow. But there's a flicker of something else beneath the script, something she doesn't want to name."
     visual:
@@ -113,7 +113,7 @@ nodes:
   layla_act2_wen_push:
     id: layla_act2_wen_push
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "See? Easy. Layla, you're being too careful. Next time, let him pick you up a block from your house. One block. Your mom can't see one block. Be bold, hogy. That's what freedom is — small bold things."
     thought: "Wen is enjoying the role of instigator a little too much. She's projecting her own movie-fed idea of rebellion onto Layla, who isn't sure she's ready for 'bold'."
     choices:
@@ -135,7 +135,7 @@ nodes:
   layla_act2_bold_yes:
     id: layla_act2_bold_yes
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "One block. Okay. Okay I can do one block. Wen says it's bold, y bold is... free, ¿no? I'll tell my mom I'm at the library. She'll believe that. She believes everything I say, mm. That's the scary part. ...But also, mm. What if it feels... different?"
     thought: "The thrill of Wen's dare is winning. She's already building the lie her mother will swallow — and noticing, for the first time, how easy it is to be believed. And there's something else, too, beneath the performance: a flicker of curiosity. What if stepping out of the script feels... real? She pushes the thought away. It's just an experiment. For now."
     visual:
@@ -156,7 +156,7 @@ nodes:
   layla_act2_bold_no:
     id: layla_act2_bold_no
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "Wen means well but... yeah. Not yet. I'm not, mm, that brave. Thank you for not making me. Quiet dates are enough. For now, pues. ...It's not that I don't want to. It's just... easier this way. You know?"
     thought: "She's relieved he shielded her from Wen's push. The relief tells her something: she likes being protected from her own daring. That's its own kind of trap. And if she's honest, she's also a little disappointed in herself. But she's not ready to be honest. Not yet."
     visual:
@@ -176,7 +176,7 @@ nodes:
   layla_act2_public_risk:
     id: layla_act2_public_risk
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "I — I can't. Not where someone could see. Wen, back me up — if my mom's friend sees me holding some guy's hand, it's over. It's not 'screw them', it's my whole life. ...But I want to. I really want to. That's the worst part, eh. ...What if I want it too much?"
     thought: "Wen goes quiet — even she won't push this far. Layla is torn between the freedom she's been sold and the cage she actually lives in, and the wanting makes the cage hurt more. There's a new fear creeping in, one she hasn't named yet: that the wanting might not be part of the performance anymore. That it might be real."
     visual:

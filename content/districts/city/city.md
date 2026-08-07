@@ -70,9 +70,8 @@ Central City's strategic layout and emphasis on modernity, combined with its ric
 | **Biblioteca Building** | Massive public library and research center |
 
 ### Red District
-| Landmark | Description |
-|---|---|
-| **Red District** | Adult entertainment and nightlife zone; operates in a regulated grey area within the city |
+
+> The Red District (adult entertainment and nightlife zone) is located in the [Central District (Suburbs)](central.md), on the frontier with the City District.
 
 ### Commercial & Recreation
 | Landmark | Description |

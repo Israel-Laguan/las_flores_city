@@ -1,7 +1,7 @@
-id: dac54bc7c-f1cf-4026-be82-ba86ea7d927c
+id: dac54bc7-f1cf-4026-be82-ba86ea7d927c
 name: "Layla Phone Call - Secrets & Photos"
 description: "Late-night text exchange (Arabic-inflected Spanglish, hums). Layla explains the rules of the secret: label R, text only at home, no voice messages, and photos only in a locked room or a 'safe batch' place — never outside, never where her mother can see. She also hints at the competition with Wen, using the player as proof she can have a romantic life too."
-character_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+character_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
 dialogue_scope: character
 start_node_id: layla_phone_start
 nodes:
@@ -29,7 +29,7 @@ nodes:
   layla_phone_opening:
     id: layla_phone_opening
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "R u awake? my mom finally se durmió. I can type but DON'T call ok? if she hears my phone at night she'll know. text only. ¿promise?"
     thought: "Even typed, her anxiety is legible — the lowercase, the urgency. The rule isn't a preference, it's survival in her house."
     choices:
@@ -51,7 +51,7 @@ nodes:
   layla_phone_rules:
     id: layla_phone_rules
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "u cant. ever. en la casa. My phone is clean, no pics of us, no 'baby' stuff, nothing she could read. I delete everything after I read it. y don't save my name as Layla, R only, ¿right? tell me ur not stupid about this."
     thought: "She's rehearsed this speech in her head a hundred times. The secrecy turns her on a little and terrifies her a lot. She needs him to be careful so she can keep pretending at home."
     choices:
@@ -73,7 +73,7 @@ nodes:
   layla_phone_photo_ask:
     id: layla_phone_photo_ask
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "ok so. can I send u a pic? not like THAT. just... me. but I have to be careful where. I cant do it in the house, mom's right there. I'd have to go to the bathroom y lock the door. or wait till I'm somewhere safe con Wen. is that weird? it feels weird but I want to, mm. ...Wen sends pics to her guy all the time. it's like, proof, no?"
     thought: "She wants to be the kind of girl who sends photos freely, like in the films. But every frame has to be calculated: door locked, phone muted, deleted after. The wanting is real; the ease is fake. And yes, she's thinking about Wen's stories, the way she shows off her own little rebellions. This is Layla's answer — a photo of her own, proof she can do this too."
     visual:
@@ -105,7 +105,7 @@ nodes:
   layla_phone_photo_deal:
     id: layla_phone_photo_deal
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "okay. I will. y I'll delete yours after too, okay? we keep it clean. this is our thing. entre nosotros. ...thank u for not making it hard. most guys would, pues. ...you dont ask a lot of questions, no? I like that. keeps it simple."
     thought: "She exhales in text. The relief is huge — he respected the rules, which means the double life might actually work. She's a little more in love, and a little more dependent. And she notices, with satisfaction, that he doesn't pry. She doesn't want to be pried into. This is easier if it stays on the surface."
     visual:
@@ -121,7 +121,7 @@ nodes:
   layla_phone_photo_risk:
     id: layla_phone_photo_risk
     type: character
-    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    speaker_id: d9927cf6-cc6c-42d3-b39c-023e6252b453
     text: "no. no no no. if she wakes up y sees the light — I cant. don't ask me to be stupid. ...I'm sorry. I'm just scared. can we not do risky right now, eh?"
     thought: "Her fear spikes; the performance drops completely. For a second she's just a girl who could lose everything her family gave her over a photo."
     visual:

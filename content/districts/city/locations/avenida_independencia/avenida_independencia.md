@@ -1,0 +1,45 @@
+# Avenida Independencia
+
+> Tags: `#transport` `#central_city` `#infrastructure`
+
+**Location:** Las Flores City
+**Type:** Arterial Road
+
+## Overview
+
+Avenida Independencia predates the free city itself — the east-west artery was a colonial-era road that the provisional government paved, widened, and rebranded in 2034 as a symbolic gesture toward the city’s self-determination. Its route cuts through the full cross-section of the city’s social geography.
+
+---
+
+## Corridor Features
+
+| Place | Description |
+|---|---|
+| **Cargo Truck Outer Lanes** | The designated freight lanes along the avenue’s full length, used by port-bound cargo convoys running beyond their designed capacity since 2045. The congestion documentation record spans four consecutive transport authority studies without a remediation outcome. |
+| **Commercial Central Zone** | The mid-avenue commercial stretch where independent retail, restaurants, and services cluster between development pressure from the west and industrial decline pressure from the east. Two historical cultural landmarks have been converted or demolished since 2060. |
+| **Surface Bus Corridor** | Designated bus lanes along the avenue serving as the ground-level counterpart to the Blue Line metro. Encroached upon by freight vehicles during peak hours; repurposed as general traffic lanes after 22:00. |
+
+## Daily Life
+
+### Daytime
+
+Between 07:00 and 10:00 and again between 15:00 and 19:00, Avenida Independencia operates at or beyond functional capacity. Cargo truck convoys compress into the outer lanes; delivery vehicles double-park in the middle lanes; surface buses operate in designated lanes that trucks and taxis encroach upon.
+
+### Nightlife
+
+After 21:00 the cargo truck presence reduces to a baseline night-freight flow. The commercial zone’s late venues create islands of pedestrian activity in an avenue fundamentally designed for vehicle throughput. Atmospheric particulate readings drop as freight volume reduces.
+
+---
+
+## Conclusion
+
+Avenida Independencia is the city’s most accurately named artery in an ironic sense: it is the road that most clearly shows what Las Flores’s economic structure has made independent decisions to prioritise. Freight throughput for port logistics has priority over pedestrian safety, transit reliability, and air quality.
+
+---
+
+## In-Game References
+
+- **Scenes:** Cargo Truck Outer Lanes, Commercial Central Zone, Surface Bus Corridor
+- **Mysteries:** investigations, environmental and labour threads tied to this location
+- **Characters:** residents, workers, and officials associated with this location
+- **Narrative Hooks:** the tensions and contradictions that surface here

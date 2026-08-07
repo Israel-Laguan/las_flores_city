@@ -1,14 +1,14 @@
-id: d75f1a08b-935b-4fa1-a584-df79629df66b
+id: d75f1a08-935b-4fa1-a584-df79629df66b
 name: "Wen - Intermediary for Layla"
 description: "Wen Zhao acts as Layla's intermediary: she messages/meets the player to relay Layla's feelings, vouch for her, and push the player to be bolder and more decisive with Layla, who is too sheltered to ask for what she wants. Unbeknownst to Wen, Layla sometimes uses these interactions to make Wen jealous, creating a subtle tension beneath the surface."
-character_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+character_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
 dialogue_scope: character
 start_node_id: wen_intermediary_start
 nodes:
   wen_intermediary_start:
     id: wen_intermediary_start
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "Hey, R. It's Wen. Layla's freaking out again — she won't text you because she thinks she's 'too much,' which, trust me, she is, but that's the point. So I'm texting for her. Don't be weird about it. ...She's weirdly calm about it today, actually. Almost... smug?"
     thought: "Wen enjoys this — being the emissary, the one who knows the boy and the girl and stands between. She's playing matchmaker and strategist at once. She doesn't notice the flicker of something beneath Layla's usual panic — a satisfaction, maybe, that she's got someone Wen doesn't control completely."
     visual:
@@ -35,7 +35,7 @@ nodes:
   wen_relay:
     id: wen_relay
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "She wants you to be bolder. She won't say it — she read about 'confident women' in books and now she's waiting for you to be the movie. So be the movie. Pick the place, text her first, don't make her chase. She's never been chased, R."
     thought: "Wen is translating Layla's helplessness into instructions. She's half genuinely helping, half living the romance through her friend because her own is colder."
     choices:
@@ -57,7 +57,7 @@ nodes:
   wen_defend:
     id: wen_defend
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "She would if she could. You don't get it — at home she's the perfect daughter, she's never wanted anything for herself out loud. So someone has to want for her first. Usually that's me. Today it's you. Step up."
     thought: "Wen's sharpness softens for a second — she knows exactly how trapped Layla is, because she's trapped the same way. The insistence is protective, not just nosy."
     choices:
@@ -79,7 +79,7 @@ nodes:
   wen_explain:
     id: wen_explain
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "Because she doesn't know how. Her mom decided everything — school, clothes, who she talks to. Layla's first 'want' was you, and she's terrified of wanting wrong. So go easy, but go. She needs the bold part from you."
     thought: "This is the closest Wen comes to admitting her own fear. She ships Layla toward the freedom she's not sure she can claim for herself."
     choices:
@@ -95,7 +95,7 @@ nodes:
   wen_deal:
     id: wen_deal
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "Good. I'll tell her you texted. She'll act surprised, like she didn't pray for it last night. Keep it clean though — R only, no voice, delete after. I taught her the rules, don't make me look stupid."
     thought: "Wen closes the deal like a handler. She's invested now; Layla's secret is her secret too."
     visual:
@@ -115,7 +115,7 @@ nodes:
   wen_warn:
     id: wen_warn
     type: character
-    speaker_id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
     text: "No. You're not. But if you bail, she'll go quiet for weeks and blame herself, not you. That's how she's built. Your call, R. Just know the cost isn't yours, it's hers."
     thought: "Wen respects the pushback but won't soften the consequence. She's warning him the way an older sister warns a careless boy about her sibling."
     visual:

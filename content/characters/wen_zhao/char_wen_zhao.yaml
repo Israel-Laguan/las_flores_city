@@ -1,4 +1,4 @@
-id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
 name: Wen Zhao
 title: Business Student, Secret Libertine
 description: |
@@ -28,6 +28,6 @@ metadata:
   quote: At home I'm the good daughter. At school? At school I'm whoever I decide.
 lore_path: wen_zhao.md
 available_dialogues:
-  - d75f1a08b-935b-4fa1-a584-df79629df66b
+  - d75f1a08-935b-4fa1-a584-df79629df66b
 asset_paths:
   portrait: wen_zhao__default.png

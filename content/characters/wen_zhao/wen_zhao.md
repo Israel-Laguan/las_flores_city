@@ -30,5 +30,5 @@ Wen is Layla's closest ally in the double life. They met at university and recog
 Wen's confidence is a costume, same as Layla's. She mistakes boldness for maturity and treats the player as part of the game. But under the sharp tongue she is as unsure as Layla — and far more afraid of what her parents would do if they knew.
 
 ## Related Lore
-- [Layla Al-Rashid](../../layla_al_rashid/layla_al_rashid.md) — her friend and double-life accomplice
+- [Layla Al-Rashid](../layla_al_rashid/layla_al_rashid.md) — her friend and double-life accomplice
 - [Northern District Communities](../locations/northern_district.md) *(if created)*

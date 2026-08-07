@@ -11,7 +11,7 @@ consumer: html-background
 
 
 ## Prompt — Base Scene
-A cinematic comic-book panel, modern colorful graphic novel style. Setting: a modest apartment kitchen in a mining town, evening, warm lamp light against dark walls. A woman in her early thirties, Andean features, in a plain sweater, sits at a small table among stacks of documents and bribery records, determined but tired, underlining with a red pen. A radio plays on the counter; city lights glow beyond the window. Centered, documents radiating outward like evidence. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of paper, ceramic, and worn wood.
+A cinematic comic-book panel, modern colorful graphic novel style. Setting: a modest apartment kitchen in the Central District of Las Flores, evening, warm lamp light against dark walls. A woman in her early thirties, Andean features, in a plain sweater, sits at a small table among stacks of documents and bribery records, determined but tired, underlining with a red pen. A radio plays on the counter; city lights glow beyond the window. Centered, documents radiating outward like evidence. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of paper, ceramic, and worn wood.
 
 ## Negative Prompt
 --no text overlay, watermarks, neon, satellites, androids, robots, cybernetics, futuristic sci-fi, holograms, extreme violence, gore, guns, magic, anime
