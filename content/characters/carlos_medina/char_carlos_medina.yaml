@@ -12,6 +12,8 @@ metadata:
   occupation: Student
   appearance: "Young Latino man, early 20s, earnest expression, wearing an engineering guild jacket, carrying a diagnostic tablet."
 lore_path: carlos_medina.md
+asset_paths:
+  portrait: carlos_medina__default.png
 portrait_urls:
   - url: s3://las-flores/portraits/carlos_medina/carlos_medina__default.png
     label: dev

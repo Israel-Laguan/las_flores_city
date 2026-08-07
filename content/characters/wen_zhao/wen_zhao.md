@@ -31,4 +31,3 @@ Wen's confidence is a costume, same as Layla's. She mistakes boldness for maturi
 
 ## Related Lore
 - [Layla Al-Rashid](../layla_al_rashid/layla_al_rashid.md) — her friend and double-life accomplice
-- [Northern District Communities](../locations/northern_district.md) *(if created)*

@@ -58,8 +58,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
 ## Expression Variants
 
-The biometric sheets capture neutral reference geometry only (face arcs, body sheet). Expression portrait variants are NOT authored here; they are derived from the base portrait in `diego_huaman.prompt.md`'s `## Expression Variants` (`__default`, `__happy`, `__focused`, `__vulnerable`, `__determined`). This sheet supplies the locked neutral face/body base those variants reuse:
+The biometric sheets capture neutral reference geometry only (face arcs, body sheet) for matching face/body proportions. Expression portrait variants are NOT authored here; they are derived from the base portrait in `diego_huaman.prompt.md`'s `## Expression Variants` (`__default`, `__happy`, `__focused`, `__vulnerable`, `__determined`). Those variants use the base portrait's outfit and backdrop — a faded university hoodie, jeans, and a handwoven mochila, waist-up on the Central Las Flores university campus — not the black gym clothes worn in the body sheet.
 
-- **`__default`** neutral geometry → source for all expression variants.
-- Face arc panels (horizontal/vertical) define the neutral face the portrait variants must match.
-- Body sheet defines the lean athletic build and minimal black gym clothes reused across variants.
+- Face arc panels (horizontal/vertical) define the neutral face geometry the portrait variants must match.
+- Body sheet defines the lean athletic build and body proportions; its black athletic clothing is worn only to reveal body mass and geometry, and is NOT reused by the portrait variants.

@@ -18,7 +18,7 @@ Chinese woman in her early 20s, sleek black hair in a high ponytail, sharp angul
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese woman in her early 20s. Sleek black hair pulled into a high, sharp ponytail, and an angular jawline that gives her a confident, faintly intimidating presence. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes and dark, knowing eyes that meet the viewer with bold composure. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless student clothing — a fitted blouse over tailored trousers. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+--no neon, no androids, no clean backgrounds
 
 ## Variations
 

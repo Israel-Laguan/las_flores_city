@@ -7,6 +7,8 @@ metadata:
   role: npc
   faction: lw_group
   personality: persuasive_composed
+asset_paths:
+  portrait: nadia_al_farsi__default.png
 portrait_urls:
   - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__default.png
     label: dev
