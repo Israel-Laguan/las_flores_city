@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Sebastian van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/sebastian_van_der_meer/sebastian_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/sebastian_van_der_meer/char_sebastian_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Dutch man in his 40s, athletic-compact build, clear skin. Angular face, strong j
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his 40s. Athletic-compact build, poised and commanding. Clear skin with confident, lightly aged features. Angular face with high cheekbones and a strong jawline, straight blond hair with subtle gray threading. Pointed nose, wide-set calculating eyes, thick brows — one sitting a fraction lower than the other — and thin lips. A small scar near his left brow, a faint detail beneath a disciplined gaze. Ambitious executive bearing, assured and faintly intense. Small sport non-in-ear earbud clipped to earlobe. CEO business attire: a tailored charcoal suit with a crisp white shirt and a Van der Meer Industries pin at the lapel. The backdrop is a gleaming executive office, growth charts on a screen, the Las Flores skyline seen through floor-to-ceiling glass. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his 40s. Athletic-compact build, poised and commanding. Clear skin with confident, lightly aged features. Angular face with high cheekbones and a strong jawline, straight blond hair with subtle gray threading. Pointed nose, wide-set calculating eyes, thick brows — one sitting a fraction lower than the other — and thin lips. A small scar near his left brow, a faint detail beneath a disciplined gaze. Ambitious executive bearing, assured and faintly intense. Small sport non-in-ear earbud clipped to earlobe. CEO business attire: a tailored charcoal suit with a crisp white shirt and a corporate pin at the lapel. The backdrop is a gleaming executive office, growth charts on a screen, a city skyline seen through floor-to-ceiling glass. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

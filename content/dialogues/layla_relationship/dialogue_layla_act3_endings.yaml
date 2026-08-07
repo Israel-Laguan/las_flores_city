@@ -1,0 +1,446 @@
+id: e8f4a9c2-5d1e-47b8-9c3d-6ef8e2b7c3d1
+name: "Layla Act 3 - Endings: The Experiment Concludes"
+description: "Act 3 endings for Layla's arc. Four possible resolutions: (1) Lovers - they discover how to continue being lovers as Layla embraces real romantic closeness; (2) Friends - they remain friends as Layla steps back from the emotional complexity; (3) Breakup - the experiment fails, Layla cannot reconcile performance with real feeling; (4) Stagnant - they never advance, stuck in awkward interactions as Layla overstepped but was never serious."
+character_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+dialogue_scope: character
+start_node_id: layla_act3_branch
+
+nodes:
+  # Branch point - determines which ending path based on flags/stats
+  layla_act3_branch:
+    id: layla_act3_branch
+    type: system
+    text: ""
+    thought: "The relationship has reached a turning point. Layla's experiment in romance has forced her to confront what she really wants — and what she's willing to risk."
+    effects:
+      flag_set:
+        layla_act3_reached: true
+    choices:
+      - id: branch_loyal
+        text: "[Continued building trust and connection]"
+        next_node_id: layla_act3_loyalty_check
+        condition:
+          flag: layla_wen_intermediary_used
+          stat: layla_trust
+          operator: ">="
+          value: 50
+          AND:
+            stat: layla_alignment
+            operator: ">="
+            value: 40
+        hidden: true
+        effects:
+          stat_set:
+            layla_visibility: 5
+
+      - id: branch_cautious
+        text: "[Kept things light, avoided depth]"
+        next_node_id: layla_act3_friendship_check
+        condition:
+          stat: layla_familiarity
+          operator: ">="
+          value: 30
+          AND:
+            stat: layla_trust
+            operator: "<"
+            value: 30
+        hidden: true
+        effects:
+          stat_set:
+            layla_visibility: 5
+
+      - id: branch_resistant
+        text: "[Pushed too hard, she pulled away]"
+        next_node_id: layla_act3_breakup_check
+        condition:
+          stat: layla_tension
+          operator: ">="
+          value: 40
+          AND:
+            stat: layla_trust
+            operator: "<"
+            value: 20
+        hidden: true
+        effects:
+          stat_set:
+            layla_visibility: 5
+
+      - id: branch_avoidant
+        text: "[Never really connected]"
+        next_node_id: layla_act3_stagnant_check
+        condition:
+          flag: layla_first_contact_made
+          NOT:
+            flag: layla_girlfriend
+          OR:
+            stat: layla_familiarity
+            operator: "<"
+            value: 20
+        hidden: true
+        effects:
+          stat_set:
+            layla_visibility: 5
+
+      # Fallback if no conditions met
+      - id: branch_default
+        text: "[Continue]"
+        next_node_id: layla_act3_loyalty_check
+        hidden: true
+
+  # ============================================
+  # ENDING 1: LOVERS (Discovery of Real Closeness)
+  # ============================================
+  layla_act3_loyalty_check:
+    id: layla_act3_loyalty_check
+    type: system
+    text: ""
+    effects:
+      stat_set:
+        layla_visibility: 5
+    next_node_id: layla_ending_lovers_start
+
+  layla_ending_lovers_start:
+    id: layla_ending_lovers_start
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I... I think I've been lying to myself. And to you."
+    thought: "She looks down, then up, her practiced smile absent for once. There's a vulnerability here she's never let herself show. The script is gone. The performance is over. What's left is... real."
+    visual:
+      expression: vulnerable
+      position: right
+      transition: fade
+    choices:
+      - id: lovers_ask
+        text: "About what?"
+        next_node_id: layla_ending_lovers_confession
+        effects:
+          stat_set:
+            layla_trust: 10
+
+  layla_ending_lovers_confession:
+    id: layla_ending_lovers_confession
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "About... about why I wanted this. I thought I was just trying it on, mm? Like a dress. Like in the movies. But then I kept wanting to put it back on. And it wasn't about Wen, not really. And it wasn't about the secret. It was... about you. About how I feel when I'm with you."
+    thought: "She's shaking a little. This is the first time she's admitted it even to herself. The experiment has become real, and the realization is terrifying and exhilarating all at once."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: lovers_respond
+        text: "And how do you feel?"
+        next_node_id: layla_ending_lovers_realization
+        effects:
+          stat_set:
+            layla_alignment: 15
+
+  layla_ending_lovers_realization:
+    id: layla_ending_lovers_realization
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Like... like I don't have to perform. Like I can just... be. And that's more free than any secret. More free than making anyone jealous. More free than the movies. ...I think I want to keep being your girlfriend. For real this time."
+    thought: "She says it softly, but there's no hesitation. The ritual has become real. She's discovered that romantic closeness isn't something you perform — it's something you feel, and then choose, again and again."
+    visual:
+      expression: tender
+    choices:
+      - id: lovers_accept
+        text: "I want that too. All of it."
+        next_node_id: layla_ending_lovers_resolved
+        effects:
+          stat_set:
+            layla_trust: 20
+            layla_alignment: 20
+
+  layla_ending_lovers_resolved:
+    id: layla_ending_lovers_resolved
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Okay. ¡Okay! So... we figure it out. The secrets, the rules, everything. But we do it together. No more... no more just trying it on. ...Unless you want to, sometimes. For fun, eh?"
+    thought: "She grins, a real grin, not a performed one. The fear hasn't disappeared — her father, her community, the risks are all still there. But for the first time, she's choosing to want anyway. That's the bravery she's been looking for."
+    visual:
+      expression: happy
+    is_end: true
+    effects:
+      flag_set:
+        layla_ending_lovers: true
+        layla_relationship_resolved: true
+      state_set:
+        layla_act: "3_done"
+        layla_path: "lovers"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_visibility: 10
+        layla_trust: 30
+        layla_alignment: 30
+
+  # ============================================
+  # ENDING 2: FRIENDS (Emotional Retreat)
+  # ============================================
+  layla_act3_friendship_check:
+    id: layla_act3_friendship_check
+    type: system
+    text: ""
+    effects:
+      stat_set:
+        layla_visibility: 5
+    next_node_id: layla_ending_friends_start
+
+  layla_ending_friends_start:
+    id: layla_ending_friends_start
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "R... can we talk?"
+    thought: "She's not smiling. There's a weight to her voice that's new. She's been thinking, and the thinking has led her somewhere she doesn't want to go but knows she has to."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: friends_ask
+        text: "Of course. What's wrong?"
+        next_node_id: layla_ending_friends_truth
+        effects:
+          stat_set:
+            layla_familiarity: 8
+
+  layla_ending_friends_truth:
+    id: layla_ending_friends_truth
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I think... I think I made a mistake. Not with you. With the whole... girlfriend thing. I wanted to feel free, mm? And I do, with you. But then I started feeling other things. Too many things. And I don't know how to... to hold them all."
+    thought: "She looks away, then back. This is the most honest she's been. She thought the experiment would give her answers. Instead, it's given her more questions than she can handle."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: friends_understand
+        text: "It's a lot. I get it."
+        next_node_id: layla_ending_friends_decision
+        effects:
+          stat_set:
+            layla_trust: 8
+
+  layla_ending_friends_decision:
+    id: layla_ending_friends_decision
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I need... I need to step back. Not because I don't care. Because I care too much, and it's too much, pues? But I don't want to lose you. Can we... can we just be friends? Real friends. Not R and Layla. Just... us."
+    thought: "She says it with relief and sadness mixed together. She's choosing safety — emotional safety. She can't handle the intensity of real romantic feeling, not yet. But she can handle friendship. And that's still something. It's still choosing to keep him in her life."
+    visual:
+      expression: tender
+    choices:
+      - id: friends_accept
+        text: "Friends. Yeah, we can do that."
+        next_node_id: layla_ending_friends_resolved
+        effects:
+          stat_set:
+            layla_trust: 10
+
+  layla_ending_friends_resolved:
+    id: layla_ending_friends_resolved
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Okay. Good. ...I still have to save you as R in my phone though. My mom, pues. But you'll know it's me. And... maybe one day, mm? When I'm braver. But no promises. I don't want to lie to you anymore."
+    thought: "She smiles, a small, real smile. She's giving up the performance, but she's keeping the connection. That's growth, even if it's not the growth she expected."
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        layla_ending_friends: true
+        layla_relationship_resolved: true
+      state_set:
+        layla_act: "3_done"
+        layla_path: "friends"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_visibility: 8
+        layla_familiarity: 15
+
+  # ============================================
+  # ENDING 3: BREAKUP (Experiment Fails)
+  # ============================================
+  layla_act3_breakup_check:
+    id: layla_act3_breakup_check
+    type: system
+    text: ""
+    effects:
+      stat_set:
+        layla_visibility: 5
+    next_node_id: layla_ending_breakup_start
+
+  layla_ending_breakup_start:
+    id: layla_ending_breakup_start
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I... I can't do this anymore."
+    thought: "Her voice is quiet, flat. The practiced smile is gone. What's left is exhaustion. The double life, the secrets, the performing — it's all too much. And worse, she's started feeling things she didn't mean to feel. Things that don't fit the script."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: breakup_ask
+        text: "Can't do what?"
+        next_node_id: layla_ending_breakup_reason
+        effects:
+          stat_set:
+            layla_tension: 10
+
+  layla_ending_breakup_reason:
+    id: layla_ending_breakup_reason
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "This. Us. The... the girlfriend thing. It was supposed to be simple. Just... trying it on, like in the books. But it's not simple. It's too real. And I'm not ready for real. I'm not... I don't know how to be real yet."
+    thought: "She's not crying. She's too numb for tears. The experiment has failed, and the failure has left her with nothing but the truth: she doesn't know who she is, or what she wants. Not really."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: breakup_plead
+        text: "We can figure it out. Together."
+        next_node_id: layla_ending_breakup_plea
+        effects:
+          stat_set:
+            layla_tension: 8
+
+  layla_ending_breakup_plea:
+    id: layla_ending_breakup_plea
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I know. I know you would. But... I have to figure out me first. And I can't do that if I'm also trying to figure out... this. Us. I'm sorry. I think I used you. And that's not fair to you. Or to me."
+    thought: "She says it with a quiet finality. She's not angry. She's not dramatic. She's just... done. The performance is over, and what's beneath it is too raw, too uncertain. She needs to walk away before she hurts him — or herself — any more."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: breakup_accept
+        text: "I get it. Take care of yourself, Layla."
+        next_node_id: layla_ending_breakup_resolved
+        effects:
+          stat_set:
+            layla_familiarity: 5
+
+  layla_ending_breakup_resolved:
+    id: layla_ending_breakup_resolved
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I will. Inshallah. ...I'll delete your number. Not because I don't want it. Because I do. And that's... that's the problem. Bye, R."
+    thought: "She turns away before he can see the tears. She's choosing honesty over cowardice — even if that honesty means walking away from something that felt good, that felt real. Sometimes growth hurts."
+    visual:
+      expression: vulnerable
+    is_end: true
+    effects:
+      flag_set:
+        layla_ending_breakup: true
+        layla_relationship_resolved: true
+      state_set:
+        layla_act: "3_done"
+        layla_path: "breakup"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_visibility: 3
+        layla_trust: -10
+
+  # ============================================
+  # ENDING 4: STAGNANT (Awkward, Never Advanced)
+  # ============================================
+  layla_act3_stagnant_check:
+    id: layla_act3_stagnant_check
+    type: system
+    text: ""
+    effects:
+      stat_set:
+        layla_visibility: 5
+    next_node_id: layla_ending_stagnant_start
+
+  layla_ending_stagnant_start:
+    id: layla_ending_stagnant_start
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "So..."
+    thought: "She looks at him, then away, then back. There's an awkward energy between them — the energy of a moment that was supposed to be something but never quite became it. She offered 'girlfriend' like she was ordering from a menu. He didn't take it. Or maybe he did, but not the way she meant. Now they're both stuck in the in-between."
+    visual:
+      expression: default
+      position: right
+    choices:
+      - id: stagnant_what
+        text: "So?"
+        next_node_id: layla_ending_stagnant_awkward
+        effects:
+          stat_set:
+            layla_familiarity: 3
+
+  layla_ending_stagnant_awkward:
+    id: layla_ending_stagnant_awkward
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I... I don't know. I just. We keep... doing this. Talking. Not talking. And I keep thinking you're going to... I don't know. Make it real? But you don't. And I don't. And it's just... weird now, mm?"
+    thought: "She laughs nervously. The ritual has lost its meaning. She showed interest, he didn't push back, but he didn't step forward either. Now they're both dancing around the thing neither of them wants to name: that the experiment fizzled before it even began."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: stagnant_why
+        text: "Why'd you ask me then?"
+        next_node_id: layla_ending_stagnant_truth
+        effects:
+          stat_set:
+            layla_tension: 8
+
+  layla_ending_stagnant_truth:
+    id: layla_ending_stagnant_truth
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "I don't know! Because it seemed like... like the thing to do? Wen had a boyfriend. I wanted... I wanted to feel like I was doing it too, I guess. But then I didn't actually... want to do it. Not for real. And now it's just... awkward."
+    thought: "She says it with a mixture of defiance and shame. She overstepped. She performed interest. But she was never actually willing to commit to the role. And now they're both paying for it with this... limbo."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: stagnant_move_on
+        text: "Yeah. It is awkward."
+        next_node_id: layla_ending_stagnant_resolved
+        effects:
+          stat_set:
+            layla_familiarity: 2
+
+  layla_ending_stagnant_resolved:
+    id: layla_ending_stagnant_resolved
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Yeah. ...I think we should just... not, mm? Not do this anymore. Not like this. Maybe... maybe I'll see you around. Or not. I don't know."
+    thought: "She shrugs, trying to play it off as no big deal. But it is a big deal. She put herself out there — or at least, she put the idea out there. And the idea didn't take. Now she's left with the awkwardness of a performance that nobody applauded."
+    visual:
+      expression: default
+    is_end: true
+    effects:
+      flag_set:
+        layla_ending_stagnant: true
+        layla_relationship_resolved: true
+      state_set:
+        layla_act: "3_done"
+        layla_path: "stagnant"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_visibility: 2
+        layla_familiarity: -2
+
+metadata:
+  version: "1.1"
+  required_flags:
+    layla_act2_met_wen: true
+  tags:
+    - "layla"
+    - "act3"
+    - "endings"
+    - "lovers"
+    - "friends"
+    - "breakup"
+    - "stagnant"
+    - "gate_logic"
+    - "accent"
+  notes: |
+    Act 3 contains four possible endings for Layla's arc:
+    1. LOVERS: High trust + alignment. She embraces real romantic closeness.
+    2. FRIENDS: Medium familiarity, low trust. She steps back to emotional safety.
+    3. BREAKUP: High tension, low trust. The experiment fails, she walks away.
+    4. STAGNANT: Never really connected. Awkward resolution of overstepping.
+    
+    Each ending reflects a different resolution to Layla's core conflict:
+    - Can she move from performative romance to real closeness? (Lovers)
+    - Can she handle the emotional weight if she can't? (Friends)
+    - Does the experiment collapse under its own contradictions? (Breakup)
+    - Does she never actually commit to the experiment at all? (Stagnant)

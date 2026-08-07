@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Isla de Oro
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/isla_de_oro.md
-**Target field:** `scene.background_url` in `content/locations/location_isla_de_oro.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Universidad Internacional de Las Flores
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/universidad_internacional_de_las_flores.md
-**Target field:** `scene.background_url` in `content/locations/location_universidad_internacional_de_las_flores.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

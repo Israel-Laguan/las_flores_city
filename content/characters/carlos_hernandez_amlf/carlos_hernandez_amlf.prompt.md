@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Hernandez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_hernandez_amlf/carlos_hernandez_amlf.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_hernandez_amlf/char_carlos_hernandez_amlf.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his 50s, broad heavy build, square face, strong jaw, pronounced ch
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his 50s. Broad, heavy build hardened by decades underground. Square face, strong jaw, pronounced cheeks, wide nose, and deep-set eyes beneath thick heavy brows. Full lips. Dust-weathered, scarred skin, a faded mining scar across his left cheek, broken callused hands. Curly dark hair threaded with gray streaks. Weatherworn, resolute bearing of a seasoned labor organizer. Worn union jacket over a work shirt with an AMLF pin, heavy boots, small sport non-in-ear earbud clipped to earlobe. Backdrop of a miners' union hall or mine entrance, an industrial backdrop. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his 50s. Broad, heavy build hardened by decades underground. Square face, strong jaw, pronounced cheeks, wide nose, and deep-set eyes beneath thick heavy brows. Full lips. Dust-weathered, scarred skin, a faded mining scar across his left cheek, broken callused hands. Curly dark hair threaded with gray streaks. Weatherworn, resolute bearing. Worn union jacket over a work shirt, heavy boots, small sport non-in-ear earbud clipped to earlobe. Backdrop of a miners' union hall or mine entrance, an industrial backdrop. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

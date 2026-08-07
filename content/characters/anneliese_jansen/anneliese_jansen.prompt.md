@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Anneliese Jansen
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/anneliese_jansen/anneliese_jansen.md
-**Target field:** `asset_paths.portrait` in `content/characters/anneliese_jansen/char_anneliese_jansen.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 27-year-old Dutch-French companion for hire near the Las Flores port district. Long, honey blonde hair often styled in loose curls or a sleek straight look. Gray-blue eyes that shift between confidence and vulnerability depending on who stands before her. Fair skin with a light tan, smooth complexion. Full lips, often painted in muted rose. High cheekbones, a small compass rose tattoo behind her left ear. Long manicured nails. She wears a smart, edgy black fitted blazer over a white blouse, thin gold chain at her throat. Her expression is open confidence that barely conceals the unease underneath — the mask of a woman who learned to charm before she learned to trust. The backdrop is the Las Flores port district at dusk. Weathered brick wall, neon signs from nearby bars, shipping containers, warm amber light mixing with cool blue twilight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 27-year-old Dutch-French companion for hire near the port district. Long, honey blonde hair often styled in loose curls or a sleek straight look. Gray-blue eyes that shift between confidence and vulnerability depending on who stands before her. Fair skin with a light tan, smooth complexion. Full lips, often painted in muted rose. High cheekbones, a small compass rose tattoo behind her left ear. Long manicured nails. She wears a smart, edgy black fitted blazer over a white blouse, thin gold chain at her throat. Her expression is open confidence that barely conceals the unease underneath — the mask of a woman who learned to charm before she learned to trust. The backdrop is the port district at dusk. Weathered brick wall, neon signs from nearby bars, shipping containers, warm amber light mixing with cool blue twilight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

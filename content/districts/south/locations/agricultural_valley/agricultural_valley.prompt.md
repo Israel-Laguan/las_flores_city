@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Agricultural Valley
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/agricultural_valley.md
-**Target field:** `scene.background_url` in `content/locations/location_agricultural_valley.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

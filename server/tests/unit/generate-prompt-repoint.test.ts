@@ -84,7 +84,7 @@ describe('generate-prompt.mjs repoint', () => {
     expect(stdout).toMatch(/✅ Created/);
 
     const promptFiles = await fs.readdir(entityDir);
-    const bioPrompt = promptFiles.filter(f => f.includes('_biometric.prompt.md'));
+    const bioPrompt = promptFiles.filter(f => f.includes('.biometric.prompt.md'));
     expect(bioPrompt.length).toBe(1);
   });
 

@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: The Apartment
 
-[CONSUMER: background]
-**Type:** background
-**Source:** the_apartment.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../the_apartment.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

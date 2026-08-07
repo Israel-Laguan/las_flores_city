@@ -9,9 +9,6 @@ consumer: logo
 
 # Prompt: VoxStream logo
 
-[CONSUMER: logo]
-**Type:** logo
-**Source:** content/lore/media/platforms/voxstream/voxstream.md
 **Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt

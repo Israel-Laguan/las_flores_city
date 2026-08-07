@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Diego López
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/diego_lopez/diego_lopez.md
-**Target field:** `asset_paths.portrait` in `content/characters/diego_lopez/char_diego_lopez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino business journalist in his 40s, stocky comfortable build, clear olive-tan
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino business journalist in his 40s. Stocky, comfortable build with a broad settled presence. Clear olive-tan skin with faint lines at the eyes and brow. Wavy dark hair with visible gray threading, neatly styled. Thick, slightly asymmetric brows over narrow, appraising eyes. Straight nose, round face with a strong prominent jawline. A slightly crooked smile, the left corner lifting more than the right, revealing a small chip in a lower molar when he speaks. Small sport non-in-ear earbud clipped to the left earlobe. Business-casual editor attire: a crisp open-collar shirt under a tailored blazer, reading glasses looped on a chain at his chest. The backdrop is an El Informador business desk, financial charts flickering on wall screens, warm office light over papers and a tablet. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino business journalist in his 40s. Stocky, comfortable build with a broad settled presence. Clear olive-tan skin with faint lines at the eyes and brow. Wavy dark hair with visible gray threading, neatly styled. Thick, slightly asymmetric brows over narrow, appraising eyes. Straight nose, round face with a strong prominent jawline. A slightly crooked smile, the left corner lifting more than the right, revealing a small chip in a lower molar when he speaks. Small sport non-in-ear earbud clipped to the left earlobe. Business-casual editor attire: a crisp open-collar shirt under a tailored blazer, reading glasses looped on a chain at his chest. The backdrop is a newsroom business desk, financial charts flickering on wall screens, warm office light over papers and a tablet. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

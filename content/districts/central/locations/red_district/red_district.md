@@ -1,12 +1,12 @@
 # Red District
 
-> Tags: `#landmark` `#red_district` `#adult_entertainment` `#nightlife` `#port_district`
+> Tags: `#landmark` `#red_district` `#adult_entertainment` `#nightlife` `#central_district` `#workers_settlement` `#historical`
 
-**Location:** En route to the port, Las Flores
+**Location:** En route to the port, Central District, Las Flores
 **Type:** Adult Entertainment District, Nightlife Hub, Mixed Commercial Area
 **Social Class:** Diverse—local residents, tourists, travelers, wealthy clients
-**Architectural Style:** Mixed commercial, contrasting upscale and older establishments
-**District:** Port District
+**Architectural Style:** Mixed commercial, contrasting upscale and older establishments from construction era
+**District:** Central District
 
 ## Overview
 
@@ -117,17 +117,26 @@ The district operates through informal governance systems:
 - **Protection Rackets:** Extortion and security arrangements
 - **Regulatory Camouflage:** Legitimate business fronts masking primary operations
 
+## Historical Development
+
+The Red District's origins trace back to the construction of Las Flores itself. When the city was being built in the 2030s, the old colonial settlement for workers extended from the old city center toward the road to the port. The original colonial city had a mountain road, but modern city construction required a better, more direct route to the port.
+
+As the worker settlement expanded along this new port road, distinct areas emerged:
+- **Zona Rosa** became the more commercial part of the settlement
+- **Iglesia Vieja** marked the location of the old colonial settlement and church
+- **Red District** formed where prostitutes settled — strategically positioned away from the Iglesia Vieja (to avoid moral opposition) but close to the port road and near Zona Rosa (to access commercial traffic and clientele)
+
+The prostitutes' settlement took root during the city's construction period and persisted. Even today, some of the older, narrower buildings in the Red District show their age from that original construction era, serving as visible reminders of the district's origins.
+
 ## Urban Context
 
 ### Location Significance:
-Positioned en route to the port, the Red District benefits from:
-- **Transient Population:** Constant flow of travelers, truckers, and maritime workers
-- **Transportation Access:** Easy reach via major routes connecting to port facilities
-- **Commercial Adjacency:** Proximity to legitimate businesses providing cover
-- **Isolation from Residential Areas:** Separation from family neighborhoods
-
-### Historical Development:
-The district's evolution reflects Las Flores's growth as a port city, with adult entertainment clustering near transportation hubs serving primarily male transient populations.
+Positioned en route to the port within Central District, the Red District benefits from:
+- **Transient Population:** Constant flow of travelers, truckers, and maritime workers heading to/from the Port District
+- **Transportation Access:** Easy reach via major routes connecting Central District to port facilities
+- **Commercial Adjacency:** Proximity to Zona Rosa's nightlife and legitimate businesses providing cover
+- **Strategic Placement:** Close enough to Central District's Iglesia Vieja and Zona Rosa for traffic, but sufficiently separated to maintain its distinct identity
+- **Isolation from Residential Areas:** Separation from family neighborhoods within Central District's suburban ring
 
 ## Safety and Legal Considerations
 
@@ -175,11 +184,14 @@ The Red District of Las Flores offers a stark look into the city's underbelly, w
 
 The district demonstrates how cities manage contradictory elements, maintaining public facades while accommodating private desires. The Red District is not merely a zone of vice but a sophisticated economic system that reflects Las Flores's character as a port city accommodating diverse needs and populations. It stands as a testament to the city's complexity, where light and shadow coexist in the same physical space, separated only by the setting sun.
 
-For more information about the surrounding district, see: [Port District](../../districts/port.md)
+For more information about the surrounding district, see: [Central District](../../districts/central.md)
 
 ## Related Locations
 
-- [Port of Las Flores](../infrastructure/port.md) - Maritime hub adjacent to the Red District
+- [Zona Rosa](zona_rosa.md) - Upscale entertainment district nearby, evolved from same worker settlement
+- [Iglesia Vieja](old_las_flores.md) - Old church marking the colonial settlement, located at a respectful distance
 - [Mercado Central](mercado_central.md) - Commercial marketplace in contrast to district commerce
+- [Port of Las Flores](../infrastructure/port.md) - Maritime hub at the end of the port road
 - [Plaza de la Constitución](plaza_de_la_constitucion.md) - Civic center in stark cultural contrast
 - [Train Station](../infrastructure/train_station.md) - Transportation hub serving transient populations
+- [Old Las Flores](old_las_flores.md) - Historic core preserving the colonial-era character

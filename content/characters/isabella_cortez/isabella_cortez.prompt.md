@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Isabella Cortez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/isabella_cortez/isabella_cortez.md
-**Target field:** `asset_paths.portrait` in `content/characters/isabella_cortez/char_isabella_cortez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 5'3" mini-market cashier and single mother in Las Flores. Long, wavy chestnut hair falls freely down her back with hypnotic grace. Sparkling green eyes, radiating warmth and mischief. Petite, slender yet curvy figure. Golden, sun-kissed skin. She wears fashionable yet provocative clothing — a colorful top and well-fitted jeans, gold hoop earrings, a small nose ring. Her expression is warm mischief — the look of a woman who thrives on attention but keeps her two children at the center of everything. The backdrop is a Las Flores residential neighborhood. Colorful murals on stucco walls, a small corner store visible behind her, warm afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 5'3" mini-market cashier and single mother in the city. Long, wavy chestnut hair falls freely down her back with hypnotic grace. Sparkling green eyes, radiating warmth and mischief. Petite, slender yet curvy figure. Golden, sun-kissed skin. She wears fashionable yet provocative clothing — a colorful top and well-fitted jeans, gold hoop earrings, a small nose ring. Her expression is warm mischief — the look of a woman who thrives on attention but keeps her two children at the center of everything. The backdrop is a residential neighborhood. Colorful murals on stucco walls, a small corner store visible behind her, warm afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

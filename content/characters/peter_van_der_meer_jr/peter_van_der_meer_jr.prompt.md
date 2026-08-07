@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Peter van der Meer Jr.
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/peter_van_der_meer_jr/peter_van_der_meer_jr.md
-**Target field:** `asset_paths.portrait` in `content/characters/peter_van_der_meer_jr/char_peter_van_der_meer_jr.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Dutch-Latina mixed man in his late 20s, athletic-compact build, clear olive-fair
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-Latina mixed man in his late 20s. Athletic-compact build, lean and poised. Clear olive-fair skin with a healthy warmth. Angular face with high cheekbones and a prominent jawline, wavy dark-blonde hair styled with easy confidence. Straight nose, round warm brown eyes, thick slightly asymmetric brows — one sits a fraction higher than the other — and full lips. A small scar near the right ear, a faint marker of a lived, active life. Self-assured advocate bearing, open and determined expression. Small sport non-in-ear earbud clipped to earlobe. Modern advocate attire: a fitted collared shirt with an Amor Verdadero pin at the chest, relaxed smart layers. The backdrop is a Las Flores community center hosting an advocacy event, understated pride-color banners and warm ambient light, softly blurred depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-Latina mixed man in his late 20s. Athletic-compact build, lean and poised. Clear olive-fair skin with a healthy warmth. Angular face with high cheekbones and a prominent jawline, wavy dark-blonde hair styled with easy confidence. Straight nose, round warm brown eyes, thick slightly asymmetric brows — one sits a fraction higher than the other — and full lips. A small scar near the right ear, a faint marker of a lived, active life. Self-assured advocate bearing, open and determined expression. Small sport non-in-ear earbud clipped to earlobe. Modern advocate attire: a fitted collared shirt with a small advocacy pin at the chest, relaxed smart layers. The backdrop is a community center hosting an advocacy event, understated pride-color banners and warm ambient light, softly blurred depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

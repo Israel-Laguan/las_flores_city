@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Electric Vehicle Zone
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/electric_vehicle_zone.md
-**Target field:** `scene.background_url` in `content/locations/location_electric_vehicle_zone.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

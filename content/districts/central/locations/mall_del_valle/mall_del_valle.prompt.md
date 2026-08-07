@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Mall del Valle
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/mall_del_valle.md
-**Target field:** `scene.background_url` in `content/locations/location_mall_del_valle.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

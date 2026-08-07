@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Javier Torres
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/javier_torres/javier_torres.md
-**Target field:** `asset_paths.portrait` in `content/characters/javier_torres/char_javier_torres.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his early 40s, stocky build, sun-damaged skin, curly dark hair wit
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early 40s. Stocky, solid build with a weathered, energetic presence. Sun-damaged warm-brown skin, practical and lived-in. Curly dark hair with gray streaks, cropped short and workable. Round face with a strong jawline and pronounced cheekbones. Hooded dark eyes, earnest and alert, thick brows, full lips, and a wide nose. A faded scar on his right forearm from cleanup campaigns, sun-damaged skin, callused hands. Gray streaks and thicker brows from years of outdoor work. Earnest, determined bearing. Small sport non-in-ear earbud clipped to earlobe. Practical activist outdoor wear: a rugged jacket over a work shirt, Humanity First vest, work boots. The backdrop is a cleanup site or community garden with environmental banners, open sky and warm daylight. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early 40s. Stocky, solid build with a weathered, energetic presence. Sun-damaged warm-brown skin, practical and lived-in. Curly dark hair with gray streaks, cropped short and workable. Round face with a strong jawline and pronounced cheekbones. Hooded dark eyes, earnest and alert, thick brows, full lips, and a wide nose. A faded scar on his right forearm, sun-damaged skin, callused hands. Gray streaks and thicker brows from years of outdoor work. Earnest, determined bearing. Small sport non-in-ear earbud clipped to earlobe. Practical activist outdoor wear: a rugged jacket over a work shirt, an activist vest, work boots. The backdrop is a cleanup site or community garden with environmental banners, open sky and warm daylight. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

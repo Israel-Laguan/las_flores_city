@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alejandro Flores
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alejandro_flores/alejandro_flores.md
-**Target field:** `asset_paths.portrait` in `content/characters/alejandro_flores/char_alejandro_flores.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 38-year-old middle manager at Vinícola La Hacienda. Tall, elegant build with a posture that says elite private-school discipline. Dark hair slicked back in a precise side part. Sharp angular features, high cheekbones, strong jawline. Keen green eyes — intelligent, appraising, and just capable of freezing a subordinate with a glance. He wears a perfectly tailored charcoal wool suit, crisp white shirt, silk tie in deep burgundy. A leather portfolio is tucked under one arm. A platinum wedding band catches the light on his left hand. His expression holds the faint tension of a man balancing high standards against the patience he does not always grant. The backdrop is a Vinícola La Hacienda executive office. Dark oak desk, wine catalogues, a glass of red wine half-full, shelves of vintage bottles. Warm lamplight pools on polished wood. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 38-year-old Latino man. Tall, elegant build with a posture of disciplined composure. Dark hair slicked back in a precise side part. Sharp angular features, high cheekbones, strong jawline. Keen green eyes — intelligent and appraising. He wears a perfectly tailored charcoal wool suit, crisp white shirt, silk tie in deep burgundy. A leather portfolio is tucked under one arm. A platinum wedding band catches the light on his left hand. His expression holds faint tension, a calm authority barely concealing impatience. The backdrop is an executive office with a dark oak desk, wine catalogues, a glass of red wine half-full, shelves of vintage bottles. Warm lamplight pools on polished wood. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

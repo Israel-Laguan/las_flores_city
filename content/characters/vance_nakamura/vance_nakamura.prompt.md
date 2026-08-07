@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Vance Nakamura
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/vance_nakamura/vance_nakamura.md
-**Target field:** `asset_paths.portrait` in `content/characters/vance_nakamura/char_vance_nakamura.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

@@ -8,9 +8,6 @@ consumer: thematic
 
 # Prompt: La Prensa (thematic art)
 
-**Type:** thematic
-**Source:** docs/lore/media/la_prensa/la_prensa.md
-**Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

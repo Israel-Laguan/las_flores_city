@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Konibo
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_konibo/carlos_konibo.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_konibo/char_carlos_konibo.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Shipibo-Konibo artisan and cultural entrepreneur in his late 30s. Broad-shouldered build from years of craftwork. Thick black hair, worn in a short practical cut with a few silver strands at the temples. Deep brown, warm and observant eyes. Warm brown complexion, weathered from outdoor work along the river. A traditional geometric tattoo on his right forearm. A beaded necklace of his own making around his throat. Calloused fingers stained with natural dyes from working with pigments. He wears a cream woven tunic with traditional Shipibo patterns along the collar. His expression is quiet pride — the bearing of a man who carries his people's legacy in his hands. The backdrop is a marketplace along Rio Las Flores. Colorful textiles hanging, pottery on display, lush green riverbank behind. Late afternoon light turning golden on the water. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Shipibo-Konibo man in his late 30s. Broad-shouldered build from years of craftwork. Thick black hair, worn in a short practical cut with a few silver strands at the temples. Deep brown, warm and observant eyes. Warm brown complexion, weathered from outdoor work along the river. A traditional geometric tattoo on his right forearm. A beaded necklace around his throat. Calloused fingers stained with natural dyes. He wears a cream woven tunic with traditional Shipibo patterns along the collar. His expression is quiet pride. The backdrop is a riverside marketplace. Colorful textiles hanging, pottery on display, lush green riverbank behind. Late afternoon light turning golden on the water. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

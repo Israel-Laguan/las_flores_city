@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alberto Ramirez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alberto_ramirez/alberto_ramirez.md
-**Target field:** `asset_paths.portrait` in `content/characters/alberto_ramirez/char_alberto_ramirez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 16-year-old South American boy. Slightly wide-set dark eyes hold restless uncertainty. Straight nose, strong jaw with faint stubble, warm olive-brown skin. Messy dark curly hair falls over a cheap sports jacket. A red sport earbud is clipped to his earlobe. A baseball cap sits slightly askew. He looks caught between two worlds — the safety of family and the allure of gang life. The backdrop is a working-class South Las Flores street corner at dusk. Rain-slicked asphalt reflects warm amber streetlights. Golden hour glow creates long shadows and soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 16-year-old South American boy. Slightly wide-set dark eyes hold restless uncertainty. Straight nose, strong jaw with faint stubble, warm olive-brown skin. Messy dark curly hair falls over a cheap sports jacket. A red sport earbud is clipped to his earlobe. A baseball cap sits slightly askew. He looks caught between two worlds — the safety of family and the allure of gang life. The backdrop is a working-class street corner at dusk. Rain-slicked asphalt reflects warm amber streetlights. Golden hour glow creates long shadows and soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

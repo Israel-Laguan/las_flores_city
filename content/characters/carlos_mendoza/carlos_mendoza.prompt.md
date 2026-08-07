@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Mendoza
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_mendoza/carlos_mendoza.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_mendoza/char_carlos_mendoza.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Elderly Latino man of about 68, aged lean-wiry build, long face, receding jaw, s
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Latino man of about 68. Aged, lean-wiry build. Long face with a receding jaw and subtle cheeks, a wide nose, hooded eyes beneath thick brows, thin lips. Weathered skin with a deep worry line between the brows from decades of fear, a slight tremor in his hands. Thin gray-white hair receding at the temples. Old engineer's clothes, a frayed collar, spectacles hanging on a chain, small sport non-in-ear earbud clipped to earlobe. Backdrop of a modest Old Las Flores apartment with blueprints and pipe diagrams spread across a table. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Latino man of about 68. Aged, lean-wiry build. Long face with a receding jaw and subtle cheeks, a wide nose, hooded eyes beneath thick brows, thin lips. Weathered skin with a deep worry line between the brows, a slight tremor in his hands. Thin gray-white hair receding at the temples. Old work clothes, a frayed collar, spectacles hanging on a chain, small sport non-in-ear earbud clipped to earlobe. Backdrop of a modest apartment with blueprints and pipe diagrams spread across a table. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

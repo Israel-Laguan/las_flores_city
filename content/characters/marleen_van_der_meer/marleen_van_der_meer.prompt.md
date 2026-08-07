@@ -10,10 +10,6 @@ consumer: portrait
 
 # Prompt: Marleen van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/marleen_van_der_meer/marleen_van_der_meer.md
-**Target field:** `portrait_urls[].url` in `content/characters/marleen_van_der_meer/char_marleen_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt — Draft

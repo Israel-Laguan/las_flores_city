@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Lacan
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_lacan/carlos_lacan.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_lacan/char_carlos_lacan.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

@@ -8,10 +8,6 @@ consumer: phaser-sprite
 
 # Prompt: Agenda (app icon)
 
-[CONSUMER: phaser-sprite]
-**Type:** app-icon
-**Dimensions:** 128×128
-**Target:** Phone OS app grid icon
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

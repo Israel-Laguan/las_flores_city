@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Roberto Mendoza
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/roberto_mendoza/roberto_mendoza.md
-**Target field:** `asset_paths.portrait` in `content/characters/roberto_mendoza/char_roberto_mendoza.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his 70s, lean-wiry aged build, weathered skin. Long face, receding
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his 70s. Lean-wiry aged build, stooped but dignified. Deeply weathered skin etched with lines accrued over decades. Long face with subtle cheekbones and a receding jawline, thin white hair receding from a high forehead. Curved nose with a broken-curve hint from an old injury, wide-set careful eyes, thick gray brows, and thin lined lips. Deep worry lines across the brow, a faded engineer scar across the back of one hand, and a slight tremor in his posture. Cautious, principled bearing, guarded yet thoughtful. Small sport non-in-ear earbud clipped to earlobe, old spectacles perched on his nose. Old engineer's clothes with a frayed collar, a worn cardigan over a checked shirt. The backdrop is a modest Old Las Flores apartment, walls covered in pipe diagrams and faded blueprints, warm lamplight and the quiet evidence of a lifetime of careful work. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his 70s. Lean-wiry aged build, stooped but dignified. Deeply weathered skin etched with lines accrued over decades. Long face with subtle cheekbones and a receding jawline, thin white hair receding from a high forehead. Curved nose with a broken-curve hint from an old injury, wide-set careful eyes, thick gray brows, and thin lined lips. Deep worry lines across the brow, a faded engineer scar across the back of one hand, and a slight tremor in his posture. Cautious, principled bearing, guarded yet thoughtful. Small sport non-in-ear earbud clipped to earlobe, old spectacles perched on his nose. Old engineer's clothes with a frayed collar, a worn cardigan over a checked shirt. The backdrop is a modest old city apartment, walls covered in pipe diagrams and faded blueprints, warm lamplight and the quiet evidence of a lifetime of careful work. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

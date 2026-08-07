@@ -9,9 +9,6 @@ consumer: logo
 
 # Prompt: PlayNetix logo
 
-[CONSUMER: logo]
-**Type:** logo
-**Source:** content/lore/media/platforms/playnetix/playnetix.md
 **Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt

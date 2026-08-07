@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: El Caimán
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/el_caiman/el_caiman.md
-**Target field:** `asset_paths.portrait` in `content/characters/el_caiman/char_el_caiman.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of the head of Las Flores' most powerful criminal syndicate. Black hair, slicked back, slightly receding at the temples. Dark brown, cold and calculating, heavy-lidded eyes. Medium height, stocky and powerful, thick neck. Deep olive skin, weathered and scarred. Thick mustache. Heavy gold chains around his neck. Tattoos on his forearms. Missing left pinky finger. A gold-capped front tooth catching the light. Scarred, heavy hands. He wears a dark cotton shirt open at the collar, thick rings on his remaining fingers. His expression is controlled menace — the deliberate slow stride of a man who has never had to hurry to be feared. The backdrop is an Industrial Zone warehouse interior. Concrete pillars, shipping containers stacked high, a single bare bulb. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of the head of the city's most powerful criminal syndicate. Black hair, slicked back, slightly receding at the temples. Dark brown, cold and calculating, heavy-lidded eyes. Medium height, stocky and powerful, thick neck. Deep olive skin, weathered and scarred. Thick mustache. Heavy gold chains around his neck. Tattoos on his forearms. Missing left pinky finger. A gold-capped front tooth catching the light. Scarred, heavy hands. He wears a dark cotton shirt open at the collar, thick rings on his remaining fingers. His expression is controlled menace — the deliberate slow stride of a man who has never had to hurry to be feared. The backdrop is an industrial zone warehouse interior. Concrete pillars, shipping containers stacked high, a single bare bulb. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

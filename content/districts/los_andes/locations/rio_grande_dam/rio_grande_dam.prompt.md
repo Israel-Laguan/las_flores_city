@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Rio Grande Dam
 
-**Type:** background
-**Source:** docs/lore/districts/rio_grande_dam.md
-**Target field:** `scene.background_url` in `content/locations/location_rio_grande_dam.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

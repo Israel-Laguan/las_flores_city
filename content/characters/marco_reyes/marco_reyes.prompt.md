@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Marco Reyes
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/marco_reyes/marco_reyes.md
-**Target field:** `asset_paths.portrait` in `content/characters/marco_reyes/char_marco_reyes.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his late sixties, square face, strong jawline, curved broken nose,
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his late sixties. Square face with a strong jawline, a curved, broken-set nose, and hooded eyes that carry decades of hard years on the docks. Thick brows, wide lips, thin gray-white hair receding from the crown. Broad, heavy build — a body built by hauling cargo. Weathered, scarred skin, deep lines carved by salt wind. Faded rope-burn scars cross his hands from three decades of dock work. A worn dockworker's jacket, a union cap, heavy boots. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is the Port District, stacks of shipping containers and cranes against grey sea light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his late sixties. Square face with a strong jawline, a curved, broken-set nose, and hooded eyes that carry decades of hard years on the docks. Thick brows, wide lips, thin gray-white hair receding from the crown. Broad, heavy build — a body built by hauling cargo. Weathered, scarred skin, deep lines carved by salt wind. Faded rope-burn scars cross his hands from three decades of dock work. A worn dockworker's jacket, a union cap, heavy boots. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is the port district docks, stacks of shipping containers and cranes against grey sea light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

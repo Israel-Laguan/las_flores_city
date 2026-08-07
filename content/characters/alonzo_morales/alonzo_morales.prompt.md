@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alonzo Morales
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alonzo_morales/alonzo_morales.md
-**Target field:** `asset_paths.portrait` in `content/characters/alonzo_morales/char_alonzo_morales.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

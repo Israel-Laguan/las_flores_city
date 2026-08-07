@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Centro Empresarial Chino-Latino
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/centro_empresarial_chino_latino.md
-**Target field:** `scene.background_url` in `content/locations/location_centro_empresarial_chino_latino.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

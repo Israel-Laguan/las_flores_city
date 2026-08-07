@@ -539,7 +539,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
 ## 1. Face Reference
 Use the horizontal and vertical face arcs from the biometric phase
-(\`content/characters/${slugify(name)}/${slugify(name)}_biometric.prompt.md\`).
+(\`content/characters/${slugify(name)}/${slugify(name)}.biometric.prompt.md\`).
 Ethnicity/face base and expressions are defined there.
 
 ## 2. Body Reference (minimal / plain clothes)
@@ -1029,7 +1029,7 @@ function processFile(filePath, type, force) {
   let outputPath;
   if (type === 'biometric' || type === 'character-sheet') {
     const slug = path.basename(filePath, '.yaml').replace(/^char_/, '');
-    const suffix = type === 'biometric' ? '_biometric' : '.character-sheet';
+    const suffix = type === 'biometric' ? '.biometric' : '.character-sheet';
     const dir = path.resolve('content/characters', slug);
     outputPath = path.join(dir, `${slug}${suffix}.prompt.md`);
   } else if (type === 'location-map') {
@@ -1072,10 +1072,53 @@ function processFile(filePath, type, force) {
   const prompt = generatePrompt(type, meta);
   if (!prompt) return false;
 
+  const finalContent = ensureFrontmatter(prompt, meta, type);
+
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, prompt, 'utf-8');
+  fs.writeFileSync(outputPath, finalContent, 'utf-8');
   console.log(`  ✅ Created: ${path.basename(outputPath)}`);
   return true;
+}
+
+/**
+ * Ensure a generated .prompt.md carries YAML frontmatter (name/type/size/
+ * consumer) as the single source of truth for metadata.
+ *
+ * Some templates already emit a frontmatter block; the rest emit body-only
+ * metadata. This prepends frontmatter (backfilled from body `**Type:**` /
+ * `**Dimensions:**` where needed) only when the content does not already
+ * begin with a `---` block, so it never double-wraps an existing block.
+ */
+function ensureFrontmatter(prompt, meta, type) {
+  if (/^---\n/.test(prompt)) return prompt;
+
+  const name = meta.name || 'Untitled';
+  const bodyTypeMatch = prompt.match(/\*\*Type:\*\*\s*(\S+)/);
+  const assetType = (meta.typeOverride || bodyTypeMatch?.[1] || type || 'portrait').trim();
+  const bodyDimMatch = prompt.match(/\*\*Dimensions:\*\*\s*(\d+)\s*[x×]\s*(\d+)/i);
+  const sizeValue = meta.sizeValue || (bodyDimMatch ? `${bodyDimMatch[1]}x${bodyDimMatch[2]}` : '1024x1024');
+  const consumer = meta.consumer || mapConsumer(assetType);
+
+  const fm = `---\nname: ${name}\ntype: ${assetType}\nsize: ${sizeValue}\nconsumer: ${consumer}\n---\n`;
+  return `${fm}${prompt}`;
+}
+
+function mapConsumer(type) {
+  const map = {
+    portrait: 'portrait',
+    biometric: 'biometric',
+    background: 'html-background',
+    tile: 'tile',
+    overlay: 'phaser-sprite',
+    'app-icon': 'phaser-sprite',
+    'phone-wallpaper': 'html-background',
+    thematic: 'thematic',
+    'outfit-pose': 'phaser-sprite',
+    'character-sheet': 'biometric',
+    expression: 'biometric',
+    location: 'phaser-sprite',
+  };
+  return map[type] || type;
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
@@ -1096,7 +1139,8 @@ function main() {
       entry.negatives = '';
       const prompt = generatePrompt(opts.type, entry);
       if (!prompt) { failed++; continue; }
-      fs.writeFileSync(outputPath, prompt, 'utf-8');
+      const finalContent = ensureFrontmatter(prompt, entry, opts.type);
+      fs.writeFileSync(outputPath, finalContent, 'utf-8');
       console.log(`  ✅ Created: ${path.basename(outputPath)}`);
       success++;
     }

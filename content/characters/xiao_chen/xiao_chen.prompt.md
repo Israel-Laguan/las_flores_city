@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Xiao Chen
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/xiao_chen/xiao_chen.md
-**Target field:** `asset_paths.portrait` in `content/characters/xiao_chen/char_xiao_chen.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Dragon Head
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/dragon_head/dragon_head.md
-**Target field:** `asset_paths.portrait` in `content/characters/dragon_head/char_dragon_head.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of Dragon Head, whose real name is Hong Kou — the enigmatic leader of Las Flores' most formidable Chinese mafia group. Silver-white hair, cropped close in a military-style cut. Dark brown, cold and penetrating, heavy-lidded eyes. Tall and lean, carries himself with controlled precision — no wasted movement. Pale, weathered skin with fine lines around eyes and mouth. Thin gold-rimmed spectacles. A jade ring on his right pinky finger. He wears an immaculate tailored suit, the kind that signals power without needing logos or ornament. His expression is silent authority — the leader whose reach connects Las Flores' underworld to Beijing, who moves through his own organization like a shadow. The backdrop is a Chinatown back room. Dark wood paneling, a half-empty porcelain tea cup, maps and ledgers spread on a low table. Single warm lamp light against surrounding dark. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an elderly Chinese man. Silver-white hair, cropped close in a military-style cut. Dark brown, cold and penetrating, heavy-lidded eyes. Tall and lean, carries himself with controlled precision — no wasted movement. Pale, weathered skin with fine lines around the eyes and mouth. Thin gold-rimmed spectacles. A jade ring on his right pinky finger. He wears an immaculate tailored suit, the kind that signals power without needing logos or ornament. His expression is silent authority. The backdrop is a dim back room with dark wood paneling, a half-empty porcelain tea cup, maps and ledgers spread on a low table, a single warm lamp light against surrounding dark. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Amina Patel
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/amina_patel/amina_patel.md
-**Target field:** `asset_paths.portrait` in `content/characters/amina_patel/char_amina_patel.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mid-30s South Asian Indian finance manager at China Lithium & Metals. Jet-black, thick straight hair worn in a neat bun at the nape of her neck. Dark brown, almost-black eyes — observant, cautious, reading the room before she speaks. Petite, compact frame with precise, deliberate movements. Deep brown, smooth complexion. A small gold nose stud on her left nostril. Round wire-rimmed glasses. A thin silver bangle on her right wrist that she turns when thinking. She wears a crisp white silk blouse and a tailored navy blazer — the uniform of the competent woman who does not want to be noticed. Her expression is calm reserve, eyes behind the glasses assessing and withholding. The backdrop is a CLM corporate office. Glass walls, a workstation with a financial display, the Las Flores skyline beyond. Cool fluorescent light, minimal decoration. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mid-30s South Asian Indian woman. Jet-black, thick straight hair worn in a neat bun at the nape of her neck. Dark brown, almost-black eyes — observant, cautious. Petite, compact frame with precise, deliberate movements. Deep brown, smooth complexion. A small gold nose stud on her left nostril. Round wire-rimmed glasses. A thin silver bangle on her right wrist. She wears a crisp white silk blouse and a tailored navy blazer. Her expression is calm reserve, eyes behind the glasses assessing and withholding. The backdrop is a corporate office. Glass walls, a workstation with a financial display, a city skyline beyond. Cool fluorescent light, minimal decoration. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

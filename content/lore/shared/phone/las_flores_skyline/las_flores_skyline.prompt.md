@@ -8,10 +8,6 @@ consumer: html-background
 
 # Prompt: Las Flores Skyline (phone wallpaper)
 
-[CONSUMER: html-background]
-**Type:** phone-wallpaper
-**Dimensions:** 1080×1920
-**Target:** Phone OS home screen wallpaper
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

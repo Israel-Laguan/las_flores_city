@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Manuel Ortega
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/manuel_ortega/manuel_ortega.md
-**Target field:** `asset_paths.portrait` in `content/characters/manuel_ortega/char_manuel_ortega.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his early sixties, long face, strong jawline, wide nose with a bro
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early sixties. Long face with a strong jawline, weathered and lined from a hard life at sea. Wide nose carrying a faint broken-curve hint, deep-set eyes watchful and knowing. Thin gray-white hair, receding from the temples, thick brows over deep-set eyes, deep lines etched into salt-stained, scarred skin. A faded smuggling scar crosses his right cheek. Lean, wiry build — a lifetime of hauling nets rather than gym hours. Weathered fisherman's layers, practical clothes suited to Old Las Flores. Salt-stained, callused hands. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is an Old Las Flores dock or back-room, coils of fishing nets and wooden crates, muted harbor light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early sixties. Long face with a strong jawline, weathered and deeply lined. Wide nose carrying a faint broken-curve hint, deep-set eyes watchful and knowing. Thin gray-white hair receding from the temples. Thick brows and deep lines etched into pale, salt-stained, scarred skin. A faded scar crosses his right cheek. Lean, wiry build — slender, weatherworn, with salt-stained, callused hands. Weathered fisherman's layers, practical clothes suited to dock work. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is a dock or back-room with coils of fishing nets and wooden crates under muted harbor light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

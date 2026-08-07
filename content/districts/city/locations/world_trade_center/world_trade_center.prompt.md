@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: World Trade Center Las Flores
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/city/landmarks/world_trade_center/world_trade_center.md
-**Target field:** `scene.background_url` in `content/districts/city/locations/world_trade_center/location_world_trade_center.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

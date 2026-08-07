@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alexandra Isabel Morales
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alexandra_isabel_morales/alexandra_isabel_morales.md
-**Target field:** `asset_paths.portrait` in `content/characters/alexandra_isabel_morales/char_alexandra_isabel_morales.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 28-year-old language teacher in San Pedro de los Pescadores. Long, straight black hair worn in loose waves or a sleek low ponytail. Warm almond-shaped dark brown eyes, expressive and bright. Petite and slender with a graceful posture. Warm ivory complexion with a natural flush to the cheeks. High cheekbones, a delicate nose, carefully manicured nails. Small gold hoop earrings catch the light. She wears a tailored navy blazer over a cream blouse with understated chic accessories — a thin chain necklace, a simple ring. Her expression is warm and open, a subtle knowing half-smile playing at the corner of her mouth — the polished city girl who grew up in Old Las Flores and carries both worlds in her posture. The backdrop is a San Pedro language classroom. Whiteboard with half-written Chinese characters, bookshelves, a desk covered in travel posters. Soft daylight from large windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 28-year-old Latina woman. Long, straight black hair worn in loose waves or a sleek low ponytail. Warm almond-shaped dark brown eyes, expressive and bright. Petite and slender with a graceful posture. Warm ivory complexion with a natural flush to the cheeks. High cheekbones, a delicate nose, carefully manicured nails. Small gold hoop earrings catch the light. She wears a tailored navy blazer over a cream blouse with understated chic accessories — a thin chain necklace, a simple ring. Her expression is warm and open, a subtle knowing half-smile playing at the corner of her mouth. The backdrop is a language classroom with a whiteboard half-written with Chinese characters, bookshelves, a desk covered in travel posters. Soft daylight from large windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

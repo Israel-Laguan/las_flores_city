@@ -10,17 +10,13 @@ consumer: portrait
 
 # Prompt: Zheng Wuhao
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** docs/lore/figures/zheng_wuhao.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_zheng_wuhao.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky in his early 50s Chinese Photorealistic portrait of Zheng Wuhao. Her frame is stocky, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, tired guarded. Her expression is weathered, as she holds a steady, weathered composure. Her black short hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky  in his early 50s Chinese Photorealistic portrait of Zheng Wuhao. Her frame is stocky, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, tired guarded. Her expression is weathered, as she holds a steady, weathered composure. Her black short hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky Chinese man in his early 50s. His frame is stocky and sturdy, un-sculpted and natural. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes and dark brown, tired and guarded eyes. His expression is weathered, as he holds a steady, weathered composure. His black short hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

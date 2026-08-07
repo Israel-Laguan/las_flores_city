@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Southeast Barrio
 
-[CONSUMER: background]
-**Type:** background
-**Source:** southeast.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_southeast.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

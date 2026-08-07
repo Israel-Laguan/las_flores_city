@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Isabella Vasquez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/isabella_vasquez/isabella_vasquez.md
-**Target field:** `asset_paths.portrait` in `content/characters/isabella_vasquez/char_isabella_vasquez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her early 40s, athletic-compact former-model build, striking and
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 40s. Athletic-compact build with a striking, graceful former-model presence. Clear warm complexion. Wavy chestnut hair, styled and glossy, arranged in an elegant shape. Heart-shaped face with a soft jawline and high cheekbones — one cheekbone sits a fraction higher than the other. Wide-set dark eyes with a sharp, appraising warmth, gently arched brows, full lips, and a subtly curved nose. A tiny scar near one hairline, subtle lines around the eyes, and a faint brow droop that soften an otherwise polished face. Calm society-mogul poise with a faint knowing smile. Small sport non-in-ear earbud clipped to earlobe. Elegant high-society attire: a tailored blazer over a silk blouse, tasteful statement jewelry. The backdrop is The Chronicle's polished marble-and-glass offices, framed society photos lining the wall, soft ambient light. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 40s. Athletic-compact build with a striking, graceful former-model presence. Clear warm complexion. Wavy chestnut hair, styled and glossy, arranged in an elegant shape. Heart-shaped face with a soft jawline and high cheekbones — one cheekbone sits a fraction higher than the other. Wide-set dark eyes with a sharp, appraising warmth, gently arched brows, full lips, and a subtly curved nose. A tiny scar near one hairline, subtle lines around the eyes, and a faint brow droop that soften an otherwise polished face. A faint knowing smile. Small sport non-in-ear earbud clipped to earlobe. Elegant high-society attire: a tailored blazer over a silk blouse, tasteful statement jewelry. The backdrop is a polished marble-and-glass newsroom office, framed society photos lining the wall, soft ambient light. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

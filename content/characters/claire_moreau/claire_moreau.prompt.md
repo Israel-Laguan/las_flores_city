@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Claire Moreau
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/claire_moreau/claire_moreau.md
-**Target field:** `asset_paths.portrait` in `content/characters/claire_moreau/char_claire_moreau.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 45-year-old French spiritual yogini and hostess by the Las Flores port. Long, flowing chestnut hair that moves like water. Striking green eyes, luminous and calm. A stunning physique shaped by years of yoga practice and a healthy lifestyle. Fair skin with a light tan from the coastal sun. She wears a flowing bohemian dress in muted tones, a jade pendant around her throat — the ocean and the spiritual life intertwined on her body. Her expression is warm charisma — the look of a woman who has turned grief into generosity, who opens her home and her heart to anyone who needs a safe space. The backdrop is her seaside terrace at dawn. Ocean stretching to the horizon, the sound of waves, yoga mats rolled at the edge. Soft early light, the promise of a meditation session to come. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 45-year-old French spiritual yogini and hostess by the port. Long, flowing chestnut hair that moves like water. Striking green eyes, luminous and calm. A stunning physique shaped by years of yoga practice and a healthy lifestyle. Fair skin with a light tan from the coastal sun. She wears a flowing bohemian dress in muted tones, a jade pendant around her throat — the ocean and the spiritual life intertwined on her body. Her expression is warm charisma — the look of a woman who has turned grief into generosity, who opens her home and her heart to anyone who needs a safe space. The backdrop is her seaside terrace at dawn. Ocean stretching to the horizon, the sound of waves, yoga mats rolled at the edge. Soft early light, the promise of a meditation session to come. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

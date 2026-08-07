@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Sofia Delgado
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/sofia_delgado/sofia_delgado.md
-**Target field:** `asset_paths.portrait` in `content/characters/sofia_delgado/char_sofia_delgado.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her early 20s, radiant beach-vendor energy, heart-shaped face, s
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 20s. Heart-shaped face with a soft, rounded jaw, pronounced cheekbones catching the coastal light, a pointed nose, and round warm brown eyes full of easy charisma. Arched brows and full lips give her an open, sun-bright demeanor. Athletic-compact build, lean and sure from a life on the water. Sun-damaged warm brown skin flecked with sun-freckles across the nose and cheeks, and a faint pale scar running along her left forearm from years of fishing work. Wavy dark hair sun-lightened at the ends, loosely tied back. Her smile sits slightly deeper on one side, a natural asymmetry that reads as genuine and approachable. Small sport non-in-ear earbud clipped to her earlobe. Practical beach-vendor clothing: rolled sleeves, a canvas apron dusted with seafood, wet with salt spray. The backdrop is Bahia de las Olas at bright midday - fishing boats bobbing at the docks, seafood stalls with ice and catch, hard coastal sunlight, salt-bright air. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 20s. Heart-shaped face with a soft, rounded jaw, pronounced cheekbones catching the coastal light, a pointed nose, and round warm brown eyes full of easy charisma. Arched brows and full lips give her an open, sun-bright demeanor. Athletic-compact build, lean and sure from a life on the water. Sun-damaged warm brown skin flecked with sun-freckles across the nose and cheeks, and a faint pale scar running along her left forearm from years of fishing work. Wavy dark hair sun-lightened at the ends, loosely tied back. Her smile sits slightly deeper on one side, a natural asymmetry that reads as genuine and approachable. Small sport non-in-ear earbud clipped to her earlobe. Practical beach-vendor clothing: rolled sleeves, a canvas apron dusted with seafood, wet with salt spray. The backdrop is the bay at bright midday - fishing boats bobbing at the docks, seafood stalls with ice and catch, hard coastal sunlight, salt-bright air. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

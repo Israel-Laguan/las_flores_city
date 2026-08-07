@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Meadowbrook Estates
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/meadowbrook_estates.md
-**Target field:** `scene.background_url` in `content/locations/location_meadowbrook_estates.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

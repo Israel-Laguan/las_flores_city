@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Rafaela
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/rafaela/rafaela.md
-**Target field:** `asset_paths.portrait` in `content/characters/rafaela/char_rafaela.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her 50s, athletic-compact build, clear skin. Heart-shaped face, 
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her 50s. Athletic-compact build, poised and graceful. Clear skin with the subtle fine lines of a life well-lived. Heart-shaped face with high cheekbones and a receding jawline that softens her features, wavy dark hair elegantly styled with graceful gray streaks. Wide nose, almond-shaped eyes, gently arched brows with a slight droop — one drooping a touch more than the other — and full lips, with a faint line etched near the right side of the mouth from candid, plain-spoken years. Poised socialite bearing, warm yet unguarded. Small sport non-in-ear earbud clipped to earlobe. Well-to-do attire: an elegant blouse with tasteful jewelry at the neck and ears. The backdrop is a van der Meer family setting or tasteful interview studio, warm soft light pooling behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her 50s. Athletic-compact build, poised and graceful. Clear skin with the subtle fine lines of a life well-lived. Heart-shaped face with high cheekbones and a receding jawline that softens her features, wavy dark hair elegantly styled with graceful gray streaks. Wide nose, almond-shaped eyes, gently arched brows with a slight droop — one drooping a touch more than the other — and full lips, with a faint line etched near the right side of the mouth from candid, plain-spoken years. Poised socialite bearing, warm yet unguarded. Small sport non-in-ear earbud clipped to earlobe. Well-to-do attire: an elegant blouse with tasteful jewelry at the neck and ears. The backdrop is a warm family home setting or tasteful interview studio, warm soft light pooling behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

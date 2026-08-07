@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Camila Reyes
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/camila_reyes/camila_reyes.md
-**Target field:** `asset_paths.portrait` in `content/characters/camila_reyes/char_camila_reyes.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

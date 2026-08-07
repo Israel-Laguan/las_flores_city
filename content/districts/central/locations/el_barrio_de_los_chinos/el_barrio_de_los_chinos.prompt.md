@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: El Barrio de los Chinos
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/el_barrio_de_los_chinos.md
-**Target field:** `scene.background_url` in `content/locations/location_el_barrio_de_los_chinos.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

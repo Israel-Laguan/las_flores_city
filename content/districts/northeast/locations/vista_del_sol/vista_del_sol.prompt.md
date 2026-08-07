@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Vista Del Sol
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/vista_del_sol.md
-**Target field:** `scene.background_url` in `content/locations/location_vista_del_sol.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

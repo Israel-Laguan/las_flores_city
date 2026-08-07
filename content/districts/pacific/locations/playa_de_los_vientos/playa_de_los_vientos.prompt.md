@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Playa de los Vientos
 
-**Type:** background
-**Source:** docs/lore/districts/playa_de_los_vientos.md
-**Target field:** `scene.background_url` in `content/locations/location_playa_de_los_vientos.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

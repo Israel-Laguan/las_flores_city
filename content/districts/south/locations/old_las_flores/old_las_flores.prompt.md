@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Old Las Flores
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/old_las_flores.md
-**Target field:** `scene.background_url` in `content/locations/location_old_las_flores.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

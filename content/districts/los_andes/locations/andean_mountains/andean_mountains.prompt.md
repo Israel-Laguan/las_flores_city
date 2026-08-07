@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Andean Mountains
 
-**Type:** background
-**Source:** docs/lore/districts/andean_mountains.md
-**Target field:** `scene.background_url` in `content/locations/location_andean_mountains.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

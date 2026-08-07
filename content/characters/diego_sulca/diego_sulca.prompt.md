@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Diego Sulca
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/diego_sulca/diego_sulca.md
-**Target field:** `asset_paths.portrait` in `content/characters/diego_sulca/char_diego_sulca.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 19-year-old Environmental Science student from San Pedro de los Pescadores and Old Las Flores. Lean, athletic build from years of helping his mother with fishing. Dark, curly hair, slightly rumpled from the sea breeze. Warm brown eyes reflecting kindness but also shyness — the look of someone who would rather be on the water than in a lecture hall. Light brown skin with warm olive undertones. He wears a rumpled faded university hoodie and cargo pants, scuffed sneakers — the practical clothes of a working-class kid who does not belong to either world fully. A charango rests beside him, its wood worn from use. His expression is quiet kindness with a flicker of self-doubt — the boy who knows the mountains don't judge you for your grades. The backdrop is the university campus edge, looking out toward the ocean. Eucalyptus trees, the Pacific visible in the distance. Late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 19-year-old indigenous Latino man. Lean, athletic build from years of fishing work. Dark, curly hair, slightly rumpled from the sea breeze. Warm brown eyes reflecting kindness and shyness. Light brown skin with warm olive undertones. He wears a rumpled faded university hoodie and cargo pants, scuffed sneakers. A charango rests beside him, its wood worn from use. His expression is quiet kindness with a flicker of self-doubt. The backdrop is a university campus edge, looking out toward the ocean — eucalyptus trees, the Pacific visible in the distance, in late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

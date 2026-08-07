@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Ethan Zhang-Morales
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/ethan_zhang_morales/ethan_zhang_morales.md
-**Target field:** `asset_paths.portrait` in `content/characters/ethan_zhang_morales/char_ethan_zhang_morales.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 21-year-old Mechanical Engineering student of mixed Chinese and Latino heritage from a multicultural neighborhood near the Las Flores port. Somewhat chubby, with a rounded face and a noticeable double chin. Short, messy black hair. Round glasses that often slip down his nose. Expressive brown eyes twinkling with mischief. A goofy, lopsided smile — endearing and slightly annoying at the same time. He wears a faded oversized anime graphic tee and comfortable cargo pants. His posture is relaxed, self-assured, a little too pleased with himself. His expression is charmless charm — the proudly goofy kid who trolls online communities but still wants you to like him. The backdrop is student housing near the port. Bare walls, anime posters, a half-disassembled machine on a desk. Afternoon light through a smudged window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 21-year-old Mechanical Engineering student of mixed Chinese and Latino heritage from a multicultural neighborhood near the port. Somewhat chubby, with a rounded face and a noticeable double chin. Short, messy black hair. Round glasses that often slip down his nose. Expressive brown eyes twinkling with mischief. A goofy, lopsided smile — endearing and slightly annoying at the same time. He wears a faded oversized anime graphic tee and comfortable cargo pants. His posture is relaxed, self-assured, a little too pleased with himself. His expression is charmless charm — the proudly goofy kid who trolls online communities but still wants you to like him. The backdrop is student housing near the port. Bare walls, anime posters, a half-disassembled machine on a desk. Afternoon light through a smudged window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

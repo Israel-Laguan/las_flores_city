@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Emilio Reyes
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/emilio_reyes/emilio_reyes.md
-**Target field:** `asset_paths.portrait` in `content/characters/emilio_reyes/char_emilio_reyes.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a disgraced Andean District councilman and judge accused of accepting bribes to suppress evidence in the Minera Estrella case. Dark brown hair, thinning, combed carefully to cover it. Dark brown, shifty and evasive eyes that will not hold a steady gaze. Medium height, slightly overweight, soft hands. Medium brown skin, smooth but lined around the mouth from stress. A thin mustache. A nervous habit of adjusting his tie. Sweat on his brow even in a cool room. He wears a cheap gray suit, poorly pressed — the uniform of a man who has lost the authority he once wore. His expression is defensive unease — the face of someone dodging a question he cannot answer. The backdrop is an Andean District courthouse corridor. Faded institutional paint, a wooden door, fluorescent light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a middle-aged Latino man. Dark brown hair, thinning, combed carefully to cover it. Dark brown, shifty and evasive eyes that will not hold a steady gaze. Medium height, slightly overweight, soft hands. Medium brown skin, smooth but lined around the mouth from stress. A thin mustache. A nervous habit of adjusting his tie. Sweat on his brow even in a cool room. He wears a cheap gray suit, poorly pressed. His expression is defensive unease. The backdrop is a courthouse corridor — faded institutional paint, a wooden door, fluorescent light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

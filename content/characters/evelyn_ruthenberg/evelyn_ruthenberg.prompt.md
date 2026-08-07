@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Evelyn Ruthenberg
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/evelyn_ruthenberg/evelyn_ruthenberg.md
-**Target field:** `asset_paths.portrait` in `content/characters/evelyn_ruthenberg/char_evelyn_ruthenberg.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 48-year-old former engineer turned shadow investigator and vigilante — the phantom who dismantled the architects of the Great Lithium Leak. Dark brown hair with premature gray streaks, usually tied back in a practical ponytail. Steel blue eyes — cold, calculating, rarely blinking. Lean and wiry build that moves with predatory efficiency. Fair skin, weathered and lined beyond her years, small scars on her hands from years of clandestine work. A thin white scar along her left jawline from the gang attack that nearly killed her. Dark circles under her eyes. She wears dark, practical clothing — a worn leather jacket within reach, a small flashlight clipped to her belt. No jewelry except a plain silver watch. Her expression is the stillness of someone who has spent twenty years working in the dark — patient, severe, and utterly without illusions about the system. The backdrop is a shadowy Las Flores alley at night. Weathered brick, distant neon glow, a single overhead light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 48-year-old Caucasian woman. Dark brown hair with premature gray streaks, usually tied back in a practical ponytail. Steel blue eyes — cold, calculating, rarely blinking. Lean and wiry build. Fair skin, weathered and lined beyond her years, small scars on her hands. A thin white scar along her left jawline. Dark circles under her eyes. She wears dark, practical clothing — a worn leather jacket, a small flashlight clipped to her belt. No jewelry except a plain silver watch. Her expression is patient and severe — a still, watchful calm. The backdrop is a shadowy city alley at night. Weathered brick, distant neon glow, a single overhead light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

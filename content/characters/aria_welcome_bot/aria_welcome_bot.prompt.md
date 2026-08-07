@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: ARIA
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/aria_welcome_bot/aria_welcome_bot.md
-**Target field:** `asset_paths.portrait` in `content/characters/aria_welcome_bot/char_aria_welcome_bot.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

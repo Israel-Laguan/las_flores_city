@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Luz del Río Energy Plant
 
-**Type:** background
-**Source:** docs/lore/districts/luz_del_r_o_energy_plant.md
-**Target field:** `scene.background_url` in `content/locations/location_luz_del_r_o_energy_plant.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

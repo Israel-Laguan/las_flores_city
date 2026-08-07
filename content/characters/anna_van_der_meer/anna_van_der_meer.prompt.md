@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Anna van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/anna_van_der_meer/anna_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/anna_van_der_meer/char_anna_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of the 36-year-old CEO of Van der Meer Industries and social advocate. Athletic, toned build shaped by an active lifestyle and love of outdoor pursuits. Dark brown hair, usually styled in a practical but elegant manner. Deep blue eyes — intelligent, appraising, and capable of genuine warmth. Oval face with an open, approachable bearing. She wears a tailored charcoal suit, crisp white shirt, a simple platinum band on her left hand — the mark of her marriage to Han Jr. Her expression is empathetic composure — someone who moves through elite circles with grace but never lost her conscience. The backdrop is a Van der Meer Industries executive office in Old Las Flores. Dark wood, a photograph of her father Jan on the credenza, a window showing the Las Flores skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 36-year-old Dutch woman. Athletic, toned build shaped by an active lifestyle. Dark brown hair, usually styled in a practical but elegant manner. Deep blue eyes — intelligent, appraising, and capable of genuine warmth. Oval face with an open, approachable bearing. She wears a tailored charcoal suit, crisp white shirt, a simple platinum band on her left hand. Her expression is empathetic composure. The backdrop is a corporate executive office in an old city district. Dark wood, a photograph of an older man on the credenza, a window showing a city skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

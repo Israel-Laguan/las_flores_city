@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Daniel Carter
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/daniel_carter/daniel_carter.md
-**Target field:** `asset_paths.portrait` in `content/characters/daniel_carter/char_daniel_carter.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Canadian settler in his mid-60s, broad heavy build, weathered wind-crinkled skin
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Canadian settler in his mid-60s. Broad, heavy build with a grounded, weathered presence. Wind-crinkled, sun-worn skin etched with deep forehead lines and creases beside the eyes. Thin gray-white hair receding from the crown, cropped short and practical. Square face with a receding jawline softened by age. Thick, heavy brows over warm round eyes, their gaze steady and quietly benevolent. Straight nose, the cartilage carrying a slight age-related offset. A faded old scar crosses one brow, adding character to a lined, weathered face. Small sport non-in-ear earbud clipped to the left earlobe. Practical clothing: a weathered field jacket with a rolled collar and a small Humanity First lapel pin, sturdy walking boots framing the base. The backdrop is a warm Humanity First community hall, handmade banners and worn wooden benches, soft communal light slanting through high windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Canadian settler in his mid-60s. Broad, heavy build with a grounded, weathered presence. Wind-crinkled, sun-worn skin etched with deep forehead lines and creases beside the eyes. Thin gray-white hair receding from the crown, cropped short and practical. Square face with a receding jawline softened by age. Thick, heavy brows over warm round eyes, their gaze steady and quietly benevolent. Straight nose, the cartilage carrying a slight age-related offset. A faded old scar crosses one brow, adding character to a lined, weathered face. Small sport non-in-ear earbud clipped to the left earlobe. Practical clothing: a weathered field jacket with a rolled collar and a small lapel pin, sturdy walking boots framing the base. The backdrop is a warm community hall, handmade banners and worn wooden benches, soft communal light slanting through high windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

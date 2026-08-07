@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Meilin Chen
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/meilin_chen/meilin_chen.md
-**Target field:** `asset_paths.portrait` in `content/characters/meilin_chen/char_meilin_chen.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Chinese businessperson in her mid-20s, lean-wiry sharp build, clear smooth skin.
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese businessperson in her mid-20s. Lean-wiry sharp build with a quick, enterprising presence. Clear smooth skin. Round face with a soft jaw and subtle cheekbones. Narrow nose, almond eyes, flat brows, full lips. Sleek straight dark hair, a tiny scar near the right eyebrow, one cheekbone subtly less pronounced than the other. Shrewd keen bearing, a quick appraising expression. Smart casual business-leaning attire: a fitted blouse over tailored trousers, a sport earbud clipped to her earlobe. The backdrop is the Las Flores commercial district, a shopfront or bustling market with colorful stalls and soft afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese businessperson in her mid-20s. Lean-wiry sharp build with a quick, enterprising presence. Clear smooth skin. Round face with a soft jaw and subtle cheekbones. Narrow nose, almond eyes, flat brows, full lips. Sleek straight dark hair, a tiny scar near the right eyebrow, one cheekbone subtly less pronounced than the other. Shrewd keen bearing, a quick appraising expression. Smart casual business-leaning attire: a fitted blouse over tailored trousers, a sport earbud clipped to her earlobe. The backdrop is the commercial district, a shopfront or bustling market with colorful stalls and soft afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

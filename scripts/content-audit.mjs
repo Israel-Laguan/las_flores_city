@@ -90,13 +90,19 @@ function checkExpressionAssets(typeDef, folder, slug, displayPath) {
 function scanFolder(typeDef, folder, slug, displayPath) {
   const yamlFile = path.join(folder, `${typeDef.prefix}${slug}.yaml`);
   const mdFile = path.join(folder, `${slug}.md`);
-  const promptFile = path.join(folder, `${slug}.prompt.md`);
   const assetsDir = path.join(folder, 'assets');
   const defaultPng = path.join(assetsDir, `${slug}__default.png`);
 
+  // Accept any `*.prompt.md` in the folder as satisfying the prompt-file
+  // requirement. This supports typed variants — e.g. `<slug>.<type>.prompt.md`
+  // (biometric, character-sheet, map) alongside the primary `<slug>.prompt.md`.
+  // Convention: docs/PROMPT_FILE_LAYOUT.md.
+  const hasPrompt = fs.existsSync(path.join(folder, `${slug}.prompt.md`))
+    || fs.readdirSync(folder, { withFileTypes: true })
+        .some(e => e.isFile() && e.name.endsWith('.prompt.md'));
+
   const hasYaml = fs.existsSync(yamlFile);
   const hasMd = fs.existsSync(mdFile);
-  const hasPrompt = fs.existsSync(promptFile);
   const hasAssets = fs.existsSync(assetsDir);
   const hasDefaultPng = fs.existsSync(defaultPng);
 

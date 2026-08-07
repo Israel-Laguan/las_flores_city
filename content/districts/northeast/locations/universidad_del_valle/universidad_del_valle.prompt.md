@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Universidad del Valle
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/universidad_del_valle.md
-**Target field:** `scene.background_url` in `content/locations/location_universidad_del_valle.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

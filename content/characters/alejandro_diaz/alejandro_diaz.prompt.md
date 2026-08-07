@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alejandro Díaz
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alejandro_diaz/alejandro_diaz.md
-**Target field:** `asset_paths.portrait` in `content/characters/alejandro_diaz/char_alejandro_diaz.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 45-year-old Latino local authority figure in San Pedro de los Pescadores. Sharp, cunning green eyes — the kind that appraise before they greet. Strong prominent nose, angular defined jaw with a faint scar across the left eyebrow from a past deal gone wrong. Salt-and-pepper hair slicked back with a casual, studied flair. Sturdy build, slightly disheveled — an ill-fitting suit jacket with a flashy silk tie is his attempt at authority. A small gold pinky ring catches the light. His expression is smooth-talking charm held just below the surface. The backdrop is a San Pedro municipal office. Faded institutional paint, half-empty coffee mug on a metal desk, fluorescent light mixed with window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 45-year-old Latino man. Sharp, cunning green eyes. Strong prominent nose, angular defined jaw with a faint scar across the left eyebrow. Salt-and-pepper hair slicked back with a casual, studied flair. Sturdy build, slightly disheveled — an ill-fitting suit jacket with a flashy silk tie. A small gold pinky ring catches the light. His expression is smooth-talking charm held just below the surface. The backdrop is a municipal office. Faded institutional paint, half-empty coffee mug on a metal desk, fluorescent light mixed with window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

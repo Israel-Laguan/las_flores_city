@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Zhang Liang
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/zhang_liang/zhang_liang.md
-**Target field:** `asset_paths.portrait` in `content/characters/zhang_liang/char_zhang_liang.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Chinese man in his early 50s, prudent strategist presence, round face, prominent
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese man in his early 50s. Round face with a prominent, solid jaw, subtle cheekbones, and a narrow nose. His deep-set eyes hold a steady, prudent intelligence; thick brows and thin lips frame a face of quiet, watchful strategy. Soft-rounded, prosperous build that reads as settled and deliberate. Clear, cared-for skin with a small mole on his right cheek and a faint line between his brows from years of concentration; one brow sits a fraction lower than the other, a subtle asymmetry beneath his composed demeanor. Straight dark hair graying and receding from the temples. Small sport non-in-ear earbud clipped to his earlobe. CFO executive attire: a tailored suit under LW Group's subtle branding, with a slim financial tablet in hand. The backdrop is an LW Group finance office, wall displays of economic charts and China-Las Flores trade data, cool corporate light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese man in his early 50s. Round face with a prominent, solid jaw, subtle cheekbones, and a narrow nose. His deep-set eyes hold a steady, prudent intelligence; thick brows and thin lips frame a face of quiet, watchful strategy. Soft-rounded, prosperous build that reads as settled and deliberate. Clear, cared-for skin with a small mole on his right cheek and a faint line between his brows from years of concentration; one brow sits a fraction lower than the other, a subtle asymmetry beneath his composed demeanor. Straight dark hair graying and receding from the temples. Small sport non-in-ear earbud clipped to his earlobe. CFO executive attire: a tailored suit, with a slim financial tablet in hand. The backdrop is a finance office, wall displays of economic charts and bilateral trade data, cool corporate light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

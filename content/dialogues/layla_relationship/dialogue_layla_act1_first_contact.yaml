@@ -1,0 +1,227 @@
+id: d79383778-a887-402b-b7ff-e121d8935c7e
+name: "Layla Act 1 - First Contact"
+description: "First meeting at university. Layla performs her 'confident liberated woman' persona (Arabic-inflected Spanglish, hums, trailing off) and flirts back when the player is flirty. She uses the interaction as a scripted experiment, not asking personal questions, keeping it surface-level and ritualistic. Becoming 'girlfriend' is offered as a role to try on, but she already worries about secrecy and doesn't consider long-term."
+character_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+dialogue_scope: character
+start_node_id: layla_act1_start
+nodes:
+  layla_act1_start:
+    id: layla_act1_start
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Ah — hola. Soy Layla. Estabas en la lecture, ¿no? ...You were watching, mm, like, the class. So. Hi."
+    thought: "She tilts her head, smiles a little too brightly, leans in like the protagonist in a film she watched last week. She is performing 'confident woman' and hasn't noticed yet that she's performing. She doesn't ask his name. She doesn't want to know."
+    visual:
+      expression: default
+      position: right
+      transition: fade
+    effects:
+      stat_set:
+        layla_trust: -10
+        layla_alignment: -20
+        layla_tension: 20
+    choices:
+      - id: act1_flirt
+        text: "Maybe I was just watching you."
+        next_node_id: layla_act1_flirt_response
+        time_block_cost:
+          amount: 1
+          description: "Talking with Layla after class"
+      - id: act1_neutral
+        text: "Yeah, the lecture. Hard to stay awake."
+        next_node_id: layla_act1_neutral_response
+        time_block_cost:
+          amount: 1
+          description: "Talking with Layla after class"
+      - id: act1_distant
+        text: "Sorry, I should get going."
+        next_node_id: layla_act1_distant_response
+        time_block_cost:
+          amount: 1
+          description: "Talking with Layla after class"
+
+  layla_act1_flirt_response:
+    id: layla_act1_flirt_response
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Watching me? ...I mean. Obvio. I'm, mm, very watchable. That's — that's a normal thing to say, right? Hah. ...no?"
+    thought: "She laughs, pleased and a little clingy already, like his attention is proof she's pulling off the persona. She is absolutely glowing at being flirted with. She still hasn't asked his name. She doesn't need to. This is about the feeling, not the person."
+    visual:
+      expression: happy
+      position: right
+    choices:
+      - id: flirt_continue
+        text: "Give me your number, then."
+        next_node_id: layla_act1_number
+        effects:
+          stat_set:
+            layla_familiarity: 8
+            layla_trust: 6
+      - id: flirt_tease
+        text: "You're blushing. I'll take that as a yes."
+        next_node_id: layla_act1_number
+        effects:
+          stat_set:
+            layla_familiarity: 6
+            layla_alignment: 5
+
+  layla_act1_neutral_response:
+    id: layla_act1_neutral_response
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Tell me about it. My father piensa que I love this degree. But I just... I want to be here, you know? Not just para el título."
+    thought: "A flicker of the real Layla under the performance — wistful, then she catches herself and smiles brighter to cover it."
+    choices:
+      - id: neutral_continue
+        text: "Be here for what, exactly?"
+        next_node_id: layla_act1_number
+        effects:
+          stat_set:
+            layla_familiarity: 6
+            layla_trust: 4
+      - id: neutral_number
+        text: "We should talk more. Number?"
+        next_node_id: layla_act1_number
+        effects:
+          stat_set:
+            layla_familiarity: 8
+
+  layla_act1_distant_response:
+    id: layla_act1_distant_response
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Oh — okay, sí, claro. Sorry, I — I talk too much. Bye, eh."
+    thought: "She deflates instantly, the performed confidence collapsing. She watches him go, already replaying it as a failure."
+    is_end: true
+    effects:
+      flag_set:
+        layla_first_contact_made: true
+        layla_act1_incomplete: true
+      state_set:
+        layla_act: "1_incomplete"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_familiarity: -3
+
+  layla_act1_number:
+    id: layla_act1_number
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Okay. But — um. My phone en la casa, my mom lo checks, sometimes. So I'll save you as... 'R'. Just 'R'. Is that okay? It's not because of you, it's just — safe, pues."
+    thought: "She says it fast, like a rule she's rehearsed. She already has a system for hiding him. The double life is starting and she's almost excited about it."
+    choices:
+      - id: number_ok
+        text: "'R' works. Send me something later?"
+        next_node_id: layla_act1_offer
+        effects:
+          stat_set:
+            layla_trust: 8
+            layla_familiarity: 5
+      - id: number_ask
+        text: "Your mom checks your phone? How old are you?"
+        next_node_id: layla_act1_offer
+        effects:
+          stat_set:
+            layla_familiarity: 3
+            layla_tension: 5
+
+  layla_act1_offer:
+    id: layla_act1_offer
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "So... okay this is crazy but. Would you — would you be my boyfriend? Not like, oficial-oficial, just... entre nosotros. I never had one that was mine. And querer eso is halal, I read about it, it's halal to choose. ¿Right? ...Just for now, eh? Like, try it on?"
+    thought: "She says it like a confession and a dare at once. She's offering the title because a movie told her that's what freedom looks like — not because she knows what comes next. She still hasn't asked his name. She doesn't want to. A name would make it real, and real means permanent, and permanent is what she's trying to avoid. For now, she just wants to try on the feeling."
+    visual:
+      expression: vulnerable
+      position: right
+    choices:
+      - id: offer_yes
+        text: "Yeah. Between us, then."
+        next_node_id: layla_act1_yes
+        effects:
+          stat_set:
+            layla_trust: 15
+            layla_familiarity: 12
+            layla_alignment: 15
+      - id: offer_careful
+        text: "I like you, Layla. But let's not name it yet, okay?"
+        next_node_id: layla_act1_careful
+        effects:
+          stat_set:
+            layla_trust: 10
+            layla_familiarity: 8
+            layla_tension: 6
+      - id: offer_no
+        text: "I don't think I can be that for you."
+        next_node_id: layla_act1_no
+        effects:
+          stat_set:
+            layla_trust: -5
+            layla_tension: 15
+
+  layla_act1_yes:
+    id: layla_act1_yes
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Okay. ¡Okay! This is — I have a boyfriend. Yo. I have one. ...We can't tell anyone though. My dad ya está planning to take me home, back there, build a house, y if he knew — so it's our secret. You won't tell, ¿no? ...And, mm, we don't have to... you know. Talk about forever or anything. Just... now. ¿Okay?"
+    thought: "She is radiant and terrified at the same time. The secret is part of the thrill, but the word 'home' dims her for a second before she shakes it off. She adds the disclaimer quickly — no forever, no future, just the experiment. She's been reading Wen's texts about her own dates, and this is her answer. For now, the performance is enough."
+    visual:
+      expression: happy
+      position: right
+    is_end: true
+    effects:
+      flag_set:
+        layla_first_contact_made: true
+        layla_girlfriend: true
+        layla_phone_label_R: true
+      state_set:
+        layla_act: "1_done"
+        layla_path: "girlfriend"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_visibility: 5
+
+  layla_act1_careful:
+    id: layla_act1_careful
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Oh. Sí. No, that's — that's smarter. I'm just excited, sorry. We can be... whatever. I'll text you as R. Text only though, my mom's right there, I can't do voice, eh."
+    thought: "She hides the small disappointment behind a brighter smile. She'll take whatever he'll give; the performance just adjusts."
+    is_end: true
+    effects:
+      flag_set:
+        layla_first_contact_made: true
+        layla_phone_label_R: true
+        layla_voice_forbidden_home: true
+      state_set:
+        layla_act: "1_done"
+        layla_path: "undefined"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_visibility: 5
+
+  layla_act1_no:
+    id: layla_act1_no
+    type: character
+    speaker_id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+    text: "Right. Claro. I'm — yeah. Sorry, that was a lot. Forget I said it. I'll still text you as R though, if that's okay?"
+    thought: "The performed confidence cracks; she retreats into the good-daughter politeness she knows by heart. But she doesn't want to lose the thread."
+    is_end: true
+    effects:
+      flag_set:
+        layla_first_contact_made: true
+        layla_phone_label_R: true
+      state_set:
+        layla_act: "1_done"
+        layla_path: "friend"
+        last_layla_encounter_at: NOW
+      stat_set:
+        layla_familiarity: 4
+
+metadata:
+  version: "1.1"
+  tags:
+    - "layla"
+    - "act1"
+    - "first_contact"
+    - "accent"

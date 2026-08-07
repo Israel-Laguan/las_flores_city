@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Sierra Verde Park
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/sierra_verde_park.md
-**Target field:** `scene.background_url` in `content/locations/location_sierra_verde_park.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

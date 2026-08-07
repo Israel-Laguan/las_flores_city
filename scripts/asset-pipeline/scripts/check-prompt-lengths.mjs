@@ -30,6 +30,10 @@ const PROMPT_ROOTS = [
   path.resolve('content/dialogues'),
 ];
 const MAX_NIM_LENGTH = 800;
+// Bare `## Prompt` (section 'full') is a MidJourney manual reference prompt and
+// is NEVER auto-sent to NIM/Pollinations by the server (which consumes only
+// `## Prompt — <name>` named variants). Its authoring budget is ~2000 chars.
+const MAX_MIDJOURNEY_LENGTH = 2000;
 const DEFAULT_MIN_REPORT = 700;
 
 function parseArgs() {
@@ -93,7 +97,13 @@ function hasDraftSection(content) {
 }
 
 function extractDraftPrompt(content) {
-  const m = content.match(/^#{2,3} Prompt \(Draft\)\n([\s\S]*?)(?=^#{2,3}\s+(?:Prompt|Negative Prompt|Sheet|Variations)|$)/m);
+  // Capture the draft body up to the next ##/### header (or end of file).
+  // NOTE: must NOT carry the /m flag — the previous regex had `(?=...|$)/m`
+  // where `$` matches at every line end, so the lazy capture collapsed to
+  // zero/first-line and drafts were never actually measured (every file with a
+  // draft fell through to the bare `## Prompt` branch). This mirrors the
+  // generator's proven draft regex in generate-drafts-unified.mjs.
+  const m = content.match(/#{2,3} Prompt \(Draft\)\n([\s\S]*?)(?=#{2,3} (?:Prompt|Negative Prompt|Sheet|Variations)|$)/);
   return m ? m[1].trim() : '';
 }
 
@@ -115,7 +125,8 @@ function parsePromptFile(filePath) {
   while ((match = promptRegex.exec(content)) !== null) {
     const variantName = match[1].trim();
     const promptText = match[2].trim();
-    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/);
+    // Stop the negative at the next ##/### section header (Variations, another ## Prompt — <name>, etc.).
+    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
     const negativeText = negMatch ? negMatch[1].trim() : '';
 
     if (promptText) {
@@ -221,14 +232,20 @@ function main() {
 
       const length = combinedPrompt.length;
 
-      if (length > MAX_NIM_LENGTH) {
+      // Per-section cap: `## Prompt (Draft)` / `## Prompt — <name>` / i2i
+      // variants are auto-sent to NIM (800 hard). Bare `## Prompt` (section
+      // 'full') is a MidJourney manual reference (~2000).
+      const cap = variant.section === 'full' ? MAX_MIDJOURNEY_LENGTH : MAX_NIM_LENGTH;
+
+      if (length > cap) {
         issues.push({
           file: relPath,
           variant: variant.variantName,
           type: variant.type,
           section: variant.section || 'unknown',
           length,
-          overLimit: length - MAX_NIM_LENGTH,
+          cap,
+          overLimit: length - cap,
           promptLength: variant.promptText.length,
           negativeLength: negativePrompt.length,
           severity: 'ERROR'
@@ -241,7 +258,8 @@ function main() {
           type: variant.type,
           section: variant.section || 'unknown',
           length,
-          headroom: MAX_NIM_LENGTH - length,
+          cap,
+          headroom: cap - length,
           promptLength: variant.promptText.length,
           negativeLength: negativePrompt.length,
           severity: 'WARN'
@@ -257,7 +275,7 @@ function main() {
   console.log(`   ✅ Has draft section: ${stats.hasDraft}`);
   console.log(`   ⚠️  No draft section: ${stats.noDraft}`);
   console.log(`   ⚠️  Approaching limit (≥ ${opts.minLength}): ${stats.approaching}`);
-  console.log(`   ❌ Over limit (> ${MAX_NIM_LENGTH}): ${stats.overLimit}`);
+  console.log(`   ❌ Over limit (> section cap): ${stats.overLimit}`);
   console.log();
 
   if (issues.length > 0) {
@@ -269,7 +287,7 @@ function main() {
         : issue.section === 'named' ? ' (named)'
         : issue.section === 'variant' ? ' (i2i variant)' : '';
       console.log(`\x1b[${color}m${marker} ${issue.file} [${issue.variant}]${sectionTag} (${issue.type})`);
-      console.log(`   Length: ${issue.length}/${MAX_NIM_LENGTH} chars`);
+      console.log(`   Length: ${issue.length}/${issue.cap} chars`);
       if (issue.severity === 'ERROR') {
         console.log(`   Over by: ${issue.overLimit} characters`);
       } else {
@@ -281,7 +299,7 @@ function main() {
     console.log();
     
     if (stats.overLimit > 0) {
-      console.log(`💡 Tip: These prompts will fail with HTTP 422 "string_too_long"`);
+      console.log(`💡 Tip: draft/named/i2i variants over their NIM cap will fail with HTTP 422 "string_too_long"; bare ## Prompt over 2000 is a MidJourney authoring concern.`);
     }
     
     process.exitCode = stats.overLimit > 0 ? 1 : 0;

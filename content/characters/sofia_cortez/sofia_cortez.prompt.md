@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Sofia Cortez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/sofia_cortez/sofia_cortez.md
-**Target field:** `asset_paths.portrait` in `content/characters/sofia_cortez/char_sofia_cortez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

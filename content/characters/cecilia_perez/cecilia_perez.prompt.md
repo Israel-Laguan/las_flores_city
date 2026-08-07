@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Cecilia Perez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/cecilia_perez/cecilia_perez.md
-**Target field:** `asset_paths.portrait` in `content/characters/cecilia_perez/char_cecilia_perez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young safety auditor at work — a young safety auditor turned independent researcher whose investigation into pre-leak contamination cost her life. Slender and slightly below average height, wiry strength. Dark brown, shoulder-length hair often tied back in a messy bun while working. Warm brown eyes, intense and focused when examining data. Light brown skin with a natural olive undertone. Small wire-framed glasses she constantly pushes up. Ink stains on her fingers from lab work. A thin scar on her left hand from a glassware accident. A small silver locket, her only jewelry. She wears a practical lab coat over a blouse — the uniform of a scientist in the field. Her expression is focused intensity — the look of someone who found the truth others wanted hidden and kept pushing toward publication. The backdrop is a Minera Estrella research field on the outskirts of the controlled area. Experimental plant plots, data sheets clipped to boards, native Carinata specimens growing between the rows. Late afternoon light, the mining operations visible in the distance. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Latina woman in her early 20s. She is slightly below average height, with wiry strength and a slender build. Dark brown, shoulder-length hair, often tied back in a messy bun while working. Warm brown eyes, intense and focused. Light brown skin with a natural olive undertone. Small wire-framed glasses that she constantly pushes up. Ink stains on her fingers from lab work. A thin scar on her left hand. A small silver locket, her only jewelry. She wears a practical lab coat over a blouse. Her expression is focused intensity. The backdrop is an outdoor research field — experimental plant plots, data sheets clipped to boards, rows of low-growing crop specimens between the rows, late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

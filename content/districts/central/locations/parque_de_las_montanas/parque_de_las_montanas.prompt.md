@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Parque de las Montañas
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/parque_de_las_monta_as.md
-**Target field:** `scene.background_url` in `content/locations/location_parque_de_las_monta_as.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

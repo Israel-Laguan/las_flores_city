@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Emilio Navarro
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/emilio_navarro/emilio_navarro.md
-**Target field:** `asset_paths.portrait` in `content/characters/emilio_navarro/char_emilio_navarro.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 49-year-old cultural journalist at La Prensa Las Flores. Brown hair, styled messily, as if he has been running a hand through it between interviews. Warm, engaging smile that appears almost instantly. Light olive skin, laugh lines at the corners of his eyes. He wears comfortable jeans and a colorful button-down shirt — turquoise with subtle pattern — the kind of shirt that mirrors his effervescent personality. A worn camera hangs from his neck by a frayed strap. His expression is warm, endlessly curious — the look of a man who listens before he writes, who cycles through new barrios on weekends looking for the next story. The backdrop is the La Prensa Las Flores newsroom. Corkboard walls covered in press clippings, a bicycle propped near the door, a half-empty coffee mug. Afternoon light through tall windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 49-year-old Latino cultural journalist. Brown hair, styled messily, as if he has been running a hand through it. Warm, engaging smile that appears almost instantly. Light olive skin, laugh lines at the corners of his eyes. He wears comfortable jeans and a colorful button-down shirt — turquoise with subtle pattern. A worn camera hangs from his neck by a frayed strap. His expression is warm, endlessly curious. The backdrop is a newsroom — corkboard walls covered in press clippings, a bicycle propped near the door, a half-empty coffee mug, afternoon light through tall windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

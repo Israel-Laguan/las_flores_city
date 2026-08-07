@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Zona Franca
 
-**Type:** background
-**Source:** docs/lore/districts/zona_franca.md
-**Target field:** `scene.background_url` in `content/locations/location_zona_franca.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

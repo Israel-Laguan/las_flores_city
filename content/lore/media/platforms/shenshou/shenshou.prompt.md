@@ -9,9 +9,6 @@ consumer: logo
 
 # Prompt: ShénShǒu (神兽) logo
 
-[CONSUMER: logo]
-**Type:** logo
-**Source:** content/lore/media/platforms/shenshou/shenshou.md
 **Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt

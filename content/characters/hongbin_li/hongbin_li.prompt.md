@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Hongbin Li
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/hongbin_li/hongbin_li.md
-**Target field:** `asset_paths.portrait` in `content/characters/hongbin_li/char_hongbin_li.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-30s senior manager for a Beijing-based PR firm, part of the government initiative to expand Chinese influence in Las Flores. Jet-black hair, neatly styled in a modern side-part. Dark brown, sharp calculating eyes. Average height, lean and fit. Fair skin with a healthy glow. Perfect white teeth from a recent veneer. He wears a tailored charcoal suit, open at the collar, designer accessories completing the look — an Apple Watch on his wrist, subtle cologne in the air. His expression is charming calculation — the smile of a man who can be ruthless when protecting his geopolitical agenda. The backdrop is a Las Flores financial district high-rise. Glass walls, a cityscape view, the glow of screens from a social-media war room. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-30s senior manager for a Beijing-based PR firm, part of the government initiative to expand Chinese influence in the city. Jet-black hair, neatly styled in a modern side-part. Dark brown, sharp calculating eyes. Average height, lean and fit. Fair skin with a healthy glow. Perfect white teeth from a recent veneer. He wears a tailored charcoal suit, open at the collar, designer accessories completing the look — an Apple Watch on his wrist, subtle cologne in the air. His expression is charming calculation — the smile of a man who can be ruthless when protecting his geopolitical agenda. The backdrop is a financial district high-rise. Glass walls, a cityscape view, the glow of screens from a social-media war room. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

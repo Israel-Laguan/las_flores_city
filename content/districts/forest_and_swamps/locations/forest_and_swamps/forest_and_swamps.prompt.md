@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Forest and Swamps
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/forest_and_swamps.md
-**Target field:** `scene.background_url` in `content/locations/location_forest_and_swamps.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

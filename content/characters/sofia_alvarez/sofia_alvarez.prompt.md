@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Sofia Alvarez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/sofia_alvarez/sofia_alvarez.md
-**Target field:** `asset_paths.portrait` in `content/characters/sofia_alvarez/char_sofia_alvarez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her 30s, athletic-compact build, clear skin. Oval face, soft jaw
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her 30s. Athletic-compact build, poised and magnetic. Clear skin with a warm, healthy glow. Oval face with pronounced cheekbones and a soft jawline, voluminous curly dark hair framing her features. Curved nose, hooded expressive eyes, gently arched brows — one arching a touch higher than the other — and full lips. A small mole on her right cheek. Inspiring youth-leader bearing, warm and open with quiet conviction. Small sport non-in-ear earbud clipped to earlobe. Modern leader attire: a sharp blazer over a simple top with a Humanity First pin at the collar. The backdrop is a Humanity First council meeting or youth event, movement banners and gathered energy softly blurred behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her 30s. Athletic-compact build, poised and magnetic. Clear skin with a warm, healthy glow. Oval face with pronounced cheekbones and a soft jawline, voluminous curly dark hair framing her features. Curved nose, hooded expressive eyes, gently arched brows — one arching a touch higher than the other — and full lips. A small mole on her right cheek. Inspiring youth-leader bearing, warm and open with quiet conviction. Small sport non-in-ear earbud clipped to earlobe. Modern leader attire: a sharp blazer over a simple top with a small movement pin at the collar. The backdrop is a council meeting or youth event, movement banners and gathered energy softly blurred behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

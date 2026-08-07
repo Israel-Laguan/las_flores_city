@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Victor Almeida
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/victor_almeida/victor_almeida.md
-**Target field:** `asset_paths.portrait` in `content/characters/victor_almeida/char_victor_almeida.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his late 50s to mid-60s, veteran editor presence, square face, str
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his late 50s to mid-60s. Square face with a strong, broad jaw, pronounced cheekbones, and a wide nose. Round eyes carry the weary, weighing gaze of a man who has read a thousand front pages. Thick brows and wide lips set in a deeply furrowed, determined cast. Stocky, solid build that fills a chair with authority. Weathered skin crossed with deep editorial frown lines, and a faded scar running through his right brow from long-ago fieldwork. Thin gray hair receding at the temples and crown. Small sport non-in-ear earbud clipped to his earlobe. Veteran editor's attire: a rumpled but pressed shirt, a lanyard press pass, reading glasses pushed up on his head. The backdrop is the La Prensa editor-in-chief's office, a wall of framed front pages behind his desk, warm desk-lamp light pooling on the papers. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his late 50s to mid-60s. Square face with a strong, broad jaw, pronounced cheekbones, and a wide nose. Round eyes carry a weary, weighing gaze. Thick brows and wide lips set in a deeply furrowed, determined cast. Stocky, solid build that fills a chair with authority. Weathered skin crossed with deep frown lines, and a faded scar running through his right brow. Thin gray hair receding at the temples and crown. Small sport non-in-ear earbud clipped to his earlobe. Veteran editor's attire: a rumpled but pressed shirt, a lanyard press pass, reading glasses pushed up on his head. The backdrop is an editor-in-chief's office, a wall of framed front pages behind a desk, warm desk-lamp light pooling on the papers. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Resort del Bosque
 
-**Type:** background
-**Source:** docs/lore/districts/resort_del_bosque.md
-**Target field:** `scene.background_url` in `content/locations/location_resort_del_bosque.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

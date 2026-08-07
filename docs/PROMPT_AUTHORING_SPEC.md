@@ -1,6 +1,6 @@
 # Character Portrait Prompt Authoring Spec
 
-**Status:** LOCKED — Milestone M1 canonical contract.
+**Status:** REVISED (v2) — Milestone canonical contract. Frontmatter is the single source of truth for metadata; the legacy body metadata block is removed.
 **Applies to:** Every `.prompt.md` under `content/characters/<slug>/`.
 **Master plan:** `docs/milestones/1786049707544-prompt-production-master.md`
 
@@ -66,10 +66,6 @@ consumer: portrait
 
 # Prompt: <Full Name>
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/<slug>/<slug>.md
-**Target field:** `asset_paths.portrait` in `content/characters/<slug>/char_<slug>.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -99,6 +95,74 @@ Authored expressions (each as `assets/<slug>__<tag>.png`, referenced in
 - **`__<expr>.png`**: Use the base portrait as reference. <…expression-specific
   description…> Keep the same art style as reference, same clothing and backdrop.
 ```
+
+---
+
+## 3. Metadata Location (v2)
+
+All machine-readable metadata lives in the YAML frontmatter block at the top
+of the file. The legacy body metadata block (`[CONSUMER: ...]`, `**Type:**`,
+`**Source:**`, `**Target field:**`, `**Dimensions:**`) is removed from the
+canonical template. These fields remain in frontmatter only:
+
+| Field | Example |
+|---|---|
+| `name` | `Carlos Lopez` |
+| `type` | `portrait` |
+| `size` | `1024x1024` |
+| `source` | `content/characters/<slug>/<slug>.md` |
+| `target` | `` `asset_paths.portrait` in `content/characters/<slug>/char_<slug>.yaml` `` |
+| `consumer` | `portrait` |
+
+Human-reference notes (`**Tool:**`, pipeline stage) may remain in the body.
+
+---
+
+## 4. Expression Variants
+
+Expression variants are **not** moved to frontmatter. They remain in the
+`## Expression Variants` body section because:
+
+1. A character can have multiple expressions (default, happy, sad, angry, …).
+2. They are managed via `portrait_urls[]` with `expression` tags in the entity YAML.
+3. Each variant is a full usable prompt, not a single metadata value.
+
+See `docs/ASSET_EXPRESSION_VOCABULARY.md` for the expression vocabulary and
+file-naming convention (`assets/<slug>__<tag>.png`).
+
+---
+
+## 5. Quality Checklist
+
+Before marking a character `.prompt.md` complete, verify:
+
+### Frontmatter
+- [ ] `name:` matches the entity name
+- [ ] `type: portrait`
+- [ ] `size: 1024x1024`
+- [ ] `source:` points to `content/characters/<slug>/<slug>.md`
+- [ ] `target:` points to the entity YAML `asset_paths.portrait` field
+- [ ] `consumer: portrait`
+- [ ] No legacy body metadata block (`[CONSUMER:]`, `**Type:**`, `**Source:**`, `**Target field:**`, `**Dimensions:**`)
+
+### Body
+- [ ] `## Prompt (Draft)` is concise, comma-separated, NO character name
+- [ ] `## Prompt` restates the graphic-novel lock string
+- [ ] `## Negative Prompt` includes ethnicity exclusions and is <200 chars
+- [ ] `## Variations` has 3 scene ideas
+- [ ] `## Expression Variants` has 5 usable prompts (`__default` + 4 expressions)
+- [ ] Each variant starts with "Use the base portrait as reference"
+- [ ] Each variant specifies "looking at the camera, 3/4 take"
+- [ ] Each variant has rich visual descriptions
+- [ ] Each variant explicitly keeps "same art style as reference, same clothing and backdrop"
+- [ ] `__default.png` exists and is described as the base
+
+### Negative Prompts
+- [ ] Includes ethnicity exclusions where applicable
+- [ ] Under 200 characters
+- [ ] Contains: no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality
+
+Any failed box is a **hard block**. Fix and re-check before proceeding.
 
 ### Hard rules
 
@@ -258,6 +322,7 @@ Any failed box is a **hard block**. Fix and re-check before proceeding.
 | **Source path** | MUST be `content/characters/<slug>/<slug>.md`. `docs/lore/figures/...` is deprecated. |
 | **Expression variants format** | Must be **real usable prompts**, not descriptive text. Must start "Use the base portrait as reference…" and include camera + art-style lock. |
 | **Character names** | Names belong in metadata and titles only. Never in Draft, Prompt, or Expression Variant prose. |
+| **Body metadata block** | v2 moves `type`, `size`, `source`, `target`, `consumer` to frontmatter. Body block (`[CONSUMER:]`, `**Type:**`, `**Source:**`, `**Target field:**`, `**Dimensions:**`) is removed from the canonical template. `**Tool:**` and pipeline notes remain in body. |
 
 
 ---

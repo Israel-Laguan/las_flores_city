@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Teatro Nacional
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/teatro_nacional.md
-**Target field:** `scene.background_url` in `content/locations/location_teatro_nacional.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

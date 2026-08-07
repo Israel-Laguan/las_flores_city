@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Elisa Pérez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/elisa_perez/elisa_perez.md
-**Target field:** `asset_paths.portrait` in `content/characters/elisa_perez/char_elisa_perez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mid-20s Social Media & Community Manager at El Informador de Las Flores. Dark brown, thick and wavy hair, often in a messy bun or loose curls. Warm brown, bright and alert eyes — always scanning, always engaged. Petite and energetic, moves quickly, energy in constant motion. Light brown skin with warm undertones. A small nose ring. Colorful beaded bracelet at her wrist. Earbuds perpetually around her neck. Her phone always in her hand — she is responding to a comment, adjusting a post, reading the room in real time. She wears smart casual creative attire — a blazer over a graphic tee, the look of a newsroom digital native. Her expression is open, engaged warmth — the digital organizer who believes journalism should serve the underrepresented. The backdrop is the El Informador de Las Flores newsroom. News clippings on the walls, a community bulletin board, a desk with two monitors. Morning light through a large window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mid-20s Latina woman working in digital media for a newspaper. Dark brown, thick and wavy hair, often in a messy bun or loose curls. Warm brown, bright and alert eyes, always scanning, always engaged. Petite and energetic, energy in constant motion. Light brown skin with warm undertones. A small nose ring. Colorful beaded bracelet at her wrist. Earbuds perpetually around her neck. Her phone always in her hand. She wears smart casual creative attire — a blazer over a graphic tee. Her expression is open, engaged warmth. The backdrop is a busy newsroom — news clippings on the walls, a community bulletin board, a desk with two monitors, morning light through a large window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

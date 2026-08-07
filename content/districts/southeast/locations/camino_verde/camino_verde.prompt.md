@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Camino Verde Neighborhood
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/camino_verde_neighborhood.md
-**Target field:** `scene.background_url` in `content/locations/location_camino_verde_neighborhood.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

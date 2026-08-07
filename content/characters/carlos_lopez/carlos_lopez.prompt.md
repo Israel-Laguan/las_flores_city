@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Lopez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_lopez/carlos_lopez.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_lopez/char_carlos_lopez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his mid-40s, stocky broad-shouldered build, warm weathered olive-b
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his mid-40s. Stocky, broad-shouldered build with a grounded, sturdy presence. Warm weathered olive-brown skin with sun-damaged texture from years working outdoors. Thick wavy dark hair with gray streaks at the temples, cropped short and practical. Thick, slightly asymmetric brows — the left sits a fraction lower than the right. Wide-set deep brown eyes, calm and appraising. Wide flat-bridged nose, strong prominent jawline, lips with a slight asymmetry to the lower lip. Calm practical-skeptic bearing, focused expression, faint furrow between the brows as if weighing evidence. Small sport non-in-ear earbud clipped to earlobe. Practical work clothes: worn collared shirt, sleeves rolled to the elbows, a weathered leather work-belt slung low at his hips. The backdrop is a weathered Las Flores storefront at golden hour, faded signage and a hand-painted awning, soft volumetric light slanting through the doorway. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his mid-40s. Stocky, broad-shouldered build with a grounded, sturdy presence. Warm weathered olive-brown skin with sun-damaged texture from years working outdoors. Thick wavy dark hair with gray streaks at the temples, cropped short and practical. Thick, slightly asymmetric brows — the left sits a fraction lower than the right. Wide-set deep brown eyes, calm and appraising. Wide flat-bridged nose, strong prominent jawline, lips with a slight asymmetry to the lower lip. Calm practical-skeptic bearing, focused expression, faint furrow between the brows as if weighing evidence. Small sport non-in-ear earbud clipped to earlobe. Practical work clothes: worn collared shirt, sleeves rolled to the elbows, a weathered leather work-belt slung low at his hips. The backdrop is a weathered storefront at golden hour, faded signage and a hand-painted awning, soft volumetric light slanting through the doorway. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

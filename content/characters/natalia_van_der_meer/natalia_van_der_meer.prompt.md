@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Natalia van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/natalia_van_der_meer/natalia_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/natalia_van_der_meer/char_natalia_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

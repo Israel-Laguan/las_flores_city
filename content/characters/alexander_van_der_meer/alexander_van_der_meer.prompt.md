@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alexander van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alexander_van_der_meer/alexander_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/alexander_van_der_meer/char_alexander_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an 82-year-old former executive in decline. Tall, once-lean frame now stooped with years and alcohol. Steel-gray hair, once blond, neatly combed back with a precise side part. Angular defined jaw, thin lips usually pressed into a neutral, unrevealing line. Pale blue, calculating eyes — still sharp beneath the clouding. Fair skin weathered from decades of Las Flores sun, age spots on the backs of his hands. A pair of wire-rimmed reading glasses hangs from a gold chain around his neck. A small gold Van der Meer signet ring on his right hand. He wears an expensive charcoal suit, but the jacket hangs a fraction loose, the cuffs slightly frayed. His expression is weathered composure — a man who has fallen far and has not yet decided whether to rise or resign himself. The backdrop is a Van der Meer Mining executive office. Dark wood, institutional quiet, photographs of family and operations. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an 82-year-old Dutch man. Tall, once-lean frame now slightly stooped with years. Steel-gray hair, once blond, neatly combed back with a precise side part. Angular defined jaw, thin lips usually pressed into a neutral, unrevealing line. Pale blue, calculating eyes — still sharp beneath the clouding. Fair weathered skin with age spots on the backs of his hands. A pair of wire-rimmed reading glasses hangs from a gold chain around his neck. A small gold signet ring on his right hand. He wears an expensive charcoal suit, but the jacket hangs a fraction loose, the cuffs slightly frayed. His expression is weathered composure. The backdrop is a mining company executive office. Dark wood, institutional quiet, photographs of family. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -10,17 +10,13 @@ consumer: portrait
 
 # Prompt: Jianhua
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** docs/lore/figures/jianhua.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_jianhua.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese engineer in his 40s. Jianhua has a slightly stooped, wiry build from years of engineering work. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown warm and distant eyes that often gaze at festivals with quiet longing. His expression shows quiet contemplation mixed nostalgic warmth, reflecting his cultural fascination. His gray-black thinning hair is cut short and practical. His calloused hands rest gently on a small notebook for sketches. He wears a simple. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese engineer in his 40s. Jianhua has a slightly stooped, wiry build from years of engineering work. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown warm and distant eyes that often gaze at festivals with quiet longing. His expression shows quiet contemplation mixed with nostalgic warmth, reflecting his cultural fascination. His gray-black thinning hair is cut short and practical. His calloused hands rest gently on a small notebook for sketches. He wears a simple cotton shirt and his signature worn canvas jacket, regardless of season. The backdrop features a vibrant indigenous festival with traditional drums and colors, or an engineering worksite showing his professional life. Clean confident linework with vector-like cleanliness, painterly soft shading, muted earthy palette with festival color accents, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese engineer in his 40s. He has a slightly stooped, wiry build from years of engineering work. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown warm and distant eyes. His expression shows quiet contemplation mixed with nostalgic warmth and a gentle cultural curiosity. His gray-black thinning hair is cut short and practical. His calloused hands rest gently on a small notebook for sketches. He wears a simple cotton shirt and a worn canvas jacket, regardless of season. The backdrop features a vibrant indigenous festival with traditional drums and colors, or an engineering worksite. Clean confident linework with vector-like cleanliness, painterly soft shading, muted earthy palette with festival color accents, zero conventional beauty templates.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

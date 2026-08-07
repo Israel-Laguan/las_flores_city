@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Isabella
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/isabella_student/isabella_student.md
-**Target field:** `asset_paths.portrait` in `content/characters/isabella_student/char_isabella_student.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

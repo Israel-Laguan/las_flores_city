@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Isabella Marquez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/isabella_marquez/isabella_marquez.md
-**Target field:** `asset_paths.portrait` in `content/characters/isabella_marquez/char_isabella_marquez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 42-year-old port district community matriarch known to everyone as Bella. Dark brown, thick curly hair worn loose or in a messy bun. Warm brown, bright and welcoming eyes. Curvy and strong build, carried with confident grace. Warm brown skin, smooth with laugh lines around her eyes and mouth. A wide, infectious smile. Gold hoop earrings, colorful beaded bracelets. She wears a vibrant floral print dress with an apron that shows traces of cooking — the kind of woman whose clothes always smell of food and flowers. Her expression is radiant warmth — the heart of the port community, the mother of three boys whose fathers all disappeared, who dances through the hard parts so her sons learn that life is still worth celebrating. The backdrop is the entrance to her home in the Las Flores port district. Colorful, lived-in, children's toys visible, the sound of the port in the background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 42-year-old port district community matriarch. Dark brown, thick curly hair worn loose or in a messy bun. Warm brown, bright and welcoming eyes. Curvy and strong build, carried with confident grace. Warm brown skin, smooth with laugh lines around her eyes and mouth. A wide, infectious smile. Gold hoop earrings, colorful beaded bracelets. She wears a vibrant floral print dress with an apron that shows traces of cooking — the kind of woman whose clothes always smell of food and flowers. Her expression is radiant warmth — the heart of the port community, the mother of three boys whose fathers all disappeared, who dances through the hard parts so her sons learn that life is still worth celebrating. The backdrop is the entrance to her home in the port district. Colorful, lived-in, children's toys visible, the sound of the port in the background. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

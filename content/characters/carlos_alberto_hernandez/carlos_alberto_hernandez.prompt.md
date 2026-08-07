@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Alberto Hernandez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_alberto_hernandez/carlos_alberto_hernandez.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_alberto_hernandez/char_carlos_alberto_hernandez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-60s politician and ELU member, son of Carlos Hernandez. Dark brown hair, thinning on top, combed carefully to cover it. Dark brown slightly hooded eyes with the practiced warmth of a career politician. Medium height, slight paunch, compensates with a well-tailored navy suit. Medium-brown skin, smooth but lined around the eyes and mouth. Silver-framed glasses. A practiced politician's smile that does not quite reach the eyes. Manicured hands. A gold signet ring on his pinky finger. His expression is the compromise — a man who wanted to do good and found the ELU's graft too enticing to resist. The backdrop is an ELU political office in Las Flores. Faded campaign posters, a mahogany desk, stacks of briefing papers. Fluorescent light and window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-60s Latino man. Dark brown hair, thinning on top, combed carefully to cover it. Dark brown slightly hooded eyes with the practiced warmth of a career politician. Medium height, slight paunch. Medium-brown skin, smooth but lined around the eyes and mouth. Silver-framed glasses. A practiced politician's smile that does not quite reach the eyes. Manicured hands. A gold signet ring on his pinky finger. He wears a well-tailored navy suit. The backdrop is a political office. Faded campaign posters, a mahogany desk, stacks of briefing papers. Fluorescent light and window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

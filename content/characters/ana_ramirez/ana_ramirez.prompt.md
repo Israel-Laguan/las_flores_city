@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Ana Ramirez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/ana_ramirez/ana_ramirez.md
-**Target field:** `asset_paths.portrait` in `content/characters/ana_ramirez/char_ana_ramirez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 32-year-old indigenous environmental activist and founder of La Coalición por la Justicia Social. Thick dark brown hair with natural copper highlights, worn in a long braid down her back. Deep amber eyes, warm and fierce with conviction. Athletic and strong build, toned arms from outdoor fieldwork and direct action. Warm copper-brown complexion, weathered slightly from sun exposure on the land she defends. High cheekbones, strong jaw. A small scar on her chin from a childhood fall. A traditional woven bracelet on her left wrist. She wears a practical cream cotton blouse and a worn field vest with a small CJS logo on the chest. Her expression is passionate intelligence — someone who speaks with her whole body, who believes what she says before she says it. The backdrop is a forest edge in Las Flores' rural outskirts. Tree trunks, native undergrowth, the green blur of the land she is protecting. Late afternoon light filtering through leaves. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 32-year-old indigenous woman. Thick dark brown hair with natural copper highlights, worn in a long braid down her back. Deep amber eyes, warm and fierce. Athletic and strong build, toned arms from outdoor fieldwork. Warm copper-brown complexion, weathered slightly from sun exposure. High cheekbones, strong jaw. A small scar on her chin. A traditional woven bracelet on her left wrist. She wears a practical cream cotton blouse and a worn field vest. Her expression is passionate intelligence. The backdrop is a forest edge in rural outskirts. Tree trunks, native undergrowth, the green blur of protected land. Late afternoon light filtering through leaves. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

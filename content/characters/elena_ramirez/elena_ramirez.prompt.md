@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Elena Ramirez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/elena_ramirez/elena_ramirez.md
-**Target field:** `asset_paths.portrait` in `content/characters/elena_ramirez/char_elena_ramirez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina educator and community leader in her 60s, soft-rounded build, weathered w
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina educator and community leader in her 60s. Soft-rounded build with a gentle, steady presence. Weathered warm-brown skin with gentle wrinkles and a subtle change in texture. Wavy gray-streaked dark hair gathered into a silver bun. Flat brows with a slight droop over warm almond eyes, their gaze patient and kind. Flat nose, oval face with a soft jawline, full lips. A faint burn scar crosses the back of her right hand, a relic of teaching and kitchen work. Small sport non-in-ear earbud clipped to the left earlobe. Modest professional attire: a simple collared blouse under a cardigan, reading glasses on a lanyard, a small Humanity First pin. The backdrop is a schoolhouse or community council room, a chalkboard and warm window light behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina educator and community leader in her 60s. Soft-rounded build with a gentle, steady presence. Weathered warm-brown skin with gentle wrinkles and a subtle change in texture. Wavy gray-streaked dark hair gathered into a silver bun. Flat brows with a slight droop over warm almond eyes, their gaze patient and kind. Flat nose, oval face with a soft jawline, full lips. A faint burn scar crosses the back of her right hand, a relic of teaching and kitchen work. Small sport non-in-ear earbud clipped to the left earlobe. Modest professional attire: a simple collared blouse under a cardigan, reading glasses on a lanyard, a small lapel pin. The backdrop is a schoolhouse or community council room, a chalkboard and warm window light behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

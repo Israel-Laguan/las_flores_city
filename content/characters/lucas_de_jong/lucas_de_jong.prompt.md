@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Lucas de Jong
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/lucas_de_jong/lucas_de_jong.md
-**Target field:** `asset_paths.portrait` in `content/characters/lucas_de_jong/char_lucas_de_jong.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Dutch man in his mid-20s, angular face, strong jawline, straight nose, wide-set 
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his mid-20s. Angular face with a strong jawline, a straight nose, and wide-set piercing blue eyes. Stylishly cut dark hair, clear skin, thin lips, thick brows — with one brow sitting a fraction lower than the other. A small chip in a front tooth, half-hidden behind a composed, calculating smile. Sleek, polished presentation: an athletic, gym-trim build beneath a designer shirt with skinny jeans and elegant shoes, careful attention to appearance. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is an upscale Las Flores lounge, warm low lighting, an affluent setting. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his mid-20s. Angular face with a strong jawline, a straight nose, and wide-set piercing blue eyes. Stylishly cut dark hair, clear skin, thin lips, thick brows — with one brow sitting a fraction lower than the other. A small chip in a front tooth, half-hidden behind a composed, calculating smile. Sleek, polished presentation: an athletic, gym-trim build beneath a designer shirt with skinny jeans and elegant shoes, careful attention to appearance. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is an upscale lounge, warm low lighting, an affluent setting. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

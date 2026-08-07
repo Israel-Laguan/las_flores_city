@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Jan van Dijk
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/jan_van_dijk/jan_van_dijk.md
-**Target field:** `asset_paths.portrait` in `content/characters/jan_van_dijk/char_jan_van_dijk.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

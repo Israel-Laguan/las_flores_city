@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alex Garcia
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alex_garcia/alex_garcia.md
-**Target field:** `asset_paths.portrait` in `content/characters/alex_garcia/char_alex_garcia.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Young Latino person of 22, lean-wiry medium-height build, clear skin. Straight d
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Latino person of 22. Lean, wiry, medium-height build with a quiet, watchful presence. Clear skin, faint dark circles beneath the eyes from too many late nights sketching. Straight dark hair, shaggy and uncut, falling across the forehead. Flat brows. Hooded dark eyes, intent and a little guarded. Heart-shaped face, straight nose, subtle cheekbones, a soft jawline, full lips. Hands covered in pencil and ink stains — the hands of someone who draws constantly. A brilliant-survivor bearing, grief held behind steady focus. Small sport non-in-ear earbud clipped to earlobe. Jeans, a hoodie, old sneakers, a worn overstuffed backpack slung with one strap, sketchbooks and urban-planning texts poking out. The backdrop is a Residencial Las Estrellas corridor or a university studio, sketches and urban-design drafts pinned to the wall, soft daylight through a high window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Latino person of 22. Lean, wiry, medium-height build with a quiet, watchful presence. Clear skin, faint dark circles beneath the eyes from too many late nights sketching. Straight dark hair, shaggy and uncut, falling across the forehead. Flat brows. Hooded dark eyes, intent and a little guarded. Heart-shaped face, straight nose, subtle cheekbones, a soft jawline, full lips. Hands covered in pencil and ink stains. Small sport non-in-ear earbud clipped to earlobe. Jeans, a hoodie, old sneakers, a worn overstuffed backpack slung with one strap, sketchbooks poking out. The backdrop is a residential corridor or a university studio, sketches and urban-design drafts pinned to the wall, soft daylight through a high window. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

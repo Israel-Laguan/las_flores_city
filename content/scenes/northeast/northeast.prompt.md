@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Northeast Quarter
 
-[CONSUMER: background]
-**Type:** background
-**Source:** northeast.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_northeast.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

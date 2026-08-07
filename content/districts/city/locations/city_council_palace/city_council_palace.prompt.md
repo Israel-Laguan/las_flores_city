@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: City Council Palace
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/city_council_palace.md
-**Target field:** `scene.background_url` in `content/locations/location_city_council_palace.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Minera Estrella Andes Mine
 
-**Type:** background
-**Source:** docs/lore/districts/minera_estrella_andes_mine.md
-**Target field:** `scene.background_url` in `content/locations/location_minera_estrella_andes_mine.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

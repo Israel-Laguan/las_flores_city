@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Daiyu Liu
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/daiyu_liu/daiyu_liu.md
-**Target field:** `asset_paths.portrait` in `content/characters/daiyu_liu/char_daiyu_liu.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

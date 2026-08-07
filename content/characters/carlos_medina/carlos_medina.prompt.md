@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Medina
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_medina/carlos_medina.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_medina/char_carlos_medina.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Young Latino man of 23, slender lean-wiry build, long face, receding jaw, subtle
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Latino man of 23. Slender, lean-wiry build. Long face with a receding jaw and subtle cheeks, a pointed nose, and hooded earnest dark-brown eyes fixed on some schematic. Thin lips. One brow habitually raised as he pushes unruly black hair from his eyes. Clear light-brown skin. Heavy canvas jacket with an Electricians' Guild patch on the shoulder, a diagnostic tablet in hand, small sport non-in-ear earbud clipped to earlobe. Backdrop of a university lab or Residencial Las Estrellas electrical room with schematic screens. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Latino man of 23. Slender, lean-wiry build. Long face with a receding jaw and subtle cheeks, a pointed nose, and hooded earnest dark-brown eyes fixed on some schematic. Thin lips. One brow habitually raised as he pushes unruly black hair from his eyes. Clear light-brown skin. Heavy canvas jacket with a trade badge on the shoulder, a diagnostic tablet in hand, small sport non-in-ear earbud clipped to earlobe. Backdrop of a university lab or an electrical room with schematic screens. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Mariana De La Cruz
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/mariana_de_la_cruz/mariana_de_la_cruz.md
-**Target field:** `asset_paths.portrait` in `content/characters/mariana_de_la_cruz/char_mariana_de_la_cruz.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina bureau chief in her 40s, athletic-compact poised build, clear skin. Angul
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina bureau chief in her 40s. Athletic-compact, poised build with an authoritative newsroom presence. Clear skin with subtle lines around the eyes. Angular face with a receding jawline and high cheekbones. Straight nose, round eyes, arched brows, wide lips. Wavy dark hair cut to the chin, a small mole near the lower lip, the right brow sitting a fraction higher than the left. Sharp editorial bearing, commanding focused expression. Professional bureau-chief attire: a tailored blazer over a pressed shirt, press credentials on a lanyard, a tablet in hand, a sport earbud clipped to her earlobe. The backdrop is the La Prensa Las Flores bureau, newsroom activity and maps of the city in cool office light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina bureau chief in her 40s. Athletic-compact, poised build with an authoritative newsroom presence. Clear skin with subtle lines around the eyes. Angular face with a receding jawline and high cheekbones. Straight nose, round eyes, arched brows, wide lips. Wavy dark hair cut to the chin, a small mole near the lower lip, the right brow sitting a fraction higher than the left. Sharp editorial bearing, commanding focused expression. Professional bureau-chief attire: a tailored blazer over a pressed shirt, press credentials on a lanyard, a tablet in hand, a sport earbud clipped to her earlobe. The backdrop is a newsroom bureau, activity and maps of the city in cool office light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

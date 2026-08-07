@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Pacific Coast
 
-**Type:** background
-**Source:** docs/lore/districts/pacific_coast.md
-**Target field:** `scene.background_url` in `content/locations/location_pacific_coast.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

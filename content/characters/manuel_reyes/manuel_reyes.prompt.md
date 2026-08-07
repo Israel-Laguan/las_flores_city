@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Manuel Reyes
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/manuel_reyes/manuel_reyes.md
-**Target field:** `asset_paths.portrait` in `content/characters/manuel_reyes/char_manuel_reyes.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his late forties to fifties, square face, prominent jawline, strai
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his late forties to early fifties. Square face with a prominent jawline, a straight nose set with a slight crooked tilt, and almond eyes that carry a charismatic, burnished warmth. Thick brows — thicker with age — and full lips. Curly dark hair threaded with gray streaks. Stocky, solid build, clear skin. Small scar on one brow from years on the picket line; callused, work-battered hands. Union organizer's attire: a Union del Trabajador jacket with a badge, work boots, sleeves that show the muscle of a working man. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is a union hall or rally, banners and a megaphone, light slanting in strong and hopeful. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his late forties to early fifties. Square face with a prominent jawline, a straight nose set with a slight crooked tilt, and almond eyes that carry a charismatic, burnished warmth. Thick brows — thicker with age — and full lips. Curly dark hair threaded with gray streaks. Stocky, solid build and clear skin. A small scar on one brow and callused, work-battered hands. Union organizer's attire: a jacket with a union badge, work boots, sleeves rolled to show the strength of a working man. Small sport non-in-ear earbud clipped to his earlobe. The backdrop is a union hall or rally, banners and a megaphone, light slanting in strong and hopeful. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

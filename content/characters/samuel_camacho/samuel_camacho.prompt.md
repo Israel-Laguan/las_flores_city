@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Samuel Camacho
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/samuel_camacho/samuel_camacho.md
-**Target field:** `asset_paths.portrait` in `content/characters/samuel_camacho/char_samuel_camacho.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

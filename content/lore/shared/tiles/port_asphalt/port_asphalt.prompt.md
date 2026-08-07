@@ -10,10 +10,6 @@ consumer: tile
 
 # Prompt: Port Asphalt
 
-[CONSUMER: tile]
-**Type:** tile
-**Source:** docs/lore/assets/registries/tiles.yaml
-**Target field:** `base_image_url` in `content/maps/map_*.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

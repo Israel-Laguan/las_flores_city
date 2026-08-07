@@ -55,19 +55,34 @@ interface ParsedPrompt {
   assetType: string;
 }
 
+function parseFrontmatter(content: string): Record<string, string> | null {
+  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return null;
+  const meta: Record<string, string> = {};
+  for (const line of m[1].split('\n')) {
+    const [k, ...v] = line.split(': ');
+    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
+  }
+  return meta;
+}
+
 /**
  * Parse a .prompt.md file for generation parameters.
  * Self-contained (does not import StorageService or queryOLTP) so it is
  * unit-testable without DB/MinIO mocks.
  *
- * Extracts: **Type:**, **Dimensions:** WxH, first ## Prompt — variant,
- * and ## Negative Prompt section.
+ * Prefers frontmatter `type:` / `size:` (single source of truth); falls
+ * back to body `**Type:**` / `**Dimensions:**`. Extracts first `## Prompt`
+ * variant and `## Negative Prompt` section.
  */
 export async function parsePromptFile(promptFilePath: string): Promise<ParsedPrompt> {
   const content = await fs.readFile(promptFilePath, 'utf-8');
 
-  const typeMatch = content.match(/\*\*Type:\*\*\s*(\S+)/);
-  const assetType = typeMatch ? typeMatch[1].trim() : 'portrait';
+  const fm = parseFrontmatter(content);
+  const assetType = fm?.type?.trim() || (() => {
+    const typeMatch = content.match(/\*\*Type:\*\*\s*(\S+)/);
+    return typeMatch ? typeMatch[1].trim() : 'portrait';
+  })();
 
   const DEFAULT_DIMS: Record<string, { width: number; height: number }> = {
     portrait: { width: 832, height: 1248 },
@@ -79,11 +94,21 @@ export async function parsePromptFile(promptFilePath: string): Promise<ParsedPro
   };
   let width = 1024;
   let height = 1024;
-  const dimMatch = content.match(/\*\*Dimensions:\*\*\s*(\d+)\s*[x×]\s*(\d+)/i);
-  if (dimMatch) {
-    width = parseInt(dimMatch[1], 10);
-    height = parseInt(dimMatch[2], 10);
-  } else {
+  if (fm?.size) {
+    const dimMatch = fm.size.match(/^(\d+)\s*[x×]\s*(\d+)$/i);
+    if (dimMatch) {
+      width = parseInt(dimMatch[1], 10);
+      height = parseInt(dimMatch[2], 10);
+    }
+  }
+  if (width === 1024 && height === 1024) {
+    const bodyDimMatch = content.match(/\*\*Dimensions:\*\*\s*(\d+)\s*[x×]\s*(\d+)/i);
+    if (bodyDimMatch) {
+      width = parseInt(bodyDimMatch[1], 10);
+      height = parseInt(bodyDimMatch[2], 10);
+    }
+  }
+  if (width === 1024 && height === 1024) {
     const def = DEFAULT_DIMS[assetType];
     if (def) {
       width = def.width;
@@ -95,7 +120,7 @@ export async function parsePromptFile(promptFilePath: string): Promise<ParsedPro
   const promptMatch = content.match(promptRegex);
   const prompt = promptMatch ? promptMatch[1].trim() : '';
 
-  const negRegex = /## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/;
+  const negRegex = /## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/;
   const negMatch = content.match(negRegex);
   const negativePrompt = negMatch ? negMatch[1].trim() : '';
 

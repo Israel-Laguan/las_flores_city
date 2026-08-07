@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Soledad Ortega
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/soledad_ortega/soledad_ortega.md
-**Target field:** `asset_paths.portrait` in `content/characters/soledad_ortega/char_soledad_ortega.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her early 40s, sharp managing-editor presence, square face, prom
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 40s. Square face with a prominent, decisive jaw, pronounced cheekbones, a curved nose, and almond eyes set with calm editorial authority. Thick brows and full lips complete a composed, exacting countenance. Athletic-compact build, poised and upright with a newsroom manager's stillness. Clear warm skin with subtle fine lines around the eyes, and a small scar cutting through her left brow from an older incident; one brow sits a fraction lower than the other, a natural asymmetry she carries unselfconsciously. Straight dark hair cut into a sharp, angled bob that frames her face cleanly. Small sport non-in-ear earbud clipped to her earlobe. Modern managing-editor attire: a tailored blazer, a tablet or slim holographic reader held in one hand. The backdrop is the La Prensa digital newsroom, banks of multi-platform screens glowing with headlines and live feeds, cool flat light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 40s. Square face with a prominent, decisive jaw, pronounced cheekbones, a curved nose, and almond eyes set with calm editorial authority. Thick brows and full lips complete a composed, exacting countenance. Athletic-compact build, poised and upright with a still, watchful bearing. Clear warm skin with subtle fine lines around the eyes, and a small scar cutting through her left brow; one brow sits a fraction lower than the other, a natural asymmetry she carries unselfconsciously. Straight dark hair cut into a sharp, angled bob that frames her face cleanly. Small sport non-in-ear earbud clipped to her earlobe. Modern managing-editor attire: a tailored blazer, a tablet or slim holographic reader held in one hand. The backdrop is a digital newsroom, banks of multi-platform screens glowing with headlines and live feeds, cool flat light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

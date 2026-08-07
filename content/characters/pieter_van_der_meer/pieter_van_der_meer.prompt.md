@@ -10,10 +10,6 @@ consumer: portrait
 
 # Prompt: Pieter van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** docs/lore/figures/pieter_van_der_meer.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_pieter_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt — Draft

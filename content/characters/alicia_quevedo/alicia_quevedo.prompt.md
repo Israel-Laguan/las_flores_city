@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alicia Quevedo
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alicia_quevedo/alicia_quevedo.md
-**Target field:** `asset_paths.portrait` in `content/characters/alicia_quevedo/char_alicia_quevedo.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of the second Governor of Las Flores in her early 60s. Dark chestnut-brown shoulder-length hair in a professional blowout. Warm hazel eyes — sharp, attentive, the eyes of someone who knows how much a room is costing her. Oval face with thin arched eyebrows. A small beauty mark above the left corner of her mouth. Light brown complexion with warm undertones, few wrinkles kept carefully at bay. Pearl stud earrings, a gold governor's pin on her lapel. Slender, poised posture — the discipline of a politician who has rehearsed every entrance. She wears a tailored navy blazer over a cream silk blouse. Her expression is composed warmth with something private held behind the eyes — a leader navigating the buildup to a crisis she suspects she cannot prevent. The backdrop is a Free City government office. Institutional wood, the city seal on the wall, briefing documents on a credenza. Fluorescent light and window light mixing. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her early 60s. Dark chestnut-brown shoulder-length hair in a professional blowout. Warm hazel eyes — sharp, attentive. Oval face with thin arched eyebrows. A small beauty mark above the left corner of her mouth. Light brown complexion with warm undertones, few wrinkles kept carefully at bay. Pearl stud earrings, a gold governor's pin on her lapel. Slender, poised posture. She wears a tailored navy blazer over a cream silk blouse. Her expression is composed warmth with something private held behind the eyes. The backdrop is a government office. Institutional wood, a city seal on the wall, briefing documents on a credenza. Fluorescent light and window light mixing. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

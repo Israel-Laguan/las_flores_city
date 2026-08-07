@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Liam van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/liam_van_der_meer/liam_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/liam_van_der_meer/char_liam_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Dutch man in his early 40s, athletic-compact build, clear skin, straight blonde 
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 40s. Athletic-compact build with a lean, strategic presence. Clear skin. Straight blonde hair with gray threading at the temples, neatly cut. Angular face with a soft jawline and high cheekbones. Deep-set eyes, cool and calculating, thick brows, thin lips, and a wide nose. A small scar near his left ear and a subtle asymmetry — one brow sits a fraction lower than the other. Gray threading and a touch more brow density from age. Composed, strategic executive bearing. Small sport non-in-ear earbud clipped to earlobe. Executive business attire: a tailored dark suit with a Van der Meer Industries pin. The backdrop is a corporate boardroom with glass walls and a sweeping city skyline, cool light. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 40s. Athletic-compact build with a lean, strategic presence. Clear skin. Straight blonde hair with gray threading at the temples, neatly cut. Angular face with a soft jawline and high cheekbones. Deep-set eyes, cool and calculating, thick brows, thin lips, and a wide nose. A small scar near his left ear and a subtle asymmetry — one brow sits a fraction lower than the other. Gray threading and a touch more brow density from age. Composed, strategic executive bearing. Small sport non-in-ear earbud clipped to earlobe. Executive business attire: a tailored dark suit with a small corporate pin. The backdrop is a corporate boardroom with glass walls and a sweeping city skyline, cool light. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Vinícola La Hacienda
 
-**Type:** background
-**Source:** docs/lore/districts/vin_cola_la_hacienda.md
-**Target field:** `scene.background_url` in `content/locations/location_vin_cola_la_hacienda.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

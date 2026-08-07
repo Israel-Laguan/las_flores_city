@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: The Governor Offices
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/the_governor_offices.md
-**Target field:** `scene.background_url` in `content/locations/location_the_governor_offices.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

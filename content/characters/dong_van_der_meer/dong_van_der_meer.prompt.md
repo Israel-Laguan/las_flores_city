@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Dong van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/dong_van_der_meer/dong_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/dong_van_der_meer/char_dong_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of the controversial leader of the Flowers Syndicate and estranged Van der Meer dynasty member. Black, thick hair slicked back with gray at the temples. Cold, calculating dark brown eyes, heavy-lidded, never quite smiling. Tall and lean, slightly gaunt from stress and drinking. Light olive complexion, sallow with deep lines around mouth and eyes from years of tension. A thin scar along the right jawline from a shootout. Heavy gold rings on multiple fingers. Gold cufflinks with the Van der Meer crest at his wrists. He wears an immaculately tailored charcoal suit — the uniform of a CEO who runs his criminal empire like a business. A slight limp from an old leg injury is barely perceptible in his posture. His expression is ruthless intelligence — the face of a man who thinks in profit centers and power grids. The backdrop is a dimly lit back room in the Industrial Zone. Rough concrete, a mahogany desk stacked with ledgers, maps of smuggling routes pinned to a wall. Single harsh overhead light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 44-year-old Euro-Asian man. Black, thick hair slicked back with gray at the temples. Cold, calculating dark brown eyes, heavy-lidded, never quite smiling. Tall and lean, slightly gaunt. Light olive complexion, sallow with deep lines around the mouth and eyes. A thin scar along the right jawline. Heavy gold rings on multiple fingers. Gold cufflinks at his wrists. He wears an immaculately tailored charcoal suit. A slight limp from an old leg injury is barely perceptible in his posture. His expression is ruthless intelligence. The backdrop is a dimly lit back room in an industrial district — rough concrete, a mahogany desk stacked with ledgers, maps pinned to a wall, a single harsh overhead light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

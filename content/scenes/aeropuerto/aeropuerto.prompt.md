@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Aeropuerto Internacional — Public Terminal
 
-[CONSUMER: background]
-**Type:** background
-**Source:** aeropuerto.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_aeropuerto.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

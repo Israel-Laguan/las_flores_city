@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Cecilia Rodríguez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/cecilia_rodriguez/cecilia_rodriguez.md
-**Target field:** `asset_paths.portrait` in `content/characters/cecilia_rodriguez/char_cecilia_rodriguez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman of 47, athletic-compact build at average height, strong from long s
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 47. Athletic-compact build, average height, strong from long shifts on her feet. Heart-shaped face with a receding jaw and subtle cheeks, a curved nose, and wide-set dark eyes that are tired, empathetic, and alert beneath flat brows with a slight droop. Full lips. Weathered olive skin worn by stress, dark circles under her eyes, faint stress lines. Dark wavy hair drawn back in a practical no-nonsense bun. Faded zip-up jacket over scrubs, practical shoes, a well-worn medical bag slung even off-duty, small sport non-in-ear earbud clipped to earlobe. Backdrop of the Calle Morales clinic or a dim alleyway in warm streetlight. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman of 47. Athletic-compact build, average height, strong from long shifts on her feet. Heart-shaped face with a receding jaw and subtle cheeks, a curved nose, and wide-set dark eyes that are tired, empathetic, and alert beneath flat brows with a slight droop. Full lips. Weathered olive skin worn by stress, dark circles under her eyes, faint stress lines. Dark wavy hair drawn back in a practical no-nonsense bun. Faded zip-up jacket over scrubs, practical shoes, a well-worn medical bag slung even off-duty, small sport non-in-ear earbud clipped to earlobe. Backdrop of the neighborhood clinic or a dim alleyway in warm streetlight. Clean confident linework, painterly soft shading, muted natural palette, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

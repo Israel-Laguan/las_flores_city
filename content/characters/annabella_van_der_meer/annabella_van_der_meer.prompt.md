@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Annabella van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/annabella_van_der_meer/annabella_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/annabella_van_der_meer/char_annabella_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch geologist in her early 80s who discovered the major lithium vein near Las Flores in 2029. Tall and sturdy, slightly stooped from decades of fieldwork. Silver-white hair, once strawberry blond, cut in a practical bob that frames a face bright with scholarly curiosity. Pale blue-green eyes — still bright, still examining. Fair skin, freckled and weathered from sun exposure on mining surveys across three continents. Strong capable hands, dirt habitually under the nails even here in the office. Reading glasses perpetually perched on top of her head. A faded field notebook always tucked into her jacket pocket. She wears a rugged field jacket over a plaid button-down shirt, cuffs rolled. Her expression is the scientist's quiet satisfaction — a woman who found what others said was not there, and then carried the consequences of that finding for fifty years. The backdrop is a Global Lithium Corp / Van der Meer Mining research office. Geological maps pinned to corkboard, core sample trays, a window looking out over the Las Flores valley. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch geologist in her early 80s. Tall and sturdy, slightly stooped from decades of fieldwork. Silver-white hair, once strawberry blond, cut in a practical bob that frames a face bright with scholarly curiosity. Pale blue-green eyes — still bright, still examining. Fair skin, freckled and weathered from sun exposure on mining surveys. Strong capable hands, dirt habitually under the nails. Reading glasses perpetually perched on top of her head. A faded field notebook always tucked into her jacket pocket. She wears a rugged field jacket over a plaid button-down shirt, cuffs rolled. Her expression is the scientist's quiet satisfaction. The backdrop is a mining research office. Geological maps pinned to corkboard, core sample trays, a window looking out over a valley. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

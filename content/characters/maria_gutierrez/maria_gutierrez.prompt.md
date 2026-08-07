@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: María Gutiérrez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/maria_gutierrez/maria_gutierrez.md
-**Target field:** `asset_paths.portrait` in `content/characters/maria_gutierrez/char_maria_gutierrez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her thirties to forties, angular face, prominent jawline, curved
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her thirties to forties. Angular face with a prominent jawline, a curved nose, and deep-set eyes that miss nothing. Arched brows — the left set a fraction higher than the right, a subtle asymmetry. Thin lips pressed into a sharp, observant line. Wavy dark hair pushed back from a lean, wiry face, clear skin. A small scar crosses the right brow, the mark of fieldwork. Practical field-reporter attire with a press badge and a notebook within reach. Small sport non-in-ear earbud clipped to her earlobe. Subtle lines around the eyes of a journalist who has chased stories for years. The backdrop is an El Informador newsroom or an industrial site, an investigative, work-lit setting. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her thirties to forties. Angular face with a prominent jawline, a curved nose, and deep-set eyes that miss nothing. Arched brows — the left set a fraction higher than the right, a subtle asymmetry. Thin lips pressed into a sharp, observant line. Wavy dark hair pushed back from a lean, wiry face, clear skin. A small scar crosses the right brow, the mark of fieldwork. Practical field-reporter attire with a press badge and a notebook within reach. Small sport non-in-ear earbud clipped to her earlobe. Subtle lines around the eyes of a journalist who has chased stories for years. The backdrop is a newsroom or an industrial site, an investigative, work-lit setting. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

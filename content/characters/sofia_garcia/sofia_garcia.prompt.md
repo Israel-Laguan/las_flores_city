@@ -11,7 +11,7 @@ consumer: portrait
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of Sofia Garcia, a thin, gaunt Latin woman in her early 30s with weathered light-brown skin, dark brown observant eyes, tangled dark brown hair, a composed expression, worn practical clothing, a visible cane handle in her right hand, and a small gold locket. Weathered Old Las Flores street, tropical sunlight, soft painterly shading, muted natural palette.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a thin, gaunt Latin woman in her early 30s. Weathered light-brown skin, etched by years of hard outdoor work. Dark brown observant eyes, alert and quietly watchful. Tangled dark brown hair, loosely gathered and un-styled. A composed expression — steady, resilient, uncomplaining. She wears worn practical clothing, durable and faded from long use, its fabric soft and creased. A visible cane handle is gripped in her right hand, and a small gold locket rests at her chest. The backdrop is a weathered old city street under intense tropical sunlight, aging facades and soft shadows creating quiet depth. Soft painterly shading, muted natural palette.
 
 ## Negative Prompt
 

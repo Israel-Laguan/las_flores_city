@@ -1,0 +1,43 @@
+id: d9927cf67-cc6c-42d3-b39c-023e6252b453
+name: Layla Al-Rashid
+title: University Student, Double Life
+description: |
+  Layla Al-Rashid is a young Arab woman in her early 20s, daughter of Mineria
+  Estrella workers, raised in the tight-knit northern district where the Arab
+  diaspora lives under strong Chinese-community influence. At home and within
+  her community she performs the perfect devout "princess" — obedient,
+  sheltered, demure. At university she is quietly rebelling, modeling a
+  confident, liberated woman on films and books, and flirting back whenever
+  someone flirts with her — her first, naive act of freedom. She uses the
+  player as a living experiment to feel liberated, to perform the role of
+  "girlfriend" she read about in books, and in part to make her friend Wen jealous.
+  She resists long-term commitment, asks few personal questions, and keeps the
+  relationship ritualistic — until, slowly, she begins to discover what it means
+  to be romantically close, not just performatively so.
+metadata:
+  type: human
+  role: npc
+  faction: minera_estrella
+  personality: sheltered_rebellious_pickme_experimental
+  age: Early 20s
+  gender: Female
+  ethnicity: Middle Eastern/Arab
+  occupation: University student
+  physical_description: youthful soft-rounded features; long dark brown wavy hair with a slight widow's peak, worn loose; deep amber-brown eyes; warm olive complexion; plain modest mom-approved clothing (muted high-necked long-sleeve blouse, no jewelry, no makeup)
+  background: born in Las Flores to Arab immigrant parents who work at Mineria Estrella; raised in the conservative northern diaspora community under Chinese-influenced social norms
+  education: enrolled at a local university, studying a "respectable" degree her father approved
+  mannerisms: at home — soft-spoken, demure, performs devotion; at university — tilts her head, leans in, smiles and laughs brightly, eager clingy attention, performs a maturity she does not yet possess; rarely asks personal questions, keeps conversations surface-level and ritualistic, uses the player to rehearse freedom
+  motivations: taste freedom on her own terms; be seen as a confident mature woman; quietly resist her father's plan; use the player as an experiment in liberation; subtly make Wen jealous with her newfound romantic life
+  fears: dishonoring her family; being sent "home" and losing the life she is just discovering; being found out by her mother; the relationship becoming too real, too permanent
+  goals: negotiate her own reading of faith and freedom; find the words to tell her father she wants to stay; discover if romantic closeness is more than just performance
+  challenges: her rebellion is book-learned, not lived; her "liberated" persona is as much a performance as her "princess" one; the community watches everything; she doesn't yet know how to separate experimental romance from genuine feeling; she uses intimacy as a tool, not an end
+  quote: Wanting to be free is halal. But what if I only want to want it?
+lore_path: layla_al_rashid.md
+available_dialogues:
+  - d79383778-a887-402b-b7ff-e121d8935c7e
+  - dac54bc7c-f1cf-4026-be82-ba86ea7d927c
+  - df9bd13e8-0625-4273-8999-3123d0f7d19d
+  - d75f1a08b-935b-4fa1-a584-df79629df66b
+  - e8f4a9c2-5d1e-47b8-9c3d-6ef8e2b7c3d1
+asset_paths:
+  portrait: layla_al_rashid__default.png

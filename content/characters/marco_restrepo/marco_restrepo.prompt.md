@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Marco Restrepo
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/marco_restrepo/marco_restrepo.md
-**Target field:** `asset_paths.portrait` in `content/characters/marco_restrepo/char_marco_restrepo.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

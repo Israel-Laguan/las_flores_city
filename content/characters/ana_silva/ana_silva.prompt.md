@@ -9,15 +9,11 @@ consumer: portrait
 
 # Prompt: Ana Silva
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/ana_silva/ana_silva.md
-**Target field:** `asset_paths.portrait` in `content/characters/ana_silva/char_ana_silva.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 
-Afro-Latina woman in her mid-50s, athletic-compact sturdy imposing build, smooth deep brown skin with subtle lines around the eyes and a slight right brow droop. Thick curly voluminous natural black hair, asymmetric brows with the left arching higher, deep-set fiery dark brown eyes, round face, wide nose, pronounced cheekbones, strong jawline, full lips, subtle laugh lines. Fierce progressive bearing, professional grounded attire, silver hoop earrings, worn leather folder of case documents, small sport earbud clipped to earlobe. City council chamber or community hall with civic banners backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Afro-Latina woman in her mid-50s, athletic-compact sturdy imposing build, smooth deep brown skin with subtle lines around the eyes and a slight right brow droop. Thick curly voluminous natural black hair, asymmetric brows with the left arching higher, deep-set fiery dark brown eyes, round face, wide nose, pronounced cheekbones, strong jawline, full lips, subtle laugh lines. Fierce progressive bearing, professional grounded attire, silver hoop earrings, worn leather folder of case documents, small sport earbud clipped to earlobe. City council chamber or community hall with civic banners. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
 
 ## Prompt
 

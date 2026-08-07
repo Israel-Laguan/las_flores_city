@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Ana Villanueva
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/ana_villanueva/ana_villanueva.md
-**Target field:** `asset_paths.portrait` in `content/characters/ana_villanueva/char_ana_villanueva.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Los Andes Heights
 
-[CONSUMER: background]
-**Type:** background
-**Source:** los_andes.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_los_andes.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

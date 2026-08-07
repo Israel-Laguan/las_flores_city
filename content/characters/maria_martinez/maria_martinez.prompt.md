@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Maria Martinez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/maria_martinez/maria_martinez.md
-**Target field:** `asset_paths.portrait` in `content/characters/maria_martinez/char_maria_martinez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina educator in her 50s, soft-rounded welcoming build, clear warm skin. Round
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina educator in her 50s. Soft-rounded, welcoming build with a dependable, maternal presence. Clear warm skin with gentle wrinkles and a subtle age-texture around the eyes. Round face with a soft jaw and subtle cheeks. Pointed nose, hooded eyes, flat brows, full lips. Curly dark hair threaded with silver streaks, one smile line deeper than the other and a faint brow droop. Beloved teacher bearing, kind patient expression. Modest educator attire: a neat blouse and cardigan, reading glasses resting on her nose, a Fundación Esperanza lanyard, a sport earbud clipped to her earlobe, a faint burn scar on her right hand from years of teaching. The backdrop is a community classroom or foundation office, warm shelves of books and learning materials in soft daylight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina educator in her 50s. Soft-rounded, welcoming build with a dependable, maternal presence. Clear warm skin with gentle wrinkles and a subtle age-texture around the eyes. Round face with a soft jaw and subtle cheeks. Pointed nose, hooded eyes, flat brows, full lips. Curly dark hair threaded with silver streaks, one smile line deeper than the other and a faint brow droop. Kind, patient expression. Modest educator attire: a neat blouse and cardigan, reading glasses resting on her nose, a lanyard, a sport earbud clipped to her earlobe, a faint burn scar on her right hand. The backdrop is a community classroom or foundation office, warm shelves of books and learning materials in soft daylight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

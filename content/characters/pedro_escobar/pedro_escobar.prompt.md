@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Pedro Escobar
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/pedro_escobar/pedro_escobar.md
-**Target field:** `asset_paths.portrait` in `content/characters/pedro_escobar/char_pedro_escobar.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino city editor in his early 40s, stocky solid build, clear warm skin. Long f
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino city editor in his early 40s. Stocky, solid build with a calm, coordinating presence in the newsroom. Clear warm skin. Long face with a soft jaw and subtle cheeks. Straight nose, slightly crooked from an old break, wide-set eyes, thick brows, full lips. Wavy dark hair threaded with gray, a small mole on one cheek, a slight natural asymmetry. Editor's calm coordinating bearing, an observant steady expression. Smart-casual editor attire: a neat shirt and open sweater, a press lanyard, a tablet under his arm, a sport earbud clipped to his earlobe. The backdrop is the La Prensa city desk, layout boards and local news feeds in warm office light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino city editor in his early 40s. Stocky, solid build with a calm, coordinating presence in the newsroom. Clear warm skin. Long face with a soft jaw and subtle cheeks. Straight nose, slightly crooked from an old break, wide-set eyes, thick brows, full lips. Wavy dark hair threaded with gray, a small mole on one cheek, a slight natural asymmetry. Editor's calm coordinating bearing, an observant steady expression. Smart-casual editor attire: a neat shirt and open sweater, a press lanyard, a tablet under his arm, a sport earbud clipped to his earlobe. The backdrop is a city newsroom desk, layout boards and local news feeds in warm office light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

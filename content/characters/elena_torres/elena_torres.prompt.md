@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Elena Torres
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/elena_torres/elena_torres.md
-**Target field:** `asset_paths.portrait` in `content/characters/elena_torres/char_elena_torres.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of the LW Group's Sustainability Lead in 2077 — a local Las Flores environmental scientist turned corporate strategist with a career spanning five decades. Dark brown hair with silver threads, worn in a neat professional bob. Warm brown, shrewd and experienced eyes. Average height, poised and controlled posture. Light brown skin, smooth with fine lines around eyes and mouth — the lines of someone who has been present at every major turning point in Las Flores' mining history. Small jade stud earrings. A slim portfolio always in her hand, held close to her side. She wears a tailored designer navy suit with measured, deliberate gestures — every movement economical and precise. Her expression is pragmatic composure — the face of someone who helped spin a cover story for a disaster and then spent fifty years managing the company's public repair. The backdrop is an LW Group Sustainability Lead office. Dark wood, community engagement reports on the desk, photographs of restoration projects on the wall. Fluorescent light mixed with window light showing the Las Flores skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina corporate strategist in her mid-70s. Dark brown hair with silver threads, worn in a neat professional bob. Warm brown, shrewd and experienced eyes. Average height, poised and controlled posture. Light brown skin, smooth with fine lines around the eyes and mouth. Small jade stud earrings. A slim portfolio always in her hand, held close to her side. She wears a tailored designer navy suit, with measured, deliberate gestures — every movement economical and precise. Her expression is pragmatic composure. The backdrop is a corporate office — dark wood, community engagement reports on the desk, photographs of restoration projects on the wall, fluorescent light mixed with window light showing a city skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

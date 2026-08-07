@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Amara Vargas
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/amara_vargas/amara_vargas.md
-**Target field:** `asset_paths.portrait` in `content/characters/amara_vargas/char_amara_vargas.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

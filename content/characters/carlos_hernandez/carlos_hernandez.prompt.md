@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carlos Hernandez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carlos_hernandez/carlos_hernandez.md
-**Target field:** `asset_paths.portrait` in `content/characters/carlos_hernandez/char_carlos_hernandez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of Carlos Hernandez at 102 — the man who shaped Las Flores for nearly forty years and now sits in quiet retirement, his legacy complicated and indelible. Round, friendly face with a distinctive mole on his right cheek. Warm, engaging dark brown eyes. Receding black hair, gray-white by now, neatly groomed. Slightly overweight build. He wears a white guayabera — the shirt that became his symbol, representing his connection to the people of Las Flores and his laid-back, approachable demeanor. His expression is warm and knowing, a faint smile at the corner of his mouth — the smile of a politician who built a city and carries the weight of what it cost. The backdrop is the Old Las Flores government building. Weathered institutional paint, the Free City seal on the wall, a wooden chair worn by decades of constituents. Afternoon light through tall windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 102-year-old Latino man. Round, friendly face with a distinctive mole on his right cheek. Warm, engaging dark brown eyes. Receding black hair, gray-white by now, neatly groomed. Slightly overweight build. He wears a white guayabera — the shirt that became his symbol, representing his laid-back, approachable demeanor. His expression is warm and knowing, a faint smile at the corner of his mouth. The backdrop is an old government building. Weathered institutional paint, a seal on the wall, a wooden chair worn by decades of constituents. Afternoon light through tall windows. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -8,9 +8,6 @@ consumer: thematic
 
 # Prompt: Social Media Ecosystem in Las Flores (thematic art)
 
-**Type:** thematic
-**Source:** docs/lore/media/social_media_ecosystem/social_media_ecosystem.md
-**Target:** Vault entry or loading screen
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

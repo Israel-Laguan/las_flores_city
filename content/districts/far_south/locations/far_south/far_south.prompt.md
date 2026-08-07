@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Far South
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/far_south.md
-**Target field:** `scene.background_url` in `content/locations/location_far_south.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Van der Meer Group Northern Mine
 
-**Type:** background
-**Source:** docs/lore/districts/van_der_meer_group_northern_mine.md
-**Target field:** `scene.background_url` in `content/locations/location_van_der_meer_group_northern_mine.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

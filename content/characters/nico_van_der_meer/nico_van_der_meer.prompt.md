@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Nico van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/nico_van_der_meer/nico_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/nico_van_der_meer/char_nico_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Dutch business heir in his early 40s, athletic-compact sharp build, clear fair s
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch business heir in his early 40s. Athletic-compact sharp build with an ambitious, observant presence. Clear fair skin. Oval face with a strong jaw and high cheekbones. Wide nose, deep-set eyes, thick brows, thin lips. Straight dark-blonde hair with early gray at the temples, a small scar on his left brow, one brow sitting a fraction lower than the other. Ambitious, cautious bearing, an observant appraising expression. Sharp European business-casual attire: a tailored blazer over a crisp open-collar shirt, practical for the dock, a sport earbud clipped to his earlobe. The backdrop is a Las Flores trade office or port warehouse, shipping manifests and stacked crates in industrial daylight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch business heir in his early 40s. Athletic-compact sharp build with an ambitious, observant presence. Clear fair skin. Oval face with a strong jaw and high cheekbones. Wide nose, deep-set eyes, thick brows, thin lips. Straight dark-blonde hair with early gray at the temples, a small scar on his left brow, one brow sitting a fraction lower than the other. Ambitious, cautious bearing, an observant appraising expression. Sharp European business-casual attire: a tailored blazer over a crisp open-collar shirt, practical for the dock, a sport earbud clipped to his earlobe. The backdrop is a trade office or port warehouse, shipping manifests and stacked crates in industrial daylight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

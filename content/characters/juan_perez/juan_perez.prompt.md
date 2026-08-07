@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Juan Pérez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/juan_perez/juan_perez.md
-**Target field:** `asset_paths.portrait` in `content/characters/juan_perez/char_juan_perez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latino man in his early 30s, athletic-compact build, clear skin, wavy dark hair 
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early 30s. Athletic-compact build with a charismatic, fast-moving presence. Clear warm-brown skin. Wavy dark hair, styled back with effort and a little shine. Angular face with a prominent jawline and high cheekbones. Hooded eyes, sharp and quick with gossip, thick brows, full lips, and a wide nose. A chipped front tooth and one brow that sits slightly lower than the other keep the charm human. Self-assured, faintly roguish bearing. Small sport non-in-ear earbud clipped to earlobe. Sharp-but-flash media attire: a well-cut jacket over an open-collar shirt, a statement watch, a recorder in hand. The backdrop is a Chronicle newsroom or society event with bright lights and bustle. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino man in his early 30s. Athletic-compact build with a charismatic, fast-moving presence. Clear warm-brown skin. Wavy dark hair, styled back with effort and a little shine. Angular face with a prominent jawline and high cheekbones. Hooded eyes, sharp and quick with gossip, thick brows, full lips, and a wide nose. A chipped front tooth and one brow that sits slightly lower than the other keep the charm human. Self-assured, faintly roguish bearing. Small sport non-in-ear earbud clipped to earlobe. Sharp-but-flash media attire: a well-cut jacket over an open-collar shirt, a statement watch, a recorder in hand. The backdrop is a newsroom or society event with bright lights and bustle. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

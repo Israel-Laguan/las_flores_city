@@ -10,17 +10,13 @@ consumer: portrait
 
 # Prompt: María Fernanda Rodriguez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** docs/lore/figures/mar_a_fernanda_rodriguez.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_mar_a_fernanda_rodriguez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in her late 40s Latin Photorealistic portrait of María Fernanda Rodriguez. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, sharp authoritative. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown bob hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless p. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in her late 40s Latin Photorealistic portrait of María Fernanda Rodriguez. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, sharp authoritative. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown bob hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height Latin American woman in her late 40s. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown eyes that are sharp and authoritative. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown hair is cut in a bob and grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing

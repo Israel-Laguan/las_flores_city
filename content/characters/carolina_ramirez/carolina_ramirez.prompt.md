@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Carolina Ramirez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/carolina_ramirez/carolina_ramirez.md
-**Target field:** `asset_paths.portrait` in `content/characters/carolina_ramirez/char_carolina_ramirez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a young Pacific District official who stood up to Governor Ramos's representative. Dark brown, thick and wavy hair, worn in a professional low ponytail. Warm brown, alert and intelligent eyes. Petite and slender, upright posture — the posture of someone who knows she is right. Light brown skin with warm undertones. A small mole below her right eye. A thin gold chain necklace at her throat. She wears a professional cream blouse and a navy blazer — modest, precise, the uniform of integrity. Her expression is calm certainty — the look of a woman whose record was spotless and who watched the smear campaign bounce off her like water. The backdrop is a Pacific District municipal office. Wooden desk, city documents, a window looking out over the Pacific coast. Late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-30s Latina woman. Dark brown, thick and wavy hair, worn in a professional low ponytail. Warm brown, alert and intelligent eyes. Petite and slender, upright posture. Light brown skin with warm undertones. A small mole below her right eye. A thin gold chain necklace at her throat. She wears a professional cream blouse and a navy blazer — modest and precise. Her expression is calm certainty — composed and quietly unshakeable. The backdrop is a municipal office. Wooden desk, city documents, a window looking out over the coast. Late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Las Tres Montañas
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/las_tres_monta_as.md
-**Target field:** `scene.background_url` in `content/locations/location_las_tres_monta_as.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

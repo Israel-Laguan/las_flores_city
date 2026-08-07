@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Fatima El-Kholi
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/fatima_el_kholi/fatima_el_kholi.md
-**Target field:** `asset_paths.portrait` in `content/characters/fatima_el_kholi/char_fatima_el_kholi.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a late-30s Egyptian mid-level executive manager at LW Group. Jet-black, thick lustrous hair, worn in a sleek blowout or elegant updo. Dark brown, sharp and commanding eyes, lined with subtle kohl. Slender and poised, moves with confident grace. Warm olive complexion, smooth and carefully maintained. Gold hoop earrings. Designer glasses. Signature red lipstick. Manicured nails. She wears a tailored designer blazer over a silk blouse — the uniform of a woman who has built an empire of control and now spends it on moments she cannot control. Her expression is composed authority with something private held behind the eyes — the quiet frustration of pay disparity and cultural displacement that the luxury cannot soothe. The backdrop is an upscale Las Flores after-hours lounge. Low amber light, polished surfaces, the quiet hum of the city's elite social circuit. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a late-30s Egyptian mid-level executive manager at a major corporation. Jet-black, thick lustrous hair, worn in a sleek blowout or elegant updo. Dark brown, sharp and commanding eyes, lined with subtle kohl. Slender and poised, moves with confident grace. Warm olive complexion, smooth and carefully maintained. Gold hoop earrings. Designer glasses. Signature red lipstick. Manicured nails. She wears a tailored designer blazer over a silk blouse — the uniform of a woman who has built an empire of control and now spends it on moments she cannot control. Her expression is composed authority with something private held behind the eyes — the quiet frustration of pay disparity and cultural displacement that the luxury cannot soothe. The backdrop is an upscale after-hours lounge. Low amber light, polished surfaces, the quiet hum of the city's elite social circuit. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

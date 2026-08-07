@@ -9,9 +9,6 @@ consumer: logo
 
 # Prompt: Vitrina logo
 
-[CONSUMER: logo]
-**Type:** logo
-**Source:** content/lore/media/platforms/vitrina/vitrina.md
 **Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt

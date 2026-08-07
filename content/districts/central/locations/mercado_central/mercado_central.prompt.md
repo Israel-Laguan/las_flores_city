@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Mercado Central
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/mercado_central.md
-**Target field:** `scene.background_url` in `content/locations/location_mercado_central.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

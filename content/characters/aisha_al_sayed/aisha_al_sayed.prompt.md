@@ -10,10 +10,6 @@ consumer: portrait
 
 # Prompt: Aisha Al-Sayed
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/aisha_al_sayed/aisha_al_sayed.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_aisha_al_sayed.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

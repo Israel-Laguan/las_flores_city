@@ -1,0 +1,33 @@
+id: d1fc02757-af55-4fe0-8fc2-a36c42c264ae
+name: Wen Zhao
+title: Business Student, Secret Libertine
+description: |
+  Wen Zhao is a young Chinese woman in her early 20s, daughter of strict
+  immigrant parents in the northern district's Chinese-influenced community.
+  Like her friend Layla Al-Rashid, she performs the obedient daughter at
+  home while quietly rebelling at university — trading book-learned ideas of
+  freedom, flirting, and late-night secrets. She is Layla's confidante and
+  accomplice in the double life they both live.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: rebellious_ally_performative
+  age: Early 20s
+  gender: Female
+  ethnicity: Chinese
+  occupation: University business student
+  physical_description: sleek black hair in high ponytail; sharp angular jawline; modern chic clothing that reads trendy at school but is swapped for modest home-wear the moment she crosses the threshold; confident, sometimes intimidating posture
+  background: born in Las Flores to strict Chinese immigrant parents in the northern district; the community's watchful eye shaped her double life
+  education: university business student
+  mannerisms: sharp-tongued and a little condescending, but loyal to those she trusts; reassures Layla in private; treats rebellion as a shared game they are both only beginning to understand
+  motivations: taste freedom on her own terms; prove she is more than the obedient daughter; keep her secret life from her parents
+  fears: her parents discovering her double life; being sent back or shamed before the community
+  goals: enjoy the rebellion without consequences; be the "experienced" one who guides Layla
+  challenges: her confidence is as performed as Layla's; she mistakes movies for life, same as her friend
+  quote: At home I'm the good daughter. At school? At school I'm whoever I decide.
+lore_path: wen_zhao.md
+available_dialogues:
+  - d75f1a08b-935b-4fa1-a584-df79629df66b
+asset_paths:
+  portrait: wen_zhao__default.png

@@ -10,15 +10,11 @@ consumer: html-background
 
 # Prompt: San Miguel Dam
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/san_miguel_dam.md
-**Target field:** `scene.background_url` in `content/locations/location_san_miguel_dam.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
 ## Prompt (Draft)
-San Miguel water reservoir in Las Flores, night, busy urban street, eco-friendly sustainable design, massive concrete water reservoir structure, near water. Warm artificial streetlight glow casting long soft shadows, illuminated signs reflecting off wet pavement, deep blue twilight sky. No people, no text, no logos.. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, iden...
+Night scene of a massive concrete water reservoir structure near water, busy urban street, eco-friendly sustainable design. Warm artificial streetlight glow casting long soft shadows, illuminated signs reflecting off wet pavement, deep blue twilight sky. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, clean 4k. No people, no text, no logos.
 
 ## Prompt
 San Miguel Dam in Las Flores, night, busy urban street, eco-friendly sustainable design, massive concrete water reservoir structure, near water. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Warm artificial streetlight glow casting long soft shadows, illuminated signs reflecting off wet pavement, dark blue twilight sky. No people, no text, no logos.

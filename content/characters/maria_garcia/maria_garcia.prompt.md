@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Maria Garcia
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/maria_garcia/maria_garcia.md
-**Target field:** `asset_paths.portrait` in `content/characters/maria_garcia/char_maria_garcia.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Latina woman in her forties, heart-shaped face, soft jawline, wide nose, round e
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her forties. Heart-shaped face with a soft jawline, a wide nose, and round eyes that hold a quiet, steady warmth. Arched brows, full lips. Curly dark hair framing a gentle face, sun-damaged skin from long days in the flower fields. Soft-rounded, maternal build. Subtle lines around the eyes of a woman who has loved and lost. A faint chemical-burn mark crosses one wrist and weathered hands tell of years tending the Garcia family flower fields. Simple flower-farming clothes with an apron and a sun hat pushed back. No earbud — a gentle, period portrait of a woman at rest. The backdrop is the Garcia family flower fields in soft, tender light, the poisoned river distant on the horizon. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina woman in her forties. Heart-shaped face with a soft jawline, a wide nose, and round eyes that hold a quiet, steady warmth. Arched brows, full lips. Curly dark hair framing a gentle face, sun-damaged skin from long days in the flower fields. Soft-rounded, maternal build. Subtle lines around the eyes of a woman who has loved and lost. A faint chemical-burn mark crosses one wrist and weathered hands tell of years tending the family flower fields. Simple flower-farming clothes with an apron and a sun hat pushed back. No earbud — a gentle, period portrait of a woman at rest. The backdrop is the flower fields in soft, tender light, the polluted river distant on the horizon. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

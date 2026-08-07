@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Zona Rosa
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/zona_rosa.md
-**Target field:** `scene.background_url` in `content/locations/location_zona_rosa.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

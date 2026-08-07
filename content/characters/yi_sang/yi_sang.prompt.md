@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Yī Sāng
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/yi_sang/yi_sang.md
-**Target field:** `asset_paths.portrait` in `content/characters/yi_sang/char_yi_sang.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

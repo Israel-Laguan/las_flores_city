@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Alfonso Vega
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/alfonso_vega/alfonso_vega.md
-**Target field:** `asset_paths.portrait` in `content/characters/alfonso_vega/char_alfonso_vega.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a late-50s former mayor of Las Flores. Stocky, broad-shouldered build with weight settled at the midsection. Silver-gray, thick wavy hair, swept back in a distinguished style. Heavy-lidded dark brown eyes with a practiced, political warmth. Medium-brown skin, deeply lined forehead and around the mouth from years of public speaking. A thick mustache neatly trimmed. Large hands often caught mid-gesture. A gold watch on his left wrist. He wears a tailored navy suit, slightly strained at the waist, with a white shirt open at the collar — the look of a man who has stopped performing authority. His expression is the politician's practiced warmth, but the eyes hold a man who knows what the tailings dam really cost. The backdrop is a mayoral office in the Free City government building. Faded institutional paint, a city seal on the wall, documents stacked on a large desk. Fluorescent light mixed with window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a late-50s Latino man. Stocky, broad-shouldered build with weight settled at the midsection. Silver-gray, thick wavy hair, swept back in a distinguished style. Heavy-lidded dark brown eyes with a practiced, political warmth. Medium-brown skin, deeply lined forehead and around the mouth. A thick mustache neatly trimmed. Large hands often caught mid-gesture. A gold watch on his left wrist. He wears a tailored navy suit, slightly strained at the waist, with a white shirt open at the collar. His expression is the politician's practiced warmth. The backdrop is a municipal office in a government building. Faded institutional paint, a city seal on the wall, documents stacked on a large desk. Fluorescent light mixed with window light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

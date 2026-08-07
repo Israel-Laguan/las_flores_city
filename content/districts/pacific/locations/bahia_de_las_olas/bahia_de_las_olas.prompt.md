@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Bahía de las Olas
 
-**Type:** background
-**Source:** docs/lore/districts/bah_a_de_las_olas.md
-**Target field:** `scene.background_url` in `content/locations/location_bah_a_de_las_olas.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)

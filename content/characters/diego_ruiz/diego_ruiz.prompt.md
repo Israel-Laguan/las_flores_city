@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Diego Ruiz
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/diego_ruiz/diego_ruiz.md
-**Target field:** `asset_paths.portrait` in `content/characters/diego_ruiz/char_diego_ruiz.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 26-year-old airport cleaner and aspiring social climber at Aeropuerto Internacional de Las Flores. Fit build, kept in shape. Medium-length dark hair, carefully styled even after a shift. Warm brown eyes, expressive and hopeful. Light olive skin, a faint five-o'clock shadow. He wears a neat casual button-down shirt over a plain tee, clean dark trousers — the off-duty uniform of someone trying very hard to look like he belongs somewhere better. A slim black notebook of pickup techniques peeks from his jacket pocket. His expression is optimistic charm — the practiced confidence of a man who has read every self-help book and still cannot believe this is working. The backdrop is the Las Flores international airport terminal at dusk. Floor-to-ceiling windows, departures board, empty gate seats. Cool blue twilight mixed with warm amber overheads. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 26-year-old airport cleaner and aspiring social climber at the international airport. Fit build, kept in shape. Medium-length dark hair, carefully styled even after a shift. Warm brown eyes, expressive and hopeful. Light olive skin, a faint five-o'clock shadow. He wears a neat casual button-down shirt over a plain tee, clean dark trousers — the off-duty uniform of someone trying very hard to look like he belongs somewhere better. A slim black notebook of pickup techniques peeks from his jacket pocket. His expression is optimistic charm — the practiced confidence of a man who has read every self-help book and still cannot believe this is working. The backdrop is the airport terminal at dusk. Floor-to-ceiling windows, departures board, empty gate seats. Cool blue twilight mixed with warm amber overheads. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

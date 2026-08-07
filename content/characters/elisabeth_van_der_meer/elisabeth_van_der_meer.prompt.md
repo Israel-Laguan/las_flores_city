@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Elisabeth van der Meer
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/elisabeth_van_der_meer/elisabeth_van_der_meer.md
-**Target field:** `asset_paths.portrait` in `content/characters/elisabeth_van_der_meer/char_elisabeth_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
@@ -21,7 +17,7 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Prompt
 
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-born socialite, art collector, and philanthropist in her early 80s. Silver-blonde hair, styled in an elegant updo, always immaculate. Pale blue eyes — refined, discerning, the eyes of a lifelong tastemaker. Tall and graceful, excellent posture. Fair skin, carefully maintained with subtle signs of aging. A pearl necklace. Diamond stud earrings. Signature red lipstick. Elegant, tailored navy gown. Her expression is composed grace — the bearing of a woman who hosts lavish gatherings, builds Shipibo-Konibo art collections, and advocates for marginalized communities through her foundation's boards. The backdrop is the Van der Meer family's sprawling Las Flores riverbank estate. Colonial architecture, manicured gardens, a terrace looking out over the water. Soft late-afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch socialite and art collector in her early 80s. Silver-blonde hair, styled in an elegant updo, always immaculate. Pale blue eyes — refined, discerning. Tall and graceful, excellent posture. Fair skin, carefully maintained with subtle signs of aging. A pearl necklace. Diamond stud earrings. Signature red lipstick. Elegant, tailored navy gown. Her expression is composed grace. The backdrop is a sprawling riverbank estate — colonial architecture, manicured gardens, a terrace looking out over the water, soft late-afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 

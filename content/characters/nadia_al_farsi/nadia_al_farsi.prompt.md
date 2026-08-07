@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Nadia Al-Farsi
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/nadia_al_farsi/nadia_al_farsi.md
-**Target field:** `asset_paths.portrait` in `content/characters/nadia_al_farsi/char_nadia_al_farsi.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

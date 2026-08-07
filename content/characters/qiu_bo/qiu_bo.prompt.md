@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Qiu Bo
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/qiu_bo/qiu_bo.md
-**Target field:** `asset_paths.portrait` in `content/characters/qiu_bo/char_qiu_bo.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

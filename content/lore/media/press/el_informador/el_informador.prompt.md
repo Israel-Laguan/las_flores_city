@@ -8,10 +8,7 @@ consumer: thematic
 
 # Prompt: El Informador de Las Flores (thematic art)
 
-**Type:** thematic
 **size:** 1280×720
-**Source:** docs/lore/media/el_informador/el_informador.md
-**Target:** Vault entry or loading screen
 
 ## Prompt
 A busy, local newsroom environment, journalists at desks with computer screens, papers, and coffee mugs, soft overhead office lighting, authentic atmosphere, high detail, 8K resolution.

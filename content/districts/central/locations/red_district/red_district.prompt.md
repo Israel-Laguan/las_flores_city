@@ -10,10 +10,6 @@ consumer: html-background
 
 # Prompt: Red District
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/red_district.md
-**Target field:** `scene.background_url` in `content/locations/location_red_district.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

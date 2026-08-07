@@ -9,10 +9,6 @@ consumer: portrait
 
 # Prompt: Juan Pablo Hernandez
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/juan_pablo_hernandez/juan_pablo_hernandez.md
-**Target field:** `asset_paths.portrait` in `content/characters/juan_pablo_hernandez/char_juan_pablo_hernandez.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)

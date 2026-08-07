@@ -141,7 +141,7 @@ function parsePromptFile(filePath) {
   while ((match = promptRegex.exec(content)) !== null) {
     const variantName = match[1].trim();
     const promptText = match[2].trim();
-    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/);
+    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
     const negativeText = negMatch ? negMatch[1].trim() : '';
     if (promptText) {
       results.push({ variantName, promptText, negativeText, type, width, height });

@@ -10,9 +10,6 @@ consumer: background
 
 # Prompt: Neighborhoods near factories
 
-**Type:** background
-**Source:** docs/lore/districts/neighborhoods_near_factories.md
-**Target field:** `scene.background_url` in `content/locations/location_neighborhoods_near_factories.yaml`
 **Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)
