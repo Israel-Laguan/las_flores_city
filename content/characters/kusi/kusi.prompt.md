@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Kusi offering a quiet, reserved smile as he helps with daily chores in the restaurant kitchen
 - [ ] Kusi sitting at Xue's restaurant counter, sharing a moment of companionship over a simple meal
 
+## Expression Variants
+
+- **`kusi__default.png`**: Use the base portrait as reference. Short indigenous man in his early 50s, stocky sturdy frame, gentle humble resting expression, looking at the camera, 3/4 take. Deep brown gentle, humble eyes, broad nose with a defined bridge, subtle knowing half-smile, thick black hair in un-styled flowing shapes, small sport earbud, simple cotton shirt and worn trousers. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`kusi__happy.png`**: Use the base portrait as reference. A quiet, reserved smile, looking at the camera, 3/4 take. Deep brown eyes warm and crinkling, the half-smile widening with gentle warmth. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`kusi__contemplative.png`**: Use the base portrait as reference. A soft, reflective moment, looking at the camera, 3/4 take. Deep brown eyes gazing into the middle distance, lips relaxed, head bowed slightly. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`kusi__surprised.png`**: Use the base portrait as reference. A gentle startle, looking at the camera, 3/4 take. Deep brown eyes widened, brows lifted, lips parting softly. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`kusi__tender.png`**: Use the base portrait as reference. A warm, intimate moment of companionship, looking gently at the camera, 3/4 take. Deep brown eyes soft and steady, lips curved in a tender, reserved smile. Keep the same art style as reference, same earbud and cotton shirt, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

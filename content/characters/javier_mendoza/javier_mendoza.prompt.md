@@ -28,3 +28,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Javier Mendoza with his farm workers, coordinating tasks during harvest season
 - [ ] Javier Mendoza negotiating with restaurant buyers, seeking fair prices for his produce
 
+## Expression Variants
+
+- **`javier_mendoza__default.png`**: Use the base portrait as reference. Weathered 47-year-old Latin farmer, solid muscular frame built by outdoor labor, warm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, tousled dark hair. Small sport earbud, sturdy cotton work shirt with rolled sleeves, durable work pants. Farmland backdrop with rows of crops under intense tropical sunlight. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, earthy natural palette, zero conventional beauty templates.
+
+- **`javier_mendoza__determined.png`**: Use the base portrait as reference. Quiet, hard-won resolve, looking directly at the camera, 3/4 take. Dark eyes steady and fixed, jaw set, brow firm. A man seeking redemption through honest work. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+
+- **`javier_mendoza__happy.png`**: Use the base portrait as reference. A genuine, weathered smile, looking at the camera, 3/4 take. Dark eyes warm and creased from years in the sun, mouth opening in a tired but real smile. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+
+- **`javier_mendoza__contemplative.png`**: Use the base portrait as reference. A reflective pause, looking at the camera, 3/4 take. Dark eyes softening into the distance, lips relaxed, the weight of his past visible in the lines of his face. Keep the same art style as reference, same earbud and work shirt, farmland backdrop. Clean confident linework, painterly soft shading, earthy natural palette.
+
+- **`javier_mendoza__surprised.png`**: Use the base portrait as reference. A startled moment, looking at the camera, 3/4 take. Dark eyes widened, brows lifted, lips parting. Earthy fields behind him catching the light. Keep the same art style as reference, same earbud and work shirt. Clean confident linework, painterly soft shading, earthy natural palette.
+

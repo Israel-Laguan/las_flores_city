@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Isabella Rodriguez deep in thought about their studies, determined to succeed
 - [ ] Isabella Rodriguez studying with classmates in a library, working together on a project
 
+## Expression Variants
+
+- **`isabella_rodriguez__default.png`**: Use the base portrait as reference. Medium-height Latina woman, solid un-sculpted frame, neutral warm resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, subtle knowing half-smile. Dark hair in un-styled flowing shapes, small sport earbud, minimalist practical clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`isabella_rodriguez__focused.png`**: Use the base portrait as reference. She is in absorbed concentration over her studies, looking at the camera, 3/4 take. Dark expressive eyes narrowed with intent, brows slightly drawn, lips pressed in quiet focus. Dark hair slightly loosened around her face. Desks and books edge the frame. Keep the same art style as reference, same earbud and practical clothing. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`isabella_rodriguez__happy.png`**: Use the base portrait as reference. A warm, genuine smile breaks through, looking at the camera, 3/4 take. Dark expressive eyes bright with warmth, cheeks lifting, the subtle knowing half-smile opening into full delight. Defined jaw relaxed. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`isabella_rodriguez__contemplative.png`**: Use the base portrait as reference. She is in thought, looking softly at the camera, 3/4 take. Dark eyes gazing into the middle distance, lips relaxed, head tilted slightly. Weight of her studies and resolve visible. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`isabella_rodriguez__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark expressive eyes fixed and sharp, defined jaw set, mouth firm. Composed bearing reaffirmed. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

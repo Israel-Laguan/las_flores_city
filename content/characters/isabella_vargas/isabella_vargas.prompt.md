@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Isabella Vargas deep in thought about their studies, determined to succeed
 - [ ] Isabella Vargas studying with classmates in a library, working together on a project
 
+## Expression Variants
+
+- **`isabella_vargas__default.png`**: Use the base portrait as reference. Slender 23-year-old Latin American woman, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, steady composed bearing. Dark hair in un-styled flowing shapes, small sport earbud, minimalist fitted blazer over casual top. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`isabella_vargas__determined.png`**: Use the base portrait as reference. Quiet steel in her expression, looking directly at the camera, 3/4 take. Dark eyes fixed and unwavering, defined jaw set, lips a firm line. Composed bearing sharpened. Keep the same art style as reference, same earbud, blazer and casual top, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`isabella_vargas__focused.png`**: Use the base portrait as reference. Deep concentration over her studies, looking at the camera, 3/4 take. Dark expressive eyes intent, brows slightly knit, lips relaxed in focus. Hair tucked behind her ear. Books and notes edge the frame. Keep the same art style as reference, same earbud and blazer. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`isabella_vargas__happy.png`**: Use the base portrait as reference. A genuine, warm smile, looking at the camera, 3/4 take. Dark eyes brighten, cheeks lift, mouth opening into a real smile that softens her determined bearing. Keep the same art style as reference, same earbud, blazer and casual top, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`isabella_vargas__contemplative.png`**: Use the base portrait as reference. A moment of reflection, looking thoughtfully at the camera, 3/4 take. Dark eyes softening into the middle distance, jaw relaxed, lips slightly parted. Keep the same art style as reference, same earbud, blazer and casual top, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

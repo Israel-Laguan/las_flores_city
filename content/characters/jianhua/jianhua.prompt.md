@@ -28,3 +28,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Jianhua photographing festival celebrations with his small camera, capturing cultural moments
 - [ ] Jianhua in quiet contemplation, the contrast between his engineering work and cultural fascination visible
 
+## Expression Variants
+
+- **`jianhua__default.png`**: Use the base portrait as reference. Chinese engineer in his 40s, slightly stooped wiry build, quiet contemplation mixed with nostalgic warmth, looking at the camera, 3/4 take. Dark brown warm yet distant eyes, calloused hands resting on a small sketch notebook. Gray-black thinning hair cut short, simple cotton shirt and worn canvas jacket. Backdrop of a vibrant indigenous festival with drums and colors. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted earthy palette with festival color accents, zero conventional beauty templates.
+
+- **`jianhua__contemplative.png`**: Use the base portrait as reference. Deep, quiet reflection, looking at the camera, 3/4 take. Dark brown eyes soft and distant, gaze cast toward the middle distance, lips relaxed. The longing beneath his fascination. Keep the same art style as reference, same sketchbook and canvas jacket, festival backdrop. Clean confident linework, painterly soft shading, muted earthy palette with festival color accents.
+
+- **`jianhua__happy.png`**: Use the base portrait as reference. A gentle, nostalgic warmth, looking at the camera, 3/4 take. Dark brown eyes brightening, a soft smile lifting the corners of his mouth, the festival glow catching his weathered face. Keep the same art style as reference, same sketchbook and canvas jacket, festival backdrop. Clean confident linework, painterly soft shading, muted earthy palette with festival color accents.
+
+- **`jianhua__sad.png`**: Use the base portrait as reference. Quiet, contained sorrow, looking slightly down, 3/4 take. Dark brown eyes dimmed, brows drawn, lips pressed together. The distance from his cultural home surfacing. Keep the same art style as reference, same sketchbook and canvas jacket, festival backdrop. Clean confident linework, painterly soft shading, muted earthy palette with festival color accents.
+
+- **`jianhua__surprised.png`**: Use the base portrait as reference. A moment of quiet astonishment, looking at the camera, 3/4 take. Dark brown eyes widened, brows lifted, lips parted — caught by a new cultural detail. Keep the same art style as reference, same sketchbook and canvas jacket, festival backdrop. Clean confident linework, painterly soft shading, muted earthy palette with festival color accents.
+

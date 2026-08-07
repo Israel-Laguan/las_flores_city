@@ -28,3 +28,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Javier Ramirez assisting visitors with polite professionalism at the security checkpoint
 - [ ] Javier Ramirez in a moment of quiet reflection during his shift, showing the weight of responsibility
 
+## Expression Variants
+
+- **`javier_ramirez__default.png`**: Use the base portrait as reference. 30-year-old Latino security guard, sturdy disciplined build, calm alert resting expression, looking at the camera, 3/4 take. Sharp brown scanning eyes, straight nose, well-groomed beard, neat short dark hair. Small communication earpiece, crisp tailored security uniform, walkie-talkie on belt, name badge. Modern business complex entrance backdrop under security lighting. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, urban professional palette, zero conventional beauty templates.
+
+- **`javier_ramirez__focused.png`**: Use the base portrait as reference. Sharp vigilance, looking directly at the camera, 3/4 take. Brown eyes narrowed and scanning, brows drawn, lips firm. Alert professionalism. Keep the same art style as reference, same earpiece and uniform, same backdrop. Clean confident linework, painterly soft shading, urban professional palette.
+
+- **`javier_ramirez__determined.png`**: Use the base portrait as reference. Steady professional resolve, looking at the camera, 3/4 take. Jaw set beneath the well-groomed beard, eyes fixed and unwavering. Keep the same art style as reference, same earpiece and uniform, same backdrop. Clean confident linework, painterly soft shading, urban professional palette.
+
+- **`javier_ramirez__contemplative.png`**: Use the base portrait as reference. The weight of responsibility, looking thoughtfully at the camera, 3/4 take. Brown eyes softening into the middle distance, lips relaxed, a moment's quiet reflection during the shift. Keep the same art style as reference, same earpiece and uniform, same backdrop. Clean confident linework, painterly soft shading, urban professional palette.
+
+- **`javier_ramirez__happy.png`**: Use the base portrait as reference. A brief, professional smile, looking at the camera, 3/4 take. Brown eyes warming, beard framing a courteous grin, alertness softening. Keep the same art style as reference, same earpiece and uniform, same backdrop. Clean confident linework, painterly soft shading, urban professional palette.
+

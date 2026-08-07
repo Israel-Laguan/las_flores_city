@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Juan Carlos Pérez in a moment of quiet contemplation, reflecting on the impact of their work
 - [ ] Juan Carlos Pérez with constituents at a community event, listening attentively to concerns
 
+## Expression Variants
+
+- **`juan_carlos_perez__default.png`**: Use the base portrait as reference. Tall Afro-Latino man in his mid-40s, broad-shouldered imposing frame, intense resting expression, looking at the camera, 3/4 take. Dark brown intense passionate eyes, square jaw, black cropped hair, squared shoulders, unwavering gaze. Small sport earbud, minimalist practical clothing — plain t-shirt under a jacket. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`juan_carlos_perez__determined.png`**: Use the base portrait as reference. Fiery conviction, looking directly at the camera, 3/4 take. Dark brown eyes blazing, square jaw set, brow firm. The speaker's resolve. Keep the same art style as reference, same earbud and jacket, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`juan_carlos_perez__contemplative.png`**: Use the base portrait as reference. Quiet reflection, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, jaw relaxed, lips pressed thoughtfully. Weighing the impact of his work. Keep the same art style as reference, same earbud and jacket, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`juan_carlos_perez__happy.png`**: Use the base portrait as reference. A warm, engaged smile, looking at the camera, 3/4 take. Dark brown eyes brightening, the intensity softening into genuine warmth, lips curving up. Keep the same art style as reference, same earbud and jacket, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`juan_carlos_perez__surprised.png`**: Use the base portrait as reference. A sharp, controlled startle, looking at the camera, 3/4 take. Dark brown eyes widened, brows lifted, lips parted. Imposing bearing intact. Keep the same art style as reference, same earbud and jacket, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

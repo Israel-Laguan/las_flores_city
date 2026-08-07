@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Juan Rodríguez reviewing interview notes at their desk, thoughtfully considering story angles
 - [ ] Juan Rodríguez with colleagues in the newsroom, collaborating on a breaking story
 
+## Expression Variants
+
+- **`juan_rodriguez__default.png`**: Use the base portrait as reference. Medium-height indigenous man, solid un-sculpted frame, calm determined resting expression with a notebook in hand, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist practical clothing suited to his environment. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`juan_rodriguez__focused.png`**: Use the base portrait as reference. Sharp journalistic attention, looking at the camera, 3/4 take. Dark expressive eyes narrowed and intent, brows drawn, lips firm, notebook poised. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`juan_rodriguez__contemplative.png`**: Use the base portrait as reference. Weighing a story angle, looking thoughtfully at the camera, 3/4 take. Dark eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`juan_rodriguez__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark expressive eyes bright, lips curving up, the composed bearing warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`juan_rodriguez__surprised.png`**: Use the base portrait as reference. A caught-off-guard moment, looking at the camera, 3/4 take. Dark eyes widened, brows lifted, lips parted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
