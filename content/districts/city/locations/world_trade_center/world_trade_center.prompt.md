@@ -3,7 +3,7 @@ name: World Trade Center Las Flores
 type: background
 size: 1280x768
 source: docs/lore/districts/city/landmarks/world_trade_center/world_trade_center.md
-target: `scene.background_url` in `content/locations/location_world_trade_center_las_flores.yaml`
+target: `scene.background_url` in `content/districts/city/locations/world_trade_center/location_world_trade_center.yaml`
 consumer: html-background
 ---
 
@@ -12,8 +12,8 @@ consumer: html-background
 
 [CONSUMER: html-background]
 **Type:** background
-**Source:** docs/lore/districts/world_trade_center_las_flores.md
-**Target field:** `scene.background_url` in `content/locations/location_world_trade_center_las_flores.yaml`
+**Source:** docs/lore/districts/city/landmarks/world_trade_center/world_trade_center.md
+**Target field:** `scene.background_url` in `content/districts/city/locations/world_trade_center/location_world_trade_center.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
