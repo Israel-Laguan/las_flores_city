@@ -1,31 +1,50 @@
-# Portrait Prompt — Jan van der Meer Jr.
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Jan van der Meer Jr., adult Van der Meer Family Member, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Jan van der Meer Jr., a adult Van der Meer Family Member from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Jan van der Meer Jr.
-title: Van der Meer Family Member
-faction: v
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/jan_van_der_meer_jr/jan_van_der_meer_jr.md
+target: `asset_paths.portrait` in `content/characters/jan_van_der_meer_jr/char_jan_van_der_meer_jr.yaml`
+consumer: portrait
 ---
 
-**Generated:** 2026-07-17T14:51:31.712Z
+# Prompt: Jan van der Meer Jr.
+
+[CONSUMER: portrait]
+**Type:** portrait
+**Source:** content/characters/jan_van_der_meer_jr/jan_van_der_meer_jr.md
+**Target field:** `asset_paths.portrait` in `content/characters/jan_van_der_meer_jr/char_jan_van_der_meer_jr.yaml`
+**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+
+## Prompt (Draft)
+
+Dutch man in his early 40s, athletic-compact build, clear skin, straight blonde hair with faint gray threading. Oval face with a strong jawline, high cheekbones, wide-set eyes, thick brows, full lips, straight slightly crooked nose. A barely-there crookedness to the nose, small scar near one ear. Faint gray threading and thicker brows from age. Small sport earbud clipped to earlobe, well-made understated casual-family attire. Tasteful family estate or garden backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch man in his early 40s. Athletic-compact build with a composed, warm presence. Clear skin. Straight blonde hair with faint gray threading at the temples, kept neat. Oval face with a strong jawline and high cheekbones. Wide-set eyes, calm and steady, thick brows, full lips, and a straight nose with the barest hint of a crooked bridge. A small scar near one ear, nearly hidden. Faint gray threading and a touch more brow density from age, laid over an open, loyal expression. Small sport non-in-ear earbud clipped to earlobe. Well-made understated clothing: a soft-collared shirt under a light knit, casual and quietly refined. The backdrop is a tasteful family estate or manicured garden, dappled light, understated wealth. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+
+## Variations
+
+- [ ] On the family estate lawn with a cup of coffee, warm morning light
+- [ ] At a quiet garden table, hands clasped, steadying a family conversation
+- [ ] In a sunlit study, folding an old photograph of happier years
+
+## Expression Variants
+
+Authored expressions (each as `assets/jan_van_der_meer_jr__<tag>.png`, referenced in
+`portrait_urls[]` with an `expression` tag — see
+[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. Dutch man in his early 40s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear skin, straight blonde hair with faint gray threading. Oval face with a strong jawline, high cheekbones, wide-set eyes, thick brows, full lips, straight slightly crooked nose. Small scar near one ear, faint gray threading. Small sport earbud, soft-collared shirt under a light knit. Family estate or garden backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__tender.png`**: Use the base portrait as reference. His expression softens with warmth and affection, looking at the camera, 3/4 take. Wide-set eyes warm and open, thick brows relaxed, full lips curved in a gentle smile. The slight crookedness to the nose and the scar near one ear read quietly kind. Dappled garden light plays across his blonde hair. Keep the same art style as reference, same knit shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. He has a resolved, protective set to his jaw, looking at the camera, 3/4 take. Wide-set eyes steady, strong jawline squared, full lips pressed into a firm line. Gray threading in his blonde hair catches the light. Estate backdrop under stronger, steadier light. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. He is quietly exposed, looking at the camera with a tentative openness, 3/4 take. Wide-set eyes slightly lowered and glassy, thick brows lifting, mouth soft and uncertain. The scar near one ear and the hint of age in his brows feel human and unguarded. Softer, more diffused garden light. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__happy.png`**: Use the base portrait as reference. He is genuinely glad, looking at the camera, 3/4 take. Wide-set eyes bright and crinkled, full lips in an easy laugh, thick brows lifted. The crooked hint of the nose and faint gray threading only add warmth. Warm estate light in the background. Keep the same art style as reference, same knit shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
