@@ -16,3 +16,6 @@ metadata:
 lore_path: marco_restrepo.md
 asset_paths:
   portrait: marco_restrepo__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/marco_restrepo/marco_restrepo__default.png
+    label: dev

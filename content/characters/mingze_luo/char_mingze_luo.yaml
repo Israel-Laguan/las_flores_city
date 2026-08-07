@@ -10,3 +10,6 @@ metadata:
 lore_path: mingze_luo.md
 asset_paths:
   portrait: mingze_luo__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/mingze_luo/mingze_luo__default.png
+    label: dev

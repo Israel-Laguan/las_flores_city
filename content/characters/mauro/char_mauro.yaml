@@ -11,3 +11,6 @@ metadata:
 lore_path: mauro.md
 asset_paths:
   portrait: mauro__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/mauro/mauro__default.png
+    label: dev

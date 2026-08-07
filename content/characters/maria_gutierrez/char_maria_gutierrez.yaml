@@ -11,3 +11,6 @@ asset_paths:
   portrait: maria_gutierrez__default.png
 
 lore_path: maria_gutierrez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/maria_gutierrez/maria_gutierrez__default.png
+    label: dev

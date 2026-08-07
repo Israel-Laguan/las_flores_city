@@ -11,3 +11,6 @@ asset_paths:
   portrait: meilin_chen__default.png
 
 lore_path: meilin_chen.md
+portrait_urls:
+  - url: s3://las-flores/portraits/meilin_chen/meilin_chen__default.png
+    label: dev

@@ -41,3 +41,6 @@ available_dialogues:
   - e8f4a9c2-5d1e-47b8-9c3d-6ef8e2b7c3d1
 asset_paths:
   portrait: layla_al_rashid__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/layla_al_rashid/layla_al_rashid__default.png
+    label: dev

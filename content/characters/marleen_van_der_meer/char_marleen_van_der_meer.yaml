@@ -14,3 +14,6 @@ metadata:
 lore_path: marleen_van_der_meer.md
 asset_paths:
   portrait: marleen_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/marleen_van_der_meer/marleen_van_der_meer__default.png
+    label: dev

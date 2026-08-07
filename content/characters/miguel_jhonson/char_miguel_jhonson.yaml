@@ -21,6 +21,8 @@ metadata:
   quote: This neighborhood will be better built next time.
   status: Active (2077 and beyond)
 portrait_urls:
+  - url: s3://las-flores/portraits/miguel_jhonson/miguel_jhonson__default.png
+    label: dev
   - url: http://minio:9000/las-flores/portraits/miguel_jhonson/neutral.png
     label: dev
     expression: neutral

@@ -12,3 +12,6 @@ metadata:
 lore_path: marco_torres.md
 asset_paths:
   portrait: marco_torres__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/marco_torres/marco_torres__default.png
+    label: dev

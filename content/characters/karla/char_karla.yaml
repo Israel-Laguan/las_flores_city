@@ -19,3 +19,6 @@ metadata:
 lore_path: karla.md
 asset_paths:
   portrait: karla__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/karla/karla__default.png
+    label: dev

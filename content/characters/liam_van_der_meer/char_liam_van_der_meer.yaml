@@ -11,3 +11,6 @@ asset_paths:
   portrait: liam_van_der_meer__default.png
 
 lore_path: liam_van_der_meer.md
+portrait_urls:
+  - url: s3://las-flores/portraits/liam_van_der_meer/liam_van_der_meer__default.png
+    label: dev

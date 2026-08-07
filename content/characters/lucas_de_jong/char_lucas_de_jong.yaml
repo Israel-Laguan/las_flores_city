@@ -11,3 +11,6 @@ asset_paths:
   portrait: lucas_de_jong__default.png
 
 lore_path: lucas_de_jong.md
+portrait_urls:
+  - url: s3://las-flores/portraits/lucas_de_jong/lucas_de_jong__default.png
+    label: dev

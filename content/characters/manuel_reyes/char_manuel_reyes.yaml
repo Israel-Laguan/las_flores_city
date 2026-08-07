@@ -11,3 +11,6 @@ asset_paths:
   portrait: manuel_reyes__default.png
 
 lore_path: manuel_reyes.md
+portrait_urls:
+  - url: s3://las-flores/portraits/manuel_reyes/manuel_reyes__default.png
+    label: dev

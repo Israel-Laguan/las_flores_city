@@ -10,3 +10,6 @@ metadata:
 lore_path: maria_sanchez_sulca.md
 asset_paths:
   portrait: maria_sanchez_sulca__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/maria_sanchez_sulca/maria_sanchez_sulca__default.png
+    label: dev
