@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Marco "Mar" Torres taking a moment to rest between tasks, showing satisfaction in their work
 - [ ] Marco "Mar" Torres with restaurant staff during a busy service, working as a team
 
+## Expression Variants
+
+- **`marco_torres__default.png`**: Use the base portrait as reference. Medium-height Latin American man, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`marco_torres__happy.png`**: Use the base portrait as reference. Warm hospitality in a genuine smile, looking at the camera, 3/4 take. Dark eyes bright and welcoming, cheeks lifting, mouth curving up warmly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`marco_torres__focused.png`**: Use the base portrait as reference. Absorbed in the task at hand, looking at the camera, 3/4 take. Dark expressive eyes intent, brows knit, lips set in concentration. Restaurant bustle behind him. Keep the same art style as reference, same earbud and work clothing. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`marco_torres__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`marco_torres__contemplative.png`**: Use the base portrait as reference. A brief, satisfied pause, looking at the camera, 3/4 take. Dark eyes softening, lips relaxed, satisfaction in a moment of rest. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

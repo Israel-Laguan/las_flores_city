@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Manuel Rodriguez in a moment of reflection, considering their next steps
 - [ ] Manuel Rodriguez with colleagues in a professional setting, engaged in discussion
 
+## Expression Variants
+
+- **`manuel_rodriguez__default.png`**: Use the base portrait as reference. Medium-height Latino man in his late 40s, slight sturdy frame, calm determined resting expression, looking at the camera, 3/4 take. Dark brown charming but shifty eyes, thin dark brown hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`manuel_rodriguez__smirk.png`**: Use the base portrait as reference. A knowing, self-serving smirk, looking at the camera, 3/4 take. Dark brown eyes narrowed and sly, one brow arched, lips curling in a smug half-grin. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`manuel_rodriguez__calculating.png`**: Use the base portrait as reference. Shifty assessment, looking intensely at the camera, 3/4 take. Dark brown eyes darting and sharp, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`manuel_rodriguez__contemplative.png`**: Use the base portrait as reference. A guarded, thoughtful pause, looking at the camera, 3/4 take. Dark brown eyes softening warily, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`manuel_rodriguez__happy.png`**: Use the base portrait as reference. A charming, disarming smile, looking at the camera, 3/4 take. Dark brown eyes bright with practiced charm, lips curving up warmly but with something held back. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

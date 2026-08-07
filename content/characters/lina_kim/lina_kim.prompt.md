@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Lina Kim reviewing interview notes at their desk, thoughtfully considering story angles
 - [ ] Lina Kim with colleagues in the newsroom, collaborating on a breaking story
 
+## Expression Variants
+
+- **`lina_kim__default.png`**: Use the base portrait as reference. Medium-height 28-year-old Korean woman, solid un-sculpted frame, calm determined resting expression with a notebook in hand, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist practical clothing suited to her environment. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`lina_kim__focused.png`**: Use the base portrait as reference. Sharp journalistic attention, looking at the camera, 3/4 take. Dark expressive eyes narrowed and intent, brows drawn, lips firm, notebook poised. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`lina_kim__contemplative.png`**: Use the base portrait as reference. Weighing a story angle, looking thoughtfully at the camera, 3/4 take. Dark eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`lina_kim__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark expressive eyes brightening, lips curving up, composed bearing warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`lina_kim__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

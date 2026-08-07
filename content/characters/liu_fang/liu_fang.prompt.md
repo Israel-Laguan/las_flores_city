@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Liu Fang in a moment of reflection, considering their next steps
 - [ ] Liu Fang with colleagues in a professional setting, engaged in discussion
 
+## Expression Variants
+
+- **`liu_fang__default.png`**: Use the base portrait as reference. Slender Chinese woman in her late 30s, sturdy un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark brown intelligent, wary eyes, black shoulder-length hair in un-styled flowing shapes, small sport earbud, professional attire — blouse and blazer. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`liu_fang__calculating.png`**: Use the base portrait as reference. Cold, guarded focus, looking intensely at the camera, 3/4 take. Dark brown eyes narrowed and sharp, brows drawn, lips a thin line. Weighing threats. Keep the same art style as reference, same earbud, blouse and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`liu_fang__contemplative.png`**: Use the base portrait as reference. A guarded moment of thought, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head tilted slightly. Keep the same art style as reference, same earbud, blouse and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`liu_fang__happy.png`**: Use the base portrait as reference. A careful, restrained smile, looking at the camera, 3/4 take. Dark brown eyes warming a fraction, lips curving up cautiously. Keep the same art style as reference, same earbud, blouse and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`liu_fang__suspicious.png`**: Use the base portrait as reference. Wariness surfacing, looking at the camera, 3/4 take. Dark brown eyes narrowed in distrust, brows drawn, lips pressed. Guard up. Keep the same art style as reference, same earbud, blouse and blazer, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Lucas van der Meer taking a moment to reflect between patients, showing quiet compassion
 - [ ] Lucas van der Meer consulting with medical colleagues, discussing patient care approaches
 
+## Expression Variants
+
+- **`lucas_van_der_meer__default.png`**: Use the base portrait as reference. Medium-height Dutch man in his early 30s, thin un-sculpted frame, haunted resting expression, looking at the camera, 3/4 take. Pale blue bloodshot, unfocused, haunted eyes, sandy blond hair in un-styled flowing shapes, small sport earbud, minimalist practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`lucas_van_der_meer__contemplative.png`**: Use the base portrait as reference. Haunted reflection between patients, looking at the camera, 3/4 take. Pale blue eyes distant and hollow, lips relaxed, the weight of his past visible. Keep the same art style as reference, same earbud and work clothing, clinical lighting. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`lucas_van_der_meer__tender.png`**: Use the base portrait as reference. Quiet compassion surfacing, looking gently at the camera, 3/4 take. Pale blue eyes warming with care, lips curving in a soft, weary smile. Keep the same art style as reference, same earbud and work clothing. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`lucas_van_der_meer__vulnerable.png`**: Use the base portrait as reference. An unguarded moment, looking slightly down, 3/4 take. Pale blue eyes glassy and soft, brow drawn, lips parted. The haunted man beneath the doctor. Keep the same art style as reference, same earbud and work clothing. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`lucas_van_der_meer__focused.png`**: Use the base portrait as reference. Professional concentration, looking at the camera, 3/4 take. Pale blue eyes narrowing with intent, lips firm. The doctor resurfacing with care. Keep the same art style as reference, same earbud and work clothing, clinical setting. Clean confident linework, painterly soft shading, muted natural palette.
+

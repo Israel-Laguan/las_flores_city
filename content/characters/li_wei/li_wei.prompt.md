@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Li Wei considering a strategic decision, weighing options thoughtfully
 - [ ] Li Wei in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`li_wei__default.png`**: Use the base portrait as reference. Medium-height 91-year-old Chinese man, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`li_wei__contemplative.png`**: Use the base portrait as reference. Deep, measured thought, looking at the camera, 3/4 take. Dark eyes narrowed in consideration, lips pressed thoughtfully, aged features settling. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`li_wei__happy.png`**: Use the base portrait as reference. A gentle, warm smile, looking at the camera, 3/4 take. Dark eyes crinkling with warmth, lips curving up softly, age lines deepening kindly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`li_wei__calculating.png`**: Use the base portrait as reference. Cautious, sharp focus, looking intensely at the camera, 3/4 take. Dark eyes sharpened, brows drawn, jaw set. Years of judgment. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`li_wei__surprised.png`**: Use the base portrait as reference. A quiet, controlled startle, looking at the camera, 3/4 take. Dark eyes widened, brows lifted, lips parted. Composure intact. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

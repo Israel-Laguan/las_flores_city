@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Maria Chicham deep in thought about their studies, determined to succeed
 - [ ] Maria Chicham studying with classmates in a library, working together on a project
 
+## Expression Variants
+
+- **`maria_chicham__default.png`**: Use the base portrait as reference. Slender young woman in her early 20s, graceful frame, warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Dark brown bright, confident eyes, long dark brown hair in simple flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`maria_chicham__happy.png`**: Use the base portrait as reference. A warm, open smile, looking at the camera, 3/4 take. Dark brown eyes bright with confidence, cheeks lifting, lips parting in a genuine grin. Long hair framing her face. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_chicham__focused.png`**: Use the base portrait as reference. Absorbed concentration over her studies, looking at the camera, 3/4 take. Dark brown eyes intent, brows knit, lips pressed in quiet focus. Books and notes edge the frame. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_chicham__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark brown eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`maria_chicham__surprised.png`**: Use the base portrait as reference. A bright, controlled startle, looking at the camera, 3/4 take. Dark brown eyes widened, brows lifted, lips parted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

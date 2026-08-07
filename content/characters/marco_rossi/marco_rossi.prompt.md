@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Marco Rossi deep in thought about their studies, determined to succeed
 - [ ] Marco Rossi studying with classmates in a library, working together on a project
 
+## Expression Variants
+
+- **`marco_rossi__default.png`**: Use the base portrait as reference. Medium-height Argentine man, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist practical clothing suited to his environment. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`marco_rossi__focused.png`**: Use the base portrait as reference. Absorbed concentration over his studies, looking at the camera, 3/4 take. Dark expressive eyes intent, brows knit, lips pressed in quiet focus. Books and notes edge the frame. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`marco_rossi__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark eyes brightening, cheeks lifting, the composed bearing warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`marco_rossi__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`marco_rossi__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Dark eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
