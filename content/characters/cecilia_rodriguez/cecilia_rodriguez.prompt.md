@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/cecilia_rodriguez/cecilia_rodriguez.md
 target: `asset_paths.portrait` in `content/characters/cecilia_rodriguez/char_cecilia_rodriguez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Cecilia Rodríguez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

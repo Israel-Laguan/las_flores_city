@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/ana_kim/ana_kim.md
 target: `asset_paths.portrait` in `content/characters/ana_kim/char_ana_kim.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Ana Kim
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

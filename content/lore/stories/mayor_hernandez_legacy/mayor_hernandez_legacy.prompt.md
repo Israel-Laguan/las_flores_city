@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Mayor Hernandez's Legacy: A City Choking on Its Own Greed — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a city official's office, late afternoon, heavy drapes drawn against the sun. A silver-haired official in a formal suit sits behind a desk of planning documents, staring at a skyline with mining smokestacks, expression one of tired calculation. Headlines and a civic award plaque hang behind; the district spreads outward. Right of center, the window skyline telling the environmental story. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of wood, paper, and city haze.
 

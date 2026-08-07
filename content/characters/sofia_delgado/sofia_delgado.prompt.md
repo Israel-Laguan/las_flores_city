@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/sofia_delgado/sofia_delgado.md
 target: `asset_paths.portrait` in `content/characters/sofia_delgado/char_sofia_delgado.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Sofia Delgado
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

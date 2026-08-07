@@ -5,12 +5,10 @@ size: 1024x1408
 source: content/characters/wei_zhang/wei_zhang.md
 target: `portrait_urls[0].url` in `content/characters/wei_zhang/char_wei_zhang.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Dr. Wei Zhang
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Chinese man in his late 50s, Dr. Wei Zhang. His frame is slender, slightly hunched. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, deep-set and observant. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His gray-black thinning hair is kept neat but slightly unkempt. He wears a simple button-down shirt under a worn brown cardigan. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO 3D render, anime, cartoon, text, watermarks, blurry, low quality...

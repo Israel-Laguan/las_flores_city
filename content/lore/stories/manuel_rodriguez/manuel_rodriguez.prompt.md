@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Manuel Rodriguez - Governor's Representative — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a small administrative office in a coastal district, mid-2040s, a government flag in a corner, a desk of stamped documents. A middle-aged official in a formal suit sits scrolling a smartphone, expression between discomfort and defiance. Behind him a framed handshake photo; through the window food stalls, a church facade, children. Framed off-center, the glowing phone as focal point. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of leather, paper, and wood.
 

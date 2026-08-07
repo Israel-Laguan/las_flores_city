@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Student's Flight (The Train Station Demo) — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. A main boulevard, late morning, a public demonstration filling a park to the east. A university student with a backpack stands center-frame holding a crumpled schedule. Around them: commuters rushing, activists handing out flyers, corporate agents observing. The student is the pivot; the protest is visible beyond the buildings. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of pavement, paper, and metal shutters.
 

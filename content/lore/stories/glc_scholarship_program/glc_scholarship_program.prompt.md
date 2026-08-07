@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Dutch Firm Launches Scholarship Program to Combat Gang Violence in Old Las Flores — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A community hall, bright midday light through tall windows, folding chairs in rows, a hand-painted banner across the front. At the front, three scholarship recipients — high school seniors, nervous but proud — hold acceptance envelopes; behind, a table with certificates. Parents and siblings watch with visible pride; a coordinator in a branded polo shirt shakes each hand. Composition frames the three students at center stage. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

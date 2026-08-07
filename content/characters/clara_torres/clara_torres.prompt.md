@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/clara_torres/clara_torres.md
 target: `asset_paths.portrait` in `content/characters/clara_torres/char_clara_torres.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Clara Torres
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

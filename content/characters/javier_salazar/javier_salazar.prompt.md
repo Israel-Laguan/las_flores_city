@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/javier_salazar/javier_salazar.md
 target: `portrait_urls[].url` in `content/characters/char_javier_javi_salazar.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Javier "Javi" Salazar
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 35-year-old Latino police helicopter pilot. Javier "Javi" Salazar has an athletic, toned build with broad shoulders from flight training. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown confident and flirtatious eyes, and a strong jawline. His expression shows magnetic charm mixed quiet discontent, reflecting his frustration remote duty. His dark brown hair is styled in a trendy fade volume on top. Aviator sunglasses rest on his head, and a flashy knock-off desi. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

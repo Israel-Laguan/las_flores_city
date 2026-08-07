@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/alexandra_isabel_morales/alexandra_isabel_morales.md
 target: `asset_paths.portrait` in `content/characters/alexandra_isabel_morales/char_alexandra_isabel_morales.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Alexandra Isabel Morales
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

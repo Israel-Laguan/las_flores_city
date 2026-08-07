@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/maria_gutierrez/maria_gutierrez.md
 target: `asset_paths.portrait` in `content/characters/maria_gutierrez/char_maria_gutierrez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: María Gutiérrez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

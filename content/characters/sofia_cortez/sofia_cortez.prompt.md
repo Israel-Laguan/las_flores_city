@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/sofia_cortez/sofia_cortez.md
 target: `asset_paths.portrait` in `content/characters/sofia_cortez/char_sofia_cortez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Sofia Cortez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/lore/media/platforms/vitrina/vitrina.md
 target: `assets/vitrina__default.png`
 consumer: logo
+aspect_ratio: 1:1
 ---
 
 # Prompt: Vitrina logo
-
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt
 Flat vector logo emblem for "Vitrina", a Latin American video and image-sharing

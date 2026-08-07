@@ -5,15 +5,10 @@ size: 1024x1024
 source: content/missions/great_lithium_leak/mission_great_lithium_leak.yaml
 target: `assets/great_lithium_leak__default.png` in `content/missions/great_lithium_leak/`
 consumer: mission
+aspect_ratio: 3:4
 ---
 
 # Prompt: The Great Lithium Leak
-
-[CONSUMER: mission]
-**Type:** mission cover illustration
-**Source:** content/missions/great_lithium_leak/mission_great_lithium_leak.yaml
-**Target field:** `assets/great_lithium_leak__default.png` in `content/missions/great_lithium_leak/`
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

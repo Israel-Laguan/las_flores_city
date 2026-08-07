@@ -5,7 +5,6 @@ source: docs/lore/media/el_grito_estudiantil/el_grito_estudiantil.md
 consumer: thematic
 ---
 
-
 # Prompt: El Grito Estudiantil (thematic art)
 
 **size:** 1280×720

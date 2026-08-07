@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/nadia_al_farsi/nadia_al_farsi.md
 target: `portrait_urls[].url` in `content/characters/nadia_al_farsi/char_nadia_al_farsi.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Nadia Al-Farsi
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

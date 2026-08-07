@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/ricardo_tan/ricardo_tan.md
 target: `portrait_urls[].url` in `content/characters/char_ricardo_tan.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Ricardo Tan
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean in his early 40s Chinese Photorealistic portrait of Ricardo Tan. His frame is lean, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, expressive and lively, light up when speaking. His expression is warm, as he offers a subtle, knowing half-smile. His black hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical work clothing.. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

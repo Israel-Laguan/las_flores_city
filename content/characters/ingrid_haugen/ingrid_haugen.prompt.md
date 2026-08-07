@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/ingrid_haugen/ingrid_haugen.md
 target: `asset_paths.portrait` in `content/characters/ingrid_haugen/char_ingrid_haugen.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Ingrid Haugen
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

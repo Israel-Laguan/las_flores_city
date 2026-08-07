@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/carlos_alberto_hernandez/carlos_alberto_hernandez.md
 target: `asset_paths.portrait` in `content/characters/carlos_alberto_hernandez/char_carlos_alberto_hernandez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Alberto Hernandez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

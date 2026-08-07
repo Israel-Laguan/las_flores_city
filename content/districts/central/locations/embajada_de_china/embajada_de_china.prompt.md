@@ -7,7 +7,6 @@ target: `scene.background_url` in `content/districts/central/locations/embajada_
 consumer: html-background
 ---
 
-
 # Prompt: Embajada de China
 
 **Tool:** NIM (draft) → Flux/Seedance (refine)

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/amara_vargas/amara_vargas.md
 target: `asset_paths.portrait` in `content/characters/amara_vargas/char_amara_vargas.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Amara Vargas
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

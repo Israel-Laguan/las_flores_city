@@ -5,12 +5,10 @@ size: 1280x768
 source: docs/lore/districts/pacific/landmarks/pacific_coast/pacific_coast.md
 target: `scene.background_url` in `content/locations/location_pacific_coast.yaml`
 consumer: background
+aspect_ratio: 16:9
 ---
 
-
 # Prompt: Pacific Coast
-
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)
 Pacific Coast in Las Flores, daytime, coastal modern, beachside traditional, resort architecture architecture. Blinding high-summer noon sun casting short sharp vertical shadows directly beneath everything. No people, no text, no logos.. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, holographic tech, glowing clothing lin...
@@ -25,5 +23,4 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 - [ ] Night version: same scene at night with different lighting
 - [ ] Rainy version: same scene with rain and mood effects
 - [ ] Wide shot: broader view of the location
-
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/alfonso_vega/alfonso_vega.md
 target: `asset_paths.portrait` in `content/characters/alfonso_vega/char_alfonso_vega.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Alfonso Vega
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: El Contagio: How the Río de las Flores Crisis is Impacting Las Flores University Students — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: The open-air courtyard of a national university, midday, banners between columns, students in small groups holding hand-lettered signs. Three students fill the mid-ground: a young woman with a water bottle, determined; a young man on a low stone ledge addressing the crowd; another young woman clutching a medical textbook, worried. Sunlight filters through jacaranda trees, purple blossoms falling. Composition uses the archway as a natural frame. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

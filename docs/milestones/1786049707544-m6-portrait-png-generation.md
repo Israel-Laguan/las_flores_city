@@ -73,7 +73,7 @@ The variant prompts are the blueprint for the variant PNGs.
 ### Art-style lock (do not re-litigate — Master §2)
 
 - `premium contemporary graphic novel realism, refined editorial line art illustration`
-- MidJourney `--v 6 --ar 3:4 --style raw` for portraits.
+- Aspect ratio is recorded in frontmatter `aspect_ratio:` for portraits.
 - `photorealistic` is INCORRECT (including the NIM FLUX.2 Klein prefix).
 
 ### Safety

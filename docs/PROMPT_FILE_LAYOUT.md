@@ -3,6 +3,10 @@
 Conventions for where `.prompt.md` files live and how they are named across
 `content/`, per the per-folder entity layout (see AGENTS.md).
 
+> **Note:** This project does not use MidJourney. Aspect ratio is recorded in
+> frontmatter (`aspect_ratio:`) only — never hard-coded into prompt prose or
+> emitted as a `--ar` flag in body metadata.
+
 ## Primary prompt file
 
 Every entity folder has one primary asset prompt file:

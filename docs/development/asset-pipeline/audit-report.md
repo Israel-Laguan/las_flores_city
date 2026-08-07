@@ -191,7 +191,7 @@ These are self-referential dev tools that ran their one-off migration and are no
 | `references/style-exploration/` (2 .md files) | ~10 KB | **Delete** — `media-pipeline-tiers.md` itself recommends removal. Decision settled. |
 | `references/akool-test/MANIFEST.md` | 2 KB | **Delete** — test log, info duplicated in `docs/tutorials/akool-image-cli.md` and `.agents/skills/akool-image-cli/SKILL.md` |
 | `references/prompts/prompts/{characters,locations,scenes}.txt` | 3×26 KB | **Delete** — README says "Superseded by registry system". Old guides reference them but old guides are also historical. |
-| `references/ui-concepts/ui-concepts/` (49 .prompt.md + 143 PNG drafts + 3 HTML mockups) | 41 MB | **Decision needed:** Since 143 PNGs are now in `content/`, the archive is redundant. The `.prompt.md` files are old-style (MidJourney). HTML mockups are stale. Delete? Keep `.prompt.md` only? |
+| `references/ui-concepts/ui-concepts/` (49 .prompt.md + 143 PNG drafts + 3 HTML mockups) | 41 MB | **Decision needed:** Since 143 PNGs are now in `content/`, the archive is redundant. The `.prompt.md` files are old-style (pre-frontmatter). HTML mockups are stale. Delete? Keep `.prompt.md` only? |
 
 ### 3.5 External `docs/lore/` cleanup (future phase)
 

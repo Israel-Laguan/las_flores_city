@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/don_pedro/don_pedro.md
 target: `asset_paths.portrait` in `content/characters/don_pedro/char_don_pedro.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Don Pedro
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

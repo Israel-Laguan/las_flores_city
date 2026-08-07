@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/sofia_alvarez/sofia_alvarez.md
 target: `asset_paths.portrait` in `content/characters/sofia_alvarez/char_sofia_alvarez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Sofia Alvarez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

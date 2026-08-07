@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Van der Meers Invierte en el Futuro de la Comunidad Indígena — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. An outdoor community event at a school construction site, midday. An affluent European family stands with local community leaders. A woman in her mid-40s shakes hands with an elder in traditional woven garments. Behind them, a partially built school with exposed wooden frames, children watching. Andean foothills in the background. The handshake is center-frame, the school behind, families providing context. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of woven fabric, wood, and outdoor light.
 

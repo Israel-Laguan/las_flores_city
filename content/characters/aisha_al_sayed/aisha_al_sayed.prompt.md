@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/aisha_al_sayed/aisha_al_sayed.md
 target: `portrait_urls[].url` in `content/characters/char_aisha_al_sayed.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Aisha Al-Sayed
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Middle Eastern Arab woman in her late 30s. Lean angular frame, deep amber-brown eyes sharp and focused, stern expression with steady bearing. Dark brown wavy hair in practical low bun, slight widow's peak, wire-rimmed glasses, sport earbud clipped to earlobe. Wears minimalist work clothing with high-visibility safety vest over blouse, warm olive complexion. hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality, East Asian features, Chinese aesthetics

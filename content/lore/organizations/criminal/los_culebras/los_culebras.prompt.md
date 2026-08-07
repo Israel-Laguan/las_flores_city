@@ -1,9 +1,5 @@
 # Prompt: Los Culebras Gang
 
-[CONSUMER: html-background]
-**Type:** organization illustration
-**Dimensions:** 1920x1080
-
 ## Prompt — Base
 A gritty street scene. A group of young men (16–25) on motorcycles and on a street corner in casual intimidating clothing: leather jackets, caps, hoodies up, bandanas. Expressions mix defiance and menace; one restless teen stands apart. Snake-motif tattoos. Worn working-class neighborhood: peeling paint, graffiti, decay. An industrial mining facility looms on a mountain slope, its glow contrasting with modest homes. Streetlights at dusk cast amber pools. Cinematic composition, photorealistic, soft cyberpunk aesthetic, vibrant natural colors, grounded realism, detailed textures, DC/Marvel-quality illustration.
 

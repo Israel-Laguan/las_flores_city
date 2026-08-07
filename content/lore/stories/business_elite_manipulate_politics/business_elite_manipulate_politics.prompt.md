@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: How the Business Elite Manipulate Local Politics — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A wood-paneled civic office, late afternoon, tall windows with a city skyline, warm lamp light mixing with cooler daylight. A long table seats five: a sharply dressed woman with a notepad, two suited businessmen, a local, a council member. On the table: finance reports, a zoning map with red markers, coffee cups. Heavy drapes, leather-bound books, a flag. Composition runs the table as a diagonal, the suited men clustered, the woman isolated. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

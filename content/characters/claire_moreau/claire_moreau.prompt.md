@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/claire_moreau/claire_moreau.md
 target: `asset_paths.portrait` in `content/characters/claire_moreau/char_claire_moreau.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Claire Moreau
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

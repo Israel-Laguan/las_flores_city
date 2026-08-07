@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/juan_rodriguez/juan_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_juan_rodr_guez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Juan Rodríguez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height indigenous Photorealistic portrait of Juan Rodríguez. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless pract. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

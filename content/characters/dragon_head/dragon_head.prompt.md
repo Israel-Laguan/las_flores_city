@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/dragon_head/dragon_head.md
 target: `asset_paths.portrait` in `content/characters/dragon_head/char_dragon_head.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Dragon Head
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

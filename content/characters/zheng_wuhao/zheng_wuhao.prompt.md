@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/zheng_wuhao/zheng_wuhao.md
 target: `portrait_urls[].url` in `content/characters/char_zheng_wuhao.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Zheng Wuhao
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a stocky in his early 50s Chinese Photorealistic portrait of Zheng Wuhao. Her frame is stocky, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, tired guarded. Her expression is weathered, as she holds a steady, weathered composure. Her black short hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...

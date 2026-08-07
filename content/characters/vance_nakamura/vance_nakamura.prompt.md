@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/vance_nakamura/vance_nakamura.md
 target: `asset_paths.portrait` in `content/characters/vance_nakamura/char_vance_nakamura.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Vance Nakamura
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

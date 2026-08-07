@@ -44,3 +44,15 @@ asset_paths:
 portrait_urls:
   - url: s3://las-flores/portraits/layla_al_rashid/layla_al_rashid__default.png
     label: dev
+  - url: s3://las-flores/portraits/layla_al_rashid/layla_al_rashid__default.png
+    label: dev
+    expression: default
+  - url: s3://las-flores/portraits/layla_al_rashid/layla_al_rashid__happy.png
+    label: dev
+    expression: happy
+  - url: s3://las-flores/portraits/layla_al_rashid/layla_al_rashid__vulnerable.png
+    label: dev
+    expression: vulnerable
+  - url: s3://las-flores/portraits/layla_al_rashid/layla_al_rashid__tender.png
+    label: dev
+    expression: tender

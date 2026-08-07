@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/juan_perez/juan_perez.md
 target: `asset_paths.portrait` in `content/characters/juan_perez/char_juan_perez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Juan Pérez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

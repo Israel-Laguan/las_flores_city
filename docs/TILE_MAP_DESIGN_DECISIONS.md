@@ -104,7 +104,7 @@ User clicks tile on MapView.ts
 
 **Rationale:**
 - Tile textures are small, repeatable patches (sand, street, water). They tile seamlessly via CSS `background-repeat`.
-- 256×256 is the sweet spot for AI art generation (Midjourney, Stable Diffusion). Higher resolutions cost 2× generation time and file size for diminishing visual benefit at 120×120 display.
+- 256×256 is the sweet spot for AI art generation (AI image generation, Stable Diffusion). Higher resolutions cost 2× generation time and file size for diminishing visual benefit at 120×120 display.
 - SVG handles the "structure" at any resolution, so the raster format is purely additive detail.
 
 ---

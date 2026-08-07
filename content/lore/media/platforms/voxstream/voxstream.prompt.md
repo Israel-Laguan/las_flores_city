@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/lore/media/platforms/voxstream/voxstream.md
 target: `assets/voxstream__default.png`
 consumer: logo
+aspect_ratio: 1:1
 ---
 
 # Prompt: VoxStream logo
-
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt
 Flat vector logo emblem for "VoxStream", a European/American professional

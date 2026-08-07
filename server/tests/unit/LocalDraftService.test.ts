@@ -110,7 +110,7 @@ describe('listLocalAssets', () => {
     // Generated draft
     await fs.writeFile(path.join(assetsDir, 'list_test__2026-07-15T01-30-12.png'), Buffer.from('draft1'));
     // Hand-dropped file (any name)
-    await fs.writeFile(path.join(assetsDir, 'my_midjourney_render.jpg'), Buffer.from('hand'));
+    await fs.writeFile(path.join(assetsDir, 'my_custom_render.jpg'), Buffer.from('hand'));
     // Invalid files (should be ignored)
     await fs.writeFile(path.join(assetsDir, 'notes.txt'), Buffer.from('notes'));
     await fs.writeFile(path.join(assetsDir, '.DS_Store'), Buffer.from('ds'));
@@ -124,7 +124,7 @@ describe('listLocalAssets', () => {
       expect(VALID_ASSET_EXTENSIONS).toContain(path.extname(entry.filename).toLowerCase());
     }
     // Hand-dropped file is included
-    expect(result.map(r => r.filename)).toContain('my_midjourney_render.jpg');
+    expect(result.map(r => r.filename)).toContain('my_custom_render.jpg');
   });
 
   it('sorts __default.png first, then by mtime newest-first', async () => {

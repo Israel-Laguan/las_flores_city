@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Cecilia's Story — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A sunlit experimental research field, early morning, year 2049 — rows of plants in marked plots, some thriving in contaminated soil. A woman in her late 20s in a field jacket and wide-brimmed hat kneels beside vivid green leaves, holding a soil-sample tube, focused with a small smile. Behind her a shade structure and a bicycle; far off, industrial structures soften into haze. Composition places her lower-left, the backdrop receding. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

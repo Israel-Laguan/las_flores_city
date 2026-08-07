@@ -5,11 +5,10 @@ size: 1024x1408
 source: content/characters/wang_mei_li/wang_mei_li.md
 target: `asset_paths.portrait` in `content/characters/wang_mei_li/char_wang_mei_li.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Wang Mei Li
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender Chinese woman in her early 70s, Wang Mei Li. Her frame is slender, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, sharp and determined. Her expression is warm, as she offers a subtle, knowing half-smile. Her jet-black hair is worn-in, grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless practical work clothing. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO 3D render, anime, cartoon, text, watermarks, blurry, low quality...

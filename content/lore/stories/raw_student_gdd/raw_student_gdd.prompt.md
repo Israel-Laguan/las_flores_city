@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Prologue: The Seed and The Trial (2053) — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a narrow shadowy alleyway off a busy boulevard, midday. A young woman in a yellow dress, dark braids, huddled against a weathered brick wall, face pained but defiant. A young student in casual clothes kneels a step away, hand outstretched, expression shifting to shock. Bystanders in the alley mouth turn away; sunlight cuts across the threshold, the pair in layered shadow. Pair foreground as emotional center. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of brick, fabric, and skin.
 

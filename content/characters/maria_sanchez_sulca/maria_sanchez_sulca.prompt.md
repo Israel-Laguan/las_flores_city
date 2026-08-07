@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/maria_sanchez_sulca/maria_sanchez_sulca.md
 target: `portrait_urls[].url` in `content/characters/char_maria_sanchez_sulca.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Maria Sanchez Sulca
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a petite in her late 20s Latin Photorealistic portrait of Maria Sanchez Sulca. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, alert and cautious. Her expression is alert, as she meets the viewer with steady, composed bearing. Her dark brown thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work c. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

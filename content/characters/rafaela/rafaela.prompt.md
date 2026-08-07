@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/rafaela/rafaela.md
 target: `asset_paths.portrait` in `content/characters/rafaela/char_rafaela.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Rafaela
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

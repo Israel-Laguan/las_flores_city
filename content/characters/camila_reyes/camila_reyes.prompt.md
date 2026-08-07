@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/camila_reyes/camila_reyes.md
 target: `asset_paths.portrait` in `content/characters/camila_reyes/char_camila_reyes.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Camila Reyes
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

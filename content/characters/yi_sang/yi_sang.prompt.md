@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/yi_sang/yi_sang.md
 target: `asset_paths.portrait` in `content/characters/yi_sang/char_yi_sang.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Yī Sāng
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

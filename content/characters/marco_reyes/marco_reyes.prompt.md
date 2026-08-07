@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/marco_reyes/marco_reyes.md
 target: `asset_paths.portrait` in `content/characters/marco_reyes/char_marco_reyes.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Marco Reyes
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/elisabeth_van_der_meer/elisabeth_van_der_meer.md
 target: `asset_paths.portrait` in `content/characters/elisabeth_van_der_meer/char_elisabeth_van_der_meer.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Elisabeth van der Meer
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

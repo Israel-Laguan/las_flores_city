@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Forgotten Neighborhoods — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A sun-baked street corner, midday, crumbling two-story buildings with faded murals and boarded windows, clotheslines between balconies, a stray dog in shade. A community organizer in her 40s stands on a crate addressing a small crowd — elders, young mothers, teenagers — on cracked pavement, megaphone in hand. A police cruiser passes on the main avenue without turning. Composition anchors her off-center, the crowd radiating outward. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

@@ -5,7 +5,6 @@ source: docs/lore/media/el_informador/el_informador.md
 consumer: thematic
 ---
 
-
 # Prompt: El Informador de Las Flores (thematic art)
 
 **size:** 1280×720

@@ -49,10 +49,6 @@ for (const slug of dirs) {
   const newPrompt = `${frontmatter}
 # Prompt: ${readableName}
 
-[CONSUMER: background]
-**Type:** background
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
-
 ## Prompt
 ${readableName}. ${visualDesc}
 

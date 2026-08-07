@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/alisha_morales/alisha_morales.md
 target: `asset_paths.portrait` in `content/characters/alisha_morales/char_alisha_morales.yaml`
 consumer: content_audit
+aspect_ratio: 3:4
 ---
 
 # Prompt: Alisha Morales
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

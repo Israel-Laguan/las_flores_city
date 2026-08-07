@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Retirement Complex Murders (2058–2077) — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: the exterior of a retirement apartment complex at dusk — faded pastel mid-rise buildings, balconies with hanging laundry, a dry courtyard fountain. Streetlights pool warm amber on cracked pavement. A figure in dark clothing stands under a streetlamp, looking toward the entrance, quiet and watchful; a couple walks a dog. Streetlamp pool spotlights the figure, complex receding into dusk shadow. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of concrete, fabric, and evening atmosphere.
 

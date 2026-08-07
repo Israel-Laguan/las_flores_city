@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/luis_contreras/luis_contreras.md
 target: `portrait_urls[].url` in `content/characters/char_luis_contreras.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Luis Contreras
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a lean in his early 20s Shipibo-Konibo Photorealistic portrait of Luis Contreras. His frame is lean, wiry. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and reserved. His expression is warm, as he offers a subtle, knowing half-smile. His black thick hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical work clothing. The backdrop is a weathe. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

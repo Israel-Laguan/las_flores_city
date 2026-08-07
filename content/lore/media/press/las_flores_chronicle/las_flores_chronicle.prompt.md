@@ -5,7 +5,6 @@ source: docs/lore/media/las_flores_chronicle/las_flores_chronicle.md
 consumer: thematic
 ---
 
-
 # Prompt: The Las Flores Chronicle (thematic art)
 
 **size:** 1280×720

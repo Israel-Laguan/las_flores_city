@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/yang_chen/yang_chen.md
 target: `portrait_urls[].url` in `content/characters/char_yang_chen.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Yang Chen
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Slight 74-year-old chinese Photorealistic portrait of Yang Chen. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, warm distant. Her expression is warm, as she offers a subtle, knowing half-smile. Her gray thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...

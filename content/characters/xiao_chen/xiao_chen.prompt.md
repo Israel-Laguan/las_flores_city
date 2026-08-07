@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/xiao_chen/xiao_chen.md
 target: `asset_paths.portrait` in `content/characters/xiao_chen/char_xiao_chen.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Xiao Chen
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

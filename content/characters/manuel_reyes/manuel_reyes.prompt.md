@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/manuel_reyes/manuel_reyes.md
 target: `asset_paths.portrait` in `content/characters/manuel_reyes/char_manuel_reyes.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Manuel Reyes
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

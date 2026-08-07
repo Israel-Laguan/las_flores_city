@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/mauro/mauro.md
 target: `portrait_urls[].url` in `content/characters/char_mauro_kusi.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Mauro (Kusi)
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a grizzled Quechua elder in his late 50s. Mauro (Kusi) has a stocky, weathered build, bent slightly from years of mining labor. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown tired but kind eyes, and a face lined with sun and hard work. His expression shows quiet melancholy mixed quiet determination, reflecting his journey of redemption. His gray, thinning hair is cropped short and rough. He wears a traditional woven cap, faded work clothes, and carries the weigh. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

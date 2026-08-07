@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/ana_villanueva/ana_villanueva.md
 target: `asset_paths.portrait` in `content/characters/ana_villanueva/char_ana_villanueva.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Ana Villanueva
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

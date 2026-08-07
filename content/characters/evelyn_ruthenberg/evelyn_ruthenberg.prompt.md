@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/evelyn_ruthenberg/evelyn_ruthenberg.md
 target: `asset_paths.portrait` in `content/characters/evelyn_ruthenberg/char_evelyn_ruthenberg.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Evelyn Ruthenberg
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

@@ -51,18 +51,13 @@ quality problems that the earlier bulk generation produced.
 name: <Full Name>
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/<slug>/<slug>.md
 target: `asset_paths.portrait` in `content/characters/<slug>/char_<slug>.yaml`
 consumer: portrait
 ---
 
 # Prompt: <Full Name>
-
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** content/characters/<slug>/<slug>.md
-**Target field:** `asset_paths.portrait` in `content/characters/<slug>/char_<slug>.yaml`
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 <concise, comma-separated, NO character name>

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/annabella_van_der_meer/annabella_van_der_meer.md
 target: `asset_paths.portrait` in `content/characters/annabella_van_der_meer/char_annabella_van_der_meer.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Annabella van der Meer
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

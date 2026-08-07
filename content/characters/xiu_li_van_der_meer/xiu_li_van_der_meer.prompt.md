@@ -5,12 +5,10 @@ size: 1024x1408
 source: content/characters/xiu_li_van_der_meer/xiu_li_van_der_meer.md
 target: `portrait_urls[0].url` in `content/characters/xiu_li_van_der_meer/char_xiu_li_van_der_meer.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Xiu Li van der Meer Krol
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a strong Chinese-Dutch woman in her mid-40s, Xiu Li van der Meer Krol. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, hazel—a blend of her Chinese mother and Dutch father—sharp and determined. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown thick hair is grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless professional outfit befitting a councilwoman. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO 3D render, anime, cartoon, text, watermarks, blurry, low quality...

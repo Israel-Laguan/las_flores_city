@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/sebastian_van_der_meer/sebastian_van_der_meer.md
 target: `asset_paths.portrait` in `content/characters/sebastian_van_der_meer/char_sebastian_van_der_meer.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Sebastian van der Meer
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

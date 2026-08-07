@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/aria_welcome_bot/aria_welcome_bot.md
 target: `asset_paths.portrait` in `content/characters/aria_welcome_bot/char_aria_welcome_bot.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: ARIA
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

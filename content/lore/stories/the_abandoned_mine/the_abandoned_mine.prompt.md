@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Abandoned Mine Across the River — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. The overgrown entrance of an abandoned mine beside a river, late afternoon. A gaping shadowy tunnel mouth amid dense vegetation and rusting mining gear. Three adventurers with headlamps hesitate at the threshold: a young local guide in a baseball cap, two tourists with a drone and camera. The mine entrance dominates center-frame, the figures small, framed by river and vegetation. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of rust, overgrown foliage, and weathered wood.
 

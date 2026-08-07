@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/carlos_lacan/carlos_lacan.md
 target: `asset_paths.portrait` in `content/characters/carlos_lacan/char_carlos_lacan.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Lacan
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

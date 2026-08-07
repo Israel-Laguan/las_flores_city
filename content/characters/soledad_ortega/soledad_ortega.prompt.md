@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/soledad_ortega/soledad_ortega.md
 target: `asset_paths.portrait` in `content/characters/soledad_ortega/char_soledad_ortega.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Soledad Ortega
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

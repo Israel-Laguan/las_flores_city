@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Van der Meer Dynasty's Unconventional Love — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. A sunlit garden party at a family estate, afternoon. A young man in his early 30s stands near a garden archway holding a microphone, expression open and relieved; a small crowd surrounds him, some surprised, others nodding support. A young man in a linen shirt stands at his side, hand on his shoulder. Manicured hedges, bougainvillea, a fountain, tables with pastries, dappled sunlight. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of fabric, foliage, and stone.
 

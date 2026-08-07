@@ -7,7 +7,6 @@ target: `scene.background_url` in `content/locations/location_parque_de_las_mont
 consumer: html-background
 ---
 
-
 # Prompt: Parque de las Montañas
 
 **Tool:** NIM (draft) → Flux/Seedance (refine)
@@ -26,5 +25,4 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 - [ ] Night version: same scene at night with different lighting
 - [ ] Rainy version: same scene with rain and mood effects
 - [ ] Wide shot: broader view of the location
-
 

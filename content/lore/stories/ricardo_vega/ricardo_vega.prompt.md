@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Ricardo Vega - Party Hopper — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a small storefront in an industrial district, midday. A silver-haired man in a worn polo stands behind a wooden counter restocking goods; metal shelves, canned food, a handwritten price board. His expression is nostalgic but not bitter as he watches a young customer leave. On the counter, a newspaper opened to election results and a small jar of candies. Center-left, the newspaper and candy jar as anchors. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of metal, paper, and wood.
 

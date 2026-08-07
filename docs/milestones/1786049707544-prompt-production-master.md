@@ -25,7 +25,7 @@ pass — now tracked as **M6** (PNG generation) and **M7** (publish & URL wiring
 - Character portraits/expressions use **graphic novel realism only**, with the
   Adeyemi/Aisha lock string:
   `premium contemporary graphic novel realism, refined editorial line art illustration`
-  Tool: `MidJourney --v 6 --ar 3:4 --style raw`. **No hard character cap.**
+  Aspect ratio is recorded in frontmatter `aspect_ratio:`. **No hard character cap.**
 - **`photorealistic` is INCORRECT** for character `.prompt.md` files — including
   the NVIDIA NIM FLUX.2 Klein prefix (`Photorealistic portrait, hyper-detailed...`)
   and the Visual Style Translator's photorealistic directives. Do **not** apply

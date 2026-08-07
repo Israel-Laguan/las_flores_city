@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Three Alleys: The Parallel Encounters — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Three parallel alley scenes as a triptych, three eras. Left: a narrow alley, a young woman kneeling beside a woman in a yellow dress. Center: a boulevard, a student in a crowd, flyers in hand. Right: a city intersection at night, a young man under a streetlamp. Warm amber, midday white, and cool blue night color the panels, thin white borders dividing them. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of brick, pavement, and urban atmosphere.
 

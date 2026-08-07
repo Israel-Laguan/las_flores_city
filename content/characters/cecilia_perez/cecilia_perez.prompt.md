@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/cecilia_perez/cecilia_perez.md
 target: `asset_paths.portrait` in `content/characters/cecilia_perez/char_cecilia_perez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Cecilia Perez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/zhang_liang/zhang_liang.md
 target: `asset_paths.portrait` in `content/characters/zhang_liang/char_zhang_liang.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Zhang Liang
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

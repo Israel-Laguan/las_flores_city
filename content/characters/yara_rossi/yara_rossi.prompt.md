@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/yara_rossi/yara_rossi.md
 target: `portrait_urls[].url` in `content/characters/char_yara_rossi.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Yara Rossi
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium in her late 30s Latin Photorealistic portrait of Yara Rossi. Her frame is athletic, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, warm determined. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark brown long hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop i. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

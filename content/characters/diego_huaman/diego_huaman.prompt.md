@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/diego_huaman/diego_huaman.md
 target: `asset_paths.portrait` in `content/characters/diego_huaman/char_diego_huaman.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Diego Huamán
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

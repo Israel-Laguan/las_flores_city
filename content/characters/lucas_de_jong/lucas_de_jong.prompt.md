@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/lucas_de_jong/lucas_de_jong.md
 target: `asset_paths.portrait` in `content/characters/lucas_de_jong/char_lucas_de_jong.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Lucas de Jong
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

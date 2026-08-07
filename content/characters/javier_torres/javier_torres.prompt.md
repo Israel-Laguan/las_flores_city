@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/javier_torres/javier_torres.md
 target: `asset_paths.portrait` in `content/characters/javier_torres/char_javier_torres.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Javier Torres
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

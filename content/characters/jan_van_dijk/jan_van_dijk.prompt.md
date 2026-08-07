@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/jan_van_dijk/jan_van_dijk.md
 target: `asset_paths.portrait` in `content/characters/jan_van_dijk/char_jan_van_dijk.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Jan van Dijk
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

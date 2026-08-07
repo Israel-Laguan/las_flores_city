@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Garcia Family's Flower Field Crisis — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A flower field near a river, late afternoon, 2052 — rows of wildflowers stretch toward the riverbank, most blooms vivid crimson, the hue bleeding into the greenery. A woman in her mid-30s kneels beside the blooms, hands resting on the red petals with quiet sorrow; her three children stand near, the eldest protective, the youngest close. On the far bank, factory silhouettes through haze. Composition makes the woman and red flowers the emotional center. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

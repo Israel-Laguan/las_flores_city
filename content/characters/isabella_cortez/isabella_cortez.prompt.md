@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/isabella_cortez/isabella_cortez.md
 target: `asset_paths.portrait` in `content/characters/isabella_cortez/char_isabella_cortez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Isabella Cortez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

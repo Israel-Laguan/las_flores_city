@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/alonzo_morales/alonzo_morales.md
 target: `asset_paths.portrait` in `content/characters/alonzo_morales/char_alonzo_morales.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Alonzo Morales
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

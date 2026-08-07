@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/elisa_perez/elisa_perez.md
 target: `asset_paths.portrait` in `content/characters/elisa_perez/char_elisa_perez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Elisa Pérez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

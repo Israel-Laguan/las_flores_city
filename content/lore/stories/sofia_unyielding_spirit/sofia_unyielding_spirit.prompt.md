@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Sofia's Unyielding Spirit — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a sunlit corner of a historic district at dusk, warm orange sky, a worn wooden cane leaning against a low wall. A middle-aged woman sits on the pavement, hands extended, face serene and unbroken, in a woven sweater and shawl, eyes toward the street. Around her, market scraps, a small woven bag; a church bell tower rises behind. Off-center, cane and bag marking her place. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of woven fabric, stone pavement, and warm twilight atmosphere.
 

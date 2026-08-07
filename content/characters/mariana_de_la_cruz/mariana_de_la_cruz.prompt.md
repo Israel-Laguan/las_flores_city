@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/mariana_de_la_cruz/mariana_de_la_cruz.md
 target: `asset_paths.portrait` in `content/characters/mariana_de_la_cruz/char_mariana_de_la_cruz.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Mariana De La Cruz
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

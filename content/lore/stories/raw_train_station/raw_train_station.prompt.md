@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: DEMO Story: Train Station Protest and Alley Incident — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a central train station corridor, 2059, midday. A university student in a backpack and ID lanyard stands near a demonstration, glancing toward a narrow alley off the hall. Mid-ground, a gathering with handmade signs and a makeshift stage, a speaker addressing students, activists. Far background, the station's high ceiling. Student foreground-right as protagonist, protest mid-ground, dark alley at left. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of stone, paper, and crowd energy.
 

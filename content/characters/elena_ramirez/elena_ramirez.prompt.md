@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/elena_ramirez/elena_ramirez.md
 target: `asset_paths.portrait` in `content/characters/elena_ramirez/char_elena_ramirez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Elena Ramirez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

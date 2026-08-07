@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Unsung Odyssey of Yang Chen — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Inside a cramped eclectic store in an old city, afternoon. A shopkeeper in his mid-60s, silver hair, cardigan, arranges plastic goods at a wooden counter. Shelves of merchandise, lanterns overhead, handwritten price tags; his wife stands at the right edge smiling. Through the window, a busy street. He is center behind the counter amid dense merchandise. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of plastic, wood, and printed labels.
 

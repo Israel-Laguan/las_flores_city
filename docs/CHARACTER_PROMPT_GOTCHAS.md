@@ -36,7 +36,7 @@
 - Removed "Adeyemi Ogunbiyi" from prompts
 - Kept names only in YAML metadata and document titles
 
-**Why:** GenAI models (MidJourney, FLUX, etc.) are not trained on fictional character names. Including them uses precious character budget without adding value.
+**Why:** GenAI models (various providers, FLUX, etc.) are not trained on fictional character names. Including them uses precious character budget without adding value.
 
 **Rule:** Character names belong in metadata only. Never include in:
 - `## Prompt (Draft)`

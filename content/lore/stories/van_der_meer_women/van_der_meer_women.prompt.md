@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Las Mujeres de la Familia Van der Meer — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. A charity gala in a civic ballroom, evening. Three generations of women stand near a floor-length window. The eldest, silver-haired, in an elegant dark gown and pearls; the middle, mid-40s, in a structured suit; the youngest, early 30s, in a bold modern dress, a smartphone in hand, a knowing smile. Formal guests, a string quartet, and candlelit tables surround them. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of silk, jewelry, and candlelit atmosphere.
 

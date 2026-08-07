@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/fatima_el_kholi/fatima_el_kholi.md
 target: `asset_paths.portrait` in `content/characters/fatima_el_kholi/char_fatima_el_kholi.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Fatima El-Kholi
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

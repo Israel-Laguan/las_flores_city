@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Dutch Maneuvers to Outsmart the Chinese — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A private conference room in a civic building — dark wood walls, heavy drapes, a table spread with zoning maps and handwritten notes. A man in his 40s in a tailored suit stands at the head gesturing toward a port-district map; a local businessman leans forward, confident, hand on a prospectus. Through a tall window, container cranes and glinting ocean. Composition places the two men as the central axis, faces lit by a single lamp. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

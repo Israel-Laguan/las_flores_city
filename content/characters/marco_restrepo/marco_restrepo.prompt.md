@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/marco_restrepo/marco_restrepo.md
 target: `asset_paths.portrait` in `content/characters/marco_restrepo/char_marco_restrepo.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Marco Restrepo
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

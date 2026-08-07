@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/carlos_hernandez_amlf/carlos_hernandez_amlf.md
 target: `asset_paths.portrait` in `content/characters/carlos_hernandez_amlf/char_carlos_hernandez_amlf.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Hernandez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

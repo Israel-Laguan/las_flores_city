@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/sofia_rodriguez_krol/sofia_rodriguez_krol.md
 target: `portrait_urls[].url` in `content/characters/char_sofia_rodriguez_krol.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Sofia Rodriguez Krol
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a slender in her late 20s Dutch Photorealistic portrait of Sofia Rodriguez Krol. Her frame is slender, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, confident and polished. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless p. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

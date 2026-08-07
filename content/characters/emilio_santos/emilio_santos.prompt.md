@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/emilio_santos/emilio_santos.md
 target: `asset_paths.portrait` in `content/characters/emilio_santos/char_emilio_santos.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Emilio Santos
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

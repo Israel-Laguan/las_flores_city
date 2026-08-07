@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/emilio_navarro/emilio_navarro.md
 target: `asset_paths.portrait` in `content/characters/emilio_navarro/char_emilio_navarro.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Emilio Navarro
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

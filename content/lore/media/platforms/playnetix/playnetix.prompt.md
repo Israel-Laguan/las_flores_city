@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/lore/media/platforms/playnetix/playnetix.md
 target: `assets/playnetix__default.png`
 consumer: logo
+aspect_ratio: 1:1
 ---
 
 # Prompt: PlayNetix logo
-
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt
 Flat vector logo emblem for "PlayNetix", a North American gamified

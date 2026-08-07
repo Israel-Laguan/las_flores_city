@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Karla's Murder (Evelyn's Encounter) — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a narrow cluttered alleyway in a dusty border town, bright midday, weathered brick walls with faded street art, overflowing trash. A young woman in casual clothes kneels beside a wounded woman with dark braided hair in a blood-stained yellow dress, hand hovering, face shocked. Bystanders walk away at the alley mouth; sunlight cuts down the alley, the pair in deep shadow foreground-left. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of brick, fabric, and skin.
 

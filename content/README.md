@@ -87,9 +87,9 @@ asset_paths:
 ### Locations
 Location metadata upserted into the `scenes` table.
 
-**Current state (corrected):** Locations are NOT absent — 75 location folders exist under `content/districts/<district>/locations/<slug>/`, each with YAML, lore (`.md`) and prompt (`.prompt.md`); 71 carry an `asset_paths.image` reference (4 — `centro_empresarial`, `electric_vehicle_zone`, `colegio_chino_latino`, `centro_empresarial_chino_latino` — do not). Unlike characters (195/195 `portrait_urls` wired) and scenes (20/20 `background_urls` wired), locations have **0/75 `image_urls` MinIO wiring** — this is the genuine open item, analogous to the scene publish in M7/G2.
+Locations live under `content/districts/<district>/locations/<slug>/`, each with a YAML file, lore (`.md`) and prompt (`.prompt.md`), and follow the same `asset_paths` selection rules as characters and scenes.
 
-**Caveat — filename hygiene:** Location `assets/` use non-canonical filenames (e.g. `GPT Image 2_Aeropuerto Internacional(1).png`) and `asset_paths.image` points at inconsistent paths (`locations/location_southeast/image.jpg`). Before wiring `image_urls`, standardize each location's selected asset to `<slug>__default.png` and fix the `asset_paths.image` reference, mirroring the character/scene convention. Do NOT auto-wire with the current arbitrary filenames — that would publish duplicate/`(1)`-suffixed or missing files. Track this as the location-specific follow-up to the scene publish work.
+**Asset naming:** Some location `assets/` still use non-canonical filenames (e.g. `GPT Image 2_Aeropuerto Internacional(1).png`), with `asset_paths.image` pointing at inconsistent paths (e.g. `locations/location_southeast/image.jpg`). Standardize each location's selected asset to `<slug>__default.png` and update the `asset_paths.image` reference before wiring `image_urls`, mirroring the character/scene convention. Publishing with the arbitrary filenames in place risks uploading duplicate, `(1)`-suffixed, or missing files.
 
 ### Dialogues
 Interactive conversation trees with choices, conditions, and effects.

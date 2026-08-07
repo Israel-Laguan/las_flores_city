@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/laura_rodriguez/laura_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_laura_rodr_guez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Laura Rodríguez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium in her late 40s Latin Photorealistic portrait of Laura Rodríguez. Her frame is slender, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, intense compassionate. Her expression is intense, as she stands with squared shoulders and unwavering gaze. Her dark brown worn in hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless a profess. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

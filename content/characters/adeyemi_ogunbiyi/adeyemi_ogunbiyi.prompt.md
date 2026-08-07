@@ -5,15 +5,14 @@ size: 1024x1024
 source: content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.md
 target: `asset_paths.portrait` in `content/characters/adeyemi_ogunbiyi/char_adeyemi_ogunbiyi.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Adeyemi Ogunbiyi
 
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
-
 ## Prompt (Draft)
 
-Afro-Latino man, tall over six feet, lean muscular build with effortless grace. Deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, strong brow, high cheekbones, chiseled jawline. Calm and determined expression, sharp perceptive look, steady composed bearing. Dark hair in simple un-styled flowing shapes. Small sport non-in-ear earbud clipped to earlobe. Wearing a minimalist trench coat, practical clothing. Atmospheric lighting, soft shadows. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio.
+Afro-Latino man, tall over six feet, lean muscular build with effortless grace. Deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, strong brow, high cheekbones, chiseled jawline. Calm and determined expression, sharp perceptive look, steady composed bearing. Dark hair in simple un-styled flowing shapes. Small sport non-in-ear earbud clipped to earlobe. Wearing a minimalist trench coat, practical clothing. Atmospheric lighting, soft shadows. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background
 
 ## Prompt
 

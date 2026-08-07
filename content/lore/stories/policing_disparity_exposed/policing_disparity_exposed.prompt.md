@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Why are Police More Present in Rich Neighborhoods? And Who's Protecting the Poor? — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: a split-composition street view divided by a faded curb. Left: a wealthy district — tree-lined sidewalk, security cameras, an officer on bicycle patrol. Right: a dense low-income district — cracked pavement, crumbling buildings with exposed brick, teenagers in a doorway. Sky shared, light brighter left, heavier right. The curb divides the scene, the contrast telling the inequality story. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of stone, foliage, and weathered concrete.
 

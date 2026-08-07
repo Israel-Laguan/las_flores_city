@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/maria_fernanda_rodriguez/maria_fernanda_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_mar_a_fernanda_rodriguez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: María Fernanda Rodriguez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in her late 40s Latin Photorealistic portrait of María Fernanda Rodriguez. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, sharp authoritative. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown bob hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless p. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...

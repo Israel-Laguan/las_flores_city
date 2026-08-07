@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Van der Meer Orgy Scandal Rocks Free City — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. A luxurious beachfront villa interior, late night, windows open onto the ocean. Young adults in party clothes among scattered glasses. A young man stands center with a champagne flute, bravado and discomfort on his face; a young woman leans against a bookshelf, arms crossed, watching. Dim lamp and string light, shadows pooling, the ocean dark blue. The two are the focal points. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of velvet, glass, and wood.
 

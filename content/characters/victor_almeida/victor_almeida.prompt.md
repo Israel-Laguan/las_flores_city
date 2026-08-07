@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/victor_almeida/victor_almeida.md
 target: `asset_paths.portrait` in `content/characters/victor_almeida/char_victor_almeida.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Victor Almeida
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

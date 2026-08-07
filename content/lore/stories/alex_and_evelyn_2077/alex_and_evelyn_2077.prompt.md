@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Alex & Evelyn: The 2077 Endgame — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A narrow concrete stairwell in an apartment block, late afternoon, cool fluorescent light mixed with warm amber from a window. A young student with a backpack stands three steps above an older woman in a worn dark jacket; they do not touch, the space charged but quiet. A half-empty coffee cup on a landing; dust in the light. Both figures on one plane, the stairwell converging on the empty step between them, peeling paint and notices on the walls. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/camila_santander/camila_santander.md
 target: `asset_paths.portrait` in `content/characters/camila_santander/char_camila_santander.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Camila Santander
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

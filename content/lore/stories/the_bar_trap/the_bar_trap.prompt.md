@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Bar Trap: Alex's Gambit — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. A dimly lit bar near the port, evening. A woman in her late 40s enters from the right, silhouette outlined by street light, dark jacket, hair pulled back, eyes landing on a solitary man at the bar. A young student watches from a shadowed corner table; the bartender wipes a glass, oblivious. Triangle of tension: woman right of center, man mid-ground, student in the left foreground. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of brass, wood, and amber glass.
 

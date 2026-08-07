@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/anneliese_jansen/anneliese_jansen.md
 target: `asset_paths.portrait` in `content/characters/anneliese_jansen/char_anneliese_jansen.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Anneliese Jansen
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

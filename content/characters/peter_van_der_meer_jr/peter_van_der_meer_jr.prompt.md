@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/peter_van_der_meer_jr/peter_van_der_meer_jr.md
 target: `asset_paths.portrait` in `content/characters/peter_van_der_meer_jr/char_peter_van_der_meer_jr.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Peter van der Meer Jr.
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

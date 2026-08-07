@@ -66,7 +66,7 @@
 
 #### 5️⃣ Generate Their Portrait (10 min)
 - Use the **[Character Prompt Template](../prompt_library.md#character-portrait-template)**.
-- **Recommended Tools:** Leonardo.AI (for consistency), MidJourney (for style)
+- **Recommended Tools:** AI image generation pipeline (for style consistency)
 - **Example Prompt:**
   ```
   Photorealistic portrait of Javier "El Fantasma" Morales, a 30-year-old smuggler with a scar across his left cheek, dark circles under his eyes from sleepless nights, wearing a worn leather jacket and a cap pulled low. Background: a dimly lit alley in the eastern district, with crates of smuggled goods and a flickering streetlight. Moody lighting, tense expression, hyper-detailed, 8K.
@@ -137,7 +137,7 @@
 
 #### 6️⃣ Generate Concept Art (10 min)
 - Use the **[Location Prompts](../prompt_library.md#location-prompts)** as reference.
-- **Recommended Tools:** MidJourney (for artistic), Stable Diffusion (for control)
+- **Recommended Tools:** AI image generation (for artistic), Stable Diffusion (for control)
 - **Example Prompt:**
   ```
   Concept art of a rooftop garden on the Vega Tower in Las Flores, wide landscape view from above. Withered plants and contaminated soil in an otherwise luxurious garden, string lights flickering. In the background, the poor districts sprawl below, and the Andean foothills rise misty and foreboding in the distance. The scene captures the contrast between the elite's false beauty and the city's decay. Environmental storytelling, moody lighting, hyper-detailed textures, 8K, atmospheric.
@@ -588,13 +588,13 @@
 
 #### 5️⃣ Generate the Image (5 min)
 - **Tool Selection:**
-  - **MidJourney:** Best for artistic styles
+  - **AI image generation:** Best for artistic styles
   - **Stable Diffusion:** Best for control
   - **DALL·E 3:** Best for text accuracy
   - **Leonardo.AI:** Best for consistency
-- **Example (MidJourney):**
+- **Example (AI image generation):**
   ```
-  /imagine prompt: [YOUR PROMPT HERE] --v 6 --ar 16:9 --style raw --chaos 30
+  Prompt: [YOUR PROMPT HERE]
   ```
 
 #### 6️⃣ Refine & Iterate (10 min)
@@ -668,7 +668,7 @@
 #### 5️⃣ Generate the Image (5 min)
 - **Recommended Tools:**
   - **Leonardo.AI** (for consistency across multiple images)
-  - **MidJourney** (for artistic quality)
+  - **AI image generation** (for artistic quality)
 - **Example (Leonardo.AI):**
   ```
   Model: Leonardo Diffusion XL
@@ -762,7 +762,7 @@
   ```
 
 #### 5️⃣ Generate the Images (10 min)
-- Use **MidJourney** or **Stable Diffusion** for control.
+- Use **AI image generation** or **Stable Diffusion** for control.
 - Generate **2-3 variations** of each composition.
 - **Example (Stable Diffusion):**
   ```

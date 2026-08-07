@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Discovery of the Lithium Vein — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: A cramped makeshift laboratory, year 2029 — a converted storefront with tall grimy windows, tables of field equipment, a gas burner on a hot plate. A scientist in her early 30s holds a sample container up to a desk lamp, expression exhilarated and disbelieving; an older man watches with a grin, arms crossed. A chalkboard holds formulas; through the window, a dusty street, laundry between buildings, mountain foothills. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

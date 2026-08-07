@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/juan_pablo_hernandez/juan_pablo_hernandez.md
 target: `asset_paths.portrait` in `content/characters/juan_pablo_hernandez/char_juan_pablo_hernandez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Juan Pablo Hernandez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

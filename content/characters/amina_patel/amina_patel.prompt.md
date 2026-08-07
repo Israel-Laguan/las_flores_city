@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/amina_patel/amina_patel.md
 target: `asset_paths.portrait` in `content/characters/amina_patel/char_amina_patel.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Amina Patel
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

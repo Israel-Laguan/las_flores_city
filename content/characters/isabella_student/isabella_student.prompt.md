@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/isabella_student/isabella_student.md
 target: `asset_paths.portrait` in `content/characters/isabella_student/char_isabella_student.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Isabella
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

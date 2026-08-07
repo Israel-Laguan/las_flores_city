@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/ana_castillo/ana_castillo.md
 target: `asset_paths.portrait` in `content/characters/ana_castillo/char_ana_castillo.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Sofia Castillo
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

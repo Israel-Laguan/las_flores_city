@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/carlos_mendoza/carlos_mendoza.md
 target: `asset_paths.portrait` in `content/characters/carlos_mendoza/char_carlos_mendoza.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Carlos Mendoza
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

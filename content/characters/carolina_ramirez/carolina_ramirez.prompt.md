@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/carolina_ramirez/carolina_ramirez.md
 target: `asset_paths.portrait` in `content/characters/carolina_ramirez/char_carolina_ramirez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Carolina Ramirez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

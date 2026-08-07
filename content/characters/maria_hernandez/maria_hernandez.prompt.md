@@ -5,12 +5,10 @@ size: 1024x1408
 source: content/characters/maria_hernandez/maria_hernandez.md
 target: `asset_paths.portrait` in `content/characters/maria_hernandez/char_maria_hernandez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Dr. Maria Hernandez
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-built Latin woman in her late 50s, Dr. Maria Hernandez. Her frame is sturdy, slightly scholarly. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, thoughtful and scholarly behind wire-rimmed glasses. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her dark brown shoulder-length hair is grouped into simple, un-styled flowing shapes. She wears a minimalist, pocketless professional blazer over a blouse. Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO 3D render, anime, cartoon, text, watermarks, blurry, low quality...

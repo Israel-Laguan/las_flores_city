@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/pedro_escobar/pedro_escobar.md
 target: `asset_paths.portrait` in `content/characters/pedro_escobar/char_pedro_escobar.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Pedro Escobar
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

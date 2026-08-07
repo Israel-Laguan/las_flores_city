@@ -1,9 +1,5 @@
 # Character Sheet: Diego Huamán
 
-[CONSUMER: biometric]
-**Type:** character-sheet
-**Source:** content/characters/diego_huaman/char_diego_huaman.yaml
-**Target:** `asset_paths.portrait` in `content/characters/diego_huaman/char_diego_huaman.yaml`
 **Pipeline stage:** reference
 **Recommended tools:** Use biometric sheets (face + body) + moveset poses below
 

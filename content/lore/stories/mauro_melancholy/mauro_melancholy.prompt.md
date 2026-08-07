@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Mauro's Melancholy — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: inside an old city bus moving through a weathered district at dawn. A grizzled elderly driver in a windbreaker and faded cap sits behind the wheel, hands lightly on the steering wheel, a gentle smile. Interior worn: faded fabric seats, hand-painted route signs. Through the windshield, the street at sunrise glows amber, a rooster on a rooftop. Driver as focal point, windshield framing the dawn. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of worn vinyl, metal, and dawn light.
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/natalia_van_der_meer/natalia_van_der_meer.md
 target: `asset_paths.portrait` in `content/characters/natalia_van_der_meer/char_natalia_van_der_meer.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Natalia van der Meer
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

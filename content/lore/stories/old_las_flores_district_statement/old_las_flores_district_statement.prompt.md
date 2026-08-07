@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Official Statement from the District of Old Las Flores — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: an outdoor podium on a street corner in a weathered historic district, midday, a crowd on cracked pavement. A district official in a formal shirt and badge reads a statement at a microphone, flanked by two uniformed officers. Behind, a banner with a district seal. Buildings show faded murals, boarded windows, laundry lines; residents listen, skeptical to hopeful. Podium centered. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of weathered plaster, fabric, and paper.
 

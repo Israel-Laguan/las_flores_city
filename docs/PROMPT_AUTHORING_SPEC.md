@@ -4,6 +4,11 @@
 **Applies to:** Every `.prompt.md` under `content/characters/<slug>/`.
 **Master plan:** `docs/milestones/1786049707544-prompt-production-master.md`
 
+> **Note:** This project does not use MidJourney. All generation is handled by
+> the configured AI image generation pipeline (NIM / Pollinations / Akool / etc.).
+> Aspect ratio and pixel dimensions are recorded in frontmatter (`aspect_ratio:`,
+> `size:`) only — never hard-coded into prompt prose or body metadata.
+
 ---
 
 ## 1. Art-Style Lock (LOCKED — do not re-litigate)
@@ -17,14 +22,8 @@ premium contemporary graphic novel realism, refined editorial line art illustrat
 ```
 
 Every `## Prompt` and every `## Expression Variants` prompt MUST begin with or
-re-state this lock string. MidJourney `--style raw` suppresses MJ's default
-beauty-template bias, which is essential for grounded, non-idealized portraits.
-
-### Tool
-
-```
-MidJourney --v 6 --ar 3:4 --style raw
-```
+re-state this lock string. Aspect ratio is recorded in frontmatter `aspect_ratio:`
+and must not be hard-coded into generation prompts.
 
 ### Length
 
@@ -59,14 +58,13 @@ strings. Replace `<Full Name>` and `<slug>` per-character.
 name: <Full Name>
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/<slug>/<slug>.md
 target: `asset_paths.portrait` in `content/characters/<slug>/char_<slug>.yaml`
 consumer: portrait
 ---
 
 # Prompt: <Full Name>
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 <concise, comma-separated, NO character name>
@@ -111,11 +109,14 @@ canonical template. These fields remain in frontmatter only:
 | `name` | `Carlos Lopez` |
 | `type` | `portrait` |
 | `size` | `1024x1024` |
+| `aspect_ratio` | `3:4` |
 | `source` | `content/characters/<slug>/<slug>.md` |
 | `target` | `` `asset_paths.portrait` in `content/characters/<slug>/char_<slug>.yaml` `` |
 | `consumer` | `portrait` |
 
-Human-reference notes (`**Tool:**`, pipeline stage) may remain in the body.
+All machine-readable metadata lives in frontmatter. The body must not restate
+`[CONSUMER:]`, `**Type:**`, `**Source:**`, `**Target field:**`, or
+`**Dimensions:**`.
 
 ---
 
@@ -141,10 +142,11 @@ Before marking a character `.prompt.md` complete, verify:
 - [ ] `name:` matches the entity name
 - [ ] `type: portrait`
 - [ ] `size: 1024x1024`
+- [ ] `aspect_ratio: 3:4`
 - [ ] `source:` points to `content/characters/<slug>/<slug>.md`
 - [ ] `target:` points to the entity YAML `asset_paths.portrait` field
 - [ ] `consumer: portrait`
-- [ ] No legacy body metadata block (`[CONSUMER:]`, `**Type:**`, `**Source:**`, `**Target field:**`, `**Dimensions:**`)
+- [ ] No legacy body metadata block (`[CONSUMER:]`, `**Type:**`, `**Source:**`, `**Target field:**`, `**Dimensions:**`, `**Tool:**`)
 
 ### Body
 - [ ] `## Prompt (Draft)` is concise, comma-separated, NO character name

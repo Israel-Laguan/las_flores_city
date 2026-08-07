@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/daniel_carter/daniel_carter.md
 target: `asset_paths.portrait` in `content/characters/daniel_carter/char_daniel_carter.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Daniel Carter
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/diego_sulca/diego_sulca.md
 target: `asset_paths.portrait` in `content/characters/diego_sulca/char_diego_sulca.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Diego Sulca
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

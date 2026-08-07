@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/elena_torres/elena_torres.md
 target: `asset_paths.portrait` in `content/characters/elena_torres/char_elena_torres.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Elena Torres
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

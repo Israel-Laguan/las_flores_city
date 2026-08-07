@@ -1,10 +1,11 @@
+---
+aspect_ratio: 16:9
+type: thematic
+---
+
 # Prompt: Fundación Esperanza (thematic art)
 
-**Type:** thematic
 **size:** 1280×720
-**Source:** docs/lore/organizations/civil_society/fundacion_esperanza/fundacion_esperanza.md
-**Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt
 Conceptual art capturing **Type:** Community Development Foundation **Location:** Old Las Flores **Mission:** Promote sustainable development, empower marginalized groups, foster community unity in Old Las Flores **Structure:** Board of directors from diverse sectors in Las Flores.  dramatic. High contrast, symbolic, environmental storytelling, 8K.

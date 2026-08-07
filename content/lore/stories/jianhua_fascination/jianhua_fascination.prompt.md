@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Jianhua's Unusual Fascination — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. Setting: The fringe of an indigenous community festival, late afternoon, 2040s — a grassy area with woven banners, stalls of textiles, a drum circle with dancers. A man in his 40s in a button-down shirt stands at the edge holding a paper plate of food, watching with quiet intensity, small smile. Locals acknowledge him: an elder nods, two children wave. Beyond, the city skyline rises. Composition places him foreground right, the festival in layered depth. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed.
 

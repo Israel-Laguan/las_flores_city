@@ -30,10 +30,10 @@ const PROMPT_ROOTS = [
   path.resolve('content/dialogues'),
 ];
 const MAX_NIM_LENGTH = 800;
-// Bare `## Prompt` (section 'full') is a MidJourney manual reference prompt and
+// Bare `## Prompt` (section 'full') is a manual reference prompt and
 // is NEVER auto-sent to NIM/Pollinations by the server (which consumes only
 // `## Prompt — <name>` named variants). Its authoring budget is ~2000 chars.
-const MAX_MIDJOURNEY_LENGTH = 2000;
+const MAX_MANUAL_PROMPT_LENGTH = 2000;
 const DEFAULT_MIN_REPORT = 700;
 
 function parseArgs() {
@@ -234,8 +234,8 @@ function main() {
 
       // Per-section cap: `## Prompt (Draft)` / `## Prompt — <name>` / i2i
       // variants are auto-sent to NIM (800 hard). Bare `## Prompt` (section
-      // 'full') is a MidJourney manual reference (~2000).
-      const cap = variant.section === 'full' ? MAX_MIDJOURNEY_LENGTH : MAX_NIM_LENGTH;
+      // 'full') is a manual reference prompt (~2000).
+      const cap = variant.section === 'full' ? MAX_MANUAL_PROMPT_LENGTH : MAX_NIM_LENGTH;
 
       if (length > cap) {
         issues.push({
@@ -299,7 +299,7 @@ function main() {
     console.log();
     
     if (stats.overLimit > 0) {
-      console.log(`💡 Tip: draft/named/i2i variants over their NIM cap will fail with HTTP 422 "string_too_long"; bare ## Prompt over 2000 is a MidJourney authoring concern.`);
+      console.log(`💡 Tip: draft/named/i2i variants over their NIM cap will fail with HTTP 422 "string_too_long"; bare ## Prompt over 2000 is a manual authoring concern.`);
     }
     
     process.exitCode = stats.overLimit > 0 ? 1 : 0;

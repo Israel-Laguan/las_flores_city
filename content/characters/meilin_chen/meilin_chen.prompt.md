@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/meilin_chen/meilin_chen.md
 target: `asset_paths.portrait` in `content/characters/meilin_chen/char_meilin_chen.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Meilin Chen
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

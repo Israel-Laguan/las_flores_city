@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: Xue's Late Epiphany — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. The kitchen of a small, aging restaurant, early evening. A woman in her late 50s, sharp features, scrubs a wooden table — a soldier's precision turned to domestic labor. In the doorway, an indigenous man in a wool cap holds firewood. Worn kitchen: dark wooden walls, a clay pot on the stove, shelves of cans, lantern light through the open door. She is foreground left, he mid-ground. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of worn wood, ceramic, and fabric.
 

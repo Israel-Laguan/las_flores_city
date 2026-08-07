@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/alejandro_ruiz/alejandro_ruiz.md
 target: `asset_paths.portrait` in `content/characters/alejandro_ruiz/char_alejandro_ruiz.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Alejandro Ruiz
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 

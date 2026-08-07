@@ -5,12 +5,10 @@ size: 1024x1024
 source: content/characters/jianhua/jianhua.md
 target: `portrait_urls[].url` in `content/characters/char_jianhua.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
-
 # Prompt: Jianhua
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese engineer in his 40s. Jianhua has a slightly stooped, wiry build from years of engineering work. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown warm and distant eyes that often gaze at festivals with quiet longing. His expression shows quiet contemplation mixed nostalgic warmth, reflecting his cultural fascination. His gray-black thinning hair is cut short and practical. His calloused hands rest gently on a small notebook for sketches. He wears a simple. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...

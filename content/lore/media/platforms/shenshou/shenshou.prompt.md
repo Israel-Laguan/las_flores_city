@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/lore/media/platforms/shenshou/shenshou.md
 target: `assets/shenshou__default.png`
 consumer: logo
+aspect_ratio: 1:1
 ---
 
 # Prompt: ShénShǒu (神兽) logo
-
-**Tool:** MidJourney --v 6 --ar 1:1 --style raw
 
 ## Prompt
 Flat vector logo emblem for "ShénShǒu (神兽)" — "Divine Beast" — a Chinese

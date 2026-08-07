@@ -2,9 +2,9 @@ id: c1000006-e29b-41d4-a716-44665544000e
 name: Alberto Santiago
 title: El Pescador - Coastal Seafood Vendor
 description: |
-  Alberto Santiago, known as 'El Pescador,' is a sturdy, sun-kissed seafood vendor who brings fresh Pacific Coast catch to Las Flores restaurants daily. Standing about 5'10" with salt-and-pepper hair and a warm smile, he wears practical clothing—well-worn t-shirts, cargo shorts, and sturdy sandals.
+  Alberto Santiago, known as 'El Pescador,' is a sturdy, sun-weathered seafood vendor who brings fresh Pacific Coast catch to Las Flores restaurants daily. Standing about 5'10" with thick black hair streaked with silver and a calm, knowing smile, he carries himself with the dignified bearing of a man who has spent five decades mastering his trade. His daily work clothes are practical—sun-faded work shirt and worn trousers—but he takes pride in his appearance and has a nicer set of clothes he wears when making special deliveries or visiting the bakeries where he knows certain someone might be working.
 
-  Lively and outgoing, Alberto charms others with infectious humor and optimism. He grew up in a fishing family along the Pacific Coast, learning the trade from his father, and established a successful seafood vending business. Each morning he delivers fresh catch to restaurants, chatting with chefs about the freshest offerings.
+  At 50, he balances gravitas with charm. Lively and outgoing, Alberto charms others with dry humor and warm optimism. He grew up in a fishing family along the Pacific Coast, learning the trade from his father, and established a successful seafood vending business. Each morning he delivers fresh catch to restaurants, chatting with chefs about the freshest offerings.
 
   After deliveries, he indulges his sweet tooth at local bakeries, delighting in artisan sweets and playful flirting. He dreams of expanding his business and spreading joy through coastal flavors, valuing the connections he makes with customers and community.
 metadata:
@@ -12,13 +12,13 @@ metadata:
   role: npc
   faction: independent
   personality: outgoing_charming
-  appearance: sturdy build, sun-kissed complexion, salt-and-pepper hair, practical clothing
-  age: 45
+  appearance: sturdy build, sun-weathered complexion, thick black hair with silver streaks, practical work clothes (dresses well when flirting)
+  age: 50
   hobbies: trying artisan sweets, visiting bakeries, light-hearted flirting
   daily_routine: morning seafood deliveries, chatting with restaurant staff, afternoon dessert indulgence
   goals: expand seafood business, build community connections, spread coastal flavors
-  romantic_interests: playful flirting with city girls, enjoys banter and attention
-  background: family of fishermen, adapted to seafood vending, Pacific Coast roots
+  romantic_interests: playful flirting with city girls, enjoys banter and attention, dresses up for the occasion
+  background: family of fishermen, adapted to seafood vending, Pacific Coast roots, five decades in the trade
 lore_path: alberto_santiago.md
 asset_paths:
   portrait: alberto_santiago__default.png

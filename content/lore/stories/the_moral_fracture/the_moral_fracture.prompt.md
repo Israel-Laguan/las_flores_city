@@ -9,7 +9,6 @@ consumer: html-background
 
 # Prompt: The Moral Fracture: Violence, Conscience, and the Cost of Justice — reference image
 
-
 ## Prompt — Base Scene
 A cinematic comic-book panel, modern colorful graphic novel style. A concrete stairwell in a corporate facility at night, emergency lighting casting red shadows. A young man stands frozen at the bottom of the stairs, face lit by a red exit sign. A uniformed security guard lies on the concrete floor before him, a whiskey bottle nearby. Green cinder-block walls, utility pipes, a security camera. He stands lower-left, the guard central, stairwell geometry closing in. Vibrant colors with grounded realism, DC/Marvel-quality illustration, cinematic lighting, highly detailed, textures of concrete, painted cinder block, and worn fabric.
 

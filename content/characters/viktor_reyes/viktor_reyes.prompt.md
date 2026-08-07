@@ -5,11 +5,10 @@ size: 1024x1024
 source: content/characters/viktor_reyes/viktor_reyes.md
 target: `asset_paths.portrait` in `content/characters/viktor_reyes/char_viktor_reyes.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
 
 # Prompt: Viktor Reyes
-
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
 
