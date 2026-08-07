@@ -12,3 +12,6 @@ lore_path: petra_solis.md
 narrative_path: petra_solis.md
 asset_paths:
   portrait: petra_solis__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/petra_solis/petra_solis__default.png
+    label: dev

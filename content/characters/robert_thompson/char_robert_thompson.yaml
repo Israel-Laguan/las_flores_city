@@ -13,3 +13,6 @@ metadata:
 lore_path: robert_thompson.md
 asset_paths:
   portrait: robert_thompson__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/robert_thompson/robert_thompson__default.png
+    label: dev

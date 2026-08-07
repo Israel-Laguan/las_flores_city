@@ -12,3 +12,6 @@ metadata:
 lore_path: rosa_martinez.md
 asset_paths:
   portrait: rosa_martinez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/rosa_martinez/rosa_martinez__default.png
+    label: dev

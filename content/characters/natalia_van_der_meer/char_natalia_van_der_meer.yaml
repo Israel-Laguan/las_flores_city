@@ -11,3 +11,6 @@ asset_paths:
   portrait: natalia_van_der_meer__default.png
 
 lore_path: natalia_van_der_meer.md
+portrait_urls:
+  - url: s3://las-flores/portraits/natalia_van_der_meer/natalia_van_der_meer__default.png
+    label: dev

@@ -13,3 +13,6 @@ metadata:
 lore_path: ricardo_tan.md
 asset_paths:
   portrait: ricardo_tan__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/ricardo_tan/ricardo_tan__default.png
+    label: dev

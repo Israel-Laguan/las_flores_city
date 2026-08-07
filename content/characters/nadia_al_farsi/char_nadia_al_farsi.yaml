@@ -7,6 +7,40 @@ metadata:
   role: npc
   faction: lw_group
   personality: persuasive_composed
-portrait_urls: []
-
+portrait_urls:
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__default.png
+    label: dev
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__afraid.png
+    label: dev
+    expression: afraid
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__angry.png
+    label: dev
+    expression: angry
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__calculating.png
+    label: dev
+    expression: calculating
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__determined.png
+    label: dev
+    expression: determined
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__happy.png
+    label: dev
+    expression: happy
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__sad.png
+    label: dev
+    expression: sad
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__shocked.png
+    label: dev
+    expression: shocked
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__smirk.png
+    label: dev
+    expression: smirk
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__surprised.png
+    label: dev
+    expression: surprised
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__tender.png
+    label: dev
+    expression: tender
+  - url: s3://las-flores/portraits/nadia_al_farsi/nadia_al_farsi__vulnerable.png
+    label: dev
+    expression: vulnerable
 lore_path: nadia_al_farsi.md
