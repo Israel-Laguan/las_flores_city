@@ -22,3 +22,6 @@ metadata:
 lore_path: sofia_duarte.md
 asset_paths:
   portrait: sofia_duarte__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_duarte/sofia_duarte__default.png
+    label: dev

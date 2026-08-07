@@ -17,3 +17,6 @@ metadata:
 lore_path: tomas_coronado.md
 asset_paths:
   portrait: tomas_coronado__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/tomas_coronado/tomas_coronado__default.png
+    label: dev

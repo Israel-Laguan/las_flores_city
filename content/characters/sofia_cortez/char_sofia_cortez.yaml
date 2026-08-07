@@ -11,3 +11,6 @@ asset_paths:
   portrait: sofia_cortez__default.png
 
 lore_path: sofia_cortez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_cortez/sofia_cortez__default.png
+    label: dev

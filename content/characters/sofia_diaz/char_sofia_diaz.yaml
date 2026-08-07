@@ -10,3 +10,6 @@ metadata:
 lore_path: sofia_diaz.md
 asset_paths:
   portrait: sofia_diaz__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_diaz/sofia_diaz__default.png
+    label: dev

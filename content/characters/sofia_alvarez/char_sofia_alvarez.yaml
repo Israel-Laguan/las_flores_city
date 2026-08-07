@@ -11,3 +11,6 @@ asset_paths:
   portrait: sofia_alvarez__default.png
 
 lore_path: sofia_alvarez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_alvarez/sofia_alvarez__default.png
+    label: dev
