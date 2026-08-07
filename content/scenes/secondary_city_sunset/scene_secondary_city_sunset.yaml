@@ -9,3 +9,6 @@ available_dialogues: []
 lore_path: secondary_city_sunset.md
 asset_paths:
   background: secondary_city_sunset__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/secondary_city_sunset/secondary_city_sunset__default.png
+    label: dev

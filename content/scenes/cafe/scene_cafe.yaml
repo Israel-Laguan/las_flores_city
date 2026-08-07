@@ -19,3 +19,6 @@ metadata:
 lore_path: cafe.md
 asset_paths:
   background: cafe__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/cafe/cafe__default.png
+    label: dev

@@ -1,4 +1,4 @@
-id: "55555555-6666-4777-8888-999999990001"
+id: 55555555-6666-4777-8888-999999990001
 name: Suburban Apartment
 description: A sterile, low-rent apartment in the Old Town suburbs of Las Flores. Standard charging port, dynamic terminal uplink, and minimal furnishings.
 district: South
@@ -25,7 +25,7 @@ metadata:
     - I can feel the humidity of the Las Flores river rising through the floorboards.
     - A holographic advertisement for Li Wei Logistics flickers through the window.
     - The terminal uplink is idle. Waiting for input I may not want to give.
-    - "Charging port status: nominal. Power flow: 12.4kW. Efficient."
+    - 'Charging port status: nominal. Power flow: 12.4kW. Efficient.'
     - The walls are thin. I can hear the neighbor's ventilation cycle. 47Hz. Different from mine.
     - There is a micro-fracture in the window frame. Stress pattern suggests seismic micro-tremor.
     - The bed is functional. Not comfortable. Comfort was not in the N&M contract.
@@ -34,3 +34,6 @@ metadata:
 lore_path: apartment.md
 asset_paths:
   background: apartment__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/apartment/apartment__default.png
+    label: dev

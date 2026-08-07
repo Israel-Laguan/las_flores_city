@@ -32,3 +32,6 @@ metadata:
 lore_path: estacion_central.md
 asset_paths:
   background: estacion_central__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/estacion_central/estacion_central__default.png
+    label: dev

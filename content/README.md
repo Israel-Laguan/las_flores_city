@@ -87,6 +87,10 @@ asset_paths:
 ### Locations
 Location metadata upserted into the `scenes` table.
 
+**Current state (corrected):** Locations are NOT absent — 75 location folders exist under `content/districts/<district>/locations/<slug>/`, each with YAML, lore (`.md`), prompt (`.prompt.md`), and an `asset_paths.image` reference. Unlike characters (195/195 `portrait_urls` wired) and scenes (20/20 `background_urls` wired), locations have **0/75 `image_urls` MinIO wiring** — this is the genuine open item, analogous to the scene publish in M7/G2.
+
+**Caveat — filename hygiene:** Location `assets/` use non-canonical filenames (e.g. `GPT Image 2_Aeropuerto Internacional(1).png`) and `asset_paths.image` points at inconsistent paths (`locations/location_southeast/image.jpg`). Before wiring `image_urls`, standardize each location's selected asset to `<slug>__default.png` and fix the `asset_paths.image` reference, mirroring the character/scene convention. Do NOT auto-wire with the current arbitrary filenames — that would publish duplicate/`(1)`-suffixed or missing files. Track this as the location-specific follow-up to the scene publish work.
+
 ### Dialogues
 Interactive conversation trees with choices, conditions, and effects.
 

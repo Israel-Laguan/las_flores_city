@@ -14,3 +14,6 @@ metadata:
 lore_path: northeast.md
 asset_paths:
   background: northeast__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/northeast/northeast__default.png
+    label: dev

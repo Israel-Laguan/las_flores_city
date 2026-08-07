@@ -54,3 +54,12 @@ Orthographic character full-body reference sheet, clean white background, 3 pane
 
 ### Negative Prompt
 photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel shading, heavy outlines, oversaturated colors, rough sketch, watercolor, oil painting, grain, noise, plastic skin, overly glossy skin, hyper detailed pores, HDR, harsh side shadows, runway models, chiseled flawless faces, identical facial features, clone appearance, stylized poses, dynamic angles, heavy clothing, jackets, loose fabric, makeup, lipstick, earrings, necklaces, glasses, text, watermarks
+---
+
+## Expression Variants
+
+The biometric sheets capture neutral reference geometry only (face arcs, body sheet). Expression portrait variants are NOT authored here; they are derived from the base portrait in `diego_huaman.prompt.md`'s `## Expression Variants` (`__default`, `__happy`, `__focused`, `__vulnerable`, `__determined`). This sheet supplies the locked neutral face/body base those variants reuse:
+
+- **`__default`** neutral geometry → source for all expression variants.
+- Face arc panels (horizontal/vertical) define the neutral face the portrait variants must match.
+- Body sheet defines the lean athletic build and minimal black gym clothes reused across variants.
