@@ -1,31 +1,50 @@
-# Portrait Prompt — Pedro Escobar
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Pedro Escobar, adult City Editor, La Prensa (Las Flores), Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Pedro Escobar, a adult City Editor, La Prensa (Las Flores) from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Pedro Escobar
-title: City Editor, La Prensa (Las Flores)
-faction: m
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/pedro_escobar/pedro_escobar.md
+target: `asset_paths.portrait` in `content/characters/pedro_escobar/char_pedro_escobar.yaml`
+consumer: portrait
 ---
 
-**Generated:** 2026-07-17T14:51:31.715Z
+# Prompt: Pedro Escobar
+
+[CONSUMER: portrait]
+**Type:** portrait
+**Source:** content/characters/pedro_escobar/pedro_escobar.md
+**Target field:** `asset_paths.portrait` in `content/characters/pedro_escobar/char_pedro_escobar.yaml`
+**Tool:** MidJourney --v 6 --ar 3:4 --style raw
+
+## Prompt (Draft)
+
+Latino city editor in his early 40s, stocky solid build, clear warm skin. Long face, soft jaw, subtle cheeks, slightly crooked straight nose, wide-set eyes, thick brows, full lips. Wavy dark hair threaded with gray, small mole on cheek, slight asymmetry. Editor's calm coordinating bearing, observant steady expression. Smart-casual editor attire, press lanyard, tablet, sport earbud. La Prensa city desk backdrop, layout boards and local news feeds. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino city editor in his early 40s. Stocky, solid build with a calm, coordinating presence in the newsroom. Clear warm skin. Long face with a soft jaw and subtle cheeks. Straight nose, slightly crooked from an old break, wide-set eyes, thick brows, full lips. Wavy dark hair threaded with gray, a small mole on one cheek, a slight natural asymmetry. Editor's calm coordinating bearing, an observant steady expression. Smart-casual editor attire: a neat shirt and open sweater, a press lanyard, a tablet under his arm, a sport earbud clipped to his earlobe. The backdrop is the La Prensa city desk, layout boards and local news feeds in warm office light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+
+## Variations
+
+- [ ] At the city desk between layout boards, coordinating the evening edition
+- [ ] Reviewing local news feeds on his tablet amid the bustle of the desk
+- [ ] Checking a proof against a layout board in late-afternoon newsroom light
+
+## Expression Variants
+
+Authored expressions (each as `assets/pedro_escobar__<tag>.png`, referenced in
+`portrait_urls[]` with an `expression` tag — see
+[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. Latino city editor in his early 40s, neutral observant resting expression, looking at the camera, 3/4 take. Stocky solid build, clear warm skin. Long face with a soft jaw, slightly crooked straight nose, wide-set eyes, thick brows, full lips. Wavy dark hair threaded with gray, small mole on cheek. Smart-casual editor attire, press lanyard, tablet, sport earbud. City desk backdrop with layout boards. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__calculating.png`**: Use the base portrait as reference. He is in sharp editorial assessment, looking directly at the camera, 3/4 take. Wide-set eyes narrowed and weighing a headline, thick brows drawn low, full lips pressed into a considering line. The slightly crooked straight nose catches the office light, the mole on his cheek subtle in shadow. City desk with layout boards behind him. Keep the same art style as reference, same shirt, sweater, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. A firm, resolute expression, looking at the camera, 3/4 take. Wide-set eyes steady and unyielding, soft jaw set, thick brows grounded in resolve. Gray-threaded dark hair neat, shoulders squared in the solid stocky build. City desk backdrop, news feeds glowing behind him. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. A dry, wry half-smile, looking at the camera, 3/4 take. Full lips curled slightly, wide-set eyes glinting with knowing humor, the crooked nose lending him an everyman charm. The mole on his cheek catches warm office light. City desk backdrop in warm afternoon tone. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. A caught-off-guard startlement, looking at the camera, 3/4 take. Wide-set eyes opened wide, thick brows raised high, full lips parted in disbelief. Stocky frame leaning forward slightly, gray-threaded hair catching light. City desk backdrop brightened with alert energy. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
