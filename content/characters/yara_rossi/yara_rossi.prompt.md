@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Yara Rossi deep in thought about their studies, determined to succeed
 - [ ] Yara Rossi studying with classmates in a library, working together on a project
 
+## Expression Variants
+
+- **`yara_rossi__default.png`**: Use the base portrait as reference. Medium-height Latina woman in her late 30s, athletic sturdy frame, warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Dark brown warm, determined eyes, long dark brown hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`yara_rossi__focused.png`**: Use the base portrait as reference. Absorbed concentration over her studies, looking at the camera, 3/4 take. Dark brown eyes intent, brows knit, lips pressed in quiet focus. Books and notes edge the frame. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`yara_rossi__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark brown eyes brightening, cheeks lifting, the half-smile opening into warmth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`yara_rossi__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark brown eyes fixed and sharp, jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`yara_rossi__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

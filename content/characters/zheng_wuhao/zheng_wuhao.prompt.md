@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Zheng Wuhao in a moment of reflection, considering their next steps
 - [ ] Zheng Wuhao with colleagues in a professional setting, engaged in discussion
 
+## Expression Variants
+
+- **`zheng_wuhao__default.png`**: Use the base portrait as reference. Stocky Chinese man in his early 50s, sturdy un-sculpted frame, weathered steady resting expression, looking at the camera, 3/4 take. Dark brown tired, guarded eyes, short black hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`zheng_wuhao__focused.png`**: Use the base portrait as reference. Absorbed in a task, looking at the camera, 3/4 take. Dark brown eyes intent and sharp beneath the weariness, brows knit, lips set in concentration. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`zheng_wuhao__contemplative.png`**: Use the base portrait as reference. A guarded, reflective pause, looking at the camera, 3/4 take. Dark brown eyes softening warily into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`zheng_wuhao__happy.png`**: Use the base portrait as reference. A tired but genuine smile, looking at the camera, 3/4 take. Dark brown eyes warming a fraction, lips curving up, the guarded composure easing. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`zheng_wuhao__surprised.png`**: Use the base portrait as reference. A sharp, controlled startle, looking at the camera, 3/4 take. Dark brown eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

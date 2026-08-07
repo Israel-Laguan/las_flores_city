@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Xiu Li van der Meer Krol considering a strategic decision at her mining operations office
 - [ ] Xiu Li van der Meer Krol at a community event, connecting with constituents
 
+## Expression Variants
+
+- **`xiu_li_van_der_meer__default.png`**: Use the base portrait as reference. Strong Chinese-Dutch woman in her mid-40s, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Sharp, determined hazel eyes, thick dark brown hair in un-styled flowing shapes, tailored professional outfit befitting a councilwoman. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`xiu_li_van_der_meer__determined.png`**: Use the base portrait as reference. Quiet political resolve, looking directly at the camera, 3/4 take. Hazel eyes fixed and sharp, jaw set, brow firm. The councilwoman weighing her move. Keep the same art style as reference, same tailored outfit, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`xiu_li_van_der_meer__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Hazel eyes narrowed in calculation, brows drawn, lips a thin line. Keep the same art style as reference, same tailored outfit, mining office light. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`xiu_li_van_der_meer__contemplative.png`**: Use the base portrait as reference. A reflective pause, looking at the camera, 3/4 take. Hazel eyes softening into the middle distance, jaw relaxed, lips set thoughtfully. Keep the same art style as reference, same tailored outfit, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`xiu_li_van_der_meer__happy.png`**: Use the base portrait as reference. A warm, engaged smile, looking at the camera, 3/4 take. Hazel eyes brightening with warmth, lips curving up genuinely while connecting with constituents. Keep the same art style as reference, same tailored outfit, community event behind her. Clean confident linework, painterly soft shading, muted natural palette.
+

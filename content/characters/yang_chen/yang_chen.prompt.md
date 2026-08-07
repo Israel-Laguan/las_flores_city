@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Yang Chen in a moment of reflection, considering their next steps
 - [ ] Yang Chen with colleagues in a professional setting, engaged in discussion
 
+## Expression Variants
+
+- **`yang_chen__default.png`**: Use the base portrait as reference. Slight 74-year-old Chinese woman, sturdy un-sculpted frame, warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Dark brown warm, distant eyes, thin gray hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`yang_chen__happy.png`**: Use the base portrait as reference. A gentle, warm smile, looking at the camera, 3/4 take. Dark brown eyes crinkling with warmth, lips curving up softly, the knowing half-smile widening. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`yang_chen__contemplative.png`**: Use the base portrait as reference. A distant, reflective pause, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head bowed slightly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`yang_chen__sad.png`**: Use the base portrait as reference. A quiet, contained sorrow, looking slightly down, 3/4 take. Dark brown eyes dimmed and soft, brows drawn, lips pressed gently. The distance in her gaze surfacing. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`yang_chen__surprised.png`**: Use the base portrait as reference. A quiet, controlled startle, looking at the camera, 3/4 take. Dark brown eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

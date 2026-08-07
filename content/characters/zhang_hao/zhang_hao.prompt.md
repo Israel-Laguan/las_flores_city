@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Zhang Hao considering a strategic decision, weighing options thoughtfully
 - [ ] Zhang Hao in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`zhang_hao__default.png`**: Use the base portrait as reference. Medium-height 45-year-old Chinese man, solid un-sculpted frame, calculating resting expression, looking at the camera, 3/4 take. Dark expressive eyes narrowed with quiet calculation, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`zhang_hao__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Dark eyes narrowed in calculation, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`zhang_hao__contemplative.png`**: Use the base portrait as reference. A guarded, reflective pause, looking at the camera, 3/4 take. Dark eyes softening warily into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`zhang_hao__happy.png`**: Use the base portrait as reference. A careful, controlled smile, looking at the camera, 3/4 take. Dark eyes warming a fraction, lips curving up faintly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`zhang_hao__surprised.png`**: Use the base portrait as reference. A sharp, controlled startle, looking at the camera, 3/4 take. Dark eyes widened, brows lifted, lips parting. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
