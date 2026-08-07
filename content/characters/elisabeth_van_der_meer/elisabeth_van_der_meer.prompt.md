@@ -2,32 +2,47 @@
 name: Elisabeth van der Meer
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/elisabeth_van_der_meer/elisabeth_van_der_meer.md
-target: `portrait_urls[].url` in `content/characters/char_elisabeth_van_der_meer.yaml`
+source: content/characters/elisabeth_van_der_meer/elisabeth_van_der_meer.md
+target: `asset_paths.portrait` in `content/characters/elisabeth_van_der_meer/char_elisabeth_van_der_meer.yaml`
 consumer: portrait
 ---
-
 
 # Prompt: Elisabeth van der Meer
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/elisabeth_van_der_meer.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_elisabeth_van_der_meer.yaml`
+**Source:** content/characters/elisabeth_van_der_meer/elisabeth_van_der_meer.md
+**Target field:** `asset_paths.portrait` in `content/characters/elisabeth_van_der_meer/char_elisabeth_van_der_meer.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
-## Prompt — Draft
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up photorealistic portrait of Elisabeth van der Meer, a tall Dutch woman in her early 80s. Her frame is slender, graceful. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, pale blue, refined and discerning. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her blonde shoulder-length hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears an elegant designer gown. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality,...
+## Prompt (Draft)
 
-## Prompt — Final
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of Elisabeth van der Meer, a tall Dutch woman in her early 80s. Her frame is slender, graceful. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, pale blue, refined and discerning. Her expression is calm and determined, as she meets the viewer with steady, composed bearing. Her blonde shoulder-length hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears an elegant designer gown at a gallery event. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of an early-80s Dutch female. Silver-blonde hair in elegant updo, pale blue refined discerning eyes, tall slender graceful posture, fair carefully maintained skin, pearl necklace, diamond stud earrings, signature red lipstick, elegant tailored navy gown, Las Flores riverbank estate, no Latin American features
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-born socialite, art collector, and philanthropist in her early 80s. Silver-blonde hair, styled in an elegant updo, always immaculate. Pale blue eyes — refined, discerning, the eyes of a lifelong tastemaker. Tall and graceful, excellent posture. Fair skin, carefully maintained with subtle signs of aging. A pearl necklace. Diamond stud earrings. Signature red lipstick. Elegant, tailored navy gown. Her expression is composed grace — the bearing of a woman who hosts lavish gatherings, builds Shipibo-Konibo art collections, and advocates for marginalized communities through her foundation's boards. The backdrop is the Van der Meer family's sprawling Las Flores riverbank estate. Colonial architecture, manicured gardens, a terrace looking out over the water. Soft late-afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latin American features
 
 ## Variations
 
-- [ ] Elisabeth van der Meer working on a painting or sketch, focused on their creative work
-- [ ] Elisabeth van der Meer gazing at their finished work, contemplating the emotional impact
-- [ ] Elisabeth van der Meer with other artists in a studio, sharing creative insights and techniques
+- [ ] Elisabeth at her riverbank estate, hosting a gathering of artists and philanthropists, Shipibo-Konibo paintings on the walls behind her
+- [ ] Elisabeth in a gallery, standing before a Shipibo-Konibo painting, explaining its meaning to a visitor
+- [ ] Elisabeth at a charity event, elegant navy gown, pearl necklace, addressing donors with genuine warmth
 
+## Expression Variants
+
+Authored expressions (each as `assets/elisabeth_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. Early-80s Dutch socialite, neutral composed elegant expression, looking at the camera, 3/4 take. Silver-blonde hair in elegant updo, pale blue refined discerning eyes, tall slender graceful posture, fair carefully maintained skin, pearl necklace, diamond stud earrings, signature red lipstick, elegant tailored navy gown. Van der Meer family Las Flores riverbank estate backdrop, manicured gardens. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__serene.png`**: Use the base portrait as reference. She has a peaceful, serene expression, looking gently at the camera, 3/4 take. Pale blue eyes soft and distant, signature red lipstick relaxed. Silver-blonde hair in elegant updo, pearl necklace warm on her throat. Tall slender graceful posture eased. Elegant tailored navy gown. Riverbank estate backdrop under warm golden-hour glow. Keep the same art style as reference, same navy gown and pearls. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__engaged.png`**: Use the base portrait as reference. She is in animated, engaged conversation, looking directly at the camera, 3/4 take. Pale blue eyes bright with interest, signature red lipstick in a warm smile. Silver-blonde hair precise, pearl necklace prominent. Tall slender graceful posture squared. Elegant tailored navy gown. Riverbank estate backdrop, guests in the background. Keep the same art style as reference, same navy gown. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__contemplative.png`**: Use the base portrait as reference. She is in quiet reflection, looking thoughtfully at the camera with a 3/4 take. Pale blue eyes distant, signature red lipstick soft, the history behind her visible. Silver-blonde hair in gentle disarray, pearl necklace catching light. Tall slender graceful posture relaxed. Elegant tailored navy gown. Riverbank estate backdrop under soft lamplight. Keep the same art style as reference, same navy gown and pearl necklace. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__warm.png`**: Use the base portrait as reference. She has a soft, warm expression, looking warmly at the camera, 3/4 take. Pale blue eyes open and sincere, signature red lipstick curved in a genuine smile. Silver-blonde hair in elegant updo, pearl necklace prominent. Tall slender graceful posture open. Elegant tailored navy gown. Riverbank estate backdrop under warm golden-hour light. Keep the same art style as reference, same navy gown and diamond studs. Clean confident linework, painterly soft shading, muted natural palette.

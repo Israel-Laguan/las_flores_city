@@ -2,32 +2,47 @@
 name: Diego Sulca
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/diego_sulca/diego_sulca.md
-target: `portrait_urls[].url` in `content/characters/char_diego_sulca.yaml`
+source: content/characters/diego_sulca/diego_sulca.md
+target: `asset_paths.portrait` in `content/characters/diego_sulca/char_diego_sulca.yaml`
 consumer: portrait
 ---
-
 
 # Prompt: Diego Sulca
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/diego_sulca.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_diego_sulca.yaml`
+**Source:** content/characters/diego_sulca/diego_sulca.md
+**Target field:** `asset_paths.portrait` in `content/characters/diego_sulca/char_diego_sulca.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a athletic Latin Photorealistic portrait of Diego Sulca. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is warm, as he offers a subtle, knowing half-smile. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical clothing suited to their environme. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 19-year-old indigenous Latino male. Lean athletic build from fishing work, dark curly hair, warm brown shy eyes, light brown olive skin, rumpled practical casual wear, faded university hoodie and cargo pants, charango resting beside him, no European features
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a athletic   Latin Photorealistic portrait of Diego Sulca. His frame is solid and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, a straight nose, and a defined jaw. His expression is warm, as he offers a subtle, knowing half-smile. His dark hair hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless practical clothing suited to their environment, with personal items reflecting their role. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a 19-year-old Environmental Science student from San Pedro de los Pescadores and Old Las Flores. Lean, athletic build from years of helping his mother with fishing. Dark, curly hair, slightly rumpled from the sea breeze. Warm brown eyes reflecting kindness but also shyness — the look of someone who would rather be on the water than in a lecture hall. Light brown skin with warm olive undertones. He wears a rumpled faded university hoodie and cargo pants, scuffed sneakers — the practical clothes of a working-class kid who does not belong to either world fully. A charango rests beside him, its wood worn from use. His expression is quiet kindness with a flicker of self-doubt — the boy who knows the mountains don't judge you for your grades. The backdrop is the university campus edge, looking out toward the ocean. Eucalyptus trees, the Pacific visible in the distance. Late afternoon light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
 
 ## Variations
 
-- [ ] Diego Sulca studying intently at a desk, surrounded by books and notes
-- [ ] Diego Sulca deep in thought about their studies, determined to succeed
-- [ ] Diego Sulca studying with classmates in a library, working together on a project
+- [ ] Diego on a weekend hike above the city, charango in hand, notebook open, bird calls all around him
+- [ ] Diego at a small café near campus, hoodie sleeves covering his hands, staring at a textbook
+- [ ] Diego at a community fishing gathering near San Pedro, charango on his lap, playing quietly
 
+## Expression Variants
+
+Authored expressions (each as `assets/diego_sulca__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. 19-year-old Environmental Science student, neutral shy open expression, looking at the camera, 3/4 take. Lean athletic build from fishing work, dark curly hair, warm brown eyes, light brown olive skin, rumpled faded university hoodie and cargo pants, charango resting beside him. University campus edge overlooking the Pacific, eucalyptus trees. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__happy.png`**: Use the base portrait as reference. He has a quiet, genuine smile, looking at the camera, 3/4 take. Warm brown eyes crinkled with shy joy, mouth relaxed in a small smile. Dark curly hair loose. Rumpled university hoodie, charango beside him. Campus backdrop under warm golden-hour light. Keep the same art style as reference, same hoodie and cargo pants. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__focused.png`**: Use the base portrait as reference. He is in quiet concentration, looking directly at the camera, 3/4 take. Warm brown eyes narrowed in thought, brow slightly furrowed, dark curly hair held back. Rumpled university hoodie, charango silent beside him. Campus backdrop, textbook in his lap. Keep the same art style as reference, same hoodie. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. He has a quietly uncertain expression, looking gently at the camera, 3/4 take. Warm brown eyes open and searching, dark curly hair falling forward. Rumpled university hoodie sleeves pulled over his hands. Charango resting beside him. Campus backdrop under soft, forgiving light. Keep the same art style as reference, same cargo pants. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. He has a resolved, quiet expression, looking unflinchingly at the camera, 3/4 take. Warm brown eyes steady with determination, jaw set. Dark curly hair, charango beside him. Rumpled university hoodie, cargo pants scuffed at the knees. Campus backdrop with strong directional light. Keep the same art style as reference, same hoodie. Clean confident linework, painterly soft shading, muted natural palette.

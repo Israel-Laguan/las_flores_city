@@ -2,32 +2,47 @@
 name: Emilio Reyes
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/emilio_reyes/emilio_reyes.md
-target: `portrait_urls[].url` in `content/characters/char_emilio_reyes.yaml`
+source: content/characters/emilio_reyes/emilio_reyes.md
+target: `asset_paths.portrait` in `content/characters/emilio_reyes/char_emilio_reyes.yaml`
 consumer: portrait
 ---
-
 
 # Prompt: Emilio Reyes
 
 [CONSUMER: portrait]
 **Type:** portrait
-**Source:** docs/lore/figures/emilio_reyes.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_emilio_reyes.yaml`
+**Source:** content/characters/emilio_reyes/emilio_reyes.md
+**Target field:** `asset_paths.portrait` in `content/characters/emilio_reyes/char_emilio_reyes.yaml`
 **Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium in his late 50s Latin Photorealistic portrait of Emilio Reyes. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, shifty and evasive. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark brown thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless a judge's rob. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a middle-aged Latino male. Dark brown thinning hair combed carefully, dark brown shifty evasive eyes, medium height slightly overweight soft hands, medium brown smooth but lined around mouth, thin mustache, gold watch, nervous habit of adjusting tie, sweat on brow, cheap gray suit, Andean District courthouse, no European features
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium  in his late 50s Latin Photorealistic portrait of Emilio Reyes. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, shifty and evasive. His expression is calm and determined, as he meets the viewer with steady, composed bearing. His dark brown thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears a minimalist, pocketless a judge's robes with a council pin. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a disgraced Andean District councilman and judge accused of accepting bribes to suppress evidence in the Minera Estrella case. Dark brown hair, thinning, combed carefully to cover it. Dark brown, shifty and evasive eyes that will not hold a steady gaze. Medium height, slightly overweight, soft hands. Medium brown skin, smooth but lined around the mouth from stress. A thin mustache. A nervous habit of adjusting his tie. Sweat on his brow even in a cool room. He wears a cheap gray suit, poorly pressed — the uniform of a man who has lost the authority he once wore. His expression is defensive unease — the face of someone dodging a question he cannot answer. The backdrop is an Andean District courthouse corridor. Faded institutional paint, a wooden door, fluorescent light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
 
 ## Variations
 
-- [ ] Emilio Reyes at work in their professional environment, focused on their tasks
-- [ ] Emilio Reyes in a moment of reflection, considering their next steps
-- [ ] Emilio Reyes with colleagues in a professional setting, engaged in discussion
+- [ ] Emilio in a courthouse corridor, tie pulled loose, glancing over his shoulder as if expecting to be followed
+- [ ] Emilio at his bench, sweat on his brow, refusing to meet the camera's gaze
+- [ ] Emilio alone in a courthouse stairwell, cheap gray suit jacket hanging off one shoulder, the weight of exposure pressing in
 
+## Expression Variants
+
+Authored expressions (each as `assets/emilio_reyes__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
+
+- **`__default.png`**: Use the base portrait as reference. Disgraced Andean District councilman and judge, neutral nervous evasive expression, looking at the camera, 3/4 take. Dark brown thinning hair combed carefully, dark brown shifty evasive eyes, medium height slightly overweight soft hands, medium brown smooth but lined around mouth, thin mustache, gold watch, nervous habit of adjusting tie. Andean District courthouse corridor backdrop, faded institutional paint. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__shocked.png`**: Use the base portrait as reference. Caught mid-exposure, looking at the camera with sudden alarm, 3/4 take. Dark brown eyes wide, sweat beading on his brow, thin mustache bristling. Dark brown thinning hair askew, gold watch catching light. Cheap gray suit jacket half off one shoulder. Andean District courthouse backdrop under bright emergency lighting. Keep the same art style as reference, same cheap gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__calculating.png`**: Use the base portrait as reference. He has a shrewd, calculating focus, looking directly at the camera, 3/4 take. Dark brown eyes narrowed with nervous evaluation, tie being adjusted. Thin mustache, gold watch prominent. Medium height slightly overweight, soft hands clenched. Cheap gray suit. Courthouse backdrop under fluorescent light. Keep the same art style as reference, same gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__defeated.png`**: Use the base portrait as reference. He has a worn, defeated expression, looking gently at the camera, 3/4 take. Dark brown eyes open and exhausted, mouth slack. Thin mustache, dark brown hair loose, tie hanging. Gold watch visible. Cheap gray suit hanging loosely. Courthouse backdrop under dim, depressing light. Keep the same art style as reference, same gray suit. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. He has a flushed, angry expression, looking at the camera, 3/4 take. Dark brown eyes blazing with defensiveness, jaw squared, thin mustache bristling. Dark brown hair askew, gold watch prominent. Medium height slightly overweight, cheap gray suit jacket open. Courthouse backdrop under harsh overhead light. Keep the same art style as reference, same gray suit. Clean confident linework, painterly soft shading, muted natural palette.
