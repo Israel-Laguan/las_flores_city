@@ -26,3 +26,6 @@ metadata:
 lore_path: ethan_zhang_morales.md
 asset_paths:
   portrait: ethan_zhang_morales__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/ethan_zhang_morales/ethan_zhang_morales__default.png
+    label: dev

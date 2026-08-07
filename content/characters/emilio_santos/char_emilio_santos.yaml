@@ -10,3 +10,6 @@ metadata:
 lore_path: emilio_santos.md
 asset_paths:
   portrait: emilio_santos__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/emilio_santos/emilio_santos__default.png
+    label: dev

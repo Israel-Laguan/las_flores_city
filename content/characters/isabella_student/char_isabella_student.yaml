@@ -11,3 +11,6 @@ asset_paths:
   portrait: isabella_student__default.png
 
 lore_path: isabella_student.md
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_student/isabella_student__default.png
+    label: dev

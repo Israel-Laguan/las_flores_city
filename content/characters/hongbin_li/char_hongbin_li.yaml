@@ -15,3 +15,6 @@ metadata:
 lore_path: hongbin_li.md
 asset_paths:
   portrait: hongbin_li__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/hongbin_li/hongbin_li__default.png
+    label: dev

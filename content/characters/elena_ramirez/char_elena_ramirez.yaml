@@ -11,3 +11,6 @@ asset_paths:
   portrait: elena_ramirez__default.png
 
 lore_path: elena_ramirez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/elena_ramirez/elena_ramirez__default.png
+    label: dev

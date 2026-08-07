@@ -15,3 +15,6 @@ metadata:
 lore_path: javier_salazar.md
 asset_paths:
   portrait: javier_salazar__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/javier_salazar/javier_salazar__default.png
+    label: dev

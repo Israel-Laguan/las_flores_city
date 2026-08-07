@@ -29,3 +29,6 @@ metadata:
 lore_path: emilio_navarro.md
 asset_paths:
   portrait: emilio_navarro__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/emilio_navarro/emilio_navarro__default.png
+    label: dev

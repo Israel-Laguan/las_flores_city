@@ -26,3 +26,6 @@ metadata:
 lore_path: juan_carlos_perez.md
 asset_paths:
   portrait: juan_carlos_perez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/juan_carlos_perez/juan_carlos_perez__default.png
+    label: dev

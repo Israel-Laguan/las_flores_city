@@ -24,3 +24,6 @@ metadata:
 lore_path: julian_schneider.md
 asset_paths:
   portrait: julian_schneider__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/julian_schneider/julian_schneider__default.png
+    label: dev
