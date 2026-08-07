@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Robert Thompson considering a strategic decision, weighing options thoughtfully
 - [ ] Robert Thompson in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`robert_thompson__default.png`**: Use the base portrait as reference. Medium-height Latino man, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair in un-styled flowing shapes, small sport earbud, minimalist practical clothing suited to his environment. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`robert_thompson__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`robert_thompson__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Dark eyes narrowed, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`robert_thompson__contemplative.png`**: Use the base portrait as reference. A reflective pause, looking at the camera, 3/4 take. Dark eyes softening into the middle distance, jaw relaxed, lips set thoughtfully. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`robert_thompson__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark eyes brightening, lips curving up, the composed bearing warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

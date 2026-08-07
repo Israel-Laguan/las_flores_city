@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Peter van der Meer considering a strategic decision, weighing options thoughtfully
 - [ ] Peter van der Meer in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`peter_van_der_meer__default.png`**: Use the base portrait as reference. Tall Dutch man in his mid-30s, athletic sturdy frame, gentle knowing half-smile, looking at the camera, 3/4 take. Pale blue warm empathetic eyes, dark hair in simple flowing shapes, small sport earbud, practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, natural asymmetry.
+
+- **`peter_van_der_meer__contemplative.png`**: Use the base portrait as reference. Weighing a decision, looking thoughtfully at the camera, 3/4 take. Pale blue eyes narrowing in consideration, half-smile gone, lips pressed thoughtfully. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`peter_van_der_meer__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Pale blue eyes sharpened, brows drawn, jaw set. The businessman surfacing. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`peter_van_der_meer__happy.png`**: Use the base portrait as reference. A warm, open smile, looking at the camera, 3/4 take. Pale blue eyes crinkling genuinely, the knowing half-smile widening with warmth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`peter_van_der_meer__surprised.png`**: Use the base portrait as reference. A quiet, controlled startle, looking at the camera, 3/4 take. Pale blue eyes widened, brows lifted, lips parted. Composure intact. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

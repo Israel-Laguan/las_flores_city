@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Nubia in a moment of reflection, considering their next steps
 - [ ] Nubia with colleagues in a professional setting, engaged in discussion
 
+## Expression Variants
+
+- **`nubia__default.png`**: Use the base portrait as reference. Short Latina woman in her early 20s, slender sturdy frame, warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Dark brown warm determined eyes, thick dark brown hair in simple flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`nubia__determined.png`**: Use the base portrait as reference. Quiet resolve, looking directly at the camera, 3/4 take. Dark brown eyes fixed and sharp, jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`nubia__focused.png`**: Use the base portrait as reference. Absorbed in a task, looking at the camera, 3/4 take. Dark brown eyes intent, brows knit, lips set in concentration. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`nubia__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`nubia__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark brown eyes brightening, cheeks lifting, the half-smile opening into warmth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Councilwoman Sofia Duarte considering a strategic decision, weighing options thoughtfully
 - [ ] Councilwoman Sofia Duarte in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`sofia_duarte__default.png`**: Use the base portrait as reference. Medium-build Latina councilwoman in her early 70s, solid un-sculpted frame, calculating resting expression, looking at the camera, 3/4 take. Dark brown sharp calculating eyes, dark brown hair in simple flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`sofia_duarte__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Dark brown eyes narrowed in calculation, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`sofia_duarte__contemplative.png`**: Use the base portrait as reference. A guarded, reflective moment, looking at the camera, 3/4 take. Dark brown eyes softening warily into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`sofia_duarte__happy.png`**: Use the base portrait as reference. A careful, stateswomanlike smile, looking at the camera, 3/4 take. Dark brown eyes warming a fraction, lips curving up with practiced warmth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`sofia_duarte__smirk.png`**: Use the base portrait as reference. A controlled, knowing smirk, looking at the camera, 3/4 take. Dark brown eyes narrowing with private satisfaction, one brow lifted, lips curving faintly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
