@@ -31,3 +31,6 @@ available_dialogues:
   - d75f1a08-935b-4fa1-a584-df79629df66b
 asset_paths:
   portrait: wen_zhao__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__default.png
+    label: dev

@@ -14,3 +14,6 @@ metadata:
 lore_path: viktor_reyes.md
 asset_paths:
   portrait: viktor_reyes__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/viktor_reyes/viktor_reyes__default.png
+    label: dev

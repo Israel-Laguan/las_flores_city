@@ -22,3 +22,6 @@ metadata:
 lore_path: valentina_rojas.md
 asset_paths:
   portrait: valentina_rojas__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/valentina_rojas/valentina_rojas__default.png
+    label: dev

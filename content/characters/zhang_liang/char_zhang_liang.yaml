@@ -11,3 +11,6 @@ asset_paths:
   portrait: zhang_liang__default.png
 
 lore_path: zhang_liang.md
+portrait_urls:
+  - url: s3://las-flores/portraits/zhang_liang/zhang_liang__default.png
+    label: dev

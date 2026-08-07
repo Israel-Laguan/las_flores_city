@@ -11,3 +11,6 @@ asset_paths:
   portrait: victor_almeida__default.png
 
 lore_path: victor_almeida.md
+portrait_urls:
+  - url: s3://las-flores/portraits/victor_almeida/victor_almeida__default.png
+    label: dev

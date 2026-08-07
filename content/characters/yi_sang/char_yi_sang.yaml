@@ -11,3 +11,6 @@ asset_paths:
   portrait: yi_sang__default.png
 
 lore_path: yi_sang.md
+portrait_urls:
+  - url: s3://las-flores/portraits/yi_sang/yi_sang__default.png
+    label: dev
