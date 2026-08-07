@@ -2,7 +2,7 @@
 name: Mei Xiang
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/mei_xiang/mei_xiang.md
+source: content/characters/mei_xiang/mei_xiang.md
 target: `portrait_urls[].url` in `content/characters/char_mei_xiang.yaml`
 consumer: portrait
 ---

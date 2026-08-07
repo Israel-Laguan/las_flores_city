@@ -2,7 +2,7 @@
 name: Juan Rodríguez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/juan_rodriguez/juan_rodriguez.md
+source: content/characters/juan_rodriguez/juan_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_juan_rodr_guez.yaml`
 consumer: portrait
 ---

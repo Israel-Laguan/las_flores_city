@@ -2,7 +2,7 @@
 name: María Fernanda Rodriguez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/maria_fernanda_rodriguez/maria_fernanda_rodriguez.md
+source: content/characters/maria_fernanda_rodriguez/maria_fernanda_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_mar_a_fernanda_rodriguez.yaml`
 consumer: portrait
 ---

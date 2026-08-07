@@ -2,7 +2,7 @@
 name: Ricardo Vega
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/ricardo_vega/ricardo_vega.md
+source: content/characters/ricardo_vega/ricardo_vega.md
 target: `portrait_urls[].url` in `content/characters/char_ricardo_vega.yaml`
 consumer: portrait
 ---

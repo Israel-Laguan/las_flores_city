@@ -2,7 +2,7 @@
 name: Jan van der Meer
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/jan_van_der_meer/jan_van_der_meer.md
+source: content/characters/jan_van_der_meer/jan_van_der_meer.md
 target: `portrait_urls[].url` in `content/characters/char_jan_van_der_meer.yaml`
 consumer: portrait
 ---

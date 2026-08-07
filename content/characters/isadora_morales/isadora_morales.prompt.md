@@ -2,7 +2,7 @@
 name: Isadora Morales
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/isadora_morales/isadora_morales.md
+source: content/characters/isadora_morales/isadora_morales.md
 target: `portrait_urls[].url` in `content/characters/char_isadora_morales.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Yara Rossi
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/yara_rossi/yara_rossi.md
+source: content/characters/yara_rossi/yara_rossi.md
 target: `portrait_urls[].url` in `content/characters/char_yara_rossi.yaml`
 consumer: portrait
 ---

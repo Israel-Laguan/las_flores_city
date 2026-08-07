@@ -2,7 +2,7 @@
 name: Robert Thompson
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/robert_thompson/robert_thompson.md
+source: content/characters/robert_thompson/robert_thompson.md
 target: `portrait_urls[].url` in `content/characters/char_robert_thompson.yaml`
 consumer: portrait
 ---

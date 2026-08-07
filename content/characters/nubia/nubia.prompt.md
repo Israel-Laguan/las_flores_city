@@ -2,7 +2,7 @@
 name: Nubia
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/nubia/nubia.md
+source: content/characters/nubia/nubia.md
 target: `portrait_urls[].url` in `content/characters/char_nubia.yaml`
 consumer: portrait
 ---

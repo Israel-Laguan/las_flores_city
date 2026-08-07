@@ -2,7 +2,7 @@
 name: Levi de Jong
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/levi_de_jong/levi_de_jong.md
+source: content/characters/levi_de_jong/levi_de_jong.md
 target: `portrait_urls[].url` in `content/characters/char_levi_de_jong.yaml`
 consumer: portrait
 ---

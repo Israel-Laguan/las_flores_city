@@ -2,7 +2,7 @@
 name: Maria Sanchez Sulca
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/maria_sanchez_sulca/maria_sanchez_sulca.md
+source: content/characters/maria_sanchez_sulca/maria_sanchez_sulca.md
 target: `portrait_urls[].url` in `content/characters/char_maria_sanchez_sulca.yaml`
 consumer: portrait
 ---

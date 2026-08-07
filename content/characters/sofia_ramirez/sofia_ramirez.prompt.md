@@ -2,7 +2,7 @@
 name: Sofia Ramirez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sofia_ramirez/sofia_ramirez.md
+source: content/characters/sofia_ramirez/sofia_ramirez.md
 target: `portrait_urls[].url` in `content/characters/char_sofia_ramirez.yaml`
 consumer: portrait
 ---

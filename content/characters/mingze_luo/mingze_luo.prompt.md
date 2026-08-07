@@ -2,7 +2,7 @@
 name: Míngzé Luo
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/mingze_luo/mingze_luo.md
+source: content/characters/mingze_luo/mingze_luo.md
 target: `portrait_urls[].url` in `content/characters/char_m_ngz_luo.yaml`
 consumer: portrait
 ---

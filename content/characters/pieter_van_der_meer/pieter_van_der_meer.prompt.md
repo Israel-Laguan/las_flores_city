@@ -2,7 +2,7 @@
 name: Pieter van der Meer
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/pieter_van_der_meer/pieter_van_der_meer.md
+source: content/characters/pieter_van_der_meer/pieter_van_der_meer.md
 target: `portrait_urls[].url` in `content/characters/char_pieter_van_der_meer.yaml`
 consumer: portrait
 ---

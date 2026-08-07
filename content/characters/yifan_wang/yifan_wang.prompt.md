@@ -2,7 +2,7 @@
 name: Yifan Wang
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/yifan_wang/yifan_wang.md
+source: content/characters/yifan_wang/yifan_wang.md
 target: `portrait_urls[].url` in `content/characters/char_yifan_wang.yaml`
 consumer: portrait
 ---

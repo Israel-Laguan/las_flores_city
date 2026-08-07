@@ -2,7 +2,7 @@
 name: Lucia Torres
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/lucia_torres/lucia_torres.md
+source: content/characters/lucia_torres/lucia_torres.md
 target: `portrait_urls[].url` in `content/characters/char_lucia_torres.yaml`
 consumer: portrait
 ---

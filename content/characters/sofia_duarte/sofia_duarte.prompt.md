@@ -2,7 +2,7 @@
 name: Councilwoman Sofia Duarte
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sofia_duarte/sofia_duarte.md
+source: content/characters/sofia_duarte/sofia_duarte.md
 target: `portrait_urls[].url` in `content/characters/char_councilwoman_sofia_duarte.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Julian Schneider
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/julian_schneider/julian_schneider.md
+source: content/characters/julian_schneider/julian_schneider.md
 target: `portrait_urls[].url` in `content/characters/char_julian_schneider.yaml`
 consumer: portrait
 ---

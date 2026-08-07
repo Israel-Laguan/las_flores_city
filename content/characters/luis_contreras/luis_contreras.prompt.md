@@ -2,7 +2,7 @@
 name: Luis Contreras
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/luis_contreras/luis_contreras.md
+source: content/characters/luis_contreras/luis_contreras.md
 target: `portrait_urls[].url` in `content/characters/char_luis_contreras.yaml`
 consumer: portrait
 ---

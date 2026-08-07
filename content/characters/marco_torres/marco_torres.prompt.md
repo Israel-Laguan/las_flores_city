@@ -2,7 +2,7 @@
 name: Marco "Mar" Torres
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/marco_torres/marco_torres.md
+source: content/characters/marco_torres/marco_torres.md
 target: `portrait_urls[].url` in `content/characters/char_marco_mar_torres.yaml`
 consumer: portrait
 ---

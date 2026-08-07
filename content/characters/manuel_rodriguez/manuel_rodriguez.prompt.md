@@ -2,7 +2,7 @@
 name: Manuel Rodriguez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/manuel_rodriguez/manuel_rodriguez.md
+source: content/characters/manuel_rodriguez/manuel_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_manuel_rodriguez.yaml`
 consumer: portrait
 ---

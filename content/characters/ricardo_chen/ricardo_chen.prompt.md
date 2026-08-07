@@ -2,7 +2,7 @@
 name: Ricardo Chen
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/ricardo_chen/ricardo_chen.md
+source: content/characters/ricardo_chen/ricardo_chen.md
 target: `portrait_urls[].url` in `content/characters/char_ricardo_chen.yaml`
 consumer: portrait
 ---

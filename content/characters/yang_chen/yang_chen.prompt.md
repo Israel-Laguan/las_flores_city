@@ -2,7 +2,7 @@
 name: Yang Chen
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/yang_chen/yang_chen.md
+source: content/characters/yang_chen/yang_chen.md
 target: `portrait_urls[].url` in `content/characters/char_yang_chen.yaml`
 consumer: portrait
 ---

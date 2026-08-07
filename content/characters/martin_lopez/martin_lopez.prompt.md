@@ -2,7 +2,7 @@
 name: Martín López
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/martin_lopez/martin_lopez.md
+source: content/characters/martin_lopez/martin_lopez.md
 target: `portrait_urls[].url` in `content/characters/char_mart_n_l_pez.yaml`
 consumer: portrait
 ---

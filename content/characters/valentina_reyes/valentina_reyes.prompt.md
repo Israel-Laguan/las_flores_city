@@ -2,7 +2,7 @@
 name: Valentina "Val" Reyes
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/valentina_reyes/valentina_reyes.md
+source: content/characters/valentina_reyes/valentina_reyes.md
 target: `portrait_urls[].url` in `content/characters/char_valentina_val_reyes.yaml`
 consumer: portrait
 ---

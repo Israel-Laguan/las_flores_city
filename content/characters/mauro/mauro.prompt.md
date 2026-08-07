@@ -2,7 +2,7 @@
 name: Mauro (Kusi)
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/mauro/mauro.md
+source: content/characters/mauro/mauro.md
 target: `portrait_urls[].url` in `content/characters/char_mauro_kusi.yaml`
 consumer: portrait
 ---

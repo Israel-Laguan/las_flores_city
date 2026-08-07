@@ -2,7 +2,7 @@
 name: Juan Carlos Pérez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/juan_carlos_perez/juan_carlos_perez.md
+source: content/characters/juan_carlos_perez/juan_carlos_perez.md
 target: `portrait_urls[].url` in `content/characters/char_juan_carlos_p_rez.yaml`
 consumer: portrait
 ---

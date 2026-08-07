@@ -2,7 +2,7 @@
 name: Senator Chen Wei
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/senator_chen_wei/senator_chen_wei.md
+source: content/characters/senator_chen_wei/senator_chen_wei.md
 target: `portrait_urls[].url` in `content/characters/char_senator_chen_wei.yaml`
 consumer: portrait
 ---

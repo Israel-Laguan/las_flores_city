@@ -2,7 +2,7 @@
 name: Kun Zhang
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/kun_zhang/kun_zhang.md
+source: content/characters/kun_zhang/kun_zhang.md
 target: `portrait_urls[].url` in `content/characters/char_kun_zhang.yaml`
 consumer: portrait
 ---

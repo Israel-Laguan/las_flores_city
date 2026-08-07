@@ -2,7 +2,7 @@
 name: Marco Jiménez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/marco_jimenez/marco_jimenez.md
+source: content/characters/marco_jimenez/marco_jimenez.md
 target: `portrait_urls[].url` in `content/characters/char_marco_jim_nez.yaml`
 consumer: portrait
 ---

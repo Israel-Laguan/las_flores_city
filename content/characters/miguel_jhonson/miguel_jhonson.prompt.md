@@ -2,7 +2,7 @@
 name: Miguel Jhonson
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/miguel_jhonson/miguel_jhonson.md
+source: content/characters/miguel_jhonson/miguel_jhonson.md
 target: `portrait_urls[].url` in `content/characters/char_miguel_jhonson.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Maria Chicham
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/maria_chicham/maria_chicham.md
+source: content/characters/maria_chicham/maria_chicham.md
 target: `portrait_urls[].url` in `content/characters/char_maria_chicham.yaml`
 consumer: portrait
 ---

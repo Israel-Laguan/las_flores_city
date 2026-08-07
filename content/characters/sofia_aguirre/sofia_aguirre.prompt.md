@@ -2,7 +2,7 @@
 name: Sofia Aguirre
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sofia_aguirre/sofia_aguirre.md
+source: content/characters/sofia_aguirre/sofia_aguirre.md
 target: `portrait_urls[].url` in `content/characters/char_sofia_aguirre.yaml`
 consumer: portrait
 ---

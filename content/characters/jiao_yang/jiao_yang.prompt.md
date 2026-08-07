@@ -2,7 +2,7 @@
 name: Jiao Yang
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/jiao_yang/jiao_yang.md
+source: content/characters/jiao_yang/jiao_yang.md
 target: `portrait_urls[].url` in `content/characters/char_jiao_yang.yaml`
 consumer: portrait
 ---

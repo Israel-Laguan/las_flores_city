@@ -2,7 +2,7 @@
 name: María Suárez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/maria_suarez/maria_suarez.md
+source: content/characters/maria_suarez/maria_suarez.md
 target: `portrait_urls[].url` in `content/characters/char_mar_a_su_rez.yaml`
 consumer: portrait
 ---

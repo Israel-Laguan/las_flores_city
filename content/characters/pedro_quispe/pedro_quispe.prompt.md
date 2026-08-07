@@ -2,7 +2,7 @@
 name: Pedro Quispe
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/pedro_quispe/pedro_quispe.md
+source: content/characters/pedro_quispe/pedro_quispe.md
 target: `portrait_urls[].url` in `content/characters/char_pedro_quispe.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Javier Ramirez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/javier_ramirez/javier_ramirez.md
+source: content/characters/javier_ramirez/javier_ramirez.md
 target: `portrait_urls[].url` in `content/characters/char_javier_ramirez.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Laura Rodríguez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/laura_rodriguez/laura_rodriguez.md
+source: content/characters/laura_rodriguez/laura_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_laura_rodr_guez.yaml`
 consumer: portrait
 ---

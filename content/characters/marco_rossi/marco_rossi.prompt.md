@@ -2,7 +2,7 @@
 name: Marco Rossi
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/marco_rossi/marco_rossi.md
+source: content/characters/marco_rossi/marco_rossi.md
 target: `portrait_urls[].url` in `content/characters/char_marco_rossi.yaml`
 consumer: portrait
 ---

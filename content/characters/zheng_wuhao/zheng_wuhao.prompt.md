@@ -2,7 +2,7 @@
 name: Zheng Wuhao
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/zheng_wuhao/zheng_wuhao.md
+source: content/characters/zheng_wuhao/zheng_wuhao.md
 target: `portrait_urls[].url` in `content/characters/char_zheng_wuhao.yaml`
 consumer: portrait
 ---

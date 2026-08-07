@@ -2,8 +2,8 @@
 
 [CONSUMER: biometric]
 **Type:** character-sheet
-**Source:** content/characters/char_diego_huam_n.yaml
-**Target:** docs/lore/figures/diego_huam_n/
+**Source:** content/characters/diego_huaman/char_diego_huaman.yaml
+**Target:** `asset_paths.portrait` in `content/characters/diego_huaman/char_diego_huaman.yaml`
 **Pipeline stage:** reference
 **Recommended tools:** Use biometric sheets (face + body) + moveset poses below
 
@@ -11,7 +11,7 @@
 
 ## 1. Face Reference
 Use the horizontal and vertical face arcs from the biometric phase
-(`docs/lore/figures/diego_huam_n/diego_huam_n_biometric.prompt.md`).
+(`content/characters/diego_huaman/diego_huaman.biometric.prompt.md`).
 Ethnicity/face base and expressions are defined there.
 
 ## 2. Body Reference (minimal / plain clothes)

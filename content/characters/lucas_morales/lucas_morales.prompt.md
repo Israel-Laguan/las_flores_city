@@ -2,7 +2,7 @@
 name: Lucas Morales
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/lucas_morales/lucas_morales.md
+source: content/characters/lucas_morales/lucas_morales.md
 target: `portrait_urls[].url` in `content/characters/char_lucas_morales.yaml`
 consumer: portrait
 ---

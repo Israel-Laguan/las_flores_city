@@ -2,7 +2,7 @@
 name: Isabella Vargas
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/isabella_vargas/isabella_vargas.md
+source: content/characters/isabella_vargas/isabella_vargas.md
 target: `portrait_urls[].url` in `content/characters/char_isabella_vargas.yaml`
 consumer: portrait
 ---

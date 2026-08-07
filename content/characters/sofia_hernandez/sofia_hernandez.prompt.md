@@ -2,7 +2,7 @@
 name: Sofia Hernánez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sofia_hernandez/sofia_hernandez.md
+source: content/characters/sofia_hernandez/sofia_hernandez.md
 target: `portrait_urls[].url` in `content/characters/char_sofia_hern_nez.yaml`
 consumer: portrait
 ---

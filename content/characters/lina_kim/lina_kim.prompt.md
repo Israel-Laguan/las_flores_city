@@ -2,7 +2,7 @@
 name: Lina Kim
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/lina_kim/lina_kim.md
+source: content/characters/lina_kim/lina_kim.md
 target: `portrait_urls[].url` in `content/characters/char_lina_kim.yaml`
 consumer: portrait
 ---

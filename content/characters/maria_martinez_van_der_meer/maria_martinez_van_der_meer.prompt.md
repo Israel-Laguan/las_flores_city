@@ -2,7 +2,7 @@
 name: Maria Martinez van der Meer
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/maria_martinez_van_der_meer/maria_martinez_van_der_meer.md
+source: content/characters/maria_martinez_van_der_meer/maria_martinez_van_der_meer.md
 target: `portrait_urls[].url` in `content/characters/char_maria_martinez_van_der_meer.yaml`
 consumer: portrait
 ---

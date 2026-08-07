@@ -2,7 +2,7 @@
 name: Sophia van der Meer Rodriguez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sophia_van_der_meer_rodriguez/sophia_van_der_meer_rodriguez.md
+source: content/characters/sophia_van_der_meer_rodriguez/sophia_van_der_meer_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_sophia_van_der_meer_rodriguez.yaml`
 consumer: portrait
 ---

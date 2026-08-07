@@ -2,7 +2,7 @@
 name: Lucas van der Meer
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/lucas_van_der_meer/lucas_van_der_meer.md
+source: content/characters/lucas_van_der_meer/lucas_van_der_meer.md
 target: `portrait_urls[].url` in `content/characters/char_lucas_van_der_meer.yaml`
 consumer: portrait
 ---

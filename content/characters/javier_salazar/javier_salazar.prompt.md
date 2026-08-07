@@ -2,7 +2,7 @@
 name: Javier "Javi" Salazar
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/javier_salazar/javier_salazar.md
+source: content/characters/javier_salazar/javier_salazar.md
 target: `portrait_urls[].url` in `content/characters/char_javier_javi_salazar.yaml`
 consumer: portrait
 ---

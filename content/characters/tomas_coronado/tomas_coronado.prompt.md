@@ -2,7 +2,7 @@
 name: Tomás Coronado
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/tomas_coronado/tomas_coronado.md
+source: content/characters/tomas_coronado/tomas_coronado.md
 target: `portrait_urls[].url` in `content/characters/char_tom_s_coronado.yaml`
 consumer: portrait
 ---

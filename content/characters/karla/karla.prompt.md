@@ -2,7 +2,7 @@
 name: Karla
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/karla/karla.md
+source: content/characters/karla/karla.md
 target: `portrait_urls[].url` in `content/characters/char_karla.yaml`
 consumer: portrait
 ---

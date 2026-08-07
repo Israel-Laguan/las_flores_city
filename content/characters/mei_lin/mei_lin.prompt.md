@@ -2,7 +2,7 @@
 name: Mei Lin
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/mei_lin/mei_lin.md
+source: content/characters/mei_lin/mei_lin.md
 target: `portrait_urls[].url` in `content/characters/char_mei_lin.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Simon De Vries
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/simons_de_vries/simons_de_vries.md
+source: content/characters/simons_de_vries/simons_de_vries.md
 target: `asset_paths.portrait` in `content/characters/simons_de_vries/char_simons_de_vries.yaml`
 consumer: portrait
 ---

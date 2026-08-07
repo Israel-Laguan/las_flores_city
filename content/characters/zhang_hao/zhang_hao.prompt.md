@@ -2,7 +2,7 @@
 name: Zhang Hao
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/zhang_hao/zhang_hao.md
+source: content/characters/zhang_hao/zhang_hao.md
 target: `portrait_urls[].url` in `content/characters/char_zhang_hao.yaml`
 consumer: portrait
 ---

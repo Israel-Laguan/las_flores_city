@@ -2,7 +2,7 @@
 name: Javier Mendoza
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/javier_mendoza/javier_mendoza.md
+source: content/characters/javier_mendoza/javier_mendoza.md
 target: `portrait_urls[].url` in `content/characters/char_javier_mendoza.yaml`
 consumer: portrait
 ---

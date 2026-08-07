@@ -2,7 +2,7 @@
 name: Mateo Vargas
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/mateo_vargas/mateo_vargas.md
+source: content/characters/mateo_vargas/mateo_vargas.md
 target: `portrait_urls[].url` in `content/characters/char_mateo_vargas.yaml`
 consumer: portrait
 ---

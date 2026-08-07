@@ -2,7 +2,7 @@
 name: Jianhua
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/jianhua/jianhua.md
+source: content/characters/jianhua/jianhua.md
 target: `portrait_urls[].url` in `content/characters/char_jianhua.yaml`
 consumer: portrait
 ---

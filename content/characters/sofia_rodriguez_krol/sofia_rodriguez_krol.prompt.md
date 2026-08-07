@@ -2,7 +2,7 @@
 name: Sofia Rodriguez Krol
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sofia_rodriguez_krol/sofia_rodriguez_krol.md
+source: content/characters/sofia_rodriguez_krol/sofia_rodriguez_krol.md
 target: `portrait_urls[].url` in `content/characters/char_sofia_rodriguez_krol.yaml`
 consumer: portrait
 ---

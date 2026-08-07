@@ -2,7 +2,7 @@
 name: Li Wei
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/li_wei/li_wei.md
+source: content/characters/li_wei/li_wei.md
 target: `portrait_urls[].url` in `content/characters/char_li_wei.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Ricardo Tan
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/ricardo_tan/ricardo_tan.md
+source: content/characters/ricardo_tan/ricardo_tan.md
 target: `portrait_urls[].url` in `content/characters/char_ricardo_tan.yaml`
 consumer: portrait
 ---

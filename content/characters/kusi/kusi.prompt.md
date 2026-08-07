@@ -2,7 +2,7 @@
 name: Kusi
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/kusi/kusi.md
+source: content/characters/kusi/kusi.md
 target: `portrait_urls[].url` in `content/characters/char_kusi.yaml`
 consumer: portrait
 ---

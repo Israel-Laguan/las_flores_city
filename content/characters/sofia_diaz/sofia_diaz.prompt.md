@@ -2,7 +2,7 @@
 name: Sofia Diaz
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/sofia_diaz/sofia_diaz.md
+source: content/characters/sofia_diaz/sofia_diaz.md
 target: `portrait_urls[].url` in `content/characters/char_sofia_diaz.yaml`
 consumer: portrait
 ---

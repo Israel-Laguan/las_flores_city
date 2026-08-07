@@ -2,7 +2,7 @@
 name: Mia Chen-Rojas
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/mia_chen_rojas/mia_chen_rojas.md
+source: content/characters/mia_chen_rojas/mia_chen_rojas.md
 target: `portrait_urls[].url` in `content/characters/char_mia_chen_rojas.yaml`
 consumer: portrait
 ---

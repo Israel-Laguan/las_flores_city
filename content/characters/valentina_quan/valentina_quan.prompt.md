@@ -2,7 +2,7 @@
 name: Valentina Quan
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/valentina_quan/valentina_quan.md
+source: content/characters/valentina_quan/valentina_quan.md
 target: `portrait_urls[].url` in `content/characters/char_valentina_quan.yaml`
 consumer: portrait
 ---

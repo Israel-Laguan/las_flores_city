@@ -2,7 +2,7 @@
 name: Rosa Marúñez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/rosa_martinez/rosa_martinez.md
+source: content/characters/rosa_martinez/rosa_martinez.md
 target: `portrait_urls[].url` in `content/characters/char_rosa_mar_ez.yaml`
 consumer: portrait
 ---

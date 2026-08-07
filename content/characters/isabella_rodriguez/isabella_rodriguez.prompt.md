@@ -2,7 +2,7 @@
 name: Isabella Rodriguez
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/isabella_rodriguez/isabella_rodriguez.md
+source: content/characters/isabella_rodriguez/isabella_rodriguez.md
 target: `portrait_urls[].url` in `content/characters/char_isabella_rodriguez.yaml`
 consumer: portrait
 ---

@@ -2,7 +2,7 @@
 name: Nadia Delgado
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/nadia_delgado/nadia_delgado.md
+source: content/characters/nadia_delgado/nadia_delgado.md
 target: `portrait_urls[].url` in `content/characters/char_nadia_delgado.yaml`
 consumer: portrait
 ---

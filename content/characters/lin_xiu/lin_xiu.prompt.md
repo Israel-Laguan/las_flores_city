@@ -2,7 +2,7 @@
 name: Lin Xiu
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/lin_xiu/lin_xiu.md
+source: content/characters/lin_xiu/lin_xiu.md
 target: `portrait_urls[].url` in `content/characters/char_lin_xiu.yaml`
 consumer: portrait
 ---

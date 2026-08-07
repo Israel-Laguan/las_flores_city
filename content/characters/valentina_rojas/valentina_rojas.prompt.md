@@ -2,7 +2,7 @@
 name: Valentina Rojas
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/valentina_rojas/valentina_rojas.md
+source: content/characters/valentina_rojas/valentina_rojas.md
 target: `portrait_urls[].url` in `content/characters/char_valentina_rojas.yaml`
 consumer: portrait
 ---
