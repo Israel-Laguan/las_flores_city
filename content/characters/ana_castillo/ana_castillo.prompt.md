@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ana_castillo__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her 40s, neutral resting expression, looking at the camera, 3/4 take. Soft-rounded build, clear warm brown skin with subtle lines around the eyes. Wavy dark hair in a practical clip, flat brows with a faint droop, wide-set eyes, round face, flat-bridged nose, subtle cheekbones, soft jawline, wide lips, right cheek dimple only. Faint burn scar on left forearm. Small sport earbud clipped to earlobe, practical apron over casual clothes, canvas tote. Food cooperative back room with produce shelves under warm light backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She wears an open, neighborly smile, looking at the camera, 3/4 take. Wide-set eyes warm, wide lips curving, the right cheek dimple deepening. Flat brows lifting gently. Wavy dark hair in its practical clip. Subtle lines around the eyes crinkling. Clear warm brown skin glowing under warm light. Soft-rounded frame easing. Food cooperative back room backdrop softened to warmth. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

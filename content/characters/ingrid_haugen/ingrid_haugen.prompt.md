@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ingrid_haugen__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Scandinavian corporate liaison in her late 30s, neutral, composed resting expression, looking at the camera, 3/4 take. Tall sharp-featured build, clear fair skin, straight blonde severe immaculate hair, arched brows, wide-set pale blue cold eyes, pointed nose, angular face with a prominent jawline, thin lips, pale scar on her right upper lip. Small sport earbud, immaculate professional attire, company-issued tablet. Sterile N&M LTD office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. A cold, analytic expression, looking directly at the camera, 3/4 take. Wide-set pale blue eyes narrowed, thin lips pressed, head tilted a fraction, sharp-featured angular face composed. The pale scar on her upper lip catching the sterile light. Glass and steel backdrop in clean shadow. Keep the same art style as reference, same blazer and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

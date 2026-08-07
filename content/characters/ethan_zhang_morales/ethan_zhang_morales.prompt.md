@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ethan_zhang_morales__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 21-year-old mixed Chinese-Latino Mechanical Engineering student, neutral goofy proud expression, looking at the camera, 3/4 take. Somewhat chubby rounded face with noticeable double chin, short messy black hair, round glasses slipping down nose, expressive mischievous brown eyes, goofy lopsided smile, faded oversized anime graphic tee, comfortable cargo pants. Student housing backdrop, anime posters on wall. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, goofy grin, looking at the camera, 3/4 take. Expressive brown eyes crinkled with mirth, mouth wide with goofy warmth, round glasses pushed up his nose. Short messy black hair. Faded oversized anime graphic tee, comfortable cargo pants. Student housing backdrop under bright afternoon light. Keep the same art style as reference, same anime tee. Clean confident linework, painterly soft shading, muted natural palette.

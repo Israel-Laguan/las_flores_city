@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/sebastian_van_der_meer__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch man in his 40s, neutral composed resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear skin. Angular face with high cheekbones and strong jawline, straight blond hair with gray threading. Pointed nose, wide-set calculating eyes, thick slightly asymmetric brows, thin lips. Small scar near left brow. Small sport earbud, tailored suit with Van der Meer Industries pin. Executive office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. Sharp, strategic assessment, looking directly at the camera, 3/4 take. Wide-set eyes narrowed with calculation, thin lips pressed in deliberation, thick brows drawn low. Angular face set, strong jawline firm. Blond hair with gray catching cool executive light. Growth-chart backdrop under focused illumination. Keep the same art style as reference, same tailored suit and pin. Clean confident linework, painterly soft shading, muted natural palette.

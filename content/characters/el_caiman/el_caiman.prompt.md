@@ -30,8 +30,6 @@ n- [ ] El Caimán in his warehouse office, leaning back in a worn leather chair,
 
 ## Expression Variants
 
-Authored expressions (each as `assets/el_caiman__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Head of Las Flores' most powerful criminal syndicate, neutral controlled menacing expression, looking at the camera, 3/4 take. Black hair slicked back, dark brown cold calculating hooded eyes, medium height stocky powerful thick neck, deep olive weathered scarred skin, thick mustache, gold chains around neck, tattoos on forearms, missing left pinky finger, gold-capped front tooth, scarred heavy hands, dark cotton shirt open at collar. Industrial Zone warehouse backdrop, concrete pillars. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__angry.png`**: Use the base portrait as reference. He has a controlled, explosive anger, looking at the camera, 3/4 take. Dark brown hooded eyes blazing, thick mustache bristling, gold-capped front tooth prominent. Missing left pinky finger clenched, gold chains heavy at his neck. Tattoos visible on forearms. Dark cotton shirt open. Industrial Zone warehouse backdrop under harsh red-tinged light. Keep the same art style as reference, same shirt. Clean confident linework, painterly soft shading, muted natural palette.

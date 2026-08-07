@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/javier_torres__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early 40s, neutral resting expression, looking at the camera, 3/4 take. Stocky build, sun-damaged warm-brown skin, curly dark hair with gray streaks. Round face with a strong jawline, pronounced cheekbones, hooded dark eyes, thick brows, full lips, wide nose. Faded scar on his right forearm, sun-damaged skin, callused hands. Small sport earbud, rugged jacket, Humanity First vest, work boots. Cleanup site or garden backdrop with banners. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__angry.png`**: Use the base portrait as reference. Frustration sharpens his face, looking at the camera, 3/4 take. Hooded dark eyes narrowed hotly, thick brows drawn down, full lips pressed into a hard line. The strong jawline tenses, the faded forearm scar caught in motion. Banner-filled backdrop under harsh daylight. Keep the same art style as reference, same vest, jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.

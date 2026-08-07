@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/aria_welcome_bot__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Androgynous AI welcome avatar, neutral resting expression, looking at the camera, 3/4 take. Heart-shaped face, soft jaw, subtle cheeks, straight nose, round warm eyes glowing softly, too-smooth synthetic skin with a faint seam along one cheek. Sleek straight hair, clean minimalist interface attire with AR glyph/halo motif and geometric neckline. Soft glowing interface backdrop with abstract data motifs. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, no earbud.
 
 - **`__happy.png`**: Use the base portrait as reference. A warm, welcoming smile spreads across the avatar's face, looking at the camera, 3/4 take. Round warm eyes brighten and the soft glow intensifies, mouth curving upward in eager-to-please delight. Heart-shaped face and soft jaw relaxed, the faint seam line still visible along one cheek. Soft glowing interface backdrop with abstract data motifs in blue-teal light. Keep the same art style as reference, same minimalist attire and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

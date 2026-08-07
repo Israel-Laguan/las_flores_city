@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_alberto_hernandez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Early-60s politician and ELU member, neutral practiced expression, looking at the camera, 3/4 take. Dark brown thinning hair combed over, slightly hooded dark brown eyes, medium height with slight paunch, medium-brown skin with lines around eyes and mouth, silver-framed glasses, practiced politician's smile, manicured hands, gold signet ring on pinky, tailored navy suit. ELU political office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a shrewd, assessing focus, looking directly at the camera, 3/4 take. Dark brown hooded eyes narrowed behind silver-framed glasses, mind visibly calculating. Dark brown thinning hair precise, gold signet ring prominent. Well-tailored navy suit, slight paunch barely visible. ELU office backdrop under bright overhead light. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.

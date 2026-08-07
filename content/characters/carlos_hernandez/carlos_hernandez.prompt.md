@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_hernandez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 102-year-old former mayor, neutral warm knowing expression, looking at the camera, 3/4 take. Round friendly face, warm engaging dark brown eyes, distinctive mole on right cheek, receding black hair gray-white and neatly groomed, slightly overweight build, white guayabera with loose sleeves. Old Las Flores government building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__contemplative.png`**: Use the base portrait as reference. He is in quiet reflection, looking thoughtfully at the camera with a 3/4 take. Warm dark brown eyes soft and distant, mouth relaxed in a faint, private smile. Gray-white receding hair, round face softened, mole on right cheek catching light. Slightly overweight build, white guayabera open at the collar. Government building backdrop under warm golden-hour glow. Keep the same art style as reference, same guayabera. Clean confident linework, painterly soft shading, muted natural palette.

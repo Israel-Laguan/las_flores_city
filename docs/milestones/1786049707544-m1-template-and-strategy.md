@@ -163,6 +163,11 @@ node scripts/content-audit.mjs
 grep -rl 'docs/lore/figures/' content/characters/carlos_lopez/ || echo "clean"
 ```
 
+> Note: `node scripts/content-audit.mjs` is a **presence gate** (checks
+> YAML/`.md`/`.prompt.md` exist). It does not validate `source:` paths or
+> `## Expression Variants` coverage — use the greps in the Master doc §7 for
+> those (see Master §5 rule #4 caveat).
+
 - `docs/lore/guides/character_prompt_audit.json` (biometric fallback for
   characters with zero physical description)
 - `docs/lore/guides/templates/templates.md` (Prompt Templates section, QC checklists)

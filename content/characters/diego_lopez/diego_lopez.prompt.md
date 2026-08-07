@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/diego_lopez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his 40s, neutral resting expression, looking at the camera, 3/4 take. Stocky comfortable build, clear olive-tan skin, wavy dark hair with gray threading, thick asymmetric brows, narrow appraising eyes, straight nose, round face with a prominent jawline, slightly crooked smile, small chip in a lower molar. Small sport earbud, business-casual editor attire, reading glasses on a chain. El Informador desk backdrop with charts. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is in sharp assessment mode, looking directly at the camera, 3/4 take. Narrow eyes narrowed further, thick brows drawn, mouth pressed into a flat line as he weighs a figure in his head. The crooked smile fades. Differential shading across his round, prominent-jaw face. The stocky frame is still. Charts glowing on screens behind him. Keep the same art style as reference, same blazer, glasses, and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

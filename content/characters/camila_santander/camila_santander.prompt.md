@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/camila_santander__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Hispanic woman in her early 30s, neutral resting expression with a ready warmth, looking at the camera, 3/4 take. Athletic-toned build, oval face, prominent jaw, pronounced cheeks, straight nose, round warm-brown crinkled eyes, arched brows with one raised higher, freckled sun-kissed skin, long wavy dark hair. Practical outdoor clothing, sun hat, sport earbud. Trailhead backdrop with maps and gear. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__happy.png`**: Use the base portrait as reference. A broad, genuine smile lights her face, looking at the camera, 3/4 take. Round warm-brown eyes crinkle deeper, freckled nose brightening, arched brows lifted in warmth. Oval face and prominent jaw relaxed, long wavy dark hair catching the natural light. Trailhead backdrop under bright sun. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.

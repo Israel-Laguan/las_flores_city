@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/amina_patel__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Mid-30s South Asian Indian finance manager, neutral reserved expression, looking at the camera, 3/4 take. Jet-black thick straight hair in neat bun, dark brown almost-black observant eyes, petite compact build, deep brown smooth skin, small gold nose stud on left nostril, round wire-rimmed glasses, thin silver bangle on right wrist, crisp white silk blouse and tailored navy blazer. CLM corporate office backdrop, glass walls and financial workstation. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Dark brown eyes narrowed behind round wire-rimmed glasses, brow slightly furrowed in analysis. Thin silver bangle turning on her right wrist. Jet-black hair neat in its bun, gold nose stud catching light. White silk blouse and tailored navy blazer crisp. CLM office backdrop under bright fluorescent light. Keep the same art style as reference, same glasses and bangle. Clean confident linework, painterly soft shading, muted natural palette.

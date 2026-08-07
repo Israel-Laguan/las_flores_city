@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/peter_van_der_meer_jr__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch-Latina mixed man in his late 20s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear olive-fair skin. Angular face with high cheekbones, prominent jawline, wavy dark-blonde hair. Straight nose, round warm brown eyes, thick slightly asymmetric brows, full lips. Small scar near right ear. Small sport earbud, fitted collared shirt with Amor Verdadero pin. Community-center backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__determined.png`**: Use the base portrait as reference. Resolute and focused, looking directly at the camera, 3/4 take. Angular face set, prominent jawline squared, round warm eyes steady and intent. Thick brows drawn together slightly, full lips pressed into a firm line. Wavy dark-blonde hair catching warm light. Community-center backdrop under stronger directional lighting. Keep the same art style as reference, same advocate attire and Amor Verdadero pin. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/maria_garcia__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her forties, neutral resting expression, looking at the camera, 3/4 take. Heart-shaped face, soft jawline, wide nose, round eyes, arched brows, full lips, curly dark hair, faint chemical-burn mark on wrist, weathered hands. Simple flower-farming clothes with apron and sun hat, no earbud, Garcia family flower fields backdrop in soft light. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A gentle, radiant smile, looking at the camera, 3/4 take. Round eyes bright and soft, full lips curved with tender happiness, arched brows lifted warmly. Heart-shaped face relaxed, sun-damaged skin glowing in golden field light. Curly dark hair loose, flower-farming clothes and apron. Soft, warm light over the fields. Keep the same art style as reference, same clothing and no earbud. Clean confident linework, painterly soft shading, muted natural palette.

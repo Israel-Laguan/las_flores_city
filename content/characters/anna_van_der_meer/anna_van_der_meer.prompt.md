@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/anna_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 36-year-old CEO of Van der Meer Industries, neutral warm composed expression, looking at the camera, 3/4 take. Athletic toned build, dark brown hair in practical elegant style, deep blue eyes, oval face, tailored charcoal suit, crisp white shirt, platinum band on left hand. Van der Meer Industries executive office backdrop, Las Flores skyline visible through window. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She has a sharp, assessing focus, looking directly at the camera, 3/4 take. Deep blue eyes narrowed with shrewd evaluation, dark brown hair perfectly in place, charcoal suit immaculate. Athletic build squared, the CEO's composure at work. Executive office backdrop under bright overhead light. Keep the same art style as reference, same charcoal suit. Clean confident linework, painterly soft shading, muted natural palette.

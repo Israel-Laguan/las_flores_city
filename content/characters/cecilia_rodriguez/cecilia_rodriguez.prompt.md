@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/cecilia_rodriguez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman of 47, neutral calm but guarded resting expression, looking at the camera, 3/4 take. Athletic-compact build, heart-shaped face, receding jaw, subtle cheeks, curved nose, wide-set tired empathetic dark eyes, flat brows with a slight droop, full lips, dark hair in a practical bun, faded zip-up jacket over scrubs, medical bag. Calle Morales clinic backdrop in warm streetlight. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__sad.png`**: Use the base portrait as reference. A heavy, quiet grief, looking at the camera, 3/4 take. Wide-set dark eyes dim with memory, flat brows drooping lower, full lips pressed in sorrow. The dark circles under her eyes deepen, curved nose softening. Warm streetlight cast long shadows in the alleyway backdrop. Keep the same art style as reference, same scrubs, zip-up jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.

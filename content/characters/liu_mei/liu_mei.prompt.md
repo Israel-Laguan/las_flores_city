@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/liu_mei__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Chinese woman in her mid-40s, neutral resting expression, looking at the camera, 3/4 take. Round face, soft receding jawline, narrow nose, almond eyes with the left eyelid slightly more hooded, tiny mole on left cheek, straight dark hair in a practical low bun, subtle lines around the eyes with slight brow droop. Professional tailored political attire with understated jewelry, small sport earbud, city-hall office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is in careful assessment mode, looking at the camera, 3/4 take. Almond eyes narrowed thoughtfully, the slightly more hooded left eye adding depth to her weighing gaze, thin lips pressed into a measured line. Round face and soft receding jawline set with quiet focus. Tiny mole on left cheek, straight dark hair in a low bun. City-hall office backdrop with trade documents in soft office light. Keep the same art style as reference, same professional attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

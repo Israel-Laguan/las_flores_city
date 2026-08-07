@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/daiyu_liu__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Mid-20s International Relations student, neutral sharp appraising expression, looking at the camera, 3/4 take. Jet-black sleek straight sharp asymmetric bob, dark brown almond-shaped sharp imperious eyes, slender poised graceful build, fair porcelain skin, precise red lipstick, manicured nails in dark lacquer, jade pendant necklace, elegant silk blouse with tailored trousers. UILF campus backdrop, grand academic architecture. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__arrogant.png`**: Use the base portrait as reference. She has an openly condescending expression, looking directly at the camera, 3/4 take. Dark brown eyes narrowed in superiority, one brow lifted. Jet-black asymmetric bob sharp, precise red lipstick firm. Slender poised build squared, elegant silk blouse crisp, jade pendant prominent. UILF campus backdrop under bright overhead light. Keep the same art style as reference, same silk blouse and jade pendant. Clean confident linework, painterly soft shading, muted natural palette.

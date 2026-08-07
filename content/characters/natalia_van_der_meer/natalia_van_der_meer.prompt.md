@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/natalia_van_der_meer__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch artist in her 20s-30s, neutral vivid resting expression, looking at the camera, 3/4 take. Lean-wiry expressive build, clear fair skin. Heart-shaped face with a prominent jaw, pointed nose, almond eyes, arched brows, full lips. Wavy blonde undyed messy-chic hair, paint-stained fingers, faint paint smear on her jaw. Artsy smock, sport earbud. Art studio backdrop with paintings and sculptures, skylight. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A bright, unguarded laugh, looking at the camera, 3/4 take. Full lips wide open mid-laugh, almond eyes crinkling with delight, arched brows lifted high. The faint paint smear on her jaw and paint-stained fingers catching the skylight. Studio chaos bright behind her. Keep the same art style as reference, same smock, attire, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

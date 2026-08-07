@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alicia_quevedo__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Early-60s former governor, neutral composed expression, looking at the camera, 3/4 take. Dark chestnut-brown shoulder-length hair in professional blowout, warm hazel sharp attentive eyes, oval face, thin arched eyebrows, pearl stud earrings, small beauty mark above left corner of mouth, slender poised posture, light brown complexion, tailored navy blazer with governor's pin. Free City government office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Warm hazel eyes narrowed with focused attention, thin arched brows drawn in. Dark chestnut hair perfectly styled, pearl studs gleaming. Tailored navy blazer crisp, governor's pin prominent. Government office backdrop under bright overhead light. Keep the same art style as reference, same blazer and earrings. Clean confident linework, painterly soft shading, muted natural palette.

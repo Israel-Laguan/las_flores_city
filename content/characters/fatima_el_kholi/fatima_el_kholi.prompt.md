@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/fatima_el_kholi__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Late-30s Egyptian LW Group executive, neutral composed expression, looking at the camera, 3/4 take. Jet-black thick hair in sleek blowout, dark brown sharp commanding eyes lined with subtle kohl, slender poised build, warm olive complexion, gold hoop earrings, designer glasses, signature red lipstick, manicured nails, tailored designer blazer over silk blouse. Upscale Las Flores after-hours lounge backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She has a sharp, assessing focus, looking directly at the camera, 3/4 take. Dark brown eyes narrowed behind designer glasses, mouth pressed in evaluation. Jet-black hair precise, gold hoop earrings prominent. Red lipstick bold, manicured nails catching light. Tailored designer blazer immaculate. Lounge backdrop under amber light. Keep the same art style as reference, same blazer and earrings. Clean confident linework, painterly soft shading, muted natural palette.

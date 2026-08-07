@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/marco_reyes__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his late sixties, neutral resting expression, looking at the camera, 3/4 take. Square face, strong jawline, curved broken nose, hooded eyes, thick brows, wide lips, thin gray-white receding hair, faded rope-burn scars on his hands, weathered scarred skin. Worn dockworker jacket, union cap, heavy boots, small sport earbud, Port District backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A gruff but genuine smile, looking at the camera, 3/4 take. Hooded eyes crinkle warmly at the corners, wide lips curve into a weathered grin, thick brows lifting. Square face and strong jawline soften with warmth. Gray-white receding hair catching sea light, union cap, worn jacket. Port District backdrop in soft light. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.

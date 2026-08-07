@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/dong_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Leader of the Flowers Syndicate, neutral cold composed expression, looking at the camera, 3/4 take. Black thick hair slicked back with gray at temples, cold calculating dark brown hooded eyes, tall lean slightly gaunt build, light olive sallow complexion with deep lines, thin scar along right jawline from shootout, heavy gold rings, gold cufflinks with Van der Meer crest, immaculately tailored charcoal suit, slight limp visible. Industrial Zone back room backdrop, rough concrete and mahogany desk. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a sharp, calculating focus, looking directly at the camera, 3/4 take. Cold dark brown hooded eyes narrowed with ruthless intelligence, thin scar on right jawline standing out. Black hair precise, gold rings prominent. Tall lean gaunt frame squared, charcoal suit immaculate, gold cufflinks catching light. Industrial Zone back room under harsh overhead light. Keep the same art style as reference, same charcoal suit. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/diego_ruiz__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 26-year-old airport cleaner, neutral optimistic expression, looking at the camera, 3/4 take. Fit build, medium-length carefully styled dark hair, expressive warm brown eyes, neat casual button-down shirt over plain tee, slim notebook of pickup techniques in jacket pocket. Las Flores airport terminal at dusk, departures board visible. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a bright, hopeful grin, looking at the camera, 3/4 take. Warm brown eyes alight with optimism, mouth wide with charm. Medium-length dark hair perfectly styled, button-down shirt crisp. Slim notebook peeking from pocket. Airport terminal backdrop under warm overhead light. Keep the same art style as reference, same button-down shirt. Clean confident linework, painterly soft shading, muted natural palette.

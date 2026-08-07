@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/cecilia_perez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Slender early-20s safety auditor and independent researcher, neutral focused intense expression, looking at the camera, 3/4 take. Dark brown shoulder-length hair often in messy bun, warm brown intense focused eyes, slender wiry build, light brown olive undertone complexion, small wire-framed glasses pushed up, ink stains on fingers, thin scar on left hand, small silver locket, practical lab coat over blouse. Minera Estrella research field backdrop, experimental Carinata plots. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp scientific concentration, looking directly at the camera, 3/4 take. Warm brown eyes narrowed behind small wire-framed glasses, brow furrowed in focused analysis. Dark brown hair in messy bun, ink stains on her fingers, thin scar on left hand prominent. Practical lab coat crisp, small silver locket visible. Research field backdrop under bright afternoon light. Keep the same art style as reference, same lab coat and glasses. Clean confident linework, painterly soft shading, muted natural palette.

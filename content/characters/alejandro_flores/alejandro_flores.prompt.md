@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alejandro_flores__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 38-year-old middle manager at Vinícola La Hacienda, neutral composed expression, looking at the camera, 3/4 take. Dark hair slicked back in precise side part, sharp angular features, keen green eyes, tall elegant build, perfectly tailored charcoal wool suit, crisp white shirt, deep burgundy silk tie, leather portfolio under one arm, platinum wedding band. Vinícola La Hacienda executive office backdrop, dark oak desk and wine catalogues. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a cold, assessing focus, looking directly at the camera, 3/4 take. Keen green eyes narrowed, dark brows drawn in evaluation. Strong angular jaw set. Dark hair perfectly in place, silk tie immaculate, portfolio held tight. Executive office backdrop under stark overhead light. Keep the same art style as reference, same charcoal suit. Clean confident linework, painterly soft shading, muted natural palette.

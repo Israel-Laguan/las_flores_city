@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/anneliese_jansen__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 27-year-old Dutch-French companion for hire, neutral confident expression, looking at the camera, 3/4 take. Long honey blonde hair in loose curls, gray-blue expressive eyes, slender toned build, fair skin with light tan, full lips with muted rose lipstick, high cheekbones, small compass rose tattoo behind left ear, smart fitted black blazer, thin gold chain. Las Flores port district at dusk, weathered brick wall and neon signs. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She has a bright, open smile, looking at the camera, 3/4 take. Gray-blue eyes crinkled with genuine delight, full lips showing a wide smile, high cheekbones lifted. Long honey blonde hair loose and joyful. Smart black blazer open, thin gold chain catching light. Port district backdrop under warm amber light. Keep the same art style as reference, same fitted blazer and gold chain. Clean confident linework, painterly soft shading, muted natural palette.

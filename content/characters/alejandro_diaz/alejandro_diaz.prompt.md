@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alejandro_diaz__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 45-year-old Latino local authority figure, neutral composed expression, looking at the camera, 3/4 take. Sharp cunning green eyes, strong prominent nose, angular defined jaw with faint eyebrow scar, salt-and-pepper hair slicked back, slightly disheveled sturdy build, ill-fitting suit jacket, flashy silk tie, small gold pinky ring. San Pedro municipal office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a cold, assessing focus, looking directly at the camera, 3/4 take. Sharp green eyes narrowed slightly, mouth pressed in a thin line. Angular jaw set, scar on left eyebrow catching light. Salt-and-pepper hair immaculate, flashy silk tie perfectly knotted. San Pedro municipal office backdrop under fluorescent light. Keep the same art style as reference, same suit and pinky ring. Clean confident linework, painterly soft shading, muted natural palette.

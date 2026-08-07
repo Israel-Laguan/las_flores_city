@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/victor_almeida__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his late 50s to mid-60s, neutral weathered resting expression, looking at the camera, 3/4 take. Square face, strong jaw, pronounced cheekbones, wide nose, round eyes, thick brows, wide lips. Stocky build, weathered skin with deep frown lines, faded scar on right brow, thin gray receding hair. Small sport earbud clipped to earlobe, press pass and reading glasses. Warm editor-in-chief office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is weighing a story's politics, looking directly at the camera, 3/4 take. Round eyes narrowed in deliberation, thick brows drawn, wide lips pressed in a firm line. Square face and strong jaw set in hard consideration. The faded scar on his right brow stands out. Reading glasses low on his nose, small sport earbud. Warm newsroom office backdrop. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

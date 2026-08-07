@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/amara_vargas__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Deaf Andean woman in her late 60s, neutral alert expression, looking at the camera, 3/4 take. Petite wiry build, black hair in practical braid, dark brown alert eyes, deep brown weathered skin, small silver pickaxe pendant, calloused hands, faded cotton work shirt, woven belt, sturdy trousers scuffed at knees. Andean mining town backdrop, rough stone buildings and mountain slopes. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__vulnerable.png`**: Use the base portrait as reference. She has a quietly vulnerable expression, looking directly at the camera, 3/4 take. Dark brown eyes open and softer than usual, the vigilance momentarily dropped. Black braid falling forward over one shoulder. Pickaxe pendant catching light. Faded cotton work shirt buttoned to the throat. Andean mining town backdrop under warm sunset light. Keep the same art style as reference, same work shirt and belt. Clean confident linework, painterly soft shading, muted natural palette.

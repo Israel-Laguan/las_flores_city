@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ana_ramirez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 32-year-old indigenous environmental activist, neutral composed expression, looking at the camera, 3/4 take. Thick dark brown hair with copper highlights in a long braid, deep amber warm fierce eyes, athletic toned arms, warm copper-brown weathered skin, high cheekbones, strong jaw, small scar on chin from childhood fall, traditional woven bracelet on left wrist, practical cotton blouse and field vest with CJS logo. Forest edge backdrop, native undergrowth. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__determined.png`**: Use the base portrait as reference. She has a fierce, resolved expression, looking unflinchingly at the camera, 3/4 take. Deep amber eyes blazing with conviction, strong jaw squared, chin scar standing out. Thick dark brown hair whipping slightly in the wind, woven bracelet prominent. Athletic frame squared, field vest crisp with CJS logo. Forest edge backdrop under bright midday light. Keep the same art style as reference, same cotton blouse and vest. Clean confident linework, painterly soft shading, muted natural palette.

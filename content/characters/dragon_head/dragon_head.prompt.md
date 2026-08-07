@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/dragon_head__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dragon Head, neutral silent authoritative expression, looking at the camera, 3/4 take. Silver-white hair cropped in military-style cut, dark brown cold penetrating heavy-lidded eyes, tall lean controlled precision build, pale weathered skin with fine lines, thin gold-rimmed spectacles, jade ring on right pinky, immaculate tailored suit. Chinatown back room backdrop, dark wood paneling and tea cup. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a sharp, calculating focus, looking directly at the camera, 3/4 take. Dark brown cold penetrating eyes narrowed, silver-white hair immaculate, gold-rimmed spectacles catching light. Jade ring on right pinky prominent. Tall lean build, immaculate tailored suit precise. Chinatown back room under bright lamp light. Keep the same art style as reference, same tailored suit. Clean confident linework, painterly soft shading, muted natural palette.

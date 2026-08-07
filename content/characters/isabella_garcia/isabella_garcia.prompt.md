@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/isabella_garcia__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina artist in her 20s, neutral, quietly observant resting expression, looking at the camera, 3/4 take. Soft-rounded slight frailty, clear pale skin with faint pallor, bluish under-eye circles, wavy dark hair, arched brows, deep-set eyes, narrow nose, heart-shaped face with a prominent jawline, full lips, faint chemical-burn mark on one wrist. Small sport earbud, paint-stained casual clothes, sketchbook. Modest studio backdrop with canvases. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__sad.png`**: Use the base portrait as reference. A quiet sorrow, looking at the camera, 3/4 take. Deep-set eyes shadowed, full lips softened into a gentle downturn, the faint pallor and bluish under-eye circles more visible in soft light. Wavy dark hair framing her face. Dimmer studio light over the canvases. Keep the same art style as reference, same paint-stained clothes and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

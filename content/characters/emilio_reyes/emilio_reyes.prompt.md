@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/emilio_reyes__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Disgraced Andean District councilman and judge, neutral nervous evasive expression, looking at the camera, 3/4 take. Dark brown thinning hair combed carefully, dark brown shifty evasive eyes, medium height slightly overweight soft hands, medium brown smooth but lined around mouth, thin mustache, gold watch, nervous habit of adjusting tie. Andean District courthouse corridor backdrop, faded institutional paint. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__shocked.png`**: Use the base portrait as reference. Caught mid-exposure, looking at the camera with sudden alarm, 3/4 take. Dark brown eyes wide, sweat beading on his brow, thin mustache bristling. Dark brown thinning hair askew, gold watch catching light. Cheap gray suit jacket half off one shoulder. Andean District courthouse backdrop under bright emergency lighting. Keep the same art style as reference, same cheap gray suit. Clean confident linework, painterly soft shading, muted natural palette.

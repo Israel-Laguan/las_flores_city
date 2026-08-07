@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/viktor_reyes__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Eastern European man in his late 50s, neutral, unnervingly still resting expression, looking at the camera, 3/4 take. Square face, strong jaw, pronounced cheekbones, pointed nose, deep-set pale gray very still eyes, thick brows, thin lips. Athletic-compact solid build, clear pale skin, faint surgical scar along right jawline, cold look behind the eyes. Ash blond graying military-short hair. Clean professional attire with medical bag, no earbud. Dark alley or sterile medical backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is assessing a scene with detached exactness, looking at the camera, 3/4 take. Deep-set pale gray eyes narrowing fractionally, thin lips flat, head perfectly still. Square face and strong jaw set in clinical neutrality, the surgical scar on his right jawline catching low light. Medical bag in hand, no earbud. Dark alley or sterile backdrop. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

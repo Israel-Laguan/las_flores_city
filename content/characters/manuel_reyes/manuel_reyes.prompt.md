@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/manuel_reyes__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his late forties to early fifties, neutral resting expression, looking at the camera, 3/4 take. Square face, prominent jawline, straight nose with a slightly crooked set, almond eyes, thick brows, full lips, curly dark hair with gray streaks, small scar on brow, callused hands. Union del Trabajador jacket with badge, work boots, small sport earbud, union-hall backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__angry.png`**: Use the base portrait as reference. He is fired up, looking at the camera with righteous intensity, 3/4 take. Almond eyes blazing, thick brows lowered, full lips set into a hard line, jaw clenched beneath the prominent jawline. Square face flushed with conviction, gray-streaked curly hair lifting. Union-hall backdrop with banners behind him. Keep the same art style as reference, same UT jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alberto_santiago__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 45-year-old Latino seafood vendor, neutral resting expression, looking at the camera, 3/4 take. Broad warm smile slightly softened, dark brown eyes crinkled at corners, thick black hair sun-bleached at tips, deep tan with laugh lines, sturdy build, faded rope-burn scar on right palm, rolled shirt sleeves, holding woven basket of fresh catch. Pacific Coast dock backdrop at golden hour. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, open grin, looking at the camera, 3/4 take. Dark brown eyes crinkled shut with laughter, mouth wide with warmth, slightly crooked front teeth showing. Sturdy frame relaxed, calloused hands free. Golden-hour light wrapping warmly around his sun-weathered face. Pacific Coast dock backdrop, ocean light flooding in. Keep the same art style as reference, same rolled shirt and apron. Clean confident linework, painterly soft shading, muted natural palette.

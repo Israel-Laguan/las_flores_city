@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/isabella_vasquez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her early 40s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear warm complexion, wavy chestnut hair styled elegantly. Heart-shaped face with a soft jawline, high cheekbones with one slightly higher, wide-set dark eyes, arched brows, full lips, gently curved nose. A tiny scar near one hairline, subtle lines around the eyes, faint brow droop. Small sport earbud, tailored blazer over silk blouse, tasteful statement jewelry. Marble-and-glass Chronicle office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. She wears a knowing, slightly mocking half-smile, looking at the camera, 3/4 take. Wide-set dark eyes glinting with dry wit, one corner of the full lips pulled up, the arched brow on one side lifting a little higher. The tiny scar near her hairline catches the light. Marble-and-glass office light plays off her wavy chestnut hair. Keep the same art style as reference, same tailored blazer, jewelry and earbud. Clean confident linework, painterly soft shading, muted natural palette.

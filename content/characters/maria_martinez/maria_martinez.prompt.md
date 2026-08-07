@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/maria_martinez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina educator in her 50s, neutral warm resting expression, looking at the camera, 3/4 take. Soft-rounded welcoming build, clear warm skin with gentle wrinkles. Round face with a soft jaw, pointed nose, hooded eyes, flat brows, full lips. Curly dark hair threaded with silver streaks, one smile line deeper, faint brow droop. Modest educator attire, reading glasses, foundation lanyard, sport earbud. Community classroom or foundation office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A broad, joyful smile, looking at the camera, 3/4 take. Full lips curved wide, the deeper smile line prominent, hooded eyes bright with delight. Silver-streaked curls framing the round face. Reading glasses catching warm light, lanyard and cardigan relaxed. Classroom backdrop with soft daylight. Keep the same art style as reference, same clothing, glasses, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

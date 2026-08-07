@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/zhang_liang__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Chinese man in his early 50s, neutral composed resting expression, looking at the camera, 3/4 take. Round face, prominent jaw, subtle cheekbones, narrow nose, deep-set eyes, thick brows, thin lips. Soft-rounded build, clear skin, small mole on right cheek, faint line between brows, one brow lower. Straight dark graying receding hair. Small sport earbud, CFO attire with financial tablet. Cool finance-office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is weighing financial projections, looking directly at the camera, 3/4 take. Deep-set eyes narrowed in careful assessment, thick brows drawn, thin lips pressed in a measured line. Round face and prominent jaw set in deliberation, the mole on his right cheek catching light. The faint line between his brows deepens. Small sport earbud, tablet in hand. Cool finance-office backdrop. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

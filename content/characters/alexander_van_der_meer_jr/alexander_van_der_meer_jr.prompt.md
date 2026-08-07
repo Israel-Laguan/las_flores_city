@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alexander_van_der_meer_jr__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch man in his mid-70s, neutral resting expression, looking at the camera, 3/4 take. Soft-rounded prosperous build, weathered fair skin with age spots. Thin white hair receding at the temples, thick white-gray brows, deep-set eyes with the left eyelid drooping faintly, oval face, narrow nose, subtle cheekbones, receding jawline, thin lips, deep nasolabial folds. Small sport earbud clipped to earlobe, well-tailored European suit with pocket square, signet ring. Refined office with warm wood paneling backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. He wears a knowing, worldly half-smile, looking at the camera, 3/4 take. Deep-set eyes glinting with old wit, one corner of thin lips lifting. The drooping left eyelid and deep nasolabial folds catching warm amber light. Thick white-gray brows relaxed. Age spots visible across weathered fair skin. Refined wood-paneled office backdrop softened to warmth. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/clara_torres__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her 30s, neutral composed resting expression, looking at the camera, 3/4 take. Lean-wiry build, angular face, soft jaw, high cheeks, pointed nose, wide-set eyes, arched brows, thin lips, small mole near the left eye, right brow slightly higher, straight dark bob, smart-casual journalist attire, tablet in hand. Digital newsroom backdrop with screens. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__calculating.png`**: Use the base portrait as reference. Sharp editorial analysis, looking at the camera, 3/4 take. Wide-set eyes narrow appraisingly, arched brows drawing together, the higher right brow more pronounced, thin lips set in a keen line. Pointed nose and angular face framed in cool screen light. Digital newsroom backdrop with data viz. Keep the same art style as reference, same journalist attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

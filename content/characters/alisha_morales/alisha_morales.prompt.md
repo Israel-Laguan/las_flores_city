@@ -4,7 +4,7 @@ type: portrait
 size: 1024x1024
 source: content/characters/alisha_morales/alisha_morales.md
 target: `asset_paths.portrait` in `content/characters/alisha_morales/char_alisha_morales.yaml`
-consumer: portrait
+consumer: content_audit
 ---
 
 # Prompt: Alisha Morales
@@ -13,7 +13,7 @@ consumer: portrait
 
 ## Prompt (Draft)
 
-Afro-Venezuelan woman of 26, athletic-compact build, clear deep brown skin. Long curly hair elegantly styled, arched brows with the right arching higher, almond eyes, round face, wide nose, pronounced cheekbones, prominent jawline, full lips with a small gap between the front teeth. Polished ambitious bearing, professional wear for an upscale workplace, small sport earbud clipped to earlobe. Upscale office in the Chinese enclave with glass and clean lines backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+Afro-Venezuelan woman of 26, athletic-compact build, clear deep brown skin. Long curly hair elegantly styled, arched brows with the right arching higher, almond eyes, round face, wide nose, pronounced cheekbones, prominent jawline, full lips with a small gap between the front teeth. Polished ambitious bearing, professional wear for an upscale workplace, small sport earbud clipped to earlobe. Upscale office in the Chinese enclave with glass and clean lines backdrop. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, waist-up portrait, 8k.
 
 ## Prompt
 
@@ -21,19 +21,17 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Negative Prompt
 
---no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no 3D render, no East Asian features, no Northern European features
 
 ## Variations
 
-- [ ] At a sleek desk reviewing documents, glass-walled office behind her
-- [ ] Stepping into an elevator in the Chinese enclave, composed and alert
-- [ ] Pausing at a window overlooking the wealthy district, fatigue briefly showing
+- **Work setting**: Use the base portrait as reference. She is at a sleek desk reviewing documents, looking slightly down at her work, 3/4 take. Almond eyes focused, arched brows steady. Athletic-compact build in polished professional wear. Long curly hair elegantly styled. Clear deep brown skin. Upscale glass-walled office in the Chinese enclave backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+- **Transitional setting**: Use the base portrait as reference. She is stepping into an elevator in the Chinese enclave, composed and alert, looking at the camera, 3/4 take. Almond eyes sharp, full lips pressed together. Athletic-compact build in polished professional wear, small sport earbud clipped to earlobe. Long curly hair elegantly styled. Clear deep brown skin. Sleek elevator interior with clean lines and soft lighting backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+- **Emotional moment**: Use the base portrait as reference. Pausing at a window overlooking the wealthy district, fatigue briefly showing, looking out, profile or 3/4 take. Almond eyes softer, arched brows relaxed. Athletic-compact build in polished professional wear, slightly less rigid posture. Long curly hair elegantly styled. Clear deep brown skin catching window light. Cityscape backdrop through glass. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+- **Home setting**: Use the base portrait as reference. Relaxing in her apartment, guard lowered, looking away from camera, 3/4 take. Almond eyes resting, arched brows relaxed, full lips neutral. Athletic-compact build in comfortable casual wear. Long curly hair worn down and looser. Clear deep brown skin. Modest, warm apartment interior backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+- **Action setting**: Use the base portrait as reference. Giving a presentation or leading a meeting, dynamic and commanding, looking at off-camera audience, 3/4 take. Almond eyes bright, arched brows expressive, full lips parted in speech. Athletic-compact build in sharp professional wear. Long curly hair elegantly styled. Clear deep brown skin. Upscale conference room backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 ## Expression Variants
-
-Authored expressions (each as `assets/alisha_morales__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
 
 - **`__default.png`**: Use the base portrait as reference. Afro-Venezuelan woman of 26, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear deep brown skin. Long curly hair elegantly styled, arched brows with the right higher, almond eyes, round face, wide nose, pronounced cheekbones, prominent jawline, full lips with a small gap between the front teeth. Small sport earbud clipped to earlobe, polished professional wear. Upscale glass-walled office in the Chinese enclave backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
@@ -44,3 +42,15 @@ Authored expressions (each as `assets/alisha_morales__<tag>.png`, referenced in
 - **`__sad.png`**: Use the base portrait as reference. She carries a tired, private disappointment, looking at the camera, 3/4 take. Almond eyes downcast, the brightness dimmed, full lips flat. Arched brows relaxing, the right still higher. Long curly hair framing a heavier face. Clear deep brown skin in flatter, cooler light. Athletic-compact frame subtly drooping. Upscale glass-walled office backdrop under dimmer light. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__afraid.png`**: Use the base portrait as reference. A jolt of startled fear, looking at the camera, 3/4 take. Almond eyes wide, arched brows raised high, full lips parted. Athletic-compact frame tensing, shoulders lifting. Long curly elegantly styled hair shifting. Clear deep brown skin catching starker light. Upscale glass-walled office backdrop with brighter, flatter illumination that momentarily flattens shadows. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. Private, guard lowered, looking away from the camera, 3/4 take. Almond eyes glassy or downcast, arched brows softened and drawn together slightly, full lips relaxed. Athletic-compact frame, shoulders slightly slumped. Long curly elegantly styled hair. Clear deep brown skin in softer light. Upscale glass-walled office backdrop, slightly out of focus. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. Warm and open, a quiet caring look, looking at the camera, 3/4 take. Almond eyes soft, arched brows relaxed, a slight, gentle smile curving her full lips without the professional polish. Athletic-compact frame, relaxed posture. Long curly elegantly styled hair. Clear deep brown skin. Upscale glass-walled office backdrop. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. Fierce resolve, looking directly at the camera, 3/4 take. Almond eyes hard and forward-focused, arched brows drawn down slightly, full lips compressed, prominent jawline set. Athletic-compact frame, shoulders squaring up. Long curly elegantly styled hair. Clear deep brown skin catching stark light. Upscale glass-walled office backdrop. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__shocked.png`**: Use the base portrait as reference. Pure disbelief, looking at the camera, 3/4 take. Almond eyes wide, arched brows fully raised, full lips parted in shock. Athletic-compact frame, involuntary lean back. Long curly elegantly styled hair shifting with movement. Clear deep brown skin. Upscale glass-walled office backdrop. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Intense frustration and anger, looking directly at the camera, 3/4 take. Almond eyes narrowed with heat, arched brows drawn tightly together, full lips compressed tightly, prominent jaw forward. Athletic-compact frame, rigid with tension. Long curly elegantly styled hair. Clear deep brown skin. Upscale glass-walled office backdrop. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Caught off guard, looking at the camera, 3/4 take. Almond eyes wide but not fearful, arched brows up, full lips slightly open in unexpected reaction. Athletic-compact frame, slight shift in posture. Long curly elegantly styled hair. Clear deep brown skin. Upscale glass-walled office backdrop. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

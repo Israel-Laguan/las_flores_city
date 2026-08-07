@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alfonso_vega__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Late-50s former mayor, neutral practiced expression, looking at the camera, 3/4 take. Stocky broad-shouldered build, silver-gray thick wavy hair swept back, heavy-lidded dark brown eyes, medium-brown deeply lined skin, thick neatly trimmed mustache, large gesturing hands, gold watch on left wrist, tailored navy suit slightly strained at the waist. Mayoral office backdrop, faded institutional paint and city seal. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a shrewd, calculating look, looking directly at the camera, 3/4 take. Heavy-lidded dark brown eyes narrowed behind the practiced warmth, mind visibly working. Thick mustache, silver-gray hair precise, gold watch catching light. Stocky frame leaning forward over the desk. Mayoral office backdrop under bright overhead light. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.

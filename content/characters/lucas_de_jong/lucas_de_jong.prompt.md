@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/lucas_de_jong__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch man in his mid-20s, neutral resting expression, looking at the camera, 3/4 take. Angular face, strong jawline, straight nose, wide-set piercing blue eyes, stylishly cut dark hair, thick brows with one sitting slightly lower, small chip in a front tooth. Designer shirt, skinny jeans, elegant shoes, small sport earbud, upscale lounge backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. He wears a sly half-smile, looking at the camera, 3/4 take. Wide-set piercing blue eyes half-lidded with amusement, one corner of his mouth pulled up, the small front-tooth chip faintly visible. Angular face and strong jawline angled with easy confidence. Stylishly cut dark hair catching lounge light. Upscale lounge backdrop in warm low light. Keep the same art style as reference, same designer shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/adeyemi_ogunbiyi__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Afro-Latino man, tall over six feet, lean muscular build with effortless grace, neutral resting expression, looking at the camera, 3/4 take. Deeply unique, un-idealized facial anatomy with realistic eye sizes, dark expressive eyes, strong brow, high cheekbones, chiseled jawline, calm and composed bearing. Dark hair in simple un-styled flowing shapes. Small sport non-in-ear earbud clipped to earlobe. Wearing a minimalist, pocketless trench coat. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__vulnerable.png`**: Use the base portrait as reference. He has a vulnerable expression, looking directly at the camera, 3/4 take. Guard completely down, dark expressive eyes soft and open with visible kohl lining, conveying the weight behind the badge. His tall frame seems slightly less imposing, shoulders relaxed. Strong brow smooth, high cheekbones less pronounced, chiseled jawline softened. Small sport earbud visible at earlobe. Weathered urban Latin American building backdrop with warm, soft atmospheric lighting creating gentle shadows. Keep the same art style as reference, same trench coat and clothing. Clean confident linework, painterly soft shading, muted natural palette.

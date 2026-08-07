@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/juan_pablo_hernandez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early 30s, neutral resting expression, looking at the camera, 3/4 take. Lean-wiry build, clear warm-brown skin, straight dark hair. Long face with a prominent jawline, high cheekbones, round eyes, thick brows, wide lips, straight nose. Slightly asymmetric smile, small scar on a knuckle. Small sport earbud, tee under overshirt, laptop bag, press-pass lanyard. Home-office or street-corner backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__angry.png`**: Use the base portrait as reference. His fervor turns sharp, looking at the camera, 3/4 take. Round eyes narrowed, thick brows drawn hard down, wide lips pressed into a tight line. The long face and prominent jawline tense with conviction. Handmade flyers and laptop in the backdrop under flat, urgent light. Keep the same art style as reference, same overshirt, bag and earbud. Clean confident linework, painterly soft shading, muted natural palette.

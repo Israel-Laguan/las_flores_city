@@ -4,7 +4,9 @@
 **Depends on:** M1 — MUST be done first. Run after (or parallel with) M2.
 **Deliverable:** every remaining character `.prompt.md` (non-stub, lacking
 `## Expression Variants`) upgraded to Tier-1.
-**Status:** executable. Run as its own chat; read master + M1 docs first.
+**Status:** ❌ **NOT met** (re-audited 2026-08-07). The remaining work is
+re-tracked as **carryover in M6** (`…-m6-portrait-png-generation.md`), to be
+addressed later. Do not treat this milestone as done.
 
 ---
 
@@ -42,22 +44,45 @@ authoritative scope (target ≈ 127).
    `docs/lore/figures/`.
 5. Pass the **quality gate** (gotchas Pre-Flight Checklist).
 
-## Acceptance criteria (M3)
+## Acceptance criteria (M3) — re-audited 2026-08-07
 
-- [ ] `grep -l '^## Expression Variants' content/characters/*/*.prompt.md | wc -l`
-      grows to **≥ 192** (i.e. all but the 2 gold refs have it — they already do,
-      so target = all 194 having the section).
-- [ ] Every file has a grounded (non-generic) `## Prompt` and an ethnicity-tuned
-      `## Negative Prompt`.
-- [ ] No `source:` points to `docs/lore/figures/`.
-- [ ] `node scripts/content-audit.mjs` passes (no new errors).
+**NOT met.** Verified live counts (main portrait prompts = `.prompt.md` excluding
+`character-sheet`/`biometric` variant files):
+
+- [ ] ❌ `## Expression Variants` coverage: **113 of 195** main prompts have it
+      (target: all 195). **82 main prompts still missing the section** (+2
+      `character-sheet`/`biometric` variant files = 84 files via the audit grep).
+      ```bash
+      find content/characters -maxdepth 2 -name '*.prompt.md' | \
+        grep -v 'character-sheet\|biometric' | \
+        xargs grep -L '^## Expression Variants' | wc -l   # → 82
+      ```
+- [ ] ❌ No `source:` points to `docs/lore/figures/`: **70 prompts still do**
+      (69 main + 1 variant). Target 0.
+      ```bash
+      grep -rl 'docs/lore/figures/' content/characters --include='*.prompt.md' | wc -l  # → 70
+      ```
+- [ ] ⚠️ `node scripts/content-audit.mjs` passes (exits 0) — but it is a
+      **presence-only gate** (checks YAML/`.md`/`.prompt.md` exist). It does NOT
+      validate `source:` content or Expression-Variants coverage, so a passing
+      audit does NOT mean M3 is done. The greps above are authoritative.
+- [ ] Grounded (non-generic) `## Prompt` and ethnicity-tuned `## Negative Prompt`
+      in every file — not re-verified in this pass; part of the M6 carryover gate.
+
+## Carryover → tracked in M6
+
+The pending M3 work is re-tracked (not re-numbered) in
+`docs/milestones/1786049707544-m6-portrait-png-generation.md` under its
+**Part A — M3 text carryover** section, marked "belongs to M3/Master, re-tracked
+here, address later."
 
 ## Verification (after each batch; commit per batch)
 
 ```bash
-grep -l '^## Expression Variants' content/characters/*/*.prompt.md | wc -l
-grep -rl 'docs/lore/figures/' content/characters/*/*.prompt.md | wc -l
-node scripts/content-audit.mjs
+find content/characters -maxdepth 2 -name '*.prompt.md' | grep -v 'character-sheet\|biometric' \
+  | xargs grep -L '^## Expression Variants' | wc -l   # → 82 today, target 0
+grep -rl 'docs/lore/figures/' content/characters --include='*.prompt.md' | wc -l  # → 70 today, target 0
+node scripts/content-audit.mjs                        # presence gate only — see Master §5 rule #4
 ```
 
 ## Do NOT

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/jan_van_dijk__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch man in his early 50s, neutral resting expression, looking at the camera, 3/4 take. Broad-heavy prosperous build, clear skin, thin receding gray-blonde hair. Square face with a soft jawline, pronounced cheekbones, almond eyes, thick brows, thin lips, pointed nose. Small mole on his left cheek, one brow lower, deepening lines. Small sport earbud, tailored suit, GLC pin, tasteful watch. Executive office backdrop with lithium-blue accent lighting. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. He wears a faint, self-assured half-smile, looking at the camera, 3/4 take. Almond eyes glinting with private amusement, the thin lips curled at one corner, the lower brow lending a knowing tilt. The mole on his left cheek is visible. Lithium-blue office glow frames his receding gray-blonde hair. Keep the same art style as reference, same suit, GLC pin and earbud. Clean confident linework, painterly soft shading, muted natural palette.

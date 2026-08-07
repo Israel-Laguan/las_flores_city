@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alonzo_morales__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 30-year-old Afro-Latino handyman, neutral warm open expression, looking at the camera, 3/4 take. Short tightly coiled black hair, warm brown skin, broad friendly face, wide rounded nose, full lips, sturdy broad build, work boots, plain t-shirt, bodega-logo overshirt, small sport earbud. Airport bodega interior backdrop, shelves of groceries and community bulletin board. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, booming grin, looking at the camera, 3/4 take. Dark brown eyes crinkled shut with joy, mouth wide and full, showing a bright smile. Sturdy build relaxed, bodega-logo overshirt open. Bodega interior backdrop, warm afternoon light flooding through the front window. Keep the same art style as reference, same t-shirt and work boots. Clean confident linework, painterly soft shading, muted natural palette.

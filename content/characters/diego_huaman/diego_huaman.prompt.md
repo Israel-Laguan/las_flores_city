@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/diego_huaman__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 19-year-old Andean Environmental Science student, neutral warm open expression, looking at the camera, 3/4 take. Lean athletic build from mountain hiking and farm work, dark curly hair, warm brown eyes, sun-kissed skin, handwoven mochila slung over one shoulder, faded university hoodie and jeans. Central Las Flores university campus backdrop, eucalyptus trees and Andean foothills. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, open grin, looking at the camera, 3/4 take. Warm brown eyes crinkled with joy, mouth wide with warmth, dark curly hair loose. Handwoven mochila slung over one shoulder, faded university hoodie open. Central Las Flores campus backdrop under bright afternoon sun. Keep the same art style as reference, same hoodie and jeans. Clean confident linework, painterly soft shading, muted natural palette.

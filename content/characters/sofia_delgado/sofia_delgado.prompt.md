@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/sofia_delgado__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her early 20s, neutral warm resting expression, looking at the camera, 3/4 take. Heart-shaped face, soft jaw, pronounced cheekbones, pointed nose, round warm brown eyes, arched brows, full lips. Athletic-compact build, sun-damaged skin with sun-freckles, faint scar on left forearm, wavy dark sun-lightened hair. Small sport earbud clipped to earlobe, beach-vendor attire with seafood apron. Bright Bahia beach backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She is laughing warmly, looking at the camera, 3/4 take. Round warm brown eyes bright and crinkled at the corners, full lips open in a genuine smile, the one-side-deeper asymmetry of her smile more pronounced. Heart-shaped face and pronounced cheekbones lifted. Sun-freckles catching the bright coastal light. Small sport earbud, beach-vendor apron. Bright Bahia beach backdrop. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

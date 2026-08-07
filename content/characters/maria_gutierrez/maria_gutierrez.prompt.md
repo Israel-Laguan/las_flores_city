@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/maria_gutierrez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her thirties to forties, neutral resting expression, looking at the camera, 3/4 take. Angular face, prominent jawline, curved nose, deep-set eyes, arched brows with the left set slightly higher, thin lips, wavy dark hair, small scar on right brow. Practical field-reporter attire, press badge, notebook, small sport earbud, newsroom backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is piecing together a story, looking at the camera with a sharp, focused gaze, 3/4 take. Deep-set eyes narrowed and intent, thin lips flat in thought, arched brows drawn — the uneven set more apparent. Angular face and prominent jawline set. Wavy dark hair, press badge visible. Newsroom backdrop under an angled desk lamp. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

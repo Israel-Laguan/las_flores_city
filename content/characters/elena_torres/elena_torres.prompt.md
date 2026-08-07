@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/elena_torres__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. LW Group Sustainability Lead, neutral composed pragmatic expression, looking at the camera, 3/4 take. Dark brown hair with silver threads in professional bob, warm brown shrewd experienced eyes, average height poised controlled posture, light brown smooth with fine lines, small jade stud earrings, slim portfolio in hand, measured deliberate gestures, tailored designer navy suit. LW Group Sustainability Lead office backdrop, community engagement reports on desk. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Warm brown eyes narrowed with analytical precision, brow slightly furrowed. Dark brown hair neat in its bob, jade stud earrings catching light. Slim portfolio held close. Tailored navy suit crisp, measured gestures still. LW Group office backdrop, community report spread before her. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.

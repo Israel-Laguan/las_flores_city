@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/roberto_mendoza__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his 70s, neutral guarded resting expression, looking at the camera, 3/4 take. Lean-wiry aged build, weathered skin. Long face with subtle cheekbones and receding jawline, thin white receding hair. Curved broken nose, wide-set careful eyes, thick gray brows, thin lined lips, deep worry lines. Small sport earbud, old spectacles, frayed-collar cardigan. Modest apartment backdrop with pipe diagrams. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. Careful, weighing assessment, looking directly at the camera, 3/4 take. Wide-set eyes narrowed in thought, deep worry lines deepening, thin lips pressed. Long face set, receding jawline firm behind a thin white beard shadow. Spectacles catching lamplight. Blueprint-lined backdrop under focused light. Keep the same art style as reference, same frayed-collar clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_rodriguez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man of 48, neutral composed resting expression, looking at the camera, 3/4 take. Athletic-compact build, oval face, prominent jaw, pronounced cheeks, curved nose, almond appraising dark eyes, thick brows, full lips, faint old scar on the chin, wavy dark hair with gray streaks at the temples, well-fitted suit with open collar and city pin. Mayor's office backdrop with skyline and civic flags. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__calculating.png`**: Use the base portrait as reference. Sharp political assessment, looking at the camera, 3/4 take. Almond appraising eyes narrow, thick brows drawn, full lips set in a measured line. Curved nose and prominent jaw read as seasoned pragmatism. The deeper-left smile flattens as he weighs leverage. Office backdrop with skyline behind. Keep the same art style as reference, same suit and earbud. Clean confident linework, painterly soft shading, muted natural palette.

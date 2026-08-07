@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/emilio_navarro__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 49-year-old cultural journalist, neutral warm approachable expression, looking at the camera, 3/4 take. Brown hair styled messily, warm engaging smile, comfortable jeans and colorful button-down shirt, worn camera hanging from neck, approachable curious demeanor. La Prensa newsroom backdrop, corkboard walls and press clippings. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, infectious grin, looking at the camera, 3/4 take. Warm eyes crinkled with joy, mouth wide with warmth, brown hair more tousled than usual. Colorful button-down shirt open at the collar, worn camera catching light. La Prensa newsroom backdrop under bright afternoon light. Keep the same art style as reference, same colorful shirt and jeans. Clean confident linework, painterly soft shading, muted natural palette.

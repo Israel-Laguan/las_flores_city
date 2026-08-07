@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/elisa_perez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Mid-20s Social Media & Community Manager, neutral engaged warm expression, looking at the camera, 3/4 take. Dark brown thick wavy hair in messy bun or loose curls, warm brown bright alert eyes, petite energetic build, light brown warm undertones, small nose ring, colorful beaded bracelet, earbuds around neck, phone in hand, smart casual creative newsroom attire. El Informador newsroom backdrop, news clippings and community bulletin board. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Warm brown eyes narrowed with focused attention, brow slightly furrowed. Dark brown hair in its messy bun, small nose ring catching light. Colorful beaded bracelet prominent, earbuds around her neck. Phone held close. El Informador newsroom backdrop, two monitors glowing. Keep the same art style as reference, same smart casual attire. Clean confident linework, painterly soft shading, muted natural palette.

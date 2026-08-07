@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_konibo__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Late-30s Shipibo-Konibo artisan, neutral proud composed expression, looking at the camera, 3/4 take. Broad-shouldered build, thick black hair with silver strands at temples, deep brown warm observant eyes, warm brown weathered skin, traditional geometric tattoo on right forearm, beaded necklace of his own making, calloused fingers stained with natural dyes, cream woven tunic with traditional Shipibo collar pattern. Rio Las Flores marketplace backdrop, colorful textiles and pottery. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a quiet, broad smile, looking at the camera, 3/4 take. Deep brown eyes crinkled with genuine warmth, mouth relaxed in pleasure. Thick black hair with silver strands, beaded necklace warm on his throat. Calloused hands open and relaxed. Cream woven tunic. Marketplace backdrop under bright afternoon sun. Keep the same art style as reference, same woven tunic. Clean confident linework, painterly soft shading, muted natural palette.

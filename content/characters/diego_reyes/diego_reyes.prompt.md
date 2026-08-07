@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/diego_reyes__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early 30s, neutral but alert resting expression, looking at the camera, 3/4 take. Athletic compact build, clear warm-brown skin, curly dark hair, thick brows, round expressive eyes, wide nose, angular face with a strong jawline, small scar near the hairline, chipped front tooth. Small sport earbud, bold activist t-shirt under an open jacket with statement pins. Staging-area backdrop with signs. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__angry.png`**: Use the base portrait as reference. A fiery, impassioned expression, looking at the camera, 3/4 take. Round eyes blazing, thick brows drawn down, strong jaw tight, mouth open as if mid-shout, the chipped front tooth visible. Shoulders squared, compact frame tensed. Daylight flares behind the handmade signs. Keep the same art style as reference, same t-shirt, open jacket, and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

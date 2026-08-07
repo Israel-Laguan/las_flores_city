@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/camilo_orozco__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 18-year-old student, neutral warm hopeful expression, looking at the camera, 3/4 take. Messy dark brown hair, warm brown eyes full of idealism, open friendly face with natural asymmetry, vintage superhero t-shirt under open flannel shirt, backpack with comic books visible. Modest working-class neighborhood backdrop, faded stucco walls. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, genuine grin, looking at the camera, 3/4 take. Warm brown eyes alight with enthusiasm, mouth wide with open joy. Messy dark brown hair, superhero t-shirt, flannel shirt open. Backpack slung over one shoulder. Modest neighborhood backdrop under bright afternoon sun. Keep the same art style as reference, same t-shirt and flannel. Clean confident linework, painterly soft shading, muted natural palette.

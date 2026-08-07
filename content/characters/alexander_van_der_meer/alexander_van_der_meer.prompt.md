@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alexander_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 82-year-old former executive, neutral weathered expression, looking at the camera, 3/4 take. Tall lean frame, steel-gray hair combed back with precise side part, pale blue calculating eyes, angular defined jaw, thin lips pressed in neutral line, fair weathered skin with age spots, wire-rimmed reading glasses on gold chain, gold Van der Meer signet ring, expensive charcoal suit slightly loose. Van der Meer Mining executive office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He has a sharp, calculating focus, looking directly at the camera, 3/4 take. Pale blue eyes narrowed with shrewd assessment, angular jaw firm, thin lips pressed. Steel-gray hair immaculate, reading glasses perched low on his nose, signet ring visible. Executive office backdrop under stark directional light. Keep the same art style as reference, same charcoal suit. Clean confident linework, painterly soft shading, muted natural palette.

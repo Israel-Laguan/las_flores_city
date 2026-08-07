@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/yi_sang__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Chinese and Korean-heritage man in his 40s to early 50s, neutral, cold, fixed resting expression, looking at the camera, 3/4 take. Angular face, receding jaw, high cheekbones, wide nose, narrow eyes, thick brows, thin lips. Athletic-compact build, clear skin, faint scar on left jaw, one brow lower, cold fixed gaze. Straight dark graying receding hair. Small sport earbud, dark security attire. Cold operations-center backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is running cold calculations, looking directly at the camera, 3/4 take. Narrow eyes narrowed further in assessment, thick brows drawn, thin lips set in a hard line. Angular face and receding jaw tilted a degree. The scar on his left jaw catches the monitor glow, one brow lower accenting his scrutiny. Small sport earbud, dark security attire. Cold operations backdrop. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

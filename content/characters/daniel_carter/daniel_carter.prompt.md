@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/daniel_carter__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Canadian settler in his mid-60s, neutral resting expression, looking at the camera, 3/4 take. Broad heavy build, weathered wind-crinkled skin with deep forehead lines, thin receding gray-white hair, thick heavy brows, warm round eyes, straight nose, square face with a receding jawline, faded scar across one brow. Small sport earbud, practical weathered field jacket with a Humanity First lapel pin. Warm community-hall backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A gentle, warm smile softens his face, looking at the camera, 3/4 take. Warm round eyes crinkle at the corners, thick brows relaxing, deep forehead lines smoothing slightly. The faded scar across his brow and creases beside his eyes deepen warmly. Thin gray-white hair catching soft communal light. Warm community-hall backdrop with golden light. Keep the same art style as reference, same weathered jacket, lapel pin, and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

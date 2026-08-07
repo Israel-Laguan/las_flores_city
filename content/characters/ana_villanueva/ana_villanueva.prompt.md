@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ana_villanueva__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman of 22, neutral resting expression, looking at the camera, 3/4 take. Lean-wiry average unimposing build, clear warm olive skin. Straight dark brown hair in a loose ponytail, flat brows, almond dark brown sharp watchful eyes with the left eyelid slightly more hooded, oval face, straight nose, subtle cheekbones, soft jawline, full lips. Faint scrape on a knuckle. Small sport earbud clipped to earlobe, jeans, oversized sweater, messenger bag. University library or busy cafe unremarkable backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is in sharp, quiet observation, looking directly at the camera, 3/4 take. Almond dark brown eyes narrowed and watchful, flat brows leveled, full lips closed. Oval face composed, soft jawline still. The more-hooded left eyelid lending an assessing asymmetry. Straight dark brown hair in a loose ponytail. Messenger bag strap held loosely. University library or busy cafe backdrop under even, neutral light. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

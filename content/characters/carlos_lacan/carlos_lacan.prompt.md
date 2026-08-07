@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_lacan__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 24-year-old European/French-Caribbean electrical engineering student, neutral warm open expression, looking at the camera, 3/4 take. Slightly built, quick precise hands, dark wavy hair, warm kind brown eyes, round soft face, small warm smile, faint stubble, faded work shirt with sleeves rolled, tool belt slung low. Northern Edge electronics workshop backdrop, circuit boards and tools on workbench. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. He has a broad, genuine grin, looking at the camera, 3/4 take. Warm brown eyes crinkled with delight, round face lit up, small warm smile widening. Dark wavy hair slightly tousled, faded work shirt, tool belt hanging loose. Workshop backdrop under warm orange desk-lamp light. Keep the same art style as reference, same work shirt and tool belt. Clean confident linework, painterly soft shading, muted natural palette.

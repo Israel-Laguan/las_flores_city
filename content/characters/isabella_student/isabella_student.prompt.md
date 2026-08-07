@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/isabella_student__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina university student in her 20s, neutral, alert focused resting expression, looking at the camera, 3/4 take. Lean-wiry build, clear warm-brown skin, straight dark hair, round glasses, asymmetric brows with the left higher, almond eyes, pointed nose, angular face with a receding jawline, thin lips, small mole on her jaw. Small sport earbud, student casual clothes, data tablet. University lab or data-room backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is in sharp analysis mode, looking directly at the camera, 3/4 take. Almond eyes narrowed behind round glasses, asymmetric brows drawn — the left still higher — thin lips pressed, head tilted a fraction. Screen-light tracing across her clear skin and pointed nose. Data-room backdrop glowing. Keep the same art style as reference, same hoodie and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

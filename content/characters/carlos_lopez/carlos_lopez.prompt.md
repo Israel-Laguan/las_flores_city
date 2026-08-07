@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_lopez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his mid-40s, neutral resting expression, looking at the camera, 3/4 take. Stocky broad-shouldered build, warm weathered olive-brown skin with sun-damaged texture. Thick wavy dark hair with gray streaks at temples, thick slightly asymmetric brows, wide-set deep brown eyes, wide flat-bridged nose, strong prominent jawline, slight asymmetry to lower lip. Small sport earbud clipped to earlobe, worn collared shirt with sleeves rolled, weathered leather work-belt. Weathered storefront backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is in sharp assessment mode, looking directly at the camera, 3/4 take. Wide-set deep brown eyes narrowed slightly, brow furrowed, mouth pressed into a neutral line as he weighs numbers in his head. Prominent jawline set. The thick slightly asymmetric brows draw attention to his scrutinizing gaze. Golden-hour light catches the gray streaks in his dark hair. Weathered storefront backdrop under directional light. Keep the same art style as reference, same worn collared shirt, sleeves rolled, work-belt. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/samuel_camacho__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early 20s, neutral alert resting expression, looking at the camera, 3/4 take. Lean-wiry build, clear skin. Round face with strong jaw and subtle cheekbones, straight messy dark hair. Flat nose, round bright eyes, flat slightly asymmetric brows, full lips. Small scar on right knuckle. Small sport earbud, flannel over tee. Workshop or lab backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. Focused problem-solving, looking directly at the camera, 3/4 take. Round eyes narrowed in thought, flat brows drawn together, full lips pressed slightly. Strong jaw set, lean frame leaning in with intent. Messy dark hair catching screen glow. Lab backdrop with code-filled monitors. Keep the same art style as reference, same flannel clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.

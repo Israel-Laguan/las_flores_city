@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/hongbin_li__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Early-30s Beijing-based PR senior manager, neutral charming calculating expression, looking at the camera, 3/4 take. Jet-black neatly styled modern side-part, dark brown sharp calculating eyes, average height lean fit build, fair healthy glow, perfect white teeth, tailored charcoal suit open at collar, subtle cologne, Apple Watch on wrist. Las Flores financial district high-rise backdrop, glass walls and cityscape. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. He has a knowing, calculating half-smile, looking at the camera, 3/4 take. Dark brown eyes glinting with strategic amusement, one corner of his mouth pulled up to show perfect white teeth. Jet-black side-part precise, Apple Watch catching light. Tailored charcoal suit open. Financial district backdrop under bright overhead light. Keep the same art style as reference, same charcoal suit. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/meilin_chen__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Chinese businessperson in her mid-20s, neutral keen resting expression, looking at the camera, 3/4 take. Lean-wiry sharp build, clear smooth skin. Round face with a soft jaw, narrow nose, almond eyes, flat brows, full lips. Sleek straight dark hair, tiny scar near the right eyebrow, one cheekbone subtler. Smart casual business attire, sport earbud. Commercial district backdrop with a shopfront. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is in sharp deal-making mode, looking directly at the camera, 3/4 take. Almond eyes narrowed and assessing, flat brows drawn in focus, full lips pressed into a weighing line. The tiny scar near her eyebrow catches the light, one cheekbone subtly catching shadow. Shopfront backdrop with market bustle. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

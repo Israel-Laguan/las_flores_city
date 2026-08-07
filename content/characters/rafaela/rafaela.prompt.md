@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/rafaela__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her 50s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear skin. Heart-shaped face with high cheekbones, receding jawline, wavy dark hair with gray streaks. Wide nose, almond eyes, arched brows with slight droop, full lips, faint line by the mouth. Small sport earbud, elegant blouse with jewelry. Warm family or studio backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. A knowing, faintly amused half-smile, looking at the camera, 3/4 take. Full lips curling at one corner, almond eyes glinting with dry candor, the line near her mouth deepening. Arched brows lifted, one drooping brow more evident. Gray-streaked hair catching warm light. Keep the same art style as reference, same elegant blouse, jewelry, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

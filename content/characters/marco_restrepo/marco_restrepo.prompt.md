@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/marco_restrepo__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his late forties, neutral resting expression, looking at the camera, 3/4 take. Square face, soft jawline, wide nose, round warm brown eyes crinkled from smiling, thick brows, full lips, wavy dark hair with grey temples and streaks, callused hands with faint burn marks. Canvas apron over casual clothes, small sport earbud, Old Town Cafe backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A warm, open smile, looking at the camera, 3/4 take. Round warm brown eyes bright and deeply crinkled, laugh lines deepening, full lips spread in genuine warmth. Square face soft and welcoming, thick brows relaxed. Wavy grey-streaked hair, canvas apron over casual clothes in warm cafe light. Keep the same art style as reference, same apron and earbud. Clean confident linework, painterly soft shading, muted natural palette.

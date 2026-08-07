@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/sofia_alvarez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her 30s, neutral warm resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear skin. Oval face with pronounced cheekbones and soft jawline, voluminous curly dark hair. Curved nose, hooded expressive eyes, arched slightly asymmetric brows, full lips. Small mole on right cheek. Small sport earbud, blazer with Humanity First pin. Council or youth-event backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. Warm, radiating smile, looking at the camera, 3/4 take. Hooded eyes crinkling warmly, full lips curved into a genuine grin, arched brows lifted — one higher. Curly dark hair bouncing with energy. Mole on right cheek beside her smile. Banners glowing bright behind her. Keep the same art style as reference, same blazer and pin. Clean confident linework, painterly soft shading, muted natural palette.

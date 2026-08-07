@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/isabella_marquez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 42-year-old port district community matriarch, neutral warm radiant expression, looking at the camera, 3/4 take. Dark brown thick curly hair worn loose or in messy bun, warm brown bright welcoming eyes, curvy strong build, warm brown smooth skin with laugh lines, wide infectious smile, gold hoop earrings, colorful beaded bracelets, vibrant floral print dress with cooking-apron traces. Port district home entrance backdrop, colorful and lived-in. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She has a broad, radiant grin, looking at the camera, 3/4 take. Warm brown eyes crinkled with joy, wide infectious smile full and open, dark brown thick curly hair loose. Gold hoop earrings and colorful beaded bracelets prominent. Vibrant floral print dress, apron with cooking traces. Port district home backdrop under bright afternoon sun. Keep the same art style as reference, same floral dress and bracelets. Clean confident linework, painterly soft shading, muted natural palette.

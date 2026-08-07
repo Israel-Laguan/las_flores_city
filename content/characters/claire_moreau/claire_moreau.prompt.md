@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/claire_moreau__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 45-year-old French spiritual yogini, neutral warm open expression, looking at the camera, 3/4 take. Long flowing chestnut hair, striking green eyes, stunning physique from yoga dedication, fair skin with light tan, flowing bohemian dress in muted tones, jade pendant. Seaside terrace backdrop at dawn, ocean stretching to horizon. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__serene.png`**: Use the base portrait as reference. She has a deeply peaceful, meditative expression, looking at the camera, 3/4 take. Striking green eyes soft and inward, mouth relaxed in quiet stillness. Long flowing chestnut hair loose, jade pendant catching the dawn light. Flowing bohemian dress, stunning physique relaxed. Seaside terrace backdrop at dawn, ocean mist rising. Keep the same art style as reference, same bohemian dress and jade pendant. Clean confident linework, painterly soft shading, muted natural palette.

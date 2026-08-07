@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/liam_van_der_meer__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch man in his early 40s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear skin, straight blonde hair with gray threading. Angular face with a soft jawline, high cheekbones, deep-set eyes, thick brows, thin lips, wide nose. Small scar near his left ear, one brow slightly lower. Small sport earbud, tailored dark suit, Van der Meer Industries pin. Boardroom backdrop with glass walls and skyline. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is weighing an angle, looking directly at the camera, 3/4 take. Deep-set eyes narrowed and intent, thick brows drawn, thin lips pressed into a flat line. The soft jawline stays poised. Gray-threaded blonde hair catches the cool boardroom light. Keep the same art style as reference, same suit, pin and earbud. Clean confident linework, painterly soft shading, muted natural palette.

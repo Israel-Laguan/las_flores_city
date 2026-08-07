@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ana_kim__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 25-year-old Korean library worker, neutral honest expression, looking at the camera, 3/4 take. Neat straight black bob, soft dark brown eyes, delicate features, light clear skin, petite neat build, simple white button-down shirt, navy cardigan over shoulders, small silver stud earrings, holding a borrowed library book. University library backdrop, oak bookshelves and reading lamp. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Soft dark brown eyes narrowed in focused thought, delicate brow furrowed, mouth pressed in quiet analysis. Neat black bob precisely in place, white button-down shirt crisp. Borrowed library book held close. University library backdrop under warm reading-lamp light. Keep the same art style as reference, same cardigan and earrings. Clean confident linework, painterly soft shading, muted natural palette.

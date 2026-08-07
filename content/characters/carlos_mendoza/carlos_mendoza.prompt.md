@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_mendoza__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Elderly Latino man of about 68, neutral guarded resting expression, looking at the camera, 3/4 take. Aged lean-wiry build, long face, receding jaw, subtle cheeks, wide nose, hooded eyes under thick brows, deep worry line between them, thin gray-white receding hair, old engineer's clothes, frayed collar, spectacles on a chain. Modest apartment backdrop with blueprints on a table. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__calculating.png`**: Use the base portrait as reference. Careful mental reconstruction, looking at the camera, 3/4 take. Hooded eyes narrow as he tallies structural details, thick brows furrowing, thin lips pursed. The deep worry line deepens, wide nose angled down at the diagrams. Spectacles catching the lamplight. Apartment backdrop with pipe diagrams. Keep the same art style as reference, same engineer's clothes and earbud. Clean confident linework, painterly soft shading, muted natural palette.

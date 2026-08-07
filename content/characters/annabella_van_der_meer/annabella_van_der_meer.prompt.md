@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/annabella_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Early-80s Dutch geologist, neutral warm expression, looking at the camera, 3/4 take. Tall sturdy build, silver-white bob haircut, pale blue-green bright scholarly eyes, fair freckled weathered skin, strong capable hands with dirt under nails, reading glasses on head, faded field notebook in jacket pocket, rugged field jacket over button-down shirt. Van der Meer Mining research office backdrop, geological maps pinned to corkboard. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in intense concentration, looking directly at the camera, 3/4 take. Pale blue-green eyes sharp behind the reading glasses on her head, lean forward with scientist's intensity. Silver-white bob neat, rugged field jacket, faded field notebook tucked in pocket. Research office backdrop under bright overhead light, geological maps spread before her. Keep the same art style as reference, same field jacket and glasses. Clean confident linework, painterly soft shading, muted natural palette.

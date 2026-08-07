@@ -86,8 +86,9 @@ blurry, low quality, ethnicity exclusions, …> (<200 chars)
 - [ ] <scene variation 3>
 
 ## Expression Variants
-Authored expressions (each as `assets/<slug>__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see docs/ASSET_EXPRESSION_VOCABULARY.md):
+<!-- Variants are staged as `assets/<slug>__<tag>.png` and wired into
+     `portrait_urls[]` (characters) / `background_urls[]` (scenes) with an
+     `expression` tag — see docs/ASSET_EXPRESSION_VOCABULARY.md. -->
 
 - **`__default.png`**: Use the base portrait as reference. <…, neutral resting
   expression, looking at the camera, 3/4 take…> Keep the same art style as

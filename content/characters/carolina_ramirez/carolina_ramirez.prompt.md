@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carolina_ramirez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Early-30s Pacific District official, neutral calm certain expression, looking at the camera, 3/4 take. Dark brown thick wavy hair in professional low ponytail, warm brown alert intelligent eyes, petite slender upright build, light brown with warm undertones, small mole below right eye, thin gold chain necklace, professional cream blouse and navy blazer. Pacific District municipal office backdrop, wooden desk and city documents. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__focused.png`**: Use the base portrait as reference. She is in sharp concentration, looking directly at the camera, 3/4 take. Warm brown eyes narrowed in focused analysis, brow slightly furrowed, small mole below right eye prominent. Dark brown thick wavy hair pulled back neatly, thin gold chain catching light. Professional navy blazer crisp. Municipal office backdrop under bright desk lamp light. Keep the same art style as reference, same cream blouse and navy blazer. Clean confident linework, painterly soft shading, muted natural palette.

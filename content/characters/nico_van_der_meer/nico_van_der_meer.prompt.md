@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/nico_van_der_meer__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch business heir in his early 40s, neutral observant resting expression, looking at the camera, 3/4 take. Athletic-compact sharp build, clear fair skin. Oval face with a strong jaw, wide nose, deep-set eyes, thick brows, thin lips. Straight dark-blonde hair with early gray at the temples, small scar on left brow, one brow lower. Sharp business-casual attire, sport earbud. Trade office or port warehouse backdrop with shipping manifests. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is in sharp business assessment, looking directly at the camera, 3/4 take. Deep-set eyes narrowed and appraising, thick brows drawn low, thin lips pressed into a weighing line. The small scar on his left brow catches light, gray-templed hair neat. Trade office desk with manifests behind him. Keep the same art style as reference, same blazer, shirt, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

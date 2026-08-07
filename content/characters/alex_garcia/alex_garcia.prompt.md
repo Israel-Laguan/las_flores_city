@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alex_garcia__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Young Latino person of 22, neutral resting expression, looking at the camera, 3/4 take. Lean-wiry medium-height build, clear skin. Straight dark shaggy uncut hair, flat brows, hooded dark eyes with faint dark circles, heart-shaped face, straight nose, subtle cheekbones, soft jawline, full lips. Hands covered in pencil and ink stains. Small sport earbud clipped to earlobe, jeans, hoodie, old sneakers, worn overstuffed backpack with sketchbooks. Residencial Las Estrellas corridor or university studio with sketches on the wall backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__determined.png`**: Use the base portrait as reference. A set, forward resolve, looking unflinchingly at the camera, 3/4 take. Hooded dark eyes steady and hard, flat brows drawn low, full lips pressed firm. Straight dark shaggy hair falling across the forehead. Heart-shaped face taut, soft jawline set. Shoulders squared under the hoodie, lean frame braced. Pencil-stained hands gripping the backpack strap. Residencial Las Estrellas corridor or studio backdrop with stronger directional light. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

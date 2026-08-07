@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/manuel_ortega__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early sixties, neutral resting expression, looking at the camera, 3/4 take. Long face, strong jawline, wide nose with a broken-curve hint, deep-set eyes, thin gray-white receding hair, faded smuggling scar across right cheek, salt-stained scarred skin with deep lines. Weathered fisherman's layers, small sport earbud, dock backdrop with nets and crates. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is weighing an offer, looking at the camera, 3/4 take. Deep-set eyes narrowed and appraising, the broken-curve hint of his wide nose catching the light, thin lips pressed into a hard line. Long face etched with deep lines, strong jawline set. Thick brows drawn down over old knowing eyes. Muted dock light. Keep the same art style as reference, same fisherman's layers and earbud. Clean confident linework, painterly soft shading, muted natural palette.

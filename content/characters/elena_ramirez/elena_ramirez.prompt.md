@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/elena_ramirez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina educator in her 60s, neutral, patient resting expression, looking at the camera, 3/4 take. Soft-rounded build, weathered warm-brown skin, gray-streaked hair in a silver bun, flat brows with a slight droop, warm almond eyes, flat nose, oval face with a soft jawline, full lips, faint burn scar on her right hand. Small sport earbud, modest professional attire, glasses on a lanyard, Humanity First pin. Schoolhouse backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Warm almond eyes crinkle at the corners, full lips curve up gently, the gentle wrinkles and subtle brow droop soften with warmth. Gray-streaked silver bun catching warm light. Sunlit schoolhouse backdrop. Keep the same art style as reference, same blouse, cardigan, and earbud: premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

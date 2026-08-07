@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alejandro_ruiz__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his 40s, neutral resting expression, looking at the camera, 3/4 take. Lean-wiry build, weathered brown skin. Wavy dark hair threaded with gray, thick brows with a faint scar across the left, deep-set watchful eyes, long face, healed crooked nose, high cheekbones, strong jawline, thin lips. Small sport earbud clipped to earlobe, rumpled journalist jacket over open collar, notebook in pocket. Cluttered newsroom under a desk lamp backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is in sharp assessment mode, looking directly at the camera, 3/4 take. Deep-set eyes narrowed, thick brows drawn low over the faint scar, mouth pressed into a thin line as he weighs a fact. Healed crooked nose catching the warm desk-lamp light. Long face taut, strong jawline set. Wavy dark hair threaded with gray. Cluttered newsroom backdrop under low directional lamplight. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

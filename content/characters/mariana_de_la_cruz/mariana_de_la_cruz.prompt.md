@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/mariana_de_la_cruz__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina bureau chief in her 40s, neutral commanding resting expression, looking at the camera, 3/4 take. Athletic-compact poised build, clear skin with subtle lines around the eyes. Angular face with a receding jawline, straight nose, round eyes, arched brows, wide lips. Wavy dark chin-length hair, small mole near the lower lip, right brow higher. Professional bureau-chief attire, press credentials, tablet, sport earbud. Newsroom backdrop with city maps. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is in sharp assessment mode, looking directly at the camera, 3/4 take. Round eyes narrowed, arched brows drawn low, wide lips pressed into a thin evaluating line as she weighs a story's angle. The mole near her lower lip catches light, high cheekbones casting clean shadow. Newsroom backdrop, maps and monitors behind her. Keep the same art style as reference, same blazer, credentials, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

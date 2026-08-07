@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/elisabeth_van_der_meer__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Early-80s Dutch socialite, neutral composed elegant expression, looking at the camera, 3/4 take. Silver-blonde hair in elegant updo, pale blue refined discerning eyes, tall slender graceful posture, fair carefully maintained skin, pearl necklace, diamond stud earrings, signature red lipstick, elegant tailored navy gown. Van der Meer family Las Flores riverbank estate backdrop, manicured gardens. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__serene.png`**: Use the base portrait as reference. She has a peaceful, serene expression, looking gently at the camera, 3/4 take. Pale blue eyes soft and distant, signature red lipstick relaxed. Silver-blonde hair in elegant updo, pearl necklace warm on her throat. Tall slender graceful posture eased. Elegant tailored navy gown. Riverbank estate backdrop under warm golden-hour glow. Keep the same art style as reference, same navy gown and pearls. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,8 +31,6 @@ n
 
 ## Expression Variants
 
-Authored expressions (each as `assets/diego__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Young Mina Escondida guide, neutral alert composed expression, looking at the camera, 3/4 take. Dark brown short tousled dusty hair, warm brown alert resourceful eyes, medium height lean agile build, sun-browned weathered skin, thin scar across left eyebrow from cave-in, strong calloused hands, worn headlamp around neck, rugged practical outdoor gear. Mina Escondida tunnel entrance backdrop, weathered timber and old tracks. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__determined.png`**: Use the base portrait as reference. He has a resolved, firm expression, looking unflinchingly at the camera, 3/4 take. Warm brown eyes steady with guide's resolve, jaw squared. Thin scar across left eyebrow prominent, dark brown short tousled hair. Strong calloused hands fisted lightly, worn headlamp around neck. Rugged practical outdoor gear. Mina Escondida backdrop under strong directional light. Keep the same art style as reference, same canvas jacket and cargo pants. Clean confident linework, painterly soft shading, muted natural palette.

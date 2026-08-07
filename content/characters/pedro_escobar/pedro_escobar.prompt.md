@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/pedro_escobar__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino city editor in his early 40s, neutral observant resting expression, looking at the camera, 3/4 take. Stocky solid build, clear warm skin. Long face with a soft jaw, slightly crooked straight nose, wide-set eyes, thick brows, full lips. Wavy dark hair threaded with gray, small mole on cheek. Smart-casual editor attire, press lanyard, tablet, sport earbud. City desk backdrop with layout boards. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is in sharp editorial assessment, looking directly at the camera, 3/4 take. Wide-set eyes narrowed and weighing a headline, thick brows drawn low, full lips pressed into a considering line. The slightly crooked straight nose catches the office light, the mole on his cheek subtle in shadow. City desk with layout boards behind him. Keep the same art style as reference, same shirt, sweater, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

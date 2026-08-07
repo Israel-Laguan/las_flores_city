@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alejandro_garcia__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early 40s, neutral resting expression, looking at the camera, 3/4 take. Stocky build, sun-damaged leathery brown skin. Thick curly dark hair with gray streaks at the temples under a sweat-stained cap pushed back, thick asymmetric brows with the left a fraction lower, square face, hooded dark eyes, wide nose, pronounced cheekbones, prominent jawline, full lips. Small sport earbud clipped to earlobe, faded shirt with sleeves rolled, weathered belt. Poisoned flower fields and weathered farmhouse backdrop under harsh sun. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__determined.png`**: Use the base portrait as reference. He has a set, resolved expression, looking unflinchingly at the camera, 3/4 take. Hooded dark eyes steady and hard, prominent jawline squared, wide nose catching the hard light. Thick asymmetric brows drawn low and firm, the left still a fraction lower. Thick curly dark hair with gray streaks at the temples, sweat-stained cap pushed back. Shoulders squared, stocky frame solid. Poisoned flower fields and weathered farmhouse backdrop under strong directional light. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

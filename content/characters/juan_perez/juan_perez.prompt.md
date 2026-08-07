@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/juan_perez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his early 30s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear warm-brown skin, wavy dark hair styled back. Angular face with a prominent jawline, high cheekbones, hooded eyes, thick brows, full lips, wide nose. A chipped front tooth, one brow slightly lower. Small sport earbud, tailored jacket over open-collar shirt, statement watch, recorder. Newsroom backdrop with bright lights. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__smirk.png`**: Use the base portrait as reference. He wears a wolfish, knowing half-smile, looking at the camera, 3/4 take. Hooded eyes glinting with mischief, the full lips curling to reveal a hint of the chipped tooth, one brow lifting. Wavy styled-back hair catching the light. Bright newsroom lights flash behind him. Keep the same art style as reference, same jacket, watch and earbud. Clean confident linework, painterly soft shading, muted natural palette.

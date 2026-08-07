@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/vance_nakamura__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Japanese-heritage man in his early 50s, neutral, unreadable resting expression, looking at the camera, 3/4 take. Angular face, receding jaw, high cheekbones, narrow nose, narrow dark expressionless analytical eyes, flat brows, thin lips. Athletic-compact rigidly straight posture, clear fair skin, faint old scar at corner of left eyebrow, one eye narrower. Straight black graying short neat hair, severe dark suit, no earbud. Cold sterile monitoring-room backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. He is dissecting data with cold precision, looking at the camera, 3/4 take. Narrow dark expressionless eyes intent, head tilted a degree, thin lips unmoving. Angular face and receding jaw set in an unfathomable neutrality, the one-narrower-eye asymmetry quietly unsettling. Severe dark suit, no earbud. Cold sterile monitoring backdrop with screen glow. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

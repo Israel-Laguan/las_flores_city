@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/sofia_cortez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina woman in her 30s, neutral watchful resting expression, looking at the camera, 3/4 take. Lean-wiry build, sun-freckled skin. Angular face with high cheekbones and soft jawline, short wavy dark hair. Wide nose, round observant eyes, arched brows, full lips, sun-freckles across the nose. Small sport earbud, field vest with press badge. Contaminated-site or newsroom backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. Sharp analytical focus, looking directly at the camera, 3/4 take. Round eyes narrowed in scrutiny, arched brows drawn together, full lips pressed in assessment. Angular face set, soft jawline firm. Sun-freckles catching work-light. Data-map backdrop in focused illumination. Keep the same art style as reference, same field vest and press badge. Clean confident linework, painterly soft shading, muted natural palette.

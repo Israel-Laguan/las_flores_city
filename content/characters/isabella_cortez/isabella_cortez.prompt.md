@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/isabella_cortez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 5'3" mini-market cashier and single mother, neutral warm mischievous expression, looking at the camera, 3/4 take. Long wavy chestnut hair flowing down her back, sparkling green warm mischievous eyes, petite slender curvy figure, golden sun-kissed skin, full lips with bright lipstick, fashionable provocative colorful top and well-fitted jeans, gold hoop earrings, small nose ring. Las Flores residential neighborhood backdrop, colorful murals. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She has a bright, radiant smile, looking at the camera, 3/4 take. Sparkling green eyes crinkled with joy, full lips wide with warmth, long wavy chestnut hair loose and joyful. Gold hoop earrings catching light, small nose ring warm. Colorful top, well-fitted jeans. Neighborhood backdrop under bright afternoon sun. Keep the same art style as reference, same gold hoop earrings. Clean confident linework, painterly soft shading, muted natural palette.

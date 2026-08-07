@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/ana_silva__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Afro-Latina woman in her mid-50s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact sturdy build, smooth deep brown skin with subtle lines around the eyes. Thick curly voluminous natural black hair, asymmetric brows with the left arching higher, deep-set fiery dark brown eyes, round face, wide nose, pronounced cheekbones, strong jawline, full lips, subtle laugh lines. Small sport earbud clipped to earlobe, professional grounded attire, silver hoop earrings, worn leather folder of case documents. City council chamber or community hall with civic banners backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__angry.png`**: Use the base portrait as reference. She is mid-indignation, looking hard at the camera, 3/4 take. Deep-set fiery dark brown eyes blazing, asymmetric brows — the left arching sharp and high — drawn down, full lips pressed into a hard line. Strong jawline set, pronounced cheekbones taut. Thick curly voluminous natural hair catching strong light. Subtle laugh lines firming into resolve. Sturdy frame coiled, leather folder gripped. City council chamber backdrop under stark directional light. Keep the same art style as reference, same clothing and backdrop — premium contemporary graphic novel realism, refined editorial line art illustration. Clean confident linework, painterly soft shading, muted natural palette.

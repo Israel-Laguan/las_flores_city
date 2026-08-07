@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/xiao_chen__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag - see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Chinese woman in her early 50s, neutral composed resting expression, looking at the camera, 3/4 take. Oval face, prominent jaw, pronounced cheekbones, straight nose, almond eyes, arched brows, full lips. Athletic-compact build, clear skin with subtle lines around the eyes, tiny mole near lower lip, one brow higher. Straight dark elegant bob with gray threading. Small sport earbud clipped to earlobe, tailored CEO attire. Cool executive office backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is evaluating a strategic move, looking directly at the camera, 3/4 take. Almond eyes narrowed in quiet assessment, arched brows lifted a shade, full lips pressed in a controlled line. Oval face and prominent jaw set in composed calculation. The mole near her lower lip draws subtle focus. Straight dark bob, small sport earbud. Cool executive office backdrop. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_medina__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Young Latino man of 23, neutral earnest resting expression, looking at the camera, 3/4 take. Slender lean-wiry build, long face, receding jaw, subtle cheeks, pointed nose, hooded earnest dark-brown eyes, thin lips, one brow raised, unruly black hair pushed from his eyes, canvas jacket with Guild patch. Electrical room backdrop with schematic screens. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__calculating.png`**: Use the base portrait as reference. Focused problem-solving, looking at the camera, 3/4 take. Hooded dark-brown eyes narrow as he runs a circuit in his head, one brow habitually raised. Pointed nose angled toward the tablet, thin lips pressed. The canvas jacket and diagnostic tablet anchor the scene. Electrical room backdrop with glowing schematics. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/camila_reyes__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 19-year-old Environmental Science student, neutral bright open expression, looking at the camera, 3/4 take. Long wavy dark hair with colorful headband, bright brown curious eyes, petite sun-kissed build, flowy white linen dress over bikini, woven bracelet, leather sandals, camera in one hand. Bahía beach backdrop at golden hour, ocean and village buildings in distance. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She has a broad, radiant grin, looking at the camera, 3/4 take. Bright brown eyes crinkled with joy, mouth wide with warmth, long wavy dark hair blowing in the sea breeze. Colorful headband catching golden light. Flowy white dress open and easy, woven bracelet visible. Bahía beach backdrop, golden light flooding in from the ocean. Keep the same art style as reference, same dress and bracelet. Clean confident linework, painterly soft shading, muted natural palette.

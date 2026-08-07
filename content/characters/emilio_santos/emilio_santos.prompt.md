@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/emilio_santos__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Disgraced former Pacific District politician, neutral haunted exhausted expression, looking at the camera, 3/4 take. Dark brown hair slicked back slightly thinning, dark brown tired haunted eyes, medium height broad-shouldered softening with age, medium tan lined around eyes, gold chain at open collar, expensive watch, five o'clock shadow, slight alcohol flush on cheeks, disheveled cheap linen shirt. Pacific District beach house terrace at dusk, weathered wooden rail and string lights. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__contemplative.png`**: Use the base portrait as reference. He is in quiet reflection, looking thoughtfully at the camera with a 3/4 take. Dark brown eyes distant, haunted, mouth slack. Dark brown hair loose, cheap linen shirt open. Gold chain at open collar, expensive watch catching last light. Broad-shouldered frame sagging. Beach house terrace backdrop under twilight, string lights glowing. Keep the same art style as reference, same linen shirt. Clean confident linework, painterly soft shading, muted natural palette.

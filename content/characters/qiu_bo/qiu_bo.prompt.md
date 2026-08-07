@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/qiu_bo__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Chinese man in his 40s, neutral resting expression, looking at the camera, 3/4 take. Lean-wiry build, clear skin. Square face with pronounced cheekbones, receding jawline, straight dark hair threaded with gray. Narrow nose, narrow attentive eyes, thick slightly asymmetric brows, thin lips, faint line between brows. Small mole on the left cheek. Small sport earbud, tech-exec smart-casual attire. R&D lab backdrop bathed in blue light. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. Sharp, measured assessment, looking directly at the camera, 3/4 take. Narrow eyes narrowed further, brow line deeper between the brows, thin lips pressed in thought. Square face set, receding jawline firm. Gray-threaded hair catching blue light. R&D lab backdrop with data readouts glowing. Keep the same art style as reference, same smart-casual attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

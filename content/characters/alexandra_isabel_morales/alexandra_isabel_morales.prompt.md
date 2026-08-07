@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alexandra_isabel_morales__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 28-year-old language teacher, neutral resting expression, looking at the camera, 3/4 take. Long straight black hair in loose waves, warm almond-shaped dark brown eyes, petite slender graceful build, warm ivory complexion with natural flush, high cheekbones, delicate nose, small gold hoop earrings, tailored blazer over blouse with chic accessories. San Pedro language classroom backdrop, whiteboard and bookshelves. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__happy.png`**: Use the base portrait as reference. She has a bright, open smile, looking at the camera, 3/4 take. Warm almond-shaped dark brown eyes crinkled with genuine delight, full smile showing. High cheekbones lifted, petite frame open and welcoming. Gold hoop earrings catching light. San Pedro classroom backdrop under bright window light. Keep the same art style as reference, same blazer and accessories. Clean confident linework, painterly soft shading, muted natural palette.

@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/evelyn_ruthenberg__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 48-year-old former engineer and shadow investigator, neutral severe expression, looking at the camera, 3/4 take. Dark brown hair with premature gray streaks in practical ponytail, steel blue cold calculating eyes that rarely blink, lean wiry build, fair weathered skin with small scars on hands, thin white scar along left jawline, plain silver watch, dark practical jacket. Shadowy Las Flores alley at night backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She has a cold, assessing focus, looking directly at the camera, 3/4 take. Steel blue eyes narrowed with tactical evaluation, mouth pressed in a thin line. Dark brown hair with gray streaks precise, plain silver watch catching light. Lean wiry build squared, worn leather jacket open. Shadowy alley backdrop under harsh single light. Keep the same art style as reference, same dark practical jacket. Clean confident linework, painterly soft shading, muted natural palette.

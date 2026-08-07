@@ -31,8 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/alberto_ramirez__<tag>.png`, referenced in `portrait_urls[]` with an `expression` tag — see [docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. 16-year-old South American boy, neutral resting expression, looking at the camera, 3/4 take. Slightly wide-set dark eyes, straight nose, strong jaw with faint stubble, messy dark curly hair, red sport earbud, cheap sports jacket, cap slightly askew. Working-class street corner at dusk, rain-slicked asphalt reflecting amber streetlights. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__vulnerable.png`**: Use the base portrait as reference. He has a vulnerable, uncertain expression, looking directly at the camera, 3/4 take. Dark eyes hold something he cannot name — doubt, longing. Strong jaw softens, the cap tilts further askew. Cheap sports jacket sleeves pulled over his hands. Working-class street backdrop under softer amber light. Keep the same art style as reference, same cap and jacket. Clean confident linework, painterly soft shading, muted natural palette.

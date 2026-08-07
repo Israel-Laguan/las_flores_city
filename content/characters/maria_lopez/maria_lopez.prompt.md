@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/maria_lopez__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latina biologist in her early 40s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, sun-freckled olive skin across nose and cheeks. Oval face with a receding jawline, wide nose, almond eyes, flat brows, full lips. Wavy dark hair in a practical ponytail, subtle lines around the eyes. GreenWatch vest, fieldwork shirt, data tablet, sport earbud. Field lab or wetland backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__calculating.png`**: Use the base portrait as reference. She is in sharp analytical mode, looking directly at the camera, 3/4 take. Almond eyes narrowed in focus, flat brows drawn together, mouth pressed into a thoughtful line as she weighs a data point. The wide nose and sun-freckled cheeks catch soft light, loose strands falling from the ponytail. Wetland backdrop with sampling gear behind her. Keep the same art style as reference, same field attire, vest, and earbud. Clean confident linework, painterly soft shading, muted natural palette.

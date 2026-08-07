@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/carlos_hernandez_amlf__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Latino man in his 50s, neutral resolute resting expression, looking at the camera, 3/4 take. Broad heavy build, square face, strong jaw, pronounced cheeks, wide nose, deep-set eyes under thick brows, faded mining scar on his left cheek, curly dark hair with gray streaks, worn union jacket with AMLF pin. Industrial backdrop of a miners' union hall. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
 
 - **`__angry.png`**: Use the base portrait as reference. A hard, righteous anger tightens his features, looking at the camera, 3/4 take. Deep-set eyes narrow, thick brows lower, square-set jaw clenched. The faded mining scar across his left cheek stands out, broad frame tensed. Industrial backdrop of the union hall in harsher light. Keep the same art style as reference, same union jacket, pin and earbud. Clean confident linework, painterly soft shading with deep shadows, muted natural palette.

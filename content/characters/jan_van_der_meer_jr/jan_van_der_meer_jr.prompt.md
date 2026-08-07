@@ -31,10 +31,6 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Expression Variants
 
-Authored expressions (each as `assets/jan_van_der_meer_jr__<tag>.png`, referenced in
-`portrait_urls[]` with an `expression` tag — see
-[docs/ASSET_EXPRESSION_VOCABULARY.md](../../../docs/ASSET_EXPRESSION_VOCABULARY.md)):
-
 - **`__default.png`**: Use the base portrait as reference. Dutch man in his early 40s, neutral resting expression, looking at the camera, 3/4 take. Athletic-compact build, clear skin, straight blonde hair with faint gray threading. Oval face with a strong jawline, high cheekbones, wide-set eyes, thick brows, full lips, straight slightly crooked nose. Small scar near one ear, faint gray threading. Small sport earbud, soft-collared shirt under a light knit. Family estate or garden backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
 
 - **`__tender.png`**: Use the base portrait as reference. His expression softens with warmth and affection, looking at the camera, 3/4 take. Wide-set eyes warm and open, thick brows relaxed, full lips curved in a gentle smile. The slight crookedness to the nose and the scar near one ear read quietly kind. Dappled garden light plays across his blonde hair. Keep the same art style as reference, same knit shirt and earbud. Clean confident linework, painterly soft shading, muted natural palette.
