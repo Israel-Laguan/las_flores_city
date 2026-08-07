@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Sophia van der Meer Rodriguez considering a strategic decision, weighing options thoughtfully
 - [ ] Sophia van der Meer Rodriguez in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`sophia_van_der_meer_rodriguez__default.png`**: Use the base portrait as reference. Tall 36-year-old Dutch woman, slender graceful frame, warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Pale blue-green refined, compassionate eyes, dark hair worn loose in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`sophia_van_der_meer_rodriguez__contemplative.png`**: Use the base portrait as reference. Weighing a decision, looking thoughtfully at the camera, 3/4 take. Pale blue-green eyes narrowing in consideration, half-smile gone, lips pressed thoughtfully. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`sophia_van_der_meer_rodriguez__happy.png`**: Use the base portrait as reference. A warm, open smile, looking at the camera, 3/4 take. Pale blue-green eyes crinkling genuinely, the knowing half-smile widening with warmth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`sophia_van_der_meer_rodriguez__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Pale blue-green eyes fixed and sharp, jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`sophia_van_der_meer_rodriguez__calculating.png`**: Use the base portrait as reference. Sharp strategic focus, looking intensely at the camera, 3/4 take. Pale blue-green eyes narrowed, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

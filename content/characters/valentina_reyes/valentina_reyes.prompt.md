@@ -27,3 +27,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Valentina "Val" Reyes deep in thought about their studies, determined to succeed
 - [ ] Valentina "Val" Reyes studying with classmates in a library, working together on a project
 
+## Expression Variants
+
+- **`valentina_reyes__default.png`**: Use the base portrait as reference. Medium-height Latina woman, solid un-sculpted frame, calm determined resting expression, looking at the camera, 3/4 take. Dark expressive eyes, straight nose, defined jaw, dark hair tied in a ponytail in un-styled flowing shapes, small sport earbud, minimalist pocketless practical clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`valentina_reyes__focused.png`**: Use the base portrait as reference. Absorbed concentration over her studies, looking at the camera, 3/4 take. Dark expressive eyes intent, brows knit, lips pressed in quiet focus. Books and notes edge the frame. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`valentina_reyes__determined.png`**: Use the base portrait as reference. Steady resolve, looking directly at the camera, 3/4 take. Dark eyes fixed and sharp, defined jaw set, mouth firm. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`valentina_reyes__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark eyes brightening, cheeks lifting, the composed bearing warming. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`valentina_reyes__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Dark eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+

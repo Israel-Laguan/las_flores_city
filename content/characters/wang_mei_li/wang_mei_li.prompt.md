@@ -26,3 +26,15 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Wang Mei Li considering a strategic decision, weighing options thoughtfully
 - [ ] Wang Mei Li in a business meeting, collaborating with team members on a strategy
 
+## Expression Variants
+
+- **`wang_mei_li__default.png`**: Use the base portrait as reference. Slender Chinese woman in her early 70s, sturdy un-sculpted frame, warm resting expression with a subtle knowing half-smile, looking at the camera, 3/4 take. Dark brown sharp, determined eyes, jet-black worn-in hair in un-styled flowing shapes, small sport earbud, minimalist pocketless practical work clothing. Weathered urban Latin American building backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`wang_mei_li__determined.png`**: Use the base portrait as reference. Quiet resolve, looking directly at the camera, 3/4 take. Dark brown eyes fixed and sharp, jaw set, mouth firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`wang_mei_li__contemplative.png`**: Use the base portrait as reference. A thoughtful pause, looking at the camera, 3/4 take. Dark brown eyes softening into the middle distance, lips relaxed, head tilted. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`wang_mei_li__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Dark brown eyes crinkling with warmth, lips curving up gently, the knowing half-smile widening. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`wang_mei_li__calculating.png`**: Use the base portrait as reference. Sharp, strategic focus, looking intensely at the camera, 3/4 take. Dark brown eyes narrowed, brows drawn, lips a thin line. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
