@@ -2,7 +2,7 @@
 name: Avenida de las Naciones
 type: background
 size: 1280x768
-source: docs/lore/districts/city/avenida_de_las_naciones/avenida_de_las_naciones.md
+source: content/districts/city/locations/avenida_de_las_naciones/avenida_de_las_naciones.md
 target: `scene.background_url` in `content/districts/city/locations/avenida_de_las_naciones/location_avenida_de_las_naciones.yaml`
 consumer: html-background
 ---
@@ -13,7 +13,7 @@ consumer: html-background
 **Pipeline stage:** draft → refine
 
 ## Prompt (Draft)
-Avenida de las Naciones in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. photorealistic portrait, hyper-detailed, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
+Avenida de las Naciones in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
 
 ## Prompt
 Avenida de las Naciones in Las Flores, establishing wide shot, premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos.

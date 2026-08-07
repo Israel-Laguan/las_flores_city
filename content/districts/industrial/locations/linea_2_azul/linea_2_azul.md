@@ -40,6 +40,6 @@ The Línea 2 Azul is the city’s most functionally honest transit line: it conn
 ## In-Game References
 
 - **Scenes:** Eastern Factory Terminal Cluster, Port Connection Stations, Contamination-Zone Tunnel Sections
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** The 2043 contractual obligation that extracted the line as partial compensation for LW Group's port-area land-use concessions; the factory-operator cameras at platform exits recording worker egress under an access arrangement not disclosed to workers; the heavily-contaminated groundwater table traversed by the tunnel sections and the 2074 independent particulate sampling that found elevated readings while the authority's ventilation review remains ongoing; the documented pattern of workers missing the last eastbound service due to mandated overtime extensions, appearing as predictable gaps in station usage
+- **Characters:** Eastern-factory shift workers boarding the 05:30 standing-room trains and the night-shift workers after 22:00; port-labour riders on the around-the-clock westbound trickle; Port Connection Stations' LW Group port-subsidiary advisory-board members; transport-authority ventilation reviewers and maintenance crews on the contamination-zone tunnels; city enforcement officers absent from the undetected factory-camera coverage
+- **Narrative Hooks:** The line connects the places where industrial labour is performed to the places where that labour is delivered, without the civic-mobility framing the Red Line carries; it was built to serve the entity that extracted the concession that made its construction necessary; contamination and labour are mapped onto every trip it makes

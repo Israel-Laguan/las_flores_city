@@ -2,7 +2,7 @@
 name: Las Tres Montañas
 type: background
 size: 1280x768
-source: docs/lore/districts/los_andes/las_tres_montanas/las_tres_montanas.md
+source: content/districts/los_andes/locations/las_tres_montanas/las_tres_montanas.md
 target: `scene.background_url` in `content/districts/los_andes/locations/las_tres_montanas/location_las_tres_montanas.yaml`
 consumer: html-background
 ---
@@ -13,7 +13,7 @@ consumer: html-background
 **Pipeline stage:** draft → refine
 
 ## Prompt (Draft)
-Las Tres Montañas in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. photorealistic portrait, hyper-detailed, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
+Las Tres Montañas in Las Flores, daytime establishing shot of the natural Andean triple-peak park with forested slopes, rocky summits and alpine trails. Warm natural light over high-mountain meadows, desaturated editorial palette. No people, no text, no logos. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
 
 ## Prompt
 Las Tres Montañas in Las Flores, establishing wide shot, premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos.

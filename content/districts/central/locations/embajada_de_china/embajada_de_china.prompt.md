@@ -2,7 +2,7 @@
 name: Embajada de China
 type: background
 size: 1280x768
-source: docs/lore/districts/central/locations/embajada_de_china/embajada_de_china.md
+source: content/districts/central/locations/embajada_de_china/embajada_de_china.md
 target: `scene.background_url` in `content/districts/central/locations/embajada_de_china/location_embajada_de_china.yaml`
 consumer: html-background
 ---
@@ -14,7 +14,7 @@ consumer: html-background
 **Pipeline stage:** draft → refine
 
 ## Prompt (Draft)
-Embajada de China in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. photorealistic portrait, hyper-detailed, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
+Embajada de China in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
 
 ## Prompt
 Embajada de China in Las Flores, establishing wide shot, premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos.

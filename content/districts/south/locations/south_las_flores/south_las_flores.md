@@ -7,7 +7,7 @@
 
 ## Overview
 
-The South District of Las Flores is a vivid mosaic of cultural heritage, agricultural roots, and evolving aspirations. At its heart lies Old Las Flores (Vieja Las Flores), the original mining settlement with its historic adobe houses and narrow colonial streets.
+This location is the namesake of the South District. For the full district profile — population, elevation, and cross-district transport links — see the [South District overview](../../south.md). The district's identity is anchored here in Old Las Flores (Vieja Las Flores), the original mining settlement whose adobe houses and narrow colonial streets predate the free city, and in the agricultural valley watered by the Río de las Flores that stretches from the eastern mountains toward the port.
 
 ---
 
@@ -25,7 +25,7 @@ The South District of Las Flores is a vivid mosaic of cultural heritage, agricul
 
 ### Daytime
 
-The South District is predominantly rural, characterized by agricultural communities and small hills that contour the fertile valleys. The Río de las Flores meanders through the district’s expanse, nurturing the land and supporting local agriculture.
+Morning light falls on the adobe facades of Old Las Flores, where market vendors set up along the colonial streets before the river bends into the Agricultural Valley. The Río de las Flores still carries the irrigation channels that feed the small hills' terraced plots; the rhythm here is set by seasonal planting and the arrival of produce trucks from the valley floor, not by the central district's rush.
 
 ### Nightlife
 
@@ -42,6 +42,6 @@ The South District of Las Flores encapsulates a journey through time, from the h
 ## In-Game References
 
 - **Scenes:** Old Las Flores (Vieja Las Flores), Historic Market District, Río de las Flores, Indigenous Riverbank Communities, Agricultural Valley
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** agricultural supply-chain investigations into produce-markup fraud; land-rights disputes over riverfront parcels eyed for luxury condos; water-quality monitoring along the Río de las Flores after upstream industrial-runoff alerts; the seasonal labour-contractor controversy in the Agricultural Valley
+- **Characters:** indigenous riverbank community elders; traditional farmers tending the Agricultural Valley plots; Old Las Flores market vendors and stall-owners; municipal water-quality monitors; the developer pushing the riverfront condo project
+- **Narrative Hooks:** preserving indigenous ceremony grounds threatened by the condo development; the generational divide between elders keeping to tradition and young farmers drawn to city jobs; seasonal flooding in the Agricultural Valley that seeds both crops and land-claim disputes

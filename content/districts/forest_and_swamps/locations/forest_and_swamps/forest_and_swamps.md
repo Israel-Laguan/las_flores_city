@@ -434,5 +434,5 @@ The success of this region demonstrates that development does not have to come a
 - [North District Overview](../../north.md) - Comprehensive district information
 - [Andean Mountains](../../andes/andean_mountains.md) - Mountain ecosystems and indigenous communities
 - [Río de las Flores](../../natural/rio_de_las_flores.md) - River systems and water resources
-- [Las Tres Montañas](../los_andes/locations/las_tres_montanas/las_tres_montanas.md) - Mountain landmarks and cultural significance
+- [Las Tres Montañas](../../../los_andes/locations/las_tres_montanas/las_tres_montanas.md) - Mountain landmarks and cultural significance
 - [Sierra Verde Park](../../natural/sierra_verde_park.md) - Protected natural areas and conservation efforts

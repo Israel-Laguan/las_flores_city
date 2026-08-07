@@ -40,6 +40,6 @@ The Museo de Arte Moderno functions as a prestige cultural institution and as an
 ## In-Game References
 
 - **Scenes:** Permanent Collection Galleries, First-Floor Temporary Exhibition Annex, Holographic Catalogue Terminals
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** The 2068 Voz Libre investigation that cross-referenced commission records with the LW Group Cultural Foundation's donor list and found no museum commissions for artists who had publicly criticised lithium extraction, river contamination, or Industrial Zone labour conditions; the leaked 2071 board document confirming the Foundation's undisclosed pre-approval curation clause; the absence of declined works from the holographic catalogue terminals that never list artists deprioritised after political statements
+- **Characters:** Permanent-collection curators operating under the Foundation's pre-approval clause; LW Group Cultural Foundation donor-relation staff; evening-atrium reception and catering staff from the Foundation's hospitality subsidiary; gallery visitors browsing the holographic terminals; artists whose work appears on the walls and those whose work does not; surveillance-camera operators monitoring the higher-density evening atrium
+- **Narrative Hooks:** Corporate patronage shapes not just what is funded but what is imaginable as fundable; the systematic filtering that determines whose art reaches the walls is invisible to the visitor who encounters only the polished result; the 2076 "Mineral Futures" exhibition funded entirely by the Foundation included no artists from the Industrial Zone or affected indigenous communities

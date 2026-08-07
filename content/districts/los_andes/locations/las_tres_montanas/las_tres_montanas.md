@@ -2,7 +2,7 @@
 
 > Tags: `#landmark` `#los_andes` `#nature`
 
-**Location:** Las Flores City
+**Location:** Los Andes District
 **Type:** Mountain Formation
 
 ## Overview
@@ -18,6 +18,7 @@ Nestled within the Andean Mountains, Las Tres Montañas is a stunning triple pea
 | **Sendero Del Puma** | A well-known hiking trail that provides a moderate challenge and leads to stunning panoramic views at its peak. |
 | **Forest Trails** | Dense woodland trails perfect for nature walks and birdwatching, allowing visitors to immerse themselves in the tranquility of the wilderness. |
 | **Cultural Landmarks** | Small shrines or cultural markers that tell stories of the indigenous peoples and their connection to the land. |
+| **Scenic Pull-offs** | Designated stopping points along mountain roads for photography and sightseeing. |
 | **Picnic Areas** | Scenic spots for picnicking with family and friends, soaking in the vibrant natural beauty. |
 
 ## Daily Life
@@ -40,7 +41,7 @@ Las Tres Montañas is not only a geological wonder but also a cultural and recre
 
 ## In-Game References
 
-- **Scenes:** Sendero Del Puma, Forest Trails, Cultural Landmarks, Picnic Areas
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Scenes:** Sendero Del Puma, Forest Trails, Cultural Landmarks, Scenic Pull-offs, Picnic Areas
+- **Mysteries:** seasonal trail-access disputes between indigenous land-rights groups and the parks board; illegal dumping along mountain roads feeding the urban watershed; the stalled summit cable-car feasibility study that split the municipal budget
+- **Characters:** indigenous mountain guides and sacred-site caretakers; park rangers; Sendero del Puma tour operators; seasonal artisans at the scenic pull-offs
+- **Narrative Hooks:** balancing public access against the conservation of sacred/indigenous sites; a proposed summit cable car versus wilderness-preservation advocates; night-hiking safety and stargazing-tourism regulation

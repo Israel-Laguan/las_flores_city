@@ -40,6 +40,6 @@ The Línea 1 Roja was built to connect the city’s economic poles and has succe
 ## In-Game References
 
 - **Scenes:** North Las Flores Terminus, Central Interchange Stations, Old Las Flores Terminus
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** The 2059 deferred-maintenance cycle that has never been rescourced for the southern stations; the 2068 data-sharing agreement routing biometric door-camera logs to the LW Group security division for "pattern analysis"; the 78% southbound-morning / northbound-evening commuter asymmetry that measures how far the working class must travel to reach jobs it cannot afford to live near; the energy-saving platform-lighting dimming after 23:00 that the transport authority calls sustainability and platform users call a safety failure
+- **Characters:** Southbound commuters from Old Las Flores and working-class quarters catching the first 05:30 trains; northbound evening commuters carrying the same asymmetry in reverse; wealthy enclave residents who use private vehicles, corporate shuttles, and the enclave's internal transit instead; transport-authority station-cleaning crews cleaning the northern section three times a day and the southern twice; LW Group security analysts reviewing the shared camera feeds
+- **Narrative Hooks:** The spine of social mobility connects the city's economic poles while making the distance between them more efficient to traverse but no shorter in social terms; the line serves the wealthy's portion of the route to a higher standard than the working-class portion; the biometric cameras log every journey regardless of direction

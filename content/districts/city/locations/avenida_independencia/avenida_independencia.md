@@ -16,7 +16,7 @@ Avenida Independencia predates the free city itself — the east-west artery was
 | Place | Description |
 |---|---|
 | **Cargo Truck Outer Lanes** | The designated freight lanes along the avenue’s full length, used by port-bound cargo convoys running beyond their designed capacity since 2045. The congestion documentation record spans four consecutive transport authority studies without a remediation outcome. |
-| **Commercial Central Zone** | The mid-avenue commercial stretch where independent retail, restaurants, and services cluster between development pressure from the west and industrial decline pressure from the east. Two historical cultural landmarks have been converted or demolished since 2060. |
+| **Commercial Central Zone** | The mid-avenue commercial stretch where independent retail, restaurants, and services cluster between development pressure from the west and industrial decline pressure from the east. Three historical cultural landmarks — a 2038-vintage public library and two community theatres — have been converted or demolished since 2060. |
 | **Surface Bus Corridor** | Designated bus lanes along the avenue serving as the ground-level counterpart to the Blue Line metro. Encroached upon by freight vehicles during peak hours; repurposed as general traffic lanes after 22:00. |
 
 ## Daily Life
@@ -40,6 +40,6 @@ Avenida Independencia is the city’s most accurately named artery in an ironic 
 ## In-Game References
 
 - **Scenes:** Cargo Truck Outer Lanes, Commercial Central Zone, Surface Bus Corridor
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** Four consecutive transport-authority congestion studies (2045–2074) finding freight volume thirty percent above design capacity with no remediation allocated; the 2060 loss of the 2038 public library and two community theatres to conversion or demolition; the after-midnight atmospheric particulate averaging that brings the 40%-of-weekdays exceedance readings within annual compliance
+- **Characters:** Port-bound cargo-truck drivers and their convoy dispatchers; independent retailers and restaurant owners in the Commercial Central Zone; delivery drivers who double-park in the middle lanes; surface-bus drivers and Blue-Line overflow riders; transport-authority enforcement officers who document but never act
+- **Narrative Hooks:** Freight throughput has priority over pedestrian safety, transit reliability, and air quality; the avenue's costs are documented thoroughly and continuously but left unactioned; development pressure from the west meets industrial decline from the east

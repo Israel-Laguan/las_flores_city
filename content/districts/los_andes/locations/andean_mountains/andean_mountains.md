@@ -198,7 +198,7 @@ The Andean Mountains form a dramatic natural barrier rising significantly to the
 
 - [Los Andes District](../../districts/los_andes.md)
 - [Sendero del Puma](../natural/sendero_del_puma.md)
-- [Las Tres Montañas](./las_tres_montanas/las_tres_montanas.md)
+- [Las Tres Montañas](../las_tres_montanas/las_tres_montanas.md)
 - [Rio Grande Dam](../../andes/rio_grande_dam.md)
 - [Resort del Bosque](../../andes/resort_del_bosque.md)
 - [Indigenous Communities](../../communities/indigenous.md) *(to be created)*

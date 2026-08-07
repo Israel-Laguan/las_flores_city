@@ -41,6 +41,6 @@ Las Flores Free City is a microcosm of geographic and social diversity, spanning
 ## In-Game References
 
 - **Scenes:** Pacific Coastal District, Andean Mountain Corridor, Old Las Flores, Northern Elite Enclaves
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** The city's 270,000 residents spread across 150 square kilometres straddling the Pacific coastline and the Andean Mountains; the river valley's southern reaches preserving Old Las Flores and deep indigenous roots alongside the indigenous communities scattered through the southern valleys; the northern swamps transitioning into Amazonian terrain that frames the urban sprawl; the socioeconomic layering that puts the northern elite enclaves in upscale neighborhoods while the industrial south and working-class quarters bear the zone's contamination legacy
+- **Characters:** Pacific-coastal port workers and beachfront business owners; Andean foothills residents and mountain-reserve stewards; Old Las Flores river-valley families and indigenous community councils; Northern Elite Enclave professionals and executives; central-corridor commercial and industrial workers connecting the mountain and maritime edges
+- **Narrative Hooks:** Wealth and poverty, history and modernity, nature and urbanization exist in constant dialogue; the topography between ocean and mountains, desert and swamps tells the story of the city's people; the contrasts that shape the city's identity are written into its geography

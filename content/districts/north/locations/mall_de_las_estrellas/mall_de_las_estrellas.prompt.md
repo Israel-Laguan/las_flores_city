@@ -2,7 +2,7 @@
 name: Mall de las Estrellas
 type: background
 size: 1280x768
-source: docs/lore/districts/north/mall_de_las_estrellas/mall_de_las_estrellas.md
+source: content/districts/north/locations/mall_de_las_estrellas/mall_de_las_estrellas.md
 target: `scene.background_url` in `content/districts/north/locations/mall_de_las_estrellas/location_mall_de_las_estrellas.yaml`
 consumer: html-background
 ---
@@ -13,7 +13,7 @@ consumer: html-background
 **Pipeline stage:** draft → refine
 
 ## Prompt (Draft)
-Mall de las Estrellas in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. photorealistic portrait, hyper-detailed, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
+Mall de las Estrellas in Las Flores, daytime establishing shot, urban Latin American setting. Warm natural light, grounded human-scale architecture, desaturated editorial palette. No people, no text, no logos. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality.
 
 ## Prompt
 Mall de las Estrellas in Las Flores, establishing wide shot, premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos.

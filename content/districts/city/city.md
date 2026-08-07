@@ -71,7 +71,7 @@ Central City's strategic layout and emphasis on modernity, combined with its ric
 
 ### Red District
 
-> The Red District (adult entertainment and nightlife zone) is located in the [Central District (Suburbs)](central.md), on the frontier with the City District.
+> The Red District (adult entertainment and nightlife zone) is located in the [Central District (Suburbs)](../central/central.md), on the frontier with the City District.
 
 ### Commercial & Recreation
 | Landmark | Description |
@@ -81,7 +81,7 @@ Central City's strategic layout and emphasis on modernity, combined with its ric
 | **Acuario Las Flores** | Public aquarium showcasing local marine life |
 | **Parque Acuático Las Estrellas** | Aquatic park (LW Group subsidiary) |
 
-> Suburban retail, markets, and historic neighborhoods (Mercado Central, El Barrio de los Chinos, Parque de las Montañas) are located in the [Central District (Suburbs)](central.md), on the frontier with the City District.
+> Suburban retail, markets, and historic neighborhoods (Mercado Central, El Barrio de los Chinos, Parque de las Montañas) are located in the [Central District (Suburbs)](../central/central.md), on the frontier with the City District.
 
 ### Diplomatic
 | Landmark | Description |
@@ -89,7 +89,7 @@ Central City's strategic layout and emphasis on modernity, combined with its ric
 | **Consulado General de los Estados Unidos** | American consulate, Paseo de las Estrellas |
 | **Various Embassies & Consulates** | Brazil, Mexico, Germany, France, and others in the diplomatic zone |
 
-> The Chinese embassy is located in the [Central District (Suburbs)](central.md).
+> The Chinese embassy is located in the [Central District (Suburbs)](../central/central.md).
 
 ### Healthcare & Hospitality
 | Landmark | Description |
@@ -132,7 +132,7 @@ Central City's strategic layout and emphasis on modernity, combined with its ric
 
 | District | Connection |
 |---|---|
-| [Central](central.md) | Suburban ring surrounds the city core; major transit links |
+| [Central](../central/central.md) | Suburban ring surrounds the city core; major transit links |
 | [Industrial](industrial.md) | Connected via Avenida de las Naciones Sur; workforce commutes |
 | [Port](port.md) | Economic linkage through World Trade Center and trade offices |
 | [North](north.md) | Connected via Paseo de las Estrellas and AN Norte |

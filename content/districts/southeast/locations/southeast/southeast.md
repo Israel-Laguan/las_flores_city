@@ -43,6 +43,6 @@ The Southeast District exemplifies the intersection of global connectivity and l
 ## In-Game References
 
 - **Scenes:** Aeropuerto Internacional de Las Flores, Camino Verde, Sierra Verde, Airport Hotels & Restaurants, Transportation Hubs, Commercial Developments
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** cargo smuggling via passenger-baggage collusion at customs (the 2073 Terminal 2 breach investigation); a night-shift freight-terminal worker-safety audit after a conveyor-strike incident; the rideshare-vs-taxi cooperative algorithm-dispatch labour dispute; the hotel-to-affordable-housing conversion conflict on Camino Verde that priced long-time residents out overnight
+- **Characters:** customs inspectors manning Terminal 2; air-traffic controllers scheduling freight arrivals; ground-crew supervisors coordinating baggage and fuel trucks; rideshare dispatchers managing surge windows; hotel front-desk managers; seasonal hospitality workers on short-term contracts
+- **Narrative Hooks:** gig-economy precarity for the airport-adjacent driving workforce whose incomes swing with flight schedules; the gap between the airport's glamorous arrival hall and the behind-terminal precarity of its workforce; seasonal employment cycles tied to tourist peaks that leave Camino Verde residents month-to-month; airport-owned landlords raising rents on the hotels that house the shift workers

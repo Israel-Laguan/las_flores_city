@@ -33,13 +33,13 @@ After 22:00 Avenida de las Naciones empties of its diplomatic and tourist traffi
 
 ## Conclusion
 
-Avenida de las Naciones is the city’s most legible statement of what it aspires to project and what it has actually produced. The avenue functions as prestige infrastructure and as shelter simultaneously, which is not what its designers intended and is an accurate portrait of the city it connects.
+The avenue's prestige is bankrolled by the 2064 LW Group sponsorship concession that keeps the flag-pole LEDs lit and the banner content rotating, while the same structure shelters an encampment the city schedules to clear just out of tourist sight. What its designers envisioned as a monument to diplomatic arrival now doubles as shelter for those the avenue bypasses — a pairing the city sustains by keeping the imagery polished and the residents unacknowledged. Success, as measured in photographs and press releases, depends on that rotation obscuring what the avenue has actually produced.
 
 ---
 
 ## In-Game References
 
 - **Scenes:** Ceremonial Flag Mile, Monorail Elevated Section, Corporate Banner Array
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** The 2064 LW Group sponsorship concession that funds the flag-pole LEDs and banner content rotation; the encampment residents beneath the 2069 monorail columns who vanish during early-morning clearance operations; the atmospheric monitoring nodes that record clean air on the commercial stretch while the underslung encampments fall outside their coverage
+- **Characters:** LW Group sponsorship-management staff and their subsidiary's content-scheduling operators; monorail service, maintenance, and clearance crews; homeless residents sheltering beneath the monorail columns; diplomatic motorcade drivers and tourist-coach guides who never encounter the encampments
+- **Narrative Hooks:** The flag poles and corporate banners occupy the same poles; the city clears encampments only out of tourist sight; the avenue's prestige infrastructure doubles as shelter for those it bypasses

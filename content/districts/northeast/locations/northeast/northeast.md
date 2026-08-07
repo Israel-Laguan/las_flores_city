@@ -7,7 +7,7 @@
 
 ## Overview
 
-In the embrace of the Northeast District lies a captivating tableau of luxury, cultural heterogeneity, and technological advancement. This enclave, defined by its sumptuous residences and strong Chinese influence, unfurls a narrative of prosperity mingled with the challenges of multicultural coexistence.
+The neighborhoods below form the residential core of the Northeast District; for the district's full profile see the [Northeast District overview](../../northeast.md). This is an enclave of sumptuous residences and a strong Chinese influence, where LW Group-facilitated recruitment anchors a stable Chinese-majority community alongside a smaller international cohort — prosperity set against the day-to-day tensions of multicultural coexistence.
 
 ---
 
@@ -34,13 +34,13 @@ As night descends, the Northeast District’s ultra-modern facilities come alive
 
 ## Conclusion
 
-The Northeast District of Las Flores encapsulates the city’s spirit of progress, luxury, and cultural diversity. The LW Group’s recruitment strategy has drawn individuals from India, South Korea, Japan, and Saudi Arabia, alongside a significant Chinese populace.
+The neighborhoods carry the district's wealth and its unresolved questions forward into daily life: the same corporate recruitment that sustains the enclave also sets the expectations of "community harmony" that get negotiated on the joint management board month to month. For the wider district picture — Tensions, Technology & Modern Living, and cross-district ties — see the [Northeast District overview](../../northeast.md).
 
 ---
 
 ## In-Game References
 
 - **Scenes:** Luxury Residential Estates, Traditional Chinese Neighborhoods, Modern Transit Systems, Futuristic Entertainment Venues
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** LW Group housing-voucher allocation favouring Chinese staff and the resident resentment that followed; the "green zoning" ordinance letting wealthy homeowners block public-transit easements; the international-school waitlist allegedly rigged by corporate sponsorship contracts
+- **Characters:** Chinese management-board residents of the Luxury Residential Estates; international hires confined to gated service housing; district transit-maintenance crews; neighbourhood security officers contracted by the homeowners' association
+- **Narrative Hooks:** whether the corporate-recruitment model holds once LW Group pulls a major contract; the private transit lanes the affluent commute on versus the public routes they bypass; the school-entrance lottery as a proxy for the enclave's openness

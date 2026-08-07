@@ -40,6 +40,6 @@ The Bolsa de Valores Las Flores is the city’s most explicit statement of what 
 ## In-Game References
 
 - **Scenes:** Trading Floor, Lithium Futures Board, Public Observation Gallery
-- **Mysteries:** investigations, environmental and labour threads tied to this location
-- **Characters:** residents, workers, and officials associated with this location
-- **Narrative Hooks:** the tensions and contradictions that surface here
+- **Mysteries:** The 2052 Great Lithium Leak triggering the third-largest single-day volatility event in the exchange's history; the 2045 bilateral investment treaty that opened the floor to Chinese sovereign wealth; every contamination event, labour dispute, and extraction-licence negotiation registering first as a price movement on the lithium futures board
+- **Characters:** LW Group commodities-desk floor personnel and their overnight Asian-market monitor; quantitative modelling teams and overnight compliance filers on the analyst floors; algorithmic trading terminal operators; surveillance drone pilots; credentialed gallery visitors watching the lithium board update through sessions
+- **Narrative Hooks:** The algorithmic systems abstract the connection between the lithium futures prices and the physical extraction consequences in the Andean range, the contaminated river basin, and the Industrial Zone labour camps; the exchange prices everything it is permitted to price and ignores everything it is not
