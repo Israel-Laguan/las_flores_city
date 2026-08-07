@@ -10,3 +10,6 @@ metadata:
 lore_path: dong_van_der_meer.md
 asset_paths:
   portrait: dong_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/dong_van_der_meer/dong_van_der_meer__default.png
+    label: dev

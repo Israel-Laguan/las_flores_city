@@ -11,3 +11,6 @@ asset_paths:
   portrait: aria_welcome_bot__default.png
 
 lore_path: aria_welcome_bot.md
+portrait_urls:
+  - url: s3://las-flores/portraits/aria_welcome_bot/aria_welcome_bot__default.png
+    label: dev

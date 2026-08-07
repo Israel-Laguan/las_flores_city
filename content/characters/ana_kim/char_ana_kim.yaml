@@ -11,6 +11,8 @@ metadata:
   faction: independent
   status: Alive (left Las Flores, 2077)
 portrait_urls:
+  - url: s3://las-flores/portraits/ana_kim/ana_kim__default.png
+    label: dev
   - url: http://minio:9000/las-flores/portraits/ana_kim/neutral.png
     label: dev
     expression: neutral

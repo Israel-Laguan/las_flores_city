@@ -19,3 +19,6 @@ metadata:
 lore_path: alonzo_morales.md
 asset_paths:
   portrait: alonzo_morales__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alonzo_morales/alonzo_morales__default.png
+    label: dev

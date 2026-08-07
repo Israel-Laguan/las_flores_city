@@ -29,3 +29,6 @@ metadata:
 lore_path: carlos_konibo.md
 asset_paths:
   portrait: carlos_konibo__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/carlos_konibo/carlos_konibo__default.png
+    label: dev

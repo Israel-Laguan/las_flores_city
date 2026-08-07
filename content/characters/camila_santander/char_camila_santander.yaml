@@ -30,3 +30,6 @@ asset_paths:
   portrait: camila_santander__default.png
 
 lore_path: camila_santander.md
+portrait_urls:
+  - url: s3://las-flores/portraits/camila_santander/camila_santander__default.png
+    label: dev

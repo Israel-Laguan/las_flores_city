@@ -24,3 +24,6 @@ metadata:
 lore_path: camila_reyes.md
 asset_paths:
   portrait: camila_reyes__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/camila_reyes/camila_reyes__default.png
+    label: dev

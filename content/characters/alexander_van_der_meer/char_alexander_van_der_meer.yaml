@@ -33,3 +33,6 @@ metadata:
 lore_path: alexander_van_der_meer.md
 asset_paths:
   portrait: alexander_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alexander_van_der_meer/alexander_van_der_meer__default.png
+    label: dev

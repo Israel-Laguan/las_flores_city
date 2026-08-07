@@ -22,3 +22,6 @@ metadata:
 lore_path: alberto_santiago.md
 asset_paths:
   portrait: alberto_santiago__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alberto_santiago/alberto_santiago__default.png
+    label: dev

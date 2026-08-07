@@ -11,3 +11,6 @@ lore_path: amara_vargas.md
 narrative_path: amara_vargas.md
 asset_paths:
   portrait: amara_vargas__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/amara_vargas/amara_vargas__default.png
+    label: dev

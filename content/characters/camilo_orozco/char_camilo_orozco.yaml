@@ -12,3 +12,6 @@ narrative_path: camilo_orozco.md
 asset_paths:
   portrait: camilo_orozco__default.png
   biometric: camilo_orozco__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/camilo_orozco/camilo_orozco__default.png
+    label: dev

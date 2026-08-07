@@ -29,3 +29,6 @@ metadata:
 lore_path: daiyu_liu.md
 asset_paths:
   portrait: daiyu_liu__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/daiyu_liu/daiyu_liu__default.png
+    label: dev

@@ -21,3 +21,6 @@ metadata:
 lore_path: amina_patel.md
 asset_paths:
   portrait: amina_patel__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/amina_patel/amina_patel__default.png
+    label: dev

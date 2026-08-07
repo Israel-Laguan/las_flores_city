@@ -11,3 +11,6 @@ asset_paths:
   portrait: carlos_lopez__default.png
 
 lore_path: carlos_lopez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/carlos_lopez/carlos_lopez__default.png
+    label: dev

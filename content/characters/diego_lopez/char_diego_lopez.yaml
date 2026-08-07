@@ -11,3 +11,6 @@ asset_paths:
   portrait: diego_lopez__default.png
 
 lore_path: diego_lopez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/diego_lopez/diego_lopez__default.png
+    label: dev

@@ -11,3 +11,6 @@ asset_paths:
   portrait: alisha_morales__default.png
 
 lore_path: alisha_morales.md
+portrait_urls:
+  - url: s3://las-flores/portraits/alisha_morales/alisha_morales__default.png
+    label: dev

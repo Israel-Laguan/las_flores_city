@@ -11,3 +11,6 @@ asset_paths:
   portrait: carlos_hernandez_amlf__default.png
 
 lore_path: carlos_hernandez_amlf.md
+portrait_urls:
+  - url: s3://las-flores/portraits/carlos_hernandez_amlf/carlos_hernandez_amlf__default.png
+    label: dev

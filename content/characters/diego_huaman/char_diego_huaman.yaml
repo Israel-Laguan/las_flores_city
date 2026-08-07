@@ -28,3 +28,6 @@ metadata:
 lore_path: diego_huaman.md
 asset_paths:
   portrait: diego_huaman__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/diego_huaman/diego_huaman__default.png
+    label: dev
