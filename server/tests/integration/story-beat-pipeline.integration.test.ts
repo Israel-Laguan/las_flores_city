@@ -53,19 +53,23 @@ describe('Story Beat Pipeline Integration', () => {
     });
 
     // Run the SQL migration first so the table exists before we clean it. The
-    // DDL + whole-table reconcile are serialized against other suites' schema
-    // mutation (and migrateContent) via the shared schema lock.
+    // DDL + reconcile are serialized against other suites' schema mutation
+    // (and migrateContent) via the shared schema lock.
     await withSchemaLock(async () => {
       const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
       const migrationSql = await fs.readFile(migrationPath, 'utf-8');
       await pool.query(migrationSql);
 
-      // Fully reconcile the registry to a clean baseline. Clearing the whole
-      // table (rather than only a hardcoded slug list) means the row-count
-      // assertion reflects exactly what story_beats.yaml defines, and does not
-      // depend on pre-existing or orphaned rows left by other suites or by beats
-      // that have since been removed from the yaml.
-      await pool.query('DELETE FROM story_beats');
+      // Delete ONLY the canonical slugs defined by story_beats.yaml, never the
+      // whole table. story_beats is a shared registry that other suites (e.g.
+      // content-pipeline.test.ts) validate dialogue/scene beat cross-references
+      // against. A `DELETE FROM story_beats` would leave that registry
+      // irrecoverably empty for every other worker if this suite dies before
+      // afterAll runs (hard test failure, killed worker, or a throwing
+      // restore). Scoping the delete to the yaml's own slugs keeps the blast
+      // radius to exactly the rows this suite re-creates itself.
+      const canonicalSlugs = (await readCanonicalBeats()).map(beat => beat.slug);
+      await pool.query('DELETE FROM story_beats WHERE slug = ANY($1::text[])', [canonicalSlugs]);
     });
   });
 
@@ -186,9 +190,13 @@ describe('Story Beat Pipeline Integration', () => {
       ['story_beats.yaml', checksum, 'story_beat', 'prologue']
     );
 
-    // Verify all registry rows are present. beforeAll cleared the table, so the
-    // count must match the yaml exactly with no extra or orphaned rows.
-    const countResult = await pool.query('SELECT COUNT(*)::int AS count FROM story_beats');
+    // Verify all registry rows are present. beforeAll cleared exactly the
+    // canonical slugs, so count those rather than the whole table — unrelated
+    // rows owned by other suites may legitimately coexist here.
+    const countResult = await pool.query(
+      'SELECT COUNT(*)::int AS count FROM story_beats WHERE slug = ANY($1::text[])',
+      [beats.map(beat => beat.slug)]
+    );
     expect(countResult.rows[0].count).toBe(expectedCount);
 
     // Verify each expected beat exists with correct order

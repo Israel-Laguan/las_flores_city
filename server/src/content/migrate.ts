@@ -162,8 +162,15 @@ async function recordMigration(
 }
 
 async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
+  let client: pg.PoolClient;
   try {
-    const client = await oltpPool.connect();
+    client = await oltpPool.connect();
+  } catch (error) {
+    console.error('[migrate] Failed to acquire content migration lock:', error);
+    return null;
+  }
+
+  try {
     // Blocking advisory lock: wait for the global content-migration lock to be
     // released rather than try-and-give-up. Under concurrent invocations (e.g.
     // parallel integration-test workers sharing one Postgres instance, or a
@@ -175,6 +182,12 @@ async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
     return client;
   } catch (error) {
     console.error('[migrate] Failed to acquire content migration lock:', error);
+    // The lock query failed, so we cannot know whether the session actually
+    // holds the lock (e.g. the statement was cancelled after the server took
+    // it). Destroy the connection rather than returning it to the pool so any
+    // session-level lock is dropped with it, and so the checked-out client is
+    // never leaked on this error path.
+    client.release(true);
     return null;
   }
 }

@@ -34,27 +34,31 @@ async function applyMigration(filename: string): Promise<void> {
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
   );
-  try {
-    await withSchemaLock(async () => {
+  // The whole try/catch runs INSIDE the lock so the 046 fallback DDL below
+  // (which alters the shared migration_log table) is serialized too. Doing the
+  // fallback outside the lock would reintroduce exactly the concurrent-DDL
+  // deadlock this helper exists to prevent.
+  await withSchemaLock(async () => {
+    try {
       await queryOLTP(sql);
-    });
-  } catch (error: any) {
-    // For migration_log constraint updates, force apply even if it "fails"
-    if (filename === '046_stories.sql' && error.message?.includes('migration_log_content_type_check')) {
-      await queryOLTP(`
-        ALTER TABLE migration_log
-          DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
-        ALTER TABLE migration_log
-          ADD CONSTRAINT migration_log_content_type_check
-          CHECK (content_type IN (
-            'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
-            'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
-          ));
-      `);
-    } else {
-      throw error;
+    } catch (error: any) {
+      // For migration_log constraint updates, force apply even if it "fails"
+      if (filename === '046_stories.sql' && error.message?.includes('migration_log_content_type_check')) {
+        await queryOLTP(`
+          ALTER TABLE migration_log
+            DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
+          ALTER TABLE migration_log
+            ADD CONSTRAINT migration_log_content_type_check
+            CHECK (content_type IN (
+              'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
+              'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
+            ));
+        `);
+      } else {
+        throw error;
+      }
     }
-  }
+  });
 }
 
 describe('Migration drift guard', () => {

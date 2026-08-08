@@ -1,4 +1,5 @@
-import { oltpPool } from '../../src/database/connection.js';
+import type pg from 'pg';
+import { oltpPool, olapPool } from '../../src/database/connection.js';
 
 /**
  * Shared blocking-advisory-lock helper for integration tests.
@@ -20,29 +21,69 @@ import { oltpPool } from '../../src/database/connection.js';
  * used so callers wait for the current holder to finish instead of failing-fast
  * under contention. Lock release + connection release are guaranteed by the
  * `finally`.
+ *
+ * IMPORTANT — advisory locks are per-database. Postgres advisory locks live in
+ * the shared lock table but are scoped to the database of the session holding
+ * them, so a lock taken on the OLTP database is invisible to sessions
+ * mutating the OLAP/analytics database (a separate server on another port).
+ * Callers applying DDL to the analytics database must therefore lock on the
+ * *same* database via `withOlapSchemaLock`, otherwise the lock provides no
+ * mutual exclusion at all.
  */
 const SCHEMA_MUTATION_LOCK_KEY = 'content_migration';
 
-/**
- * Runs `fn` while holding an exclusive advisory lock that is shared by every
- * schema-mutating integration suite (and by `migrateContent`). Use this to wrap
- * DDL migration-application, whole-table reconciles, or any other operation that
- * must not run while a sibling worker is mutating the shared schema.
- */
-export async function withSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
-  const client = await oltpPool.connect();
+async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promise<T> {
+  const client = await pool.connect();
   try {
     await client.query(`SELECT pg_advisory_lock(hashtext($1))`, [
       SCHEMA_MUTATION_LOCK_KEY,
     ]);
+  } catch (error) {
+    // Acquisition failed and the session's lock state is unknown — destroy the
+    // connection instead of returning a possibly-locked one to the pool.
+    client.release(true);
+    throw error;
+  }
+
+  try {
     return await fn();
   } finally {
     try {
       await client.query(`SELECT pg_advisory_unlock(hashtext($1))`, [
         SCHEMA_MUTATION_LOCK_KEY,
       ]);
-    } finally {
       client.release();
+    } catch {
+      // The unlock failed, so this session may still hold the session-level
+      // advisory lock. Returning it to the pool would silently carry the lock
+      // onto the next unrelated query and block every future schema mutator
+      // for the rest of the run. Destroy the connection instead: closing the
+      // backend releases all of its session locks. Mirrors the
+      // `client.release(true)` pattern in src/content/migrate.ts.
+      client.release(true);
     }
   }
+}
+
+/**
+ * Runs `fn` while holding an exclusive advisory lock that is shared by every
+ * schema-mutating integration suite (and by `migrateContent`). Use this to wrap
+ * DDL migration-application, whole-table reconciles, or any other operation that
+ * must not run while a sibling worker is mutating the shared schema.
+ *
+ * Locks on the OLTP database — use for DDL against OLTP only.
+ */
+export async function withSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
+  return withPoolSchemaLock(oltpPool, fn);
+}
+
+/**
+ * OLAP/analytics counterpart of `withSchemaLock`. Advisory locks are
+ * per-database, so DDL against the analytics database (e.g.
+ * `025_marketplace_olap.sql`, which alters the shared `player_events` table)
+ * must serialize on a lock held in that same database — a lock taken on OLTP
+ * would not exclude anything.
+ */
+export async function withOlapSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
+  return withPoolSchemaLock(olapPool, fn);
 }
