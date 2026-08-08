@@ -5,7 +5,7 @@ size: 832x1248
 source: content/characters/valentina_cruz/valentina_cruz.md
 target: `asset_paths.portrait` in `content/characters/valentina_cruz/char_valentina_cruz.yaml`
 consumer: portrait
-aspect_ratio: 3:4
+aspect_ratio: 2:3
 ---
 
 # Prompt: Valentina Cruz

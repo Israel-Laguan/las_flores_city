@@ -35,8 +35,10 @@ function buildChoiceButton(choice: ChoiceData, index: number, currentTimeBlocks:
     ? `<span class="tb-cost-label ${canAfford ? 'tb-affordable' : 'tb-unaffordable'}">[-${tbCost} TB] </span>`
     : '';
 
+  // Sign must be derived from the amount: negative changes would otherwise
+  // render as a broken "[+-1 friendship]" badge.
   const relationshipLabel = choice.relationship_change
-    ? `<span style="color:var(--neon-magenta);font-size:10px;margin-left:8px;">[+${choice.relationship_change.amount} ${choice.relationship_change.stat}]</span>`
+    ? `<span style="color:var(--neon-magenta);font-size:10px;margin-left:8px;">[${choice.relationship_change.amount >= 0 ? '+' : ''}${choice.relationship_change.amount} ${choice.relationship_change.stat}]</span>`
     : '';
 
   const disabledAttr = !canAfford ? 'disabled' : '';

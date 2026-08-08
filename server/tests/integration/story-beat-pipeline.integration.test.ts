@@ -3,7 +3,7 @@
  *
  * Validates:
  * - SQL migration creates the story_beats table with correct schema (PK on slug, UNIQUE on "order")
- * - Content file processing upserts all 12 beats with correct slugs and orders
+ * - Content file processing upserts every beat in story_beats.yaml with correct slugs and orders
  * - Migration logging records the story_beat content type
  *
  * Feature: story-beat-definition, Requirement 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
@@ -30,21 +30,17 @@ const { Pool } = pg;
 // Resolve content directory relative to the server workspace
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
-// Expected canonical beats from content/story_beats.yaml
-const EXPECTED_BEATS = [
-  { slug: 'prologue', order: 0 },
-  { slug: 'act1_awakening', order: 10 },
-  { slug: 'act1_city_arrived', order: 20 },
-  { slug: 'act1_first_contact', order: 30 },
-  { slug: 'act2_mystery_active', order: 100 },
-  { slug: 'act3_finale_unlocked', order: 200 },
-  { slug: 'finale_complete', order: 300 },
-  { slug: 'beat_sofia_intro', order: 400 },
-  { slug: 'beat_sofia_alberto_risk', order: 401 },
-  { slug: 'beat_sofia_trust_building', order: 402 },
-  { slug: 'beat_sofia_corruption_network', order: 403 },
-  { slug: 'beat_sofia_resolution', order: 404 },
-];
+// Canonical beats are read from content/story_beats.yaml at runtime rather than
+// hardcoded, so the suite stays correct as beats are added or removed.
+async function readCanonicalBeats(): Promise<
+  Array<{ slug: string; label: string; order: number; description: string }>
+> {
+  const yamlContent = await fs.readFile(path.join(CONTENT_DIR, 'story_beats.yaml'), 'utf-8');
+  const yamlData = yaml.load(yamlContent) as {
+    beats: Array<{ slug: string; label: string; order: number; description: string }>;
+  };
+  return yamlData.beats;
+}
 
 describe('Story Beat Pipeline Integration', () => {
   let pool: pg.Pool;
@@ -55,17 +51,17 @@ describe('Story Beat Pipeline Integration', () => {
       connectionTimeoutMillis: 5000,
     });
 
-    // Clean up only the canonical slugs this suite manages (collision-avoidance:
-    // these are the fixed slugs from content/story_beats.yaml under test).
-    await pool.query(
-      'DELETE FROM story_beats WHERE slug = ANY($1::text[])',
-      [EXPECTED_BEATS.map(b => b.slug)],
-    );
-
-    // Run the SQL migration to create the table
+    // Run the SQL migration first so the table exists before we clean it.
     const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
     const migrationSql = await fs.readFile(migrationPath, 'utf-8');
     await pool.query(migrationSql);
+
+    // Fully reconcile the registry to a clean baseline. Clearing the whole
+    // table (rather than only a hardcoded slug list) means the row-count
+    // assertion reflects exactly what story_beats.yaml defines, and does not
+    // depend on pre-existing or orphaned rows left by other suites or by beats
+    // that have since been removed from the yaml.
+    await pool.query('DELETE FROM story_beats');
   });
 
   afterAll(async () => {
@@ -167,9 +163,9 @@ describe('Story Beat Pipeline Integration', () => {
     // Load the canonical story_beats.yaml to get full expected data
     const yamlPath = path.join(CONTENT_DIR, 'story_beats.yaml');
     const yamlContent = await fs.readFile(yamlPath, 'utf-8');
-    const yamlData = yaml.load(yamlContent) as { beats: Array<{ slug: string; label: string; order: number; description: string }> };
+    const beats = await readCanonicalBeats();
     const checksum = crypto.createHash('sha256').update(yamlContent).digest('hex');
-    const expectedCount = yamlData.beats.length;
+    const expectedCount = beats.length;
 
     // Process the content file
     const result = await processContentFile(yamlPath);
@@ -182,12 +178,13 @@ describe('Story Beat Pipeline Integration', () => {
       ['story_beats.yaml', checksum, 'story_beat', 'prologue']
     );
 
-    // Verify all registry rows are present
+    // Verify all registry rows are present. beforeAll cleared the table, so the
+    // count must match the yaml exactly with no extra or orphaned rows.
     const countResult = await pool.query('SELECT COUNT(*)::int AS count FROM story_beats');
     expect(countResult.rows[0].count).toBe(expectedCount);
 
     // Verify each expected beat exists with correct order
-    for (const expectedBeat of yamlData.beats) {
+    for (const expectedBeat of beats) {
       const beatResult = await pool.query(
         'SELECT slug, "order", label, description FROM story_beats WHERE slug = $1',
         [expectedBeat.slug]

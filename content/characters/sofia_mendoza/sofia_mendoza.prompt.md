@@ -5,7 +5,7 @@ size: 832x1248
 source: content/characters/sofia_mendoza/sofia_mendoza.md
 target: `asset_paths.portrait` in `content/characters/sofia_mendoza/char_sofia_mendoza.yaml`
 consumer: portrait
-aspect_ratio: 3:4
+aspect_ratio: 2:3
 ---
 
 # Prompt: Sofia Mendoza
