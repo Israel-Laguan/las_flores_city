@@ -13,46 +13,6 @@ metadata:
 portrait_urls:
   - url: s3://las-flores/portraits/ana_kim/ana_kim__default.png
     label: dev
-    expression: default
-  - url: http://minio:9000/las-flores/portraits/ana_kim/neutral.png
-    label: dev
-    expression: neutral
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__focused.png
-    label: dev
-    expression: focused
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__determined.png
-    label: dev
-    expression: determined
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__vulnerable.png
-    label: dev
-    expression: vulnerable
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__smirk.png
-    label: dev
-    expression: smirk
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__happy.png
-    label: dev
-    expression: happy
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__tender.png
-    label: dev
-    expression: tender
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__afraid.png
-    label: dev
-    expression: afraid
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__sad.png
-    label: dev
-    expression: sad
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__shocked.png
-    label: dev
-    expression: shocked
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__angry.png
-    label: dev
-    expression: angry
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__calculating.png
-    label: dev
-    expression: calculating
-  - url: s3://las-flores/portraits/ana_kim/ana_kim__surprised.png
-    label: dev
-    expression: surprised
 lore_path: ana_kim.md
 asset_paths:
   portrait: ana_kim__default.png
