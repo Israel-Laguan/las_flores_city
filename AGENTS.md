@@ -303,21 +303,26 @@ Every test fixture must use a **private UUID** that no other test touches, decla
 
 The fix (applied in `LeaderboardWorker.ts`): each mystery now gets a **fresh DB client** in the loop (`client = await oltpPool.connect()` inside the `for`), so a failure/rollback on one mystery can never abort another's transaction.
 
-When writing tests that invoke the worker:
-- Keep your mystery ID truly unique (see rule 1).
-- Assert only your own mystery's state, not global side-effects.
-- Under `--runInBand` (the `test:integration` script), the worker only sees the test's own mystery, making assertions deterministic.
+**Self-isolation for worker suites** (so they never race a sibling worker): `processExpiredMysteries()` accepts an optional `mysteryIds?: readonly string[]` scope. Both `aftermath.worker.test.ts` and `leaderboard.simulation.test.ts`:
+- seed their mystery **non-expired** (`expires_at = NOW() + INTERVAL '1 hour'`) so a concurrent filterless sweep can never finalize it mid-seed;
+- expire it right before the call (`UPDATE mysteries SET ... expires_at = NOW() - INTERVAL '10 minutes' WHERE id = OWN`) and invoke `processExpiredMysteries([OWN_ID])`.
 
-#### 3. Run integration tests sequentially
+This keeps assertions deterministic under parallel workers with no global worker lock. Production callers (cron tick in `index.ts`, `trigger_leaderboard_worker.ts`) keep using the no-arg form (finalize everything).
 
-`npm test` (full suite) runs unit+smoke in parallel, then integration with `--runInBand`:
+#### 3. Integration tests run in parallel — schema-mutating operations serialize on a shared advisory lock
+
+`npm test` (full suite) runs unit+smoke in parallel, then integration in parallel:
 
 ```bash
 npx --no-install jest tests/unit tests/smoke --forceExit \
-  && npx --no-install jest tests/integration --runInBand --detectOpenHandles --forceExit
+  && npx --no-install jest tests/integration --detectOpenHandles --forceExit
 ```
 
-The dedicated `test:integration` script already uses `--runInBand`. CI uses `test:integration`, so CI is safe. The `npm test` command now also runs integration sequentially for reliable local results.
+Integration tests share one Postgres instance. Concurrent DDL (`create`/`alter table` in `beforeAll`) takes `ACCESS EXCLUSIVE` table locks and can deadlock across workers, so every suite's `applyMigration(...)` (schema DDL) and `migrateContent()` acquire a **shared blocking advisory lock** that waits rather than fails-fast.
+
+- Helper: `server/tests/helpers/schemaLock.ts` → `withSchemaLock(fn)`. It takes the **same advisory key as `migrateContent`** (`content_migration`) so one worker at a time performs schema/content mutation; data-only suites run unlocked and in parallel.
+- Wrap **DDL + whole-table reconciles** in `withSchemaLock` (the 15 `applyMigration` helpers, `story-beat-pipeline`'s `DELETE FROM story_beats` + restore).
+- Never wrap ordinary row-level data mutations — let those run in parallel.
 
 To run a single integration test file:
 ```bash
@@ -326,11 +331,11 @@ npm run test:integration -- tests/integration/aftermath.worker.test.ts
 npm run test:integration --workspace=server -- tests/integration/aftermath.worker.test.ts
 ```
 
-#### 4. `migrateContent` advisory lock now retries
+#### 4. `migrateContent` acquires a blocking advisory lock
 
-`migrateContent()` uses `pg_try_advisory_lock(hashtext('content_migration'))` — a global Postgres lock. The lock-failure previously returned `success=false` immediately (the exact `migration.drift` symptom). Now it retries 5× with 200ms backoff before giving up, providing bounded transient-contention mitigation: under mild concurrency the retries let callers acquire the lock; however, a lock held beyond the ~800ms retry window can still return `success: false`. If true serialization is required, the implementation should be changed to wait for the lock rather than retrying-and-giving-up.
+`migrateContent()` acquires `pg_advisory_lock(hashtext('content_migration'))` and **waits** for the current holder instead of try-and-give-up (previously `pg_try_advisory_lock` + 5×200ms retries that could return `success: false` — the exact `migration.drift` flake). Because the same advisory key is used by `tests/helpers/schemaLock.ts`, a migration here also serializes against other suites' schema DDL.
 
-If you add a new test that calls `migrateContent`, be aware the lock is global. Under `--runInBand` there's no contention; always run integration tests with `--runInBand`.
+If you add a new test that calls `migrateContent`, be aware the `content_migration` lock is global and **blocking**; call it from outside any `withSchemaLock` (or it nil-safe waits) and remember the whole `migration.drift` scenarios serialize via the shared lock.
 
 #### 5. `closeConnections()`/`closeRedis()` in per-file `afterAll` is redundant but safe
 

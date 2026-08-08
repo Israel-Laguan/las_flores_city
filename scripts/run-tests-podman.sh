@@ -170,14 +170,14 @@ TEST_PATH="${TEST_PATH%/}"
 # Strip redundant "server/" prefix so the path is relative to SERVER_DIR
 TEST_PATH="${TEST_PATH#server/}"
 if [[ "$TEST_PATH" == *"tests/integration"* ]]; then
-    # Use test:integration (--runInBand) for integration test paths
+    # Use test:integration (parallel; DDL/worker suites serialize via schemaLock)
     TEST_COMMAND="cd ${SERVER_DIR} && npm run test:integration -- ${TEST_PATH}"
 elif [[ "$TEST_PATH" == *"tests/unit"* ]]; then
     TEST_COMMAND="cd ${SERVER_DIR} && npm run test:unit -- ${TEST_PATH}"
 elif [[ "$TEST_PATH" == *"tests/smoke"* ]]; then
     TEST_COMMAND="cd ${SERVER_DIR} && npm run test:smoke -- ${TEST_PATH}"
 else
-    # Default: run full suite (unit+smoke in parallel, then integration sequentially)
+    # Default: run full suite (unit+smoke in parallel, then integration in parallel)
     TEST_COMMAND="cd ${SERVER_DIR} && npm test -- ${TEST_PATH}"
 fi
 
