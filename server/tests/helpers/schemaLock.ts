@@ -45,22 +45,41 @@ async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promi
     throw error;
   }
 
+  let succeeded = false;
   try {
-    return await fn();
+    const value = await fn();
+    succeeded = true;
+    return value;
   } finally {
     try {
       await client.query(`SELECT pg_advisory_unlock(hashtext($1))`, [
         SCHEMA_MUTATION_LOCK_KEY,
       ]);
       client.release();
-    } catch {
+    } catch (error) {
       // The unlock failed, so this session may still hold the session-level
       // advisory lock. Returning it to the pool would silently carry the lock
       // onto the next unrelated query and block every future schema mutator
       // for the rest of the run. Destroy the connection instead: closing the
-      // backend releases all of its session locks. Mirrors the
-      // `client.release(true)` pattern in src/content/migrate.ts.
+      // backend releases all of its session locks.
       client.release(true);
+
+      // Always log: a failed unlock is a real infrastructure problem and must
+      // never vanish silently from a test run.
+      console.error(
+        `[schemaLock] Failed to release advisory lock '${SCHEMA_MUTATION_LOCK_KEY}'; connection destroyed to drop it:`,
+        error
+      );
+
+      // Only propagate when `fn` itself succeeded. This block runs in a
+      // `finally`, so rethrowing unconditionally would overwrite a genuine
+      // test failure from `fn` with this secondary lock error and hide the
+      // assertion the developer actually needs to see. When `fn` already
+      // threw, that error stays the one that propagates and this one is
+      // surfaced via the log above.
+      if (succeeded) {
+        throw error;
+      }
     }
   }
 }
