@@ -1,11 +1,7 @@
 # Prompt: Los Culebras Gang
 
-[CONSUMER: html-background]
-**Type:** organization illustration
-**Dimensions:** 1920x1080
-
 ## Prompt — Base
-A gritty street scene in South Las Flores depicting the Los Culebras gang in action. In the foreground, a group of young men (16-25 years old) on motorcycles and standing on a street corner, wearing casual but intimidating clothing: leather jackets, caps, hoodies with the hoods up, bandanas. Their expressions are a mix of defiance, boredom, and menace. One young man who looks like Alberto Ramirez (16, restless expression) stands slightly apart, looking uncertain. The gang members have various tattoos, including snake motifs. The setting is a worn working-class neighborhood with peeling paint on buildings, graffiti on walls (including Culebras tags), and a sense of decay. In the background, the Minera Estrella mining facility looms on the mountain slope, its industrial glow contrasting with the modest homes. The lighting is streetlights at dusk, creating pools of warm amber light. The mood is tense and dangerous, but with a sense of sad desperation underneath. Cinematic composition, photorealistic, soft cyberpunk aesthetic, vibrant but natural colors with grounded realism, detailed textures, DC/Marvel-quality illustration.
+A gritty street scene. A group of young men (16–25) on motorcycles and on a street corner in casual intimidating clothing: leather jackets, caps, hoodies up, bandanas. Expressions mix defiance and menace; one restless teen stands apart. Snake-motif tattoos. Worn working-class neighborhood: peeling paint, graffiti, decay. An industrial mining facility looms on a mountain slope, its glow contrasting with modest homes. Streetlights at dusk cast amber pools. Cinematic composition, photorealistic, soft cyberpunk aesthetic, vibrant natural colors, grounded realism, detailed textures, DC/Marvel-quality illustration.
 
 ## Negative Prompt
---no androids, no robots, no cybernetic humans, no implants, no neural ports, no chrome, no extreme violence, no blood, no gore, no dismemberment, no guns visible, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no fantasy elements, no magic, no supernatural, no glowing clothing, no holograms, no futuristic technology
+--no text overlay, watermarks, neon, satellites, androids, robots, cybernetics, futuristic sci-fi, holograms, extreme violence, gore, guns, magic, anime, modern day, 2020s

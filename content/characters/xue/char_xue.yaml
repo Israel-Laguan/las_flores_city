@@ -10,3 +10,6 @@ metadata:
 lore_path: xue.md
 asset_paths:
   portrait: xue__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/xue/xue__default.png
+    label: dev

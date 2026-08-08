@@ -12,3 +12,6 @@ metadata:
 lore_path: simons_de_vries.md
 asset_paths:
   portrait: simons_de_vries__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/simons_de_vries/simons_de_vries__default.png
+    label: dev

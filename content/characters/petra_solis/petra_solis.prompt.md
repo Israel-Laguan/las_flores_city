@@ -17,3 +17,15 @@ A professional, composed woman in her early fifties with silver-streaked dark ha
 - Managed expression (warm but guarded)
 - Professional lighting (government office)
 - Subtle unease in the eyes
+
+## Expression Variants
+
+- **`petra_solis__default.png`**: Use the base portrait as reference. Carefully managed warm-but-guarded expression, looking slightly off-camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Semi-realistic digital painting, muted earth tones with subtle warm highlights.
+
+- **`petra_solis__calculating.png`**: Use the base portrait as reference. The cold, calculating reality beneath the persona, looking intensely at the camera, 3/4 take. Eyes narrowed and sharp, the practiced smile gone, lips pressed in a thin, assessing line. The pause before she speaks — already three moves ahead. Keep the same art style as reference, same suit and styling, government office lighting. Semi-realistic digital painting, muted earth tones with subtle warm highlights.
+
+- **`petra_solis__happy.png`**: Use the base portrait as reference. The warm, concerned public persona in full display, looking at the camera, 3/4 take. Eyes crinkling with practiced warmth, lips curved in a reassuring politician's smile. Keep the same art style as reference, same suit and styling, government office lighting. Semi-realistic digital painting, muted earth tones with subtle warm highlights.
+
+- **`petra_solis__contemplative.png`**: Use the base portrait as reference. A guarded moment of reflection, looking thoughtfully at the camera, 3/4 take. Eyes drifting into the middle distance, the smile fading, jaw relaxing. Weighing a political calculation. Keep the same art style as reference, same suit and styling, government office lighting. Semi-realistic digital painting, muted earth tones with subtle warm highlights.
+
+- **`petra_solis__smirk.png`**: Use the base portrait as reference. A private, knowing smirk — the warmth briefly stripped away, looking at the camera, 3/4 take. Eyes narrowing with private satisfaction, one brow lifted, lips curling in a controlled, self-aware curve. Keep the same art style as reference, same suit and styling, government office lighting. Semi-realistic digital painting, muted earth tones with subtle warm highlights.

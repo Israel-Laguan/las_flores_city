@@ -57,7 +57,7 @@ const TEMPLATES = {
     const accessoriesDesc = (accessories && accessories !== 'undefined') ? accessories : 'personal items reflecting their role';
     const ageLabel = /^\d+$/.test(age) ? age + '-year-old' : age;
     const heritageNote = heritage ? `Multicultural heritage (${heritage}).` : '';
-    const draftPrompt = `[CONSUMER: portrait] ${name}, ${ageLabel} ${role}, ${district}. ${physicalDesc}. ${expressionDesc}. ${clothingDesc}, ${accessoriesDesc}. ${setting}. ${lighting}, ${shadows}. ${heritageNote} Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.`;
+    const draftPrompt = `[CONSUMER: portrait] ${name}, ${ageLabel} ${role}, ${district}. ${physicalDesc}. ${expressionDesc}. ${clothingDesc}, ${accessoriesDesc}. ${setting}. ${lighting}, ${shadows}. ${heritageNote} Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background.`;
     const fullPrompt = `[CONSUMER: portrait]
 Bust portrait of ${name}, a ${ageLabel} ${role} from Las Flores's ${district}.
 ${physicalDesc}.
@@ -66,15 +66,18 @@ Dressed in ${clothingDesc}, with ${accessoriesDesc}.
 Background: ${setting}.
 Lighting: ${lighting}, casting ${shadows}.
 ${mood}. ${heritageNote}
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.`;
-    return `# Prompt: ${name} (portrait)
-
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** ${sourcePath}
-**Target field:** \`portrait_urls[].url\` in \`content/characters/char_${slugify(name)}.yaml\`
-**Tool:** NIM (draft) → Flux/Seedance (refine)
-**Pipeline stage:** draft → refine
+Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background.`;
+    const frontmatter = `---
+name: ${name}
+type: portrait
+size: 1024x1024
+aspect_ratio: 3:4
+source: ${sourcePath}
+target: \`portrait_urls[].url\` in \`content/characters/char_${slugify(name)}.yaml\`
+consumer: portrait
+---
+`;
+    return `${frontmatter}# Prompt: ${name} (portrait)
 
 ## Prompt (Draft)
 ${draftPrompt}
@@ -106,23 +109,17 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     const cleanMood = uniqueMoodWords.join(', ');
     const styleDesc = 'Premium contemporary graphic novel realism, refined editorial line art illustration.';
     const draftPrompt = `[CONSUMER: html-background] Scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}. ${lighting}. ${cleanMood}${contrast ? `, contrast: ${contrast}` : ''}. ${styleDesc} No people, no text.`;
-    const fullPrompt = `Scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${lighting}, ${cleanMood}${contrast ? `, capturing the contrast between ${contrast}` : ''}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos, 1920×1080.`;
-    return `---
+    const fullPrompt = `Scene of ${name} in Las Flores, ${timeOfDay}, ${keyElements}, ${lighting}, ${cleanMood}${contrast ? `, capturing the contrast between ${contrast}` : ''}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No people, no text, no logos.`;
+    const frontmatter = `---
 name: ${name}
 type: background
+aspect_ratio: 16:9
 source: ${sourcePath}
 target: \`scene.background_url\` in \`content/districts/_draft/locations/location_${slugify(name)}.yaml\`
 consumer: html-background
 ---
-
-# Prompt: ${name}
-
-[CONSUMER: html-background]
-**Type:** background
-**Source:** ${sourcePath}
-**Target field:** \`scene.background_url\` in \`content/districts/_draft/locations/location_${slugify(name)}.yaml\`
-**Tool:** NIM (draft) → Flux/Seedance (refine)
-**Pipeline stage:** draft → refine
+`;
+    return `${frontmatter}# Prompt: ${name}
 
 ## Prompt (Draft)
 ${draftPrompt}
@@ -151,10 +148,11 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
   tile({ name, terrainType, description, colors }) {
     const title = name.toLowerCase().includes(terrainType.toLowerCase()) ? name : `${name} (${terrainType})`;
     const draftPrompt = `[CONSUMER: tile] Seamless top-down tile texture of ${description}, Las Flores 2077. ${colors ? `Color palette: ${colors}.` : ''} No objects, no people, tileable.`;
-    const fullPrompt = `Seamless top-down tile texture of ${description}, Las Flores 2077. ${colors ? `Color palette: ${colors}.` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No objects, no people, no external shadows, no horizon, no sky, tileable, 256×256.`;
+    const fullPrompt = `Seamless top-down tile texture of ${description}, Las Flores 2077. ${colors ? `Color palette: ${colors}.` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. No objects, no people, no external shadows, no horizon, no sky, tileable.`;
     return `---
 name: ${title}
 type: tile
+aspect_ratio: 1:1
 source: scripts/asset-pipeline/registries/tiles.yaml
 target: \`base_image_url\` in \`content/maps/map_*.yaml\`
 consumer: tile
@@ -182,10 +180,11 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
   overlay({ name, description, sourcePath }) {
     const draftPrompt = `[CONSUMER: phaser-sprite] Top-down view of ${name}, Las Flores 2077, ${description}. Transparent background, centered.`;
-    const fullPrompt = `Top-down view of ${name}, Las Flores 2077, ${description}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered composition, no external shadows, 256×256.`;
+    const fullPrompt = `Top-down view of ${name}, Las Flores 2077, ${description}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered composition, no external shadows.`;
     return `---
 name: ${name}
 type: overlay
+aspect_ratio: 1:1
 source: ${sourcePath}
 target: \`overlay_image_url\` in \`content/maps/map_*.yaml\`
 consumer: phaser-sprite
@@ -217,6 +216,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
     return `---
 name: ${name}
 type: thematic
+aspect_ratio: 16:9
 source: content/lore/events/${slugify(name)}.md
 target: Vault entry or loading screen
 consumer: thematic
@@ -227,7 +227,6 @@ consumer: thematic
 **Type:** thematic
 **Source:** content/lore/events/${slugify(name)}.md
 **Target:** Vault entry or loading screen
-**Tool:** MidJourney --v 6 --ar 16:9 --style raw
 
 ## Prompt (Draft)
 ${draftPrompt}
@@ -290,11 +289,12 @@ theme, ${mood.toLowerCase()}, cinematic, las flores, cyberpunk
 
   'phone-wallpaper'({ name, description, timeOfDay, mood, colors }) {
     const draftPrompt = `[CONSUMER: html-background] Phone wallpaper Las Flores 2077: ${description}. ${timeOfDay || 'ambient'}, ${mood}. ${colors ? `Palette: ${colors}.` : ''} Vertical composition, no text.`;
-    const fullPrompt = `Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay || 'ambient time of day'}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Vertical composition, no text, no logos, 1080×1920.`;
+    const fullPrompt = `Phone wallpaper for Las Flores 2077, ${description}. ${timeOfDay || 'ambient time of day'}, ${mood}. ${colors ? `Color palette: ${colors}.` : ''} Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Vertical composition, no text, no logos.`;
     return `---
 name: ${name}
 type: phone-wallpaper
 size: 1080x1920
+aspect_ratio: 9:16
 target: Phone OS home screen wallpaper
 consumer: html-background
 ---
@@ -303,7 +303,6 @@ consumer: html-background
 
 [CONSUMER: html-background]
 **Type:** phone-wallpaper
-**Dimensions:** 1080×1920
 **Target:** Phone OS home screen wallpaper
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -333,11 +332,12 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
   'app-icon'({ name, description, iconStyle }) {
     const draftPrompt = `[CONSUMER: phaser-sprite] App icon: ${description}, Las Flores 2077, ${iconStyle || 'minimalist geometric icon'}. Transparent background, centered, no text.`;
-    const fullPrompt = `Phone app icon design: ${description}, Las Flores 2077 style, ${iconStyle || 'minimalist geometric icon'}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered, 128×128, sharp edges, no text.`;
+    const fullPrompt = `Phone app icon design: ${description}, Las Flores 2077 style, ${iconStyle || 'minimalist geometric icon'}. Premium contemporary graphic novel realism, refined editorial line art illustration, painterly soft shading, muted desaturated colors, smooth gradients, crisp rendering, minimal surface texture, ultra-clean 4k. Transparent background, centered, sharp edges, no text.`;
     return `---
 name: ${name}
 type: app-icon
 size: 128x128
+aspect_ratio: 1:1
 target: Phone OS app grid icon
 consumer: phaser-sprite
 ---
@@ -346,7 +346,6 @@ consumer: phaser-sprite
 
 [CONSUMER: phaser-sprite]
 **Type:** app-icon
-**Dimensions:** 128×128
 **Target:** Phone OS app grid icon
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
@@ -539,7 +538,7 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 
 ## 1. Face Reference
 Use the horizontal and vertical face arcs from the biometric phase
-(\`content/characters/${slugify(name)}/${slugify(name)}_biometric.prompt.md\`).
+(\`content/characters/${slugify(name)}/${slugify(name)}.biometric.prompt.md\`).
 Ethnicity/face base and expressions are defined there.
 
 ## 2. Body Reference (minimal / plain clothes)
@@ -1029,7 +1028,7 @@ function processFile(filePath, type, force) {
   let outputPath;
   if (type === 'biometric' || type === 'character-sheet') {
     const slug = path.basename(filePath, '.yaml').replace(/^char_/, '');
-    const suffix = type === 'biometric' ? '_biometric' : '.character-sheet';
+    const suffix = type === 'biometric' ? '.biometric' : '.character-sheet';
     const dir = path.resolve('content/characters', slug);
     outputPath = path.join(dir, `${slug}${suffix}.prompt.md`);
   } else if (type === 'location-map') {
@@ -1072,10 +1071,53 @@ function processFile(filePath, type, force) {
   const prompt = generatePrompt(type, meta);
   if (!prompt) return false;
 
+  const finalContent = ensureFrontmatter(prompt, meta, type);
+
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, prompt, 'utf-8');
+  fs.writeFileSync(outputPath, finalContent, 'utf-8');
   console.log(`  ✅ Created: ${path.basename(outputPath)}`);
   return true;
+}
+
+/**
+ * Ensure a generated .prompt.md carries YAML frontmatter (name/type/size/
+ * consumer) as the single source of truth for metadata.
+ *
+ * Some templates already emit a frontmatter block; the rest emit body-only
+ * metadata. This prepends frontmatter (backfilled from body `**Type:**` /
+ * `**Dimensions:**` where needed) only when the content does not already
+ * begin with a `---` block, so it never double-wraps an existing block.
+ */
+function ensureFrontmatter(prompt, meta, type) {
+  if (/^---\n/.test(prompt)) return prompt;
+
+  const name = meta.name || 'Untitled';
+  const bodyTypeMatch = prompt.match(/\*\*Type:\*\*\s*(\S+)/);
+  const assetType = (meta.typeOverride || bodyTypeMatch?.[1] || type || 'portrait').trim();
+  const bodyDimMatch = prompt.match(/\*\*Dimensions:\*\*\s*(\d+)\s*[x×]\s*(\d+)/i);
+  const sizeValue = meta.sizeValue || (bodyDimMatch ? `${bodyDimMatch[1]}x${bodyDimMatch[2]}` : '1024x1024');
+  const consumer = meta.consumer || mapConsumer(assetType);
+
+  const fm = `---\nname: ${name}\ntype: ${assetType}\nsize: ${sizeValue}\nconsumer: ${consumer}\n---\n`;
+  return `${fm}${prompt}`;
+}
+
+function mapConsumer(type) {
+  const map = {
+    portrait: 'portrait',
+    biometric: 'biometric',
+    background: 'html-background',
+    tile: 'tile',
+    overlay: 'phaser-sprite',
+    'app-icon': 'phaser-sprite',
+    'phone-wallpaper': 'html-background',
+    thematic: 'thematic',
+    'outfit-pose': 'phaser-sprite',
+    'character-sheet': 'biometric',
+    expression: 'biometric',
+    location: 'phaser-sprite',
+  };
+  return map[type] || type;
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
@@ -1096,7 +1138,8 @@ function main() {
       entry.negatives = '';
       const prompt = generatePrompt(opts.type, entry);
       if (!prompt) { failed++; continue; }
-      fs.writeFileSync(outputPath, prompt, 'utf-8');
+      const finalContent = ensureFrontmatter(prompt, entry, opts.type);
+      fs.writeFileSync(outputPath, finalContent, 'utf-8');
       console.log(`  ✅ Created: ${path.basename(outputPath)}`);
       success++;
     }

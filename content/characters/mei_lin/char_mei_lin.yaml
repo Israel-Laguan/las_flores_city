@@ -10,3 +10,6 @@ metadata:
 lore_path: mei_lin.md
 asset_paths:
   portrait: mei_lin__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/mei_lin/mei_lin__default.png
+    label: dev

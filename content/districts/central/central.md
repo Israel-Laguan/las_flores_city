@@ -31,6 +31,7 @@ Over time, these organic settlements were joined by formal residential developme
 | **Mall del Valle** | Shopping | Major shopping destination on the western edge, includes HSBC branch |
 | **Universidad Nacional** | Education | Main campus reserved for post-docs and final-year students |
 | **Zona Rosa** | Entertainment | Frontier district between City and Suburbs; began as temporary commerce during construction, evolved into an exclusive nightlife hub |
+| **Red District** | Entertainment | Originated during city construction; worker settlement area where adult entertainment took root, strategically placed near port road and Zona Rosa but away from Iglesia Vieja |
 | **Parque de las Montañas** | Urban park | Green frontier at the north; entrance from the City (southwest), suburban exits at north and east |
 | **Various Commercial Centers** | Retail | Shopping, dining, and entertainment hubs |
 | **Bus & Train Stations** | Transit | Facilitate access to city center and beyond |

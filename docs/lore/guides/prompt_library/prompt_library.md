@@ -620,32 +620,18 @@ Add these to **all** Las Flores prompts:
 
 ---
 
-### 🔹 MIDJOURNEY
+### 🔹 AI image generation
 
-**Strengths:** Best for **artistic, stylized** images.
+**Note:** This project does not use MidJourney. Aspect ratio and pixel dimensions
+are recorded in frontmatter (`aspect_ratio:`, `size:`) only — never as CLI flags
+in prompt prose. Prompts are sent through the configured AI image generation
+pipeline (NIM / Pollinations / Akool / etc.).
 
-**Tips:**
-- Use `--v 6` for **realism**.
-- Add `intricate details` for **textures**.
-- Use `--ar 16:9` for **landscapes**, `--ar 3:4` for **portraits**.
-- Add `--style raw` for **photorealism**.
-- Use `--chaos 20-40` for **varied compositions**.
-
-**Example Settings:**
-```
---v 6 --ar 16:9 --style raw --chaos 20
-```
-
-**MidJourney-Specific Prompt Adjustments:**
-- Replace "Photorealistic" with `photo, ultra-detailed, octane render`
-- Add `trending on ArtStation` for artistic styles
-- Use `unreal engine 5` for hyper-realism
-
-**Example (Mercado Central):**
-```
-photo of Mercado Central in Las Flores at midday, ultra-detailed, octane render, a bustling market with colorful stalls and hidden corruption, warm sunlight filtering through high windows, faded multicultural murals on walls, vendors and shoppers from diverse backgrounds, subtle signs of bribery and police indifference, trending on ArtStation, 8k
---v 6 --ar 16:9 --style raw --chaos 30
-```
+**General tips:**
+- Keep prompts concise and descriptive.
+- Include the art-style lock string at the start of every prompt.
+- Do not embed pixel dimensions or aspect-ratio prose in the prompt body.
+- Use frontmatter for all machine-readable metadata.
 
 ---
 

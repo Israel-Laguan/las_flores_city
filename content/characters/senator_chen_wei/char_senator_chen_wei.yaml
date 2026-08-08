@@ -10,3 +10,6 @@ metadata:
 lore_path: senator_chen_wei.md
 asset_paths:
   portrait: senator_chen_wei__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/senator_chen_wei/senator_chen_wei__default.png
+    label: dev

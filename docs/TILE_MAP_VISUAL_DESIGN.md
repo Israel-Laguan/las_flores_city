@@ -219,7 +219,7 @@ no external shadows.
 **Priority landmarks (from your lore + content):**
 1. City Council Palace (`location_city_council_palace.yaml`)
 2. Governor's Offices (`location_the_governor_offices.yaml`)
-3. World Trade Center (`location_world_trade_center_las_flores.yaml`)
+3. World Trade Center (`location_world_trade_center.yaml`)
 4. Mercado Central (`location_mercado_central.yaml`)
 5. Universidad Nacional (`location_universidad_nacional_de_las_flores.yaml`)
 6. Luz del Río Energy Plant (`location_luz_del_rio_energy_plant.yaml`)

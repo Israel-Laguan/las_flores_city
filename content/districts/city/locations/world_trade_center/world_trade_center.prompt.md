@@ -3,17 +3,12 @@ name: World Trade Center Las Flores
 type: background
 size: 1280x768
 source: docs/lore/districts/city/landmarks/world_trade_center/world_trade_center.md
-target: `scene.background_url` in `content/locations/location_world_trade_center_las_flores.yaml`
+target: `scene.background_url` in `content/districts/city/locations/world_trade_center/location_world_trade_center.yaml`
 consumer: html-background
 ---
 
-
 # Prompt: World Trade Center Las Flores
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/world_trade_center_las_flores.md
-**Target field:** `scene.background_url` in `content/locations/location_world_trade_center_las_flores.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
@@ -30,5 +25,4 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 - [ ] Night version: same scene at night with different lighting
 - [ ] Rainy version: same scene with rain and mood effects
 - [ ] Wide shot: broader view of the location
-
 

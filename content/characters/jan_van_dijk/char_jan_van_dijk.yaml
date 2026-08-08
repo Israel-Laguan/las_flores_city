@@ -11,3 +11,6 @@ asset_paths:
   portrait: jan_van_dijk__default.png
 
 lore_path: jan_van_dijk.md
+portrait_urls:
+  - url: s3://las-flores/portraits/jan_van_dijk/jan_van_dijk__default.png
+    label: dev

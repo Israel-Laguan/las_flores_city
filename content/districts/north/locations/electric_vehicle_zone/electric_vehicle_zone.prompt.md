@@ -7,13 +7,8 @@ target: `scene.background_url` in `content/locations/location_electric_vehicle_z
 consumer: html-background
 ---
 
-
 # Prompt: Electric Vehicle Zone
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/electric_vehicle_zone.md
-**Target field:** `scene.background_url` in `content/locations/location_electric_vehicle_zone.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
@@ -30,5 +25,4 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 - [ ] Night version: same scene at night with different lighting
 - [ ] Rainy version: same scene with rain and mood effects
 - [ ] Wide shot: broader view of the location
-
 

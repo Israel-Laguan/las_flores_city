@@ -11,3 +11,6 @@ asset_paths:
   portrait: maria_martinez__default.png
 
 lore_path: maria_martinez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/maria_martinez/maria_martinez__default.png
+    label: dev

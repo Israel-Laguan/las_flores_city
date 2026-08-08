@@ -1,0 +1,118 @@
+id: "f0000000-0000-0000-0000-000000000060"
+name: "Camila Reyes - The Confrontation"
+description: "Camila fails to introduce the player by name to her peers. If the player calls it out, the key emotional reckoning of her storyline unfolds."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+dialogue_scope: "character"
+start_node_id: "f0000000-0000-0000-0000-000000000061"
+nodes:
+  f0000000-0000-0000-0000-000000000061:
+    id: "f0000000-0000-0000-0000-000000000061"
+    type: "narrator"
+    text: "[Camila's Peer]: Camila! Who's this?"
+    next_node_id: "f0000000-0000-0000-0000-000000000062"
+
+  f0000000-0000-0000-0000-000000000062:
+    id: "f0000000-0000-0000-0000-000000000062"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Oh — they're helping me with the Van Der Meer thing. Listen, did you get the sensor readings from Lab 3? I need the sulfate baseline for—"
+    thought: "(Expression: happy. She barely glances at the player.)"
+    choices:
+      - id: "confront_let_go"
+        text: "(Say nothing. Let it go.)"
+        next_node_id: "f0000000-0000-0000-0000-000000000063"
+      - id: "confront_call_it"
+        text: "You didn't even tell them my name."
+        next_node_id: "f0000000-0000-0000-0000-000000000064"
+        relationship_change:
+          stat: "romance"
+          amount: 1
+
+  f0000000-0000-0000-0000-000000000063:
+    id: "f0000000-0000-0000-0000-000000000063"
+    type: "narrator"
+    text: "You let it pass. Camila continues talking about sulfate baselines. The tension settles silently into the space between you."
+    is_end: true
+    effects:
+      flag_set:
+        camila_confrontation_complete: true
+        camila_confrontation_avoided: true
+      story_beat: act2b_confrontation_avoided
+
+  f0000000-0000-0000-0000-000000000064:
+    id: "f0000000-0000-0000-0000-000000000064"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I— what? Of course I did. Didn't I? I'm sorry, I'm in the middle of—"
+    thought: "(Expression: surprised. She genuinely doesn't realize she didn't.)"
+    choices:
+      - id: "confront_press"
+        text: "You never use my name, Camila. To everyone I'm just 'the person helping with the Van Der Meer thing.' Am I a person to you, or a resource?"
+        next_node_id: "f0000000-0000-0000-0000-000000000065"
+
+  f0000000-0000-0000-0000-000000000065:
+    id: "f0000000-0000-0000-0000-000000000065"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "That's... that's not fair. I'm not—"
+    thought: "(Expression: vulnerable.)"
+    choices:
+      - id: "confront_compassionate"
+        text: "I know why you're doing this. I know your home is on the line. But you can't save the ocean and lose the people standing next to you at the same time."
+        next_node_id: "f0000000-0000-0000-0000-000000000066"
+
+  f0000000-0000-0000-0000-000000000066:
+    id: "f0000000-0000-0000-0000-000000000066"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I don't know how to do both at once. I've never had to before. In Bahía... everyone just knew. Everyone was part of the same thing. What's the canal bridge at midnight for you, if not the same cause?"
+    thought: "(Expression: calculating -> sad. For the first time, she is genuinely lost.)"
+    choices:
+      - id: "confront_its_for_you"
+        text: "It's for you. Not just the cause."
+        next_node_id: "f0000000-0000-0000-0000-000000000067"
+        relationship_change:
+          stat: "romance"
+          amount: 2
+      - id: "confront_shouldnt_be"
+        text: "You're right. Maybe it shouldn't be."
+        next_node_id: "f0000000-0000-0000-0000-000000000068"
+        relationship_change:
+          stat: "romance"
+          amount: -1
+
+  f0000000-0000-0000-0000-000000000067:
+    id: "f0000000-0000-0000-0000-000000000067"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Then... I'll try. I really will try."
+    thought: "(Expression: tender. She finally introduces the player by name to her peer. This is the gateway to the Lover ending.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_confrontation_complete: true
+        camila_lover_path_unlocked: true
+      story_beat: act2b_confrontation_lover_path
+
+  f0000000-0000-0000-0000-000000000068:
+    id: "f0000000-0000-0000-0000-000000000068"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I know. I know I'm asking too much. I'm sorry."
+    thought: "(Expression: afraid. The warmth doesn't return in full. A crack, but not one she knows how to fix. Gateway to Friend or Tragic path.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_confrontation_complete: true
+        camila_lover_path_unlocked: false
+      story_beat: act2b_confrontation_friend_path
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_reyes"
+    - "confrontation"
+    - "act2b"
+    - "romance_gate"

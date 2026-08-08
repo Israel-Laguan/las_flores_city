@@ -15,3 +15,6 @@ metadata:
 lore_path: javier_mendoza.md
 asset_paths:
   portrait: javier_mendoza__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/javier_mendoza/javier_mendoza__default.png
+    label: dev

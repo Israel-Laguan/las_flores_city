@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Welcome Center
 
-[CONSUMER: background]
-**Type:** background
-**Source:** welcome_center.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../welcome_center.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

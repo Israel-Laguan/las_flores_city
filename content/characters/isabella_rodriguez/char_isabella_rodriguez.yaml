@@ -31,3 +31,6 @@ metadata:
 lore_path: isabella_rodriguez.md
 asset_paths:
   portrait: isabella_rodriguez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_rodriguez/isabella_rodriguez__default.png
+    label: dev

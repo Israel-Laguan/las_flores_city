@@ -10,3 +10,6 @@ metadata:
 lore_path: marco_jimenez.md
 asset_paths:
   portrait: marco_jimenez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/marco_jimenez/marco_jimenez__default.png
+    label: dev

@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Central Plaza
 
-[CONSUMER: background]
-**Type:** background
-**Source:** central_plaza.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_central_plaza.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

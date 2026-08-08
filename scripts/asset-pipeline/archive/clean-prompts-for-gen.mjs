@@ -2,12 +2,11 @@
 /**
  * Clean portrait prompt files for image generation.
  *
- * Processes files in the MidJourney format:
+ * Processes files in the legacy prompt format:
  *   # Prompt: Name
  *   [CONSUMER: portrait]
  *   **Type:** portrait
  *   ...
- *   **Tool:** MidJourney --v 6 --ar 3:4 --style raw
  *   ## Prompt
  *   Single-line prompt text...
  *   ## Negative Prompt

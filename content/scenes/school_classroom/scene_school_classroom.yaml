@@ -9,3 +9,6 @@ available_dialogues: []
 lore_path: school_classroom.md
 asset_paths:
   background: school_classroom__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/school_classroom/school_classroom__default.png
+    label: dev

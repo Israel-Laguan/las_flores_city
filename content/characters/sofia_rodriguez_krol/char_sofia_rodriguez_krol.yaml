@@ -12,3 +12,6 @@ lore_path: sofia_rodriguez_krol.md
 narrative_path: sofia_rodriguez_krol.md
 asset_paths:
   portrait: sofia_rodriguez_krol__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_rodriguez_krol/sofia_rodriguez_krol__default.png
+    label: dev

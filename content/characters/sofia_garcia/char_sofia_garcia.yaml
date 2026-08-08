@@ -12,3 +12,6 @@ lore_path: sofia_garcia.md
 narrative_path: sofia_garcia.md
 asset_paths:
   portrait: sofia_garcia__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_garcia/sofia_garcia__default.png
+    label: dev

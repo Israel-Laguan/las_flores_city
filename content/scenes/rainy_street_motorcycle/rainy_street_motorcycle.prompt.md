@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Rainy Street Motorcycle
 
-[CONSUMER: background]
-**Type:** background
-**Source:** rainy_street_motorcycle.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_rainy_street_motorcycle.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

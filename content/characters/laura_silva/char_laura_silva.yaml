@@ -11,3 +11,6 @@ asset_paths:
   portrait: laura_silva__default.png
 
 lore_path: laura_silva.md
+portrait_urls:
+  - url: s3://las-flores/portraits/laura_silva/laura_silva__default.png
+    label: dev

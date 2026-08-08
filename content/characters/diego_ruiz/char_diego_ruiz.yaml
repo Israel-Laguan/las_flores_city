@@ -28,3 +28,6 @@ metadata:
 lore_path: diego_ruiz.md
 asset_paths:
   portrait: diego_ruiz__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/diego_ruiz/diego_ruiz__default.png
+    label: dev

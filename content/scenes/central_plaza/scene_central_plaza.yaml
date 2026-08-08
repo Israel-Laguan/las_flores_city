@@ -17,3 +17,6 @@ metadata:
 lore_path: central_plaza.md
 asset_paths:
   background: central_plaza__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/central_plaza/central_plaza__default.png
+    label: dev

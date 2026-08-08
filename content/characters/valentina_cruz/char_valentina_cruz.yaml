@@ -12,3 +12,6 @@ narrative_path: valentina_cruz.md
 asset_paths:
   portrait: valentina_cruz__default.png
   biometric: valentina_cruz__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/valentina_cruz/valentina_cruz__default.png
+    label: dev

@@ -35,3 +35,6 @@ metadata:
 lore_path: luis_contreras.md
 asset_paths:
   portrait: luis_contreras__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/luis_contreras/luis_contreras__default.png
+    label: dev

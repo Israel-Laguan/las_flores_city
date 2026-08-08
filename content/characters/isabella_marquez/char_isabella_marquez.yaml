@@ -25,3 +25,6 @@ metadata:
 lore_path: isabella_marquez.md
 asset_paths:
   portrait: isabella_marquez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_marquez/isabella_marquez__default.png
+    label: dev

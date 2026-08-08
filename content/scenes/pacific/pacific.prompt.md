@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Pacific Coast
 
-[CONSUMER: background]
-**Type:** background
-**Source:** pacific.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_pacific.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

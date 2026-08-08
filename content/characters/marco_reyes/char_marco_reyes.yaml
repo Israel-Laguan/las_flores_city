@@ -16,3 +16,6 @@ asset_paths:
   portrait: marco_reyes__default.png
 
 lore_path: marco_reyes.md
+portrait_urls:
+  - url: s3://las-flores/portraits/marco_reyes/marco_reyes__default.png
+    label: dev

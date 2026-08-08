@@ -7,13 +7,8 @@ target: `scene.background_url` in `content/locations/location_the_governor_offic
 consumer: html-background
 ---
 
-
 # Prompt: The Governor Offices
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/the_governor_offices.md
-**Target field:** `scene.background_url` in `content/locations/location_the_governor_offices.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
@@ -30,5 +25,4 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 - [ ] Night version: same scene at night with different lighting
 - [ ] Rainy version: same scene with rain and mood effects
 - [ ] Wide shot: broader view of the location
-
 

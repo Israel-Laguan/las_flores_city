@@ -14,3 +14,6 @@ metadata:
 lore_path: north.md
 asset_paths:
   background: north__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/north/north__default.png
+    label: dev

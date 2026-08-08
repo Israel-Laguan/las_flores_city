@@ -134,21 +134,57 @@ function parsePromptFile(filePath) {
   const results = [];
 
   const { type, width, height } = extractTypeAndSize(content);
+  
+  // Track variant names to avoid duplicates
+  const seenVariants = new Set();
 
-  // 1. Try named variants first
-  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
-  let match;
-  while ((match = promptRegex.exec(content)) !== null) {
-    const variantName = match[1].trim();
-    const promptText = match[2].trim();
-    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/);
-    const negativeText = negMatch ? negMatch[1].trim() : '';
-    if (promptText) {
-      results.push({ variantName, promptText, negativeText, type, width, height });
+  // 1. Check for Expression Variants (often used in character prompts)
+  const exprMatch = content.match(/## Expression Variants\n([\s\S]*?)(?=##|$)/);
+  if (exprMatch) {
+    const exprText = exprMatch[1];
+    // Match both bullet filename forms:
+    //   - **`<slug>__<expression>.png`**: <text>   (e.g. peter_van_der_meer__default.png)
+    //   - **`__<expression>.png`**: <text>          (e.g. __default.png)
+    const listItemRegex = /-\s*\*\*`([^`]+\.png)`\*\*:\s*(.*)/g;
+    let liMatch;
+    
+    // Also grab negative prompt if it exists
+    const globalNegMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
+    const negativeText = globalNegMatch ? globalNegMatch[1].trim() : '';
+
+    while ((liMatch = listItemRegex.exec(exprText)) !== null) {
+      const fileName = liMatch[1].trim();
+      const promptText = liMatch[2].trim();
+      // Variant name = expression tag (segment after the last "__").
+      const variantName = fileName.replace(/\.png$/i, '').split('__').pop().trim();
+      
+      if (!seenVariants.has(variantName) && promptText) {
+        results.push({ variantName, promptText, negativeText, type, width, height });
+        seenVariants.add(variantName);
+      }
     }
   }
 
-  // 2. Dual-prompt files
+  // 2. Named variants (## Prompt — <Variant Name>) — only when no Expression
+  //    Variants were found. When expression bullets exist they are the
+  //    authoritative image list; the "Draft"/"Final"/"Base" headers are
+  //    alternative base-prompt phrasings, not separate image files.
+  if (results.length === 0) {
+    const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
+    let match;
+    while ((match = promptRegex.exec(content)) !== null) {
+      const variantName = match[1].trim();
+      const promptText = match[2].trim();
+      const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
+      const negativeText = negMatch ? negMatch[1].trim() : '';
+      if (promptText && !seenVariants.has(variantName)) {
+        results.push({ variantName, promptText, negativeText, type, width, height });
+        seenVariants.add(variantName);
+      }
+    }
+  }
+
+  // 3. Dual-prompt files
   if (results.length === 0) {
     const draftRegex = /##{1,2} Prompt \(Draft\)\n([\s\S]*?)(?=##{1,2} (?:Prompt|Negative Prompt|Sheet|Variations)|$)/g;
     let draftMatch;
@@ -157,21 +193,23 @@ function parsePromptFile(filePath) {
       const afterDraft = content.slice(draftMatch.index + draftMatch[0].length);
       const negMatch = afterDraft.match(/##{1,2} Negative Prompt\n([\s\S]*?)(?=##{1,2} |$)/);
       const negativeText = negMatch ? negMatch[1].trim() : '';
-      if (promptText) {
+      if (promptText && !seenVariants.has('default')) {
         results.push({ variantName: 'default', promptText, negativeText, type, width, height });
+        seenVariants.add('default');
       }
     }
   }
 
-  // 3. Fallback
+  // 4. Fallback single prompt
   if (results.length === 0) {
     const singleMatch = content.match(/##{1,2} Prompt\n([\s\S]*?)(?=##{1,2} Negative Prompt|$)/);
     if (singleMatch) {
       const promptText = singleMatch[1].trim();
       const negMatch = content.match(/##{1,2} Negative Prompt\n([\s\S]*?)(?=##{1,2} |$)/);
       const negativeText = negMatch ? negMatch[1].trim() : '';
-      if (promptText) {
+      if (promptText && !seenVariants.has('default')) {
         results.push({ variantName: 'default', promptText, negativeText, type, width, height });
+        seenVariants.add('default');
       }
     }
   }
@@ -230,10 +268,11 @@ async function generatePollinations(variant, outPath) {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const opts = { filter: null, force: false, dryRun: false };
+  const opts = { filter: null, file: null, force: false, dryRun: false };
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
       case '--filter': opts.filter = args[++i]; break;
+      case '--file': opts.file = args[++i]; break;
       case '--force': opts.force = true; break;
       case '--dry-run': opts.dryRun = true; break;
       case '--help': case '-h':
@@ -243,6 +282,7 @@ generate-pollinations-drafts.mjs — Generate draft images via Pollinations
 Usage:
   node generate-pollinations-drafts.mjs
   node generate-pollinations-drafts.mjs --filter tile,overlay
+  node generate-pollinations-drafts.mjs --file content/characters/example/example.prompt.md
   node generate-pollinations-drafts.mjs --force
   node generate-pollinations-drafts.mjs --dry-run
 `);
@@ -273,12 +313,18 @@ async function main() {
         if (entry.name === 'references') continue;
         walk(full);
       } else if (entry.isFile() && entry.name.endsWith('.prompt.md')) {
+        if (opts.file && path.resolve(opts.file) !== full) continue;
         promptFiles.push(full);
       }
     }
   }
-  for (const root of PROMPT_ROOTS) {
-    if (fs.existsSync(root)) walk(root);
+  
+  if (opts.file) {
+    promptFiles.push(path.resolve(opts.file));
+  } else {
+    for (const root of PROMPT_ROOTS) {
+      if (fs.existsSync(root)) walk(root);
+    }
   }
 
   const workItems = [];

@@ -58,3 +58,123 @@ beats:
     label: "Beat 5 — Finale"
     order: 404
     description: "The culmination of choices. Sofia either stays, leaves, or dies."
+
+  - slug: act1_camila_sabotage_started
+    label: "Camila Beat 1 — Trust Gained"
+    order: 500
+    description: "Player has taken down a developer's drone, gaining Camila's trust and unlocking the sabotage quest."
+
+  - slug: act1_camila_ignored
+    label: "Camila Beat 1 — Ignored"
+    order: 501
+    description: "Player ignored the drone and parted ways with Camila."
+
+  - slug: act1_camila_camera_sabotage
+    label: "Camila Beat 2 — Plausible Deniability"
+    order: 502
+    description: "Player destroyed a developer security camera on Camila's behalf."
+
+  - slug: act2_camila_spree_complete
+    label: "Camila Beat 3 — The Spree"
+    order: 503
+    description: "Player completed the vandalism spree with Camila, witnessing her ruthless double-dipping scam."
+
+  - slug: camila_ending_lover
+    label: "Camila Ending — The Shared Silence"
+    order: 504
+    description: "Player and Camila secure the lodge together and she opens up genuinely."
+
+  - slug: camila_ending_friend
+    label: "Camila Ending — The Business Partner"
+    order: 505
+    description: "Player and Camila establish a permanent, transactional alliance."
+
+  - slug: camila_ending_tragic
+    label: "Camila Ending — The Golden Cage"
+    order: 506
+    description: "Camila sells out to the developers for a massive buyout."
+
+  - slug: camila_ending_enemy
+    label: "Camila Ending — The Ledger"
+    order: 507
+    description: "Camila betrays the player, leaving them stranded in a trap to protect her profits."
+
+  - slug: act1_camila_recruited
+    label: "Camila Beat 1 — Recruited"
+    order: 510
+    description: "Player accepts Camila's offer and is drawn into her scheme."
+
+  - slug: act1_camila_rejected
+    label: "Camila Beat 1 — Rejected"
+    order: 511
+    description: "Player refuses Camila's offer and keeps their distance."
+
+  - slug: act1b_camila_falsifier
+    label: "Camila Beat 1b — The Falsifier"
+    order: 512
+    description: "Player helps Camila forge evidence against a rival developer."
+
+  - slug: act1c_vdm_approach_refused
+    label: "Camila Beat 1c — VDM Refused"
+    order: 520
+    description: "Player declines Van Der Meer's attempt to recruit them away from Camila."
+
+  - slug: act1c_vdm_approach_considered
+    label: "Camila Beat 1c — VDM Considered"
+    order: 521
+    description: "Player weighs Van Der Meer's offer but stays noncommittal."
+
+  - slug: act1c_vdm_approach_reported
+    label: "Camila Beat 1c — VDM Reported"
+    order: 522
+    description: "Player reports Van Der Meer's overture back to Camila, deepening trust."
+
+  - slug: act2a_upload_success
+    label: "Camila Beat 2a — Upload Success"
+    order: 525
+    description: "Player successfully leaks the incriminating footage on Camila's behalf."
+
+  - slug: act2a_upload_betrayal
+    label: "Camila Beat 2a — Upload Betrayal"
+    order: 526
+    description: "Player uploads the footage in a way that exposes Camila instead of helping her."
+
+  - slug: act2b_confrontation_avoided
+    label: "Camila Beat 2b — Confrontation Avoided"
+    order: 530
+    description: "Player sidesteps the confrontation and slips away from Camila."
+
+  - slug: act2b_confrontation_lover_path
+    label: "Camila Beat 2b — Confrontation (Lover)"
+    order: 531
+    description: "Player confronts Camila from a place of love, opening a romantic resolution."
+
+  - slug: act2b_confrontation_friend_path
+    label: "Camila Beat 2b — Confrontation (Friend)"
+    order: 532
+    description: "Player confronts Camila as a friend, securing a loyal partnership."
+
+  - slug: act3_camila_lover_ending
+    label: "Camila Ending — Lover"
+    order: 540
+    description: "Player and Camila end the story as partners in love, sharing the lodge."
+
+  - slug: act3_camila_friend_ending
+    label: "Camila Ending — Friend"
+    order: 541
+    description: "Player and Camila end the story as steadfast friends and allies."
+
+  - slug: act3_camila_enemy_ending
+    label: "Camila Ending — Enemy"
+    order: 542
+    description: "Player and Camila end the story as bitter enemies."
+
+  - slug: act3_camila_betrayal_ending
+    label: "Camila Ending — Betrayal"
+    order: 543
+    description: "Player betrays Camila at the climax, seizing control of her operation."
+
+  - slug: act3_camila_distant_ending
+    label: "Camila Ending — Distant"
+    order: 544
+    description: "Player and Camila part ways, forever changed but estranged."

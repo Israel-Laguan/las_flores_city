@@ -20,3 +20,6 @@ metadata:
 lore_path: industrial.md
 asset_paths:
   background: industrial__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/industrial/industrial__default.png
+    label: dev

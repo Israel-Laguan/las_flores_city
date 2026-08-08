@@ -12,3 +12,6 @@ metadata:
 lore_path: ricardo_chen.md
 asset_paths:
   portrait: ricardo_chen__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/ricardo_chen/ricardo_chen__default.png
+    label: dev

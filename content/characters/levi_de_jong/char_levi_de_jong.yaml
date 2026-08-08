@@ -22,3 +22,6 @@ metadata:
 lore_path: levi_de_jong.md
 asset_paths:
   portrait: levi_de_jong__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/levi_de_jong/levi_de_jong__default.png
+    label: dev

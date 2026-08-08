@@ -1,31 +1,41 @@
-# Portrait Prompt — Liu Mei
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Liu Mei, 44-year-old Vice-Mayor of Las Flores Free City, is politically necessary. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. is politically necessary cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Liu Mei, a 44-year-old Vice-Mayor of Las Flores Free City from Las Flores's is politically necessary.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: is politically necessary cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Liu Mei
-title: Vice-Mayor of Las Flores Free City
-faction: g
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/liu_mei/liu_mei.md
+target: `asset_paths.portrait` in `content/characters/liu_mei/char_liu_mei.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.713Z
+# Prompt: Liu Mei
+
+## Prompt (Draft)
+
+Chinese woman in her mid-40s, round face, soft receding jawline, narrow nose, almond eyes, straight dark hair in a practical low bun, clear skin with tiny mole on left cheek, subtle lines around eyes with slight brow droop, composed diplomatic bearing, professional political attire, understated jewelry, small sport earbud, city-hall office backdrop with trade documents and flags, premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese woman in her mid-40s. Round face with a soft, receding jawline and a composed diplomatic bearing. Narrow nose and almond eyes — the left eyelid sits a fraction more hooded than the right, a subtle asymmetry. A tiny mole rests on her left cheek. Clear skin, straight dark hair drawn back in a practical low bun. Thin lips set in a calm, appraising expression. Subtle lines around the eyes and a slight droop to the brows of a mid-career politician. Professional tailored political attire — a structured blazer over a modest blouse, understated jewelry. Small sport non-in-ear earbud clipped to her earlobe. The backdrop is a city-hall office with bilateral trade documents and a pair of flags, soft ambient light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no European features, no South Asian features
+
+## Variations
+
+- [ ] At her office desk reviewing bilateral trade documents under an angled desk lamp
+- [ ] In measured conversation with the Mayor in the city-hall corridor
+- [ ] Presenting the surveillance-disclosure proposal to a committee
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__calculating.png`**: Use the base portrait as reference. She is in careful assessment mode, looking at the camera, 3/4 take. Eyes narrowed thoughtfully, the slightly more hooded left eye adding depth to her weighing gaze, thin lips pressed into a measured line. Keep the same art style as reference, same professional attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. She has a resolute, firm expression, looking directly at the camera, 3/4 take. Eyes steady and clear, thin lips set, brows drawn with quiet resolve. Keep the same art style as reference, same tailored attire and earbud. Clean confident linework, painterly soft shading with deeper contrast, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. A rare exposed moment, looking at the camera, 3/4 take. Eyes softened, a hint of weariness in the subtle lines around them, the slightly more hooded left eye more apparent. Thin lips parted. Keep the same art style as reference, same professional attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. A faint knowing half-smile, looking at the camera, 3/4 take. One corner of her thin lips curves up, eyes glinting with dry irony, eyebrows arched. Keep the same art style as reference, same tailored attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

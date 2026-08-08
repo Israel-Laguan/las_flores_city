@@ -10,3 +10,6 @@ metadata:
 lore_path: martin_lopez.md
 asset_paths:
   portrait: martin_lopez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/martin_lopez/martin_lopez__default.png
+    label: dev

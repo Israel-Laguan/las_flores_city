@@ -15,3 +15,6 @@ metadata:
 lore_path: javier_ramirez.md
 asset_paths:
   portrait: javier_ramirez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/javier_ramirez/javier_ramirez__default.png
+    label: dev

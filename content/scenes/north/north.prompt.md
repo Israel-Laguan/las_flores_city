@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Northern District
 
-[CONSUMER: background]
-**Type:** background
-**Source:** north.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_north.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

@@ -1,0 +1,682 @@
+id: b2e4f17a-9d3c-4b8e-a125-f3c7e8d09c55
+name: "Wen Act 3 - The Movie Cracks"
+description: |
+  Act 3 for Wen Zhao's arc. The movie-logic fails to contain what actually
+  happened. Three central beats: (1) The non-marriage reveal — she lets slip
+  she never pictured a future with the player; (2) The father scene — the
+  player witnesses Wen's father arriving and her complete transformation into
+  obedience; (3) The confrontation — the Layla manipulation seed from Act 2
+  surfaces. Player choices here determine which of five endings resolves the arc:
+  Lover, Friend, Tragic, Enemy, or Distant.
+character_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+dialogue_scope: character
+start_node_id: wen_act3_branch
+
+nodes:
+
+  # ============================================
+  # GATE BRANCH — route by Act 2 outcome
+  # ============================================
+  wen_act3_branch:
+    id: wen_act3_branch
+    type: system
+    text: ""
+    choices:
+      - id: branch_distant
+        text: "[Never engaged]"
+        next_node_id: wen_act3_distant_party
+        condition:
+          flag: wen_dare_refused
+          NOT:
+            flag: wen_first_kiss
+        hidden: true
+
+      - id: branch_layla_enemy
+        text: "[Layla lovers + manipulation found]"
+        next_node_id: wen_act3_enemy_open
+        condition:
+          flag: layla_ending_lovers
+          AND:
+            flag: wen_layla_manipulation_seed
+        hidden: true
+
+      - id: branch_engaged
+        text: "[Engaged with Wen]"
+        next_node_id: wen_act3_open
+        hidden: true
+
+  # ============================================
+  # MAIN ACT 3 OPENING — The Non-Marriage Reveal
+  # ============================================
+  wen_act3_open:
+    id: wen_act3_open
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "My cousin is getting married. Big community wedding. My parents keep giving me this look — like I'm next. I smile and nod. Obviously. ...Like I would ever let them pick. I'm going to live in Shanghai for two years first. Then maybe Europe. Then, I don't know — maybe someone interesting, when I feel like it."
+    thought: "She says it the way she says everything — with the confidence of someone reading from a script they wrote themselves. But there's something she doesn't notice herself saying: 'when I feel like it.' Not 'when I find someone.' Not even 'when I'm ready.' The future she's described has no player in it. No one specific. She is talking about her life as a series of cinematic locations, and he is not in the storyboard."
+    visual:
+      expression: smirk
+      position: right
+      transition: fade
+    effects:
+      flag_set:
+        wen_act3_opened: true
+    choices:
+      - id: open_probe
+        text: "Where does this fit in that plan?"
+        next_node_id: wen_act3_no_future_reveal
+        effects:
+          stat_set:
+            wen_zhao_trust: 5
+      - id: open_let_go
+        text: "Sounds like a full life."
+        next_node_id: wen_act3_no_future_unchallenged
+        effects:
+          stat_set:
+            wen_thrill: -5
+
+  wen_act3_no_future_reveal:
+    id: wen_act3_no_future_reveal
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "This? This is — this is the exciting part. The part before everything gets boring and serious. This is what I'll remember when I'm thirty and married to someone sensible. This is the story I'll tell."
+    thought: "She says it warmly, like a compliment. Like she's giving him something. She does not register that she has just described him as a memory she hasn't finished making yet. He is the exciting part. He is not the sensible part. She has never once pictured him in the thirty-year-old version of her life."
+    visual:
+      expression: happy
+    choices:
+      - id: reveal_name_it
+        text: "You just told me I'm a story you plan to tell. Not someone you're with."
+        next_node_id: wen_act3_future_confronted
+        effects:
+          flag_set:
+            wen_future_confronted: true
+          stat_set:
+            wen_zhao_trust: 15
+            wen_zhao_tension: 10
+      - id: reveal_absorb
+        text: "Good memory to have, I guess."
+        next_node_id: wen_act3_father_scene
+        effects:
+          stat_set:
+            wen_thrill: 5
+
+  wen_act3_no_future_unchallenged:
+    id: wen_act3_no_future_unchallenged
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Exactly. Very full. No room for boring. ...You get it. You're not boring."
+    thought: "She considers this a compliment she is bestowing. She has no idea she just mapped out a future with no room for the person she is currently looking at. The compliment is real; the blindspot is total."
+    visual:
+      expression: smirk
+    next_node_id: wen_act3_father_scene
+
+  wen_act3_future_confronted:
+    id: wen_act3_future_confronted
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I — that's not — I didn't mean it like that. I meant this is real. Right now. This is the real part. I'm not — I'm not planning to just — "
+    thought: "She stops. She is watching herself try to backfill a defense for something she didn't realize she'd admitted. The words aren't coming because the defense doesn't exist. She did mean it like that, on some level. She just didn't know she was saying it out loud."
+    visual:
+      expression: afraid
+    choices:
+      - id: confront_push
+        text: "You can't even finish the sentence, Wen."
+        next_node_id: wen_act3_future_reckoning
+        effects:
+          stat_set:
+            wen_zhao_trust: 10
+            wen_zhao_tension: 15
+      - id: confront_gentle
+        text: "You don't have to figure it out right now."
+        next_node_id: wen_act3_father_scene
+        effects:
+          stat_set:
+            wen_zhao_trust: 8
+
+  wen_act3_future_reckoning:
+    id: wen_act3_future_reckoning
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...I don't know how to want something that doesn't have a script. Okay? I never have. I know how to want the exciting part. I don't know what to do when the exciting part is over."
+    thought: "It lands like a confession she didn't mean to make. She looks at him, then away. For a person who performs constantly, the silences she lets happen when he's around are becoming a problem. She doesn't fill this one."
+    visual:
+      expression: vulnerable
+    next_node_id: wen_act3_father_scene
+
+  # ============================================
+  # THE FATHER SCENE
+  # ============================================
+  wen_act3_father_scene:
+    id: wen_act3_father_scene
+    type: system
+    text: ""
+    thought: "[The next day. The player is near the north gate of the university when they see Wen by the entrance — and a car they don't recognize. A man steps out. Mid-fifties. Pressed shirt. The posture of someone who does not explain himself.]"
+    next_node_id: wen_act3_father_arrives
+
+  wen_act3_father_arrives:
+    id: wen_act3_father_arrives
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Baba. I wasn't expecting— I was just finishing— yes. Yes, I'm ready. Of course."
+    thought: "The Wen the player knows is gone. Not hidden — dissolved. The girl standing by the car is quieter, smaller, with her chin slightly down and both hands holding the strap of her bag. She doesn't look toward the player. She knows exactly where he is. She doesn't look because she cannot afford to. Her father says something brief. She nods and gets in the car."
+    visual:
+      expression: afraid
+      position: right
+    choices:
+      - id: father_wait
+        text: "[Wait. Say nothing. Let the car leave.]"
+        next_node_id: wen_act3_father_aftermath
+      - id: father_text
+        text: "[Text her: I saw that.]"
+        next_node_id: wen_act3_father_text_reply
+
+  wen_act3_father_aftermath:
+    id: wen_act3_father_aftermath
+    type: system
+    text: ""
+    thought: "[The car pulls away into the northern district traffic. The player stands at the gate alone. The university noise continues behind them. The contrast is absolute — everything she performs out here, erased in thirty seconds by a man stepping out of a car.]"
+    next_node_id: wen_act3_father_next_day
+
+  wen_act3_father_text_reply:
+    id: wen_act3_father_text_reply
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "[TEXT] Don't. I'll talk to you tomorrow."
+    thought: "The text arrives forty minutes later. Three words. She didn't write anything else and she didn't explain. She didn't try to be clever about it, which means she doesn't have a frame for it yet. She's still in the car."
+    visual:
+      expression: default
+    next_node_id: wen_act3_father_next_day
+
+  wen_act3_father_next_day:
+    id: wen_act3_father_next_day
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Don't. Whatever you're about to say — some speech about how I don't have to live like this, or how I'm brave enough to — don't. You don't know what it costs. You don't know what he can do. Not to me. To my mother. To everything my family has here."
+    thought: "She beats him to it. She has written his speech in her head and she's refusing it before he delivers it. But she came to find him today, which she didn't have to do. She's angry in the way people are angry when they're also terrified."
+    visual:
+      expression: angry
+      position: right
+    choices:
+      - id: father_respect
+        text: "I wasn't going to say any of that. I just wanted to know if you're okay."
+        next_node_id: wen_act3_father_disarmed
+        effects:
+          stat_set:
+            wen_zhao_trust: 20
+      - id: father_push
+        text: "Then what IS the movie for, Wen? What does it change if he still owns you?"
+        next_node_id: wen_act3_father_cracked
+        effects:
+          stat_set:
+            wen_zhao_trust: 10
+            wen_zhao_tension: 20
+
+  wen_act3_father_disarmed:
+    id: wen_act3_father_disarmed
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...yeah. I'm fine. It's fine. I just — sometimes the two halves don't fit together. The girl at the gate and the one right now. Sometimes I don't know which one is real."
+    thought: "She says it quietly, without irony. For a moment she sounds twenty-three, not the constructed version of twenty-three she performs. She sounds like someone who has been holding two contradictory selves together for years and is starting to feel the seam."
+    visual:
+      expression: vulnerable
+    next_node_id: wen_act3_layla_surface
+
+  wen_act3_father_cracked:
+    id: wen_act3_father_cracked
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "It changes — it changes that for two hours I'm not his. That's all. That's the whole thing. Two hours where I get to be someone he doesn't recognize. And yes — yes it's a movie. So what? The two hours are real."
+    thought: "Her voice breaks on 'real' and she hates that. She turns away, jaw tight. She is angrier at herself for the crack than at him for causing it. She's answered the question he actually asked — what the movie is for — and the answer is smaller and more desperate than she's ever let anyone see."
+    visual:
+      expression: sad
+    next_node_id: wen_act3_layla_surface
+
+  # ============================================
+  # THE LAYLA CONFRONTATION
+  # ============================================
+  wen_act3_layla_surface:
+    id: wen_act3_layla_surface
+    type: system
+    text: ""
+    thought: "[The player has to decide how to handle what they know about Layla.]"
+    choices:
+      - id: layla_confront
+        text: "[Bring up Layla. The manipulation. What she actually said.]"
+        next_node_id: wen_act3_layla_confronted
+        condition:
+          flag: wen_layla_manipulation_seed
+        effects:
+          flag_set:
+            wen_manipulation_confronted: true
+      - id: layla_skip
+        text: "[Leave it. Move toward an ending without the confrontation.]"
+        next_node_id: wen_act3_endings_branch
+
+  wen_act3_layla_confronted:
+    id: wen_act3_layla_confronted
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I talked to her. I told you — she said she wanted you to be happy."
+    thought: "She's already in defense mode. She remembers the conversation with Layla. She also remembers, if she lets herself, exactly how she led it."
+    visual:
+      expression: calculating
+      position: right
+    choices:
+      - id: layla_specific
+        text: "She said she wanted me to find someone who 'really goes for it.' You gave her that line, Wen. You led her there."
+        next_node_id: wen_act3_layla_caught
+        effects:
+          stat_set:
+            wen_zhao_tension: 20
+            wen_zhao_trust: -5
+      - id: layla_softer
+        text: "You edited what she said. You know you did."
+        next_node_id: wen_act3_layla_caught
+        effects:
+          stat_set:
+            wen_zhao_tension: 15
+            wen_zhao_trust: 5
+
+  wen_act3_layla_caught:
+    id: wen_act3_layla_caught
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I — ...I was helping. She doesn't know what she wants either. I just — I pointed her at the answer she already had."
+    thought: "There it is. She believes this, which is what makes it dangerous. She is genuinely not sure she did anything wrong. But there's a tremble in her argument she can't quite suppress, because on some level she knows he's right and she is watching herself try to edit reality in real time."
+    visual:
+      expression: afraid
+    choices:
+      - id: layla_anger
+        text: "That's not helping. That's using her."
+        next_node_id: wen_act3_layla_reckoning
+        effects:
+          stat_set:
+            wen_zhao_tension: 20
+      - id: layla_name_pattern
+        text: "You do this with everyone. You edit the scene until you're the lead."
+        next_node_id: wen_act3_layla_reckoning
+        effects:
+          stat_set:
+            wen_zhao_tension: 15
+            wen_zhao_trust: 10
+      - id: layla_forgive
+        text: "I know. But I also know you thought you were helping."
+        next_node_id: wen_act3_layla_forgiven
+        effects:
+          stat_set:
+            wen_zhao_trust: 20
+            wen_zhao_tension: -5
+
+  wen_act3_layla_reckoning:
+    id: wen_act3_layla_reckoning
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...I know. Okay? I know. I just — I needed her to not be in the way. And she was in the way. And I told myself it was for her. But I knew it wasn't."
+    thought: "She says it flat. No performance. No defense. She looks at the floor. This is possibly the most honest sentence she has spoken in months, and she has no follow-up. The script is gone. There's nothing left but the admission and the silence after it."
+    visual:
+      expression: sad
+    next_node_id: wen_act3_endings_branch
+
+  wen_act3_layla_forgiven:
+    id: wen_act3_layla_forgiven
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...I didn't think you'd say that. I thought you'd just — walk. Most people walk when I stop being fun."
+    thought: "Something shifts in her. She looks at him differently — with something that isn't performance and isn't calculation. She's trying to figure out what to do with forgiveness when she expected punishment."
+    visual:
+      expression: vulnerable
+    next_node_id: wen_act3_endings_branch
+
+  # ============================================
+  # ENDINGS BRANCH
+  # ============================================
+  wen_act3_endings_branch:
+    id: wen_act3_endings_branch
+    type: system
+    text: ""
+    choices:
+      - id: end_lover
+        text: "[Toward Lover]"
+        next_node_id: wen_ending_lover_start
+        condition:
+          flag: wen_post_intimate_honest
+          AND:
+            flag: wen_manipulation_confronted
+        hidden: true
+
+      - id: end_tragic
+        text: "[Toward Tragic]"
+        next_node_id: wen_ending_tragic_start
+        condition:
+          flag: wen_intimate_scene
+          AND:
+            flag: wen_post_intimate_cool
+        hidden: true
+
+      - id: end_friend
+        text: "[Toward Friend]"
+        next_node_id: wen_ending_friend_start
+        condition:
+          flag: wen_manipulation_confronted
+          NOT:
+            flag: wen_intimate_scene
+        hidden: true
+
+      - id: end_default
+        text: "[Continue]"
+        next_node_id: wen_ending_tragic_start
+        hidden: true
+
+  # ============================================
+  # ENDING 1 — 💖 LOVER: "The Real Sequel"
+  # ============================================
+  wen_ending_lover_start:
+    id: wen_ending_lover_start
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "You're not going to make this easy, are you. Not even a little bit."
+    thought: "She says it like a complaint, but she's not moving away. She's looked at him the same way for thirty seconds straight, which she never does. She's trying to figure out what she actually wants, and the trying is a new experience."
+    visual:
+      expression: calculating
+      position: right
+    choices:
+      - id: lover_honest
+        text: "Easy is the movie version. This is the actual one."
+        next_node_id: wen_ending_lover_crack
+
+  wen_ending_lover_crack:
+    id: wen_ending_lover_crack
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...I don't know how to do the actual one."
+    thought: "She says it quietly. It's terrifying how quietly she says it. The girl who is always the loudest, sharpest person in the room is speaking barely above a breath."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: lover_together
+        text: "I don't entirely either. We could be bad at it together."
+        next_node_id: wen_ending_lover_resolve
+
+  wen_ending_lover_resolve:
+    id: wen_ending_lover_resolve
+    type: system
+    text: ""
+    thought: "[A week later. Night. The north gate of the university. Wen is standing outside her apartment building — the wrong direction from where she told her parents she was going. She has a bag. Not a large bag. Enough for a few days. She is wearing her university clothes. She looks ridiculous and completely serious at the same time.]"
+    next_node_id: wen_ending_lover_final
+
+  wen_ending_lover_final:
+    id: wen_ending_lover_final
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I don't have a next scene. I planned up to this part and then I just — I ran out of script. I have nowhere to stay tonight. My mother is going to call in an hour. I have no idea what comes after the movie. ...I've never seen that part."
+    thought: "She's not performing. The bag is real. The hour is real. The terror on her face is real. This is possibly the first completely unscripted thing she has done since she was a child. She looks at him as if he might have a line she can use."
+    visual:
+      expression: afraid
+    choices:
+      - id: lover_accept
+        text: "Then we write it from here."
+        next_node_id: wen_ending_lover_done
+
+  wen_ending_lover_done:
+    id: wen_ending_lover_done
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...okay. Okay. Just — don't make it boring."
+    thought: "She laughs. It is an entirely real laugh — slightly too high, a little undone, nothing like her usual performance. She picks up her bag. The mother will call. The father will call after that. None of that has been solved. But for tonight, she is choosing what comes next herself. That's the whole movie."
+    visual:
+      expression: happy
+    is_end: true
+    effects:
+      flag_set:
+        wen_ending_lovers: true
+        wen_relationship_resolved: true
+      state_set:
+        wen_path: "lovers"
+        last_wen_encounter_at: NOW
+      stat_set:
+        wen_thrill: 20
+        wen_zhao_trust: 30
+
+  # ============================================
+  # ENDING 2 — 🤝 FRIEND: "The Real Accomplice"
+  # ============================================
+  wen_ending_friend_start:
+    id: wen_ending_friend_start
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "So that's it then. You called me out, I admitted it, and now we just... stand here."
+    thought: "She's expecting him to walk. That's how the scene plays in her head — he says his piece, she concedes, he goes. She has very little data for what happens if he doesn't."
+    visual:
+      expression: contemplative
+      position: right
+    choices:
+      - id: friend_stay
+        text: "I don't think you're a bad person, Wen. I think you've never had anyone tell you no."
+        next_node_id: wen_ending_friend_sit
+
+  wen_ending_friend_sit:
+    id: wen_ending_friend_sit
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "That's possibly the most insulting and accurate thing anyone's said to me in years."
+    thought: "She sits down on the steps. University steps, the kind that get cold after dark. She doesn't bother straightening her posture or checking her appearance. She just sits. Her home-wear is visible at the hem of her jacket — she didn't change all the way before leaving."
+    visual:
+      expression: sad
+    choices:
+      - id: friend_sit_too
+        text: "[Sit next to her.]"
+        next_node_id: wen_ending_friend_final
+
+  wen_ending_friend_final:
+    id: wen_ending_friend_final
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I think I wanted a movie because I was afraid the real thing would just be... this. Awkward and quiet and nothing going on. ...It's not nothing, though. Is it."
+    thought: "She's not asking. She's naming something she can feel but hasn't verified. The city hums distantly. It's genuinely nothing, and genuinely something. She's correct on both counts."
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        wen_ending_friend: true
+        wen_relationship_resolved: true
+      state_set:
+        wen_path: "friend"
+        last_wen_encounter_at: NOW
+      stat_set:
+        wen_zhao_trust: 25
+
+  # ============================================
+  # ENDING 3 — 💔 TRAGIC: "The Perfect Daughter"
+  # ============================================
+  wen_ending_tragic_start:
+    id: wen_ending_tragic_start
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I think we should stop. The whole thing. I think — I think I got too close to the edge of the movie and looked down, and what's down there is my actual life, and it scared me."
+    thought: "She says it cleanly, almost without emotion. This is a decision she's made somewhere between the last conversation and this one. She's not asking. She's announcing. The performance is different now — quieter, tidier. More like her father's."
+    visual:
+      expression: sad
+      position: right
+    choices:
+      - id: tragic_accept
+        text: "Okay. I hear you."
+        next_node_id: wen_ending_tragic_walk
+      - id: tragic_push
+        text: "What does your actual life look like, Wen?"
+        next_node_id: wen_ending_tragic_push
+
+  wen_ending_tragic_push:
+    id: wen_ending_tragic_push
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "The same as my mother's. Just — quieter. Done on my own terms. ...That's different. It's different when you choose it yourself."
+    thought: "She says the last part with a conviction that doesn't quite reach her eyes. She believes it, the way you believe something you have to believe because the alternative is unbearable. She has already started recasting herself in a smaller role."
+    visual:
+      expression: determined
+    next_node_id: wen_ending_tragic_walk
+
+  wen_ending_tragic_walk:
+    id: wen_ending_tragic_walk
+    type: system
+    text: ""
+    thought: "[Some time later. The player sees her crossing the main university hallway. She is in modest clothing — not because she has to get home. It is the middle of the day. She doesn't need to perform for anyone here. She has already made the decision. She sees the player. She doesn't stop.]"
+    next_node_id: wen_ending_tragic_final
+
+  wen_ending_tragic_final:
+    id: wen_ending_tragic_final
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "[She doesn't stop. She walks past. Her posture is her father's daughter. She doesn't look back.]"
+    thought: "She felt him watching. She counted three steps before she was past him. Her jaw is tight for the rest of the afternoon and she cannot explain why to her study group."
+    visual:
+      expression: determined
+    is_end: true
+    effects:
+      flag_set:
+        wen_ending_tragic: true
+        wen_relationship_resolved: true
+      state_set:
+        wen_path: "tragic"
+        last_wen_encounter_at: NOW
+      stat_set:
+        wen_thrill: -20
+        wen_zhao_trust: -10
+
+  # ============================================
+  # ENDING 4 — 🔥 ENEMY: "The Director"
+  # ============================================
+  wen_act3_enemy_open:
+    id: wen_act3_enemy_open
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Layla told me you told her. About what I said. About how I framed the question."
+    thought: "She's composed. Too composed. This is the version of Wen that operates when the game has turned dangerous — flat affect, very direct eye contact, everything filed and categorized. She's deciding what to do, and she's doing it in real time."
+    visual:
+      expression: calculating
+      position: right
+      transition: fade
+    choices:
+      - id: enemy_confirm
+        text: "She deserved to know."
+        next_node_id: wen_act3_enemy_betrayal
+        effects:
+          stat_set:
+            wen_zhao_tension: 30
+      - id: enemy_justify
+        text: "You used her. I wasn't going to pretend I didn't see it."
+        next_node_id: wen_act3_enemy_betrayal
+        effects:
+          stat_set:
+            wen_zhao_tension: 25
+
+  wen_act3_enemy_betrayal:
+    id: wen_act3_enemy_betrayal
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "You think you're the protagonist. Protecting Layla, standing up for what's right. But I've been writing this story longer than you've been in it, R. Both of you."
+    thought: "She's smiling now. It's the sharpest, coldest version of the smirk — the one that means she's already past anger and into something that is simply operational. She's not performing anymore; she's executing."
+    visual:
+      expression: angry
+    choices:
+      - id: enemy_what
+        text: "What does that mean?"
+        next_node_id: wen_act3_enemy_threat
+      - id: enemy_dont
+        text: "Wen. Don't do something you can't undo."
+        next_node_id: wen_act3_enemy_threat
+
+  wen_act3_enemy_threat:
+    id: wen_act3_enemy_threat
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "My father knows the head of the northern district community board. Which means he knows Layla's father's employer. Which means he knows exactly who to call if he heard that a boy from outside the community was spending time with two girls from inside it. ...I'm sure it won't come to that. We're all adults."
+    thought: "She says it pleasantly. The threat is real. Her father's connections extend exactly as far as she described — she has not invented this, which is the worst part. She will burn Layla's situation along with the player's. She will do it cleanly, without visible anger, and she will frame it as something that got out of hand."
+    visual:
+      expression: calculating
+    next_node_id: wen_act3_enemy_final
+
+  wen_act3_enemy_final:
+    id: wen_act3_enemy_final
+    type: system
+    text: ""
+    thought: "[Later that week, the player hears from Layla — there has been a call. Her father received information about 'inappropriate behavior.' The source is untraceable. Layla is frightened. She doesn't know who to be angry at. The player does.]"
+    next_node_id: wen_act3_enemy_coda
+
+  wen_act3_enemy_coda:
+    id: wen_act3_enemy_coda
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "[Across the university courtyard, Wen watches the player for exactly one second. She's with a group of friends, laughing. She raises her coffee cup in a small, private toast. Then she turns back to her group and doesn't look again.]"
+    thought: "She won this scene. She's not happy. She's not satisfied. But she played her role with precision and the movie had a villain and it was her, and that's something. That's something she chose."
+    visual:
+      expression: smirk
+    is_end: true
+    effects:
+      flag_set:
+        wen_ending_enemy: true
+        wen_relationship_resolved: true
+        layla_community_tipped: true
+      state_set:
+        wen_path: "enemy"
+        last_wen_encounter_at: NOW
+      stat_set:
+        wen_zhao_tension: 40
+        wen_zhao_trust: -30
+        layla_tension: 30
+
+  # ============================================
+  # ENDING 5 — 🌫️ DISTANT: "The Movie Extra"
+  # ============================================
+  wen_act3_distant_party:
+    id: wen_act3_distant_party
+    type: system
+    text: ""
+    thought: "[A university party, three weeks after the failed dare. The music is loud. The player spots Wen across the room — she's with a different group, different guy beside her. She's holding a drink and laughing at something and wearing the most attention-demanding thing she owns.]"
+    next_node_id: wen_ending_distant_eye
+
+  wen_ending_distant_eye:
+    id: wen_ending_distant_eye
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "[She notices the player from across the room. One second of eye contact. Then she smiles at something the new guy says, turns away, and does not look back.]"
+    thought: "She clocked him. She held it for one second. Then she let him go completely, and the letting-go was practiced and total, and the player realizes she has simply recast the lead without an audition. There is no confrontation. There is no scene. He is an extra in a movie she has already moved past."
+    visual:
+      expression: happy
+    is_end: true
+    effects:
+      flag_set:
+        wen_ending_distant: true
+        wen_relationship_resolved: true
+      state_set:
+        wen_path: "distant"
+        last_wen_encounter_at: NOW
+
+metadata:
+  version: "1.0"
+  required_flags:
+    wen_act2_done: true
+  tags:
+    - "wen_zhao"
+    - "act3"
+    - "endings"
+    - "lovers"
+    - "friend"
+    - "tragic"
+    - "enemy"
+    - "distant"
+    - "father_scene"
+    - "manipulation_confronted"
+    - "gate_logic"
+  notes: |
+    Act 3 contains all five endings for Wen Zhao's arc.
+    Gate logic summary:
+      wen_post_intimate_honest + wen_manipulation_confronted → 💖 Lover
+      wen_manipulation_confronted + NOT wen_intimate_scene → 🤝 Friend
+      wen_intimate_scene + wen_post_intimate_cool → 💔 Tragic (default fallback)
+      layla_ending_lovers + wen_layla_manipulation_seed → 🔥 Enemy (separate entry branch)
+      wen_dare_refused + NOT wen_first_kiss → 🌫️ Distant (separate entry branch)
+
+    Side effect of Enemy ending: layla_community_tipped is set,
+    which should be readable by Layla's dialogue tree to surface
+    the fallout with her father in a follow-on scene.

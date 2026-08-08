@@ -96,17 +96,13 @@ for (const slug of dirs) {
 name: ${data.name}
 type: portrait
 size: 1024x1024
+aspect_ratio: 3:4
 source: content/characters/${slug}/${slug}.md
 target: \`portrait_urls[].url\` in \`content/characters/${slug}/char_${slug}.yaml\`
 consumer: portrait
 ---
 
 # Prompt: ${data.name}
-
-[CONSUMER: portrait]
-**Type:** portrait
-**Target field:** \`portrait_urls[].url\` in \`content/characters/char_${slug}.yaml\`
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
 
 ## Prompt
 Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of ${data.name}, a ${age} ${data.title} ${ethnicity}. ${physicalDesc} They wear practical clothing suited for their environment. The backdrop is ${backdrop} Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.

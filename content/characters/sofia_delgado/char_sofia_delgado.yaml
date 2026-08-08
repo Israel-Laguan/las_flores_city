@@ -11,3 +11,6 @@ asset_paths:
   portrait: sofia_delgado__default.png
 
 lore_path: sofia_delgado.md
+portrait_urls:
+  - url: s3://las-flores/portraits/sofia_delgado/sofia_delgado__default.png
+    label: dev

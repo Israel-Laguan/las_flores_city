@@ -25,3 +25,6 @@ metadata:
 lore_path: jan_van_der_meer.md
 asset_paths:
   portrait: jan_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/jan_van_der_meer/jan_van_der_meer__default.png
+    label: dev

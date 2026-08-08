@@ -200,14 +200,14 @@ function extractFromOldPrompt(oldPrompt) {
     timeOfDay: "daytime",
     adjectives: [],
     isNIM: false,
-    isMidJourney: false,
+    isLegacyFormat: false,
   };
 
   if (!oldPrompt) return d;
 
   // Detect format
   d.isNIM = /Premium contemporary graphic novel realism/.test(oldPrompt);
-  d.isMidJourney = /Photorealistic scene|Soft cyberpunk/.test(oldPrompt);
+  d.isLegacyFormat = /Photorealistic scene|Soft cyberpunk/.test(oldPrompt);
 
   // Extract time of day
   const timeMatch = oldPrompt.match(

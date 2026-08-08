@@ -11,3 +11,6 @@ asset_paths:
   portrait: rafaela__default.png
 
 lore_path: rafaela.md
+portrait_urls:
+  - url: s3://las-flores/portraits/rafaela/rafaela__default.png
+    label: dev

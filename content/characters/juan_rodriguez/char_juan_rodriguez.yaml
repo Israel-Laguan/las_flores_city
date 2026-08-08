@@ -24,3 +24,6 @@ metadata:
 lore_path: juan_rodriguez.md
 asset_paths:
   portrait: juan_rodriguez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/juan_rodriguez/juan_rodriguez__default.png
+    label: dev

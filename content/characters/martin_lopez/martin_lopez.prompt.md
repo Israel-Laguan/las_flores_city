@@ -2,25 +2,19 @@
 name: Martín López
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/martin_lopez/martin_lopez.md
+source: content/characters/martin_lopez/martin_lopez.md
 target: `portrait_urls[].url` in `content/characters/char_mart_n_l_pez.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
-
 
 # Prompt: Martín López
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** docs/lore/figures/mart_n_l_pez.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_mart_n_l_pez.yaml`
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
-
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium 55-year-old Latin Photorealistic portrait of Martín López. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, weary but sharp. Her expression is weary, as she holds a steady, weathered composure. Her gray thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weath. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-build 55-year-old Latin American man. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown eyes that are weary but sharp. His expression is weary, as he holds a steady, weathered composure. His thin, gray hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium  55-year-old Latin Photorealistic portrait of Martín López. Her frame is slight, sturdy, and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown, weary but sharp. Her expression is weary, as she holds a steady, weathered composure. Her gray thin hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-build 55-year-old Latin American man. His frame is slight, sturdy, and un-sculpted. He exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, dark brown eyes that are weary but sharp. His expression is weary, as he holds a steady, weathered composure. His thin, gray hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to his earlobe. He wears minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
 --no neon, no androids, no clean backgrounds, no modern clothing
@@ -30,4 +24,16 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 - [ ] Martín López with notebook in hand, interviewing a local source for a cultural feature story
 - [ ] Martín López reviewing interview notes at their desk, thoughtfully considering story angles
 - [ ] Martín López with colleagues in the newsroom, collaborating on a breaking story
+
+## Expression Variants
+
+- **`martin_lopez__default.png`**: Use the base portrait as reference. Weary but steady resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry.
+
+- **`martin_lopez__focused.png`**: Use the base portrait as reference. Seasoned journalistic attention, looking at the camera, 3/4 take. Eyes narrowed and sharp beneath the weariness, brows drawn, lips firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`martin_lopez__contemplative.png`**: Use the base portrait as reference. A weary, reflective pause, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, head bowed slightly. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`martin_lopez__happy.png`**: Use the base portrait as reference. A tired but genuine smile, looking at the camera, 3/4 take. Eyes warming, the weariness lifting at the corners of his mouth. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`martin_lopez__determined.png`**: Use the base portrait as reference. Quiet resolve beneath the weariness, looking directly at the camera, 3/4 take. Eyes fixed and sharp, jaw set, brow firm. Keep the same art style as reference, same earbud and work clothing, same backdrop. Clean confident linework, painterly soft shading, muted natural palette.
 

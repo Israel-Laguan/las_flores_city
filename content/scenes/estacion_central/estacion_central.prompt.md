@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Estación Central — Metro Platform
 
-[CONSUMER: background]
-**Type:** background
-**Source:** estacion_central.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_estacion_central.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

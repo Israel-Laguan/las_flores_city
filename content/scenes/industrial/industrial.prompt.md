@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Industrial District
 
-[CONSUMER: background]
-**Type:** background
-**Source:** industrial.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_industrial.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

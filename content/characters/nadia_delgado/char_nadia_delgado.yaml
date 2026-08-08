@@ -12,3 +12,6 @@ metadata:
 lore_path: nadia_delgado.md
 asset_paths:
   portrait: nadia_delgado__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/nadia_delgado/nadia_delgado__default.png
+    label: dev

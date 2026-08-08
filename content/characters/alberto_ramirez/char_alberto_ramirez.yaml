@@ -12,3 +12,6 @@ narrative_path: alberto_ramirez.md
 asset_paths:
   portrait: alberto_ramirez__default.png
   biometric: alberto_ramirez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alberto_ramirez/alberto_ramirez__default.png
+    label: dev

@@ -99,7 +99,8 @@ export interface ParsedPromptFile {
 /**
  * Pure helper: extracts the asset_type from prompt file markdown content.
  *
- * Looks for a line containing `**Type:** <value>` and returns the value.
+ * Prefers frontmatter `type:` (single source of truth); falls back to the
+ * legacy body `**Type:** <value>` for files that have not yet been migrated.
  * Returns `'unknown'` if the field is absent.
  *
  * This function is intentionally root-agnostic — it reads only from the
@@ -107,8 +108,21 @@ export interface ParsedPromptFile {
  * regardless of which root directory the file originated from.
  */
 export function extractAssetType(content: string): string {
+  const fm = parseFrontmatter(content);
+  if (fm?.type) return fm.type.trim();
   const typeMatch = content.match(/\*\*Type:\*\* (\S+)/);
   return typeMatch ? typeMatch[1].trim() : 'unknown';
+}
+
+function parseFrontmatter(content: string): Record<string, string> | null {
+  const m = content.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) return null;
+  const meta: Record<string, string> = {};
+  for (const line of m[1].split('\n')) {
+    const [k, ...v] = line.split(': ');
+    if (k && v.length) meta[k.trim()] = v.join(': ').trim();
+  }
+  return meta;
 }
 
 export async function parsePromptFile(filePath: string): Promise<ParsedPromptFile | null> {
@@ -123,18 +137,29 @@ export async function parsePromptFile(filePath: string): Promise<ParsedPromptFil
 
     const asset_type = extractAssetType(content);
 
-    const dimMatch = content.match(/\*\*Dimensions:\*\* (\d+)\s*[x×]\s*(\d+)/i);
+    const fm = parseFrontmatter(content);
     let width = 1024;
     let height = 1024;
-    if (dimMatch) {
-      width = parseInt(dimMatch[1], 10);
-      height = parseInt(dimMatch[2], 10);
-    } else {
-      const def = DEFAULT_DIMENSIONS[asset_type];
-      if (def) {
-        width = def.width;
-        height = def.height;
+    if (fm?.size) {
+      const dimMatch = fm.size.match(/^(\d+)\s*[x×]\s*(\d+)$/i);
+      if (dimMatch) {
+        width = parseInt(dimMatch[1], 10);
+        height = parseInt(dimMatch[2], 10);
       }
+    }
+    if (width === 1024 && height === 1024) {
+      const bodyDimMatch = content.match(/\*\*Dimensions:\*\* (\d+)\s*[x×]\s*(\d+)/i);
+      if (bodyDimMatch) {
+        width = parseInt(bodyDimMatch[1], 10);
+        height = parseInt(bodyDimMatch[2], 10);
+      }
+    }
+    const def = DEFAULT_DIMENSIONS[asset_type];
+    if (!def && width === 1024 && height === 1024) {
+      // keep 1024×1024 fallback when nothing matched
+    } else if (def && width === 1024 && height === 1024) {
+      width = def.width;
+      height = def.height;
     }
     const resolved = pickSupportedResolution(width, height);
     width = resolved.width;
@@ -156,7 +181,7 @@ export async function parsePromptFile(filePath: string): Promise<ParsedPromptFil
     while ((match = promptRegex.exec(content)) !== null) {
       const variantName = match[1].trim();
       const promptText = match[2].trim();
-      const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=## Prompt — |$)/);
+      const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
       const negativeText = negMatch ? negMatch[1].trim() : '';
 
       if (promptText) {

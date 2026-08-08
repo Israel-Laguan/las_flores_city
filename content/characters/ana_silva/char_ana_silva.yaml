@@ -12,3 +12,6 @@ lore_path: ana_silva.md
 narrative_path: ana_silva.md
 asset_paths:
   portrait: ana_silva__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/ana_silva/ana_silva__default.png
+    label: dev

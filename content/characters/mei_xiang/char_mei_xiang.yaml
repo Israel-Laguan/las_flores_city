@@ -10,3 +10,6 @@ metadata:
 lore_path: mei_xiang.md
 asset_paths:
   portrait: mei_xiang__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/mei_xiang/mei_xiang__default.png
+    label: dev

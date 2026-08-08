@@ -11,3 +11,6 @@ lore_path: wei_zhang.md
 narrative_path: wei_zhang.md
 asset_paths:
   portrait: wei_zhang__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/wei_zhang/wei_zhang__default.png
+    label: dev

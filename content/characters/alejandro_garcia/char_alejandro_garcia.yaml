@@ -11,3 +11,6 @@ asset_paths:
   portrait: alejandro_garcia__default.png
 
 lore_path: alejandro_garcia.md
+portrait_urls:
+  - url: s3://las-flores/portraits/alejandro_garcia/alejandro_garcia__default.png
+    label: dev

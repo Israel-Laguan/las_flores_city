@@ -26,3 +26,6 @@ metadata:
 lore_path: claire_moreau.md
 asset_paths:
   portrait: claire_moreau__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/claire_moreau/claire_moreau__default.png
+    label: dev

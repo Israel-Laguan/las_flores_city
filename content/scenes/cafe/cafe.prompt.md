@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Old Town Café
 
-[CONSUMER: background]
-**Type:** background
-**Source:** cafe.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_cafe.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

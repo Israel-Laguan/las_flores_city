@@ -11,3 +11,6 @@ asset_paths:
   portrait: qiu_bo__default.png
 
 lore_path: qiu_bo.md
+portrait_urls:
+  - url: s3://las-flores/portraits/qiu_bo/qiu_bo__default.png
+    label: dev

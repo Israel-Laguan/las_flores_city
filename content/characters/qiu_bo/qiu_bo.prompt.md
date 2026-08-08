@@ -1,31 +1,41 @@
-# Portrait Prompt — Qiu Bo
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Qiu Bo, adult Head of Tech & Innovation, LW Group, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Qiu Bo, a adult Head of Tech & Innovation, LW Group from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Qiu Bo
-title: Head of Tech & Innovation, LW Group
-faction: l
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/qiu_bo/qiu_bo.md
+target: `asset_paths.portrait` in `content/characters/qiu_bo/char_qiu_bo.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.715Z
+# Prompt: Qiu Bo
+
+## Prompt (Draft)
+
+Chinese man in his 40s, lean-wiry build, clear skin. Square face, receding jaw, pronounced cheekbones, straight dark-gray hair receding. Narrow nose, narrow eyes, thick brows, thin lips. Small mole on left cheek, one brow lower, faint line between brows. Focused innovator bearing, small sport earbud clipped to earlobe. Tech-exec smart-casual attire with subtle LW Group branding, holographic tablet, R&D lab backdrop with blue ambient light. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Chinese man in his 40s. Lean-wiry build, alert and precise. Clear skin with a studious, lightly lined face. Square face with pronounced cheekbones and a receding jawline, straight dark hair threaded with gray and receding at the temples. Narrow nose, narrow attentive eyes, thick brows — one sitting slightly lower than the other — and thin lips, with a faint vertical line drawn between the brows from constant focus. A small mole on the left cheek. Composed innovator bearing, calculating and intent. Small sport non-in-ear earbud clipped to earlobe. Tech-executive smart-casual attire with understated LW Group branding, a slim holographic tablet angled in hand. The backdrop is a LW Group R&D laboratory, next-generation lithium-extraction prototypes, cool blue ambient light washing over clean surfaces. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no European features, no South Asian features
+
+## Variations
+
+- [ ] At a lab workbench reviewing a holographic extraction prototype under cool blue light
+- [ ] Presenting a renewable-energy plan to colleagues in a conference alcove
+- [ ] Examining a lithium sample, blue data readouts reflected in his eyes
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__calculating.png`**: Use the base portrait as reference. Sharp, measured assessment, looking directly at the camera, 3/4 take. Narrow eyes narrowed further, brow line deeper between the brows, thin lips pressed in thought. Keep the same art style as reference, same smart-casual attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. Resolved and driven, looking unflinchingly at the camera, 3/4 take. Narrow eyes steady and hard, thick brows lowered, thin lips set. Lean frame squared with intent, faint line between the brows more pronounced. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. Faint mirthful half-smile, looking at the camera, 3/4 take. One corner of the thin lips pulled into a knowing smirk, narrow eyes glinting with satisfaction, thick brows relaxed. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Sudden, controlled surprise, looking at the camera, 3/4 take. Narrow eyes widening, thick brows rising, thin lips parting slightly. Keep the same art style as reference, same smart-casual clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.

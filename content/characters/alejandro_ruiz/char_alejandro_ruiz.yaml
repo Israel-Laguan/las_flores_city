@@ -11,3 +11,6 @@ asset_paths:
   portrait: alejandro_ruiz__default.png
 
 lore_path: alejandro_ruiz.md
+portrait_urls:
+  - url: s3://las-flores/portraits/alejandro_ruiz/alejandro_ruiz__default.png
+    label: dev

@@ -7,13 +7,8 @@ target: `scene.background_url` in `content/locations/location_camino_verde_neigh
 consumer: html-background
 ---
 
-
 # Prompt: Camino Verde Neighborhood
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** docs/lore/districts/camino_verde_neighborhood.md
-**Target field:** `scene.background_url` in `content/locations/location_camino_verde_neighborhood.yaml`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 
@@ -30,5 +25,4 @@ photorealistic, 3D render, Pixar, Disney, comic book, manga screentones, cel sha
 - [ ] Night version: same scene at night with different lighting
 - [ ] Rainy version: same scene with rain and mood effects
 - [ ] Wide shot: broader view of the location
-
 

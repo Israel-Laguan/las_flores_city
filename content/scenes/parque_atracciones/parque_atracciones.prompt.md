@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Parque de Atracciones — Midway
 
-[CONSUMER: background]
-**Type:** background
-**Source:** parque_atracciones.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_parque_atracciones.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

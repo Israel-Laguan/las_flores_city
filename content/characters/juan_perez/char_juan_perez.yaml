@@ -12,3 +12,6 @@ asset_paths:
   portrait: juan_perez__default.png
 
 lore_path: juan_perez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/juan_perez/juan_perez__default.png
+    label: dev

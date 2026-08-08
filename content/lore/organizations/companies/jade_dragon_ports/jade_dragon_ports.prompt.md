@@ -1,9 +1,6 @@
 # Prompt: Jade Dragon Ports & Logistics Ltd. (thematic art)
 
-**Type:** thematic
 **size:** 1280×720
-**Source:** docs/lore/organizations/companies/jade_dragon_ports/jade_dragon_ports.md
-**Target:** Vault entry or loading screen
 ## Prompt
 A busy seaport with container cranes, cargo ships, logistics warehouses, sunset over water, high detail, 8K resolution.
 

@@ -162,18 +162,19 @@ describe('Story Beat Pipeline Integration', () => {
     expect(constraintDef).toContain("'story_beat'");
   });
 
-  // Requirement 3.3, 3.6: processContentFile upserts all 12 beats with matching slugs and orders
-  test('processContentFile upserts all 12 beats with correct data', async () => {
+  // Requirement 3.3, 3.6: processContentFile upserts every beat in story_beats.yaml
+  test('processContentFile upserts all beats with correct data', async () => {
     // Load the canonical story_beats.yaml to get full expected data
     const yamlPath = path.join(CONTENT_DIR, 'story_beats.yaml');
     const yamlContent = await fs.readFile(yamlPath, 'utf-8');
     const yamlData = yaml.load(yamlContent) as { beats: Array<{ slug: string; label: string; order: number; description: string }> };
     const checksum = crypto.createHash('sha256').update(yamlContent).digest('hex');
+    const expectedCount = yamlData.beats.length;
 
     // Process the content file
     const result = await processContentFile(yamlPath);
     expect(result.contentType).toBe('story_beat');
-    expect(result.contentId.split(',').length).toBe(12);
+    expect(result.contentId.split(',').length).toBe(expectedCount);
 
     // Record the migration (simulates what migrateContent does after processContentFile)
     await pool.query(
@@ -181,12 +182,12 @@ describe('Story Beat Pipeline Integration', () => {
       ['story_beats.yaml', checksum, 'story_beat', 'prologue']
     );
 
-    // Verify all 12 rows are present
+    // Verify all registry rows are present
     const countResult = await pool.query('SELECT COUNT(*)::int AS count FROM story_beats');
-    expect(countResult.rows[0].count).toBe(12);
+    expect(countResult.rows[0].count).toBe(expectedCount);
 
     // Verify each expected beat exists with correct order
-    for (const expectedBeat of EXPECTED_BEATS) {
+    for (const expectedBeat of yamlData.beats) {
       const beatResult = await pool.query(
         'SELECT slug, "order", label, description FROM story_beats WHERE slug = $1',
         [expectedBeat.slug]
@@ -197,10 +198,8 @@ describe('Story Beat Pipeline Integration', () => {
       expect(beatResult.rows[0].order).toBe(expectedBeat.order);
 
       // Also verify label and description match the YAML
-      const yamlBeat = yamlData.beats.find((b) => b.slug === expectedBeat.slug);
-      expect(yamlBeat).toBeDefined();
-      expect(beatResult.rows[0].label).toBe(yamlBeat!.label);
-      expect(beatResult.rows[0].description).toBe(yamlBeat!.description);
+      expect(beatResult.rows[0].label).toBe(expectedBeat.label);
+      expect(beatResult.rows[0].description).toBe(expectedBeat.description);
     }
   });
 
@@ -274,7 +273,9 @@ describe('Story Beat Pipeline Integration', () => {
     expect(cacheCall).toBeDefined();
     const cachedSlugs = cacheCall![1] as string[];
     expect(cachedSlugs).toContain('beat_sofia_alberto_risk');
-    // Cache should contain all 12 registry slugs, not just this one
-    expect(cachedSlugs.length).toBe(12);
+    // Cache should contain all registry slugs (refreshed from the full table),
+    // not just this one.
+    const { rows: totalRows } = await pool.query('SELECT COUNT(*)::int AS c FROM story_beats');
+    expect(cachedSlugs.length).toBe(totalRows[0].c);
   });
 });

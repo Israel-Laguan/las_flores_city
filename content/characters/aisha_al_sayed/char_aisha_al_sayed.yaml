@@ -15,3 +15,6 @@ metadata:
 lore_path: aisha_al_sayed.md
 asset_paths:
   portrait: aisha_al_sayed__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/aisha_al_sayed/aisha_al_sayed__default.png
+    label: dev

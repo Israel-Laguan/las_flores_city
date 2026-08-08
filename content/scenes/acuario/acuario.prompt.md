@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Acuario Las Flores — Interior
 
-[CONSUMER: background]
-**Type:** background
-**Source:** acuario.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_acuario.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

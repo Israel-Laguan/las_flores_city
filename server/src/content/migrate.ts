@@ -218,6 +218,23 @@ async function dropDialogueTreeFKConstraints(): Promise<void> {
 }
 
 async function recreateDialogueTreeFKConstraints(): Promise<void> {
+  // Scrub any placeholder zero-UUID FK values left by skipped or legacy
+  // migrations so re-adding the constraints does not fail on stale rows.
+  await queryOLTP(`
+    UPDATE dialogue_trees
+    SET scene_id = NULL
+    WHERE scene_id = '00000000-0000-0000-0000-000000000000'
+  `);
+  await queryOLTP(`
+    UPDATE dialogue_trees
+    SET character_id = NULL
+    WHERE character_id = '00000000-0000-0000-0000-000000000000'
+  `);
+  await queryOLTP(`
+    UPDATE dialogue_trees
+    SET mission_id = NULL
+    WHERE mission_id = '00000000-0000-0000-0000-000000000000'
+  `);
   await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_character_id_fkey FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE SET NULL');
   await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_scene_id_fkey FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE SET NULL');
   await queryOLTP('ALTER TABLE dialogue_trees ADD CONSTRAINT dialogue_trees_mission_id_fkey FOREIGN KEY (mission_id) REFERENCES mysteries(id) ON DELETE SET NULL');

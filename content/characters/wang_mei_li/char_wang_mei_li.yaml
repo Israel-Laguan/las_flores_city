@@ -10,3 +10,6 @@ metadata:
 lore_path: wang_mei_li.md
 asset_paths:
   portrait: wang_mei_li__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/wang_mei_li/wang_mei_li__default.png
+    label: dev

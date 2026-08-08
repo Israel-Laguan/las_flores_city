@@ -9,10 +9,6 @@ consumer: html-background
 
 # Prompt: La Casa de la Música
 
-[CONSUMER: html-background]
-**Type:** background
-**Source:** La Casa de la Música lore
-**Target field:** `asset_paths.image`
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 **Pipeline stage:** draft → refine
 

@@ -1,6 +1,17 @@
 import { queryOLTP } from '../database/connection.js';
 import { sanitizeText } from './validate-xss.js';
 
+const ZERO_UUID = '00000000-0000-0000-0000-000000000000';
+
+// Content files sometimes use the zero UUID as a "no reference" placeholder
+// for FK columns (e.g. scene_id on dialogue trees). That value does not exist
+// in the referenced table, so it must be normalized to NULL before upsert to
+// avoid violating the foreign-key constraint.
+function normalizeUuid(value: any): string | null {
+  if (!value || value === ZERO_UUID) return null;
+  return value;
+}
+
 export async function upsertCharacter(data: any): Promise<string> {
   const result = await queryOLTP(
     `INSERT INTO characters (id, name, title, description, avatar_url, portrait_urls, atlas_url, available_dialogues, metadata)
@@ -40,7 +51,7 @@ export async function upsertDialogueTree(data: any): Promise<string> {
         updated_at = NOW()
       RETURNING id`,
     [data.id, data.name, data.description || null, data.start_node_id, JSON.stringify(data.nodes || {}), JSON.stringify(data.metadata || {}),
-     data.character_id || null, data.scene_id || null, data.mission_id || null, data.dialogue_scope || 'character']
+     normalizeUuid(data.character_id), normalizeUuid(data.scene_id), normalizeUuid(data.mission_id), data.dialogue_scope || 'character']
   );
   return result.rows[0].id;
 }
