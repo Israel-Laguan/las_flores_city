@@ -67,28 +67,30 @@ Location: `server/tests/unit/`
 
 ### Flaky Integration Tests
 
-Integration tests share the same Postgres and Redis instances. Under parallel execution (`npm test` without `--runInBand`), tests can interfere with each other. The `npm test` command now runs integration tests sequentially to prevent this.
+Integration tests share the same Postgres and Redis instances and **run in parallel by default** (no `--runInBand`). To stay stable, schema-mutating operations serialize on a shared advisory lock and the global worker suites self-isolate. See `AGENTS.md` → "Test isolation rules" for the full contract.
 
 #### Known flaky tests (fixed)
 
 | Test file | Symptom | Root cause | Fix |
 |-----------|---------|------------|-----|
 | `aftermath.worker.test.ts` | `scRows` = 1 (scene_characters not deleted) | `processExpiredMysteries()` reused one DB client across all mysteries; a failure on a foreign mystery poisoned the test's own mystery | Per-mystery clients in `LeaderboardWorker.ts` |
-| `migration.drift.test.ts` | `result.success === false` | Shared `MYSTERY_ID` with `leaderboard.simulation.test.ts` + advisory lock fail-fast | Decoupled IDs + retry lock acquisition |
+| `migration.drift.test.ts` | `result.success === false` | Shared `MYSTERY_ID` with `leaderboard.simulation.test.ts` + advisory lock fail-fast | Decoupled IDs + **blocking** advisory lock |
+| Parallel DDL deadlocks (`migration.drift`, `story-beat-pipeline`, `breakthrough.concurrency`, etc.) | Postgres `deadlock detected` / `Test suite failed` | Concurrent `create`/`alter table` across workers take `ACCESS EXCLUSIVE` locks | `withSchemaLock(...)` in `server/tests/helpers/schemaLock.ts` serializes DDL + whole-table reconciles |
+| `leaderboard.simulation.test.ts` / `aftermath.worker.test.ts` mid-seed interference | Nondeterministic rank/count assertions | Global `processExpiredMysteries()` finalized a sibling's mystery mid-seed | Non-expired seed + scoped `processExpiredMysteries([OWN_ID])` |
 
-#### Reproducing the flakiness (diagnostic)
+#### Reproducing a suspected integration flake (diagnostic)
 
 ```bash
 # 1. Clear stale ts-jest cache first (required!)
 cd server && npx --no-install jest --clearCache
 
-# 2. Run integration tests in PARALLEL (no --runInBand) to reproduce the flake
-npx --no-install jest tests/integration --forceExit --detectOpenHandles --verbose
+# 2. Run integration tests in PARALLEL (default; no --runInBand) repeatedly
+npx --no-install jest tests/integration --forceExit --detectOpenHandles
 
-# 3. Run the two flaky files together in parallel
-npx --no-install jest tests/integration/aftermath.worker.test.ts tests/integration/migration.drift.test.ts tests/integration/leaderboard.simulation.test.ts --forceExit --detectOpenHandles --verbose
+# 3. Run the worker suites together in parallel
+npx --no-install jest tests/integration/aftermath.worker.test.ts tests/integration/migration.drift.test.ts tests/integration/leaderboard.simulation.test.ts --forceExit --detectOpenHandles
 
-# 4. Verify fix: run sequentially (should pass)
+# 4. Verify: integration now passes in parallel
 npm run test:integration
 ```
 
@@ -96,8 +98,8 @@ npm run test:integration
 
 1. **Use a dedicated synthetic UUID** for every test fixture. Never reuse a real content ID (e.g., `a0000000-...`) for a synthetic simulation.
 2. **Clean up rows in `afterAll`** — delete test data but do NOT call `closeConnections()` / `closeRedis()` unless you must. `globalTeardown` handles pool teardown.
-3. **If you call `processExpiredMysteries()`**, assert only your own mystery's state. The worker is global.
-4. **If you call `migrateContent()`**, rely on the now-retryable advisory lock. Run integration tests with `--runInBand`.
+3. **If you call `processExpiredMysteries()`**, scope it to your own mystery (`processExpiredMysteries([SELF_ID])`) and seed non-expired, so a sibling worker can never touch it.
+4. **If you run schema DDL (`applyMigration`) or a whole-table reconcile (`DELETE FROM x` with no WHERE)**, wrap it in `withSchemaLock(...)` from `tests/helpers/schemaLock.ts`. Leave ordinary row-level data mutations unlocked so they run in parallel.
 
 ### Asset Tests Fail in CI but Pass Another Way
 

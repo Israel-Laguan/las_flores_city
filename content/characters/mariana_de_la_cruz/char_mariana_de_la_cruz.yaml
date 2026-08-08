@@ -11,3 +11,6 @@ asset_paths:
   portrait: mariana_de_la_cruz__default.png
 
 lore_path: mariana_de_la_cruz.md
+portrait_urls:
+  - url: s3://las-flores/portraits/mariana_de_la_cruz/mariana_de_la_cruz__default.png
+    label: dev

@@ -11,3 +11,6 @@ asset_paths:
   portrait: ana_castillo__default.png
 
 lore_path: ana_castillo.md
+portrait_urls:
+  - url: s3://las-flores/portraits/ana_castillo/ana_castillo__default.png
+    label: dev

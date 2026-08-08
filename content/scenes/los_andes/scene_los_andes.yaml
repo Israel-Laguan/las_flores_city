@@ -14,3 +14,6 @@ metadata:
 lore_path: los_andes.md
 asset_paths:
   background: los_andes__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/los_andes/los_andes__default.png
+    label: dev

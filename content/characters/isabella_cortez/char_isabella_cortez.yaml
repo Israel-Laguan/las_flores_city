@@ -13,3 +13,6 @@ metadata:
 lore_path: isabella_cortez.md
 asset_paths:
   portrait: isabella_cortez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_cortez/isabella_cortez__default.png
+    label: dev

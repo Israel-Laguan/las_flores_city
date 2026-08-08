@@ -10,3 +10,6 @@ metadata:
 lore_path: yang_chen.md
 asset_paths:
   portrait: yang_chen__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/yang_chen/yang_chen__default.png
+    label: dev

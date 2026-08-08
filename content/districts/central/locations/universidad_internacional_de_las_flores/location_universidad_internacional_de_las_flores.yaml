@@ -10,18 +10,20 @@ alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
 history: |
-  Situated in the northern part of the Central district, with an additional campus dedicated to senior students, doctoral candidates, and postdocs in the Cultural Zone of the city center, Universidad Internacional stands as a testament to academic rigor and scientific advancement. With an evolving focus on engineering and scientific disciplines, this institution is a cornerstone of educational excellence, often juxtaposed with the Universidad Nacional in a healthy rivalry for supremacy.
+  Situated in the northern part of the Central district, with an additional campus dedicated to senior students, doctoral candidates, and postdocs in the Cultural Zone of the city center, Universidad Internacional de Las Flores stands as a testament to academic rigor and scientific advancement. As a private university owned by Chinese investors, it serves an elite student body of wealthy international students, particularly from China. With an evolving focus on engineering and scientific disciplines, this institution is a cornerstone of educational excellence and one of the twin pillars of higher education in Las Flores, alongside its sister institution Universidad del Valle.
 legacy: |
-  Originally established with a broad spectrum of academic programs, Universidad Internacional has refined its focus over time, channeling its resources and expertise into engineering and scientific domains. This strategic shift has positioned the university at the forefront of technological innovation and scientific research.
+  Originally established with a broad spectrum of academic programs, Universidad Internacional has refined its focus over time, channeling its resources and expertise into engineering and scientific domains. This strategic shift, driven by Chinese ownership and investment, has positioned the university at the forefront of technological innovation and scientific research.
 dual_campus: |
   The university's dual-campus system caters to students at different academic levels, fostering an environment conducive to both learning and high-level research. The city center campus, located within the vibrant Cultural Zone, provides an immersive setting for advanced students, facilitating their engagement with the broader cultural and intellectual life of the city.
-chinese_influence: |
-  The influence of Chinese stakeholders is palpable in Universidad Internacional's operations, contributing to its global outlook and fostering a competitive academic environment. The university takes pride in its fierce internal competition and its spirited rivalry with Universidad Nacional, which fuels a collective drive for excellence.
+chinese_ownership: |
+  Universidad Internacional is a private institution owned by Chinese investors, which shapes its global outlook and fosters a highly competitive academic environment. The university is known for its exclusive clubs and social events catering to high-net-worth international students. It takes pride in its fierce internal competition and its spirited rivalry with Universidad Nacional, which fuels a collective drive for excellence among its privileged student body.
 university_fair: |
   Each year, the University Fair becomes the highlight of the academic calendar, where students showcase their projects, competing for prestigious awards. This event is a testament to the institution's commitment to fostering innovation and providing students with a platform to excel.
 academic_rigor: |
   The university is known for its intense cram sessions and summer classes, a tradition carried over from the secondary school level, emphasizing the institution's commitment to academic achievement. The entrance exam is notably challenging, and success in it is a source of significant pride among students, symbolizing their entry into a community of high achievers.
+twin_pillars: |
+  Together with Universidad del Valle, these two Chinese-owned institutions form the twin pillars of private higher education in Las Flores. While Universidad Internacional specializes in engineering and scientific disciplines, Universidad del Valle focuses on humanities and social sciences, creating a complementary educational ecosystem under shared Chinese investment.
 conclusion: |
-  Universidad Internacional, with its dual campuses, focus on engineering and scientific excellence, and competitive academic culture, represents a beacon of advanced education in the region. The deep Chinese influence, coupled with a tradition of academic rigor and a calendar filled with enriching activities, makes it a crucible for shaping the scientific leaders of tomorrow.
+  Universidad Internacional, with its dual campuses, focus on engineering and scientific excellence, and competitive academic culture, represents a beacon of advanced education for the elite. The Chinese ownership, coupled with a tradition of academic rigor and a calendar filled with enriching activities, makes it a crucible for shaping the scientific and technical leaders of tomorrow.
 asset_paths:
   image: universidad_internacional_de_las_flores__default.png

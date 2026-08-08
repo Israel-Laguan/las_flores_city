@@ -22,7 +22,7 @@ metadata:
     - rolling_luggage
     - crowd_hum
   idle_thoughts:
-    - "The biometric gate array at passport control is logging departure patterns against dual registries simultaneously: city border authority and LW Group security division. The data-sharing clause is in the concession agreement signed in 2047. The passengers whose iris geometry is being logged in two separate databases are not informed of the second registry at any point during the process."
+    - 'The biometric gate array at passport control is logging departure patterns against dual registries simultaneously: city border authority and LW Group security division. The data-sharing clause is in the concession agreement signed in 2047. The passengers whose iris geometry is being logged in two separate databases are not informed of the second registry at any point during the process.'
     - The LW Group charter terminal access corridor branches from behind the service doors at the northern end of this concourse. The door is marked Authorized Personnel Only. Regulatory delegations visiting Las Flores to audit mineral extraction compliance enter through that door. Their visit schedules, access routes, and accommodation arrangements are coordinated by LW Group's government relations division.
     - The holographic departures board shows forty-two passenger routes. The raw operational feed visible in the cargo wing's terminal interface includes mineral shipment specifications, consignee data, and lithium batch identification codes. These are not displayed on the public board. The information exists; it is displayed in a different room.
     - A family is photographing the departures board. They are not departing. They are documenting the city from its threshold. The city, from this angle, looks like a connection to somewhere else. This is what the airport is designed to express.
@@ -32,3 +32,6 @@ metadata:
 lore_path: aeropuerto.md
 asset_paths:
   background: aeropuerto__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/aeropuerto/aeropuerto__default.png
+    label: dev

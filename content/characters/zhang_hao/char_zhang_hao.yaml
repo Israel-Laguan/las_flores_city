@@ -12,3 +12,6 @@ metadata:
 lore_path: zhang_hao.md
 asset_paths:
   portrait: zhang_hao__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/zhang_hao/zhang_hao__default.png
+    label: dev

@@ -11,3 +11,6 @@ asset_paths:
   portrait: daniel_carter__default.png
 
 lore_path: daniel_carter.md
+portrait_urls:
+  - url: s3://las-flores/portraits/daniel_carter/daniel_carter__default.png
+    label: dev

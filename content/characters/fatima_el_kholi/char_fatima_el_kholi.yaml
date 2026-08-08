@@ -27,3 +27,6 @@ metadata:
 lore_path: fatima_el_kholi.md
 asset_paths:
   portrait: fatima_el_kholi__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/fatima_el_kholi/fatima_el_kholi__default.png
+    label: dev

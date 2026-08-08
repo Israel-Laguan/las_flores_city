@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
 import express from 'express';
+import { withSchemaLock, withOlapSchemaLock } from '../helpers/schemaLock.js';
 import { paypalRouter } from '../../src/routes/paypal.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { closeRedis, deleteCache } from '../../src/database/redis.js';
@@ -39,13 +40,27 @@ let oltpPool: pg.Pool;
 let olapPool: pg.Pool;
 let port: number;
 
-async function applyMigration(pool: pg.Pool, filename: string) {
+/**
+ * Applies a migration under the schema lock for the database being mutated.
+ *
+ * `database` must match `pool`: advisory locks are per-database, so locking on
+ * OLTP while running DDL on the analytics DB would provide no mutual exclusion
+ * (025_marketplace_olap.sql alters `player_events`, shared by every suite).
+ */
+async function applyMigration(
+  pool: pg.Pool,
+  filename: string,
+  database: 'oltp' | 'olap' = 'oltp'
+) {
   const sql = fs.readFileSync(
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
   );
+  const withLock = database === 'olap' ? withOlapSchemaLock : withSchemaLock;
   try {
-    await pool.query(sql);
+    await withLock(async () => {
+      await pool.query(sql);
+    });
   } catch {
     // Migration may already be applied
   }
@@ -66,7 +81,7 @@ beforeAll(async () => {
   });
 
   await applyMigration(oltpPool, '024_marketplace.sql');
-  await applyMigration(olapPool, '025_marketplace_olap.sql');
+  await applyMigration(olapPool, '025_marketplace_olap.sql', 'olap');
 
   // Dedicated test user (auth NOT used — webhook is unauthenticated —
   // but the user must exist for the FK on bank_transactions.user_id

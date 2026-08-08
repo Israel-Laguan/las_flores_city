@@ -25,9 +25,10 @@ export interface PromptGenerationOptions {
  * These files are read by the asset generation pipeline.
  * Writes to per-entity folders: content/<type>s/<slug>/<slug>.prompt.md
  *
+ * Emits standard YAML frontmatter (name/type/size/consumer) as the single
+ * source of truth for metadata. Body metadata block removed (legacy).
  * Format follows the convention parsed by assets.helpers.ts:
- * - **Type:** <value> for asset type extraction
- * - **Dimensions:** WxH for resolution
+ * - frontmatter `type:` / `size:` for asset type + resolution
  * - ## Prompt — <VariantName> for variant extraction
  */
 export async function generatePromptFiles(items: ContentPlanItem[], contentDir: string, fileSnapshots?: Map<string, string | null>, options: PromptGenerationOptions = {}): Promise<string[]> {
@@ -168,11 +169,11 @@ function buildPromptFile(item: ContentPlanItem): string {
   const contextParts = [description, personality, faction, district].filter(Boolean).join('. ');
   const defaultDescription = contextParts || `${name} in Las Flores 2077, cyberpunk aesthetic, neon-lit urban environment`;
 
-  return `# Prompt: ${name}
+  const frontmatter = `---\nname: ${name}\ntype: ${primaryType}\nsize: ${dimensions}\nconsumer: ${primaryType}\n---\n`;
 
-[CONSUMER: ${primaryType}]
-**Type:** ${primaryType}
-**Dimensions:** ${dimensions}
+  return `${frontmatter}# Prompt: ${name}
+
+**Tool:** AI image generation
 
 ## Prompt — Base
 ${defaultDescription}

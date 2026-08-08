@@ -11,3 +11,6 @@ asset_paths:
   portrait: javier_torres__default.png
 
 lore_path: javier_torres.md
+portrait_urls:
+  - url: s3://las-flores/portraits/javier_torres/javier_torres__default.png
+    label: dev

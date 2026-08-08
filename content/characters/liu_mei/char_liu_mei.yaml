@@ -32,3 +32,6 @@ asset_paths:
   portrait: liu_mei__default.png
 
 lore_path: liu_mei.md
+portrait_urls:
+  - url: s3://las-flores/portraits/liu_mei/liu_mei__default.png
+    label: dev

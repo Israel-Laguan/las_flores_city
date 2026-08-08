@@ -11,3 +11,6 @@ asset_paths:
   portrait: diego_reyes__default.png
 
 lore_path: diego_reyes.md
+portrait_urls:
+  - url: s3://las-flores/portraits/diego_reyes/diego_reyes__default.png
+    label: dev

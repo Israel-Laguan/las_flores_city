@@ -10,3 +10,6 @@ metadata:
 lore_path: maria_fernanda_rodriguez.md
 asset_paths:
   portrait: maria_fernanda_rodriguez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/maria_fernanda_rodriguez/maria_fernanda_rodriguez__default.png
+    label: dev

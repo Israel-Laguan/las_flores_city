@@ -24,3 +24,6 @@ metadata:
 lore_path: jiao_yang.md
 asset_paths:
   portrait: jiao_yang__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/jiao_yang/jiao_yang__default.png
+    label: dev

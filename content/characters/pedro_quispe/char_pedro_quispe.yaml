@@ -15,3 +15,6 @@ metadata:
 lore_path: pedro_quispe.md
 asset_paths:
   portrait: pedro_quispe__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/pedro_quispe/pedro_quispe__default.png
+    label: dev

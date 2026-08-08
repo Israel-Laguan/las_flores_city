@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Secondary City Sunset
 
-[CONSUMER: background]
-**Type:** background
-**Source:** secondary_city_sunset.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_secondary_city_sunset.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

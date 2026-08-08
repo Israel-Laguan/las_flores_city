@@ -1,0 +1,47 @@
+id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+name: Wen Zhao
+title: Business Student, Secret Libertine
+description: |
+  Wen Zhao is a young Chinese woman in her early 20s, daughter of strict
+  Chinese immigrant parents in the northern district. Where Layla rebels
+  quietly, Wen rebels loudly — dressing provocatively, pushing boundaries,
+  and obsessively chasing the thrill of a "movie" romance. She started as
+  Layla's confidante, but she is fully capable of manipulating or abandoning
+  Layla to secure her own starring role. She wants a boyfriend the way
+  some people want an adrenaline rush — she has no interest in what comes
+  after the climax.
+metadata:
+  type: human
+  role: npc
+  faction: independent
+  personality: manipulative_thrill_seeker
+  age: Early 20s
+  gender: Female
+  ethnicity: Chinese
+  occupation: University business student
+  physical_description: sleek black hair in high ponytail; sharp angular jawline; deliberately provocative, high-exposure clothing at university (the deliberate opposite of Layla's modest style); swapped instantly for the modest home-wear the moment she crosses the threshold; posture is commanding and performatively sexual in public, rigid and contained at home
+  background: born in Las Flores to strict Chinese immigrant parents in the northern district; the community's watchful eye shaped her double life
+  education: university business student
+  mannerisms: sharp-tongued, performatively confident, prone to pushing others into reckless decisions; frames manipulation as "helping"; openly defiant with her mother (will yell, will argue); completely submissive in front of her father; drops hints of real vulnerability only in private, and immediately regrets it
+  motivations: feel the thrill of a high-octane movie romance; have a boyfriend as a trophy and a performance; defy family control on her own schedule; never end up as the boring "good daughter" who gets nothing
+  fears: her father discovering her double life; the movie-romance running out before she is ready; realizing she may not actually want anything real
+  goals: secure the most dramatic, passionate boyfriend-experience she can; eventually leverage independence from her family once she has the thrill safely in hand
+  challenges: she compels the player into genuinely reckless situations that have real consequences; she cannot distinguish movie-logic from real danger; she has no exit plan when the drama becomes real
+  quote: "Layla wants romance. I want the movie. There's a difference — the movie doesn't have to end well, it just has to be unforgettable."
+lore_path: wen_zhao.md
+available_dialogues:
+  - d75f1a08-935b-4fa1-a584-df79629df66b
+  - c3e9808d-f55a-4f93-b8a5-d8b3cf94d809
+  - a7f3d02e-c81b-4e9a-b340-e1d9a5cf8b44
+  - b2e4f17a-9d3c-4b8e-a125-f3c7e8d09c55
+asset_paths:
+  portrait: wen_zhao__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__default.png
+    label: dev
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__smirk.png
+    label: dev
+    expression: smirk
+  - url: s3://las-flores/portraits/wen_zhao/wen_zhao__calculating.png
+    label: dev
+    expression: calculating

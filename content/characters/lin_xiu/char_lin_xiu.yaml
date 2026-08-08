@@ -23,3 +23,6 @@ metadata:
 lore_path: lin_xiu.md
 asset_paths:
   portrait: lin_xiu__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/lin_xiu/lin_xiu__default.png
+    label: dev

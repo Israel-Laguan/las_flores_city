@@ -2,32 +2,40 @@
 name: Elena Torres
 type: portrait
 size: 1024x1024
-source: docs/lore/figures/elena_torres/elena_torres.md
-target: `portrait_urls[].url` in `content/characters/char_elena_torres.yaml`
+source: content/characters/elena_torres/elena_torres.md
+target: `asset_paths.portrait` in `content/characters/elena_torres/char_elena_torres.yaml`
 consumer: portrait
+aspect_ratio: 3:4
 ---
-
 
 # Prompt: Elena Torres
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Source:** docs/lore/figures/elena_torres.md
-**Target field:** `portrait_urls[].url` in `content/characters/char_elena_torres.yaml`
-**Tool:** MidJourney --v 6 --ar 3:4 --style raw
-
 ## Prompt (Draft)
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in her early 70s Chinese Photorealistic portrait of Elena Torres. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, warm brown, shrewd experienced. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark brown worn in hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The back. photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. NO photorealistic, 3D render, anime, cartoon, text, watermarks, blurry, low quality...
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a mid-70s Latina female. Dark brown hair with silver threads in professional bob, warm brown shrewd experienced eyes, average height poised controlled posture, light brown smooth with fine lines, small jade stud earrings, slim portfolio always in hand, measured deliberate gestures, tailored designer navy suit, LW Group Sustainability Lead office, Las Flores, no European features
 
 ## Prompt
-Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a medium-height in her early 70s Chinese Photorealistic portrait of Elena Torres. Her frame is solid and un-sculpted. She exhibits a deeply unique, un-idealized facial anatomy with realistic eye sizes, warm brown, shrewd experienced. Her expression is warm, as she offers a subtle, knowing half-smile. Her dark brown worn in hair is grouped into simple, un-styled flowing shapes. A small sport non-in-ear earbud is clipped firmly to her earlobe. She wears a minimalist, pocketless practical work clothing. The backdrop is a weathered urban Latin American building under intense vertical tropical sunlight, creating soft volumetric depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina corporate strategist in her mid-70s. Dark brown hair with silver threads, worn in a neat professional bob. Warm brown, shrewd and experienced eyes. Average height, poised and controlled posture. Light brown skin, smooth with fine lines around the eyes and mouth. Small jade stud earrings. A slim portfolio always in her hand, held close to her side. She wears a tailored designer navy suit, with measured, deliberate gestures — every movement economical and precise. Her expression is pragmatic composure. The backdrop is a corporate office — dark wood, community engagement reports on the desk, photographs of restoration projects on the wall, fluorescent light mixed with window light showing a city skyline. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
 
 ## Negative Prompt
---no neon, no androids, no clean backgrounds, no modern clothing
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no European features
 
 ## Variations
 
-- [ ] Elena Torres at work in their professional environment, focused on their tasks
-- [ ] Elena Torres in a moment of reflection, considering their next steps
-- [ ] Elena Torres with colleagues in a professional setting, engaged in discussion
+- [ ] Elena in her LW Group office, portfolio open to a community engagement report, reviewing language with a critical eye
+- [ ] Elena at a Las Flores community meeting, speaking to residents, slim portfolio at her side, the corporate reformer performing her role
+- [ ] Elena standing alone at a window in her office, Las Flores skyline behind her, the weight of five decades in her expression
 
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral composed pragmatic expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__focused.png`**: Use the base portrait as reference. Sharp concentration, looking directly at the camera, 3/4 take. Eyes narrowed with analytical precision, brow slightly furrowed. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. A resolute, firm expression, looking unflinchingly at the camera, 3/4 take. Eyes steady with pragmatic resolve, jaw set. Keep the same art style as reference, same navy suit and jade earrings. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. A quietly reflective expression, looking gently at the camera, 3/4 take. Eyes open and honest, the private cost of fifty years showing through the composure. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__contemplative.png`**: Use the base portrait as reference. Deep thought, looking thoughtfully at the camera with a 3/4 take. Eyes distant, evaluating something beyond the frame. Keep the same art style as reference, same navy suit. Clean confident linework, painterly soft shading, muted natural palette.

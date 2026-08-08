@@ -20,3 +20,6 @@ metadata:
 lore_path: lina_kim.md
 asset_paths:
   portrait: lina_kim__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/lina_kim/lina_kim__default.png
+    label: dev

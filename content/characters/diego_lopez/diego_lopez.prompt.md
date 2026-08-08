@@ -1,31 +1,41 @@
-# Portrait Prompt — Diego López
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Diego López, adult Business & Economics Editor, El Informador, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Diego López, a adult Business & Economics Editor, El Informador from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Diego López
-title: Business & Economics Editor, El Informador
-faction: m
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/diego_lopez/diego_lopez.md
+target: `asset_paths.portrait` in `content/characters/diego_lopez/char_diego_lopez.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.711Z
+# Prompt: Diego López
+
+## Prompt (Draft)
+
+Latino business journalist in his 40s, stocky comfortable build, clear olive-tan skin. Wavy dark hair with gray threading, thick slightly asymmetric brows, narrow appraising eyes, straight nose, round face with a prominent jawline, slightly crooked smile that lifts more on the left, small chip in one molar. Business-casual editor attire, reading glasses looped on a chain, small sport earbud clipped to earlobe. El Informador business desk backdrop with financial charts on screens. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latino business journalist in his 40s. Stocky, comfortable build with a broad settled presence. Clear olive-tan skin with faint lines at the eyes and brow. Wavy dark hair with visible gray threading, neatly styled. Thick, slightly asymmetric brows over narrow, appraising eyes. Straight nose, round face with a strong prominent jawline. A slightly crooked smile, the left corner lifting more than the right, revealing a small chip in a lower molar when he speaks. Small sport non-in-ear earbud clipped to the left earlobe. Business-casual editor attire: a crisp open-collar shirt under a tailored blazer, reading glasses looped on a chain at his chest. The backdrop is a newsroom business desk, financial charts flickering on wall screens, warm office light over papers and a tablet. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+
+## Variations
+
+- [ ] At his desk cross-referencing investment figures against a tablet, screens glowing behind him
+- [ ] Interviewing a local business owner across a small table, notebook and recorder out
+- [ ] Rising from his chair to greet a source, tie loosened, charts crowding every screen
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__calculating.png`**: Use the base portrait as reference. Sharp assessment mode, looking directly at the camera, 3/4 take. Eyes narrowing further, brows drawn, mouth pressed into a flat line as he weighs a figure, the crooked smile fading. Keep the same art style as reference, same blazer, glasses, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. A faint knowing half-smile, looking at the camera, 3/4 take. The crooked, left-leaning grin more pronounced, one corner tugged up, eyes glinting dry humor. Keep the same art style as reference, same shirt, blazer, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. A firm, resolved expression, looking unflinchingly at the camera, 3/4 take. Eyes steady, jawline set, face squared with intent, the crooked smile gone. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Caught off guard by a figure, looking at the camera with sudden startlement, 3/4 take. Eyes widened, brows raised high, mouth slightly open, the crooked smile wiped away. Keep the same art style as reference, same jacket and earbud. Clean confident linework, painterly soft shading, muted natural palette.

@@ -1,9 +1,6 @@
 # Prompt: Minera Estrella (thematic art)
 
-**Type:** thematic
 **size:** 1280×720
-**Source:** docs/lore/organizations/companies/minera_estrella/minera_estrella.md
-**Target:** Vault entry or loading screen
 ## Prompt
 An industrial mineral extraction site, modern heavy excavation machinery, metallic structures, mineral conveyor belts, high contrast, dramatic sunset lighting, high detail, 8K resolution.
 

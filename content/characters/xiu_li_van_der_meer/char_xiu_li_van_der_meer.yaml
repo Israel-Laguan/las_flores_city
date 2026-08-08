@@ -12,3 +12,6 @@ lore_path: xiu_li_van_der_meer.md
 narrative_path: xiu_li_van_der_meer.md
 asset_paths:
   portrait: xiu_li_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/xiu_li_van_der_meer/xiu_li_van_der_meer__default.png
+    label: dev

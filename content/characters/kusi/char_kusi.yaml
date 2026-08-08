@@ -10,3 +10,6 @@ metadata:
 lore_path: kusi.md
 asset_paths:
   portrait: kusi__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/kusi/kusi__default.png
+    label: dev

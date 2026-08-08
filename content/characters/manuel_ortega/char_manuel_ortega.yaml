@@ -11,3 +11,6 @@ asset_paths:
   portrait: manuel_ortega__default.png
 
 lore_path: manuel_ortega.md
+portrait_urls:
+  - url: s3://las-flores/portraits/manuel_ortega/manuel_ortega__default.png
+    label: dev

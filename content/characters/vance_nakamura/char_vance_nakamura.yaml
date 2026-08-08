@@ -17,3 +17,6 @@ lore_path: vance_nakamura.md
 narrative_path: vance_nakamura.md
 asset_paths:
   portrait: vance_nakamura__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/vance_nakamura/vance_nakamura__default.png
+    label: dev

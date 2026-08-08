@@ -1,31 +1,41 @@
-# Portrait Prompt — Peter van der Meer Jr.
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Peter van der Meer Jr., adult LGBTQ+ Advocate & Van der Meer Heir, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Peter van der Meer Jr., a adult LGBTQ+ Advocate & Van der Meer Heir from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Peter van der Meer Jr.
-title: LGBTQ+ Advocate & Van der Meer Heir
-faction: v
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/peter_van_der_meer_jr/peter_van_der_meer_jr.md
+target: `asset_paths.portrait` in `content/characters/peter_van_der_meer_jr/char_peter_van_der_meer_jr.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.715Z
+# Prompt: Peter van der Meer Jr.
+
+## Prompt (Draft)
+
+Dutch-Latina mixed man in his late 20s, athletic-compact build, clear olive-fair skin. Angular face, high cheekbones, prominent jawline, wavy dark-blonde hair. Straight nose, round warm eyes, thick brows, full lips. Small scar near right ear, one brow sitting slightly higher. Confident warm advocate bearing, small sport earbud clipped to earlobe. Modern advocate attire with an Amor Verdadero pin, community-center backdrop with understated pride accents. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch-Latina mixed man in his late 20s. Athletic-compact build, lean and poised. Clear olive-fair skin with a healthy warmth. Angular face with high cheekbones and a prominent jawline, wavy dark-blonde hair styled with easy confidence. Straight nose, round warm brown eyes, thick slightly asymmetric brows — one sits a fraction higher than the other — and full lips. A small scar near the right ear, a faint marker of a lived, active life. Self-assured advocate bearing, open and determined expression. Small sport non-in-ear earbud clipped to earlobe. Modern advocate attire: a fitted collared shirt with a small advocacy pin at the chest, relaxed smart layers. The backdrop is a community center hosting an advocacy event, understated pride-color banners and warm ambient light, softly blurred depth. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no African features
+
+## Variations
+
+- [ ] At a community-center podium addressing a small advocacy crowd under warm lights
+- [ ] In casual conversation with allies, Amor Verdadero pin catching the light
+- [ ] Outside the center at golden hour, pride colors draped beneath an awning
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__determined.png`**: Use the base portrait as reference. Resolute and focused, looking directly at the camera, 3/4 take. Round eyes steady and intent, thick brows drawn together slightly, full lips pressed into a firm line. Keep the same art style as reference, same advocate attire and Amor Verdadero pin. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+
+- **`__happy.png`**: Use the base portrait as reference. Genuine, warm smile, looking at the camera, 3/4 take. Round eyes crinkling, full lips curved up naturally, thick brows relaxed and lifted, frame open and at ease. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__vulnerable.png`**: Use the base portrait as reference. Soft, guarded openness, looking at the camera, 3/4 take. Round eyes with a searching, sincere quality, one brow lifted higher as emotion surfaces, full lips parted slightly. Keep the same art style as reference, same shirt and pin. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Firm, righteous anger, looking at the camera, 3/4 take. Oval-round eyes narrowed, thick brows drawn low and hard, full lips tight, jawline clenched. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading with strong contrast, muted natural palette.

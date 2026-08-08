@@ -15,3 +15,6 @@ metadata:
 lore_path: cecilia_rodriguez.md
 asset_paths:
   portrait: cecilia_rodriguez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/cecilia_rodriguez/cecilia_rodriguez__default.png
+    label: dev

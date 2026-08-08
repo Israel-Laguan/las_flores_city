@@ -33,3 +33,6 @@ asset_paths:
   portrait: don_pedro__default.png
 
 lore_path: don_pedro.md
+portrait_urls:
+  - url: s3://las-flores/portraits/don_pedro/don_pedro__default.png
+    label: dev

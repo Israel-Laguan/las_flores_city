@@ -1,31 +1,41 @@
-# Portrait Prompt — Nico van der Meer
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Nico van der Meer, adult European Business Heir, Van der Meer Family Member, Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Nico van der Meer, a adult European Business Heir, Van der Meer Family Member from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Nico van der Meer
-title: European Business Heir, Van der Meer Family Member
-faction: d
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/nico_van_der_meer/nico_van_der_meer.md
+target: `asset_paths.portrait` in `content/characters/nico_van_der_meer/char_nico_van_der_meer.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.715Z
+# Prompt: Nico van der Meer
+
+## Prompt (Draft)
+
+Dutch business heir in his early 40s, athletic-compact sharp build, clear fair skin. Oval face, strong jaw, high cheekbones, wide nose, deep-set eyes, thick brows, thin lips. Straight dark-blonde hair with early gray at the temples, small scar on left brow, one brow slightly lower. Ambitious cautious bearing, observant appraising expression. Sharp European business-casual attire, import-export practical, sport earbud. Las Flores trade office or port warehouse backdrop, shipping manifests. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Dutch business heir in his early 40s. Athletic-compact sharp build with an ambitious, observant presence. Clear fair skin. Oval face with a strong jaw and high cheekbones. Wide nose, deep-set eyes, thick brows, thin lips. Straight dark-blonde hair with early gray at the temples, a small scar on his left brow, one brow sitting a fraction lower than the other. Ambitious, cautious bearing, an observant appraising expression. Sharp European business-casual attire: a tailored blazer over a crisp open-collar shirt, practical for the dock, a sport earbud clipped to his earlobe. The backdrop is a trade office or port warehouse, shipping manifests and stacked crates in industrial daylight. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no Latino features, no East Asian features, no African features
+
+## Variations
+
+- [ ] At the trade office desk, reviewing shipping manifests under lamplight
+- [ ] On the warehouse floor between stacked crates, tablet in hand
+- [ ] In quiet counsel with a local partner at the port, manifests spread out
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral observant resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same blazer, shirt, and earbud. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__calculating.png`**: Use the base portrait as reference. He is in sharp business assessment, looking directly at the camera, 3/4 take. Eyes narrowed and appraising, thick brows drawn low, thin lips pressed into a weighing line. Keep the same art style as reference, same blazer, shirt, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__smirk.png`**: Use the base portrait as reference. A faint, wry knowing curl, looking at the camera, 3/4 take. Thin lips pulled into a slight half-smile, eyes glinting with quiet ambition. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. A firm, resolute expression, looking at the camera, 3/4 take. Eyes steady and unyielding, strong jaw set, thick brows grounded in resolve, shoulders squared. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+
+- **`__afraid.png`**: Use the base portrait as reference. A guarded, controlled unease, looking at the camera, 3/4 take. Eyes slightly widened, thin lips taut. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

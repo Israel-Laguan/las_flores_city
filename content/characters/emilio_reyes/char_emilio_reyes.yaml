@@ -12,3 +12,6 @@ lore_path: emilio_reyes.md
 narrative_path: emilio_reyes.md
 asset_paths:
   portrait: emilio_reyes__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/emilio_reyes/emilio_reyes__default.png
+    label: dev

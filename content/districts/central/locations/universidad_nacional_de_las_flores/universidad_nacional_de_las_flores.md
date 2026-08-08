@@ -1,11 +1,12 @@
 # Universidad Nacional de Las Flores
 
-> Tags: `#landmark` `#education` `#university` `#diversity` `#central-district`
+> Tags: `#landmark` `#education` `#university` `#diversity` `#central-district` `#public` `#social-mobility`
 
 **Aliases:** UNLF, Universidad Nacional, National University
 **Location:** Central Las Flores district (near industrial zone)
 **Type:** Public national university
 **Academic Focus:** Broad academic excellence, with notable engineering faculty
+**Socioeconomic Role:** Engine of social mobility for middle class, working class, and marginalized communities
 
 ## Overview
 
@@ -38,12 +39,12 @@ The university is renowned for its diverse and inclusive environment, with a stu
 ### Academic Excellence
 Despite being sometimes perceived as protesting and lazy, the university hosts a highly respected engineering faculty, challenging stereotypes and demonstrating its commitment to academic rigor across disciplines.
 
-### International Engagement
-The presence of Dutch organizations and NGOs offering scholarships and support to students from various backgrounds illustrates the university's global engagement and its commitment to accessibility.
+### Van der Meer Foundation and International Engagement
+The Fundación Van der Meer plays a significant role at Universidad Nacional through its philanthropic scholarship programs. The Dutch foundation provides full scholarships enabling talented students from marginalized backgrounds, including working-class communities and indigenous groups, to access higher education. This philanthropic support, alongside other Dutch organizations and NGOs, illustrates the university's global engagement and its commitment to accessibility and social mobility.
 
 ## Rivalry and Perception
 
-There exists a healthy competition between Universidad Nacional and Universidad Internacional, with the latter often perceived as privileged and influenced by Chinese interests. This rivalry does not detract from the National University's appeal; instead, it underscores its unique identity and its role in fostering an inclusive educational environment that celebrates diversity and champions social mobility.
+There exists a healthy competition between Universidad Nacional and the private universities—Universidad Internacional and Universidad del Valle—both owned by Chinese investors and serving elite international student bodies. While Universidad Internacional focuses on engineering and sciences, and Universidad del Valle on humanities, Universidad Nacional stands as the public counterpoint: accessible, diverse, and dedicated to social mobility. This rivalry does not detract from the National University's appeal; instead, it underscores its unique identity as the people's university, championing inclusivity and opportunity for all socioeconomic backgrounds.
 
 ## Global Attraction
 
@@ -51,7 +52,7 @@ The university's reputation extends beyond national borders, attracting students
 
 ## Conclusion
 
-Universidad Nacional de Las Flores is more than an educational institution; it is a vibrant community that nurtures intellectual growth, celebrates diversity, and fosters global citizenship. Its infrastructure, academic offerings, and inclusive environment make it a cornerstone of education and cultural exchange in Central Las Flores and beyond.
+Universidad Nacional de Las Flores is more than an educational institution; it is a vibrant community that nurtures intellectual growth, celebrates diversity, and fosters global citizenship. As the city's public university, accessible to students of all socioeconomic backgrounds through initiatives like the Fundación Van der Meer scholarships, it stands in contrast to the elite private institutions. Its infrastructure, academic offerings, and inclusive environment make it a cornerstone of education and cultural exchange in Central Las Flores and beyond—the true engine of social mobility in Las Flores.
 
 ---
 

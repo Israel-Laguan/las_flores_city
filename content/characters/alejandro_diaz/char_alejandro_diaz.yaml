@@ -15,3 +15,6 @@ metadata:
 lore_path: alejandro_diaz.md
 asset_paths:
   portrait: alejandro_diaz__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alejandro_diaz/alejandro_diaz__default.png
+    label: dev

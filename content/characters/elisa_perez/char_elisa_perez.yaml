@@ -27,3 +27,6 @@ metadata:
 lore_path: elisa_perez.md
 asset_paths:
   portrait: elisa_perez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/elisa_perez/elisa_perez__default.png
+    label: dev

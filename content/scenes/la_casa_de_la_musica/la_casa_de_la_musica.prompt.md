@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: La Casa de la Música — Main Floor
 
-[CONSUMER: background]
-**Type:** background
-**Source:** la_casa_de_la_musica.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_la_casa_de_la_musica.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

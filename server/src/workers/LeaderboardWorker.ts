@@ -40,7 +40,15 @@ type OlapUsageRow = {
  * subsequent ticks skip the row.
  */
 export class LeaderboardWorker {
-  public static async processExpiredMysteries(): Promise<void> {
+  /**
+   * @param mysteryIds Optional scope. When provided, only these mystery IDs are
+   *   finalized (instead of every expired RESOLVING mystery). Production callers
+   *   (cron tick, `trigger_leaderboard_worker.ts`) omit it and process all. Tests
+   *   pass their private mystery ID so a sibling worker run can never finalize a
+   *   foreign mystery mid-seed — keeping assertions deterministic under parallel
+   *   integration-test workers.
+   */
+  public static async processExpiredMysteries(mysteryIds?: readonly string[]): Promise<void> {
     // Use a dedicated client just for the SELECT query so a connection
     // failure here is isolated from per-mystery work.
     let selectClient: import('pg').PoolClient;
@@ -53,12 +61,18 @@ export class LeaderboardWorker {
 
     let expiredMysteries: Array<{ id: string; title: string }>;
     try {
+      const params: unknown[] = [OLAP_GRACE_PERIOD_MINUTES];
+      let scopeClause = '';
+      if (mysteryIds && mysteryIds.length > 0) {
+        scopeClause = ' AND id = ANY($2::uuid[])';
+        params.push(mysteryIds);
+      }
       const { rows } = await selectClient.query<{ id: string; title: string }>(
         `SELECT id, title
            FROM mysteries
           WHERE status = 'RESOLVING'
-            AND expires_at <= NOW() - ($1 || ' minutes')::interval`,
-        [OLAP_GRACE_PERIOD_MINUTES]
+            AND expires_at <= NOW() - ($1 || ' minutes')::interval${scopeClause}`,
+        params
       );
       expiredMysteries = rows;
     } catch (err) {

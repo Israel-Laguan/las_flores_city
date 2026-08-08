@@ -19,3 +19,6 @@ metadata:
 lore_path: kun_zhang.md
 asset_paths:
   portrait: kun_zhang__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/kun_zhang/kun_zhang__default.png
+    label: dev

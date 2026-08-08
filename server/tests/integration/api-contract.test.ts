@@ -4,6 +4,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { queryOLTP, closeConnections } from '../../src/database/connection.js';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { commsRouter } from '../../src/routes/comms.js';
 import '../../src/routes/comms-reply.js';
 import { healthRouter } from '../../src/routes/health.js';
@@ -22,7 +23,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch {
     // Migration may already be applied
   }

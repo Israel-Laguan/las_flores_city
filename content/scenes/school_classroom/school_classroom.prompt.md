@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: School Classroom
 
-[CONSUMER: background]
-**Type:** background
-**Source:** school_classroom.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_school_classroom.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

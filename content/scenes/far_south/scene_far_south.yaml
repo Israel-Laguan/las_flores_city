@@ -14,3 +14,6 @@ metadata:
 lore_path: far_south.md
 asset_paths:
   background: far_south__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/far_south/far_south__default.png
+    label: dev

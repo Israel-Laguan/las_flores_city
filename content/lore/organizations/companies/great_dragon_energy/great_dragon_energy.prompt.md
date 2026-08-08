@@ -1,9 +1,6 @@
 # Prompt: Great Dragon Energy (thematic art)
 
-**Type:** thematic
 **size:** 1280×720
-**Source:** docs/lore/organizations/companies/great_dragon_energy/great_dragon_energy.md
-**Target:** Vault entry or loading screen
 ## Prompt
 A massive hydroelectric dam with water cascading over turbines, steel structures, sunrise lighting, high detail, 8K resolution.
 

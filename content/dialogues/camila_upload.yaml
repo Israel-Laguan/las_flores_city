@@ -1,0 +1,92 @@
+id: "f0000000-0000-0000-0000-000000000050"
+name: "Camila Reyes - The Upload"
+description: "The night of the infiltration. Camila goes in while the player stands guard. The player's prior choices determine whether betrayal is possible."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+dialogue_scope: "character"
+start_node_id: "f0000000-0000-0000-0000-000000000051"
+nodes:
+  f0000000-0000-0000-0000-000000000051:
+    id: "f0000000-0000-0000-0000-000000000051"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "The badge works. I ran it past the simulator. I go in through the freight entrance at midnight, upload the data to the PR subnet, and walk out. Fifteen minutes, maximum."
+    thought: "(Expression: focused. She lays out the plan with clinical precision.)"
+    choices:
+      - id: "upload_lookout"
+        text: "And my job is to wait outside."
+        next_node_id: "f0000000-0000-0000-0000-000000000052"
+
+  f0000000-0000-0000-0000-000000000052:
+    id: "f0000000-0000-0000-0000-000000000052"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "You're the escape route. If anything goes wrong, we meet at the canal bridge. It won't go wrong. But... thank you. For all of this."
+    thought: "(Expression: happy -> tender. A rare, genuine pause.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000053"
+
+  f0000000-0000-0000-0000-000000000053:
+    id: "f0000000-0000-0000-0000-000000000053"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I know I've been a lot. I know I've dragged you into something that isn't yours to carry. I'm sorry for that."
+    thought: "(Expression: tender. The most emotionally open she has been.)"
+    choices:
+      - id: "upload_loyal"
+        text: "[LOYAL] Go save your village. I'll be on the canal."
+        next_node_id: "f0000000-0000-0000-0000-000000000054"
+      - id: "upload_betray"
+        text: "[BETRAY] I called in the offer. VDM security is already inside."
+        next_node_id: "f0000000-0000-0000-0000-000000000056"
+        requires_flag: "vdm_offer_considered"
+
+  f0000000-0000-0000-0000-000000000054:
+    id: "f0000000-0000-0000-0000-000000000054"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Canal bridge. Fifteen minutes."
+    thought: "(Expression: tender. She disappears into the freight entrance.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000055"
+
+  f0000000-0000-0000-0000-000000000055:
+    id: "f0000000-0000-0000-0000-000000000055"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I did it. It's uploading right now. It's done!"
+    thought: "(Expression: happy, breathless, laughing. She emerges at a sprint fifteen minutes later.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_upload_success: true
+        camila_upload_betrayed: false
+      story_beat: act2a_upload_success
+
+  f0000000-0000-0000-0000-000000000056:
+    id: "f0000000-0000-0000-0000-000000000056"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "What? You... what? The whole time?"
+    thought: "(Expression: shocked.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000057"
+
+  f0000000-0000-0000-0000-000000000057:
+    id: "f0000000-0000-0000-0000-000000000057"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "You had days. You sat with me for three days knowing what you were going to do. That's so much worse than if you'd just said no at the beginning."
+    thought: "(Expression: sad -> cold. Her eyes go flat. She turns and walks away. She is arrested two blocks later.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_upload_success: false
+        camila_upload_betrayed: true
+      story_beat: act2a_upload_betrayal
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_reyes"
+    - "upload"
+    - "act2a"
+    - "branching"

@@ -1,31 +1,41 @@
-# Portrait Prompt — Mariana De La Cruz
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Mariana De La Cruz, adult Bureau Chief, La Prensa (Las Flores), Las Flores. Distinctive appearance fitting their background. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Mariana De La Cruz, a adult Bureau Chief, La Prensa (Las Flores) from Las Flores's Las Flores.
-Distinctive appearance fitting their background.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Mariana De La Cruz
-title: Bureau Chief, La Prensa (Las Flores)
-faction: m
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/mariana_de_la_cruz/mariana_de_la_cruz.md
+target: `asset_paths.portrait` in `content/characters/mariana_de_la_cruz/char_mariana_de_la_cruz.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.715Z
+# Prompt: Mariana De La Cruz
+
+## Prompt (Draft)
+
+Latina bureau chief in her 40s, athletic-compact poised build, clear skin. Angular face, receding jaw, high cheekbones, straight nose, round eyes, arched brows, wide lips. Wavy dark chin-length hair, subtle lines around the eyes, small mole near lower lip, right brow sitting higher. Sharp editorial bearing, commanding focused expression. Professional bureau-chief attire, press credentials, tablet, sport earbud. La Prensa Las Flores bureau newsroom backdrop, maps of the city. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina bureau chief in her 40s. Athletic-compact, poised build with an authoritative newsroom presence. Clear skin with subtle lines around the eyes. Angular face with a receding jawline and high cheekbones. Straight nose, round eyes, arched brows, wide lips. Wavy dark hair cut to the chin, a small mole near the lower lip, the right brow sitting a fraction higher than the left. Sharp editorial bearing, commanding focused expression. Professional bureau-chief attire: a tailored blazer over a pressed shirt, press credentials on a lanyard, a tablet in hand, a sport earbud clipped to her earlobe. The backdrop is a newsroom bureau, activity and maps of the city in cool office light. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+
+## Variations
+
+- [ ] At the bureau's assignment board, coordinating reporters amid cluttered desks
+- [ ] Reviewing city maps with a junior journalist in the newsroom
+- [ ] Leading an editorial meeting, tablet raised, deadline pressure in the air
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral commanding resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same blazer, press credentials, and earbud, backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__calculating.png`**: Use the base portrait as reference. In sharp assessment mode, looking directly at the camera, 3/4 take. Eyes narrowed, brows drawn low, lips pressed into a thin evaluating line as she weighs a story's angle. Keep the same art style as reference, same blazer, credentials, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. A firm, resolved expression, looking at the camera, 3/4 take. Eyes steady and unyielding, jaw set, brows level and intense. Shoulders squared. Keep the same art style as reference, same attire, credentials, and earbud. Clean confident linework, painterly soft shading with deeper shadows, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. A sharp, frustrated glare, looking at the camera, 3/4 take. Eyes narrowed hard, brows drawn down tightly, lips set in a grim line. Keep the same art style as reference, same attire, credentials, and earbud. Clean confident linework, painterly soft shading with stronger contrast, muted natural palette.
+
+- **`__happy.png`**: Use the base portrait as reference. A warm, brief professional smile, looking at the camera, 3/4 take. Lips curving up, eyes brightening, the right brow naturally higher giving her a sharp knowing look. Keep the same art style as reference, same attire and earbud. Clean confident linework, painterly soft shading, muted natural palette.

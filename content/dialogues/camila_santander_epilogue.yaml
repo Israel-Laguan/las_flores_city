@@ -1,0 +1,128 @@
+id: "f1000000-0000-0000-0000-000000000006"
+name: "Camila Santander - Epilogue Encounters"
+description: "Post-finale encounters with Camila depending on the relationship ending achieved."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+dialogue_scope: "character"
+start_node_id: "epilogue_hub"
+nodes:
+  epilogue_hub:
+    id: "epilogue_hub"
+    type: "choice"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Epilogue Hub"
+    choices:
+      - id: "check_lover"
+        text: "[Lover Epilogue]"
+        next_node_id: "epilogue_lover"
+        condition:
+          type: "story_beat"
+          beat: "camila_ending_lover"
+          value: true
+
+      - id: "check_friend"
+        text: "[Friend Epilogue]"
+        next_node_id: "epilogue_friend"
+        condition:
+          type: "story_beat"
+          beat: "camila_ending_friend"
+          value: true
+
+      - id: "check_tragic"
+        text: "[Tragic Epilogue]"
+        next_node_id: "epilogue_tragic"
+        condition:
+          type: "story_beat"
+          beat: "camila_ending_tragic"
+          value: true
+
+      - id: "check_enemy"
+        text: "[Enemy Epilogue]"
+        next_node_id: "epilogue_enemy"
+        condition:
+          type: "story_beat"
+          beat: "camila_ending_enemy"
+          value: true
+
+  epilogue_lover:
+    id: "epilogue_lover"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "There you are. I was just about to lock the gate. The tourists are finally gone for the day, and I saved the good bottle of wine for us. Come sit."
+    thought: "(Expression: tender. She is at the fully constructed rural lodge, looking entirely at peace. The misanthropic armor is nowhere to be seen when it's just the two of you.)"
+    choices:
+      - id: "lover_sit"
+        text: "Don't mind if I do. How was the business today?"
+        next_node_id: "epilogue_lover_2"
+
+  epilogue_lover_2:
+    id: "epilogue_lover_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Profitable, exhausting, and exactly why I need you here to keep me sane. Now turn off your comms. You're on mountain time now."
+    thought: "(Expression: happy. She pours two glasses, entirely content.)"
+    is_end: true
+
+  epilogue_friend:
+    id: "epilogue_friend"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Hey! Keep your voice down, I'm briefing a VIP tour group. But since you're here—take this. Found a sweet salvage spot near the old ridge. It's yours. Call it a partner dividend."
+    thought: "(Expression: calculating -> happy. She drops her 'tour guide' voice for a second, slipping a set of coordinates to the player with a wink.)"
+    choices:
+      - id: "friend_thanks"
+        text: "Thanks, partner. Don't let me interrupt the hustle."
+        next_node_id: "epilogue_friend_2"
+
+  epilogue_friend_2:
+    id: "epilogue_friend_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Never. See you on the trails."
+    thought: "(Expression: determined. She turns back to her group, instantly switching her flawless customer-service smile back on.)"
+    is_end: true
+
+  epilogue_tragic:
+    id: "epilogue_tragic"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Oh. It's you. Listen, I have a board meeting with Horizon in ten minutes. I really can't be seen talking to... well. People from the old neighborhood. I have a reputation to maintain."
+    thought: "(Expression: calculating -> vulnerable. She is wearing a stiff corporate suit in the high-end district. She looks incredibly wealthy, but exhausted and cornered by her own success.)"
+    choices:
+      - id: "tragic_leave"
+        text: "Right. Wouldn't want to ruin your image. See you around, Camila."
+        next_node_id: "epilogue_tragic_2"
+
+  epilogue_tragic_2:
+    id: "epilogue_tragic_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Yeah. See you."
+    thought: "(Expression: sad. She watches the player leave for a second too long before adjusting her collar and walking into the glass building.)"
+    is_end: true
+
+  epilogue_enemy:
+    id: "epilogue_enemy"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "You. How did you survive the drop-bear snare? ...Never mind. Back off. I have three armed private security guards on speed dial, and this is a public street. You touch me, you go to a blacksite."
+    thought: "(Expression: shocked -> angry. She spots the player and visibly pales, taking a defensive step backward. The confident tour guide is replaced by cornered prey.)"
+    choices:
+      - id: "enemy_warn"
+        text: "Just reminding you that I'm still here. Sleep with one eye open."
+        next_node_id: "epilogue_enemy_2"
+
+  epilogue_enemy_2:
+    id: "epilogue_enemy_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Stay away from me!"
+    thought: "(Expression: afraid. She practically runs in the opposite direction, abandoning whatever business she had in the area.)"
+    is_end: true
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_santander"
+    - "epilogue"

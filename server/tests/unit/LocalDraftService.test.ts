@@ -32,7 +32,7 @@ async function mkEntityDir(slug: string, withPrompt = true): Promise<string> {
   await fs.mkdir(path.join(dir, 'assets'), { recursive: true });
   if (withPrompt) {
     await fs.writeFile(path.join(dir, `${slug}.prompt.md`),
-      '# Prompt: Test\n\n**Type:** portrait\n**Dimensions:** 832x1248\n\n## Prompt — Base\nA cyberpunk bartender.\n\n## Negative Prompt\nno robots, no guns\n');
+      '---\nname: Test\n type: portrait\n size: 832x1248\n consumer: portrait\n ---\n# Prompt: Test\n\n## Prompt — Base\nA cyberpunk bartender.\n\n## Negative Prompt\nno robots, no guns\n');
   }
   return dir;
 }
@@ -110,7 +110,7 @@ describe('listLocalAssets', () => {
     // Generated draft
     await fs.writeFile(path.join(assetsDir, 'list_test__2026-07-15T01-30-12.png'), Buffer.from('draft1'));
     // Hand-dropped file (any name)
-    await fs.writeFile(path.join(assetsDir, 'my_midjourney_render.jpg'), Buffer.from('hand'));
+    await fs.writeFile(path.join(assetsDir, 'my_custom_render.jpg'), Buffer.from('hand'));
     // Invalid files (should be ignored)
     await fs.writeFile(path.join(assetsDir, 'notes.txt'), Buffer.from('notes'));
     await fs.writeFile(path.join(assetsDir, '.DS_Store'), Buffer.from('ds'));
@@ -124,7 +124,7 @@ describe('listLocalAssets', () => {
       expect(VALID_ASSET_EXTENSIONS).toContain(path.extname(entry.filename).toLowerCase());
     }
     // Hand-dropped file is included
-    expect(result.map(r => r.filename)).toContain('my_midjourney_render.jpg');
+    expect(result.map(r => r.filename)).toContain('my_custom_render.jpg');
   });
 
   it('sorts __default.png first, then by mtime newest-first', async () => {

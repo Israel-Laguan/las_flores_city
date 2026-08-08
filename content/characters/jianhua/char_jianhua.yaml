@@ -10,3 +10,6 @@ metadata:
 lore_path: jianhua.md
 asset_paths:
   portrait: jianhua__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/jianhua/jianhua__default.png
+    label: dev

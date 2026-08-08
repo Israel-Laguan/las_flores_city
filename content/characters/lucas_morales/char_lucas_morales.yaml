@@ -19,3 +19,6 @@ metadata:
 lore_path: lucas_morales.md
 asset_paths:
   portrait: lucas_morales__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/lucas_morales/lucas_morales__default.png
+    label: dev

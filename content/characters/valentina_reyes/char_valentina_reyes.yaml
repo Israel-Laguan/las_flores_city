@@ -12,3 +12,6 @@ metadata:
 lore_path: valentina_reyes.md
 asset_paths:
   portrait: valentina_reyes__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/valentina_reyes/valentina_reyes__default.png
+    label: dev

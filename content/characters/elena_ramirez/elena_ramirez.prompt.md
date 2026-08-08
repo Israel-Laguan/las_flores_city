@@ -1,31 +1,41 @@
-# Portrait Prompt — Elena Ramirez
-
-> Auto-generated from character YAML by `scripts/generate-missing-content.mjs`
-
-## Draft Prompt (short)
-
-[CONSUMER: portrait] Elena Ramirez, adult Former Chair, Humanity First, Las Flores. Hair: of the Humanity First council, guiding it through its crucial growth era. Calm and determined expression. Practical clothing suited to their environment, personal items reflecting their role. Las Flores cityscape. Atmospheric lighting, soft shadows. --no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k. Transparent background, 3:4 aspect ratio, 512×768.
-
-## Full Prompt
-
-[CONSUMER: portrait]
-Bust portrait of Elena Ramirez, a adult Former Chair, Humanity First from Las Flores's Las Flores.
-Hair: of the Humanity First council, guiding it through its crucial growth era.
-Calm and determined expression.
-Dressed in practical clothing suited to their environment, with personal items reflecting their role.
-Background: Las Flores cityscape, atmospheric lighting.
---no androids, no robots, no cybernetic humans, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no comic book style, no fantasy elements, no magic, no supernatural
-Photorealistic portrait, hyper-detailed, grounded human anatomy with natural asymmetry, 8k.
-Transparent background, 3:4 aspect ratio, 512×768.
-
-## Source
-
-```yaml
+---
 name: Elena Ramirez
-title: Former Chair, Humanity First
-faction: h
-```
-
+type: portrait
+size: 1024x1024
+source: content/characters/elena_ramirez/elena_ramirez.md
+target: `asset_paths.portrait` in `content/characters/elena_ramirez/char_elena_ramirez.yaml`
+consumer: portrait
+aspect_ratio: 3:4
 ---
 
-**Generated:** 2026-07-17T14:51:31.711Z
+# Prompt: Elena Ramirez
+
+## Prompt (Draft)
+
+Latina educator and community leader in her 60s, soft-rounded build, weathered warm-brown skin with gentle wrinkles. Wavy gray-streaked dark hair in a silver bun, flat brows with a slight droop, warm almond eyes, flat nose, oval face with a soft jawline, full lips, faint burn scar on her right hand. Modest professional attire, reading glasses on a lanyard, Humanity First pin, small sport earbud clipped to earlobe. Warm schoolhouse or community council-room backdrop with a chalkboard. premium contemporary graphic novel realism, refined editorial line art illustration, grounded anatomy, natural asymmetry, clean confident linework, painterly soft shading, muted natural palette, 8k.
+
+## Prompt
+
+Premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait of a Latina educator and community leader in her 60s. Soft-rounded build with a gentle, steady presence. Weathered warm-brown skin with gentle wrinkles and a subtle change in texture. Wavy gray-streaked dark hair gathered into a silver bun. Flat brows with a slight droop over warm almond eyes, their gaze patient and kind. Flat nose, oval face with a soft jawline, full lips. A faint burn scar crosses the back of her right hand, a relic of teaching and kitchen work. Small sport non-in-ear earbud clipped to the left earlobe. Modest professional attire: a simple collared blouse under a cardigan, reading glasses on a lanyard, a small lapel pin. The backdrop is a schoolhouse or community council room, a chalkboard and warm window light behind her. Clean confident linework with vector-like cleanliness, painterly soft shading, muted natural palette, zero conventional beauty templates, grounded human anatomy with natural asymmetry, 8k.
+
+## Negative Prompt
+
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+
+## Variations
+
+- [ ] Standing before a chalkboard addressing a community council, notes in hand
+- [ ] Reading aloud to students in a sunlit schoolhouse, glasses perched on her nose
+- [ ] In warm conversation at a council table, a steaming kettle beside her
+
+## Expression Variants
+
+- **`__default.png`**: Use the base portrait as reference. Neutral, patient resting expression, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, muted natural palette, zero conventional beauty templates.
+
+- **`__happy.png`**: Use the base portrait as reference. A warm, genuine smile, looking at the camera, 3/4 take. Eyes crinkling at the corners, lips curving up gently, wrinkles softening with warmth. Keep the same art style as reference, same blouse, cardigan, and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__tender.png`**: Use the base portrait as reference. A soft, compassionate expression, looking at the camera with warmth, 3/4 take. Eyes gentle, lips relaxed into a kind line, the slight brow droop lending a motherly softness. Keep the same art style as reference, same clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. A firm, resolved expression, looking steadily at the camera, 3/4 take. Eyes steady, lips pressed into a strong line, chin lifted, face composed. Keep the same art style as reference, same modest attire and earbud. Clean confident linework, painterly soft shading with clearer shadows, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. A quiet, restrained sorrow, looking at the camera, 3/4 take. Eyes slightly downcast, lips a soft worried line, the brow droop more pronounced, gentle lines deepening. Keep the same art style as reference, same cardigan and earbud. Clean confident linework, painterly soft shading, muted natural palette.

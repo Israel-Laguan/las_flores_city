@@ -10,3 +10,6 @@ metadata:
 lore_path: marco_rossi.md
 asset_paths:
   portrait: marco_rossi__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/marco_rossi/marco_rossi__default.png
+    label: dev

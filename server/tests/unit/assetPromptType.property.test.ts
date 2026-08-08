@@ -30,12 +30,12 @@ const assetTypeTokenArb = (): fc.Arbitrary<string> =>
     { minLength: 1, maxLength: 40 },
   );
 
-/**
- * Generates arbitrary "surrounding" text for the prompt file (e.g. a name
- * heading, description paragraphs, dimension lines) that does NOT contain
- * a `**Type:**` line — so it can be freely mixed in without interfering
- * with the extracted type.
- */
+const sizeTokenArb = (): fc.Arbitrary<string> =>
+  fc.tuple(
+    fc.integer({ min: 100, max: 4096 }),
+    fc.integer({ min: 100, max: 4096 }),
+  ).map(([w, h]) => `${w}x${h}`);
+
 const surroundingTextArb = (): fc.Arbitrary<string> =>
   fc.array(
     fc.oneof(
@@ -47,11 +47,18 @@ const surroundingTextArb = (): fc.Arbitrary<string> =>
     { minLength: 0, maxLength: 5 },
   ).map(parts => parts.join(''));
 
-/**
- * Builds a complete prompt file content string containing a `**Type:** <token>`
- * line, optionally surrounded by arbitrary other content.
- */
-const promptFileContentWithTypeArb = (): fc.Arbitrary<{ content: string; expectedType: string }> =>
+const promptFileContentWithFrontmatterArb = (): fc.Arbitrary<{ content: string; expectedType: string }> =>
+  fc.tuple(
+    assetTypeTokenArb(),
+    sizeTokenArb(),
+    surroundingTextArb(),
+    surroundingTextArb(),
+  ).map(([token, size, prefix, suffix]) => ({
+    content: `---\nname: Test\ntype: ${token}\nsize: ${size}\nconsumer: ${token}\n---\n${prefix}${suffix}`,
+    expectedType: token,
+  }));
+
+const promptFileContentWithBodyArb = (): fc.Arbitrary<{ content: string; expectedType: string }> =>
   fc.tuple(
     assetTypeTokenArb(),
     surroundingTextArb(),
@@ -91,12 +98,12 @@ const rootPathArb = (): fc.Arbitrary<string> =>
 // ============================================================
 
 describe('Property 7: Prompt file asset_type from content', () => {
-  // ── 7a: extractAssetType returns the **Type:** field value ──
+  // ── 7a: frontmatter `type:` wins (single source of truth) ────
 
-  it('7a — extractAssetType returns the value from the **Type:** field', () => {
+  it('7a — extractAssetType returns frontmatter `type:` when present', () => {
     fc.assert(
       fc.property(
-        promptFileContentWithTypeArb(),
+        promptFileContentWithFrontmatterArb(),
         ({ content, expectedType }) => {
           expect(extractAssetType(content)).toBe(expectedType);
         },
@@ -105,21 +112,50 @@ describe('Property 7: Prompt file asset_type from content', () => {
     );
   });
 
-  // ── 7b: Result is root-independent ──
-  //
-  // extractAssetType reads only from the content string. Calling it twice
-  // on the same content (simulating two files with the same text but from
-  // different root directories) must always produce identical results.
+  // ── 7b: body `**Type:**` fallback when no frontmatter ─────────
 
-  it('7b — same content produces the same asset_type regardless of (simulated) root', () => {
+  it('7b — extractAssetType falls back to body `**Type:**` when frontmatter is absent', () => {
     fc.assert(
       fc.property(
-        promptFileContentWithTypeArb(),
+        promptFileContentWithBodyArb(),
+        ({ content, expectedType }) => {
+          expect(extractAssetType(content)).toBe(expectedType);
+        },
+      ),
+      { numRuns: 300, verbose: false },
+    );
+  });
+
+  // ── 7c: frontmatter wins over body when both present ──────────
+
+  it('7c — frontmatter `type:` overrides body `**Type:**` when both exist', () => {
+    fc.assert(
+      fc.property(
+        assetTypeTokenArb(),
+        assetTypeTokenArb(),
+        (fmType, bodyType) => {
+          fc.pre(fmType !== bodyType);
+          const content = `---
+type: ${fmType}
+---
+**Type:** ${bodyType}
+`;
+          expect(extractAssetType(content)).toBe(fmType);
+        },
+      ),
+      { numRuns: 100, verbose: false },
+    );
+  });
+
+  // ── 7d: extractAssetType is content-only (root-agnostic) ─────
+
+  it('7d — same content produces the same asset_type regardless of (simulated) root', () => {
+    fc.assert(
+      fc.property(
+        promptFileContentWithFrontmatterArb(),
         rootPathArb(),
         rootPathArb(),
         ({ content }, _rootA, _rootB) => {
-          // extractAssetType is content-only; roots are irrelevant.
-          // We call it twice to confirm referential transparency.
           const typeFromRootA = extractAssetType(content);
           const typeFromRootB = extractAssetType(content);
           expect(typeFromRootA).toBe(typeFromRootB);
@@ -129,14 +165,13 @@ describe('Property 7: Prompt file asset_type from content', () => {
     );
   });
 
-  // ── 7c: When **Type:** is absent, result is 'unknown' ──
+  // ── 7e: When type is absent entirely, result is 'unknown' ─────
 
-  it('7c — returns "unknown" when the **Type:** field is absent', () => {
+  it('7e — returns "unknown" when frontmatter and body `**Type:**` are both absent', () => {
     fc.assert(
       fc.property(
-        // Content that never contains '**Type:**'
         fc.string({ minLength: 0, maxLength: 500 }).filter(
-          s => !s.includes('**Type:**'),
+          s => !s.includes('**Type:**') && !s.match(/^---[\s\S]*type:/m),
         ),
         (content) => {
           expect(extractAssetType(content)).toBe('unknown');
@@ -146,39 +181,24 @@ describe('Property 7: Prompt file asset_type from content', () => {
     );
   });
 
-  // ── 7d: Token is taken verbatim (no extra whitespace trimmed into it) ──
+  // ── 7f: Token is taken verbatim ───────────────────────────────
 
-  it('7d — the extracted type token matches the value immediately after **Type:** ', () => {
+  it('7f — frontmatter type token is taken verbatim', () => {
     fc.assert(
       fc.property(
         assetTypeTokenArb(),
         (token) => {
-          const content = `**Type:** ${token}\n`;
+          const content = `---
+type: ${token}
+---
+`;
           expect(extractAssetType(content)).toBe(token);
         },
       ),
       { numRuns: 200, verbose: false },
     );
   });
-
-  // ── 7e: When multiple **Type:** lines exist, the first one wins ──
-
-  it('7e — when multiple **Type:** lines exist, the first match is returned', () => {
-    fc.assert(
-      fc.property(
-        assetTypeTokenArb(),
-        assetTypeTokenArb(),
-        (firstToken, secondToken) => {
-          fc.pre(firstToken !== secondToken);
-          const content = `**Type:** ${firstToken}\nSome text.\n**Type:** ${secondToken}\n`;
-          expect(extractAssetType(content)).toBe(firstToken);
-        },
-      ),
-      { numRuns: 100, verbose: false },
-    );
-  });
 });
-
 // ── Spot-checks ───────────────────────────────────────────────
 
 describe('extractAssetType — spot checks', () => {

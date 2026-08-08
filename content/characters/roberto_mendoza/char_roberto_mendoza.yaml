@@ -16,3 +16,6 @@ asset_paths:
   portrait: roberto_mendoza__default.png
 
 lore_path: roberto_mendoza.md
+portrait_urls:
+  - url: s3://las-flores/portraits/roberto_mendoza/roberto_mendoza__default.png
+    label: dev

@@ -11,3 +11,6 @@ asset_paths:
   portrait: peter_van_der_meer_jr__default.png
 
 lore_path: peter_van_der_meer_jr.md
+portrait_urls:
+  - url: s3://las-flores/portraits/peter_van_der_meer_jr/peter_van_der_meer_jr__default.png
+    label: dev

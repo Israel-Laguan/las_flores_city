@@ -1,0 +1,457 @@
+id: a7f3d02e-c81b-4e9a-b340-e1d9a5cf8b44
+name: "Wen Act 2 - The Movie"
+description: |
+  Wen escalates the relationship. She drags the player onto the roof of the
+  university admin building at night (the dare), dresses for maximum attention,
+  and gives the player full agency to escalate physically: hold her hand, kiss
+  her first, or go further. Every reckless action raises wen_thrill. The
+  costume-change reveal crack and the Layla manipulation seed are also planted
+  here. NSFW content is implied and cut-away — the scene ends at the moment,
+  the aftermath is shown.
+character_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+dialogue_scope: character
+start_node_id: wen_act2_start
+
+nodes:
+
+  # ============================================
+  # OPENING — The Dare is Issued
+  # ============================================
+  wen_act2_start:
+    id: wen_act2_start
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Okay, R. I've been thinking. We've been very... nice. Very safe. And safe is boring. I know a way onto the admin building roof — maintenance door, third floor, never locked after eight. Tonight. You in, or are you going to make excuses?"
+    thought: "She's already decided he's going. She's pitched it like a dare and not a question, which is how she handles most things she actually wants. There's a fizzing energy to her — she's been planning this, probably since the last time she saw him. This is what the movie looks like in her head."
+    visual:
+      expression: smirk
+      position: right
+      transition: fade
+    effects:
+      flag_set:
+        wen_act2_dare_issued: true
+    choices:
+      - id: dare_yes
+        text: "Tonight. Let's go."
+        next_node_id: wen_act2_dare_accepted
+        time_block_cost:
+          amount: 2
+          description: "Sneaking onto the admin building roof with Wen"
+        effects:
+          flag_set:
+            wen_dare_accepted: true
+          stat_set:
+            wen_thrill: 15
+            wen_zhao_tension: 10
+      - id: dare_kiss_first
+        text: "[Pull her in and kiss her before she can say another word.]"
+        next_node_id: wen_act2_kiss_first
+        time_block_cost:
+          amount: 2
+          description: "Kissing Wen before she can dare you"
+        effects:
+          flag_set:
+            wen_dare_accepted: true
+            wen_first_kiss: true
+          stat_set:
+            wen_thrill: 20
+            wen_zhao_tension: 15
+      - id: dare_no
+        text: "Not tonight, Wen."
+        next_node_id: wen_act2_dare_refused
+        effects:
+          flag_set:
+            wen_dare_refused: true
+          stat_set:
+            wen_thrill: -10
+
+  # ============================================
+  # PLAYER KISSES FIRST — The Unscripted Moment
+  # ============================================
+  wen_act2_kiss_first:
+    id: wen_act2_kiss_first
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "..."
+    thought: "She did not plan this scene. Her mouth is still open from mid-sentence. For exactly two seconds, Wen Zhao is not performing. Her eyes go wide, and something under the sharp confidence surfaces — surprise, then something softer, then the awareness that she is being surprised, which she cannot allow. She kisses him back hard, as if reclaiming authorship of the moment."
+    visual:
+      expression: shocked
+      position: right
+    choices:
+      - id: kiss_hold
+        text: "[Don't let her deflect. Hold the moment.]"
+        next_node_id: wen_act2_kiss_lingers
+        effects:
+          stat_set:
+            wen_zhao_trust: 10
+            wen_thrill: 10
+      - id: kiss_release
+        text: "[Pull back. Let her have the room.]"
+        next_node_id: wen_act2_dare_accepted
+        effects:
+          stat_set:
+            wen_thrill: 5
+
+  wen_act2_kiss_lingers:
+    id: wen_act2_kiss_lingers
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...okay. Okay. That was — fine. That's fine. Don't think that gets you out of the roof."
+    thought: "Her voice is half a register lower than usual. She has already filed this moment under 'exactly the movie she imagined' but she knows, somewhere, that it wasn't. He moved first. She didn't direct that shot. She doesn't know whether to love it or be afraid of it."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: lingers_roof
+        text: "Roof first. Then we revisit."
+        next_node_id: wen_act2_dare_accepted
+        effects:
+          stat_set:
+            wen_thrill: 10
+            wen_zhao_tension: 8
+
+  # ============================================
+  # DARE ACCEPTED — The Roof Scene
+  # ============================================
+  wen_act2_dare_accepted:
+    id: wen_act2_dare_accepted
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Third floor. Maintenance door. You go first, I'll follow — if anyone sees us it's your fault. That's the rule. ...Are you scared? You look scared."
+    thought: "She is absolutely giddy. The logistics of sneaking in are the best part — the risk, the heartbeat in the throat, the potential for getting caught. She's wearing her most attention-demanding outfit and she wants to be seen doing something she's not supposed to do."
+    visual:
+      expression: happy
+    choices:
+      - id: roof_im_fine
+        text: "I'm not scared. Lead the way."
+        next_node_id: wen_act2_rooftop
+        effects:
+          stat_set:
+            wen_thrill: 5
+      - id: roof_grab_hand
+        text: "[Take her hand and walk in without waiting.]"
+        next_node_id: wen_act2_rooftop
+        effects:
+          flag_set:
+            wen_public_touch: true
+          stat_set:
+            wen_thrill: 10
+            wen_zhao_tension: 8
+
+  wen_act2_rooftop:
+    id: wen_act2_rooftop
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "See? The whole city. Nobody up here. Nobody watching. ...I love it when there's nobody watching. It means I can actually breathe."
+    thought: "She says the last part quietly, almost by accident. The city is spread below them — Las Flores at night, humid and loud and lit up like a warning sign. She's leaning on the railing with her whole chest out like she owns the view. But the 'I can actually breathe' part came from somewhere under the performance, and she knows it did."
+    visual:
+      expression: happy
+      background: rooftop_night
+    choices:
+      - id: rooftop_challenge
+        text: "You always perform, even when there's no audience."
+        next_node_id: wen_act2_rooftop_crack
+        effects:
+          stat_set:
+            wen_zhao_trust: 8
+            wen_zhao_tension: 5
+      - id: rooftop_kiss_now
+        text: "[Kiss her. Here. Under the city lights.]"
+        next_node_id: wen_act2_rooftop_kiss
+        effects:
+          flag_set:
+            wen_first_kiss: true
+          stat_set:
+            wen_thrill: 20
+            wen_zhao_tension: 15
+
+  wen_act2_rooftop_crack:
+    id: wen_act2_rooftop_crack
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...shut up. I don't perform when there's no audience. I just... I don't know what to do with my hands when no one's looking. There's a difference."
+    thought: "The honesty surprises her. She turns away from him slightly, looking back at the city. There's something embarrassed in her posture — not shame exactly, but the discomfort of having said something true in front of someone who might use it."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: crack_gentle
+        text: "I think I'm starting to figure out what to do with mine."
+        next_node_id: wen_act2_rooftop_kiss
+        effects:
+          flag_set:
+            wen_first_kiss: true
+          stat_set:
+            wen_thrill: 20
+            wen_zhao_tension: 15
+            wen_zhao_trust: 10
+      - id: crack_back_off
+        text: "Sorry. Forget I said it."
+        next_node_id: wen_act2_costume_pivot
+        effects:
+          stat_set:
+            wen_zhao_tension: -5
+
+  wen_act2_rooftop_kiss:
+    id: wen_act2_rooftop_kiss
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "This is — this is the part. This is exactly the part."
+    thought: "She whispers it against his mouth, and it would be cynical if she didn't sound so completely meant. This is the movie. This is what she has been building toward in her head since she was fourteen and watching films in her room with the sound low so her parents wouldn't know. And it is exactly as electric as she imagined. And that should be enough. It almost is."
+    visual:
+      expression: tender
+    choices:
+      - id: kiss_more
+        text: "[Stay. Let the scene write itself.]"
+        next_node_id: wen_act2_escalation
+        effects:
+          stat_set:
+            wen_thrill: 15
+            wen_zhao_tension: 10
+      - id: kiss_pull
+        text: "[Pull back slowly. Keep something in reserve.]"
+        next_node_id: wen_act2_costume_pivot
+        effects:
+          stat_set:
+            wen_thrill: 5
+
+  # ============================================
+  # ESCALATION — Implied NSFW, Cut to Aftermath
+  # ============================================
+  wen_act2_escalation:
+    id: wen_act2_escalation
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Not here. I know somewhere — come on."
+    thought: "She takes his hand this time, without framing it as a scene. She just does it."
+    visual:
+      expression: smirk
+    choices:
+      - id: escalation_yes
+        text: "[Follow her.]"
+        next_node_id: wen_act2_nsfw_cutaway
+        time_block_cost:
+          amount: 1
+          description: "Leaving with Wen"
+        effects:
+          flag_set:
+            wen_intimate_scene: true
+          stat_set:
+            wen_thrill: 30
+            wen_zhao_tension: 20
+      - id: escalation_no
+        text: "Not tonight, Wen."
+        next_node_id: wen_act2_costume_pivot
+        effects:
+          stat_set:
+            wen_thrill: -5
+            wen_zhao_tension: 5
+
+  wen_act2_nsfw_cutaway:
+    id: wen_act2_nsfw_cutaway
+    type: system
+    text: ""
+    thought: "[The scene cuts. A quiet room somewhere — a friend's empty apartment, the dim warmth of it. Disarranged clothing on a chair. The distant sound of the city through a cracked window. Time passes. The city dims slightly and comes back.]\n\n[When the scene returns, it is later. Much later.]"
+    next_node_id: wen_act2_aftermath
+
+  wen_act2_aftermath:
+    id: wen_act2_aftermath
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "..."
+    thought: "She's sitting on the edge of the bed, re-doing her hair. Her back is to him. The movie-logic hasn't caught up yet — she doesn't have a line for this part. Her hands are moving with habitual precision, and she is very carefully not looking at him. The performance is coming back online, slowly, like a system reboot. But there's a gap in it. A few seconds of nothing."
+    visual:
+      expression: contemplative
+    choices:
+      - id: aftermath_press
+        text: "Hey. You okay?"
+        next_node_id: wen_act2_aftermath_honest
+        effects:
+          flag_set:
+            wen_post_intimate_honest: true
+          stat_set:
+            wen_zhao_trust: 15
+      - id: aftermath_cool
+        text: "[Say nothing. Give her the silence she's building.]"
+        next_node_id: wen_act2_aftermath_cool
+        effects:
+          flag_set:
+            wen_post_intimate_cool: true
+          stat_set:
+            wen_thrill: 10
+
+  wen_act2_aftermath_honest:
+    id: wen_act2_aftermath_honest
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I'm fine. I'm always fine. ...I just didn't write this scene. I don't know what comes after it."
+    thought: "It's barely above a whisper. She finishes fixing her hair and finally turns to look at him. She looks different — not smaller, exactly, but less produced. Like a photograph before the filter goes on. There's something real in her face and she knows it, and she isn't sure if she wants to protect it or perform over it."
+    visual:
+      expression: vulnerable
+    choices:
+      - id: honest_stay
+        text: "Then let's just... not write it. Stay in the scene."
+        next_node_id: wen_act2_post_tender
+        effects:
+          stat_set:
+            wen_zhao_trust: 10
+            wen_thrill: 5
+      - id: honest_name_it
+        text: "I think you might actually want something real, Wen."
+        next_node_id: wen_act2_post_confronted
+        effects:
+          stat_set:
+            wen_zhao_trust: 20
+            wen_zhao_tension: -10
+
+  wen_act2_aftermath_cool:
+    id: wen_act2_aftermath_cool
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Good. You're not making it weird. I appreciate that."
+    thought: "The performance is back. She's grateful he didn't ask, because she would have had to answer. She stands up, smooths her top, checks her phone. The Wen who sat quietly for three seconds is already being edited out of the footage. She doesn't know he saw her."
+    visual:
+      expression: smirk
+    next_node_id: wen_act2_costume_pivot
+
+  wen_act2_post_tender:
+    id: wen_act2_post_tender
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...okay. Okay. Yeah. Just — just this. That's enough for now."
+    thought: "She leans back slightly, not quite against him but near enough. She doesn't know what to call this, so she doesn't call it anything. It's the most comfortable she's been in years and she doesn't have a script for it. She files it under 'good scene' to avoid naming it correctly."
+    visual:
+      expression: tender
+    next_node_id: wen_act2_costume_pivot
+
+  wen_act2_post_confronted:
+    id: wen_act2_post_confronted
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "...don't. Don't do that. Don't — make it more than it is."
+    thought: "Her voice is harder, but she doesn't move away. The denial is automatic, defensive. But she's sitting completely still, which she never does, and her jaw is working like she's holding something back. He's right. She knows he's right. She can't say it yet."
+    visual:
+      expression: afraid
+    next_node_id: wen_act2_costume_pivot
+
+  # ============================================
+  # DARE REFUSED — She Cools
+  # ============================================
+  wen_act2_dare_refused:
+    id: wen_act2_dare_refused
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Excuses. I figured."
+    thought: "She smiles, but it's the kind that means she's already mentally recasting the role. He's been filed under 'not the lead' and she's moving on to the next audition. She doesn't say it, but she's bored. And Wen Zhao, when bored, starts making other plans."
+    visual:
+      expression: calculating
+    is_end: true
+    effects:
+      state_set:
+        wen_act: "2_done_refused"
+        last_wen_encounter_at: NOW
+
+  # ============================================
+  # COSTUME REVEAL — The Crack
+  # ============================================
+  wen_act2_costume_pivot:
+    id: wen_act2_costume_pivot
+    type: system
+    text: ""
+    thought: "[Later — a different day. The player spots Wen crossing toward the university gate, clearly on her way home. She's mid-transition: the cropped top has been swapped for a loose covered blouse, the confident posture straightening into something careful. She doesn't see the player yet.]"
+    next_node_id: wen_act2_costume_reveal
+
+  wen_act2_costume_reveal:
+    id: wen_act2_costume_reveal
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "—R. How long have you been standing there."
+    thought: "It's not a question. Her jaw is tight. She's been caught in the transition, caught being the other version of herself, and the humiliation is immediate and physical. She can see exactly what he's seeing — the modest blouse, the careful posture, the version of her that she would never let him see deliberately."
+    visual:
+      expression: angry
+    choices:
+      - id: costume_ignore
+        text: "Just got here. Nice blouse."
+        next_node_id: wen_act2_costume_defused
+        effects:
+          stat_set:
+            wen_zhao_trust: 10
+      - id: costume_tease
+        text: "Long enough to see the other Wen."
+        next_node_id: wen_act2_costume_confronted
+        effects:
+          stat_set:
+            wen_zhao_tension: 10
+            wen_zhao_trust: -5
+
+  wen_act2_costume_defused:
+    id: wen_act2_costume_defused
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I hate you. Don't — just don't make this a thing. My dad's picking me up."
+    thought: "The relief is visible and she immediately resents the relief. He's being kind, which means she owes him something, and she doesn't know how to be owed. She shifts the bag on her shoulder and looks away, already calculating how to reclaim control of the scene."
+    visual:
+      expression: afraid
+    next_node_id: wen_act2_layla_seed
+
+  wen_act2_costume_confronted:
+    id: wen_act2_costume_confronted
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "There is no 'other Wen.' This is a bus outfit. Don't be dramatic."
+    thought: "The lie is reflexive and completely transparent. She knows it and he knows it. But she's angry enough that she doesn't care — the anger is the performance now, covering the humiliation, covering the fear of being seen. She's never let anyone see the transition before."
+    visual:
+      expression: angry
+    next_node_id: wen_act2_layla_seed
+
+  # ============================================
+  # LAYLA MANIPULATION SEED
+  # ============================================
+  wen_act2_layla_seed:
+    id: wen_act2_layla_seed
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I talked to Layla, by the way. Don't make a face. I told her things were good — that you were happy. She said she wanted that for you. She said — and I quote — 'I just want him to find someone who really goes for it.' So. She's fine with it. Basically gave her blessing."
+    thought: "She says it lightly, as if reporting good news. She did talk to Layla. The conversation was real. But she edited it — she asked Layla loaded questions, guided the answers, and is now delivering a version of Layla's consent that Layla did not exactly give. Wen does not think of this as manipulation. She thinks of it as screenwriting."
+    visual:
+      expression: smirk
+    is_end: true
+    effects:
+      flag_set:
+        wen_layla_manipulation_seed: true
+        wen_act2_done: true
+      state_set:
+        wen_act: "2_done"
+        last_wen_encounter_at: NOW
+      stat_set:
+        wen_thrill: 5
+
+metadata:
+  version: "1.0"
+  required_flags:
+    wen_flirtation_started: true
+  tags:
+    - "wen_zhao"
+    - "act2"
+    - "dare"
+    - "rooftop"
+    - "escalation"
+    - "nsfw_implied"
+    - "layla_manipulation"
+    - "costume_reveal"
+    - "gate_logic"
+  notes: |
+    Act 2 contains the full escalation ladder:
+    - Dare accepted/refused sets the engagement level.
+    - Player-initiated kiss (before or during dare) sets wen_first_kiss.
+    - Rooftop escalation leads to implied NSFW cutaway.
+    - Aftermath choice (press/cool) sets wen_post_intimate_honest or wen_post_intimate_cool.
+    - Costume reveal plants the vulnerability crack.
+    - Layla manipulation seed is always planted at the end — it will be
+      discoverable and confrontable in Act 3.
+    
+    Flag summary:
+      wen_dare_refused → Distant ending track
+      wen_first_kiss → raises trust, required for full Lover ending
+      wen_intimate_scene → gates aftermath branch
+      wen_post_intimate_honest → required for Lover ending
+      wen_post_intimate_cool → required for Tragic ending
+      wen_layla_manipulation_seed → confrontable in Act 3, required for Enemy ending

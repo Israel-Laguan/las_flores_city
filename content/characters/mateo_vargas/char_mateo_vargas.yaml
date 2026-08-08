@@ -12,3 +12,6 @@ metadata:
 lore_path: mateo_vargas.md
 asset_paths:
   portrait: mateo_vargas__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/mateo_vargas/mateo_vargas__default.png
+    label: dev

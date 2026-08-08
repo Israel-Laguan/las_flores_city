@@ -10,3 +10,6 @@ metadata:
 lore_path: alicia_quevedo.md
 asset_paths:
   portrait: alicia_quevedo__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alicia_quevedo/alicia_quevedo__default.png
+    label: dev

@@ -10,3 +10,6 @@ metadata:
 lore_path: alfonso_vega.md
 asset_paths:
   portrait: alfonso_vega__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alfonso_vega/alfonso_vega__default.png
+    label: dev

@@ -10,3 +10,6 @@ metadata:
 lore_path: zheng_wuhao.md
 asset_paths:
   portrait: zheng_wuhao__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/zheng_wuhao/zheng_wuhao__default.png
+    label: dev

@@ -3,7 +3,7 @@
  *
  * Validates:
  * - SQL migration creates the story_beats table with correct schema (PK on slug, UNIQUE on "order")
- * - Content file processing upserts all 12 beats with correct slugs and orders
+ * - Content file processing upserts every beat in story_beats.yaml with correct slugs and orders
  * - Migration logging records the story_beat content type
  *
  * Feature: story-beat-definition, Requirement 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
@@ -24,27 +24,24 @@ jest.mock('../../src/database/redis.js', () => ({
 import * as yaml from 'js-yaml';
 import crypto from 'crypto';
 import { processContentFile } from '../../src/content/upsert.js';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 
 const { Pool } = pg;
 
 // Resolve content directory relative to the server workspace
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
-// Expected canonical beats from content/story_beats.yaml
-const EXPECTED_BEATS = [
-  { slug: 'prologue', order: 0 },
-  { slug: 'act1_awakening', order: 10 },
-  { slug: 'act1_city_arrived', order: 20 },
-  { slug: 'act1_first_contact', order: 30 },
-  { slug: 'act2_mystery_active', order: 100 },
-  { slug: 'act3_finale_unlocked', order: 200 },
-  { slug: 'finale_complete', order: 300 },
-  { slug: 'beat_sofia_intro', order: 400 },
-  { slug: 'beat_sofia_alberto_risk', order: 401 },
-  { slug: 'beat_sofia_trust_building', order: 402 },
-  { slug: 'beat_sofia_corruption_network', order: 403 },
-  { slug: 'beat_sofia_resolution', order: 404 },
-];
+// Canonical beats are read from content/story_beats.yaml at runtime rather than
+// hardcoded, so the suite stays correct as beats are added or removed.
+async function readCanonicalBeats(): Promise<
+  Array<{ slug: string; label: string; order: number; description: string }>
+> {
+  const yamlContent = await fs.readFile(path.join(CONTENT_DIR, 'story_beats.yaml'), 'utf-8');
+  const yamlData = yaml.load(yamlContent) as {
+    beats: Array<{ slug: string; label: string; order: number; description: string }>;
+  };
+  return yamlData.beats;
+}
 
 describe('Story Beat Pipeline Integration', () => {
   let pool: pg.Pool;
@@ -55,25 +52,36 @@ describe('Story Beat Pipeline Integration', () => {
       connectionTimeoutMillis: 5000,
     });
 
-    // Clean up only the canonical slugs this suite manages (collision-avoidance:
-    // these are the fixed slugs from content/story_beats.yaml under test).
-    await pool.query(
-      'DELETE FROM story_beats WHERE slug = ANY($1::text[])',
-      [EXPECTED_BEATS.map(b => b.slug)],
-    );
+    // Run the SQL migration first so the table exists before we clean it. The
+    // DDL + reconcile are serialized against other suites' schema mutation
+    // (and migrateContent) via the shared schema lock.
+    await withSchemaLock(async () => {
+      const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
+      const migrationSql = await fs.readFile(migrationPath, 'utf-8');
+      await pool.query(migrationSql);
 
-    // Run the SQL migration to create the table
-    const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
-    const migrationSql = await fs.readFile(migrationPath, 'utf-8');
-    await pool.query(migrationSql);
+      // Delete ONLY the canonical slugs defined by story_beats.yaml, never the
+      // whole table. story_beats is a shared registry that other suites (e.g.
+      // content-pipeline.test.ts) validate dialogue/scene beat cross-references
+      // against. A `DELETE FROM story_beats` would leave that registry
+      // irrecoverably empty for every other worker if this suite dies before
+      // afterAll runs (hard test failure, killed worker, or a throwing
+      // restore). Scoping the delete to the yaml's own slugs keeps the blast
+      // radius to exactly the rows this suite re-creates itself.
+      const canonicalSlugs = (await readCanonicalBeats()).map(beat => beat.slug);
+      await pool.query('DELETE FROM story_beats WHERE slug = ANY($1::text[])', [canonicalSlugs]);
+    });
   });
 
   afterAll(async () => {
     // Restore the canonical story_beats registry. These are real content slugs,
     // so we must NOT delete them — doing so leaves the shared registry empty
     // and breaks content-pipeline.test.ts, which validates dialogue/scene
-    // story_beat cross-references against it. Re-populate instead.
-    await processContentFile(path.join(CONTENT_DIR, 'story_beats.yaml'));
+    // story_beat cross-references against it. Re-populate instead. Runs under
+    // the schema lock so the restore is atomic vs. concurrent readers.
+    await withSchemaLock(async () => {
+      await processContentFile(path.join(CONTENT_DIR, 'story_beats.yaml'));
+    });
     await pool.end();
   });
 
@@ -162,18 +170,19 @@ describe('Story Beat Pipeline Integration', () => {
     expect(constraintDef).toContain("'story_beat'");
   });
 
-  // Requirement 3.3, 3.6: processContentFile upserts all 12 beats with matching slugs and orders
-  test('processContentFile upserts all 12 beats with correct data', async () => {
+  // Requirement 3.3, 3.6: processContentFile upserts every beat in story_beats.yaml
+  test('processContentFile upserts all beats with correct data', async () => {
     // Load the canonical story_beats.yaml to get full expected data
     const yamlPath = path.join(CONTENT_DIR, 'story_beats.yaml');
     const yamlContent = await fs.readFile(yamlPath, 'utf-8');
-    const yamlData = yaml.load(yamlContent) as { beats: Array<{ slug: string; label: string; order: number; description: string }> };
+    const beats = await readCanonicalBeats();
     const checksum = crypto.createHash('sha256').update(yamlContent).digest('hex');
+    const expectedCount = beats.length;
 
     // Process the content file
     const result = await processContentFile(yamlPath);
     expect(result.contentType).toBe('story_beat');
-    expect(result.contentId.split(',').length).toBe(12);
+    expect(result.contentId.split(',').length).toBe(expectedCount);
 
     // Record the migration (simulates what migrateContent does after processContentFile)
     await pool.query(
@@ -181,12 +190,17 @@ describe('Story Beat Pipeline Integration', () => {
       ['story_beats.yaml', checksum, 'story_beat', 'prologue']
     );
 
-    // Verify all 12 rows are present
-    const countResult = await pool.query('SELECT COUNT(*)::int AS count FROM story_beats');
-    expect(countResult.rows[0].count).toBe(12);
+    // Verify all registry rows are present. beforeAll cleared exactly the
+    // canonical slugs, so count those rather than the whole table — unrelated
+    // rows owned by other suites may legitimately coexist here.
+    const countResult = await pool.query(
+      'SELECT COUNT(*)::int AS count FROM story_beats WHERE slug = ANY($1::text[])',
+      [beats.map(beat => beat.slug)]
+    );
+    expect(countResult.rows[0].count).toBe(expectedCount);
 
     // Verify each expected beat exists with correct order
-    for (const expectedBeat of EXPECTED_BEATS) {
+    for (const expectedBeat of beats) {
       const beatResult = await pool.query(
         'SELECT slug, "order", label, description FROM story_beats WHERE slug = $1',
         [expectedBeat.slug]
@@ -197,10 +211,8 @@ describe('Story Beat Pipeline Integration', () => {
       expect(beatResult.rows[0].order).toBe(expectedBeat.order);
 
       // Also verify label and description match the YAML
-      const yamlBeat = yamlData.beats.find((b) => b.slug === expectedBeat.slug);
-      expect(yamlBeat).toBeDefined();
-      expect(beatResult.rows[0].label).toBe(yamlBeat!.label);
-      expect(beatResult.rows[0].description).toBe(yamlBeat!.description);
+      expect(beatResult.rows[0].label).toBe(expectedBeat.label);
+      expect(beatResult.rows[0].description).toBe(expectedBeat.description);
     }
   });
 
@@ -274,7 +286,9 @@ describe('Story Beat Pipeline Integration', () => {
     expect(cacheCall).toBeDefined();
     const cachedSlugs = cacheCall![1] as string[];
     expect(cachedSlugs).toContain('beat_sofia_alberto_risk');
-    // Cache should contain all 12 registry slugs, not just this one
-    expect(cachedSlugs.length).toBe(12);
+    // Cache should contain all registry slugs (refreshed from the full table),
+    // not just this one.
+    const { rows: totalRows } = await pool.query('SELECT COUNT(*)::int AS c FROM story_beats');
+    expect(cachedSlugs.length).toBe(totalRows[0].c);
   });
 });

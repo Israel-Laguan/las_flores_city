@@ -11,3 +11,6 @@ asset_paths:
   portrait: samuel_camacho__default.png
 
 lore_path: samuel_camacho.md
+portrait_urls:
+  - url: s3://las-flores/portraits/samuel_camacho/samuel_camacho__default.png
+    label: dev

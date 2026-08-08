@@ -22,6 +22,8 @@ metadata:
   status: Deceased (2077)
   death: Died in a mine explosion while creating an improvised dam to save Las Flores from a catastrophic flood.
 portrait_urls:
+  - url: s3://las-flores/portraits/alex_garcia/alex_garcia__default.png
+    label: dev
   - url: http://minio:9000/las-flores/portraits/alex_garcia/neutral.png
     label: dev
     expression: neutral

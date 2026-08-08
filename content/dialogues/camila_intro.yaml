@@ -1,0 +1,128 @@
+id: "f0000000-0000-0000-0000-000000000001"
+name: "Camila Reyes - Intro"
+description: "Introductory conversation with Camila near the university campus."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+dialogue_scope: "character"
+start_node_id: "f0000000-0000-0000-0000-000000000002"
+nodes:
+  f0000000-0000-0000-0000-000000000002:
+    id: "f0000000-0000-0000-0000-000000000002"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Oh my gosh, I'm so clumsy! Thank you so much for catching those. If these water samples broke, I'd lose three weeks of baseline data."
+    thought: "(Expression: surprised -> happy. She smiles warmly, exuding a radiant positivity.)"
+    choices:
+      - id: "reply_friendly"
+        text: "No problem. Looks like important research."
+        next_node_id: "f0000000-0000-0000-0000-000000000003"
+        relationship_change:
+          stat: "friendship"
+          amount: 1
+      - id: "reply_cold"
+        text: "Careful. You almost smashed my datapad."
+        next_node_id: "f0000000-0000-0000-0000-000000000004"
+        relationship_change:
+          stat: "friendship"
+          amount: -1
+
+  f0000000-0000-0000-0000-000000000003:
+    id: "f0000000-0000-0000-0000-000000000003"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "It is. It's everything, actually. I'm Camila. I have the ecological impact data that proves Van Der Meer Mining is breaking international law in Bahía de las Olas. But it's useless unless I can upload it to their internal PR subnet. And their security is impenetrable."
+    thought: "(Expression: tender -> sad. She pivots smoothly to her cause, completely unprompted.)"
+    choices:
+      - id: "joke_falsifier"
+        text: "You could always grab a fake badge. I hear the street falsifiers in the industrial district do great work. Kidding, obviously."
+        next_node_id: "f0000000-0000-0000-0000-000000000005"
+      - id: "joke_forge"
+        text: "Why don't you just forge an access card? Joke's on them, right?"
+        next_node_id: "f0000000-0000-0000-0000-000000000005"
+
+  f0000000-0000-0000-0000-000000000004:
+    id: "f0000000-0000-0000-0000-000000000004"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I'm sorry, I haven't slept in two days... I'm Camila. I'm just so stressed out trying to figure out how to get my ecological data past Van Der Meer Mining's security subnet. It feels impossible."
+    thought: "(Expression: vulnerable. She uses her exhaustion to defuse hostility and immediately brings up her objective.)"
+    choices:
+      - id: "joke_falsifier_2"
+        text: "You could always grab a fake badge. I hear the street falsifiers in the industrial district do great work. Kidding, obviously."
+        next_node_id: "f0000000-0000-0000-0000-000000000005"
+      - id: "joke_forge_2"
+        text: "Why don't you just forge an access card? Joke's on them, right?"
+        next_node_id: "f0000000-0000-0000-0000-000000000005"
+
+  f0000000-0000-0000-0000-000000000005:
+    id: "f0000000-0000-0000-0000-000000000005"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Wait... you know how to find a falsifier? You have connections in the industrial district?"
+    thought: "(Expression: shocked -> focused. She completely ignores the sarcasm. Her single-mindedness overrides standard social cues.)"
+    choices:
+      - id: "clarify_joke"
+        text: "Whoa, slow down. I was just joking. You don't actually want to commit corporate espionage, do you?"
+        next_node_id: "f0000000-0000-0000-0000-000000000006"
+
+  f0000000-0000-0000-0000-000000000006:
+    id: "f0000000-0000-0000-0000-000000000006"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "This is incredible! You have no idea how lucky it is that we bumped into each other today. The universe provides, right? You're going to introduce me to this falsifier."
+    thought: "(Expression: happy. She steps into my personal space, radiating intense warmth, but she is essentially railroading me.)"
+    choices:
+      - id: "refuse_risk"
+        text: "I literally just said it was a joke. I'm not risking my neck for a stranger."
+        next_node_id: "f0000000-0000-0000-0000-000000000007"
+
+  f0000000-0000-0000-0000-000000000007:
+    id: "f0000000-0000-0000-0000-000000000007"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Van Der Meer is planning to bulldoze my entire village to build a lithium export mega-port and a toxic brine-discharge facility. They are terrified of bad press. If this data hits their internal subnet, it automatically leaks to the Chinese-backed political factions in the city council. The public backlash will freeze their permits instantly."
+    thought: "(Expression: determined. She drops the warmth and hits me with the raw geopolitical reality.)"
+    choices:
+      - id: "hesitant_agree"
+        text: "That's a solid plan, but I don't want to get involved."
+        next_node_id: "f0000000-0000-0000-0000-000000000008"
+      - id: "hard_rejection"
+        text: "You're insane. Find another mule."
+        next_node_id: "f0000000-0000-0000-0000-000000000009"
+
+  f0000000-0000-0000-0000-000000000008:
+    id: "f0000000-0000-0000-0000-000000000008"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I know it's a lot to ask. But they're going to destroy my home. My family's livelihood. The coral reefs I grew up swimming in... they'll all be concrete and toxic sludge by next month. I just need the introduction. You take me to the falsifier, I get the badge, and I do the upload. You won't even be in the building. Please. I wouldn't ask if I wasn't desperate."
+    thought: "(Expression: vulnerable -> calculating. She is deliberately utilizing her desperation to secure my compliance.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_intro_complete: true
+        camila_quest_falsifier_active: true
+      state_set:
+        camila_dynamic: "hesitant_ally"
+      story_beat: act1_camila_recruited
+
+  f0000000-0000-0000-0000-000000000009:
+    id: "f0000000-0000-0000-0000-000000000009"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Right. Just another city drone collecting a paycheck while the world burns. If you're okay with them bulldozing a village just so you can stay comfortable, then I guess I misjudged you. Give me my samples back. I'll find someone who actually cares."
+    thought: "(Expression: angry -> sad. Her sunny disposition vanishes instantly. I am no longer useful to her, so she discards me.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_intro_complete: true
+      state_set:
+        camila_dynamic: "rejected"
+      story_beat: act1_camila_rejected
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_reyes"
+    - "intro"
+    - "falsifier_quest"

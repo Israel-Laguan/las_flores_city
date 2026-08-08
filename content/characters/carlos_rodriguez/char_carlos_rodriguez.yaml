@@ -37,3 +37,6 @@ asset_paths:
   portrait: carlos_rodriguez__default.png
 
 lore_path: carlos_rodriguez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/carlos_rodriguez/carlos_rodriguez__default.png
+    label: dev

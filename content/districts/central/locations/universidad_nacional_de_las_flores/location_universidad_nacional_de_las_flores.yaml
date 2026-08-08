@@ -12,7 +12,7 @@ alwaysIncludeInContext: false
 doNotTrack: false
 noAutoInclude: false
 history: |
-  Located in the heart of the Central Las Flores district, Universidad Nacional de Las Flores stands as a beacon of educational excellence and cultural diversity. Its strategic position near the industrial zone, along with dedicated bus and train stations, makes it an accessible hub for students from various parts of the region, including the valley, Old Las Flores, and even the Pacific coast. The university boasts a vast campus equipped with state-of-the-art facilities that cater to both academic and extracurricular pursuits.
+  Located in the heart of the Central Las Flores district, Universidad Nacional de Las Flores stands as a beacon of educational excellence, cultural diversity, and social mobility. As the city's premier public university, it serves the middle class, working class, and marginalized communities, providing accessible higher education to students from various socioeconomic backgrounds. Its strategic position near the industrial zone, along with dedicated bus and train stations, makes it an accessible hub for students from the valley, Old Las Flores, and even the Pacific coast. The university boasts a vast campus equipped with state-of-the-art facilities that cater to both academic and extracurricular pursuits.
 daytime: |
   During the day, the campus buzzes with academic and extracurricular activity. Students attend lectures in modern classrooms, conduct research in the comprehensive library, and utilize the extensive sports facilities that were instrumental in hosting the South American Student Games in 2048 and 2052. The large student cafeteria, green spaces, group study seats, and dedicated study halls foster a vibrant student community. Well-planned roads and paths facilitate easy movement across the campus for pedestrians, cyclists, and motorists alike.
 nightlife: |
@@ -32,7 +32,11 @@ important_places:
     description: Dedicated collaborative learning spaces equipped for group projects and study sessions, supporting the university's emphasis on peer learning.
   - name: Green Spaces
     description: Expansive outdoor areas providing relaxation and recreational opportunities, contributing to a balanced campus environment.
+van_der_meer_foundation: |
+  The Fundación Van der Meer plays a significant role at Universidad Nacional through its philanthropic scholarship programs. The foundation provides full scholarships enabling talented students from marginalized backgrounds, including working-class communities and indigenous groups, to access higher education. This Dutch philanthropic support complements the university's mission of social mobility and inclusion.
+social_mobility: |
+  Universidad Nacional is the engine of social mobility in Las Flores, providing accessible, high-quality education to the city's middle class, working class, and marginalized communities. Its diverse student body includes significant numbers of Latin American, indigenous, and international students from various socioeconomic backgrounds, making it the true people's university of the city.
 conclusion: |
-  Universidad Nacional de Las Flores is more than an educational institution; it is a vibrant community that nurtures intellectual growth, celebrates diversity, and fosters global citizenship. Its infrastructure, academic offerings, and inclusive environment make it a cornerstone of education and cultural exchange in Central Las Flores and beyond. The healthy rivalry with Universidad Internacional underscores its unique identity and its role in fostering an inclusive educational environment that celebrates diversity and champions social mobility.
+  Universidad Nacional de Las Flores is more than an educational institution; it is a vibrant community that nurtures intellectual growth, celebrates diversity, and fosters global citizenship. As the city's public university, its infrastructure, academic offerings, and inclusive environment make it a cornerstone of education and cultural exchange in Central Las Flores and beyond. The healthy rivalry with Universidad Internacional underscores its unique identity as the accessible, diverse counterpoint to the elite private institutions, championing social mobility for all.
 asset_paths:
   image: universidad_nacional_de_las_flores__default.png

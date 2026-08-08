@@ -10,3 +10,6 @@ metadata:
 lore_path: el_caiman.md
 asset_paths:
   portrait: el_caiman__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/el_caiman/el_caiman__default.png
+    label: dev

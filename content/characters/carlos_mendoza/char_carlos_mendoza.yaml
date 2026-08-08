@@ -11,3 +11,6 @@ asset_paths:
   portrait: carlos_mendoza__default.png
 
 lore_path: carlos_mendoza.md
+portrait_urls:
+  - url: s3://las-flores/portraits/carlos_mendoza/carlos_mendoza__default.png
+    label: dev

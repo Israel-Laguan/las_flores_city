@@ -12,3 +12,6 @@ metadata:
 lore_path: maria_suarez.md
 asset_paths:
   portrait: maria_suarez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/maria_suarez/maria_suarez__default.png
+    label: dev

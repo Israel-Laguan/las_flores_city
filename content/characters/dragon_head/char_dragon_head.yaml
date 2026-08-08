@@ -10,3 +10,6 @@ metadata:
 lore_path: dragon_head.md
 asset_paths:
   portrait: dragon_head__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/dragon_head/dragon_head__default.png
+    label: dev

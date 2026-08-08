@@ -36,7 +36,7 @@
 - Removed "Adeyemi Ogunbiyi" from prompts
 - Kept names only in YAML metadata and document titles
 
-**Why:** GenAI models (MidJourney, FLUX, etc.) are not trained on fictional character names. Including them uses precious character budget without adding value.
+**Why:** GenAI models (various providers, FLUX, etc.) are not trained on fictional character names. Including them uses precious character budget without adding value.
 
 **Rule:** Character names belong in metadata only. Never include in:
 - `## Prompt (Draft)`
@@ -217,6 +217,6 @@ Before generating any character assets, verify:
 ## 📚 Related Documentation
 
 - [ASSET_EXPRESSION_VOCABULARY.md](ASSET_EXPRESSION_VOCABULARY.md) - Expression tag conventions
-- [PROMPT_GUIDELINES.md](lore/PROMPT_GUIDELINES.md) - NVIDIA NIM FLUX.2 Klein specific guidelines
+- [PROMPT_AUTHORING_SPEC.md](PROMPT_AUTHORING_SPEC.md) - Canonical character prompt authoring spec (template, static map, AI contract, quality gate)
 - [content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md](../content/characters/adeyemi_ogunbiyi/adeyemi_ogunbiyi.prompt.md) - Reference implementation
 - [content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md](../content/characters/aisha_al_sayed/aisha_al_sayed.prompt.md) - Reference implementation

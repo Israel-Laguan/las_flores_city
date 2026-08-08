@@ -11,3 +11,6 @@ asset_paths:
   portrait: pedro_escobar__default.png
 
 lore_path: pedro_escobar.md
+portrait_urls:
+  - url: s3://las-flores/portraits/pedro_escobar/pedro_escobar__default.png
+    label: dev

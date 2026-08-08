@@ -20,3 +20,6 @@ metadata:
 lore_path: anna_van_der_meer.md
 asset_paths:
   portrait: anna_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/anna_van_der_meer/anna_van_der_meer__default.png
+    label: dev

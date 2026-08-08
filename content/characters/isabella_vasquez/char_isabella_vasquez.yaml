@@ -12,3 +12,6 @@ asset_paths:
   portrait: isabella_vasquez__default.png
 
 lore_path: isabella_vasquez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_vasquez/isabella_vasquez__default.png
+    label: dev

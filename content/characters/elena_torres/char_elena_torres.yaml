@@ -10,3 +10,6 @@ metadata:
 lore_path: elena_torres.md
 asset_paths:
   portrait: elena_torres__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/elena_torres/elena_torres__default.png
+    label: dev

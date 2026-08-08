@@ -10,3 +10,6 @@ metadata:
 lore_path: liu_fang.md
 asset_paths:
   portrait: liu_fang__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/liu_fang/liu_fang__default.png
+    label: dev

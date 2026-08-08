@@ -44,3 +44,6 @@ metadata:
 lore_path: the_apartment.md
 asset_paths:
   background: the_apartment__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/the_apartment/the_apartment__default.png
+    label: dev

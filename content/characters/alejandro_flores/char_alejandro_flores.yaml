@@ -15,3 +15,6 @@ metadata:
 lore_path: alejandro_flores.md
 asset_paths:
   portrait: alejandro_flores__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/alejandro_flores/alejandro_flores__default.png
+    label: dev

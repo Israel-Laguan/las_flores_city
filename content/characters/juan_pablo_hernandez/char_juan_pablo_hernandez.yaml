@@ -11,3 +11,6 @@ asset_paths:
   portrait: juan_pablo_hernandez__default.png
 
 lore_path: juan_pablo_hernandez.md
+portrait_urls:
+  - url: s3://las-flores/portraits/juan_pablo_hernandez/juan_pablo_hernandez__default.png
+    label: dev

@@ -1,5 +1,6 @@
 import { queryOLTP } from '../database/connection.js';
 import { sanitizeText } from './validate-xss.js';
+import { normalizeUuid } from './uuid-utils.js';
 
 export async function upsertCharacter(data: any): Promise<string> {
   const result = await queryOLTP(
@@ -40,7 +41,7 @@ export async function upsertDialogueTree(data: any): Promise<string> {
         updated_at = NOW()
       RETURNING id`,
     [data.id, data.name, data.description || null, data.start_node_id, JSON.stringify(data.nodes || {}), JSON.stringify(data.metadata || {}),
-     data.character_id || null, data.scene_id || null, data.mission_id || null, data.dialogue_scope || 'character']
+     normalizeUuid(data.character_id), normalizeUuid(data.scene_id), normalizeUuid(data.mission_id), data.dialogue_scope || 'character']
   );
   return result.rows[0].id;
 }

@@ -172,6 +172,8 @@ export const YAMLLocationSchema = z.object({
     description: z.string().max(500),
   })).optional(),
   conclusion: z.string().optional(),
+  van_der_meer_foundation: z.string().optional(),
+  social_mobility: z.string().optional(),
   map: z.object({
     grid: z.object({ cols: z.number().int(), rows: z.number().int() }).optional(),
     base_tile: z.string().optional(),

@@ -21,3 +21,6 @@ metadata:
 lore_path: anneliese_jansen.md
 asset_paths:
   portrait: anneliese_jansen__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/anneliese_jansen/anneliese_jansen__default.png
+    label: dev

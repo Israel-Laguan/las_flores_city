@@ -14,3 +14,6 @@ metadata:
 lore_path: pacific.md
 asset_paths:
   background: pacific__default.png
+background_urls:
+  - url: s3://las-flores/backgrounds/pacific/pacific__default.png
+    label: dev

@@ -3,6 +3,7 @@ import { closeRedis } from '../../src/database/redis.js';
 import { LeaderboardWorker } from '../../src/workers/LeaderboardWorker.js';
 import fs from 'fs';
 import path from 'path';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 
 // ============================================================
 // OLAP Leaderboard Simulation
@@ -54,7 +55,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch {
     // Migration may already be applied
   }
@@ -69,20 +72,36 @@ async function ensurePublicProfile(userId: string, username: string): Promise<vo
   );
 }
 
+// Moves this suite's own mystery back into the expired RESOLVING window right
+// before a worker invocation, so the scoped worker finalizes it. Only this
+// suite's ID is touched, keeping the call deterministic under parallel workers.
+async function expireResolvingMystery(): Promise<void> {
+  await queryOLTP(
+    `UPDATE mysteries
+        SET status = 'RESOLVING',
+            expires_at = NOW() - INTERVAL '10 minutes'
+      WHERE id = $1`,
+    [MYSTERY_ID]
+  );
+}
+
 describe('OLAP Leaderboard Simulation', () => {
   beforeAll(async () => {
     createdUserIds = [];
     await applyMigration('017_mystery_state.sql');
     await applyMigration('021_leaderboards.sql');
 
-    // 1. Ensure the mystery exists in RESOLVING status with
-    //    expires_at well in the past so the worker picks it up.
+    // 1. Ensure the mystery exists in RESOLVING status. It is seeded
+    //    **non-expired** so a concurrent (filterless) worker sweep from a
+    //    sibling test can never finalize it mid-seed. The suite itself expires
+    //    it (owns only its own ID) immediately before the scoped worker call —
+    //    see the per-test `expireResolvingMystery` helper below.
     await queryOLTP(
       `INSERT INTO mysteries (id, title, description, status, expires_at)
-       VALUES ($1, 'Test Old Town Leak', 'Simulation test mystery', 'RESOLVING', NOW() - INTERVAL '10 minutes')
+       VALUES ($1, 'Test Old Town Leak', 'Simulation test mystery', 'RESOLVING', NOW() + INTERVAL '1 hour')
        ON CONFLICT (id) DO UPDATE SET
          status = 'RESOLVING',
-         expires_at = NOW() - INTERVAL '10 minutes'`,
+         expires_at = NOW() + INTERVAL '1 hour'`,
       [MYSTERY_ID]
     );
 
@@ -176,8 +195,11 @@ describe('OLAP Leaderboard Simulation', () => {
   });
 
   test('Leaderboard accurately ranks players by TB spent, then Delta Time', async () => {
-    // 4. Force the Batch Worker to run
-    await LeaderboardWorker.processExpiredMysteries();
+    // 4. Force the Batch Worker to run, scoped to this suite's mystery. The
+    //    mystery is deliberately expired right before the call so the scoped
+    //    worker finalizes it; a sibling worker invocation can never interfere.
+    await expireResolvingMystery();
+    await LeaderboardWorker.processExpiredMysteries([MYSTERY_ID]);
 
     // 5. Assert Rankings from the OLTP Leaderboard table
     const { rows } = await queryOLTP<{
@@ -241,7 +263,7 @@ describe('OLAP Leaderboard Simulation', () => {
       [MYSTERY_ID]
     );
 
-    await LeaderboardWorker.processExpiredMysteries();
+    await LeaderboardWorker.processExpiredMysteries([MYSTERY_ID]);
 
     const afterCount = await queryOLTP<{ count: string }>(
       `SELECT COUNT(*)::text AS count FROM leaderboards WHERE mystery_id = $1`,

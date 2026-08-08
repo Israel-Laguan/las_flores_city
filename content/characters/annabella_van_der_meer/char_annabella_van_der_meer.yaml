@@ -11,3 +11,6 @@ metadata:
 lore_path: annabella_van_der_meer.md
 asset_paths:
   portrait: annabella_van_der_meer__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/annabella_van_der_meer/annabella_van_der_meer__default.png
+    label: dev

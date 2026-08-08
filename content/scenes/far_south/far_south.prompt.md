@@ -9,10 +9,6 @@ consumer: background
 
 # Prompt: Far South Outskirts
 
-[CONSUMER: background]
-**Type:** background
-**Source:** far_south.md
-**Target field:** `background_urls[].url` / `asset_paths.background` in .../scene_far_south.yaml
 **Tool:** NIM (draft) → Flux/Seedance (refine)
 
 ## Prompt (Draft)

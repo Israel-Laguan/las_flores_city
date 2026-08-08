@@ -18,3 +18,6 @@ metadata:
 lore_path: valentina_quan.md
 asset_paths:
   portrait: valentina_quan__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/valentina_quan/valentina_quan__default.png
+    label: dev

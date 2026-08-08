@@ -11,3 +11,6 @@ asset_paths:
   portrait: isabella_garcia__default.png
 
 lore_path: isabella_garcia.md
+portrait_urls:
+  - url: s3://las-flores/portraits/isabella_garcia/isabella_garcia__default.png
+    label: dev

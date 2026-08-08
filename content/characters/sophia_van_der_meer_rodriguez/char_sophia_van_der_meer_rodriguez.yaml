@@ -20,3 +20,6 @@ metadata:
 lore_path: sophia_van_der_meer_rodriguez.md
 asset_paths:
   portrait: sophia_van_der_meer_rodriguez__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/sophia_van_der_meer_rodriguez/sophia_van_der_meer_rodriguez__default.png
+    label: dev

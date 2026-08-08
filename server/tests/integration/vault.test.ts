@@ -7,6 +7,7 @@ import path from 'path';
 import pg from 'pg';
 import * as yaml from 'js-yaml';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
@@ -17,7 +18,7 @@ const { Pool } = pg;
 
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000088';
 const WELCOME_DIALOGUE_ID = '550e8400-e29b-41d4-a716-446655440003';
-const ARRIVAL_TICKET_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+const ARRIVAL_TICKET_ID = '11111111-2222-4333-8444-555555550001';
 const PREMIUM_CG_ID = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
 
 const app = express();
@@ -44,7 +45,9 @@ async function applyMigration(pool: pg.Pool, filename: string) {
     'utf-8'
   );
   try {
-    await pool.query(sql);
+    await withSchemaLock(async () => {
+      await pool.query(sql);
+    });
   } catch {
     // Migration may already be applied
   }
@@ -184,7 +187,7 @@ describe('Vault API', () => {
     expect(chooseRes.status).toBe(200);
     expect(chooseData.success).toBe(true);
     expect(chooseData.data.unlocked_vault_item).toEqual({
-      id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+      id: ARRIVAL_TICKET_ID,
       title: 'Arrival Ticket Stub',
     });
 
@@ -192,7 +195,7 @@ describe('Vault API', () => {
     const vaultData = await vaultRes.json();
 
     expect(vaultData.data).toHaveLength(1);
-    expect(vaultData.data[0].id).toBe('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
+    expect(vaultData.data[0].id).toBe(ARRIVAL_TICKET_ID);
     expect(vaultData.data[0].thumbnailUrl).toBe('https://cdn.lasflores2077.com/vault/thumb_arrival_ticket.png');
     expect(vaultData.data[0].mediaPath).toBe('/vault/arrival_ticket.png');
   });
@@ -298,7 +301,7 @@ describe('Vault API', () => {
 
     if (events.rows.length > 0) {
       expect(events.rows[0].event_type).toBe('vault_item_unlocked');
-      expect(events.rows[0].event_data.itemId).toBe('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
+      expect(events.rows[0].event_data.itemId).toBe(ARRIVAL_TICKET_ID);
     }
   });
 });

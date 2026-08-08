@@ -1,0 +1,127 @@
+id: "f1000000-0000-0000-0000-000000000004"
+name: "Camila Santander - Midpoint Hangout"
+description: "A quiet moment by the campfire where Camila's facade drops and the player learns about her true motivations."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+dialogue_scope: "character"
+start_node_id: "hangout_node_1"
+nodes:
+  hangout_node_1:
+    id: "hangout_node_1"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Forty-five... fifty... fifty-five thousand. Not a bad haul for the week, considering we had to reroute three tours around those developer drones."
+    thought: "(Expression: calculating. She is sitting by a campfire outside her half-built rural lodge, flipping through a stack of physical cash. The charismatic 'tour guide' smile is completely gone.)"
+    choices:
+      - id: "ask_about_money"
+        text: "You really keep track of every credit, don't you?"
+        next_node_id: "hangout_node_2"
+      - id: "ask_about_facade"
+        text: "It's weird seeing you without the giant fake smile."
+        next_node_id: "hangout_node_2"
+
+  hangout_node_2:
+    id: "hangout_node_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "The smile is for paying customers. You're not a customer. And yes, I track the money. Because money is the only thing in this city that doesn't lie to you."
+    thought: "(Expression: vulnerable. She doesn't look up from the cash. For a moment, the guarded, misanthropic wall cracks just a fraction.)"
+    choices:
+      - id: "dig_deeper"
+        text: "Who lied to you to make you this cynical?"
+        next_node_id: "hangout_node_3"
+      - id: "agree_cynical"
+        text: "You're not wrong. Trust is a liability in Las Flores."
+        next_node_id: "hangout_node_3a"
+
+  hangout_node_3:
+    id: "hangout_node_3"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Everyone. My first business partner ran off with the seed money. The city council promised environmental protections and then sold our river rights to the highest bidder. People are just... exhausting. They always want something. Up here? The mountain doesn't want anything from me."
+    thought: "(Expression: sad. She finally looks at the player, the firelight catching the genuine exhaustion in her eyes.)"
+    choices:
+      - id: "push_romance"
+        text: "I'm up here, and I don't want anything from you. Just your company."
+        next_node_id: "hangout_node_lover"
+        relationship_change:
+          stat: "friendship"
+          amount: 3
+      - id: "push_friend"
+        text: "That's rough. But you don't have to fight the developers entirely alone."
+        next_node_id: "hangout_node_friend"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
+      - id: "push_tragic"
+        text: "If you hate people so much, why not just take the developers' buyout and disappear?"
+        next_node_id: "hangout_node_tragic"
+        relationship_change:
+          stat: "friendship"
+          amount: -1
+
+  hangout_node_3a:
+    id: "hangout_node_3a"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Exactly. That's why we work well together. We both know the score. You help me protect my territory, I cut you in. Clean, simple, no messy emotions."
+    thought: "(Expression: determined. She nods approvingly, locking her emotional walls back firmly in place.)"
+    choices:
+      - id: "push_friend_2"
+        text: "I've got your back. As a partner."
+        next_node_id: "hangout_node_friend"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
+      - id: "push_enemy"
+        text: "Just make sure my cut is always on time, or we'll have a problem."
+        next_node_id: "hangout_node_enemy"
+        relationship_change:
+          stat: "friendship"
+          amount: -4
+
+  hangout_node_lover:
+    id: "hangout_node_lover"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "You... really mean that, don't you? Careful. You're going to ruin my perfectly cultivated hatred for humanity if you keep talking like that."
+    thought: "(Expression: tender. She offers a small, entirely genuine smile, putting the money away.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_romanced: true
+
+  hangout_node_friend:
+    id: "hangout_node_friend"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "I appreciate that. Truly. It's nice to have someone watching my six out here for once."
+    thought: "(Expression: happy. A solid, grounded nod of respect. The foundation of a real partnership.)"
+    is_end: true
+
+  hangout_node_tragic:
+    id: "hangout_node_tragic"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "The buyout... yeah. Horizon offered me a blank check yesterday. It would be enough to buy a private island. Never have to deal with another tourist again. It's tempting. Very tempting."
+    thought: "(Expression: calculating. The seed of selling out takes root in her mind as she stares into the fire.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_sold_out: true
+
+  hangout_node_enemy:
+    id: "hangout_node_enemy"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Is that a threat? Because you really don't want to threaten me on my own mountain. Let's just stick to the arrangement."
+    thought: "(Expression: angry. Her eyes narrow into a cold glare. The fragile trust shatters instantly.)"
+    is_end: true
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_santander"
+    - "midpoint"
+    - "romance"

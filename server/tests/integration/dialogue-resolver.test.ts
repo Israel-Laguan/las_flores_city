@@ -4,6 +4,7 @@ import { getCache, invalidatePattern, closeRedis } from '../../src/database/redi
 import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 
@@ -113,7 +114,9 @@ describe('DialogueResolver', () => {
         'utf-8'
       );
       try {
-        await queryOLTP(sql);
+        await withSchemaLock(async () => {
+          await queryOLTP(sql);
+        });
       } catch {
         // Column may already exist
       }

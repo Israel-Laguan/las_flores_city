@@ -17,3 +17,6 @@ lore_path: ingrid_haugen.md
 narrative_path: ingrid_haugen.md
 asset_paths:
   portrait: ingrid_haugen__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/ingrid_haugen/ingrid_haugen__default.png
+    label: dev

@@ -3,6 +3,7 @@ import { closeRedis, invalidatePattern } from '../../src/database/redis.js';
 import { getDialogState } from '../../src/routes/dialogue-helpers.js';
 import fs from 'fs';
 import path from 'path';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import type { DialogueNode } from '@las-flores/shared';
 
 // ============================================================
@@ -76,7 +77,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch {
     // Column may already exist
   }

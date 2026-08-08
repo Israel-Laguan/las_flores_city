@@ -1,11 +1,29 @@
+---
+name: Sofia Mendoza
+type: portrait
+size: 832x1248
+source: content/characters/sofia_mendoza/sofia_mendoza.md
+target: `asset_paths.portrait` in `content/characters/sofia_mendoza/char_sofia_mendoza.yaml`
+consumer: portrait
+aspect_ratio: 2:3
+---
+
 # Prompt: Sofia Mendoza
 
-[CONSUMER: portrait]
-**Type:** portrait
-**Dimensions:** 832x1248
-
 ## Prompt — Base
-A young Latina woman, 18 years old, slightly olive skin, brown curly hair tied in a ponytail. Casual street clothes — not a uniform, wearing a worn canvas jacket with vintage hero comic books tucked inside. Quiet exhaustion and sadness in her expression, but forcing a small reassuring smile that doesn't quite reach her eyes. A stack of printed resumes and community organizing flyers beside a worn backpack. Warm golden light from a kitchen window in a modest working-class South American home, creating soft golden light mixed with cooler shadows. The background shows details of her family home: old refrigerator covered in magnets, worn tablecloth, school photos on the wall, a small television showing football commentary. She carries both the weight of her past (Camilo's death, her vigilante phase) and her hope for the future (community organizing, protecting her brother). The room feels lived-in but modest, with a sense of quiet tension underneath the domestic normality. Cinematic comic-book panel, modern colorful graphic novel style, vibrant colors with grounded realism, detailed expressive facial acting, natural asymmetry, DC/Marvel-quality illustration, hyper-detailed.
+A young Latina woman, 18, slightly olive skin, brown curly hair in a ponytail, casual street clothes—a worn canvas jacket with vintage hero comic books tucked inside. Quiet exhaustion, forcing a small smile that doesn't reach her eyes. Resumes and community flyers beside a worn backpack. Warm golden kitchen-window light in a modest working-class South American home; old refrigerator, worn tablecloth, a television showing football. She carries a past loss and hope for the future—community organizing, protecting her brother. Lived-in, quiet tension under normality. Cinematic comic-book panel, modern colorful graphic novel style, vibrant colors with grounded realism, natural asymmetry, DC/Marvel-quality illustration.
 
 ## Negative Prompt
---no androids, no robots, no cybernetic humans, no implants, no neural ports, no chrome, no extreme violence, no blood, no gore, no dismemberment, no guns, no modern day, no 2020s, no utopian, no pristine environments, no clean cityscapes, no oversaturated colors, no cartoonish, no anime, no fantasy elements, no magic, no supernatural, no glowing clothing, no holograms
+--no neon, no androids, no clean backgrounds, no anime, no cartoon, no text, no watermarks, no blurry, no low quality, no East Asian features, no Northern European features
+
+## Expression Variants
+
+- **`sofia_mendoza__default.png`**: Use the base portrait as reference. Quiet exhaustion, forcing a small smile that doesn't reach her eyes, looking at the camera, 3/4 take. Keep the same art style as reference, same canvas jacket and backpack, warm kitchen light. Clean confident linework, painterly soft shading, vibrant colors with grounded realism, natural asymmetry.
+
+- **`sofia_mendoza__determined.png`**: Use the base portrait as reference. Fierce, quiet resolve beneath the exhaustion, looking directly at the camera, 3/4 take. Eyes sharp and focused, jaw set, mouth firm. Keep the same art style as reference, same canvas jacket and backpack, warm kitchen light. Clean confident linework, painterly soft shading, vibrant colors with grounded realism.
+
+- **`sofia_mendoza__contemplative.png`**: Use the base portrait as reference. A quiet moment of reflection, looking at the camera, 3/4 take. Eyes softening into the middle distance, lips relaxed, the small smile fading. Keep the same art style as reference, same canvas jacket and backpack, warm kitchen light. Clean confident linework, painterly soft shading, vibrant colors with grounded realism.
+
+- **`sofia_mendoza__happy.png`**: Use the base portrait as reference. A real, tired but genuine smile, looking at the camera, 3/4 take. Eyes brightening with warmth, cheeks lifting, the exhaustion easing for a moment. Keep the same art style as reference, same canvas jacket and backpack, warm kitchen light. Clean confident linework, painterly soft shading, vibrant colors with grounded realism.
+
+- **`sofia_mendoza__sad.png`**: Use the base portrait as reference. A quiet, contained grief, looking slightly down, 3/4 take. Eyes dimmed and soft, brows drawn, lips pressed gently. Keep the same art style as reference, same canvas jacket and backpack, warm kitchen light. Clean confident linework, painterly soft shading, vibrant colors with grounded realism.

@@ -11,3 +11,6 @@ metadata:
 lore_path: isadora_morales.md
 asset_paths:
   portrait: isadora_morales__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/isadora_morales/isadora_morales__default.png
+    label: dev

@@ -1,0 +1,62 @@
+id: "c1110000-0000-0000-0000-000000000030"
+name: "Ana Villanueva - Endings"
+description: "The final resolution of Ana's relationship arc after the main investigation is complete."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+dialogue_scope: "character"
+start_node_id: "c1110000-0000-0000-0000-000000000031"
+nodes:
+  c1110000-0000-0000-0000-000000000031:
+    id: "c1110000-0000-0000-0000-000000000031"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "The data has been published. The arrests are happening as we speak. It's over."
+    thought: "(Expression: default. The culmination of the entire game's investigation. Her reaction depends entirely on the player's past choices.)"
+    choices:
+      - id: "trigger_lover"
+        text: "[Trigger Lover Ending: You confronted her flaw and protected her.]"
+        next_node_id: "c1110000-0000-0000-0000-000000000032"
+      - id: "trigger_friend"
+        text: "[Trigger Friend Ending: You maintained a steady, professional relationship.]"
+        next_node_id: "c1110000-0000-0000-0000-000000000033"
+      - id: "trigger_ex"
+        text: "[Trigger Ex/Tragic Ending: You used her cover for a quick win.]"
+        next_node_id: "c1110000-0000-0000-0000-000000000034"
+      - id: "trigger_enemy"
+        text: "[Trigger Enemy Ending: You blocked her investigation to protect a faction.]"
+        next_node_id: "c1110000-0000-0000-0000-000000000035"
+
+  c1110000-0000-0000-0000-000000000032:
+    id: "c1110000-0000-0000-0000-000000000032"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "I sent a draft of the follow-up piece to your secure drive. I... actually put my real name on this one. And yours. I wrote about what you did for Beto. What you did for me."
+    thought: "(Expression: happy. The Lover Ending. She has dropped her armor entirely. The player wakes to find she has finally stepped out of the shadows, and brought them with her.)"
+    choices:
+      - id: "lover_end"
+        text: "I can't wait to read it."
+        next_node_id: "END"
+
+  c1110000-0000-0000-0000-000000000033:
+    id: "c1110000-0000-0000-0000-000000000033"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "The article dropped under a pseudonym, but Lina Kim is verifying it publicly. We did good work. You're a good source. Don't get yourself killed on the next one."
+    thought: "(Expression: determined. The Friend Ending. A solid, respectful conclusion. She remains in the shadows, but considers the player a trusted ally.)"
+    is_end: true
+
+  c1110000-0000-0000-0000-000000000034:
+    id: "c1110000-0000-0000-0000-000000000034"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "I survived the raid, no thanks to you acting early. The investigation is burnt. I'm leaving for the north tonight. Don't contact me again."
+    thought: "(Expression: sad. The Ex/Tragic Ending. The player burned her cover for a short-term win. She offers precise, undramatic closure and leaves the city.)"
+    is_end: true
+
+  c1110000-0000-0000-0000-000000000035:
+    id: "c1110000-0000-0000-0000-000000000035"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "You think you buried it. But I published the account anyway. Your name is in the third paragraph. You made your choice, now live with it."
+    thought: "(Expression: angry. The Enemy Ending. She caught the player protecting the corrupt factions. She destroys them with meticulous, fair journalism.)"
+    is_end: true

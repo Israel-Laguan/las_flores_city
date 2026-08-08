@@ -22,3 +22,6 @@ metadata:
 lore_path: evelyn_ruthenberg.md
 asset_paths:
   portrait: evelyn_ruthenberg__default.png
+portrait_urls:
+  - url: s3://las-flores/portraits/evelyn_ruthenberg/evelyn_ruthenberg__default.png
+    label: dev
