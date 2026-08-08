@@ -28,19 +28,19 @@ nodes:
         text: "You're right. Beto knew the risks. Let's take the servers."
         next_node_id: "c1110000-0000-0000-0000-000000000023"
         relationship_change:
-          stat: "trust_level"
+          stat: "friendship"
           amount: 5
       - id: "angry_reject"
         text: "You're a monster, Ana. I'm going to the docks. You can rot."
         next_node_id: "c1110000-0000-0000-0000-000000000024"
         relationship_change:
-          stat: "trust_level"
+          stat: "friendship"
           amount: -10
       - id: "confront_flaw"
         text: "Stop doing that. Stop treating people like math problems because you're terrified of losing them. We can hit the servers after we get him out."
         next_node_id: "c1110000-0000-0000-0000-000000000025"
         relationship_change:
-          stat: "romanced_status"
+          stat: "romance"
           amount: 1
 
   c1110000-0000-0000-0000-000000000023:
@@ -49,10 +49,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "Good. I'm glad we're on the same page. Let's move."
     thought: "(Expression: determined. She respects the player's pragmatism, but the player has missed the chance to heal her core flaw. This locks out the Lover ending.)"
-    choices:
-      - id: "leave_servers"
-        text: "[Leave for the servers]"
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000024:
     id: "c1110000-0000-0000-0000-000000000024"
@@ -60,10 +57,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "Do what you want. But if you get caught, I will burn your files and deny I ever knew you."
     thought: "(Expression: angry. She is furious that the player is letting emotion ruin the operation. Path to Enemy/Ex ending initiated.)"
-    choices:
-      - id: "leave_angry"
-        text: "[Leave for the docks alone]"
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000025:
     id: "c1110000-0000-0000-0000-000000000025"
@@ -93,7 +87,4 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "...Alright. I have the security patrol schedules for the docks. Give me two minutes to slice their comms."
     thought: "(Expression: tender. A profound shift. She realizes the player is reliable in a way she hasn't experienced in years. Lover/Friend path secured.)"
-    choices:
-      - id: "leave_together"
-        text: "[Leave for the docks together]"
-        next_node_id: "END"
+    is_end: true

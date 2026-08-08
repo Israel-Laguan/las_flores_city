@@ -47,9 +47,15 @@ nodes:
       - id: "hack_drone"
         text: "[Hack the drone's navigation protocol to send it crashing into the trees.]"
         next_node_id: "intro_node_trust_gained"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
       - id: "throw_rock"
         text: "[Pick up a heavy rock and smash the drone out of the air.]"
         next_node_id: "intro_node_trust_gained"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
       - id: "ignore_drone"
         text: "That sucks. Well, I should probably head back down to the city."
         next_node_id: "intro_node_part_ways"
@@ -65,9 +71,6 @@ nodes:
       flag_set:
         camila_intro_complete: true
         camila_quest_sabotage_active: true
-      relationship_change:
-        stat: "trust"
-        amount: 2
       story_beat: act1_camila_sabotage_started
 
   intro_node_part_ways:

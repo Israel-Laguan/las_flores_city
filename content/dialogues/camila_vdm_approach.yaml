@@ -29,6 +29,9 @@ nodes:
       - id: "vdm_warn_camila"
         text: "[WARN CAMILA] You just made a mistake telling me this."
         next_node_id: "f0000000-0000-0000-0000-000000000045"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
 
   f0000000-0000-0000-0000-000000000043:
     id: "f0000000-0000-0000-0000-000000000043"
@@ -74,9 +77,6 @@ nodes:
         vdm_approach_complete: true
         vdm_offer_reported: true
         camila_trust_bonus: true
-      relationship_change:
-        stat: "trust"
-        amount: 2
       story_beat: act1c_vdm_approach_reported
 
 metadata:

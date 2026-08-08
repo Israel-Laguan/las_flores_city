@@ -44,12 +44,21 @@ nodes:
       - id: "push_romance"
         text: "I'm up here, and I don't want anything from you. Just your company."
         next_node_id: "hangout_node_lover"
+        relationship_change:
+          stat: "friendship"
+          amount: 3
       - id: "push_friend"
         text: "That's rough. But you don't have to fight the developers entirely alone."
         next_node_id: "hangout_node_friend"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
       - id: "push_tragic"
         text: "If you hate people so much, why not just take the developers' buyout and disappear?"
         next_node_id: "hangout_node_tragic"
+        relationship_change:
+          stat: "friendship"
+          amount: -1
 
   hangout_node_3a:
     id: "hangout_node_3a"
@@ -61,9 +70,15 @@ nodes:
       - id: "push_friend_2"
         text: "I've got your back. As a partner."
         next_node_id: "hangout_node_friend"
+        relationship_change:
+          stat: "friendship"
+          amount: 2
       - id: "push_enemy"
         text: "Just make sure my cut is always on time, or we'll have a problem."
         next_node_id: "hangout_node_enemy"
+        relationship_change:
+          stat: "friendship"
+          amount: -4
 
   hangout_node_lover:
     id: "hangout_node_lover"
@@ -75,9 +90,6 @@ nodes:
     effects:
       flag_set:
         camila_romanced: true
-      relationship_change:
-        stat: "trust"
-        amount: 3
 
   hangout_node_friend:
     id: "hangout_node_friend"
@@ -86,10 +98,6 @@ nodes:
     text: "I appreciate that. Truly. It's nice to have someone watching my six out here for once."
     thought: "(Expression: happy. A solid, grounded nod of respect. The foundation of a real partnership.)"
     is_end: true
-    effects:
-      relationship_change:
-        stat: "friendship"
-        amount: 2
 
   hangout_node_tragic:
     id: "hangout_node_tragic"
@@ -101,9 +109,6 @@ nodes:
     effects:
       flag_set:
         camila_sold_out: true
-      relationship_change:
-        stat: "friendship"
-        amount: -1
 
   hangout_node_enemy:
     id: "hangout_node_enemy"
@@ -112,10 +117,6 @@ nodes:
     text: "Is that a threat? Because you really don't want to threaten me on my own mountain. Let's just stick to the arrangement."
     thought: "(Expression: angry. Her eyes narrow into a cold glare. The fragile trust shatters instantly.)"
     is_end: true
-    effects:
-      relationship_change:
-        stat: "trust"
-        amount: -4
 
 metadata:
   version: "1.0"

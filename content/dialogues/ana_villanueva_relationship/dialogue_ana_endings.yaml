@@ -43,10 +43,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "The article dropped under a pseudonym, but Lina Kim is verifying it publicly. We did good work. You're a good source. Don't get yourself killed on the next one."
     thought: "(Expression: determined. The Friend Ending. A solid, respectful conclusion. She remains in the shadows, but considers the player a trusted ally.)"
-    choices:
-      - id: "friend_end"
-        text: "You too, Ana."
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000034:
     id: "c1110000-0000-0000-0000-000000000034"
@@ -54,10 +51,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "I survived the raid, no thanks to you acting early. The investigation is burnt. I'm leaving for the north tonight. Don't contact me again."
     thought: "(Expression: sad. The Ex/Tragic Ending. The player burned her cover for a short-term win. She offers precise, undramatic closure and leaves the city.)"
-    choices:
-      - id: "ex_end"
-        text: "I'm sorry, Ana."
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000035:
     id: "c1110000-0000-0000-0000-000000000035"
@@ -65,7 +59,4 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "You think you buried it. But I published the account anyway. Your name is in the third paragraph. You made your choice, now live with it."
     thought: "(Expression: angry. The Enemy Ending. She caught the player protecting the corrupt factions. She destroys them with meticulous, fair journalism.)"
-    choices:
-      - id: "enemy_end"
-        text: "You shouldn't have done that."
-        next_node_id: "END"
+    is_end: true

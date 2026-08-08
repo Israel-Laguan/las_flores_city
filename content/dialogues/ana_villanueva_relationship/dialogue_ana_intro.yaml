@@ -26,10 +26,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "Down the hall, take a left. They close in twenty minutes."
     thought: "(Expression: default. She dismisses the player immediately, returning her focus to the screen.)"
-    choices:
-      - id: "leave"
-        text: "[Leave]"
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000003:
     id: "c1110000-0000-0000-0000-000000000003"
@@ -48,7 +45,7 @@ nodes:
         text: "Gas leaks don't selectively fry security camera feeds three blocks away. Someone was scrubbing a server farm, and the explosion was just the cover."
         next_node_id: "c1110000-0000-0000-0000-000000000007"
         relationship_change:
-          stat: "trust_level"
+          stat: "friendship"
           amount: 5
 
   c1110000-0000-0000-0000-000000000005:
@@ -57,10 +54,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "I'm sure the mayor's office will issue a very sternly worded statement. If you'll excuse me, I really need to finish this reading."
     thought: "(Expression: default. She writes the player off as dangerously naive. Amateurs who want to be heroes get themselves killed.)"
-    choices:
-      - id: "leave_heroic"
-        text: "[Leave]"
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000006:
     id: "c1110000-0000-0000-0000-000000000006"
@@ -68,10 +62,7 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "Right. Excuse me, I need to get back to my work."
     thought: "(Expression: default. She writes the player off as apathetic and useless. She turns up the volume on her earbud to end the conversation.)"
-    choices:
-      - id: "leave_apathetic"
-        text: "[Leave]"
-        next_node_id: "END"
+    is_end: true
 
   c1110000-0000-0000-0000-000000000007:
     id: "c1110000-0000-0000-0000-000000000007"
@@ -112,7 +103,4 @@ nodes:
     speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
     text: "Proof. Names. The actual architecture of who runs what in Las Flores, stripped of the PR. I build cases. You're going to help me finish one. Bring me the drives, and I'll share what I find."
     thought: "(Expression: default. She opens her laptop again, slipping back into her cover identity. The deal is struck.)"
-    choices:
-      - id: "agree_and_leave"
-        text: "I'll get the drives."
-        next_node_id: "END"
+    is_end: true

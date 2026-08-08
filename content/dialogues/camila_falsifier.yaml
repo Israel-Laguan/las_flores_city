@@ -50,13 +50,14 @@ nodes:
 
   f0000000-0000-0000-0000-000000000025:
     id: "f0000000-0000-0000-0000-000000000025"
-    type: "player"
+    type: "choice"
+    text: "[Player]: How do you want to handle the falsifier?"
     choices:
       - id: "vouch_for_her"
         text: "She won't be a problem. Name your price."
         next_node_id: "f0000000-0000-0000-0000-000000000026"
         relationship_change:
-          stat: "trust"
+          stat: "friendship"
           amount: 1
       - id: "honest_about_her"
         text: "She has a point though. She's going to be nervous. Can you guarantee a clean job?"
