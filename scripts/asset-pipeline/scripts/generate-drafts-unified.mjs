@@ -207,15 +207,43 @@ function parsePromptFile(filePath) {
   const { type, width, height } = extractTypeAndSize(content);
   const resolved = pickSupportedResolution(width, height);
 
-  const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
-  let match;
-  while ((match = promptRegex.exec(content)) !== null) {
-    const variantName = match[1].trim();
-    const promptText = match[2].trim();
-    const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
-    const negativeText = negMatch ? negMatch[1].trim() : '';
-    if (promptText) {
-      results.push({ variantName, promptText, negativeText, type, width: resolved.width, height: resolved.height });
+  // 1. Expression Variants (authoritative for character portraits).
+  //    Supports both bullet filename forms:
+  //      - **`<slug>__<expression>.png`**: <text>   (e.g. peter_van_der_meer__default.png)
+  //      - **`__<expression>.png`**: <text>          (e.g. __default.png)
+  //    Variant name = expression tag (segment after the last "__").
+  const seenVariants = new Set();
+  const exprMatch = content.match(/## Expression Variants\n([\s\S]*?)(?=##|$)/);
+  if (exprMatch) {
+    const exprText = exprMatch[1];
+    const listItemRegex = /-\s*\*\*`([^`]+\.png)`\*\*:\s*(.*)/g;
+    let liMatch;
+    const globalNegMatch = content.match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
+    const negativeText = globalNegMatch ? globalNegMatch[1].trim() : '';
+    while ((liMatch = listItemRegex.exec(exprText)) !== null) {
+      const fileName = liMatch[1].trim();
+      const promptText = liMatch[2].trim();
+      const variantName = fileName.replace(/\.png$/i, '').split('__').pop().trim();
+      if (!seenVariants.has(variantName) && promptText) {
+        results.push({ variantName, promptText, negativeText, type, width: resolved.width, height: resolved.height });
+        seenVariants.add(variantName);
+      }
+    }
+  }
+
+  // 2. Named variants (## Prompt — <Variant Name>) — only when no Expression
+  //    Variants were found (expression bullets are the authoritative image list).
+  if (results.length === 0) {
+    const promptRegex = /## Prompt — ([^\n]+)\n([\s\S]*?)(?=## Prompt — |## Negative Prompt\n|$)/g;
+    let match;
+    while ((match = promptRegex.exec(content)) !== null) {
+      const variantName = match[1].trim();
+      const promptText = match[2].trim();
+      const negMatch = content.slice(match.index + match[0].length).match(/## Negative Prompt\n([\s\S]*?)(?=\n#{2,3}\s|$)/);
+      const negativeText = negMatch ? negMatch[1].trim() : '';
+      if (promptText) {
+        results.push({ variantName, promptText, negativeText, type, width: resolved.width, height: resolved.height });
+      }
     }
   }
 

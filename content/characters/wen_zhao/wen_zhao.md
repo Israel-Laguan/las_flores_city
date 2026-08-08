@@ -4,30 +4,30 @@
 >
 > **Age:** Early 20s
 > **Origin:** Las Flores (Chinese immigrant family)
-> **Role:** University business student — Layla's confidante in the double life
+> **Role:** University business student — Layla's confidante turned rival
 > **Status:** Active
 
 ## Physical Description
 - Hair: Sleek black hair, usually in a high ponytail
 - Face: Sharp, angular jawline; confident, sometimes intimidating expression
-- Build: Trendy, chic, modern — high-fashion mixed with streetwear at school
-- Distinguishing features: At university she dresses for attention; the moment she is home she changes into the modest clothing her parents expect. The swap is ritual.
+- Build: Trendy, provocative, modern — where Layla dresses modestly even in her rebellion, Wen deliberately goes the high-exposure, provocative route when free to wear what she wants.
+- Distinguishing features: At university she dresses for maximum attention and defiance; the moment she is home she changes into the modest clothing her parents expect. The swap is ritual, but she resents it more every day.
 
 ## Overview
 
-Wen Zhao is the daughter of strict Chinese immigrants in the northern district, where the Arab and Chinese diasporas live side by side under a shared culture of watchful reputation. Like Layla Al-Rashid, Wen performs the flawless obedient daughter at home and experiments with a freer self at university. Unlike Layla, Wen has decided she is the *experienced* one — the friend who knows how this works. She does not. Both girls are quoting freedom from films.
+Wen Zhao is the daughter of strict Chinese immigrants in the northern district. Like Layla Al-Rashid, Wen performs the obedient daughter at home, but her rebellion is far more aggressive. She is obsessed with the idea of having "a boyfriend" — not for marriage or long-term commitment, but to feel the thrill of a high-octane, movie-style romance. She wants the drama, the sneaking around, and the reckless passion she sees on screen, and she actively compels the player to act just as recklessly.
 
 ## Family
 
-Wen's parents are strict in the Chinese-community register: grades first, modesty, curfew, no questions about where she really goes after class. Reputation before the aunties is everything. Wen has learned to smile, nod, and lie smoothly. The lying is easy; the loneliness of it is not.
+Wen's parents are strict in the Chinese-community register: grades first, modesty, curfew, reputation before the aunties. But Wen's grip on obedience is slipping. She has started defying her family, even going so far as to openly yell at her mother. The only person who still holds any real control over her is her father; his presence alone is enough to temporarily force her back into the "good daughter" mold.
 
-## Relationship with Layla
+## Relationship with Layla & The Betrayal
 
-Wen is Layla's closest ally in the double life. They met at university and recognized each other instantly — two "good daughters" who sweat the same secrets. Wen encourages Layla's flirting and rebellion, frames it as empowerment, and sometimes pushes her further than Layla is ready for. She is loyal in private, competitive in public, and the one Layla texts when something with the player goes wrong. Beneath the surface, there's a quiet tension: Layla's relationship with the player is both a shared secret and, in some small way, a competition. Wen doesn't realize she's part of the performance.
+Initially, Wen is Layla's closest ally, encouraging Layla's flirting and framing it as empowerment. However, Wen's support is fundamentally selfish. She views Layla's relationship with the player as a movie she wants to star in. If given the chance, Wen will drop the supportive mask and actively manipulate Layla into supporting *her* pursuit of the player, eventually abandoning or using Layla to achieve her own goals. To Wen, stealing her friend's ex isn't a betrayal; it's just the ultimate dramatic plot twist.
 
 ## The Performance
 
-Wen's confidence is a costume, same as Layla's. She mistakes boldness for maturity and treats the player as part of the game. But under the sharp tongue she is as unsure as Layla — and far more afraid of what her parents would do if they knew.
+Wen's confidence is a costume built entirely out of cinematic tropes. She doesn't want a real, grounded relationship; she wants a performance. She pushes the player into reckless, high-adrenaline situations (sneaking into off-limits places, dangerous public affection) because that's what "real" love looks like in her head. She mistakes danger and drama for passion, deeply disconnected from the actual consequences of her actions.
 
 ## Related Lore
-- [Layla Al-Rashid](../layla_al_rashid/layla_al_rashid.md) — her friend and double-life accomplice
+- [Layla Al-Rashid](../layla_al_rashid/layla_al_rashid.md) — her friend and eventual target of manipulation

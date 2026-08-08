@@ -1,0 +1,124 @@
+id: "f1000000-0000-0000-0000-000000000005"
+name: "Camila Santander - The Spree"
+description: "A night of vandalism and legal trickery against the developers, during which Camila reveals more of her misanthropy."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+dialogue_scope: "character"
+start_node_id: "spree_node_1"
+nodes:
+  spree_node_1:
+    id: "spree_node_1"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Okay, first stop on the itinerary. Horizon put up these official 'Trail Closed' signs to redirect hikers away from their construction zone. Grab that wrench. We're moving the signs so they point directly into the Blackwood ravine."
+    thought: "(Expression: calculating. She is wearing a dark fleece and a headlamp, looking over a map of the trails.)"
+    choices:
+      - id: "ask_about_hikers"
+        text: "Wait, won't hikers get lost if we point the signs into the ravine?"
+        next_node_id: "spree_node_2a"
+      - id: "agree_enthusiastic"
+        text: "Brilliant. They'll waste weeks trying to find their own site."
+        next_node_id: "spree_node_2b"
+
+  spree_node_2a:
+    id: "spree_node_2a"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "If people are stupid enough to blindly follow a piece of plastic without checking a topo map, they deserve to spend the night in a ravine. It's called natural selection. Don't worry, my company will charge them double for the rescue operation tomorrow."
+    thought: "(Expression: happy. She laughs, genuinely amused by the idea of profiting off the gullibility of tourists.)"
+    choices:
+      - id: "call_out_ruthless"
+        text: "You are absolutely ruthless."
+        next_node_id: "spree_node_3"
+      - id: "agree_natural_selection"
+        text: "Fair enough. Let's move the signs."
+        next_node_id: "spree_node_3"
+
+  spree_node_2b:
+    id: "spree_node_2b"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Exactly. The surveyors will follow the signs, get lost, and have to call for emergency evac. And guess whose tourism company holds the exclusive contract for mountain rescues? We hit their timeline, and I get paid to save them."
+    thought: "(Expression: calculating -> happy. She taps her temple, proud of her double-dipping scheme.)"
+    choices:
+      - id: "praise_genius"
+        text: "That is genuinely evil genius level."
+        next_node_id: "spree_node_3"
+        relationship_change:
+          stat: "friendship"
+          amount: 1
+
+  spree_node_3:
+    id: "spree_node_3"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Alright, signs are swapped. Next up: we're 'legally' surveying their generator. Which is to say, we're pouring an entire bag of raw sugar into the fuel tank. Hand me the bag."
+    thought: "(Expression: determined. She moves efficiently through the dark trail, completely in her element.)"
+    choices:
+      - id: "ask_about_workers"
+        text: "What about the crew? They're just wage workers trying to make a living."
+        next_node_id: "spree_node_4"
+      - id: "hand_sugar"
+        text: "Here. Let's ruin some heavy machinery."
+        next_node_id: "spree_node_5"
+
+  spree_node_4:
+    id: "spree_node_4"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Wage workers who agreed to pave over my livelihood. Everyone in this world is out for themselves. The sooner you realize people only care about their own paycheck, the less you'll pity them when you have to take it away to protect your own."
+    thought: "(Expression: angry. Her voice hardens. This is her core misanthropy showing—she views every human interaction as a zero-sum game.)"
+    choices:
+      - id: "push_back"
+        text: "Not everyone is like that, Camila."
+        next_node_id: "spree_node_5_soft"
+      - id: "agree_cynical"
+        text: "You're right. It's us or them."
+        next_node_id: "spree_node_5_hard"
+
+  spree_node_5:
+    id: "spree_node_5"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "There. Engine is bricked. And look at this—we're done early. No one around for miles. Just the wind and the trees. Perfect."
+    thought: "(Expression: relaxed. She dusts off her hands, taking a deep breath of the cold mountain air, visibly more at peace than she ever is in the city.)"
+    is_end: true
+    effects:
+      relationship_change:
+        stat: "trust"
+        amount: 2
+      story_beat: act2_camila_spree_complete
+
+  spree_node_5_soft:
+    id: "spree_node_5_soft"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Maybe. But I'm not taking any chances. Anyway... the engine is bricked. Listen. No machines, no talking. Just the wind. This is why I do this. This is all I care about."
+    thought: "(Expression: sad -> tender. The anger fades, replaced by a quiet vulnerability as she listens to the silence of the mountain.)"
+    is_end: true
+    effects:
+      relationship_change:
+        stat: "friendship"
+        amount: 1
+      story_beat: act2_camila_spree_complete
+
+  spree_node_5_hard:
+    id: "spree_node_5_hard"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Exactly. The engine is bricked. And we get to enjoy the quiet. No machines, no people. Just us and the mountain. I knew you'd understand."
+    thought: "(Expression: happy. She gives the player a genuine smile of camaraderie, feeling validated in her ruthless worldview.)"
+    is_end: true
+    effects:
+      relationship_change:
+        stat: "trust"
+        amount: 2
+      story_beat: act2_camila_spree_complete
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_santander"
+    - "vandalism"
+    - "spree"

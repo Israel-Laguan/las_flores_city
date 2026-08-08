@@ -32,6 +32,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { execSync } from 'node:child_process';
 
 // ── Config / constants ──────────────────────────────────────────────────────
@@ -51,7 +52,27 @@ const NIM_TIMEOUT_MS = 60000;
 const MIN_FILE_SIZE = 5000;
 const DEFAULT_SIZE = { width: 1024, height: 1024 };
 
+// Hard prompt-length caps enforced by the providers. NIM (flux.2-klein-4b)
+// rejects anything over 800 characters with HTTP 422 string_too_long, and the
+// Pollinations URL-based API degrades on very long query strings.
+const NIM_PROMPT_LIMIT = 800;
+const POLLINATIONS_PROMPT_LIMIT = 2000;
+
 const AKOOL_SCALES = ['1:1', '4:3', '3:4', '16:9', '9:16', '3:2', '2:3'];
+
+/**
+ * Thrown when NIM rejects a prompt via its content guardrails
+ * (finishReason === 'CONTENT_FILTERED'). This is NOT retried — the prompt is
+ * inherently blocked, so retrying is pointless. The provider chain skips
+ * straight to the next provider (Akool, then Pollinations).
+ */
+export class NimContentFilteredError extends Error {
+  constructor(message = 'NIM content filtered (guardrails)') {
+    super(message);
+    this.name = 'NimContentFilteredError';
+    this.retryable = false;
+  }
+}
 // ── Small helpers ───────────────────────────────────────────────────────────
 
 function sleep(ms) {
@@ -88,6 +109,53 @@ function cleanNegativePrompt(text) {
   t = t.replace(/^--no\s+/, 'no ');
   t = t.replace(/^--no$/, 'no');
   return t.trim();
+}
+
+/** Truncate at a word boundary so we never cut a word in half. */
+function truncateAtWord(text, limit) {
+  if (text.length <= limit) return text;
+  const slice = text.slice(0, limit);
+  const cut = slice.lastIndexOf(' ');
+  return (cut > limit * 0.5 ? slice.slice(0, cut) : slice).trim();
+}
+
+/**
+ * Build a prompt that fits inside a provider's hard character limit.
+ *
+ * The positive prompt always takes priority: it carries the actual subject and
+ * is never sacrificed for the negative prompt. The appended "NO ..." clause is
+ * a refinement, so it is trimmed first, then dropped entirely, and only if the
+ * positive prompt alone still overflows do we truncate it (at a word boundary).
+ *
+ * Returns { prompt, negativeApplied, truncated } so callers can report what
+ * happened without silently changing the request.
+ */
+function fitPrompt(prompt, negativePrompt, limit) {
+  const base = (prompt || '').trim();
+  const cleaned = cleanNegativePrompt(negativePrompt);
+
+  if (!cleaned) {
+    const fitted = truncateAtWord(base, limit);
+    return { prompt: fitted, negativeApplied: false, truncated: fitted.length < base.length };
+  }
+
+  const suffix = `\n\nNO ${cleaned}`;
+  if (base.length + suffix.length <= limit) {
+    return { prompt: base + suffix, negativeApplied: true, truncated: false };
+  }
+
+  // Try to keep a shortened negative clause if a useful amount still fits.
+  const room = limit - base.length - '\n\nNO '.length;
+  if (room >= 24) {
+    const shortNeg = truncateAtWord(cleaned, room);
+    if (shortNeg) {
+      return { prompt: `${base}\n\nNO ${shortNeg}`, negativeApplied: true, truncated: true };
+    }
+  }
+
+  // Otherwise drop the negative prompt entirely, trimming the base if needed.
+  const fitted = truncateAtWord(base, limit);
+  return { prompt: fitted, negativeApplied: false, truncated: true };
 }
 
 function isErrorBuffer(buffer) {
@@ -167,9 +235,14 @@ async function generateNim(prompt, negativePrompt, width, height) {
   const apiKey = process.env.NVIDIA_API_KEY;
   if (!apiKey) throw new Error('NVIDIA_API_KEY not set');
 
-  const fullPrompt = negativePrompt
-    ? `${prompt}\n\nNO ${cleanNegativePrompt(negativePrompt)}`
-    : prompt;
+  const fitted = fitPrompt(prompt, negativePrompt, NIM_PROMPT_LIMIT);
+  const fullPrompt = fitted.prompt;
+  if (fitted.truncated || (negativePrompt && !fitted.negativeApplied)) {
+    console.warn(
+      `    nim: prompt trimmed to ${fullPrompt.length}/${NIM_PROMPT_LIMIT} chars`
+      + `${fitted.negativeApplied ? ' (negative shortened)' : ' (negative dropped)'}`,
+    );
+  }
 
   const payload = {
     prompt: fullPrompt,
@@ -204,7 +277,10 @@ async function generateNim(prompt, negativePrompt, width, height) {
       const artifact = body.artifacts?.[0];
 
       if (artifact?.finishReason === 'CONTENT_FILTERED') {
-        throw new Error('NIM content filtered');
+        // Guardrail rejection: do NOT retry — the prompt is blocked. Throw a
+        // non-retryable error so the provider chain moves to Akool, then
+        // Pollinations, immediately (no pointless NIM backoff/retries).
+        throw new NimContentFilteredError();
       }
 
       const b64 = artifact?.base64;
@@ -215,6 +291,11 @@ async function generateNim(prompt, negativePrompt, width, height) {
 
       return buffer;
     } catch (err) {
+      // Non-retryable errors (e.g. content guardrails) bail out immediately;
+      // all other errors are retried with backoff up to NIM_MAX_RETRIES.
+      if (err instanceof NimContentFilteredError || err.retryable === false) {
+        throw err;
+      }
       lastError = err;
       if (attempt >= NIM_MAX_RETRIES) break;
       await sleep(wait);
@@ -227,10 +308,25 @@ async function generateNim(prompt, negativePrompt, width, height) {
 // ── Provider: Akool (CLI) ───────────────────────────────────────────────────
 
 function isAkoolConfigured() {
-  return Boolean(
+  // Env vars take precedence (AKOOL_CLIENT_ID + AKOOL_CLIENT_SECRET, or AKOOL_API_KEY).
+  if (
     (process.env.AKOOL_CLIENT_ID && process.env.AKOOL_CLIENT_SECRET)
     || process.env.AKOOL_API_KEY
-  );
+  ) {
+    return true;
+  }
+
+  // The CLI stores login credentials in ~/.akool/config.json (via `akool-cli login`).
+  try {
+    const confPath = path.join(os.homedir(), '.akool', 'config.json');
+    if (fs.existsSync(confPath)) {
+      const conf = JSON.parse(fs.readFileSync(confPath, 'utf8'));
+      if (conf && (conf.clientId || conf.clientSecret || conf.apiKey)) return true;
+    }
+  } catch {
+    // fall through to false
+  }
+  return false;
 }
 
 /** Single-quote a string for safe shell interpolation. */
@@ -238,14 +334,64 @@ function shellQuote(s) {
   return `'${String(s).replace(/'/g, `'\\''`)}'`;
 }
 
-/** Pull the first complete JSON object out of mixed CLI output. */
+/**
+ * Pull a usable JSON object out of mixed akool-cli output.
+ *
+ * `akool-cli --json ... --wait` emits more than one JSON document: the initial
+ * submit response, progress lines, then the final completed task, followed by a
+ * decorative box. Slicing from the first '{' to the last '}' therefore spans
+ * several documents and fails to parse. Instead we scan for every complete,
+ * brace-balanced object (ignoring braces inside strings) and return the last
+ * one that carries the finished payload.
+ */
 function extractJson(text) {
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start === -1 || end === -1 || end < start) {
+  const objects = [];
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = true;
+    } else if (ch === '{') {
+      if (depth === 0) start = i;
+      depth += 1;
+    } else if (ch === '}') {
+      if (depth > 0) {
+        depth -= 1;
+        if (depth === 0 && start !== -1) {
+          try {
+            objects.push(JSON.parse(text.slice(start, i + 1)));
+          } catch {
+            // Not valid JSON (e.g. an ANSI-decorated fragment) — ignore it.
+          }
+          start = -1;
+        }
+      }
+    }
+  }
+
+  if (!objects.length) {
     throw new Error('no JSON object found in akool-cli output');
   }
-  return JSON.parse(text.slice(start, end + 1));
+
+  // Prefer the last object that actually contains the generated image URLs.
+  for (let i = objects.length - 1; i >= 0; i--) {
+    const urls = objects[i]?.data?.upscaled_urls;
+    if (Array.isArray(urls) && urls.length) return objects[i];
+  }
+
+  return objects[objects.length - 1];
 }
 
 async function generateAkool(prompt, negativePrompt, scale) {
@@ -285,7 +431,14 @@ async function generateAkool(prompt, negativePrompt, scale) {
 // ── Provider: Pollinations ──────────────────────────────────────────────────
 
 async function generatePollinations(prompt, negativePrompt, width, height) {
-  const encoded = encodeURIComponent(prompt);
+  // Pollinations puts the prompt in the URL path, so keep it within budget.
+  // The negative prompt travels as its own query param here, so it does not
+  // compete with the positive prompt for the same character budget.
+  const fittedPrompt = truncateAtWord((prompt || '').trim(), POLLINATIONS_PROMPT_LIMIT);
+  if (fittedPrompt.length < (prompt || '').trim().length) {
+    console.warn(`    pollinations: prompt trimmed to ${fittedPrompt.length}/${POLLINATIONS_PROMPT_LIMIT} chars`);
+  }
+  const encoded = encodeURIComponent(fittedPrompt);
   const key = process.env.POLLINATIONS_API_KEY;
 
   let url;
@@ -297,7 +450,7 @@ async function generatePollinations(prompt, negativePrompt, width, height) {
     url = `${POLLINATIONS_LEGACY_BASE}/${encoded}?width=${width}&height=${height}&nologo=true&model=flux`;
   }
 
-  const cleaned = cleanNegativePrompt(negativePrompt);
+  const cleaned = truncateAtWord(cleanNegativePrompt(negativePrompt), POLLINATIONS_PROMPT_LIMIT);
   if (cleaned) {
     url += `&negative_prompt=${encodeURIComponent(cleaned)}`;
   }
@@ -331,7 +484,7 @@ function uniqueOutputPath(outputDir, base) {
 
 function printHelp() {
   console.log(`Usage:
-  node generate-images.mjs [--input <path>] [--output-dir <path>] [--stop-on-fail]
+  node generate-images.mjs [--input <path>] [--output-dir <path>] [--stop-on-fail] [--batch <i>/<n>]
 
 Options:
   --input <path>       Path to non-i2i-prompts.json
@@ -341,6 +494,14 @@ Options:
   --stop-on-fail       Stop the batch after the first failure instead of
                        continuing. Errors are still saved next to the output
                        in <output-dir>/generation-errors.log.
+  --batch <i>/<n>      Process only slice i of n (0-based) of the input, so
+                       multiple processes can run in parallel on disjoint
+                       ranges. Example: --batch 0/4, --batch 1/4, ...
+  --provider <name>    Primary provider tried first for this run/batch:
+                       nim (default), akool, or pollinations. The next provider
+                       in the chain is used on failure; Pollinations is always
+                       the last resort. Use it to rotate load across batches
+                       (e.g. batch 0 = nim, batch 1 = akool, batch 2 = nim ...).
   -h, --help           Show this help
 
 Providers are tried in order NIM -> Akool -> Pollinations. A provider is
@@ -356,12 +517,32 @@ function parseArgs() {
     input: 'scripts/asset-pipeline/output/non-i2i-prompts.json',
     outputDir: 'scripts/asset-pipeline/output/images',
     stopOnFail: false,
+    batch: null, // { index, total }
+    provider: 'nim', // primary provider for this run/batch
   };
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
       case '--input': opts.input = args[++i]; break;
       case '--output-dir': opts.outputDir = args[++i]; break;
       case '--stop-on-fail': opts.stopOnFail = true; break;
+      case '--batch': {
+        const m = String(args[++i] || '').match(/^(\d+)\s*\/\s*(\d+)$/);
+        if (!m || Number(m[2]) < 1 || Number(m[1]) >= Number(m[2])) {
+          console.error('[FAIL] --batch must be <i>/<n> with 0 <= i < n');
+          process.exit(1);
+        }
+        opts.batch = { index: Number(m[1]), total: Number(m[2]) };
+        break;
+      }
+      case '--provider': {
+        const v = String(args[++i] || '').toLowerCase();
+        if (!['nim', 'akool', 'pollinations'].includes(v)) {
+          console.error('[FAIL] --provider must be one of: nim, akool, pollinations');
+          process.exit(1);
+        }
+        opts.provider = v;
+        break;
+      }
       case '--help': case '-h': printHelp(); process.exit(0);
       default:
         console.error(`Unknown argument: ${args[i]}`);
@@ -385,7 +566,36 @@ function logError(outputDir, message) {
   }
 }
 
-async function generateOne(entry, outputDir) {
+/**
+ * Build the ordered provider chain for a run. The primary provider is tried
+ * first; the other non-Pollinations provider is the middle fallback; and
+ * Pollinations is always last (last resort on failure).
+ * Examples:
+ *   nim       -> ['nim', 'akool', 'pollinations']
+ *   akool     -> ['akool', 'nim', 'pollinations']
+ *   pollinations -> ['nim', 'akool', 'pollinations']  (forced to last)
+ */
+function buildProviderChain(primary) {
+  const others = ['nim', 'akool'].filter((p) => p !== primary);
+  if (primary === 'pollinations') return [...others, 'pollinations'];
+  return [primary, ...others, 'pollinations'];
+}
+
+/** Try a single provider for an entry. Returns a Buffer or throws. */
+async function runProvider(name, entry, width, height, scale) {
+  switch (name) {
+    case 'nim':
+      return generateNim(entry.prompt, entry.negative_prompt, width, height);
+    case 'akool':
+      return generateAkool(entry.prompt, entry.negative_prompt, scale);
+    case 'pollinations':
+      return generatePollinations(entry.prompt, entry.negative_prompt, width, height);
+    default:
+      throw new Error(`unknown provider: ${name}`);
+  }
+}
+
+async function generateOne(entry, outputDir, providerChain) {
   const baseName = `${entrySlug(entry)}__default.png`;
 
   // Resume: skip if the default image already exists.
@@ -403,36 +613,31 @@ async function generateOne(entry, outputDir) {
   let buffer = null;
   let provider = null;
 
-  // 1) NIM
-  if (process.env.NVIDIA_API_KEY) {
-    try {
-      buffer = await generateNim(entry.prompt, entry.negative_prompt, width, height);
-      provider = 'NIM';
-    } catch (err) {
-      console.warn(`  ${label}: NIM failed (${err.message})`);
-    }
-  } else {
-    console.warn(`  ${label}: NVIDIA_API_KEY unset, skipping NIM`);
-  }
+  for (const name of providerChain) {
+    if (buffer) break;
 
-  // 2) Akool
-  if (!buffer) {
-    if (isAkoolConfigured()) {
-      try {
-        buffer = await generateAkool(entry.prompt, entry.negative_prompt, scale);
-        provider = 'Akool';
-      } catch (err) {
-        console.warn(`  ${label}: Akool failed (${err.message})`);
+    // Skip providers that are not configured (except Pollinations, always free).
+    if (name !== 'pollinations') {
+      if (name === 'nim' && !process.env.NVIDIA_API_KEY) {
+        console.warn(`  ${label}: NVIDIA_API_KEY unset, skipping NIM`);
+        continue;
       }
-    } else {
-      console.warn(`  ${label}: Akool unconfigured, skipping`);
+      if (name === 'akool' && !isAkoolConfigured()) {
+        console.warn(`  ${label}: Akool unconfigured, skipping`);
+        continue;
+      }
+    }
+
+    try {
+      buffer = await runProvider(name, entry, width, height, scale);
+      provider = name;
+    } catch (err) {
+      console.warn(`  ${label}: ${name} failed (${err.message})`);
     }
   }
 
-  // 3) Pollinations (always available as last resort)
   if (!buffer) {
-    buffer = await generatePollinations(entry.prompt, entry.negative_prompt, width, height);
-    provider = 'Pollinations';
+    throw new Error('all providers failed for this entry');
   }
 
   // Never overwrite an existing file; append a numeric suffix if needed.
@@ -469,13 +674,33 @@ async function main() {
 
   console.log(`\nGenerating ${raw.length} images from ${path.basename(inputPath)} -> ${outputDir}\n`);
 
+  // Resolve the slice of entries this process should handle.
+  let entries = raw;
+  let sliceLabel = 'all';
+  if (opts.batch) {
+    const { index, total } = opts.batch;
+    const size = Math.ceil(raw.length / total);
+    const start = index * size;
+    entries = raw.slice(start, start + size);
+    sliceLabel = `batch ${index}/${total} (${entries.length} entries)`;
+    console.log(`[BATCH] Processing ${sliceLabel}\n`);
+    if (entries.length === 0) {
+      console.log('Nothing to do for this slice.');
+      return;
+    }
+  }
+
+  // Ordered provider chain for this run (primary first, Pollinations last).
+  const providerChain = buildProviderChain(opts.provider);
+  console.log(`[PROVIDERS] primary=${opts.provider} chain=${providerChain.join(' -> ')} (Pollinations only on failure)\n`);
+
   let ok = 0;
   let skipCount = 0;
   let fail = 0;
 
-  for (const entry of raw) {
+  for (const entry of entries) {
     try {
-      const result = await generateOne(entry, outputDir);
+      const result = await generateOne(entry, outputDir, providerChain);
       if (result === 'skip') skipCount += 1;
       else ok += 1;
     } catch (err) {

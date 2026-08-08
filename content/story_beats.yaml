@@ -58,3 +58,43 @@ beats:
     label: "Beat 5 — Finale"
     order: 404
     description: "The culmination of choices. Sofia either stays, leaves, or dies."
+
+  - slug: act1_camila_sabotage_started
+    label: "Camila Beat 1 — Trust Gained"
+    order: 500
+    description: "Player has taken down a developer's drone, gaining Camila's trust and unlocking the sabotage quest."
+
+  - slug: act1_camila_ignored
+    label: "Camila Beat 1 — Ignored"
+    order: 501
+    description: "Player ignored the drone and parted ways with Camila."
+
+  - slug: act1_camila_camera_sabotage
+    label: "Camila Beat 2 — Plausible Deniability"
+    order: 502
+    description: "Player destroyed a developer security camera on Camila's behalf."
+
+  - slug: act2_camila_spree_complete
+    label: "Camila Beat 3 — The Spree"
+    order: 503
+    description: "Player completed the vandalism spree with Camila, witnessing her ruthless double-dipping scam."
+
+  - slug: camila_ending_lover
+    label: "Camila Ending — The Shared Silence"
+    order: 504
+    description: "Player and Camila secure the lodge together and she opens up genuinely."
+
+  - slug: camila_ending_friend
+    label: "Camila Ending — The Business Partner"
+    order: 505
+    description: "Player and Camila establish a permanent, transactional alliance."
+
+  - slug: camila_ending_tragic
+    label: "Camila Ending — The Golden Cage"
+    order: 506
+    description: "Camila sells out to the developers for a massive buyout."
+
+  - slug: camila_ending_enemy
+    label: "Camila Ending — The Ledger"
+    order: 507
+    description: "Camila betrays the player, leaving them stranded in a trap to protect her profits."

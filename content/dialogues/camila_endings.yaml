@@ -1,0 +1,144 @@
+id: "f0000000-0000-0000-0000-000000000010"
+name: "Camila Reyes - Endings"
+description: "The five possible resolution scenes for Camila's storyline."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+dialogue_scope: "character"
+start_node_id: "lover_ending_node_1"
+nodes:
+  # ---------------------------------------------------------
+  # 1. LOVER ENDING (The Mended Bond)
+  # ---------------------------------------------------------
+  lover_ending_node_1:
+    id: "lover_ending_node_1"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "It's really over. The city council formally revoked the mega-port zoning an hour ago. My dad called... they're throwing a massive party in the village plaza tonight."
+    thought: "(Expression: tender. The upload was successful. She is packing her apartment.)"
+    choices:
+      - id: "lover_reply_1"
+        text: "You did it. You saved them."
+        next_node_id: "lover_ending_node_2"
+
+  lover_ending_node_2:
+    id: "lover_ending_node_2"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "No. We did it. And... I know I haven't been fair to you. I was so terrified of failing that I treated you like a tool. I treated you like Van Der Meer treats the ocean—just a means to an end. I don't want to do that anymore. I'm going home. But it won't feel like home unless you come with me. Let me make space for you. Real space."
+    thought: "(Expression: vulnerable -> happy. She finally acknowledges her flaw and reaches out.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_story_complete: true
+      story_beat: act3_camila_lover_ending
+
+  # ---------------------------------------------------------
+  # 2. FRIEND ENDING (The Academic Ally)
+  # ---------------------------------------------------------
+  friend_ending_node_1:
+    id: "friend_ending_node_1"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I can't believe it actually worked. The news feeds are completely dominated by the Chinese-faction politicians tearing Van Der Meer apart. The village is safe."
+    thought: "(Expression: happy. She has won the PR war.)"
+    choices:
+      - id: "friend_reply_1"
+        text: "You're going to be a hero back home, Camila."
+        next_node_id: "friend_ending_node_2"
+
+  friend_ending_node_2:
+    id: "friend_ending_node_2"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I'll be a scientist. That's enough for me. Listen... I know you belong to the city. I'm not going to ask you to leave it. But Bahía de las Olas will always have a place for you. If you ever need ecological data, or just a place to breathe where the air doesn't taste like smog... call me. Thank you. For being the only real friend I found in this concrete jungle."
+    thought: "(Expression: tender -> focused. A bittersweet, respectful farewell.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_story_complete: true
+      story_beat: act3_camila_friend_ending
+
+  # ---------------------------------------------------------
+  # 3. EX / TRAGIC ENDING (The Cynical Betrayal)
+  # ---------------------------------------------------------
+  ex_ending_node_1:
+    id: "ex_ending_node_1"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "They approved the permits. The dredging ships are already moving into the bay. The upload... the server logs say the data was intentionally corrupted by the user."
+    thought: "(Expression: shocked -> sad. Confrontation in the rain.)"
+    choices:
+      - id: "ex_reply_1"
+        text: "It's just business, Camila. You can't stop a corporation that big. You should have known that."
+        next_node_id: "ex_ending_node_2"
+
+  ex_ending_node_2:
+    id: "ex_ending_node_2"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Business. I let you in. I trusted you with my home, and you sold it to them. You didn't just break my heart... you bulldozed it for a paycheck. You're exactly what this city is. Rot disguised as neon. Don't ever speak to me again."
+    thought: "(Expression: vulnerable -> angry. Complete emotional severance.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_story_complete: true
+      story_beat: act3_camila_betrayal_ending
+
+  # ---------------------------------------------------------
+  # 4. ENEMY ENDING (The Radicalization)
+  # ---------------------------------------------------------
+  enemy_ending_node_1:
+    id: "enemy_ending_node_1"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "My name isn't Camila anymore. And this? This is just empirical data. I'm testing the flashpoint of corporate greed."
+    thought: "(Expression: calculating. Dressed in tactical gear, planting thermite.)"
+    choices:
+      - id: "enemy_reply_1"
+        text: "You're going to get yourself killed. Put it down."
+        next_node_id: "enemy_ending_node_2"
+
+  enemy_ending_node_2:
+    id: "enemy_ending_node_2"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "You taught me a valuable lesson when you helped them destroy Bahía. You taught me that playing by the rules is a death sentence. If they want to treat the world like a warzone, I'll give them a war. Stand aside, or you burn with the train."
+    thought: "(Expression: angry. Complete radicalization.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_story_complete: true
+      story_beat: act3_camila_enemy_ending
+
+  # ---------------------------------------------------------
+  # 5. DISTANT ENDING (The Faded Spark)
+  # ---------------------------------------------------------
+  distant_ending_node_1:
+    id: "distant_ending_node_1"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Home. I'm dropping out. I couldn't get the data past their security. I tried going through the official university channels, but Van Der Meer threatened to pull the dean's funding, so they expelled me."
+    thought: "(Expression: sad. Defeated at the transit station.)"
+    choices:
+      - id: "distant_reply_1"
+        text: "I'm sorry to hear that."
+        next_node_id: "distant_ending_node_2"
+
+  distant_ending_node_2:
+    id: "distant_ending_node_2"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "You were right not to help me. I was stupid to think one girl with a camera could stop them. They're going to destroy the bay, and I'm going to have to watch it happen. Enjoy the city."
+    thought: "(Expression: vulnerable. She yields to the city's corruption.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_story_complete: true
+      story_beat: act3_camila_distant_ending
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_reyes"
+    - "endings"

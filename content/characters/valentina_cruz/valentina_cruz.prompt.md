@@ -8,7 +8,7 @@ A lean student with neon-green streaks in her dark hair and cybernetic ocular im
 
 ## Expression Variants
 
-- **`valentina_cruz__default.png`**: Use the base portrait as reference. A lean student with neon-green streaks in her dark hair and cybernetic ocular implants that flicker with data streams, moving with methodical precision, looking at the camera, 3/4 take. Sharp knowing eyes, angular features, dark hair with the green streaks catching the light. Student clothing layered with tech accents. University corridor backdrop. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, grounded realism, natural asymmetry.
+- **`valentina_cruz__default.png`**: Use the base portrait as reference. Moving with methodical precision, looking at the camera, 3/4 take. Keep the same art style as reference, same clothing and backdrop. Clean confident linework, painterly soft shading, grounded realism, natural asymmetry.
 
 - **`valentina_cruz__calculating.png`**: Use the base portrait as reference. Cold, methodical assessment, looking intensely at the camera, 3/4 take. Ocular implants flickering with data, eyes narrowed in calculation, lips a thin, dangerous line. Weighing her next move. Keep the same art style as reference, same tech-accented clothing, corridor backdrop. Clean confident linework, painterly soft shading, grounded realism.
 

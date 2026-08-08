@@ -1,15 +1,15 @@
 id: 6a8b13c0-7e61-419b-98f5-b772e0c238fa
 name: Ana Villanueva
-title: University Student & Undercover Operative
+title: Independent Shadow Journalist (Former Student)
 description: |
-  A cautious sociology student drawn into a corporate conspiracy after a deadly car chase. Initially reluctant, she discovers a talent for observation and goes undercover to expose corruption in the Residencial Las Estrellas scandal.
+  A former sociology student drawn into a corporate conspiracy years ago after a deadly car chase. After navigating police betrayals and the fallout of the Evelyn Ruthenberg events, she dropped out of university to become a "shadow journalist." In 2077, she operates entirely off the grid, publishing under pseudonyms and feeding airtight evidence to trusted mentors while remaining invisible to corporate retaliation.
 metadata:
   type: human
   role: npc
   faction: independent
   personality: cautious_observant_brave
-  age_2077: 22
-  occupation: Student
+  age_2077: 27
+  occupation: Shadow Journalist
   appearance: "Young Latina woman, early 20s, sharp observant eyes, dressed in casual student clothes with a practical messenger bag."
 lore_path: ana_villanueva.md
 asset_paths:
@@ -17,3 +17,4 @@ asset_paths:
 portrait_urls:
   - url: s3://las-flores/portraits/ana_villanueva/ana_villanueva__default.png
     label: dev
+    expression: default

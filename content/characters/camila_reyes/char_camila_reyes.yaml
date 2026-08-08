@@ -2,25 +2,25 @@ id: 36375e33-3a5d-4290-891e-09f5530267e7
 name: Camila Reyes
 title: Environmental Science Student from Bahía de las Olas
 description: |
-  Camila Reyes is a spirited 19-year-old from Bahía de las Olas, a picturesque coastal village with stunning beaches and a vibrant fishing community. Growing up by the ocean, she developed a deep love for the sea and her hometown's cultural richness. As the first in her family to attend university, Camila is driven to create opportunities for herself and her community, pursuing a degree in Environmental Science with a focus on marine conservation. Her dream is to return to Bahía de las Olas after graduation to help implement sustainable fishing practices and preserve the coastline. Adventurous, passionate, and sociable, she radiates positivity and makes friends easily, though she sometimes struggles with homesickness and adjusting to city life after the tight-knit simplicity of her coastal home.
+  Camila Reyes is a spirited 19-year-old from Bahía de las Olas, a picturesque coastal village threatened by Van Der Meer Mining. To support their inland lithium operations, the corporation plans to bulldoze her hometown's coastline to build a deep-water export mega-port and a toxic brine-discharge facility. Realizing that Van Der Meer is highly sensitive to negative press and political pressure—especially the fear of public backlash driving support toward Chinese-backed politicians—Camila has come to the cynical city of Las Flores to pursue a degree in Environmental Science. She aims to weaponize empirical data and PR against the corporation. While she radiates a warm-hearted enthusiasm, she suffers from severe imposter syndrome. Furthermore, her idealism has become a single-minded obsession; she views her cause as the absolute center of her universe, frequently treating allies and potential partners as secondary props or support units rather than emotional equals.
 metadata:
   type: human
   role: npc
   faction: civil_society
-  personality: adventurous_passionate_sociable
+  personality: passionate_idealistic_singleminded
   age: 19
   gender: Female
   ethnicity: Latin American
   occupation: Environmental Science Student
-  background: grew up in Bahía de las Olas coastal village, first in family to attend university, deep connection to ocean and fishing community
+  background: Grew up in Bahía de las Olas. First in family to attend university. Sparked into activism when Van Der Meer Mining announced plans to bulldoze her village for a lithium export mega-port, plunging her into a complex political proxy war.
   education: Environmental Science degree in progress at university
   residence: Bahía de las Olas (hometown), currently living in city for university studies
   organization: none (independent student)
   allies: local fishing community, environmental advocates, university peers
-  mannerisms: radiates positivity and enthusiasm, makes friends easily, frequently takes photographs, shares coastal adventures on social media, wears colorful headbands and beachy accessories
-  motivations: return to Bahía de las Olas to implement sustainable practices, protect coastal ecosystems, inspire next generation to appreciate and protect environment, bridge gap between traditional knowledge and modern ecological practices
-  quote: The ocean gave me life and purpose. I want to give back by protecting it for future generations.
-  methods: education, community organizing, photography, social media advocacy, traditional knowledge integration
+  mannerisms: radiates positivity but gets fiercely defensive about her home, treats people as useful props for her activism, takes photographs of both beauty and ecological evidence
+  motivations: weaponize PR and empirical data to exploit Van Der Meer's fear of Chinese-backed rivals, protect her village's coastline, prove she belongs at university despite her imposter syndrome
+  quote: They look at the ocean and just see a balance sheet. I have to prove to them it's a heartbeat before they stop it forever.
+  methods: ecological surveying, photography, political PR leverage, academic research
 lore_path: camila_reyes.md
 asset_paths:
   portrait: camila_reyes__default.png

@@ -24,18 +24,32 @@ Premium contemporary graphic novel realism, refined editorial line art illustrat
 
 ## Variations
 
-- [ ] Briefing a tour group at a trailhead, maps spread across a table in bright sunlight
-- [ ] Arranging gear inside her tourism office, brochures and coiled rope nearby
-- [ ] Surveying the rural lodge construction site in the distance, planning the next season
+- [ ] **University/Work setting**: Briefing a tour group at a trailhead, maps spread across a table in bright sunlight. Clothing: Professional outdoor guide attire, vest. Emotional state: Charismatic and attentive. Use base portrait as reference. Maintain premium contemporary graphic novel realism style.
+- [ ] **Home/Private setting**: Arranging gear inside her tourism office, brochures and coiled rope nearby. Clothing: Casual t-shirt and hiking pants. Emotional state: Calculating and focused. Use base portrait as reference. Maintain premium contemporary graphic novel realism style.
+- [ ] **Performance/Role-specific setting**: Surveying the rural lodge construction site in the distance. Clothing: Hard hat and high-visibility vest over hiking gear. Emotional state: Determined and ambitious. Use base portrait as reference. Maintain premium contemporary graphic novel realism style.
+- [ ] **Emotional/Private moment**: Sitting alone on a secluded mountain ridge at sunset, counting cash. Clothing: Fleece jacket. Emotional state: Relaxed, unmasked misanthropy, genuine greedy satisfaction. Use base portrait as reference. Maintain premium contemporary graphic novel realism style.
+- [ ] **CG/Group scene**: Confronting a suited real estate developer on a dirt road. Clothing: Hiking ready outdoor clothing. Emotional state: Defensive and sharp. Use base portrait as reference. Maintain premium contemporary graphic novel realism style.
 
 ## Expression Variants
 
-- **`__default.png`**: Use the base portrait as reference. Hispanic woman in her early 30s, neutral resting expression with a ready warmth, looking at the camera, 3/4 take. Athletic-toned build, oval face, prominent jaw, pronounced cheeks, straight nose, round warm-brown crinkled eyes, arched brows with one raised higher, freckled sun-kissed skin, long wavy dark hair. Practical outdoor clothing, sun hat, sport earbud. Trailhead backdrop with maps and gear. Keep the same art style as reference: premium contemporary graphic novel realism, refined editorial line art illustration, waist-up portrait. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__default.png`**: Use the base portrait as reference. Neutral resting expression with a ready warmth, looking at the camera, 3/4 take. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__happy.png`**: Use the base portrait as reference. A broad, genuine smile lights her face, looking at the camera, 3/4 take. Round warm-brown eyes crinkle deeper, freckled nose brightening, arched brows lifted in warmth. Oval face and prominent jaw relaxed, long wavy dark hair catching the natural light. Trailhead backdrop under bright sun. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__happy.png`**: Use the base portrait as reference. Broad, flawlessly charming smile lights her face, looking at the camera, 3/4 take. Eyes crinkle deeper, arched brows lifted in warmth. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__determined.png`**: Use the base portrait as reference. Fierce resolve animates her, looking at the camera, 3/4 take. Round warm-brown eyes steady, prominent jaw set, arched brows drawn together in focus. Freckled straight-nosed face angled forward, athletic shoulders squared. Maps and gear visible in the trailhead backdrop. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading with sharper light, muted natural palette.
+- **`__vulnerable.png`**: Use the base portrait as reference. A rare moment of dropping the mask, looking down or away. Eyes uncertain, mouth slightly parted, shoulders dropped. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__calculating.png`**: Use the base portrait as reference. Shrewd assessment settles across her features, looking at the camera, 3/4 take. Round warm-brown eyes narrower and appraising, the higher arched brow raised further, full lips pressed into a thoughtful line. Oval face composed, long dark hair tucked behind an ear. Tourism office backdrop with gear visible. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__tender.png`**: Use the base portrait as reference. Soft, open warmth softens her expression, looking at the camera, 3/4 take. Eyes gentle, a quiet half-smile on full lips. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
 
-- **`__tender.png`**: Use the base portrait as reference. A soft, open warmth softens her expression, looking at the camera, 3/4 take. Round warm-brown eyes gentle, freckled features relaxed, a quiet half-smile on full lips. Arching brows eased, prominent jaw softened. Warm natural light across the trailhead backdrop. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+- **`__afraid.png`**: Use the base portrait as reference. Sudden panic or loss of control. Eyes wide, pupils dilated, mouth tight or slightly open in shock. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__determined.png`**: Use the base portrait as reference. Fierce resolve animates her, looking at the camera, 3/4 take. Eyes steady, prominent jaw set, arched brows drawn together in focus. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading with sharper light, muted natural palette.
+
+- **`__sad.png`**: Use the base portrait as reference. The charismatic facade broken by melancholy. Eyes downturned and glistening, lips pressed in a slight frown. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__shocked.png`**: Use the base portrait as reference. Startled surprise, mouth agape, eyes wide, brows raised high. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__angry.png`**: Use the base portrait as reference. Cold, misanthropic fury. Eyes narrowed into a glare, lips pulled tight, jaw clenched. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__calculating.png`**: Use the base portrait as reference. Shrewd assessment settles across her features, looking at the camera, 3/4 take. Eyes narrower and appraising, the higher arched brow raised further, full lips pressed into a thoughtful line. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.
+
+- **`__surprised.png`**: Use the base portrait as reference. Mild, perhaps pleasant astonishment. Brows lifted, mouth forming a small 'o', eyes brightened. Keep the same art style as reference, same outdoor clothing and earbud. Clean confident linework, painterly soft shading, muted natural palette.

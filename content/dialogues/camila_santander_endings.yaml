@@ -1,0 +1,142 @@
+id: "f1000000-0000-0000-0000-000000000003"
+name: "Camila Santander - Endings"
+description: "The various relationship endings for Camila Santander."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+dialogue_scope: "character"
+start_node_id: "camila_ending_hub"
+nodes:
+  camila_ending_hub:
+    id: "camila_ending_hub"
+    type: "hub"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Resolution Hub"
+    choices:
+      - id: "trigger_lover"
+        text: "[Trigger Lover Ending: The Shared Silence]"
+        next_node_id: "ending_lover_setup"
+        condition:
+          type: "flag"
+          flag: "camila_romanced"
+          value: true
+
+      - id: "trigger_friend"
+        text: "[Trigger Friend Ending: The Business Partner]"
+        next_node_id: "ending_friend_setup"
+        condition:
+          type: "stat"
+          stat: "friendship"
+          operator: ">="
+          value: 7
+
+      - id: "trigger_ex"
+        text: "[Trigger Ex/Tragic Ending: The Golden Cage]"
+        next_node_id: "ending_tragic_setup"
+        condition:
+          type: "flag"
+          flag: "camila_sold_out"
+          value: true
+
+      - id: "trigger_enemy"
+        text: "[Trigger Enemy Ending: The Ledger]"
+        next_node_id: "ending_enemy_setup"
+        condition:
+          type: "stat"
+          stat: "trust"
+          operator: "<="
+          value: -5
+
+  # LOVER ENDING: THE SHARED SILENCE
+  ending_lover_setup:
+    id: "ending_lover_setup"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "The final injunction against Horizon went through. I saw their trucks packing up the survey equipment this morning. It's actually over. The ridge belongs to the lodge."
+    thought: "(Expression: vulnerable. She holds the legal deed, her hands shaking slightly. She's so used to fighting that victory feels alien.)"
+    choices:
+      - id: "lover_comfort"
+        text: "You earned this, Camila. We both did."
+        next_node_id: "ending_lover_resolution"
+
+  ending_lover_resolution:
+    id: "ending_lover_resolution"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "You know... I used to come up here because I hated listening to people talk. I just wanted the quiet. But sitting here with you... the quiet is even better."
+    thought: "(Expression: tender. They are sitting on the porch of her newly secured rural lodge. Her comms are completely turned off for the first time.)"
+    is_end: true
+    effects:
+      story_beat: camila_ending_lover
+
+  # FRIEND ENDING: THE BUSINESS PARTNER
+  ending_friend_setup:
+    id: "ending_friend_setup"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "I just got off the phone with the city council. The pressure campaign worked. Horizon is rerouting their resort to the southern basin. The trails are safe, and the monopoly holds."
+    thought: "(Expression: calculating -> happy. She flips a commemorative coin, clearly thrilled by the power play she just pulled off with your help.)"
+    choices:
+      - id: "friend_congratulate"
+        text: "A successful operation. Time to cash in."
+        next_node_id: "ending_friend_resolution"
+
+  ending_friend_resolution:
+    id: "ending_friend_resolution"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "The deed is signed. I couldn't have done it without you. You have a free pass to the trails for life, and a 10% cut of the rescue bounties... just don't tell the paying customers, alright?"
+    thought: "(Expression: happy. A firm, respectful handshake. It's transactional, but it's the closest thing to genuine friendship she can offer.)"
+    is_end: true
+    effects:
+      story_beat: camila_ending_friend
+
+  # TRAGIC/EX ENDING: THE GOLDEN CAGE
+  ending_tragic_setup:
+    id: "ending_tragic_setup"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Look. I know we fought hard for this land. But Horizon didn't just offer money... they offered generational wealth. Enough to never have to hustle a single tourist ever again."
+    thought: "(Expression: calculating. She's standing in front of the developer's office, holding a polished datapad with the buyout contract glowing on the screen.)"
+    choices:
+      - id: "tragic_accuse"
+        text: "You're selling out the mountain. You're giving them exactly what they want."
+        next_node_id: "ending_tragic_resolution"
+
+  ending_tragic_resolution:
+    id: "ending_tragic_resolution"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "It's a ten-million-credit buyout. Don't look at me like that. It's just business. I won, didn't I?"
+    thought: "(Expression: vulnerable -> sad. She is wearing a corporate suit, refusing to meet the player's eyes as the construction drones tear down the trees behind her. She signs the pad.)"
+    is_end: true
+    effects:
+      story_beat: camila_ending_tragic
+
+  # ENEMY ENDING: THE LEDGER
+  ending_enemy_setup:
+    id: "ending_enemy_setup"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "You should have stayed out of my way. You thought you could muscle me on my own mountain? Threaten my profit margins? You don't know the terrain like I do."
+    thought: "(Expression: angry. She's speaking over a local comms channel. The player is standing in a clearing, suddenly realizing the path back is blocked by a rockslide she triggered.)"
+    choices:
+      - id: "enemy_threaten"
+        text: "You can't hide up here forever, Camila."
+        next_node_id: "ending_enemy_resolution"
+
+  ending_enemy_resolution:
+    id: "ending_enemy_resolution"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "I don't have to. I just have to hide longer than you can survive a drop-bear snare trap. Accidents happen on the trails all the time. Nothing personal. Just balancing the ledger."
+    thought: "(Expression: calculating. Cold, misanthropic fury. She cuts the comms, leaving the player stranded in the rigged trap.)"
+    is_end: true
+    effects:
+      story_beat: camila_ending_enemy
+
+metadata:
+  version: "1.1"
+  author: "Las Flores Team"
+  tags:
+    - "camila_santander"
+    - "endings"

@@ -1,0 +1,118 @@
+id: "c1110000-0000-0000-0000-000000000001"
+name: "Ana Villanueva - Intro"
+description: "Organic introductory encounter with Ana in the university library. The player must choose the analytical response to trigger her interest."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+dialogue_scope: "character"
+start_node_id: "c1110000-0000-0000-0000-000000000002"
+nodes:
+  c1110000-0000-0000-0000-000000000002:
+    id: "c1110000-0000-0000-0000-000000000002"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Can I help you? I'm in the middle of preparing a rather extensive research review."
+    thought: "(Expression: default. She doesn't look up from her laptop, projecting the perfect image of a stressed grad student. She is actually running a background check on a corporate proxy.)"
+    choices:
+      - id: "ask_news"
+        text: "Just taking a break. Did you see the news about the 'gas leak' explosion in the industrial district this morning?"
+        next_node_id: "c1110000-0000-0000-0000-000000000003"
+      - id: "ask_directions"
+        text: "Just looking for the archives. Sorry to bother you."
+        next_node_id: "c1110000-0000-0000-0000-000000000004"
+
+  c1110000-0000-0000-0000-000000000004:
+    id: "c1110000-0000-0000-0000-000000000004"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Down the hall, take a left. They close in twenty minutes."
+    thought: "(Expression: default. She dismisses the player immediately, returning her focus to the screen.)"
+    choices:
+      - id: "leave"
+        text: "[Leave]"
+        next_node_id: "END"
+
+  c1110000-0000-0000-0000-000000000003:
+    id: "c1110000-0000-0000-0000-000000000003"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "I saw the headline. Tragic accident. The city infrastructure has been failing for years. It's a miracle it doesn't happen more often."
+    thought: "(Expression: calculating. She gives a perfectly generic, non-committal answer, waiting to see if the player is just making small talk or if they actually see what's happening.)"
+    choices:
+      - id: "reply_heroic"
+        text: "Someone needs to do something. The city needs to be held accountable so these accidents stop happening to innocent people."
+        next_node_id: "c1110000-0000-0000-0000-000000000005"
+      - id: "reply_apathetic"
+        text: "Yeah, well. Not my problem. The city's always burning somewhere."
+        next_node_id: "c1110000-0000-0000-0000-000000000006"
+      - id: "reply_analytical"
+        text: "Gas leaks don't selectively fry security camera feeds three blocks away. Someone was scrubbing a server farm, and the explosion was just the cover."
+        next_node_id: "c1110000-0000-0000-0000-000000000007"
+        relationship_change:
+          stat: "trust_level"
+          amount: 5
+
+  c1110000-0000-0000-0000-000000000005:
+    id: "c1110000-0000-0000-0000-000000000005"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "I'm sure the mayor's office will issue a very sternly worded statement. If you'll excuse me, I really need to finish this reading."
+    thought: "(Expression: default. She writes the player off as dangerously naive. Amateurs who want to be heroes get themselves killed.)"
+    choices:
+      - id: "leave_heroic"
+        text: "[Leave]"
+        next_node_id: "END"
+
+  c1110000-0000-0000-0000-000000000006:
+    id: "c1110000-0000-0000-0000-000000000006"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Right. Excuse me, I need to get back to my work."
+    thought: "(Expression: default. She writes the player off as apathetic and useless. She turns up the volume on her earbud to end the conversation.)"
+    choices:
+      - id: "leave_apathetic"
+        text: "[Leave]"
+        next_node_id: "END"
+
+  c1110000-0000-0000-0000-000000000007:
+    id: "c1110000-0000-0000-0000-000000000007"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "..."
+    thought: "(Expression: surprised. She stops typing. The left, more-hooded eyelid twitches slightly as she processes that the player actually pays attention.)"
+    choices:
+      - id: "wait_for_response"
+        text: "[Wait for her response]"
+        next_node_id: "c1110000-0000-0000-0000-000000000008"
+
+  c1110000-0000-0000-0000-000000000008:
+    id: "c1110000-0000-0000-0000-000000000008"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "You pay attention. That's a rare trait in this city. Sit down."
+    thought: "(Expression: calculating. She closes her laptop slightly, dropping the 'bored student' act entirely. She's assessing the player's utility.)"
+    choices:
+      - id: "sit_down"
+        text: "[Sit down across from her]"
+        next_node_id: "c1110000-0000-0000-0000-000000000009"
+
+  c1110000-0000-0000-0000-000000000009:
+    id: "c1110000-0000-0000-0000-000000000009"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "If you know they were scrubbing servers, you also know they missed the physical backups at the transit hub. I can't get in there without drawing the wrong kind of attention. You don't look like you care about drawing attention."
+    thought: "(Expression: determined. She offers a transaction. This is a test to see if the player is competent enough to survive doing her dirty work.)"
+    choices:
+      - id: "accept_mission"
+        text: "You want me to pull the physical drives for you. What's in it for me?"
+        next_node_id: "c1110000-0000-0000-0000-000000000010"
+
+  c1110000-0000-0000-0000-000000000010:
+    id: "c1110000-0000-0000-0000-000000000010"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Proof. Names. The actual architecture of who runs what in Las Flores, stripped of the PR. I build cases. You're going to help me finish one. Bring me the drives, and I'll share what I find."
+    thought: "(Expression: default. She opens her laptop again, slipping back into her cover identity. The deal is struck.)"
+    choices:
+      - id: "agree_and_leave"
+        text: "I'll get the drives."
+        next_node_id: "END"

@@ -1,0 +1,89 @@
+id: "f0000000-0000-0000-0000-000000000040"
+name: "Camila Reyes - VDM Approach"
+description: "A Van Der Meer corporate fixer intercepts the player while alone, offering a bribe to betray Camila before the upload."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+dialogue_scope: "character"
+start_node_id: "f0000000-0000-0000-0000-000000000041"
+nodes:
+  f0000000-0000-0000-0000-000000000041:
+    id: "f0000000-0000-0000-0000-000000000041"
+    type: "narrator"
+    text: "[VDM Fixer]: We know about the badge. We know about the falsifier in the industrial district. We know about Camila Reyes and her water samples. We've known for a while."
+    choices:
+      - id: "vdm_small_fry"
+        text: "Then you know I'm just a lookout. Small fry."
+        next_node_id: "f0000000-0000-0000-0000-000000000042"
+
+  f0000000-0000-0000-0000-000000000042:
+    id: "f0000000-0000-0000-0000-000000000042"
+    type: "narrator"
+    text: "[VDM Fixer]: We know you're the only person she trusts. Which makes you considerably more than a lookout. We're not asking you to hurt anyone. We're asking you to tell us the upload time and let our security team handle the rest. The girl goes home, the data disappears, and the bay project proceeds on schedule. Everyone walks away."
+    choices:
+      - id: "vdm_refuse"
+        text: "[REFUSE] Tell your bosses to find another angle. I'm not interested."
+        next_node_id: "f0000000-0000-0000-0000-000000000043"
+      - id: "vdm_consider"
+        text: "[CONSIDER] I'll think about it."
+        next_node_id: "f0000000-0000-0000-0000-000000000044"
+      - id: "vdm_warn_camila"
+        text: "[WARN CAMILA] You just made a mistake telling me this."
+        next_node_id: "f0000000-0000-0000-0000-000000000045"
+
+  f0000000-0000-0000-0000-000000000043:
+    id: "f0000000-0000-0000-0000-000000000043"
+    type: "narrator"
+    text: "[VDM Fixer]: Of course. The offer expires at midnight on Thursday. The upload window, as I understand it, is Friday."
+    thought: "He leaves. The player now knows Van Der Meer is fully aware — and has to decide whether to tell Camila."
+    is_end: true
+    effects:
+      flag_set:
+        vdm_approach_complete: true
+        vdm_offer_refused: true
+      story_beat: act1c_vdm_approach_refused
+
+  f0000000-0000-0000-0000-000000000044:
+    id: "f0000000-0000-0000-0000-000000000044"
+    type: "narrator"
+    text: "[VDM Fixer]: We'll be in touch with the final details. Enjoy your evening."
+    thought: "The player has days to sit with this. The betrayal path on upload night is now unlocked."
+    is_end: true
+    effects:
+      flag_set:
+        vdm_approach_complete: true
+        vdm_offer_considered: true
+      story_beat: act1c_vdm_approach_considered
+
+  f0000000-0000-0000-0000-000000000045:
+    id: "f0000000-0000-0000-0000-000000000045"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "They know? They already know?"
+    thought: "(Expression: afraid -> determined. She cycles through panic then snaps into action.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000046"
+
+  f0000000-0000-0000-0000-000000000046:
+    id: "f0000000-0000-0000-0000-000000000046"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Then we move the upload to tonight. Can you call the falsifier? We need to accelerate everything."
+    thought: "(Expression: determined. No time for warmth; pure mission-mode.)"
+    is_end: true
+    effects:
+      flag_set:
+        vdm_approach_complete: true
+        vdm_offer_reported: true
+        camila_trust_bonus: true
+      relationship_change:
+        stat: "trust"
+        amount: 2
+      story_beat: act1c_vdm_approach_reported
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_reyes"
+    - "van_der_meer"
+    - "betrayal_seed"
+    - "act1c"

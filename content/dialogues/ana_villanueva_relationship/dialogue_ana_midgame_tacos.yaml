@@ -1,0 +1,99 @@
+id: "c1110000-0000-0000-0000-000000000020"
+name: "Ana Villanueva - Midgame Taco Stand"
+description: "Mid-investigation trust check. A mutual informant, Beto, has been taken. Ana wants to use him as a distraction. The player must confront her emotional detachment."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+dialogue_scope: "character"
+start_node_id: "c1110000-0000-0000-0000-000000000021"
+nodes:
+  c1110000-0000-0000-0000-000000000021:
+    id: "c1110000-0000-0000-0000-000000000021"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "I confirmed it. Corporate security grabbed Beto an hour ago. They've taken him to the holding facility at the docks."
+    thought: "(Expression: default. She is eating a taco at a late-night street stand, seemingly entirely unbothered that their informant was just captured.)"
+    choices:
+      - id: "react_save"
+        text: "We need to hit the docks right now. Get your gear."
+        next_node_id: "c1110000-0000-0000-0000-000000000022"
+
+  c1110000-0000-0000-0000-000000000022:
+    id: "c1110000-0000-0000-0000-000000000022"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "No. Security is mobilized at the docks. That means the server farm uptown is running on a skeleton crew. Beto bought us a window. We are hitting the servers."
+    thought: "(Expression: calculating. She calculates human tragedy purely as a logistical advantage. She expects the player to follow the logic.)"
+    choices:
+      - id: "agree_cold"
+        text: "You're right. Beto knew the risks. Let's take the servers."
+        next_node_id: "c1110000-0000-0000-0000-000000000023"
+        relationship_change:
+          stat: "trust_level"
+          amount: 5
+      - id: "angry_reject"
+        text: "You're a monster, Ana. I'm going to the docks. You can rot."
+        next_node_id: "c1110000-0000-0000-0000-000000000024"
+        relationship_change:
+          stat: "trust_level"
+          amount: -10
+      - id: "confront_flaw"
+        text: "Stop doing that. Stop treating people like math problems because you're terrified of losing them. We can hit the servers after we get him out."
+        next_node_id: "c1110000-0000-0000-0000-000000000025"
+        relationship_change:
+          stat: "romanced_status"
+          amount: 1
+
+  c1110000-0000-0000-0000-000000000023:
+    id: "c1110000-0000-0000-0000-000000000023"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Good. I'm glad we're on the same page. Let's move."
+    thought: "(Expression: determined. She respects the player's pragmatism, but the player has missed the chance to heal her core flaw. This locks out the Lover ending.)"
+    choices:
+      - id: "leave_servers"
+        text: "[Leave for the servers]"
+        next_node_id: "END"
+
+  c1110000-0000-0000-0000-000000000024:
+    id: "c1110000-0000-0000-0000-000000000024"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "Do what you want. But if you get caught, I will burn your files and deny I ever knew you."
+    thought: "(Expression: angry. She is furious that the player is letting emotion ruin the operation. Path to Enemy/Ex ending initiated.)"
+    choices:
+      - id: "leave_angry"
+        text: "[Leave for the docks alone]"
+        next_node_id: "END"
+
+  c1110000-0000-0000-0000-000000000025:
+    id: "c1110000-0000-0000-0000-000000000025"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "..."
+    thought: "(Expression: vulnerable. The player's words hit exactly the armor she built after Ken's betrayal. She looks away, gripping her coffee cup so hard her knuckles go white.)"
+    choices:
+      - id: "wait_vulnerable"
+        text: "I know what Ken did to you. I'm not him. But I'm not leaving Beto."
+        next_node_id: "c1110000-0000-0000-0000-000000000026"
+
+  c1110000-0000-0000-0000-000000000026:
+    id: "c1110000-0000-0000-0000-000000000026"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "If we go to the docks, we lose the window on the servers. The entire case gets delayed by a month."
+    thought: "(Expression: sad. She isn't arguing logistics anymore; she's asking for reassurance.)"
+    choices:
+      - id: "reassure"
+        text: "Then we spend another month building it. Together. Let's go get our guy."
+        next_node_id: "c1110000-0000-0000-0000-000000000027"
+
+  c1110000-0000-0000-0000-000000000027:
+    id: "c1110000-0000-0000-0000-000000000027"
+    type: "character"
+    speaker_id: "6a8b13c0-7e61-419b-98f5-b772e0c238fa"
+    text: "...Alright. I have the security patrol schedules for the docks. Give me two minutes to slice their comms."
+    thought: "(Expression: tender. A profound shift. She realizes the player is reliable in a way she hasn't experienced in years. Lover/Friend path secured.)"
+    choices:
+      - id: "leave_together"
+        text: "[Leave for the docks together]"
+        next_node_id: "END"

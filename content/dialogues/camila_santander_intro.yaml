@@ -1,0 +1,91 @@
+id: "f1000000-0000-0000-0000-000000000001"
+name: "Camila Santander - Intro"
+description: "Introductory conversation with Camila Santander on a mountain trail."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+dialogue_scope: "character"
+start_node_id: "intro_node_1"
+nodes:
+  intro_node_1:
+    id: "intro_node_1"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "So, what do you think? Beautiful, right? You can't get air this clean down in the city. Just breathe it in."
+    thought: "(Expression: happy. She gives a flawless, infectious smile. She's laying on the charm thick.)"
+    choices:
+      - id: "reply_beautiful"
+        text: "It's amazing. Thanks for bringing me up here."
+        next_node_id: "intro_node_2"
+        relationship_change:
+          stat: "friendship"
+          amount: 1
+      - id: "reply_suspicious"
+        text: "It's nice. But I know you didn't bring me all the way out here just for the fresh air."
+        next_node_id: "intro_node_2"
+
+  intro_node_2:
+    id: "intro_node_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Anytime! Though... enjoy it while you can. This whole ridge? Might be paved over by next year. Horizon Development wants to build a massive resort right on top of this trail."
+    thought: "(Expression: sad. She smoothly transitions from cheerful to concerned, baiting the hook.)"
+    choices:
+      - id: "sympathize_nature"
+        text: "That's terrible. The ecosystem will be devastated."
+        next_node_id: "intro_node_3"
+      - id: "call_out_business"
+        text: "Sounds like bad news for your tourism monopoly."
+        next_node_id: "intro_node_3"
+
+  intro_node_3:
+    id: "intro_node_3"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Exactly. It's a tragedy. Look—up there. Another one of their surveying drones. They buzz around all day, scaring the wildlife and mapping the terrain."
+    thought: "(Expression: angry. She points up at a small, sleek drone hovering near the treeline, genuine annoyance cracking her facade.)"
+    choices:
+      - id: "hack_drone"
+        text: "[Hack the drone's navigation protocol to send it crashing into the trees.]"
+        next_node_id: "intro_node_trust_gained"
+      - id: "throw_rock"
+        text: "[Pick up a heavy rock and smash the drone out of the air.]"
+        next_node_id: "intro_node_trust_gained"
+      - id: "ignore_drone"
+        text: "That sucks. Well, I should probably head back down to the city."
+        next_node_id: "intro_node_part_ways"
+
+  intro_node_trust_gained:
+    id: "intro_node_trust_gained"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Whoa. You didn't even hesitate... I like that. You know, I could actually use someone with your lack of restraint. I need to delay their main surveying team tomorrow, and I can't be seen doing it. Help me out, and I'll make sure you're very well compensated."
+    thought: "(Expression: surprised -> calculating. She assesses the player's quick action and immediately recognizes their utility.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_intro_complete: true
+        camila_quest_sabotage_active: true
+      relationship_change:
+        stat: "trust"
+        amount: 2
+      story_beat: act1_camila_sabotage_started
+
+  intro_node_part_ways:
+    id: "intro_node_part_ways"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Right. The city. Well, watch your step on the way down. The trails are getting more crowded every day."
+    thought: "(Expression: neutral. Her smile turns professional and polite. The player isn't useful to her right now, so she drops the hook.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_intro_complete: true
+      story_beat: act1_camila_ignored
+
+metadata:
+  version: "1.1"
+  author: "Las Flores Team"
+  tags:
+    - "camila_santander"
+    - "intro"
+    - "sabotage_quest"

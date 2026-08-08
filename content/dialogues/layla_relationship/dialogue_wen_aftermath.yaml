@@ -1,0 +1,183 @@
+id: c3e9808d-f55a-4f93-b8a5-d8b3cf94d809
+name: "Wen - The Aftermath"
+description: "Wen approaches the player after Layla's Act 3. If Layla and the player are together, Wen acts as a slightly jealous but supportive conspirator. If they broke up or remained friends, Wen immediately swoops in to flirt with the player, eager to prove she is bolder than Layla."
+character_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+dialogue_scope: character
+start_node_id: wen_aftermath_branch
+
+nodes:
+  wen_aftermath_branch:
+    id: wen_aftermath_branch
+    type: system
+    text: ""
+    choices:
+      - id: branch_lovers
+        text: "[Layla is Lover]"
+        next_node_id: wen_aftermath_lovers_start
+        condition:
+          flag: layla_ending_lovers
+        hidden: true
+
+      - id: branch_single
+        text: "[Layla is Single]"
+        next_node_id: wen_aftermath_single_start
+        hidden: true
+
+  # ============================================
+  # LOVERS BRANCH: The Conspirator
+  # ============================================
+  wen_aftermath_lovers_start:
+    id: wen_aftermath_lovers_start
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "So. You actually did it. You made her choose you."
+    thought: "Wen looks at the player with a mix of respect and something else — maybe a little jealousy. She's no longer the only one Layla trusts, and she's lost some control, but she's decided to play the supportive handler anyway."
+    visual:
+      expression: smirk
+      position: right
+    choices:
+      - id: lovers_modest
+        text: "We chose each other, Wen."
+        next_node_id: wen_aftermath_lovers_plan
+        effects:
+          stat_set:
+            wen_zhao_trust: 5
+      - id: lovers_proud
+        text: "Was there ever any doubt?"
+        next_node_id: wen_aftermath_lovers_plan
+        effects:
+          stat_set:
+            wen_zhao_tension: 5
+
+  wen_aftermath_lovers_plan:
+    id: wen_aftermath_lovers_plan
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Right, well. Don't get too comfortable. Her parents are still her parents, and the community still talks. Which means you still need me. I know the blind spots in the northern district. When you need to hide her, you ask me."
+    thought: "She's carving out a role for herself in their relationship. If she can't control Layla's rebellion anymore, she'll settle for managing the logistics. It keeps her close to the danger without taking any of the real risk."
+    visual:
+      expression: calculating
+    choices:
+      - id: lovers_accept_help
+        text: "We appreciate it, Wen. Truly."
+        next_node_id: wen_aftermath_lovers_resolved
+        effects:
+          stat_set:
+            wen_zhao_trust: 10
+      - id: lovers_wary
+        text: "Just don't push her into anything stupid."
+        next_node_id: wen_aftermath_lovers_resolved
+        effects:
+          stat_set:
+            wen_zhao_tension: 5
+
+  wen_aftermath_lovers_resolved:
+    id: wen_aftermath_lovers_resolved
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "I'm not the one she has to worry about anymore, R. That's your job now. ...Just, take care of her, okay? She's braver than she looks, but she still breaks easy."
+    thought: "For a split second, the mask slips. The calculating handler vanishes, leaving just a protective friend. She really does care about Layla, even if she doesn't know how to do it without turning it into a game."
+    visual:
+      expression: tender
+    is_end: true
+    effects:
+      flag_set:
+        wen_agreed_to_help_lovers: true
+      state_set:
+        last_wen_encounter_at: NOW
+
+  # ============================================
+  # SINGLE BRANCH: The Opportunist
+  # ============================================
+  wen_aftermath_single_start:
+    id: wen_aftermath_single_start
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "So. Layla backed out. Or you did. Honestly, I'm not surprised. I told you she was too scared of her own shadow."
+    thought: "Wen doesn't waste any time. The moment Layla is out of the picture, Wen moves in. She's always seen herself as the bolder, more experienced one. Now she wants to prove it."
+    visual:
+      expression: calculating
+      position: right
+    choices:
+      - id: single_defend
+        text: "It was mutual. It just didn't work out."
+        next_node_id: wen_aftermath_single_flirt
+        effects:
+          stat_set:
+            wen_zhao_trust: 5
+      - id: single_agree
+        text: "Yeah, she wasn't ready."
+        next_node_id: wen_aftermath_single_flirt
+        effects:
+          stat_set:
+            wen_zhao_alignment: 5
+
+  wen_aftermath_single_flirt:
+    id: wen_aftermath_single_flirt
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Exactly. She likes the idea of rebelling, but she doesn't actually want to cross the line. Some of us don't have that problem. We know what we want. And we're not afraid to take it."
+    thought: "She steps a little closer. The implication is obvious. She's framing herself as the upgrade — the girl who won't hesitate where Layla did. The 'experienced' act is in full swing, and she wants him to play along."
+    visual:
+      expression: smirk
+    choices:
+      - id: single_reciprocate
+        text: "Is that right? And what do you want?"
+        next_node_id: wen_aftermath_single_hooked
+        effects:
+          stat_set:
+            wen_zhao_tension: 10
+            wen_zhao_alignment: 10
+      - id: single_reject
+        text: "Wen, she's your friend. Let's not."
+        next_node_id: wen_aftermath_single_rejected
+        effects:
+          stat_set:
+            wen_zhao_trust: -5
+            wen_zhao_tension: 5
+
+  wen_aftermath_single_hooked:
+    id: wen_aftermath_single_hooked
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Maybe I'll show you. When the time is right. Just don't expect me to hide in library corners, R. I prefer a little more... risk."
+    thought: "She smiles, clearly thrilled that the bait was taken. She's officially crossed the line, stealing the spotlight — and the boy — from her best friend. But beneath the thrill, there's a nervous edge. She's just written a check her 'experienced' persona will have to cash."
+    visual:
+      expression: happy
+    is_end: true
+    effects:
+      flag_set:
+        wen_flirtation_started: true
+      state_set:
+        last_wen_encounter_at: NOW
+
+  wen_aftermath_single_rejected:
+    id: wen_aftermath_single_rejected
+    type: character
+    speaker_id: d1fc0275-af55-4fe0-8fc2-a36c42c264ae
+    text: "Wow. Okay. I was just making a point, but sure. Be the noble guy. Suits you. Just don't come crying to me when you realize what you missed out on."
+    thought: "She deflects instantly, wrapping the rejection in a layer of defensive condescension. Her pride is stung, but she won't let him see it. The 'confident' mask snaps firmly back into place."
+    visual:
+      expression: angry
+    is_end: true
+    effects:
+      flag_set:
+        wen_flirtation_rejected: true
+      state_set:
+        last_wen_encounter_at: NOW
+
+metadata:
+  version: "1.0"
+  required_flags:
+    layla_relationship_resolved: true
+  tags:
+    - "wen_zhao"
+    - "layla"
+    - "aftermath"
+    - "flirting"
+    - "gate_logic"
+  notes: |
+    Occurs after Layla's Act 3 endings. If Layla is the player's lover, Wen
+    acts as the logistical handler to help them hide. If the player and Layla
+    broke up or stayed friends, Wen immediately swoops in to flirt, initiating
+    her own romance arc.

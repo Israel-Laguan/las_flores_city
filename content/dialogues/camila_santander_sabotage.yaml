@@ -1,0 +1,77 @@
+id: "f1000000-0000-0000-0000-000000000002"
+name: "Camila Santander - Sabotage"
+description: "Camila tasks the player with destroying a developer's security camera, framing it playfully."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+dialogue_scope: "character"
+start_node_id: "sabotage_node_1"
+nodes:
+  sabotage_node_1:
+    id: "sabotage_node_1"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "You made it! Perfect timing. Okay, look up at the ridge near the old pine. See that blinking red light? Horizon Development just installed a security camera to monitor 'unauthorized hikers'."
+    thought: "(Expression: calculating. She's standing deliberately behind a large boulder, completely out of the camera's line of sight.)"
+    choices:
+      - id: "ask_plan"
+        text: "I see it. What's the plan?"
+        next_node_id: "sabotage_node_2"
+
+  sabotage_node_2:
+    id: "sabotage_node_2"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "The plan? You're going to take down that camera! Smash it, hack it, spray paint it—whatever you want. Teach those evil bastards a lesson, haha! Make it fun!"
+    thought: "(Expression: happy. She laughs, framing the felony destruction of property as a fun, spontaneous game between friends.)"
+    choices:
+      - id: "agree_enthusiastic"
+        text: "Say less. I'll make sure it's offline permanently."
+        next_node_id: "sabotage_node_3"
+      - id: "point_out_hiding"
+        text: "You sound really enthusiastic for someone hiding behind a rock."
+        next_node_id: "sabotage_node_2a"
+
+  sabotage_node_2a:
+    id: "sabotage_node_2a"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Hey, I have a tourism license to protect! If they catch me on tape, they pull my permit. But if they just catch some... unruly hiker they don't know? Well, I can't be held responsible for every random vandal on the mountain, can I?"
+    thought: "(Expression: calculating -> happy. She openly admits to using the player as a scapegoat, but delivers it with a playful wink.)"
+    choices:
+      - id: "accept_logic"
+        text: "Fair point. Plausible deniability. I'll take care of it."
+        next_node_id: "sabotage_node_3"
+      - id: "demand_more_money"
+        text: "If I'm taking all the risk, my cut just went up."
+        next_node_id: "sabotage_node_2b"
+
+  sabotage_node_2b:
+    id: "sabotage_node_2b"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "Ooh, a tough negotiator. I like it. Fine, 20% bonus if you take it out without triggering the silent alarm. Now go get 'em, tiger."
+    thought: "(Expression: surprised -> determined. She respects the hustle, since it mirrors her own greed.)"
+    choices:
+      - id: "go_do_it"
+        text: "[Approach the camera.]"
+        next_node_id: "sabotage_node_3"
+
+  sabotage_node_3:
+    id: "sabotage_node_3"
+    type: "character"
+    speaker_id: "66856547-525f-4d5d-8b3c-6a264134d868"
+    text: "I'll be right here 'enjoying the scenery.' Let me know when the coast is clear!"
+    thought: "(Expression: tender. She gives an encouraging wave from her perfectly safe hiding spot.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_quest_camera_active: true
+      story_beat: act1_camila_camera_sabotage
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_santander"
+    - "sabotage"
+    - "camera"

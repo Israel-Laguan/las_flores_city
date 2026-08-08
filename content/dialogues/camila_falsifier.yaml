@@ -1,0 +1,114 @@
+id: "f0000000-0000-0000-0000-000000000020"
+name: "Camila Reyes - The Falsifier"
+description: "The player takes Camila to a document forger in the industrial district to get a Van Der Meer access badge."
+scene_id: "00000000-0000-0000-0000-000000000000"
+character_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+dialogue_scope: "character"
+start_node_id: "f0000000-0000-0000-0000-000000000021"
+nodes:
+  f0000000-0000-0000-0000-000000000021:
+    id: "f0000000-0000-0000-0000-000000000021"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "This is the place? It smells like burned circuit boards."
+    thought: "(Expression: determined. She surveys the forger's back-alley shop with nervous energy.)"
+    choices:
+      - id: "falsifier_player_talks"
+        text: "It usually does. Let me do the talking."
+        next_node_id: "f0000000-0000-0000-0000-000000000022"
+
+  f0000000-0000-0000-0000-000000000022:
+    id: "f0000000-0000-0000-0000-000000000022"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Actually, I prepared a brief on the exact level of access we need. I have it right here — the technical specifications for a Tier-2 Van Der Meer administrative subnet badge, the biometric spoofing requirements, and a cost breakdown I found in a university—"
+    thought: "(Expression: focused. She immediately overrides the player's lead, pulling out a document folder.)"
+    choices:
+      - id: "falsifier_responds"
+        text: "..."
+        next_node_id: "f0000000-0000-0000-0000-000000000023"
+
+  f0000000-0000-0000-0000-000000000023:
+    id: "f0000000-0000-0000-0000-000000000023"
+    type: "narrator"
+    text: "The falsifier doesn't look up."
+    choices:
+      - id: "falsifier_triple"
+        text: "[Falsifier]: Sweetheart, I charge triple when clients bring a 'brief.'"
+        next_node_id: "f0000000-0000-0000-0000-000000000024"
+
+  f0000000-0000-0000-0000-000000000024:
+    id: "f0000000-0000-0000-0000-000000000024"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "What? Why?"
+    thought: "(Expression: shocked. She genuinely doesn't understand.)"
+    choices:
+      - id: "falsifier_idealist"
+        text: "[Falsifier]: Because it means I'm doing the job for an idealist, and idealists get nervous, and nervous clients talk to people they shouldn't."
+        next_node_id: "f0000000-0000-0000-0000-000000000025"
+
+  f0000000-0000-0000-0000-000000000025:
+    id: "f0000000-0000-0000-0000-000000000025"
+    type: "player"
+    choices:
+      - id: "vouch_for_her"
+        text: "She won't be a problem. Name your price."
+        next_node_id: "f0000000-0000-0000-0000-000000000026"
+        relationship_change:
+          stat: "trust"
+          amount: 1
+      - id: "honest_about_her"
+        text: "She has a point though. She's going to be nervous. Can you guarantee a clean job?"
+        next_node_id: "f0000000-0000-0000-0000-000000000027"
+
+  f0000000-0000-0000-0000-000000000026:
+    id: "f0000000-0000-0000-0000-000000000026"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Thank you. I would have argued with him for an hour."
+    thought: "(Expression: tender. A rare, quiet moment of genuine gratitude.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000029"
+
+  f0000000-0000-0000-0000-000000000027:
+    id: "f0000000-0000-0000-0000-000000000027"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "I'm standing right here. I can handle pressure."
+    thought: "(Expression: angry.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000028"
+
+  f0000000-0000-0000-0000-000000000028:
+    id: "f0000000-0000-0000-0000-000000000028"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "...Can you tell him I can handle pressure?"
+    thought: "(Expression: vulnerable. A small, involuntary concession.)"
+    next_node_id: "f0000000-0000-0000-0000-000000000029"
+
+  f0000000-0000-0000-0000-000000000029:
+    id: "f0000000-0000-0000-0000-000000000029"
+    type: "narrator"
+    text: "[Falsifier]: Three days. Half upfront, half on delivery. And if this blows back on my shop, I'll sell your contact info to Van Der Meer myself. We clear?"
+    next_node_id: "f0000000-0000-0000-0000-000000000030"
+
+  f0000000-0000-0000-0000-000000000030:
+    id: "f0000000-0000-0000-0000-000000000030"
+    type: "character"
+    speaker_id: "36375e33-3a5d-4290-891e-09f5530267e7"
+    text: "Crystal. Let's talk delivery timeline."
+    thought: "(Expression: determined. She steps forward and immediately cuts the player out of the negotiation she just made them facilitate.)"
+    is_end: true
+    effects:
+      flag_set:
+        camila_falsifier_complete: true
+        camila_badge_in_progress: true
+      story_beat: act1b_camila_falsifier
+
+metadata:
+  version: "1.0"
+  author: "Las Flores Team"
+  tags:
+    - "camila_reyes"
+    - "falsifier"
+    - "act1b"
