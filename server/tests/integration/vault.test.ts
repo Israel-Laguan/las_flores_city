@@ -7,6 +7,7 @@ import path from 'path';
 import pg from 'pg';
 import * as yaml from 'js-yaml';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
@@ -44,7 +45,9 @@ async function applyMigration(pool: pg.Pool, filename: string) {
     'utf-8'
   );
   try {
-    await pool.query(sql);
+    await withSchemaLock(async () => {
+      await pool.query(sql);
+    });
   } catch {
     // Migration may already be applied
   }

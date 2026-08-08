@@ -15,6 +15,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { queryOLTP } from '../../src/database/connection.js';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { authRouter } from '../../src/routes/auth.js';
 import { playerRouter } from '../../src/routes/player.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
@@ -38,7 +39,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch {
     // Column may already exist
   }

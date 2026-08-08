@@ -24,6 +24,7 @@ jest.mock('../../src/database/redis.js', () => ({
 import * as yaml from 'js-yaml';
 import crypto from 'crypto';
 import { processContentFile } from '../../src/content/upsert.js';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 
 const { Pool } = pg;
 
@@ -51,25 +52,32 @@ describe('Story Beat Pipeline Integration', () => {
       connectionTimeoutMillis: 5000,
     });
 
-    // Run the SQL migration first so the table exists before we clean it.
-    const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
-    const migrationSql = await fs.readFile(migrationPath, 'utf-8');
-    await pool.query(migrationSql);
+    // Run the SQL migration first so the table exists before we clean it. The
+    // DDL + whole-table reconcile are serialized against other suites' schema
+    // mutation (and migrateContent) via the shared schema lock.
+    await withSchemaLock(async () => {
+      const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
+      const migrationSql = await fs.readFile(migrationPath, 'utf-8');
+      await pool.query(migrationSql);
 
-    // Fully reconcile the registry to a clean baseline. Clearing the whole
-    // table (rather than only a hardcoded slug list) means the row-count
-    // assertion reflects exactly what story_beats.yaml defines, and does not
-    // depend on pre-existing or orphaned rows left by other suites or by beats
-    // that have since been removed from the yaml.
-    await pool.query('DELETE FROM story_beats');
+      // Fully reconcile the registry to a clean baseline. Clearing the whole
+      // table (rather than only a hardcoded slug list) means the row-count
+      // assertion reflects exactly what story_beats.yaml defines, and does not
+      // depend on pre-existing or orphaned rows left by other suites or by beats
+      // that have since been removed from the yaml.
+      await pool.query('DELETE FROM story_beats');
+    });
   });
 
   afterAll(async () => {
     // Restore the canonical story_beats registry. These are real content slugs,
     // so we must NOT delete them — doing so leaves the shared registry empty
     // and breaks content-pipeline.test.ts, which validates dialogue/scene
-    // story_beat cross-references against it. Re-populate instead.
-    await processContentFile(path.join(CONTENT_DIR, 'story_beats.yaml'));
+    // story_beat cross-references against it. Re-populate instead. Runs under
+    // the schema lock so the restore is atomic vs. concurrent readers.
+    await withSchemaLock(async () => {
+      await processContentFile(path.join(CONTENT_DIR, 'story_beats.yaml'));
+    });
     await pool.end();
   });
 

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { queryOLTP, closeConnections } from '../../src/database/connection.js';
 import { closeRedis } from '../../src/database/redis.js';
 import { LeaderboardWorker } from '../../src/workers/LeaderboardWorker.js';
@@ -41,7 +42,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch {
     // Column may already exist — that's fine
   }
@@ -74,13 +77,16 @@ describe('Aftermath Worker', () => {
        ON CONFLICT (name) DO NOTHING`
     );
 
-    // Seed a RESOLVING mystery with the aftermath payload.
+    // Seed a RESOLVING mystery with the aftermath payload. Seeded **non-expired**
+    // so a concurrent (filterless) worker sweep from a sibling test can never
+    // finalize it mid-seed. The suite expires its own mystery immediately before
+    // each scoped worker invocation.
     await queryOLTP(
       `INSERT INTO mysteries (id, title, description, status, expires_at, aftermath_payload)
-       VALUES ($1, 'Aftermath Test Mystery', 'Worker test', 'RESOLVING', NOW() - INTERVAL '10 minutes', $2)
+       VALUES ($1, 'Aftermath Test Mystery', 'Worker test', 'RESOLVING', NOW() + INTERVAL '1 hour', $2)
        ON CONFLICT (id) DO UPDATE SET
          status = 'RESOLVING',
-         expires_at = NOW() - INTERVAL '10 minutes',
+         expires_at = NOW() + INTERVAL '1 hour',
          aftermath_payload = $2`,
       [MYSTERY_ID, JSON.stringify(AFTERMATH_PAYLOAD)]
     );
@@ -158,8 +164,16 @@ describe('Aftermath Worker', () => {
 
   test('Worker demotes clue items to mementos and scrubs characters', async () => {
     // The mystery has no solvers, so the worker takes the no-solvers
-    // path (getSolvers returns []).
-    await LeaderboardWorker.processExpiredMysteries();
+    // path (getSolvers returns []). Expire this suite's own mystery, then run
+    // the worker scoped to it so a sibling worker sweep cannot interfere.
+    await queryOLTP(
+      `UPDATE mysteries
+          SET status = 'RESOLVING',
+              expires_at = NOW() - INTERVAL '10 minutes'
+        WHERE id = $1`,
+      [MYSTERY_ID]
+    );
+    await LeaderboardWorker.processExpiredMysteries([MYSTERY_ID]);
 
     // 1. Clue item should now be a memento.
     const { rows: clueRows } = await queryOLTP<{ item_type: string }>(
@@ -195,7 +209,7 @@ describe('Aftermath Worker', () => {
   test('Idempotent: running worker again is a safe no-op', async () => {
     // The mystery is already ARCHIVED, so processExpiredMysteries
     // skips it entirely (WHERE status = 'RESOLVING').
-    await LeaderboardWorker.processExpiredMysteries();
+    await LeaderboardWorker.processExpiredMysteries([MYSTERY_ID]);
 
     // Clue item should still be memento (UPDATE is idempotent
     // but the worker never reaches applyAftermath on ARCHIVED).

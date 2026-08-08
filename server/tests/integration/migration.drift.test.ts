@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import path from 'path';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import pg from 'pg';
 import { migrateContent, extractContentIds } from '../../src/content/migrate.js';
 import { closeRedis } from '../../src/database/redis.js';
@@ -34,7 +35,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch (error: any) {
     // For migration_log constraint updates, force apply even if it "fails"
     if (filename === '046_stories.sql' && error.message?.includes('migration_log_content_type_check')) {

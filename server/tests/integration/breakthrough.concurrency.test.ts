@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
 import { closeRedis } from '../../src/database/redis.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
@@ -91,7 +92,9 @@ async function setupTestFixtures(): Promise<string[]> {
       'utf-8'
     );
     try {
-      await queryOLTP(sql);
+      await withSchemaLock(async () => {
+        await queryOLTP(sql);
+      });
     } catch {
       // Column may already exist
     }

@@ -1,6 +1,7 @@
 import { queryOLTP, closeConnections } from '../../src/database/connection.js';
 import { invalidatePattern, closeRedis } from '../../src/database/redis.js';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 
@@ -59,7 +60,9 @@ describe('Dialogue speakers enrichment', () => {
         'utf-8'
       );
       try {
-        await queryOLTP(sql);
+        await withSchemaLock(async () => {
+          await queryOLTP(sql);
+        });
       } catch (err: any) {
         // Swallow only the already-applied SQLSTATEs (duplicate table/object),
         // not real migration failures (syntax, permission, connection) —

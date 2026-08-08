@@ -4,6 +4,7 @@ import { DialogueResolver, deepMergeNodes } from '../../src/services/DialogueRes
 import type { DialogueNode } from '@las-flores/shared';
 import fs from 'fs';
 import path from 'path';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 
 // ============================================================
 // Archive Room (Legacy Play) integration tests
@@ -72,7 +73,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await queryOLTP(sql);
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
   } catch {
     // Column may already exist
   }

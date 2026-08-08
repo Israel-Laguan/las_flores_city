@@ -3,6 +3,7 @@ import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { playerRouter } from '../../src/routes/player.js';
 import { locationRouter } from '../../src/routes/location.js';
 import { generateToken } from '../../src/middleware/auth.js';
@@ -35,7 +36,9 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await pool.query(sql);
+    await withSchemaLock(async () => {
+      await pool.query(sql);
+    });
   } catch (err: any) {
     if (err.code === '42P07' || err.code === '42701') {
       console.warn(`applyMigration(${filename}) ignored idempotent error:`, err.message);

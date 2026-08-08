@@ -17,6 +17,7 @@ import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
 import express from 'express';
+import { withSchemaLock } from '../helpers/schemaLock.js';
 import { paypalRouter } from '../../src/routes/paypal.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { closeRedis, deleteCache } from '../../src/database/redis.js';
@@ -45,7 +46,9 @@ async function applyMigration(pool: pg.Pool, filename: string) {
     'utf-8'
   );
   try {
-    await pool.query(sql);
+    await withSchemaLock(async () => {
+      await pool.query(sql);
+    });
   } catch {
     // Migration may already be applied
   }

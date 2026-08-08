@@ -162,44 +162,21 @@ async function recordMigration(
 }
 
 async function acquireMigrationLock(): Promise<pg.PoolClient | null> {
-  const MAX_RETRIES = 5;
-  const RETRY_DELAY_MS = 200;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    let client: pg.PoolClient;
-    try {
-      client = await oltpPool.connect();
-    } catch (error) {
-      if (attempt === MAX_RETRIES - 1) throw error;
-      await sleep(RETRY_DELAY_MS);
-      continue;
-    }
-
-    try {
-      const result = await client.query<{ pg_try_advisory_lock: boolean }>(
-        `SELECT pg_try_advisory_lock(hashtext('content_migration')) AS pg_try_advisory_lock`
-      );
-      if (result.rows[0].pg_try_advisory_lock) {
-        return client;
-      }
-      client.release();
-    } catch (error) {
-      client.release();
-      if (attempt === MAX_RETRIES - 1) throw error;
-      await sleep(RETRY_DELAY_MS);
-      continue;
-    }
-
-    if (attempt < MAX_RETRIES - 1) {
-      await sleep(RETRY_DELAY_MS);
-    }
+  try {
+    const client = await oltpPool.connect();
+    // Blocking advisory lock: wait for the global content-migration lock to be
+    // released rather than try-and-give-up. Under concurrent invocations (e.g.
+    // parallel integration-test workers sharing one Postgres instance, or a
+    // second admin-triggered migration) the later caller waits for the current
+    // holder to finish instead of spurious `success: false`. The advisory key
+    // `content_migration` is also used by tests/helpers/schemaLock.ts so that a
+    // migration here serializes against other suites' schema DDL too.
+    await client.query(`SELECT pg_advisory_lock(hashtext('content_migration'))`);
+    return client;
+  } catch (error) {
+    console.error('[migrate] Failed to acquire content migration lock:', error);
+    return null;
   }
-
-  return null;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function releaseMigrationLock(client: pg.PoolClient): Promise<void> {
