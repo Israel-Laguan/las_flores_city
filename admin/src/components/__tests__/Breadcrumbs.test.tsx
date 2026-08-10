@@ -29,6 +29,7 @@ function renderWith(pathname: string, registrar?: { id: string; label: string | 
 }
 
 afterEach(() => {
+  mockPathname = '/';
   cleanup();
 });
 

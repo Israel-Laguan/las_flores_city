@@ -75,6 +75,7 @@ function parseArgs(argv: string[]): ProbeOptions {
         process.exit(0);
       case '-i':
       case '--input':
+        if (inputFile !== null) failUsage('input file given more than once');
         inputFile = expandTilde(next());
         break;
       case '-d':
