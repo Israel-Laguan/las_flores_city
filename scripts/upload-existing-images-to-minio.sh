@@ -17,7 +17,7 @@ form las-flores/<assetType>/<name><ext>.
   -h, --help  Show this help and exit.
 
 Environment:
-  MINIO_ENDPOINT    MinIO endpoint host (default: minio)
+  MINIO_ENDPOINT    MinIO endpoint host (default: localhost)
   MINIO_PORT        MinIO API port (default: 9000; appended if endpoint has no port)
   MINIO_ACCESS_KEY  MinIO access key (required for a real upload)
   MINIO_SECRET_KEY  MinIO secret key (required for a real upload)
