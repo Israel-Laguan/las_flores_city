@@ -56,4 +56,21 @@ describe('PlanTemplates', () => {
     const plan = template!.buildPlan('The lithium leak mystery');
     expect(plan.description).toContain('The lithium leak mystery');
   });
+
+  it('add-mission-from-scene template is registered and yields 4 items + both links', () => {
+    const template = getTemplateById('add-mission-from-scene');
+    expect(template).toBeDefined();
+    const plan = template!.buildPlan('Test mission from scene');
+    expect(plan.items).toHaveLength(4);
+    expect(plan.items.map(i => i.type)).toContain('mission');
+    expect(plan.items.map(i => i.type)).toContain('character');
+    expect(plan.items.map(i => i.type)).toContain('scene');
+    expect(plan.items.map(i => i.type)).toContain('dialogue');
+
+    // Both links: scene -> dialogue (available_dialogues) and dialogue -> mission (mission_id)
+    expect(plan.links.length).toBeGreaterThanOrEqual(2);
+    const linkFields = plan.links.map(l => l.field);
+    expect(linkFields).toContain('available_dialogues');
+    expect(linkFields).toContain('mission_id');
+  });
 });

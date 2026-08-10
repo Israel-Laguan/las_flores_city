@@ -271,12 +271,18 @@ function parseCharacterExpressionMap(yamlFiles) {
     if (typeof data.id !== 'string') continue;
 
     const expressions = new Set();
+    let hasUntaggedDefault = false;
     if (Array.isArray(data.portrait_urls)) {
       for (const entry of data.portrait_urls) {
         if (entry && typeof entry.expression === 'string' && entry.expression.length > 0) {
           expressions.add(entry.expression.toLowerCase());
+        } else if (entry && !hasUntaggedDefault) {
+          hasUntaggedDefault = true;
         }
       }
+    }
+    if (hasUntaggedDefault) {
+      expressions.add('default');
     }
     charMap.set(data.id, {
       name: typeof data.name === 'string' ? data.name : data.id,

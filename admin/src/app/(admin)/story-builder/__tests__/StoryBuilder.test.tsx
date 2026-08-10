@@ -111,3 +111,49 @@ describe('ResultsStep (Milestone 08)', () => {
     expect(screen.getByText(/solidify failed/i)).toBeInTheDocument();
   });
 });
+
+describe('CoverageSection (GAP 7)', () => {
+  it('renders unplanned entities from _meta.entity_roster', () => {
+    const planWithRoster: ContentPlan = {
+      ...createPlan(),
+      _meta: {
+        entity_roster: [
+          { name: 'Mysterious Stranger', type: 'character', description: 'Shadows' },
+        ],
+      },
+    };
+    render(
+      <ReviewStep
+        {...{
+          plan: planWithRoster,
+          planId: '00000000-0000-0000-0000-000000000001',
+          loading: false,
+          onRegenerateLore: noop,
+          refineFeedback: '',
+          setRefineFeedback: noop,
+          showRefine: false,
+          setShowRefine: noop,
+          onRefine: noop,
+          onUpdateItem: noop,
+          onRemoveItem: noop,
+          onAddItem: noop,
+          onAssetPathRemove: noop,
+          onDependsOnChange: noop,
+          onUpdateLink: noop,
+          onAddLink: noop,
+          onRemoveLink: noop,
+          onGenerateDrafts: noop,
+          onChooseDraft: noop,
+          draftAssetsByItem: {},
+          draftLoading: false,
+          onApproveAndShip: noop,
+          approving: false,
+          genStatus: { status: 'idle', progress: undefined },
+          onAddFromRoster: noop,
+        }}
+      />
+    );
+    expect(screen.getByText(/Mentioned but not planned/)).toBeInTheDocument();
+    expect(screen.getByText('Mysterious Stranger')).toBeInTheDocument();
+  });
+});

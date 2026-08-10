@@ -170,7 +170,7 @@ inventing a new contract layer — it exists and is dependency-free.
 **Effort:** Low (days) · **Risk:** Very low · **Reversibility:** Trivial
 
 Keep one process, one DB, but reorganize `server/src/` into explicit bounded contexts:
-```
+```text
 server/src/
   domains/
     game/          ← routes, DialogueResolver, BankService, PlayerStateRepo
@@ -298,13 +298,25 @@ The route returns `pending` fast (good), but `runSolidify` keeps running **in th
 Node process**. It calls `stagePlan` → the LLM provider (`LiteLLMProvider`/NIM/
 Pollinations), which are long HTTP calls (30–60s+), plus `AssetGenerationService` image
 generation with token-bucket rate limiting and 6 retries at 60s backoff
-(`AssetGenerationService.ts:7-9`). All of this occupies the **single event loop** and
-libuv threadpool slots that the game server needs for sub-100ms dialogue responses.
+(`AssetGenerationService.ts:7-9`). All of this shares the **single event loop**
+and competes for libuv threadpool resources that the game server also needs.
 
-Node default `UV_THREADPOOL_SIZE=4` handles DNS/TLS/fs for *all* these fetches *and* the
-game's DB connections. A burst of LLM calls can starve the game's I/O.
+Node default `UV_THREADPOOL_SIZE=4` handles `dns.lookup()`, filesystem I/O,
+crypto/compression, and CPU-heavy parsing (e.g. image processing, JSON decoding of
+large chunks) for **both** the LLM pipeline and the game. Standard `fetch`/HTTP sockets
+and non-blocking database traffic are handled by the event loop's non-blocking I/O
+(epoll/kqueue/IOCP) and do **not** consume threadpool slots. However, the LLM pipeline's
+`dns.lookup()` calls (provider endpoints), file reads of prompt/lore files, and
+image-processing work in `AssetGenerationService` can still occupy the threadpool and
+reduce headroom for the game's I/O during bursts.
 
 ### Options for content read optimization
+
+> ⚠️ **Contract warning:** A1 (open a second pg `Pool`) would violate the repo's
+> documented hard constraint in `AGENTS.md`, which forbids introducing new pools and
+> mandates using only the existing `oltpPool` / `withOLTPTransaction` / `getCache` /
+> `setCache` / `queryOLAP` patterns. Implement A1 only if the contract is updated
+> first, or drop it in favor of A2/A4.
 
 | Option | Description | Feasibility |
 |---|---|---|
@@ -313,7 +325,7 @@ game's DB connections. A burst of LLM calls can starve the game's I/O.
 | **A3. Content as a separate DB** | Move content tables to a 3rd Postgres. Breaks cross-table joins. | ★★☆☆☆ |
 | **A4. Content snapshot to Redis/disk on migrate** | Write a denormalized resolved snapshot per dialogue; runtime reads only the snapshot. | ★★★☆☆ |
 
-**Recommendation:** A1 now, A2 when load demands.
+**Recommendation:** A2 or A4 now; revisit A1 only if the pool contract changes.
 
 ### Options for authoring workload separation
 
@@ -417,7 +429,7 @@ ContentPlanSchema:     { items: [...], links: [...], status, ... }              
 ```
 The `ContentPlanSchema` even **validates cross-link integrity** (lines 73–90: rejects
 links referencing unknown items). And `content_plans.status` already has the lifecycle:
-```
+```text
 draft → proposed → approved → staged → migrated → verified → failed
 ```
 
@@ -437,10 +449,10 @@ authoring canvas be a real graph DB instead of `plan_json` JSONB?
 | Authoring task | With `plan_json` | With graph DB |
 |---|---|---|
 | "What links to character X?" | Scan all items' fields + `links[]` in JS — O(n) per query | `MATCH (c:Character)<-[:SPOKEN_BY]-(d:Dialogue) RETURN d` — O(hops) |
-| "Is this plan internally consistent?" | Custom validation in `ContentPlanSchema.superRefine` | Built-in: orphan nodes, dangling edges are structural anomalies |
+| "Is this plan internally consistent?" | Custom validation in `ContentPlanSchema.superRefine` | Requires explicit Cypher queries + application validators — orphans, dangling edges, and invalid cycles are not automatically enforced |
 | "What changes if I edit mission Y?" | Not supported — scan every plan | 1-hop traversal query |
 | Visual editing of relationships | Admin `content-linker` edits YAML fields by path string — clunky | Neo4j Browser/Bloom: drag to connect |
-| Detecting cycles in `dependsOn` | `topologicalSort` throws on cycle (runtime) | Cycle detection is native |
+| Detecting cycles in `dependsOn` | `topologicalSort` throws on cycle (runtime) | Requires explicit Cypher cycle-detection query (e.g. `apoc.path`) + application validator |
 | Multi-plan composition | Can't — plans are isolated JSONB blobs | Edges cross plan boundaries; one global content graph |
 
 ### Three approaches compared
@@ -451,8 +463,9 @@ authoring canvas be a real graph DB instead of `plan_json` JSONB?
 - ★★★★★ for branching/merging, ★☆☆☆☆ for relationship analysis.
 
 **Approach B — Graph DB as authoring canvas:**
-- Plans = subgraphs (`plan_id` property); approved lore = `status='approved'` nodes;
-  approve = transaction promoting plan nodes.
+- Plans = subgraphs (`plan_id` property); approved lore = nodes with `plan_id: NULL`
+  (deltas promoted from `plan_id=$pid` on approve — equivalent to `status='approved'`;
+  `approve` = transaction promoting plan nodes to `plan_id: NULL`).
 - ★★★★☆ for relationship analysis, ★★★☆☆ for branching/merging (reinventing git).
 
 **Approach C — Hybrid (recommended): git for branching, graph for analysis:**
@@ -500,7 +513,7 @@ instead of true field-level deltas. The graph DB fixes both.
 
 ### Plan storage: OLTP metadata + graph deltas (split)
 
-```
+```text
 OLTP (content_plans)              Graph DB
 ──────────────────────            ──────────────────────────────────
 id, status, created_by,           nodes/edges tagged with
@@ -549,20 +562,40 @@ better than git's line-diff and better than the current full-snapshot
 The "merged graph for plan X" is a **query**, not a separate store:
 ```cypher
 // What does the world look like if plan X is approved?
-MATCH (n)
-WHERE n.plan_id IS NULL                      // production base
-   OR n.plan_id = $planId                     // plan's additions/modifications
-WITH n
-// Coalesce: for each (type, slug), prefer plan's shadow over production
-MATCH (merged)
-WHERE NOT EXISTS((t:Tombstone {plan_id:$planId, target_slug:merged.slug, target_type:labels(merged)[0]}))
-OPTIONAL MATCH (shadow {plan_id:$planId, modifies: id(merged)})
-RETURN coalesce(shadow, merged) as effectiveNode
+// 1. Collect production base + plan deltas (no unbound MATCH — no cross-product)
+MATCH (candidate)
+WHERE candidate.plan_id IS NULL              // production base
+   OR candidate.plan_id = $planId             // plan's additions/modifications
+WITH candidate
+// 2. Exclude annotation nodes (Conflict, Suggestion) from the merged view
+WHERE NOT ('Conflict' IN labels(candidate) OR 'Suggestion' IN labels(candidate))
+WITH collect(candidate) AS candidates
+UNWIND candidates AS candidate
+// 3. Skip entities targeted for deletion (tombstones) — bound to candidate
+WITH candidate
+WHERE NOT EXISTS((t:Tombstone {
+  plan_id: $planId,
+  target_slug: candidate.slug,
+  target_type: labels(candidate)[0]   // stable type key per candidate
+}))
+// 4. Resolve each candidate's plan shadow; application layer merges shadow
+//    fields onto the base to preserve unchanged production properties
+OPTIONAL MATCH (shadow {plan_id:$planId, modifies: id(candidate)})
+WITH coalesce(shadow, candidate) AS effectiveNode
+// 5. Aggregate: one effective node per canonical entity (type, slug).
+//    When both a production base and its shadow delta appear, prefer the
+//    production base (plan_id IS NULL) so unchanged fields are preserved.
+WITH effectiveNode, effectiveNode.slug AS slug, labels(effectiveNode)[0] AS type
+ORDER BY slug, type, effectiveNode.plan_id NULLS FIRST
+WITH slug, type, collect(effectiveNode)[0] AS finalNode
+RETURN finalNode AS effectiveNode
 ```
 **This merged view is a live preview of post-migration production** — the admin can *see*
 the merged graph before approving. When `approveAndSolidifyPlan()` runs, the materialized
-SQL+MinIO should match this merged graph (and `verifyPlan()` confirms it). The graph
-merged-state and post-materialize production are **two views of the same truth**.
+SQL+MinIO should match this merged graph. `verifyPlan()` checks path, FK, story-beat, and
+asset consistency in the materialized content, but **does not read the graph** — a new
+verification step that compares the merged graph revision with SQL+MinIO state is a
+required future addition.
 
 ### All three criteria satisfied
 
@@ -597,7 +630,7 @@ patterns.
 
 All the pieces compose into a single coherent target:
 
-```
+```text
                          ┌──────────────────────────────────┐
                          │  CDN (CloudFront / MinIO public) │
                          │  - dialogues/<slug>.json         │ ← immutable content blobs
@@ -656,7 +689,7 @@ All the pieces compose into a single coherent target:
 
 ### Authoring → approve flow with the delta model
 
-```
+```text
 SEED (first migration / content sync)
   import content/ YAML + DB FKs → graph base (plan_id=NULL)
         │
@@ -669,11 +702,9 @@ AUTHOR (plan session, graph DB)
   - Impact analysis: traversals against production base
         │ APPROVE
         ▼
-GRAPH MERGE (apply deltas to base)
-  - promote plan_id=$pid nodes → plan_id=NULL (ADD/MODIFY→production)
-  - apply tombstones (DELETE)
-  - commit plan edges to production
-  - content_plans.status='staging'
+GRAPH MERGE (build merged revision from unchanged base)
+  - build view: base (plan_id=NULL) + plan_id=$pid deltas + tombstones
+  - do NOT mutate production base yet
         │
         ▼
 MATERIALIZE (existing pipeline, UNCHANGED)
@@ -681,9 +712,15 @@ MATERIALIZE (existing pipeline, UNCHANGED)
   - stagePlan → writePlanItems + applyLink (YAML files)
   - publishChosenDrafts → MinIO
   - migrateContent → SQL upserts + chunk compile
-  - verifyPlan → cross-ref check (merged graph == production?)
+  - verifyPlan → cross-ref check (merged graph == production)
   - invalidatePattern → game drops cache
   - content_plans.status='verified'
+        │ (only on success)
+        ▼
+COMMIT GRAPH (advance production base — idempotent)
+  - promote plan_id=$pid nodes → plan_id=NULL (ADD/MODIFY→production)
+  - apply tombstones (DELETE)
+  - commit plan edges to production
         │
         ▼
 production SQL + MinIO + refreshed graph base
@@ -784,6 +821,7 @@ service tomorrow) must satisfy all of these. **No provider method is AI-critique
 | **2** | **Plan generation / fill** — LLM makes authoring decisions (fills fields, writes lore) | ✅ Built | Output should become graph deltas (refactor of format, not LLM logic) |
 | **3** | **Analyze** — button triggers AI to find conflicts + suggestions, leaving them as annotations | ⚠️ Partial | `verifyPlan()` is **deterministic** (FK integrity, file paths, cross-plan consistency). **No AI semantic critique exists.** |
 | **4** | **Chat** — grab a conflict/proposal, chat freely, chat proposes changes, sign-off applies them and refreshes the view | ⚠️ Partial | `refinePlan()`/`refinePlanItems()` are single-turn strings. No multi-turn chat, conflict paste, structured delta, or "apply → refresh" loop |
+
 ### Moment 1 — Intake (add surface-level conflict scan)
 
 `POST /admin/story-builder/generate/plan` → `generateOutline()` → `validateAndRepairOutline`
@@ -842,7 +880,7 @@ cross-mission scans.
 
 `refinePlan()` is the single-turn template. The chat is its multi-turn evolution:
 
-```
+```text
 4a. [📋 Copy to Chat] on a :Conflict node
     → serializes ConflictChatContext (conflict + evidence + neighborhood)
 4b. chatExplain(messages, graphCtx, conflictCtx?)  → prose reply   (cheap, frequent)
@@ -893,7 +931,7 @@ them. This is portable — switching from Bloom to Neodash to a custom React com
 swapping the LLM model, never loses prior annotations (each carries `ai_model` +
 `timestamp` provenance).
 
-```
+```text
                             writes annotations
      AI Critique Service  ─────────────────────►  Graph DB
      (query neighborhood → LLM → parse)            (:Conflict, :Suggestion
@@ -907,10 +945,13 @@ swapping the LLM model, never loses prior annotations (each carries `ai_model` +
 ### AI Critique Service (Moment 3)
 
 Targeted Cypher neighborhood query per entity (not a full-graph dump — too expensive),
-serialize the subgraph including the **actual text** (`d.nodes`, `.md` lore) into an LLM
-prompt asking for structured JSON: `[{type, severity, description, evidence:
-{node_ids, text_excerpts}}]`. Write the parsed output back as `:Conflict` / `:Suggestion`
-nodes linked to their content nodes.
+serialize the subgraph into an LLM prompt. The **authoritative text revision** for AI
+critique is the canonical MinIO/CDN object referenced by `content_url` / `lore_url`
+(checksum-versioned, not graph-stored text) — the graph stores pointers to these objects,
+so preview, critique, and materialization all read from the same explicitly identified
+source. The prompt includes: `[{type, severity, description, evidence:
+{node_ids, content_url, checksum}}]`. Write the parsed output back as `:Conflict` /
+`:Suggestion` nodes linked to their content nodes.
 
 Trigger points: on-save (event-driven), manual "Analyze" (deep, on demand), **pre-approve
 gate** ("AI found 3 conflicts — approve anyway?" safety net before `approveAndSolidifyPlan`),
@@ -945,7 +986,7 @@ interface ConflictChatContext {
 | Tool | What it does | Conflict detection? | Writes back to graph? |
 |---|---|---|---|
 | Microsoft GraphRAG | Builds KG from text, community detection, hierarchical summarization | ❌ construction/retrieval only | builds its own graph |
-| Neo4j + LangChain GraphQA | LLM generates/runs Cypher | ⚠️ structure only — can't read node text via Cypher | ✅ via Cypher |
+| Neo4j + LangChain GraphQA | LLM generates/runs Cypher | ⚠️ structural queries only — semantic contradiction detection requires an explicit NLI/LLM layer | ✅ via Cypher |
 | LangGraph | Orchestrates multi-step LLM workflows as graphs | ✅ can orchestrate "query → critique → annotate" | ✅ via driver |
 | Neo4j Knowledge Graph Builder | LLM builds graph from docs + chat + viz | ❌ construction only | ✅ writes to Neo4j |
 | Graphiti (Zep) | Temporal KG for agent memory | ⚠️ temporal, not narrative critique | ✅ |
@@ -960,7 +1001,7 @@ Bloom/Neodash** — which is exactly the separation recommended here.
 
 New route in the intake-worker (pattern = `refinePlan` + multi-turn + graph-scoped):
 
-```
+```text
 POST /admin/story-builder/chat
   Body: { planId, messages: ChatMessage[], conflictContext?: ConflictChatContext }
   → load plan session → query graph neighborhood (or from conflictContext)
@@ -1002,7 +1043,7 @@ All claims in this document are grounded in the codebase. Key file references:
 
 | Claim | Evidence |
 |---|---|
-| AI/intake never touches player tables | `grep -rE 'player_states\|player_dialogue\|users\|player_events\|...' server/src/services/StoryBuilder*.ts Content*.ts Plan*.ts` → 0 hits |
+| AI/intake never touches player tables | `grep -rE 'player_states\|player_dialogue\|users\|player_events\|...' server/src/services/StoryBuilder*.ts server/src/services/Content*.ts server/src/services/Plan*.ts` → 0 hits |
 | `ContentPlan` is graph-shaped (items=nodes, links=edges) | `shared/src/schemas/story-builder.ts:14-33` (`ContentPlanItemSchema`, `ContentLinkSchema`) |
 | Cross-link validation already exists | `shared/src/schemas/story-builder.ts:55-90` (`ContentPlanSchema.superRefine`) |
 | Plan lifecycle status | `server/src/database/migrations/047_content_plans.sql:8-9` (`CHECK status IN (...)`) |
@@ -1021,7 +1062,7 @@ All claims in this document are grounded in the codebase. Key file references:
 | OLAP pool max 20, 1000ms timeout | `server/src/database/connection.ts:36-41` |
 | Images already externalized to MinIO | `content/characters/*/char_*.yaml` (`portrait_urls: s3://...`) |
 | Content is git-tracked (1175 files) | `git ls-files content/ \| wc -l` → 1175 |
-| Current branch | `prompt-production-master` |
+| Source commit | `0ce5c7d0cf3cbdc85b7520381a05608a6aaabfdd` (2026-08-10) |
 | `ContentPlanItem.action` enum (no delete) | `shared/src/schemas/story-builder.ts:17` (`z.enum(['create', 'update'])`) |
 | `ContentLink.action` enum | `shared/src/schemas/story-builder.ts:32` (`z.enum(['add', 'set'])`) |
 | `AssetGenerationService` token-bucket + retries | `server/src/services/AssetGenerationService.ts:7-9` (`RPM_LIMIT=35`, `MAX_RETRIES=6`, `INITIAL_BACKOFF_MS=60000`) |

@@ -4,11 +4,11 @@
  * check-prompt-lengths.mjs
  * 
  * Scans all .prompt.md files and reports prompts that exceed NVIDIA NIM's
- * 800-character limit. Checks the ## Prompt (Draft) section preferentially;
- * falls back to ## Prompt if no draft section exists. Also validates named
- * variants (`## Prompt — <name>`) and image-to-image background variants
- * (`### \`night\` — <name>` + `**Edit prompt:**`), whose edit prompt is
- * combined with the file-level negative prompt.
+ * 800-character hard limit. 800 is a hard NIM limit for ALL NIM-bound
+ * sections (`## Prompt (Draft)`, `## Prompt — <name>`, i2i variants);
+ * `story-illustration` Base Scene is NIM-bound and is NOT exempt. Bare
+ * `## Prompt` is a manual reference (~2000). Exemption would only hide
+ * text the generator silently truncates.
  * 
  * Usage:
  *   node check-prompt-lengths.mjs
@@ -68,8 +68,16 @@ Options:
   --min-length <chars>  Minimum length to report (default: 700)
   --help, -h             Show this help
 
-The script checks the ## Prompt (Draft) section (or ## Prompt if no draft)
-combined with negative prompt against NVIDIA NIM's 800-character limit.
+Every section bound for NVIDIA NIM is hard-capped at 800 characters:
+  - \`## Prompt (Draft)\` (preferred)
+  - \`## Prompt — <name>\` named variants
+  - image-to-image background variants (\`### \`night\` — <name>\` + \`**Edit prompt:**\`)
+  - \`story-illustration\` Base Scene (NIM-bound, NOT exempt)
+Bare \`## Prompt\` is a manual reference prompt (~2000 chars) and is NEVER
+auto-sent to NIM/Pollinations; it is capped at 2000. Named and bare \`## Prompt\`
+variants are measured on the combined prompt (prompt text + negative prompt);
+drafts and i2i Edit prompts are measured standalone (drafts force
+negativePrompt to '' and i2i edit prompts have no negative).
 `);
 }
 

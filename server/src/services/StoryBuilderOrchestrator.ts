@@ -271,8 +271,9 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
     );
 
     // --- Migrate ---
-    // migrateStagedPlan validates DB status is 'staged'/'approved'/'failed',
+    // migrateStagedPlan validates DB status is 'staged'/'approved',
     // then takes ownership of the 'migrating' transition internally.
+    // (A 'failed' plan must be re-staged before migration is retried.)
     await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
 
     const migrationResult = await migrateStagedPlan(planId, undefined, stageResult.createdFiles);
@@ -321,6 +322,9 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
       verificationReport,
     });
     emitAdminEvent('plan_verified', { status: 'verified' }, planId, userId);
+    // Terminal signal for the single-click "Approve & Solidify" capstone: emit
+    // only after the pipeline fully succeeds. Failures emit `plan_failed` above.
+    emitAdminEvent('plan_solidified', { status: 'verified', success: true }, planId, userId);
   } catch (error: any) {
     console.error(`[story-builder] runSolidify failed for ${planId}:`, error.message);
     try {

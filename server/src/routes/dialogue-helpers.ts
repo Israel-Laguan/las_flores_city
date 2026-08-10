@@ -249,7 +249,7 @@ export async function processRelationshipChange(
  * root-rewards) WITHOUT changing existing keys — preserving the
  * idempotency of already-claimed rewards for production users.
  */
-async function tryClaimReward(
+export async function tryClaimReward(
   client: any,
   userId: string,
   claimKey: string,

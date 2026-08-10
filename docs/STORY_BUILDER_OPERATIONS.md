@@ -268,3 +268,14 @@ probe without any story-bible file.
 | `LLM_OUTLINE_MAX_TOKENS` | `4096` | Max tokens on outline LLM calls |
 | `LLM_OUTLINE_INITIAL_MAX_ITEMS` | `15` | Initial item count cap for outline generation |
 | `PLAN_FILL_TIMEOUT_MS` | `120000` | Per-item fill timeout |
+## 8. Telemetry: admin_events is OLTP
+
+The `admin_events` table stores Story Builder telemetry and admin audit events.
+It is **intentionally OLTP** (not OLAP) to provide low-latency event capture.
+
+- **Why OLTP**: Admin UI event emission must not introduce the latency or
+  overhead of an OLAP write path.
+- **Implementation**: `AdminEventEmitter.emitAdminEvent()` uses `queryOLTP`
+  and swallows errors internally so the caller is never blocked.
+- **Migration**: `060_admin_events_solidified.sql` extends the `event_type`
+  CHECK to include `'plan_solidified'` for the Approve & Ship flow.

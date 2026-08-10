@@ -40,7 +40,7 @@ Direct DB edits outside the migration path are considered drift and are out of s
 | scene | content/scenes/<slug>/scene_<slug>.yaml | YAMLSceneSchema | scenes | uuid | GET /admin/scenes(:id) | /api/location/:id (scene rows returned) |
 | location | content/districts/<district>/locations/<slug>/location_<slug>.yaml | YAMLLocationSchema | scenes | uuid | GET /admin/locations(:id) (filtered metadata->>type=location) | /api/location/:id and /api/location (same row, unfiltered) |
 | gig | content/gigs/*.yaml | YAMLGigSchema | gigs | uuid | GET /admin/gigs(:id) | internal player gigs |
-| mission | content/missions/ or content/mysteries/ | YAMLMissionSchema | mysteries | uuid | GET /admin/mysteries(:id) | /api/mystery/* |
+| mission | content/missions/ | YAMLMissionSchema | mysteries | uuid | GET /admin/missions(:id) | /api/mystery/* |
 | vault | content/vault/*.yaml | file schema | vault_items | uuid | GET /admin/vault(:id) | /api/vault |
 | shop_item | content/shop/*.yaml | file schema | shop_items | uuid | GET /admin/shop(:id) | /api/shop/catalog |
 | story | content/stories/*.yaml | YAMLStorySchema | stories | uuid | GET /admin/stories(:id) | story-builder canvas |
