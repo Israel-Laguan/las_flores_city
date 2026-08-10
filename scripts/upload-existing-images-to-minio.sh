@@ -91,14 +91,24 @@ else
     fi
 fi
 
-# Track keys already emitted this run. A repeated canonical key would let the
-# later file silently replace the earlier object in MinIO (flat keys can
-# collide across entity folders), so treat it as a hard error. The loop runs in
-# the main shell (process substitution, not a pipeline subshell), so
-# SEEN_KEYS survives across iterations.
-declare -A SEEN_KEYS=()
+# Pass 1: discover every asset and resolve its canonical key WITHOUT uploading.
+#
+# Canonical keys are flat (las-flores/<assetType>/<name><ext>), so two files in
+# different entity folders can resolve to the same key. Rather than letting the
+# later upload silently replace the earlier object — or aborting the whole run —
+# colliding keys are auto-renamed with a numeric suffix before the extension
+# (e.g. far_south__default.png -> far_south__default_2.png). Doing this as a
+# full pre-scan means every final key is known before the first `mc cp`, so a
+# run never lands in a partially-renamed, ambiguous state.
+#
+# The loop runs in the main shell (process substitution, not a pipeline
+# subshell), so these arrays survive across iterations.
+declare -A KEY_SOURCES=()
+declare -a UPLOAD_FILES=()
+declare -a UPLOAD_KEYS=()
+declare -a UPLOAD_RELS=()
+COLLISIONS=0
 
-# Upload any existing images
 echo "🔍 Looking for image assets..."
 while IFS= read -r image_file; do
     # Get relative path from content directory
@@ -116,22 +126,40 @@ while IFS= read -r image_file; do
     asset_type="$(asset_type_for "$top_dir")"
     minio_path="las-flores/${asset_type}/${name}${ext}"
 
-    if [[ -n "${SEEN_KEYS[$minio_path]:-}" ]]; then
-        echo "❌ Key collision: $minio_path already emitted this run (flat keys can collide)" >&2
-        echo "   Current source:    $rel_path" >&2
-        echo "   Previously from:   ${SEEN_KEYS[$minio_path]}" >&2
-        echo "   Aborting — the later file would replace the earlier object." >&2
-        exit 1
+    if [[ -n "${KEY_SOURCES[$minio_path]:-}" ]]; then
+        COLLISIONS=$((COLLISIONS + 1))
+        # Auto-rename by inserting a numeric suffix before the extension so the
+        # colliding file still uploads under a unique key instead of overwriting
+        # the earlier object. Keep probing upward until we find a free key.
+        suffix=2
+        stem="las-flores/${asset_type}/${name}"
+        while [[ -n "${KEY_SOURCES[${stem}_${suffix}${ext}]:-}" ]]; do
+            suffix=$((suffix + 1))
+        done
+        minio_path="${stem}_${suffix}${ext}"
+        echo "⚠️  Key collision: '$minio_path' already taken by ${KEY_SOURCES[las-flores/${asset_type}/${name}${ext}]}" >&2
+        echo "   Renaming ${rel_path} -> ${minio_path} to avoid overwrite." >&2
     fi
-    SEEN_KEYS[$minio_path]="$rel_path"
+    KEY_SOURCES[$minio_path]="$rel_path"
 
-    if [[ "$DRY_RUN" -eq 1 ]]; then
-        echo "DRY-RUN $rel_path -> $BUCKET_NAME/$minio_path"
-    else
-        echo "  📁 Uploading $rel_path -> $minio_path"
-        mc cp "$image_file" "lasflores/$BUCKET_NAME/$minio_path"
-    fi
+    UPLOAD_FILES+=("$image_file")
+    UPLOAD_KEYS+=("$minio_path")
+    UPLOAD_RELS+=("$rel_path")
 done < <(find "$CONTENT_DIR" -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp")
+
+if [[ "$COLLISIONS" -gt 0 ]]; then
+    echo "   $COLLISIONS collision(s) auto-renamed; every file will still upload." >&2
+fi
+
+# Pass 2: upload (or preview) every file under its resolved key.
+for i in "${!UPLOAD_FILES[@]}"; do
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+        echo "DRY-RUN ${UPLOAD_RELS[$i]} -> $BUCKET_NAME/${UPLOAD_KEYS[$i]}"
+    else
+        echo "  📁 Uploading ${UPLOAD_RELS[$i]} -> ${UPLOAD_KEYS[$i]}"
+        mc cp "${UPLOAD_FILES[$i]}" "lasflores/$BUCKET_NAME/${UPLOAD_KEYS[$i]}"
+    fi
+done
 
 echo "✅ Image upload complete!"
 echo ""

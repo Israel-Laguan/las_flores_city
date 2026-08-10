@@ -277,5 +277,5 @@ It is **intentionally OLTP** (not OLAP) to provide low-latency event capture.
   overhead of an OLAP write path.
 - **Implementation**: `AdminEventEmitter.emitAdminEvent()` uses `queryOLTP`
   and swallows errors internally so the caller is never blocked.
-- **Migration**: `055_admin_events_solidified.sql` extends the `event_type`
+- **Migration**: `060_admin_events_solidified.sql` extends the `event_type`
   CHECK to include `'plan_solidified'` for the Approve & Ship flow.
