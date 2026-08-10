@@ -83,6 +83,7 @@ admin/
     │   ├── navIcons.tsx
     │   ├── TopBar.tsx
     │   ├── Breadcrumbs.tsx
+    │   ├── BreadcrumbContext.tsx
     │   ├── ContentListPage.tsx
     │   ├── ContentDetailPage.tsx
     │   ├── Badge.tsx
@@ -200,11 +201,11 @@ There are **zero** `/api/admin/*` route handlers. Pages and hooks do not call an
 | `AdminShell` | `src/components/AdminShell.tsx` | Shell: renders `<Sidebar>` + `<TopBar>` + `<Breadcrumbs>` + mobile backdrop. Owns mobile-open and sidebar-collapsed state (with localStorage persistence). |
 | `Sidebar` | `src/components/Sidebar.tsx` | Renders pillar-based nav from `nav-config.ts`: collapsible sections, expandable items with sub-items, active-state highlighting, icon-rail collapse mode. |
 | `TopBar` | `src/components/TopBar.tsx` | Mobile hamburger + breadcrumb-aware title. Receives `user` from layout; shows logout button when authenticated. |
-| `Breadcrumbs` | `src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail derived from the current pathname and `nav-config.ts` labels. |
+| `Breadcrumbs` | `src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail derived from the current pathname. Dynamic segments resolve through `useBreadcrumbLabel` registration, falling back to the raw segment (UUIDs verbatim). |
 | `ContentListPage<T>` | `src/components/ContentListPage.tsx` | Generic paginated table primitive. Props: `title`, `heading`, `endpoint`, `detailPath`, `columns: Column<T>[]`. Owns its own `useState` + `useEffect` + `AbortController` so callers don't have to. Renders a `.table` with clickable rows that route to `${detailPath}/${id}`. **This is the building block for most "Type A" list pages** — see below. |
 | `ContentDetailPage` | `src/components/ContentDetailPage.tsx` | Generic detail view that reads `params.id`, fetches `/admin/{area}/{id}`, and renders the JSON. Most areas opt for a hand-rolled detail page instead (e.g. `characters/[id]/page.tsx`) so they can show typed fields. |
 | `Badge` | `src/components/Badge.tsx` | `<span className={cn(styles.badge, styles[variant])}>` for the 5 variants (`success` / `warning` / `danger` / `info` / `muted`). Used by `ContentListPage` columns and by detail pages. |
-| `PageHeader` | `src/components/ui/PageHeader.tsx` | Tiny `<header><h1>…</h1>{description && <p>…</p>}</header>`. Optional helper; not used by every page. |
+| `PageHeader` | `src/components/ui/PageHeader.tsx` | Tiny `<header><h1>…</h1>{description && <p>…</p>}</header>`. Optional helper; intentionally breadcrumb-free (global `Breadcrumbs` owns the trail). |
 
 ## Page archetypes
 
@@ -380,6 +381,7 @@ Vitest + jsdom + Testing Library. Run with `npm run test --workspace=admin` (22 
 |---|---|
 | `src/components/__tests__/Sidebar.test.tsx` | Sidebar nav: sections, active-state, collapsible groups, sub-items |
 | `src/components/__tests__/TopBar.test.tsx` | TopBar renders breadcrumbs and title |
+| `src/components/__tests__/Breadcrumbs.test.tsx` | Breadcrumbs: raw UUID fallback, `useBreadcrumbLabel` registration, Edit-leaf, unmount cleanup |
 | `src/app/(admin)/__tests__/badgeRendering.test.tsx` | Badge variant class rendering (property-based) |
 | `src/app/(admin)/__tests__/contentListViews.test.tsx` | ContentListPage end-to-end with mocked adminFetch |
 | `src/app/(admin)/lore/__tests__/LoreEditor.test.tsx` | Lore editor: edit/save/cancel, dirty-guard, error display |
@@ -449,6 +451,8 @@ When contributing to `admin/`, follow these rules. They are the result of the mu
 9. **Local form state** in the page when the hook needs to defer the mutation (e.g. `story-beats` keeps `formSlug`/`formLabel`/etc. locally and passes them to the hook on submit).
 10. **Nav is defined in `src/components/nav-config.ts` + rendered by `Sidebar.tsx` + `AdminShell.tsx`**: when adding a new link, add a `NavItem` / `NavSection` to `navSections` in `nav-config.ts`. The sidebar and top-bar title pick up the change automatically. For section-group parent icons, add the icon name to `src/components/navIcons.tsx`.
 11. **Tests** for the new page live in `app/<area>/__tests__/`. Follow the `ContentListPage` or `storyBeatsPage` patterns for the boilerplate.
+12. **Routing stays flat** under `app/(admin)/`; grouping lives only in `navSections` (`nav-config.ts`). Do **not** create `(content)`/`(creation)`/`(operations)` route groups — `nav-config.ts` documents the rejected tradeoff. Revisit only when a route cluster needs its own `layout.tsx`/`loading.tsx`/`error.tsx` boundary.
+13. **Detail pages register their entity name** with `useBreadcrumbLabel(id, name)` (from `BreadcrumbContext`) once the record loads, so the breadcrumb trail shows the entity name instead of a raw UUID. Call the hook before any early return.
 
 ## Adding a new CRUD page (recipe)
 
@@ -519,11 +523,12 @@ All three must exit `0` before merging.
 | `admin/src/components/nav-config.ts` | `navSections` array + `isActive` / `getPageTitle` helpers |
 | `admin/src/components/navIcons.tsx` | Icon map for sidebar items |
 | `admin/src/components/TopBar.tsx` | Breadcrumb-aware top bar with mobile hamburger |
-| `admin/src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail from `nav-config.ts` |
+| `admin/src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail from `nav-config.ts` + `useBreadcrumbLabel` registrations |
+| `admin/src/components/BreadcrumbContext.tsx` | Breadcrumb label registry provider + `useBreadcrumbLabel` / `useBreadcrumbLabels` hooks |
 | `admin/src/components/ContentListPage.tsx` | Generic paginated table primitive (Type A) |
 | `admin/src/components/ContentDetailPage.tsx` | Generic JSON-viewer detail shell |
 | `admin/src/components/Badge.tsx` | 5-variant badge span |
-| `admin/src/components/ui/PageHeader.tsx` | `<header><h1>{title}</h1>{description?}</header>` |
+| `admin/src/components/ui/PageHeader.tsx` | `<header><h1>{title}</h1>{description?}</header>` — intentionally breadcrumb-free (global `Breadcrumbs` owns the trail) |
 | `admin/src/components/editor/` | Extracted editor: `FileTree`, `EditorPanel`, `useEditor` (+ CSS) |
 | `admin/src/components/validation/` | Extracted validation: `ValidationSummary`, `ErrorsByFile`, `WarningsByFile` (+ CSS) |
 | `admin/src/components/migration/` | Extracted migration: `MigrationResultView`, `MigrationStatusView` (+ CSS) |
