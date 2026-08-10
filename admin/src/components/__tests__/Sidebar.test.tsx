@@ -50,7 +50,6 @@ describe('Sidebar', () => {
     expect(screen.getByRole('link', { name: 'Story Arc' })).toHaveAttribute('href', '/story-arc');
     expect(screen.getByRole('link', { name: 'Story Beats' })).toHaveAttribute('href', '/story-beats');
     expect(screen.getByRole('link', { name: 'Missions' })).toHaveAttribute('href', '/missions');
-    expect(screen.getByRole('link', { name: 'Mysteries' })).toHaveAttribute('href', '/mysteries');
     expect(screen.getByRole('link', { name: 'Gigs' })).toHaveAttribute('href', '/gigs');
     expect(screen.getByRole('link', { name: 'Characters' })).toHaveAttribute('href', '/characters');
     expect(screen.getByRole('link', { name: 'Scenes' })).toHaveAttribute('href', '/scenes');

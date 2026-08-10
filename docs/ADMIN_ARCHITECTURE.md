@@ -107,7 +107,7 @@ admin/
 | `/characters` | List (Type A) | `ContentListPage` + `Badge` for portrait status |
 | `/story-beats` | CRUD (Type B) | `useBeatHandlers` + `BeatForm` + `BeatTable` + `BeatUsagesTable` |
 | `/story-arc` | Visualization | Beat timeline + reachability |
-| `/missions` + `/[id]` + `/new` | CRUD (Type B) | `useMissionWizard` for new-mission flow |
+| `/missions` + `/[id]` + `/new` | List/Detail (Type A) | `ContentListPage` + claim-stats; `/new` redirects to Story Builder |
 | `/overlays` + `/[id]` | List/Detail (Type A) | |
 | `/locations` + `/[id]` | List/Detail (Type A) | |
 | `/vault` + `/[id]` | List/Detail (Type A) | |

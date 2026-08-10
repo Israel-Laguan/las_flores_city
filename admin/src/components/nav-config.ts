@@ -45,7 +45,6 @@ export const navSections: NavSection[] = [
       { href: '/story-arc', label: 'Story Arc', icon: 'trending' },
       { href: '/story-beats', label: 'Story Beats', icon: 'grid' },
       { href: '/missions', label: 'Missions', icon: 'target' },
-      { href: '/mysteries', label: 'Mysteries', icon: 'search' },
       { href: '/gigs', label: 'Gigs', icon: 'bolt' },
     ],
   },
