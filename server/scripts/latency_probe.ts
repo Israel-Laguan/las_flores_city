@@ -38,14 +38,27 @@ function failUsage(message: string): never {
   process.exit(2);
 }
 
+/**
+ * Parse a positive integer from an environment variable.
+ * Returns the fallback when the var is unset/empty.
+ * Calls failUsage for non-positive or non-numeric values.
+ */
+function positiveIntEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw === '') return fallback;
+  const n = parseInt(raw, 10);
+  if (!Number.isFinite(n) || n <= 0) failUsage(`${name} must be a positive integer`);
+  return n;
+}
+
 function parseArgs(argv: string[]): ProbeOptions {
   let inputFile: string | null = null;
   let description: string | null = null;
   let full = process.env.FULL_INPUT === '1';
-  let maxChars = parseInt(process.env.BRIEF_MAX_CHARS || '1200', 10);
+  let maxChars = positiveIntEnv('BRIEF_MAX_CHARS', 1200);
   let serverUrl = process.env.SERVER_URL || 'http://localhost:3000';
-  let pollIntervalMs = parseInt(process.env.POLL_INTERVAL_MS || '1000', 10);
-  let maxWaitMs = parseInt(process.env.MAX_WAIT_MS || '600000', 10);
+  let pollIntervalMs = positiveIntEnv('POLL_INTERVAL_MS', 1000);
+  let maxWaitMs = positiveIntEnv('MAX_WAIT_MS', 600000);
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -100,13 +113,15 @@ function parseArgs(argv: string[]): ProbeOptions {
     }
   }
 
-  if (!Number.isFinite(maxChars)) maxChars = 1200;
   const envInput = process.env.INPUT_FILE ? expandTilde(process.env.INPUT_FILE) : null;
-  inputFile = inputFile ?? envInput
-    ?? path.join(os.homedir(), 'Downloads', 'posts-compilation-complete.md');
 
-  if (description !== null && inputFile !== null) {
+  if (description !== null && (inputFile !== null || envInput !== null)) {
     failUsage('use either --input or --description, not both');
+  }
+
+  inputFile = inputFile ?? envInput;
+  if (description === null && inputFile === null) {
+    inputFile = path.join(os.homedir(), 'Downloads', 'posts-compilation-complete.md');
   }
 
   return { inputFile, description, full, maxChars, serverUrl, pollIntervalMs, maxWaitMs };

@@ -52,27 +52,37 @@ export default function CharacterDetailPage() {
   const [dialoguesMap, setDialoguesMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    let cancelled = false;
+    // Reset state for the new route — clears stale breadcrumb label
+    setRecord(null);
+    setLoading(true);
+    setError(null);
+    setNotFound(false);
+
     async function fetchRecord() {
       try {
         const data = await adminFetch<{ success: boolean; data?: CharacterRecord; error?: string }>(
           `/admin/characters/${id}`,
         );
+        if (cancelled) return;
         if (data.success && data.data) {
           setRecord(data.data);
         } else {
           setError(data.error || 'Failed to fetch character');
         }
       } catch (err: any) {
+        if (cancelled) return;
         if (err?.status === 404) {
           setNotFound(true);
         } else {
           setError('Failed to fetch character');
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchRecord();
+    return () => { cancelled = true; };
   }, [id]);
 
   // Build a dialogue-id → name lookup once

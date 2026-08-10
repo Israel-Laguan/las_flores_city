@@ -239,7 +239,7 @@ export default function AnalyticsPage() {
               <div className={styles.grid}>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Dialogue Completion Rates</h2><DialogueRatesTable rates={data.dialogueRates} /></div>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Story Beat Reach</h2><StoryBeatReachTable reach={data.storyBeatReach} /></div>
-                <div className={styles.section}><h2 className={styles.sectionHeading}>Mystery Status Distribution</h2><MysteryStatusTable status={data.mysteryStatus} /></div>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Mission Status Distribution</h2><MysteryStatusTable status={data.mysteryStatus} /></div>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Time-Block Spend by Content</h2><TimeBlockSpendTable spend={data.timeBlockSpend} /></div>
               </div>
             </>

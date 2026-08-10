@@ -39,27 +39,37 @@ export default function ContentDetailPage({ title, backHref, backLabel, getBread
   useBreadcrumbLabel(id, breadcrumbLabel);
 
   useEffect(() => {
+    let cancelled = false;
+    // Reset state for the new route — clears stale breadcrumb label
+    setRecord(null);
+    setLoading(true);
+    setError(null);
+    setNotFound(false);
+
     async function fetchRecord() {
       try {
         const data = await adminFetch<{ success: boolean; data?: unknown; error?: string }>(
           `/admin/${backHref.slice(1)}/${id}`,
         );
+        if (cancelled) return;
         if (data.success) {
           setRecord(data.data);
         } else {
           setError(data.error || `Failed to fetch ${title.toLowerCase()}`);
         }
       } catch (err: any) {
+        if (cancelled) return;
         if (err?.status === 404) {
           setNotFound(true);
         } else {
           setError(`Failed to fetch ${title.toLowerCase()}`);
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchRecord();
+    return () => { cancelled = true; };
   }, [id, backHref, title]);
 
   return (
