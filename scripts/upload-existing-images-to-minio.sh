@@ -17,7 +17,8 @@ form las-flores/<assetType>/<name><ext>.
   -h, --help  Show this help and exit.
 
 Environment:
-  MINIO_ENDPOINT    MinIO endpoint (default: localhost:9000)
+  MINIO_ENDPOINT    MinIO endpoint host (default: minio)
+  MINIO_PORT        MinIO API port (default: 9000; appended if endpoint has no port)
   MINIO_ACCESS_KEY  MinIO access key (required for a real upload)
   MINIO_SECRET_KEY  MinIO secret key (required for a real upload)
   MINIO_BUCKET      MinIO bucket (default: las-flores)
@@ -39,7 +40,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Configuration
-MINIO_ENDPOINT="${MINIO_ENDPOINT:-localhost:9000}"
+# MINIO_ENDPOINT may include a port; if it does not, the documented MINIO_PORT
+# (default 9000) is appended so the default target is the MinIO API port.
+MINIO_ENDPOINT="${MINIO_ENDPOINT:-minio}"
+MINIO_PORT="${MINIO_PORT:-9000}"
+case "$MINIO_ENDPOINT" in
+    *:*) MINIO_HOST="$MINIO_ENDPOINT" ;;
+    *)   MINIO_HOST="${MINIO_ENDPOINT}:${MINIO_PORT}" ;;
+esac
 MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY:-}"
 MINIO_SECRET_KEY="${MINIO_SECRET_KEY:-}"
 BUCKET_NAME="${MINIO_BUCKET:-las-flores}"
@@ -80,7 +88,7 @@ else
     fi
 
     # Configure MinIO client
-    mc alias set lasflores "http://${MINIO_ENDPOINT}" "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"
+    mc alias set lasflores "http://${MINIO_HOST}" "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"
 
     # Create bucket if it doesn't exist
     if ! mc ls "lasflores/$BUCKET_NAME" &> /dev/null; then
