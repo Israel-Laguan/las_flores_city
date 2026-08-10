@@ -15,7 +15,6 @@ export type IconName =
   | 'cart'
   | 'map'
   | 'fileText'
-  | 'search'
   | 'wrench'
   | 'clipboard'
   | 'code'
@@ -126,12 +125,6 @@ const iconPaths: Record<IconName, ReactElement> = {
       <line x1="16" y1="13" x2="8" y2="13" />
       <line x1="16" y1="17" x2="8" y2="17" />
       <polyline points="10 9 9 9 8 9" />
-    </>
-  ),
-  search: (
-    <>
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </>
   ),
   wrench: (

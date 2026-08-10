@@ -1,38 +1,170 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import dotenv from 'dotenv';
 
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
-const POLL_INTERVAL_MS = parseInt(process.env.POLL_INTERVAL_MS || '1000', 10);
-const MAX_WAIT_MS = parseInt(process.env.MAX_WAIT_MS || '600000', 10);
-const FULL_INPUT = process.env.FULL_INPUT === '1';
-const INPUT_FILE = process.env.INPUT_FILE
-  || path.join(os.homedir(), 'Downloads', 'posts-compilation-complete.md');
+interface ProbeOptions {
+  inputFile: string | null;
+  description: string | null;
+  full: boolean;
+  maxChars: number;
+  serverUrl: string;
+  pollIntervalMs: number;
+  maxWaitMs: number;
+}
+
+const USAGE = `Usage: npx tsx server/scripts/latency_probe.ts [input-file] [options]
+
+  [input-file]              Story-bible markdown (positional; same as --input)
+  -i, --input <path>        Story-bible markdown file
+  -d, --description <text>  Literal description instead of reading a file
+      --full                Send the entire body, no truncation (= FULL_INPUT=1)
+      --max-chars <n>       Brief truncation cap for file input (default 1200)
+  -s, --server <url>        Server base URL (default http://localhost:3000)
+      --poll-interval <ms>  Generation-status poll interval (default 1000)
+      --max-wait <ms>       Max wait for terminal status (default 600000)
+  -h, --help                Print this usage and exit 0
+
+Input resolution: argv > env (INPUT_FILE, FULL_INPUT, BRIEF_MAX_CHARS,
+SERVER_URL, POLL_INTERVAL_MS, MAX_WAIT_MS) > built-in default.
+Exit codes: 0 completed, 1 runtime/probe failure (incl. unreadable input), 2 bad usage.`;
+
+function expandTilde(p: string): string {
+  if (p === '~' || p.startsWith('~/')) return path.join(os.homedir(), p.slice(1));
+  return p;
+}
+
+function failUsage(message: string): never {
+  process.stderr.write(`ERROR: ${message}\n\n${USAGE}\n`);
+  process.exit(2);
+}
 
 /**
- * Derive a Story Builder description from the story-bible input file.
- * Uses the document's first non-empty heading (H1/H2) as a title anchor.
- * In FULL_INPUT mode, sends the entire file; otherwise slices to ~1200 chars.
+ * Parse a positive integer from an environment variable.
+ * Returns the fallback when the var is unset/empty.
+ * Calls failUsage for non-positive or non-numeric values.
  */
-async function buildDescription(): Promise<string> {
+/** Strict base-10 positive integer parser. Rejects hex/octal/binary/exponent
+ *  and any non-digit characters (including whitespace). */
+function strictPositiveInt(raw: string, name: string): number {
+  if (!/^\d+$/.test(raw)) failUsage(`${name} must be a positive integer (got "${raw}")`);
+  const n = Number(raw);
+  if (!Number.isSafeInteger(n) || n <= 0) failUsage(`${name} must be a positive integer`);
+  return n;
+}
+
+function positiveIntEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw === '') return fallback;
+  return strictPositiveInt(raw, name);
+}
+
+function parseArgs(argv: string[]): ProbeOptions {
+  let inputFile: string | null = null;
+  let description: string | null = null;
+  let full = process.env.FULL_INPUT === '1';
+  let maxChars = positiveIntEnv('BRIEF_MAX_CHARS', 1200);
+  let serverUrl = process.env.SERVER_URL || 'http://localhost:3000';
+  let pollIntervalMs = positiveIntEnv('POLL_INTERVAL_MS', 1000);
+  let maxWaitMs = positiveIntEnv('MAX_WAIT_MS', 600000);
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    const next = () => {
+      const v = argv[i + 1];
+      if (v === undefined) failUsage(`missing value for ${arg}`);
+      i++;
+      return v;
+    };
+    switch (arg) {
+      case '-h':
+      case '--help':
+        process.stdout.write(USAGE + '\n');
+        process.exit(0);
+      case '-i':
+      case '--input':
+        if (inputFile !== null) failUsage('input file given more than once');
+        inputFile = expandTilde(next());
+        break;
+      case '-d':
+      case '--description':
+        description = next();
+        break;
+      case '--full':
+        full = true;
+        break;
+      case '--max-chars': {
+        maxChars = strictPositiveInt(next(), '--max-chars');
+        break;
+      }
+      case '-s':
+      case '--server':
+        serverUrl = next();
+        break;
+      case '--poll-interval': {
+        pollIntervalMs = strictPositiveInt(next(), '--poll-interval');
+        break;
+      }
+      case '--max-wait': {
+        maxWaitMs = strictPositiveInt(next(), '--max-wait');
+        break;
+      }
+      default:
+        if (arg.startsWith('-')) failUsage(`unknown option ${arg}`);
+        if (inputFile !== null) failUsage('input file given more than once');
+        inputFile = expandTilde(arg);
+    }
+  }
+
+  const envInput = process.env.INPUT_FILE ? expandTilde(process.env.INPUT_FILE) : null;
+
+  if (description !== null && (inputFile !== null || envInput !== null)) {
+    failUsage('use either --input or --description, not both');
+  }
+
+  inputFile = inputFile ?? envInput;
+  if (description === null && inputFile === null) {
+    inputFile = path.join(os.homedir(), 'Downloads', 'posts-compilation-complete.md');
+  }
+
+  return { inputFile, description, full, maxChars, serverUrl, pollIntervalMs, maxWaitMs };
+}
+
+/**
+ * Resolve the Story Builder description.
+ *
+ * Either a literal `--description` is used verbatim, or the input file is read:
+ * its first non-empty heading (H1/H2) anchors a title, and the body is sent
+ * whole (FULL_INPUT / --full) or truncated to MAX_CHARS (default 1200). An
+ * unreadable input file is a hard error — there is no silent fallback.
+ */
+async function buildDescription(opts: ProbeOptions): Promise<string> {
+  if (opts.description !== null) {
+    return opts.description;
+  }
+
+  const file = opts.inputFile!;
   let raw = '';
   try {
-    raw = await fs.readFile(INPUT_FILE, 'utf-8');
-  } catch {
-    return 'Add a mysterious stranger named Victor Crane, a enigmatic informant who operates from a downtown pawn shop, plus 3 scene locations (pawn shop backroom, foggy alleyway, rooftop meeting spot).';
+    raw = await fs.readFile(file, 'utf-8');
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException;
+    process.stderr.write(`FATAL: cannot read input file ${path.resolve(file)}: ${e.code || ''} ${e.message}\n`);
+    process.exit(1);
   }
 
   const lines = raw.split('\n');
   const heading = lines.find((l) => /^#{1,2}\s+/.test(l))?.replace(/^#{1,2}\s+/, '').trim() || 'story bible';
   const body = raw.replace(/^#{1,6}\s+.*$/gm, '').replace(/\s+/g, ' ').trim();
 
-  if (FULL_INPUT) {
-    console.log(`   FULL_INPUT mode: sending entire file (${body.length} chars)`);
+  if (opts.full) {
+    console.log(`   --full mode: sending entire file (${body.length} chars)`);
     return `From the story bible "${heading}": ${body}`;
   }
 
-  const brief = body.slice(0, 1200);
+  if (body.length > opts.maxChars) {
+    console.log(`   brief truncated: ${body.length} -> ${opts.maxChars} chars (use --full to send the whole file)`);
+  }
+  const brief = body.slice(0, opts.maxChars);
   return `From the story bible "${heading}": ${brief}`;
 }
 
@@ -44,13 +176,16 @@ async function req<T>(m: string, u: string, b?: any, c?: string): Promise<HttpRe
   const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json', ...(c ? { Cookie: c } : {}) }, body: b ? JSON.stringify(b) : undefined });
   const sc = r.headers.get('set-cookie');
   let d: T | undefined;
-  try { d = await r.json(); } catch {}
-  return { ok: r.ok, status: r.status, data: d, error: d?.error, cookie: sc ? sc.split(';')[0] : undefined };
+  try { d = await r.json() as T; } catch {}
+  const error = (d as { error?: string } | undefined)?.error;
+  return { ok: r.ok, status: r.status, data: d, error, cookie: sc ? sc.split(';')[0] : undefined };
 }
 
 async function main() {
+  const opts = parseArgs(process.argv.slice(2));
+  const { serverUrl: SERVER_URL, pollIntervalMs: POLL_INTERVAL_MS, maxWaitMs: MAX_WAIT_MS } = opts;
   console.log('=== Story Builder Latency Probe ===\n');
-  const description = await buildDescription();
+  const description = await buildDescription(opts);
   console.log('[1] Login');
   const login = await req<{ user?: { id: string } }>('POST', SERVER_URL + '/auth/dev-admin-login', { userId: '00000000-0000-0000-0000-000000000001' });
   if (!login.ok) { console.error('FAIL', login.error); process.exit(1); }
@@ -61,9 +196,10 @@ async function main() {
   const t0 = Date.now();
   const cr = await req<{ success: boolean; data: { planId: string; status: string } }>('POST', SERVER_URL + '/admin/story-builder/plan', { description }, cookie);
   const t1 = Date.now();
-  if (!cr.ok || !cr.data.data?.planId) { console.error('FAIL', cr.error); process.exit(1); }
-  const pid = cr.data.data.planId;
-  const initStatus = cr.data.data.status;
+  const created = cr.data?.data;
+  if (!cr.ok || !created?.planId) { console.error('FAIL', cr.error); process.exit(1); }
+  const pid = created.planId;
+  const initStatus = created.status;
   console.log('   plan=' + pid + ' status=' + initStatus + ' llm=' + (t1 - t0) + 'ms\n');
 
   console.log('[3] Poll generation status (wait for async fill)');
@@ -86,8 +222,8 @@ async function main() {
     process.exit(1);
   }
 
-  // Big-story assertions in FULL_INPUT mode
-  if (FULL_INPUT) {
+  // Big-story assertions in full-input mode
+  if (opts.full) {
     const planCheck = await req<{ success: boolean; data: { plan_json: any } }>('GET', SERVER_URL + '/admin/story-builder/plans/' + pid, undefined, cookie);
     const planData = planCheck.data?.data?.plan_json;
     const itemCount = planData?.items?.length ?? 0;

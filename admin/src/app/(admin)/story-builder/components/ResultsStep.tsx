@@ -50,7 +50,7 @@ function liveContentHref(item: ContentPlanItem): string | null {
     case 'dialogue':
       return `/dialogues/${slug}`;
     case 'mission':
-      return `/mysteries/${slug}`;
+      return item.id ? `/missions/${item.id}` : `/missions/${slug}`;
     case 'story':
       return `/story-beats`;
     default:

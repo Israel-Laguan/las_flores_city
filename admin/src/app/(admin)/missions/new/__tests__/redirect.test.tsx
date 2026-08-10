@@ -7,7 +7,7 @@ vi.mock('next/navigation', () => ({
 
 import MissionNewRedirect from '../page';
 
-describe('missions/new redirect (M13)', () => {
+describe('missions/new redirect', () => {
   it('redirects to /story-builder on render', () => {
     try {
       MissionNewRedirect();

@@ -29,7 +29,7 @@ function StatCards({ data }: { data: AnalyticsData }) {
     { value: data.totalPlayers, label: 'Total Players' },
     { value: (data.dialogueRates ?? []).length, label: 'Dialogues Tracked' },
     { value: (data.storyBeatReach ?? []).length, label: 'Story Beats Set' },
-    { value: totalMysteries, label: 'Total Mysteries' },
+    { value: totalMysteries, label: 'Total Missions' },
   ];
   return (
     <div className={styles.statGrid}>
@@ -102,7 +102,7 @@ function StoryBeatReachTable({ reach }: { reach: AnalyticsData['storyBeatReach']
 }
 
 function MysteryStatusTable({ status }: { status: AnalyticsData['mysteryStatus'] }) {
-  if (status.length === 0) return <p className={styles.muted}>No mysteries found.</p>;
+  if (status.length === 0) return <p className={styles.muted}>No missions found.</p>;
   return (
     <table className={styles.table}>
       <thead><tr><th className={styles.th}>Status</th><th className={styles.th}>Count</th></tr></thead>
@@ -239,7 +239,7 @@ export default function AnalyticsPage() {
               <div className={styles.grid}>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Dialogue Completion Rates</h2><DialogueRatesTable rates={data.dialogueRates} /></div>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Story Beat Reach</h2><StoryBeatReachTable reach={data.storyBeatReach} /></div>
-                <div className={styles.section}><h2 className={styles.sectionHeading}>Mystery Status Distribution</h2><MysteryStatusTable status={data.mysteryStatus} /></div>
+                <div className={styles.section}><h2 className={styles.sectionHeading}>Mission Status Distribution</h2><MysteryStatusTable status={data.mysteryStatus} /></div>
                 <div className={styles.section}><h2 className={styles.sectionHeading}>Time-Block Spend by Content</h2><TimeBlockSpendTable spend={data.timeBlockSpend} /></div>
               </div>
             </>

@@ -147,7 +147,7 @@ las_flores_city/
 │   ├── dialogues/       # Dialogue trees
 │   ├── overlays/        # Content overlays
 │   ├── scenes/          # Location definitions
-│   └── mysteries/       # Mission/story content
+│   └── missions/        # Mission/story content
 ├── docker-compose.yml
 └── package.json
 ```

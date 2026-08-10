@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminFetch } from '@/lib/client-api';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import EntityDetailView from '@/components/entity/EntityDetailView';
 import { LOCATION_VIEW_FIELDS } from '../field-definitions';
 import styles from './page.module.css';
@@ -23,35 +24,49 @@ export default function LocationDetailPage() {
   const id = params.id as string;
 
   const [record, setRecord] = useState<LocationRecord | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+    // Reset state for the new route — clears stale breadcrumb label
+    setRecord(null);
+    setLoading(true);
+    setError(null);
+    setNotFound(false);
+
     async function fetchRecord() {
       try {
         const data = await adminFetch<{ success: boolean; data?: LocationRecord; error?: string }>(
           `/admin/locations/${id}`,
         );
+        if (cancelled) return;
         if (data.success && data.data) {
           setRecord(data.data);
+          setLoadedId(id);
         } else {
           setError(data.error || 'Failed to fetch location');
         }
       } catch (err: any) {
+        if (cancelled) return;
         if (err?.status === 404) {
           setNotFound(true);
         } else {
           setError('Failed to fetch location');
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchRecord();
+    return () => { cancelled = true; };
   }, [id]);
 
-  if (loading) {
+  useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
+
+  if (loading || loadedId !== id) {
     return (
       <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>

@@ -1,3 +1,13 @@
+// Nav configuration — single source of truth for admin grouping.
+//
+// `navSections` is the single source of truth for grouping; routes are intentionally
+// flat under `app/(admin)/`. Grouping is expressed ONLY here, not via Next route groups.
+//
+// Rejected design: creating `(content)` / `(creation)` / `(operations)` route groups would
+// require ~46 directory moves, break relative imports (`../field-definitions`,
+// `../components/BeatUsagesTable`), change no URLs, and buy no layout/loading boundary we
+// need. Revisit only when a route cluster genuinely needs its own `layout.tsx` /
+// `loading.tsx` / `error.tsx` boundary.
 import type { IconName } from './navIcons';
 
 export interface NavSubItem {
@@ -45,7 +55,6 @@ export const navSections: NavSection[] = [
       { href: '/story-arc', label: 'Story Arc', icon: 'trending' },
       { href: '/story-beats', label: 'Story Beats', icon: 'grid' },
       { href: '/missions', label: 'Missions', icon: 'target' },
-      { href: '/mysteries', label: 'Mysteries', icon: 'search' },
       { href: '/gigs', label: 'Gigs', icon: 'bolt' },
     ],
   },

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import DialogueVisualEditor from '@/components/dialogue/DialogueVisualEditor';
 import { useDialogueDraft } from '@/components/dialogue/useDialogueDraft';
 import { useUnsafeNavigationGuard } from '@/hooks/useUnsafeNavigationGuard';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import styles from './dialogue-detail.module.css';
 
 export default function DialogueDetailPage() {
@@ -28,6 +29,8 @@ export default function DialogueDetailPage() {
   // Warn before losing unsaved edits across ANY navigation (sidebar, breadcrumbs,
   // back link, browser back, reload, logout) — see hook for the full coverage.
   useUnsafeNavigationGuard(dirty);
+
+  useBreadcrumbLabel(id, typeof draft?.name === 'string' ? draft.name : null);
 
   const ready = !loading && !error;
 

@@ -2,7 +2,10 @@
 
 **Status:** REVISED (v2) — Milestone canonical contract. Frontmatter is the single source of truth for metadata; the legacy body metadata block is removed.
 **Applies to:** Every `.prompt.md` under `content/characters/<slug>/`.
-**Master plan:** `docs/milestones/1786049707544-prompt-production-master.md`
+**Master plan:** retired (2026-08-09). The durable art-style lock, static-extraction
+map, AI-pass contract, quality gate, and conflicts-resolved sections below are the
+long-term home of that guidance; the per-step milestone tracking files (M1–M8,
+M28–M32) are captured in `docs/milestones/1786049707544-m33-milestone-backlog-cleanup.md`.
 
 > **Note:** This project does not use MidJourney. All generation is handled by
 > the configured AI image generation pipeline (NIM / Pollinations / Akool / etc.).

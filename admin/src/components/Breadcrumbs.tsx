@@ -2,19 +2,34 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useBreadcrumbLabels } from './BreadcrumbContext';
 import styles from './Breadcrumbs.module.css';
 
-function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }> {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function humanize(part: string): string {
+  return part
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function resolveLabel(part: string, labels: Record<string, string>): string {
+  if (labels[part]) return labels[part];
+  if (UUID_RE.test(part)) return part; // raw UUID verbatim until a label is registered
+  return humanize(part);
+}
+
+function getBreadcrumbs(
+  pathname: string,
+  labels: Record<string, string>,
+): Array<{ label: string; href: string }> {
   const parts = pathname.split('/').filter(Boolean);
   const crumbs: Array<{ label: string; href: string }> = [];
 
   let accumulated = '';
   for (const part of parts) {
     accumulated += `/${part}`;
-    const label = part
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase());
-    crumbs.push({ label, href: accumulated });
+    crumbs.push({ label: resolveLabel(part, labels), href: accumulated });
   }
 
   return crumbs;
@@ -22,7 +37,8 @@ function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }
 
 export default function Breadcrumbs() {
   const pathname = usePathname();
-  const crumbs = getBreadcrumbs(pathname);
+  const labels = useBreadcrumbLabels();
+  const crumbs = getBreadcrumbs(pathname, labels);
 
   if (crumbs.length <= 1) return null;
 

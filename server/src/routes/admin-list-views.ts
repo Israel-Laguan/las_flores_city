@@ -194,10 +194,10 @@ adminListViewsRouter.get('/characters/:id', makeDetailHandler({
 }));
 
 // ---------------------------------------------------------------------------
-// Mysteries
+// Missions (stored in the mysteries table)
 // ---------------------------------------------------------------------------
 
-adminListViewsRouter.get('/mysteries', makeListHandler({
+adminListViewsRouter.get('/missions', makeListHandler({
   countSql: 'SELECT count(*)::int FROM mysteries',
   listSql: `SELECT
     id,
@@ -209,12 +209,12 @@ adminListViewsRouter.get('/mysteries', makeListHandler({
   FROM mysteries
   ORDER BY created_at DESC
   LIMIT $1 OFFSET $2`,
-  entityLabel: 'mysteries',
+  entityLabel: 'missions',
 }));
 
-adminListViewsRouter.get('/mysteries/:id', makeDetailHandler({
+adminListViewsRouter.get('/missions/:id', makeDetailHandler({
   sql: 'SELECT * FROM mysteries WHERE id = $1',
-  entityLabel: 'Mystery',
+  entityLabel: 'Mission',
 }));
 
 // ---------------------------------------------------------------------------

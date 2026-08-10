@@ -142,7 +142,7 @@ describe('Property 1: Pagination slice correctness', () => {
       }),
     },
     {
-      path: '/mysteries',
+      path: '/missions',
       makeRow: (item: { id: string; name: string; description: string }) => ({
         id: item.id,
         title: item.name,
@@ -489,7 +489,7 @@ describe('Property 3: Pagination parameter validation', () => {
     fc.string({ minLength: 1 }).filter(s => isNaN(Number(s))),
   );
 
-  const listEndpoints = ['/dialogues', '/scenes', '/characters', '/mysteries', '/overlays', '/locations', '/vault', '/gigs', '/shop', '/maps'];
+  const listEndpoints = ['/dialogues', '/scenes', '/characters', '/missions', '/overlays', '/locations', '/vault', '/gigs', '/shop', '/maps'];
 
   for (const path of listEndpoints) {
     describe(`GET ${path}`, () => {

@@ -23,7 +23,7 @@ const TAB_CONFIG: Record<Tab, { label: string; listEndpoint: string; entityName:
   },
   missions: {
     label: 'Missions',
-    listEndpoint: '/admin/mysteries',
+    listEndpoint: '/admin/missions',
     entityName: 'Mission',
     entityType: 'mission',
     sections: [

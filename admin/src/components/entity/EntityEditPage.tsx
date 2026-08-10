@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEntityYaml } from '@/components/entity/useEntityYaml';
 import { useEntityYamlSave } from '@/components/entity/useEntityYamlSave';
 import EntityEditForm from '@/components/entity/EntityEditForm';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import type { FieldDef } from '@/components/entity/FieldDef';
 import styles from './EntityEditPage.module.css';
 
@@ -90,6 +91,13 @@ export default function EntityEditPage({
       resetSave();
     }
   }, [migrate, refetch, resetSave]);
+
+  const yamlForLabel = yaml as Record<string, unknown> | undefined;
+  const editLabelRaw = draft
+    ? (draft.name ?? yamlForLabel?.name)
+    : (yamlForLabel?.name ?? null);
+  const editLabel = typeof editLabelRaw === 'string' ? editLabelRaw : null;
+  useBreadcrumbLabel(id, editLabel);
 
   if (yamlLoading) {
     return (

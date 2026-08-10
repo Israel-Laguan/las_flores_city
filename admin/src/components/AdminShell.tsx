@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import Breadcrumbs from './Breadcrumbs';
 import { SidebarContext } from './SidebarContext';
+import { BreadcrumbProvider } from './BreadcrumbContext';
 import styles from './AdminShell.module.css';
 
 const COLLAPSE_STORAGE_KEY = 'lf-admin-sidebar-collapsed';
@@ -86,9 +87,11 @@ export default function AdminShell({ user, children }: AdminShellProps) {
           // keyboard focus stays within the navigation.
           {...(mobileOpen ? { inert: true } : {})}
         >
-          <TopBar user={user} />
-          <Breadcrumbs />
-          <div className={styles.main}>{children}</div>
+          <BreadcrumbProvider>
+            <TopBar user={user} />
+            <Breadcrumbs />
+            <div className={styles.main}>{children}</div>
+          </BreadcrumbProvider>
         </div>
       </div>
     </SidebarContext.Provider>

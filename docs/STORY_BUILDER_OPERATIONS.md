@@ -230,15 +230,24 @@ If litellm is not responding:
 # Server must be running and migrated
 podman exec las-flores-server wget -qO- http://localhost:3000/health   # expect {"success":true}
 
-# Run the end-to-end probe against the story bible
-INPUT_FILE=~/Downloads/posts-compilation-complete.md \
-  SERVER_URL=http://localhost:3000 \
-  npx tsx server/scripts/latency_probe.ts
+# Run the end-to-end probe against the story bible (argv form)
+npx tsx server/scripts/latency_probe.ts ~/Downloads/posts-compilation-complete.md \
+  --full --server http://localhost:3000
+
+# Env form still supported (and the file defaults to ~/Downloads/posts-compilation-complete.md):
+# INPUT_FILE=~/Downloads/posts-compilation-complete.md SERVER_URL=http://localhost:3000 \
+#   npx tsx server/scripts/latency_probe.ts
+# FULL_INPUT=1 sends the whole body (same as --full). BRIEF_MAX_CHARS controls default truncation.
 
 # After probe completes, check the host's content/ directory:
 # ls -la content/characters/graciela_ramirez/
 # ls -la content/scenes/central_plaza/
 ```
+
+Exit codes: `0` = probe completed, `1` = runtime/probe failure (including an
+unreadable input file — there is no silent fallback description), `2` = bad CLI
+usage (`--help` prints usage and exits `0`). `--description "<text>"` runs the
+probe without any story-bible file.
 
 ---
 

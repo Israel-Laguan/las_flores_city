@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminFetch } from '@/lib/client-api';
 import Badge from '@/components/Badge';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import EntityDetailView from '@/components/entity/EntityDetailView';
 import { CHARACTER_VIEW_FIELDS } from '../field-definitions';
 import styles from './character-detail.module.css';
@@ -43,6 +44,7 @@ export default function CharacterDetailPage() {
   const id = params.id as string;
 
   const [record, setRecord] = useState<CharacterRecord | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -51,27 +53,38 @@ export default function CharacterDetailPage() {
   const [dialoguesMap, setDialoguesMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    let cancelled = false;
+    // Reset state for the new route — clears stale breadcrumb label
+    setRecord(null);
+    setLoading(true);
+    setError(null);
+    setNotFound(false);
+
     async function fetchRecord() {
       try {
         const data = await adminFetch<{ success: boolean; data?: CharacterRecord; error?: string }>(
           `/admin/characters/${id}`,
         );
+        if (cancelled) return;
         if (data.success && data.data) {
           setRecord(data.data);
+          setLoadedId(id);
         } else {
           setError(data.error || 'Failed to fetch character');
         }
       } catch (err: any) {
+        if (cancelled) return;
         if (err?.status === 404) {
           setNotFound(true);
         } else {
           setError('Failed to fetch character');
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchRecord();
+    return () => { cancelled = true; };
   }, [id]);
 
   // Build a dialogue-id → name lookup once
@@ -92,7 +105,9 @@ export default function CharacterDetailPage() {
     });
   }, [record?.available_dialogues]);
 
-  if (loading) {
+  useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
+
+  if (loading || loadedId !== id) {
     return (
       <main className={styles.main}>
         <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>

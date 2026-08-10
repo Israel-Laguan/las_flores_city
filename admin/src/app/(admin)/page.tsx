@@ -16,7 +16,7 @@ function QuickStats({ counts, loading }: { counts: StatsData['counts']; loading:
     { value: loading ? '...' : String(counts.dialogues), label: 'Dialogues' },
     { value: loading ? '...' : String(counts.scenes), label: 'Scenes' },
     { value: loading ? '...' : String(counts.overlays), label: 'Overlays' },
-    { value: loading ? '...' : String(counts.mysteries), label: 'Mysteries' },
+    { value: loading ? '...' : String(counts.mysteries), label: 'Missions' },
   ];
   return (
     <div className={styles.quickStats}>
