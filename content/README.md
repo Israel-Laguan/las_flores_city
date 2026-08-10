@@ -15,7 +15,7 @@ content/
 ├── districts/<district>/     # District folder
 │   └── locations/<slug>/     # Location YAML + lore + prompt + assets/
 ├── overlays/<slug>/          # Overlay YAML + lore + assets/
-├── mysteries/<slug>/         # Mystery YAML + lore + assets/
+├── missions/<slug>/          # Mission YAML + lore + assets/
 ├── dialogues/                # Dialogue trees (flat YAML files)
 ├── vault/                    # Collectible items and clues
 ├── gigs/                     # Side jobs and commissions
@@ -97,7 +97,7 @@ Interactive conversation trees with choices, conditions, and effects.
 ### Overlays
 Modifications to existing dialogues (e.g., NSFW content).
 
-### Mysteries
+### Missions
 Quest lines with status tracking and time limits.
 
 ## Validation

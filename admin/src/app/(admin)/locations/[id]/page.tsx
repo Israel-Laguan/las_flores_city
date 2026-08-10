@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminFetch } from '@/lib/client-api';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import EntityDetailView from '@/components/entity/EntityDetailView';
 import { LOCATION_VIEW_FIELDS } from '../field-definitions';
 import styles from './page.module.css';
@@ -50,6 +51,8 @@ export default function LocationDetailPage() {
     }
     fetchRecord();
   }, [id]);
+
+  useBreadcrumbLabel(id, record?.name ?? null);
 
   if (loading) {
     return (

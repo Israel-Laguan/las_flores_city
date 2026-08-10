@@ -4,15 +4,28 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminFetch } from '@/lib/client-api';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import styles from './content-detail.module.css';
 
 interface Props {
   title: string;
   backHref: string;
   backLabel: string;
+  getBreadcrumbLabel?: (record: unknown) => string | null;
 }
 
-export default function ContentDetailPage({ title, backHref, backLabel }: Props) {
+function defaultBreadcrumbLabel(record: unknown): string | null {
+  if (record && typeof record === 'object') {
+    const r = record as Record<string, unknown>;
+    const name = r.name;
+    const title = r.title;
+    if (typeof name === 'string' && name.length > 0) return name;
+    if (typeof title === 'string' && title.length > 0) return title;
+  }
+  return null;
+}
+
+export default function ContentDetailPage({ title, backHref, backLabel, getBreadcrumbLabel }: Props) {
   const params = useParams();
   const id = params.id as string;
 
@@ -20,6 +33,10 @@ export default function ContentDetailPage({ title, backHref, backLabel }: Props)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  const resolveLabel = getBreadcrumbLabel ?? defaultBreadcrumbLabel;
+  const breadcrumbLabel = record ? resolveLabel(record) : null;
+  useBreadcrumbLabel(id, breadcrumbLabel);
 
   useEffect(() => {
     async function fetchRecord() {

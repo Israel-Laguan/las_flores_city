@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminFetch } from '@/lib/client-api';
 import Badge from '@/components/Badge';
+import { useBreadcrumbLabel } from '@/components/BreadcrumbContext';
 import EntityDetailView from '@/components/entity/EntityDetailView';
 import { CHARACTER_VIEW_FIELDS } from '../field-definitions';
 import styles from './character-detail.module.css';
@@ -91,6 +92,8 @@ export default function CharacterDetailPage() {
       console.error('[CharacterDetailPage] Failed to load dialogue names:', err);
     });
   }, [record?.available_dialogues]);
+
+  useBreadcrumbLabel(id, record?.name ?? null);
 
   if (loading) {
     return (
