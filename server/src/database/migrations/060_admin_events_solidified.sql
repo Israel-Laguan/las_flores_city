@@ -3,7 +3,7 @@
 -- Add the constraint with NOT VALID so the ALTER never takes a full table scan
 -- (locking writes) against existing rows. Re-validating an already-validated
 -- constraint is cheap and idempotent. The scan/validation happens in the
--- follow-up migration 059_admin_events_validate.sql once this migration is
+-- follow-up migration 061_admin_events_validate.sql once this migration is
 -- committed.
 
 ALTER TABLE admin_events DROP CONSTRAINT IF EXISTS admin_events_event_type_check;

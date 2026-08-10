@@ -27,9 +27,6 @@ export interface MissionRewardFixtureConfig {
   userId: string;
   treeId: string;
   vaultItemId: string;
-  /** Rows that reference the fixture's own character/scene. */
-  characterId: string;
-  sceneId: string;
   /** Human labels + seeded row content. */
   treeName: string;
   treeNodes: Record<string, DialogueNode>;

@@ -80,21 +80,23 @@ else
     fi
 
     # Configure MinIO client
-    mc alias set lasflores http://$MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+    mc alias set lasflores "http://${MINIO_ENDPOINT}" "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"
 
     # Create bucket if it doesn't exist
-    if ! mc ls lasflores/$BUCKET_NAME &> /dev/null; then
+    if ! mc ls "lasflores/$BUCKET_NAME" &> /dev/null; then
         echo "📦 Creating bucket: $BUCKET_NAME"
-        mc mb lasflores/$BUCKET_NAME
+        mc mb "lasflores/$BUCKET_NAME"
     else
         echo "✅ Bucket already exists: $BUCKET_NAME"
     fi
 fi
 
-# Track keys already emitted this run so flat-key collisions surface as warnings.
-# The loop runs in the main shell (process substitution, not a pipeline subshell),
-# so SEEN_KEYS survives across iterations.
-SEEN_KEYS=()
+# Track keys already emitted this run. A repeated canonical key would let the
+# later file silently replace the earlier object in MinIO (flat keys can
+# collide across entity folders), so treat it as a hard error. The loop runs in
+# the main shell (process substitution, not a pipeline subshell), so
+# SEEN_KEYS survives across iterations.
+declare -A SEEN_KEYS=()
 
 # Upload any existing images
 echo "🔍 Looking for image assets..."
@@ -114,10 +116,14 @@ while IFS= read -r image_file; do
     asset_type="$(asset_type_for "$top_dir")"
     minio_path="las-flores/${asset_type}/${name}${ext}"
 
-    if [[ " ${SEEN_KEYS[*]} " == *" $minio_path "* ]]; then
-        echo "⚠️  Collision: $minio_path already emitted this run (flat keys can collide)"
+    if [[ -n "${SEEN_KEYS[$minio_path]:-}" ]]; then
+        echo "❌ Key collision: $minio_path already emitted this run (flat keys can collide)" >&2
+        echo "   Current source:    $rel_path" >&2
+        echo "   Previously from:   ${SEEN_KEYS[$minio_path]}" >&2
+        echo "   Aborting — the later file would replace the earlier object." >&2
+        exit 1
     fi
-    SEEN_KEYS+=("$minio_path")
+    SEEN_KEYS[$minio_path]="$rel_path"
 
     if [[ "$DRY_RUN" -eq 1 ]]; then
         echo "DRY-RUN $rel_path -> $BUCKET_NAME/$minio_path"
@@ -125,7 +131,7 @@ while IFS= read -r image_file; do
         echo "  📁 Uploading $rel_path -> $minio_path"
         mc cp "$image_file" "lasflores/$BUCKET_NAME/$minio_path"
     fi
-done < <(find "$CONTENT_DIR" -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp")
+done < <(find "$CONTENT_DIR" -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp")
 
 echo "✅ Image upload complete!"
 echo ""

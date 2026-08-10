@@ -51,8 +51,8 @@
     "056_player_state_and_stats.sql",
     "057_dialogue_ownership.sql",
     "058_drop_stories_table.sql",
-    "059_admin_events_validate.sql",
-    "060_admin_events_solidified.sql"
+    "060_admin_events_solidified.sql",
+    "061_admin_events_validate.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

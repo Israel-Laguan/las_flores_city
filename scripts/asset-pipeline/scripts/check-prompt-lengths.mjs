@@ -74,8 +74,10 @@ Every section bound for NVIDIA NIM is hard-capped at 800 characters:
   - image-to-image background variants (\`### \`night\` — <name>\` + \`**Edit prompt:**\`)
   - \`story-illustration\` Base Scene (NIM-bound, NOT exempt)
 Bare \`## Prompt\` is a manual reference prompt (~2000 chars) and is NEVER
-auto-sent to NIM/Pollinations; it is capped at 2000. Lengths are measured on the
-combined prompt (prompt text + negative prompt) per variant.
+auto-sent to NIM/Pollinations; it is capped at 2000. Named and bare \`## Prompt\`
+variants are measured on the combined prompt (prompt text + negative prompt);
+drafts and i2i Edit prompts are measured standalone (drafts force
+negativePrompt to '' and i2i edit prompts have no negative).
 `);
 }
 

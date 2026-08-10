@@ -65,8 +65,6 @@ const TREE_NODES: Record<string, DialogueNode> = {
 const fixture = createMissionRewardFixture({
   userId: TEST_USER_ID,
   treeId: TEST_TREE_ID,
-  characterId: MOCK_CHARACTER_ID,
-  sceneId: MOCK_SCENE_ID,
   vaultItemId: VAULT_ITEM_ID,
   treeName: 'Mission Reward Test Tree',
   treeNodes: TREE_NODES,
