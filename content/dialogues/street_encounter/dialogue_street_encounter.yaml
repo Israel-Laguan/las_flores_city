@@ -16,4 +16,3 @@ nodes:
     type: narrator
     text: 'TODO: Add ending text'
     is_end: true
-lore_path: street_encounter.md

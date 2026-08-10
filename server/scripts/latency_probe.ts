@@ -86,8 +86,8 @@ function parseArgs(argv: string[]): ProbeOptions {
         full = true;
         break;
       case '--max-chars': {
-        const n = parseInt(next(), 10);
-        if (!Number.isFinite(n) || n <= 0) failUsage('--max-chars must be a positive integer');
+        const n = Number(next());
+        if (!Number.isSafeInteger(n) || n <= 0) failUsage('--max-chars must be a positive integer');
         maxChars = n;
         break;
       }
@@ -96,14 +96,14 @@ function parseArgs(argv: string[]): ProbeOptions {
         serverUrl = next();
         break;
       case '--poll-interval': {
-        const n = parseInt(next(), 10);
-        if (!Number.isFinite(n) || n <= 0) failUsage('--poll-interval must be a positive integer');
+        const n = Number(next());
+        if (!Number.isSafeInteger(n) || n <= 0) failUsage('--poll-interval must be a positive integer');
         pollIntervalMs = n;
         break;
       }
       case '--max-wait': {
-        const n = parseInt(next(), 10);
-        if (!Number.isFinite(n) || n <= 0) failUsage('--max-wait must be a positive integer');
+        const n = Number(next());
+        if (!Number.isSafeInteger(n) || n <= 0) failUsage('--max-wait must be a positive integer');
         maxWaitMs = n;
         break;
       }
