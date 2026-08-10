@@ -37,19 +37,20 @@ The simplest and most common path. Authors edit YAML files under `content/`, the
 
 ```text
 content/
-├── characters/        # char_<slug>.yaml
-├── dialogues/         # dialogue_<slug>.yaml
+├── characters/           # <slug>/char_<slug>.yaml
+├── dialogues/            # dialogue_<slug>.yaml
+├── districts/<district>/
+│   └── locations/<slug>/ # location_<slug>.yaml + lore + prompt + assets/
 ├── scenes/
 ├── missions/
-├── mysteries/
 ├── stories/
 ├── overlays/
-├── locations/
-├── vault/
 ├── gigs/
 ├── shop/
-├── maps/
-└── story_beats.yaml   # registry of canonical story beats
+├── vault/
+├── lore/
+├── story_beats/
+└── story_beats.yaml      # registry of canonical story beats
 ```
 
 ### Pipeline
@@ -130,13 +131,13 @@ Describe  →  AI Proposal  →  Review/Refine  →  Approve  →  Stage  →  M
 
 The Story Builder path can be driven end-to-end from a long-form markdown brief (e.g. `~/Downloads/posts-compilation-complete.md`) instead of a typed description. The canonical harness is `server/scripts/latency_probe.ts`, which:
 
-1. Reads the input file (`INPUT_FILE` env, default `~/Downloads/posts-compilation-complete.md`).
-2. Derives the description from the file's first heading + a body brief.
-3. Logs in, `POST /admin/story-builder/plans` (LLM mode), `PUT .../plans/:id` to `verified`, then polls asset needs until terminal.
+1. Resolves the input file from the positional arg / `--input` (argv) > `INPUT_FILE` env > default `~/Downloads/posts-compilation-complete.md`. An unreadable input file is a hard error (the probe exits 1 and never contacts the server). `--description "<text>"` is an explicit alternative that skips the file entirely.
+2. Derives the description from the file's first heading + a body brief. In default mode the brief is truncated to `--max-chars` (default 1200); `--full` (or `FULL_INPUT=1`) sends the entire body. Truncation, when it fires, is logged explicitly.
+3. Logs in (`POST /auth/dev-admin-login`), `POST /admin/story-builder/plan` (LLM mode) to create the plan, then polls `GET /admin/story-builder/plans/:id/generation-status` until the async fill reaches a terminal state — only after that does it `PUT /admin/story-builder/plans/:id` to `verified`, then `DELETE`s the plan on exit.
 
-The LLM pre-fill step calls `ContentPlanService.gatherContext()`, which must match the live schema: scenes are joined to `districts` (the old `scenes.district` column was dropped in migration `033`), and **locations are read from `content/locations/*/*.yaml` — there is no `locations` DB table**. A mismatch here throws before `stagePlan` writes any files, so the plan goes `failed` and no `content/` folders are produced. This was the root cause of an earlier "no output" ingestion run.
+The LLM pre-fill step calls `ContentPlanService.gatherContext()`, which must match the live schema: scenes are joined to `districts` (the old `scenes.district` column was dropped in migration `033`), and **locations are read from `content/districts/*/locations/*/*.yaml` — there is no `locations` DB table** (see `ContentPlanService.ts`). A mismatch here throws before `stagePlan` writes any files, so the plan goes `failed` and no `content/` folders are produced. This was the root cause of an earlier "no output" ingestion run.
 
-**Big-story behavior**: When the input exceeds `PLAN_OUTLINE_MAX_INPUT_CHARS` (~8–12k chars), a two-pass ingestion kicks in: chunk the description by heading/paragraph windows, extract entity candidates per chunk (parallel, batched), merge/dedupe by normalized name, then run a bounded outline call from the merged roster + a synthesized synopsis. The roster is capped at `LLM_OUTLINE_INITIAL_MAX_ITEMS` entries (default 15); the synopsis is capped at 2,000 characters with entity descriptions truncated to 80 characters each. Every LLM call stays small regardless of story size. Output is capped via `LLM_OUTLINE_MAX_TOKENS` with `finish_reason=length` handling. Verified via `FULL_INPUT=1` mode in `latency_probe.ts`.
+**Big-story behavior**: When the input exceeds `PLAN_OUTLINE_MAX_INPUT_CHARS` (~8–12k chars), a two-pass ingestion kicks in: chunk the description by heading/paragraph windows, extract entity candidates per chunk (parallel, batched), merge/dedupe by normalized name, then run a bounded outline call from the merged roster + a synthesized synopsis. The roster is capped at `LLM_OUTLINE_INITIAL_MAX_ITEMS` entries (default 15); the synopsis is capped at 2,000 characters with entity descriptions truncated to 80 characters each. Every LLM call stays small regardless of story size. Output is capped via `LLM_OUTLINE_MAX_TOKENS` with `finish_reason=length` handling. Verified via `--full` (or `FULL_INPUT=1`) mode in `latency_probe.ts`.
 
 ### Open questions
 
