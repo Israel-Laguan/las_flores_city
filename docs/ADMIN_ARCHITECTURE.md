@@ -523,7 +523,7 @@ All three must exit `0` before merging.
 | `admin/src/components/nav-config.ts` | `navSections` array + `isActive` / `getPageTitle` helpers |
 | `admin/src/components/navIcons.tsx` | Icon map for sidebar items |
 | `admin/src/components/TopBar.tsx` | Breadcrumb-aware top bar with mobile hamburger |
-| `admin/src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail from `nav-config.ts` + `useBreadcrumbLabel` registrations |
+| `admin/src/components/Breadcrumbs.tsx` | Auto-generated breadcrumb trail from the current pathname + `useBreadcrumbLabel` registrations |
 | `admin/src/components/BreadcrumbContext.tsx` | Breadcrumb label registry provider + `useBreadcrumbLabel` / `useBreadcrumbLabels` hooks |
 | `admin/src/components/ContentListPage.tsx` | Generic paginated table primitive (Type A) |
 | `admin/src/components/ContentDetailPage.tsx` | Generic JSON-viewer detail shell |

@@ -5,7 +5,7 @@
 **Master plan:** retired (2026-08-09). The durable art-style lock, static-extraction
 map, AI-pass contract, quality gate, and conflicts-resolved sections below are the
 long-term home of that guidance; the per-step milestone tracking files (M1–M8,
-M28–M32) are captured in `docs/milestones/1786049707544-m33-milestone-backlog-cleanup.md`.
+M28–M32) are captured in the [milestone backlog](milestones/1786377431414-m40-prompt-expression-asset-carryforward.md).
 
 > **Note:** This project does not use MidJourney. All generation is handled by
 > the configured AI image generation pipeline (NIM / Pollinations / Akool / etc.).

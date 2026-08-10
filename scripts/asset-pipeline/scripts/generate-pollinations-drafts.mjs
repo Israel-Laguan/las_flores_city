@@ -3,7 +3,8 @@
 /**
  * generate-pollinations-drafts.mjs
  *
- * Reads .prompt.md files from docs/lore/assets/ (recursively) and generates
+ * Reads .prompt.md files under content/{characters,districts,scenes,overlays,missions,
+ * stories,story_beats,lore,dialogues} (see PROMPT_ROOTS) and generates
  * first-draft images via Pollinations free endpoint for each prompt variant.
  *
  * Drafts are saved to a `drafts/` subdirectory next to each prompt file.
