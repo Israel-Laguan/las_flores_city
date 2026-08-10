@@ -137,7 +137,7 @@ while IFS= read -r image_file; do
             suffix=$((suffix + 1))
         done
         minio_path="${stem}_${suffix}${ext}"
-        echo "⚠️  Key collision: '$minio_path' already taken by ${KEY_SOURCES[las-flores/${asset_type}/${name}${ext}]}" >&2
+        echo "⚠️  Key collision: 'las-flores/${asset_type}/${name}${ext}' already taken by ${KEY_SOURCES[las-flores/${asset_type}/${name}${ext}]}" >&2
         echo "   Renaming ${rel_path} -> ${minio_path} to avoid overwrite." >&2
     fi
     KEY_SOURCES[$minio_path]="$rel_path"
@@ -145,7 +145,7 @@ while IFS= read -r image_file; do
     UPLOAD_FILES+=("$image_file")
     UPLOAD_KEYS+=("$minio_path")
     UPLOAD_RELS+=("$rel_path")
-done < <(find "$CONTENT_DIR" -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp")
+done < <(find "$CONTENT_DIR" \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" \) | sort)
 
 if [[ "$COLLISIONS" -gt 0 ]]; then
     echo "   $COLLISIONS collision(s) auto-renamed; every file will still upload." >&2
