@@ -69,7 +69,7 @@ function parseCsv(text) {
   let hasData = false;
 
   const flushRow = () => {
-    if (hasData || row.length > 0) {
+    if (row.some((f) => f !== '')) {
       rows.push(row);
     }
     row = [];

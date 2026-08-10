@@ -46,8 +46,8 @@ function failUsage(message: string): never {
 function positiveIntEnv(name: string, fallback: number): number {
   const raw = process.env[name];
   if (raw === undefined || raw === '') return fallback;
-  const n = parseInt(raw, 10);
-  if (!Number.isFinite(n) || n <= 0) failUsage(`${name} must be a positive integer`);
+  const n = Number(raw);
+  if (!Number.isSafeInteger(n) || n <= 0) failUsage(`${name} must be a positive integer`);
   return n;
 }
 

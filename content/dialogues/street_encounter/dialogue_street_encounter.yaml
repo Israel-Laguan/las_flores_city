@@ -1,0 +1,19 @@
+id: d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80
+name: Street Encounter
+description: A chance conversation on the streets of Las Flores.
+start_node_id: start
+nodes:
+  start:
+    id: start
+    type: narrator
+    text: 'TODO: Add dialogue text'
+    choices:
+      - id: continue
+        text: Continue
+        next_node_id: end
+  end:
+    id: end
+    type: narrator
+    text: 'TODO: Add ending text'
+    is_end: true
+lore_path: street_encounter.md

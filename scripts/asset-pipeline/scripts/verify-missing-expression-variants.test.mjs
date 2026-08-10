@@ -26,9 +26,6 @@ describe('parseCsv (RFC 4180)', () => {
   });
 
   test('handles unquoted fields with commas in prompt via quoting', () => {
-    // Unquoted field with comma would be split; quoting handles it
-    const text = 'a/"x,y"/"z/1:1,0\n';
-    // Actually test that quoting works for comma-containing fields
     const text2 = 'a,"x,y","z",1:1,0\n';
     const rows = parseCsv(text2);
     assert.deepEqual(rows[0], ['a', 'x,y', 'z', '1:1', '0']);

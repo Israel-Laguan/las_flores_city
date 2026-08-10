@@ -107,7 +107,7 @@ export default function CharacterDetailPage() {
 
   useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
 
-  if (loading) {
+  if (loading || loadedId !== id) {
     return (
       <main className={styles.main}>
         <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
@@ -130,15 +130,6 @@ export default function CharacterDetailPage() {
       <main className={styles.main}>
         <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
         <div className={styles.errorBox}>{error || 'Character not found'}</div>
-      </main>
-    );
-  }
-
-  if (loadedId !== id) {
-    return (
-      <main className={styles.main}>
-        <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
-        <p className={styles.muted}>Loading...</p>
       </main>
     );
   }
