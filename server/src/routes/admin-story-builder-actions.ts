@@ -184,7 +184,11 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
   try {
     const result = await approveAndSolidifyPlan(id, req.userId);
 
-    emitAdminEvent('plan_solidified', { success: result.success, error: result.error }, id, req.userId);
+    // NOTE: do NOT emit `plan_solidified` here — approveAndSolidifyPlan returns
+    // `status: 'pending'` before the async runSolidify completes. The terminal
+    // `plan_solidified` (success) / `plan_failed` (failure) events are emitted by
+    // the solidify flow itself (StoryBuilderOrchestrator.runSolidify). Approval
+    // setup failures short-circuit to the catch block below.
 
     res.status(200).json({
       success: result.success,

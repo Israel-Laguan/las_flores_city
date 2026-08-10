@@ -17,7 +17,10 @@ describe('OutlineChunking', () => {
     it('splits by heading first', () => {
       const text = '# Title\n\nPara 1.\n\n## Subtitle\n\nPara 2.';
       const result = chunkDescription(text, 20);
-      expect(result.length).toBeGreaterThan(1);
+      // The heading-splitter must produce one chunk per heading section, NOT a
+      // blind hard-slice. Asserting the exact chunk boundaries guarantees a
+      // regression back to hard-slicing (which would also yield >1 chunk) fails.
+      expect(result).toEqual(['# Title\n\nPara 1.', '## Subtitle\n\nPara 2.']);
     });
 
     it('falls back to hard slice for oversized paragraphs', () => {

@@ -386,7 +386,13 @@ function buildNimPrompt(fullPromptText, fileLabel, assetType) {
     if (cutAt > 0) {
       scene = trimmed.substring(0, cutAt).trim();
     } else {
-      scene = trimmed.trim();
+      // No sentence/clause boundary before the cap: cut at the last whitespace
+      // boundary so we never end mid-word. Fall back to the full hard-capped
+      // prefix only when the remaining text is a single token.
+      const lastWordBoundary = trimmed.search(/\s+\S*$/);
+      scene = lastWordBoundary > 0
+        ? trimmed.slice(0, lastWordBoundary).trim()
+        : trimmed.trim();
     }
     combined = `${scene}. ${STYLE}. NO ${NEG}`;
   }

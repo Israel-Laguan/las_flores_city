@@ -68,8 +68,14 @@ Options:
   --min-length <chars>  Minimum length to report (default: 700)
   --help, -h             Show this help
 
-The script checks the ## Prompt (Draft) section (or ## Prompt if no draft)
-combined with negative prompt against NVIDIA NIM's 800-character limit.
+Every section bound for NVIDIA NIM is hard-capped at 800 characters:
+  - \`## Prompt (Draft)\` (preferred)
+  - \`## Prompt — <name>\` named variants
+  - image-to-image background variants (\`### \`night\` — <name>\` + \`**Edit prompt:**\`)
+  - \`story-illustration\` Base Scene (NIM-bound, NOT exempt)
+Bare \`## Prompt\` is a manual reference prompt (~2000 chars) and is NEVER
+auto-sent to NIM/Pollinations; it is capped at 2000. Lengths are measured on the
+combined prompt (prompt text + negative prompt) per variant.
 `);
 }
 

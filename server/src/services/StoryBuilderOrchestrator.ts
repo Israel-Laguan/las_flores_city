@@ -322,6 +322,9 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
       verificationReport,
     });
     emitAdminEvent('plan_verified', { status: 'verified' }, planId, userId);
+    // Terminal signal for the single-click "Approve & Solidify" capstone: emit
+    // only after the pipeline fully succeeds. Failures emit `plan_failed` above.
+    emitAdminEvent('plan_solidified', { status: 'verified', success: true }, planId, userId);
   } catch (error: any) {
     console.error(`[story-builder] runSolidify failed for ${planId}:`, error.message);
     try {

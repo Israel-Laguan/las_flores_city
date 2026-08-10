@@ -1,7 +1,7 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import express from 'express';
-import type { AuthRequest } from '../../src/middleware/auth.js';
 import { adminStoryBuilderActionsRouter } from '../../src/routes/admin-story-builder-actions.js';
+import { contentPlanService } from '../../src/services/ContentPlanService.js';
 
 // Mock DB/Redis per AGENTS.md unit-test rule 7
 jest.mock('../../src/database/connection.js', () => ({
@@ -47,14 +47,6 @@ describe('POST /plans/:id/refine itemIds validation (GAP 6)', () => {
 
   let server: ReturnType<typeof app.listen>;
   let port: number;
-
-  function authReq(body: any): Partial<AuthRequest> {
-    return {
-      body,
-      params: { id: 'plan-1' },
-      userId: 'user-1',
-    } as Partial<AuthRequest>;
-  }
 
   beforeAll(async () => {
     await new Promise<void>((resolve) => {
@@ -116,5 +108,13 @@ describe('POST /plans/:id/refine itemIds validation (GAP 6)', () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
+    // The scoped path must forward plan id, trimmed feedback, and itemIds to
+    // refinePlanItems — and must NOT fall back to the unscoped refinePlan.
+    expect(contentPlanService.refinePlanItems).toHaveBeenCalledWith(
+      'plan-1',
+      'make it darker',
+      ['abc-123'],
+    );
+    expect(contentPlanService.refinePlan).not.toHaveBeenCalled();
   });
 });

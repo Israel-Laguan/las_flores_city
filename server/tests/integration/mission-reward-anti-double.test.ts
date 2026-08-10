@@ -12,12 +12,8 @@
  */
 
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
-import express from 'express';
-import { queryOLTP, closeConnections } from '../../src/database/connection.js';
-import { dialogueRouter } from '../../src/routes/dialogue.js';
-import { generateToken } from '../../src/middleware/auth.js';
-import { deleteCache, invalidatePattern, closeRedis } from '../../src/database/redis.js';
-import { compileDialogueTree } from '../../src/content/compiler.js';
+import { queryOLTP } from '../../src/database/connection.js';
+import { createMissionRewardFixture } from '../helpers/missionReward.js';
 import type { DialogueNode } from '@las-flores/shared';
 
 // ============================================================
@@ -51,117 +47,38 @@ const TREE_NODES: Record<string, DialogueNode> = {
   },
 };
 
-const app = express();
-app.use(express.json());
-app.use('/dialogue', dialogueRouter);
+const fixture = createMissionRewardFixture({
+  userId: TEST_USER_ID,
+  treeId: TEST_TREE_ID,
+  characterId: MOCK_CHARACTER_ID,
+  sceneId: MOCK_SCENE_ID,
+  vaultItemId: VAULT_ITEM_ID,
+  treeName: 'Anti-Double Test Tree',
+  treeNodes: TREE_NODES,
+  email: 'anti-double-test@test.example',
+  username: 'anti_double_test',
+  displayName: 'Anti-Double Test',
+  vaultItemTitle: 'Anti-Double Item',
+  vaultItemDescription: 'Test item',
+});
 
-let server: ReturnType<typeof app.listen>;
-let port: number;
-let startChunkId = '';
 let dialogueId = '';
 
-function authHeaders() {
-  return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
-}
-
-async function post(path: string, body: object) {
-  const res = await fetch(`http://localhost:${port}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify(body),
-  });
-  return res;
-}
-
 beforeAll(async () => {
-  await queryOLTP(
-    `INSERT INTO users (id, email, username, display_name)
-     VALUES ($1, 'anti-double-test@test.example', 'anti_double_test', 'Anti-Double Test')
-     ON CONFLICT (id) DO UPDATE SET updated_at = NOW()`,
-    [TEST_USER_ID]
-  );
-
-  await queryOLTP(
-    `INSERT INTO player_states (user_id, time_blocks, credits, gold_credits, current_day, story_beat, flags, alignment)
-     VALUES ($1, 48, 200, 0, 1, 'prologue', '{}'::jsonb, 'neutral')
-     ON CONFLICT (user_id) DO UPDATE SET credits = 200, time_blocks = 48, updated_at = NOW()`,
-    [TEST_USER_ID]
-  );
-
-  await queryOLTP(
-    `INSERT INTO vault_items (id, title, description, thumbnail_url, media_path, item_type)
-     VALUES ($1, 'Anti-Double Item', 'Test item', 'https://example.com/item.png', '/media/item.png', 'memento')
-     ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title`,
-    [VAULT_ITEM_ID]
-  );
-
-  await queryOLTP(
-    `INSERT INTO dialogue_trees (id, name, start_node_id, nodes)
-     VALUES ($1, 'Anti-Double Test Tree', 'start', $2)
-     ON CONFLICT (id) DO UPDATE
-       SET nodes = EXCLUDED.nodes,
-           start_node_id = EXCLUDED.start_node_id,
-           updated_at = NOW()`,
-    [TEST_TREE_ID, JSON.stringify(TREE_NODES)]
-  );
-
-  await compileDialogueTree(TEST_TREE_ID);
-
-  const chunks = await queryOLTP<{ id: string; chunk_key: string }>(
-    `SELECT id, chunk_key FROM dialogue_chunks WHERE tree_id = $1`,
-    [TEST_TREE_ID]
-  );
-  startChunkId = chunks.rows.find(r => r.chunk_key === 'start')!.id;
-
-  await new Promise<void>((resolve) => {
-    server = app.listen(0, () => resolve());
-  });
-  port = (server.address() as { port: number }).port;
-
-  await deleteCache(`user:state:${TEST_USER_ID}`);
-  await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
+  await fixture.boot();
 });
 
 afterAll(async () => {
-  if (server) {
-    await new Promise<void>((resolve, reject) =>
-      server.close((err: Error | undefined) => (err ? reject(err) : resolve()))
-    );
-  }
-
-  await queryOLTP(`DELETE FROM mission_reward_claims WHERE user_id = $1`, [TEST_USER_ID]);
-  await queryOLTP(`DELETE FROM player_vault WHERE user_id = $1`, [TEST_USER_ID]);
-  await queryOLTP(`DELETE FROM player_dialogue_states WHERE user_id = $1`, [TEST_USER_ID]);
-  await queryOLTP(
-    `UPDATE player_states SET active_dialogue_id = NULL, current_node_id = NULL WHERE user_id = $1`,
-    [TEST_USER_ID]
-  );
-  await queryOLTP(`DELETE FROM dialogue_chunks WHERE tree_id = $1`, [TEST_TREE_ID]);
-  await queryOLTP(`DELETE FROM dialogue_trees WHERE id = $1`, [TEST_TREE_ID]);
-  await queryOLTP(`DELETE FROM player_states WHERE user_id = $1`, [TEST_USER_ID]);
-  await queryOLTP(`DELETE FROM vault_items WHERE id = $1`, [VAULT_ITEM_ID]);
-  await queryOLTP(`DELETE FROM users WHERE id = $1`, [TEST_USER_ID]);
-
-  await deleteCache(`user:state:${TEST_USER_ID}`);
-  await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
-
-  await closeConnections();
-  await closeRedis();
+  await fixture.cleanup();
 });
 
 beforeEach(async () => {
-  await queryOLTP(`DELETE FROM player_dialogue_states WHERE user_id = $1`, [TEST_USER_ID]);
-  await queryOLTP(
-    `UPDATE player_states SET active_dialogue_id = NULL, current_node_id = NULL, credits = 200, time_blocks = 48 WHERE user_id = $1`,
-    [TEST_USER_ID]
-  );
-  await queryOLTP(`DELETE FROM mission_reward_claims WHERE user_id = $1`, [TEST_USER_ID]);
-  await queryOLTP(`DELETE FROM player_vault WHERE user_id = $1`, [TEST_USER_ID]);
+  await fixture.resetState();
 });
 
 describe('Mission reward anti-double (integration)', () => {
   test('processing the same choice twice does not double-grant', async () => {
-    const startRes = await post('/dialogue/start', {
+    const startRes = await fixture.post('/dialogue/start', {
       characterId: MOCK_CHARACTER_ID,
       sceneId: MOCK_SCENE_ID,
     });
@@ -170,7 +87,7 @@ describe('Mission reward anti-double (integration)', () => {
     dialogueId = startData.data.dialogue_id;
     const chunkId = startData.data.current_chunk_id;
 
-    const res1 = await post(`/dialogue/${dialogueId}/choose`, {
+    const res1 = await fixture.post(`/dialogue/${dialogueId}/choose`, {
       current_chunk_id: chunkId,
       choice_id: 'take',
     });
@@ -192,7 +109,7 @@ describe('Mission reward anti-double (integration)', () => {
       [TEST_USER_ID]
     )).rows[0].count;
 
-    const res2 = await post(`/dialogue/${dialogueId}/choose`, {
+    const res2 = await fixture.post(`/dialogue/${dialogueId}/choose`, {
       current_chunk_id: chunkId,
       choice_id: 'take',
     });
@@ -209,15 +126,22 @@ describe('Mission reward anti-double (integration)', () => {
       [TEST_USER_ID, VAULT_ITEM_ID]
     )).rows[0].count;
 
-    const finalClaimsCount = (await queryOLTP<{ count: string }>(
-      `SELECT COUNT(*)::text AS count FROM mission_reward_claims WHERE user_id = $1`,
+    const finalClaims = (await queryOLTP<{ claim_key: string }>(
+      `SELECT claim_key FROM mission_reward_claims WHERE user_id = $1`,
       [TEST_USER_ID]
-    )).rows[0].count;
+    )).rows.map(r => r.claim_key);
+    const finalClaimsCount = String(finalClaims.length);
 
     expect(finalCredits).toBe(midCredits);
     expect(finalVaultCount).toBe(midVaultCount);
     expect(finalVaultCount).toBe('1');
     expect(finalClaimsCount).toBe(midClaimsCount);
-    expect(parseInt(finalClaimsCount, 10)).toBeGreaterThanOrEqual(1);
+    // Exactly two distinct claim keys: one `grant_boundary` credit key and one
+    // `grant_boundary_item` key (the chunk-boundary IronGate path). The second
+    // choice attempt must not add duplicate keys, so all keys are distinct and
+    // exactly one item key is present.
+    expect(new Set(finalClaims).size).toBe(finalClaims.length);
+    expect(finalClaims.filter(k => k.includes('_item_')).length).toBe(1);
+    expect(finalClaims.length).toBe(2);
   });
 });

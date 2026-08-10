@@ -5,7 +5,7 @@ import {
   processBreakthroughSolve,
   type BreakthroughResult,
 } from '../routes/dialogue-breakthrough-helpers.js';
-import { applyEffects } from '../routes/dialogue-helpers.js';
+import { applyEffects, tryClaimReward } from '../routes/dialogue-helpers.js';
 import type { Leaf, GuardedLeaf } from '@las-flores/shared';
 
 // ============================================================
@@ -313,16 +313,12 @@ export class IronGateValidator {
     // The claim-key prefix differentiates choice-level (`grant_boundary_choice`)
     // from destination-node (`grant_boundary`) effects so both can grant
     // credits independently without one silently shadowing the other.
+    // Both reward types flow through the shared tryClaimReward ledger so the
+    // claim semantics (INSERT + ON CONFLICT DO NOTHING) live in one place,
+    // identical to grantDialogueRewards.
     if (effects.grant_credits) {
       const claimKey = `${claimKeyPrefix}_${userId}_${chunkId}_${choiceId}`;
-      const claimResult = await client.query(
-        `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT (claim_key) DO NOTHING
-         RETURNING id`,
-        [userId, claimKey, chunkId, choiceId]
-      );
-      if (claimResult.rows.length > 0) {
+      if (await tryClaimReward(client, userId, claimKey, chunkId, choiceId)) {
         const creditsDelta = effects.grant_credits.currency === 'gold_credits' ? undefined : effects.grant_credits.amount;
         const goldDelta = effects.grant_credits.currency === 'gold_credits' ? effects.grant_credits.amount : undefined;
         await PlayerStateRepository.modifyBalance(client, userId, creditsDelta, goldDelta);
@@ -332,19 +328,19 @@ export class IronGateValidator {
     // M15: grant vault item as mission reward (idempotent via claim ledger).
     if (effects.grant_item) {
       const claimKey = `${claimKeyPrefix}_item_${userId}_${chunkId}_${choiceId}`;
-      const claimResult = await client.query(
-        `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT (claim_key) DO NOTHING
-         RETURNING id`,
-        [userId, claimKey, chunkId, choiceId],
-      );
-      if (claimResult.rows.length > 0) {
-        await client.query(
-          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+      if (await tryClaimReward(client, userId, claimKey, chunkId, choiceId)) {
+        // RETURNING distinguishes a real insert from an ON CONFLICT no-op: the
+        // player may already own this item (granted via vault_unlock or another
+        // node), in which case nothing was actually granted and the response /
+        // telemetry must not claim otherwise.
+        const vaultResult = await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2)
+           ON CONFLICT (user_id, item_id) DO NOTHING RETURNING item_id`,
           [userId, effects.grant_item],
         );
-        applied['grant_item'] = effects.grant_item;
+        if (vaultResult.rows.length > 0) {
+          applied['grant_item'] = effects.grant_item;
+        }
       }
     }
     // location_discovered, app_opened, message_read are client-side
