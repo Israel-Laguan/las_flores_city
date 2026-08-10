@@ -45,17 +45,17 @@ function failUsage(message: string): never {
  */
 /** Strict base-10 positive integer parser. Rejects hex/octal/binary/exponent
  *  and any non-digit characters (including whitespace). */
-function strictPositiveInt(raw: string): number {
-  if (!/^\d+$/.test(raw)) failUsage(`must be a positive integer (got "${raw}")`);
+function strictPositiveInt(raw: string, name: string): number {
+  if (!/^\d+$/.test(raw)) failUsage(`${name} must be a positive integer (got "${raw}")`);
   const n = Number(raw);
-  if (!Number.isSafeInteger(n) || n <= 0) failUsage('must be a positive integer');
+  if (!Number.isSafeInteger(n) || n <= 0) failUsage(`${name} must be a positive integer`);
   return n;
 }
 
 function positiveIntEnv(name: string, fallback: number): number {
   const raw = process.env[name];
   if (raw === undefined || raw === '') return fallback;
-  return strictPositiveInt(raw);
+  return strictPositiveInt(raw, name);
 }
 
 function parseArgs(argv: string[]): ProbeOptions {
@@ -93,7 +93,7 @@ function parseArgs(argv: string[]): ProbeOptions {
         full = true;
         break;
       case '--max-chars': {
-        maxChars = strictPositiveInt(next());
+        maxChars = strictPositiveInt(next(), '--max-chars');
         break;
       }
       case '-s':
@@ -101,11 +101,11 @@ function parseArgs(argv: string[]): ProbeOptions {
         serverUrl = next();
         break;
       case '--poll-interval': {
-        pollIntervalMs = strictPositiveInt(next());
+        pollIntervalMs = strictPositiveInt(next(), '--poll-interval');
         break;
       }
       case '--max-wait': {
-        maxWaitMs = strictPositiveInt(next());
+        maxWaitMs = strictPositiveInt(next(), '--max-wait');
         break;
       }
       default:
