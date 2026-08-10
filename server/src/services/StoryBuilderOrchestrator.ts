@@ -271,8 +271,9 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
     );
 
     // --- Migrate ---
-    // migrateStagedPlan validates DB status is 'staged'/'approved'/'failed',
+    // migrateStagedPlan validates DB status is 'staged'/'approved',
     // then takes ownership of the 'migrating' transition internally.
+    // (A 'failed' plan must be re-staged before migration is retried.)
     await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
 
     const migrationResult = await migrateStagedPlan(planId, undefined, stageResult.createdFiles);

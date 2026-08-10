@@ -1,11 +1,8 @@
 import path from 'node:path';
 
-export function resolveContentDir(): string {
-  const isSubdir = process.cwd().endsWith('server');
-  return isSubdir
-    ? path.resolve(process.cwd(), '..', 'content')
-    : path.resolve(process.cwd(), 'content');
-}
+import { resolveContentDir } from '../services/StoryBuilderLore.js';
+
+export { resolveContentDir };
 
 /**
  * Validates a relative content path before any filesystem operations.

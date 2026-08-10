@@ -1,8 +1,9 @@
+// Admin telemetry is intentionally OLTP (not OLAP) for low-latency event capture.
 import { queryOLTP } from '../database/connection.js';
 
 export type AdminEventType =
   | 'plan_created' | 'plan_refined' | 'plan_staged'
-  | 'plan_migrated' | 'plan_verified' | 'plan_failed'
+  | 'plan_migrated' | 'plan_verified' | 'plan_failed' | 'plan_solidified'
   | 'user_role_changed' | 'settings_updated'
   | 'placeholders_filled';
 

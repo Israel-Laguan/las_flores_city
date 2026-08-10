@@ -109,6 +109,7 @@ async function main() {
   let errors = 0;
 
   const only = process.env.SLUG_ONLY ? new Set(process.env.SLUG_ONLY.split(',').map((s) => s.trim()).filter(Boolean)) : null;
+  const force = process.env.FORCE === '1' || process.argv.includes('--republish');
 
   for (const slug of slugFolders()) {
     if (only && !only.has(slug)) { skipped++; continue; }
@@ -122,7 +123,7 @@ async function main() {
     const data = (yaml.load(raw) as Record<string, any>) || {};
     const existing = Array.isArray(data.portrait_urls) ? data.portrait_urls : [];
     // Skip folders already referencing an untagged default (already wired).
-    if (existing.some((e: any) => !e.expression)) { skipped++; continue; }
+    if (!force && existing.some((e: any) => !e.expression)) { skipped++; continue; }
 
     const def = pickDefaultArtifact(slug, assetsDir);
     if (!def) { skipped++; continue; }

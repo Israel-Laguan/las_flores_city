@@ -329,15 +329,24 @@ export class IronGateValidator {
         applied['grant_credits'] = effects.grant_credits;
       }
     }
-    // M15: grant vault item as mission reward
+    // M15: grant vault item as mission reward (idempotent via claim ledger).
     if (effects.grant_item) {
-      await client.query(
-        `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
-        [userId, effects.grant_item]
+      const claimKey = `${claimKeyPrefix}_item_${userId}_${chunkId}_${choiceId}`;
+      const claimResult = await client.query(
+        `INSERT INTO mission_reward_claims (user_id, claim_key, dialogue_id, node_id)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (claim_key) DO NOTHING
+         RETURNING id`,
+        [userId, claimKey, chunkId, choiceId],
       );
-      applied['grant_item'] = effects.grant_item;
+      if (claimResult.rows.length > 0) {
+        await client.query(
+          `INSERT INTO player_vault (user_id, item_id) VALUES ($1, $2) ON CONFLICT (user_id, item_id) DO NOTHING`,
+          [userId, effects.grant_item],
+        );
+        applied['grant_item'] = effects.grant_item;
+      }
     }
-
     // location_discovered, app_opened, message_read are client-side
     // hints only — no server-side OLTP mutation needed for them.
     if (effects.location_discovered) {

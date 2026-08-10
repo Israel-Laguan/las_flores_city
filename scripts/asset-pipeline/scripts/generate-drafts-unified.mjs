@@ -376,8 +376,18 @@ function buildNimPrompt(fullPromptText, fileLabel, assetType) {
 
   let combined = `${scene}. ${STYLE}. NO ${NEG}`;
   if (combined.length > 800) {
+    // Sentence-boundary-aware trim: cut at the last sentence/major-clause
+    // boundary (". " or ", ") before the cap so we never slice mid-word.
     const maxScene = 800 - STYLE.length - NEG.length - 10;
-    scene = scene.substring(0, maxScene).trim();
+    const trimmed = scene.substring(0, maxScene);
+    const lastDot = trimmed.lastIndexOf('. ');
+    const lastComma = trimmed.lastIndexOf(', ');
+    const cutAt = Math.max(lastDot, lastComma);
+    if (cutAt > 0) {
+      scene = trimmed.substring(0, cutAt).trim();
+    } else {
+      scene = trimmed.trim();
+    }
     combined = `${scene}. ${STYLE}. NO ${NEG}`;
   }
   return combined;

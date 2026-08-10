@@ -76,7 +76,7 @@ function CoverageSection({
         Mentioned but not planned ({unplannedEntities.length})
       </h3>
       <p className={styles.description}>
-        These entities were extracted from your description but don't have plan items yet.
+        These entities were extracted from your description but don&apos;t have plan items yet.
       </p>
       {unplannedEntities.map((entity: { name: string; type: string; description?: string }, i: number) => (
         <div key={i} className={styles.coverageItem}>

@@ -180,10 +180,11 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthReques
 // POST /admin/story-builder/plans/:id/approve-and-solidify — Single-click "Approve & Ship"
 // Fires async solidify and returns immediately with status=planId for polling.
 adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (req: AuthRequest, res) => {
+  const { id } = req.params as Record<string, string>;
   try {
-    const { id } = req.params as Record<string, string>;
-
     const result = await approveAndSolidifyPlan(id, req.userId);
+
+    emitAdminEvent('plan_solidified', { success: result.success, error: result.error }, id, req.userId);
 
     res.status(200).json({
       success: result.success,
@@ -198,6 +199,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/approve-and-solidify', async (re
       : isPlanStatusError(error) || message.includes('must be') || message.includes("'proposed'")
         ? 400
         : 500;
+    emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
     res.status(statusCode).json({
       success: false,
       error: message,
