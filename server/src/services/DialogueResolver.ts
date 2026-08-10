@@ -14,7 +14,7 @@
 // ============================================================
 
 import { createHash } from 'node:crypto';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP, queryContent } from '../database/connection.js';
 import { getCache, setCache } from '../database/redis.js';
 import { DialogueNode, Leaf } from '@las-flores/shared';
 
@@ -299,7 +299,7 @@ export class DialogueResolver {
    * with hook choices are visible to all players).
    */
   public static async getActiveMysteries(): Promise<string[]> {
-    const result = await queryOLTP<{ id: string }>(
+    const result = await queryContent<{ id: string }>(
       `SELECT id FROM mysteries WHERE status = 'ACTIVE'`
     );
     return result.rows.map((row) => row.id).sort();
@@ -336,7 +336,7 @@ export class DialogueResolver {
   private static async loadBaseTree(
     baseTreeId: string
   ): Promise<BaseDialogueTree> {
-    const result = await queryOLTP<{
+    const result = await queryContent<{
       start_node_id: string;
       updated_at: string;
       nodes: Record<string, DialogueNode>;
@@ -359,7 +359,7 @@ export class DialogueResolver {
     baseTreeId: string,
     mysteryIds: string[]
   ): Promise<OverlayRow[]> {
-    const result = await queryOLTP<OverlayRow>(
+    const result = await queryContent<OverlayRow>(
       `SELECT nodes, updated_at, is_nsfw, unlock_condition
        FROM dialogue_overlays
        WHERE target_tree_id = $1
@@ -380,7 +380,7 @@ export class DialogueResolver {
     baseTreeId: string,
     mysteryId: string
   ): Promise<OverlayRow[]> {
-    const result = await queryOLTP<OverlayRow>(
+    const result = await queryContent<OverlayRow>(
       `SELECT nodes, updated_at, is_nsfw, unlock_condition
          FROM dialogue_overlays
         WHERE target_tree_id = $1
@@ -498,7 +498,7 @@ export class DialogueResolver {
    * Load a base chunk from dialogue_chunks by its UUID id.
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
-    const result = await queryOLTP<BaseDialogueChunkRow>(
+    const result = await queryContent<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, nodes, leaves
          FROM dialogue_chunks
         WHERE id = $1`,
@@ -517,7 +517,7 @@ export class DialogueResolver {
    * Used by resolveNextChunk when crossing boundaries.
    */
   private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
-    const result = await queryOLTP<BaseDialogueChunkRow>(
+    const result = await queryContent<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, nodes, leaves
          FROM dialogue_chunks
         WHERE chunk_key = $1

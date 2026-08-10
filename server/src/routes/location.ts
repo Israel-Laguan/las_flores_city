@@ -1,5 +1,5 @@
 import express from 'express';
-import { queryOLTP } from '../database/connection.js';
+import { queryContent } from '../database/connection.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { getCache, setCache, deleteCache } from '../database/redis.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
@@ -28,7 +28,7 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
   let sceneData = await getCache(sceneCacheKey(sceneId));
 
   if (!sceneData) {
-    const sceneResult = await queryOLTP(
+    const sceneResult = await queryContent(
       `SELECT id, name, background_url, background_urls, ambient_sound_url, mood
        FROM scenes WHERE id = $1`,
       [sceneId]
@@ -63,7 +63,7 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
   }
 
   // 2. Fetch permanent NPCs from scene_characters
-  let permanentResult = await queryOLTP(
+  let permanentResult = await queryContent(
     `SELECT
       sc.character_id,
       sc.is_permanent,
@@ -78,10 +78,10 @@ export async function assembleScenePayload(sceneId: string, userId: string) {
   );
 
   if (permanentResult.rows.length === 0) {
-    const sceneMetaResult = await queryOLTP('SELECT metadata FROM scenes WHERE id = $1', [sceneId]);
+    const sceneMetaResult = await queryContent('SELECT metadata FROM scenes WHERE id = $1', [sceneId]);
     const npcIds = ((sceneMetaResult.rows[0]?.metadata as any) || {}).npcs || [];
     if (npcIds.length > 0) {
-      permanentResult = await queryOLTP(
+      permanentResult = await queryContent(
         `SELECT c.id AS character_id,
                 true AS is_permanent,
                 'neutral' AS default_mood,
@@ -191,7 +191,7 @@ locationRouter.get('/:id/dialogues', authMiddleware, async (req: AuthRequest, re
     const { id } = req.params as Record<string, string>;
 
     // Get location's available dialogues
-    const locationResult = await queryOLTP(
+    const locationResult = await queryContent(
       'SELECT available_dialogues FROM scenes WHERE id = $1',
       [id]
     );
@@ -218,7 +218,7 @@ locationRouter.get('/:id/dialogues', authMiddleware, async (req: AuthRequest, re
     }
 
     // Get dialogue details
-    const dialoguesResult = await queryOLTP(
+    const dialoguesResult = await queryContent(
       `SELECT DISTINCT dt.id, dt.name, dt.description, c.name as character_name, c.avatar_url
        FROM dialogue_trees dt
        LEFT JOIN scenes s ON dt.id = ANY(s.available_dialogues)
@@ -264,7 +264,7 @@ locationRouter.get('/', authMiddleware, async (req: AuthRequest, res) => {
     const storyBeat = playerRow?.story_beat || 'prologue';
 
     // Fetch all scenes including metadata for gating check
-    const result = await queryOLTP(
+    const result = await queryContent(
       `SELECT s.id, s.name, s.description, s.image_url, s.image_urls, s.metadata,
               d.id as district_id, d.name as district, d.slug as district_slug,
               d.x as district_x, d.y as district_y
