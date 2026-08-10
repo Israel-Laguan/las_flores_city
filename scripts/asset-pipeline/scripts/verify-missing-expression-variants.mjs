@@ -40,12 +40,16 @@ function parseArgs(argv = process.argv.slice(2)) {
 }
 
 function isHealthyPng(p) {
-  if (!fs.existsSync(p)) return false;
-  if (fs.statSync(p).size < MIN_OK) return false;
-  const fd = fs.openSync(p, 'r');
-  const buf = Buffer.alloc(8);
-  try { fs.readSync(fd, buf, 0, 8, 0); } finally { fs.closeSync(fd); }
-  return buf.equals(PNG_SIGNATURE);
+  try {
+    const stat = fs.statSync(p);
+    if (!stat.isFile() || stat.size < MIN_OK) return false;
+    const fd = fs.openSync(p, 'r');
+    const buf = Buffer.alloc(8);
+    try { fs.readSync(fd, buf, 0, 8, 0); } finally { fs.closeSync(fd); }
+    return buf.equals(PNG_SIGNATURE);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -60,6 +64,7 @@ function parseCsv(text) {
   let field = '';
   let row = [];
   let inQuotes = false;
+  let afterQuote = false;
   let atFieldStart = true;
   let hasData = false;
 
@@ -71,6 +76,7 @@ function parseCsv(text) {
     field = '';
     atFieldStart = true;
     hasData = false;
+    afterQuote = false;
   };
 
   for (let i = 0; i < text.length; i++) {
@@ -82,10 +88,13 @@ function parseCsv(text) {
           i++;
         } else {
           inQuotes = false;
+          afterQuote = true;
         }
       } else {
         field += ch;
       }
+    } else if (afterQuote && ch !== ',' && ch !== '\r' && ch !== '\n') {
+      throw new Error('Unexpected character after closing CSV quote');
     } else if (ch === '"') {
       if (!atFieldStart) throw new Error('Unexpected quote in CSV field');
       inQuotes = true;
@@ -94,6 +103,7 @@ function parseCsv(text) {
       row.push(field);
       field = '';
       atFieldStart = true;
+      afterQuote = false;
     } else if (ch === '\r') {
       if (text[i + 1] === '\n') i++;
       row.push(field);
@@ -109,6 +119,7 @@ function parseCsv(text) {
       hasData = true;
     }
   }
+  if (inQuotes) throw new Error('Unterminated quoted CSV field');
   // Flush last row if the file doesn't end with a newline
   if (hasData || field !== '') {
     row.push(field);
@@ -145,13 +156,15 @@ function processRows(csvText, csvDir) {
   const header = rows[0];
   const pathIdx = header.findIndex((h) => h === 'path');
   const doneIdx = header.findIndex((h) => h === 'done');
+  if (pathIdx < 0 || doneIdx < 0) {
+    throw new Error('CSV header must include path and done columns');
+  }
 
   let done = 0;
   let changed = 0;
 
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
-    if (pathIdx < 0 || doneIdx < 0) continue;
     const rawPath = row[pathIdx];
     if (!rawPath) continue;
     const resolvedPath = path.isAbsolute(rawPath)

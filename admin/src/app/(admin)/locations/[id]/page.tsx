@@ -24,6 +24,7 @@ export default function LocationDetailPage() {
   const id = params.id as string;
 
   const [record, setRecord] = useState<LocationRecord | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -44,6 +45,7 @@ export default function LocationDetailPage() {
         if (cancelled) return;
         if (data.success && data.data) {
           setRecord(data.data);
+          setLoadedId(id);
         } else {
           setError(data.error || 'Failed to fetch location');
         }
@@ -62,7 +64,7 @@ export default function LocationDetailPage() {
     return () => { cancelled = true; };
   }, [id]);
 
-  useBreadcrumbLabel(id, record?.name ?? null);
+  useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
 
   if (loading) {
     return (
@@ -87,6 +89,15 @@ export default function LocationDetailPage() {
       <div className={styles.main}>
         <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
         <div className={styles.errorBox}>{error || 'Location not found'}</div>
+      </div>
+    );
+  }
+
+  if (loadedId !== id) {
+    return (
+      <div className={styles.main}>
+        <Link href="/locations" className={styles.backLink}>&larr; Back to Locations</Link>
+        <p className={styles.muted}>Loading...</p>
       </div>
     );
   }

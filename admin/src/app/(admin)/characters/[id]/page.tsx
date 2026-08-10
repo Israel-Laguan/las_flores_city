@@ -44,6 +44,7 @@ export default function CharacterDetailPage() {
   const id = params.id as string;
 
   const [record, setRecord] = useState<CharacterRecord | null>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
@@ -67,6 +68,7 @@ export default function CharacterDetailPage() {
         if (cancelled) return;
         if (data.success && data.data) {
           setRecord(data.data);
+          setLoadedId(id);
         } else {
           setError(data.error || 'Failed to fetch character');
         }
@@ -103,7 +105,7 @@ export default function CharacterDetailPage() {
     });
   }, [record?.available_dialogues]);
 
-  useBreadcrumbLabel(id, record?.name ?? null);
+  useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
 
   if (loading) {
     return (
@@ -128,6 +130,15 @@ export default function CharacterDetailPage() {
       <main className={styles.main}>
         <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
         <div className={styles.errorBox}>{error || 'Character not found'}</div>
+      </main>
+    );
+  }
+
+  if (loadedId !== id) {
+    return (
+      <main className={styles.main}>
+        <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
+        <p className={styles.muted}>Loading...</p>
       </main>
     );
   }

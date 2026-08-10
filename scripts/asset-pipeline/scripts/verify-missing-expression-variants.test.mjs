@@ -54,6 +54,16 @@ describe('parseCsv (RFC 4180)', () => {
     const rows = parseCsv(text);
     assert.deepEqual(rows[0], ['a', '', 'c', 'd', '0']);
   });
+
+  test('throws on unterminated quoted field', () => {
+    const text = 'a,b,"c\n';
+    assert.throws(() => parseCsv(text), { message: /Unterminated quoted CSV field/ });
+  });
+
+  test('throws on trailing text after closing quote', () => {
+    const text = 'a,"b"suffix,c\n';
+    assert.throws(() => parseCsv(text), { message: /Unexpected character after closing CSV quote/ });
+  });
 });
 
 describe('serializeField / serializeCsv', () => {

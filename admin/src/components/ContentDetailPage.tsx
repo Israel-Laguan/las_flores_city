@@ -30,12 +30,13 @@ export default function ContentDetailPage({ title, backHref, backLabel, getBread
   const id = params.id as string;
 
   const [record, setRecord] = useState<unknown>(null);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
 
   const resolveLabel = getBreadcrumbLabel ?? defaultBreadcrumbLabel;
-  const breadcrumbLabel = record ? resolveLabel(record) : null;
+  const breadcrumbLabel = loadedId === id && record ? resolveLabel(record) : null;
   useBreadcrumbLabel(id, breadcrumbLabel);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function ContentDetailPage({ title, backHref, backLabel, getBread
         if (cancelled) return;
         if (data.success) {
           setRecord(data.data);
+          setLoadedId(id);
         } else {
           setError(data.error || `Failed to fetch ${title.toLowerCase()}`);
         }
@@ -79,7 +81,7 @@ export default function ContentDetailPage({ title, backHref, backLabel, getBread
       {loading && <p className={styles.muted}>Loading...</p>}
       {!loading && notFound && <p>Not found.</p>}
       {!loading && !notFound && error && <div className={styles.errorBox}>{error}</div>}
-      {!loading && !notFound && !error && record !== null && (
+      {!loading && !notFound && !error && loadedId === id && record !== null && (
         <pre className={styles.json}>
           {JSON.stringify(record, null, 2)}
         </pre>
