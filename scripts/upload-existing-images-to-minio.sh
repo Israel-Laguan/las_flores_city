@@ -42,7 +42,7 @@ done
 # Configuration
 # MINIO_ENDPOINT may include a port; if it does not, the documented MINIO_PORT
 # (default 9000) is appended so the default target is the MinIO API port.
-MINIO_ENDPOINT="${MINIO_ENDPOINT:-minio}"
+MINIO_ENDPOINT="${MINIO_ENDPOINT:-localhost}"
 MINIO_PORT="${MINIO_PORT:-9000}"
 case "$MINIO_ENDPOINT" in
     *:*) MINIO_HOST="$MINIO_ENDPOINT" ;;
