@@ -20,6 +20,9 @@ content/
 ├── vault/                    # Collectible items and clues
 ├── gigs/                     # Side jobs and commissions
 ├── shop/                     # Cosmetic and functional items
+├── stories/                  # Narrative story groupings
+├── lore/                     # World-level lore markdown
+├── story_beats/              # Per-beat folders (story beat registry)
 └── story_beats.yaml          # Narrative beat registry (single file)
 ```
 
