@@ -3,7 +3,7 @@ import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { handleStartDialogue } from './dialogue-start.js';
 import { handleChoose } from './dialogue-choose.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
+import { withOLTPTransaction, queryOLTP } from '@las-flores/infra';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { buildDialogueResponse, stripGuardedTargetChunks, type ChunkPayload } from './dialogue-response-helpers.js';
 import { resolveChunkSpeakers } from './dialogue-speakers.js';

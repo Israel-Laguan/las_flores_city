@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { AuthRequest } from '../middleware/auth.js';
 import bcrypt from 'bcryptjs';
 

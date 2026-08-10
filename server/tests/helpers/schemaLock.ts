@@ -1,5 +1,5 @@
 import type pg from 'pg';
-import { oltpPool, olapPool } from '../../src/database/connection.js';
+import { oltpPool, olapPool } from '@las-flores/infra';
 
 /**
  * Shared blocking-advisory-lock helper for integration tests.

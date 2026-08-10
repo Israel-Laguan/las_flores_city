@@ -7,7 +7,7 @@ import { withSchemaLock } from '../helpers/schemaLock.js';
 import { playerRouter } from '../../src/routes/player.js';
 import { locationRouter } from '../../src/routes/location.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 const { Pool } = pg;
 

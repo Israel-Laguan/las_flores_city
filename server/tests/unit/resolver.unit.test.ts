@@ -6,7 +6,7 @@ import type { DialogueNode } from '@las-flores/shared';
 // (which would register a handle on globalThis that jest-environment-node
 // soft-deletes at worker teardown). deepMergeNodes is pure and does not
 // use Redis, but DialogueResolver.js imports the redis module at load time.
-jest.mock('../../src/database/redis.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => undefined),
   deleteCache: jest.fn(async () => true),
@@ -15,7 +15,7 @@ jest.mock('../../src/database/redis.js', () => ({
   closeRedis: jest.fn(async () => undefined),
 }));
 
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 // ============================================================
 // DialogueResolver Unit Tests

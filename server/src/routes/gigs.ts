@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { oltpPool, queryOLAP } from '../database/connection.js';
-import { deleteCache } from '../database/redis.js';
+import { oltpPool, queryOLAP } from '@las-flores/infra';
+import { deleteCache } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { GigFileSchema, Gig } from '../../../shared/src/schemas/gig.js';
 

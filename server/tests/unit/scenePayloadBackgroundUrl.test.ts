@@ -11,7 +11,7 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 const cacheStore = new Map<string, any>();
 
-jest.mock('../../src/database/connection.js', () => {
+jest.mock('@las-flores/infra', () => ({ ...(() => {
   const handler = jest.fn(async (text: string) => {
     if (text.includes('FROM scenes WHERE id = $1')) {
       // Main scene query (SELECT id, name, background_url, background_urls, ...).
@@ -35,9 +35,7 @@ jest.mock('../../src/database/connection.js', () => {
     queryContent: handler,
     queryOLAP: jest.fn(async () => ({ rows: [] })),
   };
-});
-
-jest.mock('../../src/database/redis.js', () => ({
+})(), ...(() => ({
   getCache: jest.fn(async (key: string) => cacheStore.get(key) ?? null),
   setCache: jest.fn(async (key: string, val: any) => {
     cacheStore.set(key, val);
@@ -47,7 +45,7 @@ jest.mock('../../src/database/redis.js', () => ({
     cacheStore.delete(key);
     return true;
   }),
-}));
+}))() }));
 
 jest.mock('../../src/routes/location.npcs.js', () => ({
   getOverlayNpcs: jest.fn(async () => []),

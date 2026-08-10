@@ -170,6 +170,7 @@ services:
       # Production: Remove volume mounts for source code
       - ./server/src:/app/server/src
       - ./shared:/app/shared
+      - ./infra:/app/infra
       - ./content:/app/content
       - ./docs:/app/docs:ro
 

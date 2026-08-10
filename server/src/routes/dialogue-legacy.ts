@@ -1,4 +1,4 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
   getDialogState,
@@ -6,7 +6,7 @@ import {
   joinMystery,
   type ProcessChoiceResult,
 } from './dialogue-helpers.js';
-import { deleteCache, invalidatePattern } from '../database/redis.js';
+import { deleteCache, invalidatePattern } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { handleAlignmentSideEffects, handleBreakthroughSideEffects } from './dialogue-side-effects.js';
 

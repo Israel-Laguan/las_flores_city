@@ -1,6 +1,6 @@
 import express from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { DialogueResolver } from '../services/DialogueResolver.js';
 import { initializeDialogueState, filterChoices, getSpeaker } from './dialogue-helpers.js';
 import { buildDialogueResponse, type ChunkPayload } from './dialogue-response-helpers.js';

@@ -3,7 +3,7 @@ import path from 'path';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import pg from 'pg';
 import { migrateContent, extractContentIds } from '../../src/content/migrate.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 const { Pool } = pg;
 
@@ -29,7 +29,7 @@ let pool: pg.Pool;
 async function applyMigration(filename: string): Promise<void> {
   const fs = await import('fs');
   const path = await import('path');
-  const { queryOLTP } = await import('../../src/database/connection.js');
+  const { queryOLTP } = await import('@las-flores/infra');
   const sql = fs.readFileSync(
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { queryOLTP } from './connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import bcrypt from 'bcryptjs';
 
 // Load env the same way the server does (cwd is the server workspace, .env lives at repo root).

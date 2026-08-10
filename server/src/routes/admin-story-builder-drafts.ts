@@ -3,7 +3,7 @@ import express from 'express';
 import path from 'node:path';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { markDrafted, markChosen } from '../services/AssetNeedsService.js';
 import { generatePromptFiles } from '../services/PromptFileGenerator.js';
 import {

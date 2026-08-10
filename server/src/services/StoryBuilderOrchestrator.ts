@@ -1,6 +1,6 @@
 import { ContentPlanSchema, type VerificationReport } from '@las-flores/shared';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
-import { setCache, getCache } from '../database/redis.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { setCache, getCache } from '@las-flores/infra';
 import { migrateContent } from '../content/migrate.js';
 import { ContentPlanService } from './ContentPlanService.js';
 import { publishChosenDrafts } from './AssetPublishService.js';

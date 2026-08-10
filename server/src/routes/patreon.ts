@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
-import { invalidatePattern } from '../database/redis.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { invalidatePattern } from '@las-flores/infra';
 
 export const patreonRouter = Router();
 

@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { VAULT_ITEM_IDS, ARIA_CHARACTER_ID, SMS_CHAT_HISTORY } from '../database/seedFixtures.js';
 
 export const devRouter = Router();

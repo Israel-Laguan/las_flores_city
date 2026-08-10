@@ -1,5 +1,5 @@
-import { queryOLTP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 import { computeRelationshipDecay, RELATIONSHIP_STAT_PREFIXES } from '../../src/workers/RelationshipDecayWorker.js';
 import { choicePassesFilters, metadataConditionsPass, PlayerConditionState } from '@las-flores/shared';
 import { ADEYEMI_ENDINGS as ACT_5_ENDINGS } from '../fixtures/adeyemi_endings.js';

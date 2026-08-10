@@ -14,7 +14,7 @@ import path from 'path';
 import fs from 'fs/promises';
 
 // Mock Redis cache operations to avoid Redis dependency in integration tests
-jest.mock('../../src/database/redis.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   setCache: jest.fn() as any,
   getCache: jest.fn() as any,
   deleteCache: jest.fn() as any,
@@ -279,7 +279,7 @@ describe('Story Beat Pipeline Integration', () => {
     expect(beatResult.rows[0].description).toContain('intercept him');
 
     // Verify the cache was refreshed (mocked setCache should have been called with all slugs)
-    const { setCache } = await import('../../src/database/redis.js');
+    const { setCache } = await import('@las-flores/infra');
     const cacheCall = (setCache as jest.Mock).mock.calls.find(
       (call: any[]) => call[0] === 'story_beats:slugs',
     );

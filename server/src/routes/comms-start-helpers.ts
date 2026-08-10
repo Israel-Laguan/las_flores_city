@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { queryOLTP, queryOLAP } from '../database/connection.js';
+import { queryOLTP, queryOLAP } from '@las-flores/infra';
 import type { SMSMessage } from '../../../shared/src/types/sms.js';
 
 export interface StartThreadTransactionResult {

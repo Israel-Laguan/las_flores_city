@@ -1,7 +1,7 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { queryOLTP } from '../database/connection.js';
-import { deleteCache, setCache } from '../database/redis.js';
+import { queryOLTP } from '@las-flores/infra';
+import { deleteCache, setCache } from '@las-flores/infra';
 import { StoryBeatSchema } from '@las-flores/shared';
 
 /**

@@ -1,7 +1,7 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 
 /**

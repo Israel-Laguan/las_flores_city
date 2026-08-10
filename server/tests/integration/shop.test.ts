@@ -21,7 +21,7 @@ import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { shopRouter } from '../../src/routes/shop.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis, deleteCache } from '../../src/database/redis.js';
+import { closeRedis, deleteCache } from '@las-flores/infra';
 
 const { Pool } = pg;
 

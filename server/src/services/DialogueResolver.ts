@@ -14,8 +14,8 @@
 // ============================================================
 
 import { createHash } from 'node:crypto';
-import { queryOLTP, queryContent } from '../database/connection.js';
-import { getCache, setCache } from '../database/redis.js';
+import { queryOLTP, queryContent } from '@las-flores/infra';
+import { getCache, setCache } from '@las-flores/infra';
 import { DialogueNode, Leaf } from '@las-flores/shared';
 
 export interface ResolvedTree {

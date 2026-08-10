@@ -27,15 +27,13 @@ import express from 'express';
 
 // ── Module mocks (hoisted by Jest) ──────────────────────────
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({ ...(() => ({
   queryOLTP: jest.fn(),
-}));
-
-jest.mock('../../src/database/redis.js', () => ({
+}))(), ...(() => ({
   deleteCache: jest.fn(async () => true),
   setCache: jest.fn(async () => true),
   getCache: jest.fn(async () => null),
-}));
+}))() }));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => next(),
@@ -43,8 +41,8 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 // ── Imports (after mocks) ────────────────────────────────────
 
-import { queryOLTP } from '../../src/database/connection.js';
-import { deleteCache, setCache } from '../../src/database/redis.js';
+import { queryOLTP } from '@las-flores/infra';
+import { deleteCache, setCache } from '@las-flores/infra';
 import { adminStoryBeatsRouter } from '../../src/routes/admin-story-beats.js';
 
 // ── App fixture ──────────────────────────────────────────────

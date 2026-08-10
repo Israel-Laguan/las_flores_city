@@ -3,7 +3,7 @@ import pg from 'pg';
 import express from 'express';
 import { playerRouter } from '../../src/routes/player.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 const { Pool } = pg;
 

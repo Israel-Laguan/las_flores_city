@@ -1,6 +1,6 @@
 import { ContentPlanSchema, type ContentPlanItem } from '@las-flores/shared';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
-import { setCache, getCache, deleteCache } from '../database/redis.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { setCache, getCache, deleteCache } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { finiteInt } from '../utils/env.js';

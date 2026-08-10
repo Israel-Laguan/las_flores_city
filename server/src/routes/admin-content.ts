@@ -5,7 +5,7 @@ import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { validateContent, checkContentQuality } from '../content/validate.js';
 import { migrateContent } from '../content/migrate.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { computeContentDiff } from './utils/contentDiff.js';
 import { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
 import { invalidateContentResolverCache } from './admin-content-resolver.js';

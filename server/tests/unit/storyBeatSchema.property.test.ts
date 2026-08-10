@@ -241,10 +241,8 @@ describe('Beat upsert round-trip', () => {
       const actual = await jestGlobals.requireActual<typeof import('@las-flores/shared')>('@las-flores/shared');
       return { ...actual };
     });
-    jestGlobals.unstable_mockModule('../../src/database/connection.js', () => ({
+    jestGlobals.unstable_mockModule('@las-flores/infra', () => ({
       queryOLTP: queryOLTPMock,
-    }));
-    jestGlobals.unstable_mockModule('../../src/database/redis.js', () => ({
       setCache: setCacheMock,
       deleteCache: deleteCacheMock,
       getCache: jestGlobals.fn(),

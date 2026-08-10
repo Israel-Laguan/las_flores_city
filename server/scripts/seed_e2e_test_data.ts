@@ -9,7 +9,7 @@
  */
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { queryOLTP, closeConnections } from '../src/database/connection.js';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { VAULT_ITEM_IDS, ARIA_CHARACTER_ID, SMS_CHAT_HISTORY } from '../src/database/seedFixtures.js';
 
 dotenv.config();

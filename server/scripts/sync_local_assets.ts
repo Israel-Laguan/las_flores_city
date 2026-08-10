@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'crypto';
-import { queryOLTP, withOLTPTransaction } from '../src/database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { uploadToMinio } from '../src/services/StorageService.js';
 import { fileURLToPath } from 'node:url';
 

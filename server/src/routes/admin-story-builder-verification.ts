@@ -1,5 +1,5 @@
 import type { AuthRequest } from '../middleware/auth.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 // GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
 export async function handleGetVerificationReport(req: AuthRequest, res: any) {

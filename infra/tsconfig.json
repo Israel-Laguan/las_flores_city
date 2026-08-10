@@ -7,19 +7,14 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "..",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": false,
-    "paths": {
-      "@las-flores/shared": ["../shared/src/index.ts"],
-      "@las-flores/infra": ["../infra/src/index.ts"]
-    }
+    "isolatedModules": true
   },
-  "include": ["src/**/*", "../shared/src/**/*", "../infra/src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

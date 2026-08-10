@@ -1,5 +1,5 @@
-import { queryOLTP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
-import { closeRedis, invalidatePattern } from '../../src/database/redis.js';
+import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+import { closeRedis, invalidatePattern } from '@las-flores/infra';
 import { getDialogState } from '../../src/routes/dialogue-helpers.js';
 import fs from 'fs';
 import path from 'path';

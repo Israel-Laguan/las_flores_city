@@ -1,5 +1,5 @@
 import pg from 'pg';
-import { withOLTPTransaction } from '../database/connection.js';
+import { withOLTPTransaction } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import {
   processBreakthroughSolve,

@@ -1,4 +1,4 @@
-import { queryOLTP, queryContent } from '../database/connection.js';
+import { queryOLTP, queryContent } from '@las-flores/infra';
 import { resolveAssetUrl } from '../services/AssetStageResolver.js';
 
 // Portrait base path convention: /assets/portraits/{slug}/

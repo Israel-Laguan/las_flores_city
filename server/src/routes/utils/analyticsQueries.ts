@@ -1,4 +1,4 @@
-import { queryOLTP, queryOLAP } from '../../database/connection.js';
+import { queryOLTP, queryOLAP } from '@las-flores/infra';
 
 export interface DialogueRow {
   event_type: string;

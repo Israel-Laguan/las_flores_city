@@ -1,7 +1,7 @@
 import { Router, Response, NextFunction } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP } from '../database/connection.js';
-import { getCache, setCache } from '../database/redis.js';
+import { queryOLTP } from '@las-flores/infra';
+import { getCache, setCache } from '@las-flores/infra';
 import { MediaSigner } from '../services/MediaSigner.js';
 
 export const vaultRouter = Router();

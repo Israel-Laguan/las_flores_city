@@ -3,7 +3,7 @@ import {
   GenerateBasesRequestSchema,
   GenerateVariantsRequestSchema,
 } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { deleteFromMinio, uploadToMinio } from '../services/StorageService.js';
 import { resolvePromptFile, slugify } from './assets.helpers.js';
 import { sanitizePromptRel } from '../utils/sanitize.js';

@@ -1,6 +1,6 @@
 import express from 'express';
 import { ContentPlanSchema } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { executePlan } from '../services/StoryBuilderOrchestrator.js';
 import { PLAN_TEMPLATES, getTemplateById } from '../services/PlanTemplates.js';
 import { cloneItem } from '../services/CloneTemplateService.js';

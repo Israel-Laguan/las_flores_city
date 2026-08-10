@@ -33,7 +33,7 @@ import {
   contentPool,
   oltpPool,
   closeConnections,
-} from '../../src/database/connection.js';
+} from '@las-flores/infra';
 
 describe('M19 contentPool', () => {
   beforeEach(async () => {

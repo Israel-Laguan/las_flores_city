@@ -1,4 +1,4 @@
-import { queryOLAP } from '../database/connection.js';
+import { queryOLAP } from '@las-flores/infra';
 
 export type ShopPurchaseEventData = {
   shop_item_id: string;

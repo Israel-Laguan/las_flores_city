@@ -1,7 +1,7 @@
 import express from 'express';
-import { queryContent } from '../database/connection.js';
+import { queryContent } from '@las-flores/infra';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { getCache, setCache, deleteCache } from '../database/redis.js';
+import { getCache, setCache, deleteCache } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import {
   getOverlayNpcs,

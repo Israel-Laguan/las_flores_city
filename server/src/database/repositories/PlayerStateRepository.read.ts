@@ -1,5 +1,5 @@
 import pg from 'pg';
-import { queryOLTP } from '../connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import type { FullStateRow } from './PlayerStateRepository.js';
 
 export async function getFullState(userId: string): Promise<FullStateRow | null> {

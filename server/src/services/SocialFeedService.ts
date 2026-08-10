@@ -1,5 +1,5 @@
-import { oltpPool } from '../database/connection.js';
-import { getCache, setCache, deleteCache } from '../database/redis.js';
+import { oltpPool } from '@las-flores/infra';
+import { getCache, setCache, deleteCache } from '@las-flores/infra';
 import { SocialPost } from '../../../shared/src/types/feed.js';
 
 const CACHE_KEY = 'global:feed';

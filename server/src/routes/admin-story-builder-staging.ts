@@ -1,4 +1,4 @@
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { stagePlan } from '../services/StoryBuilderOrchestrator.js';
 import {

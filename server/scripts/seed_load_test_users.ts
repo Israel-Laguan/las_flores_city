@@ -13,7 +13,7 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import { queryOLTP, closeConnections } from '../src/database/connection.js';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });

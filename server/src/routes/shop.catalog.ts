@@ -1,8 +1,8 @@
 import express from 'express';
 import { type ShopItem } from '@las-flores/shared';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP } from '../database/connection.js';
-import { getCache, setCache } from '../database/redis.js';
+import { queryOLTP } from '@las-flores/infra';
+import { getCache, setCache } from '@las-flores/infra';
 
 const CATALOG_CACHE_TTL_SECONDS = 300;
 

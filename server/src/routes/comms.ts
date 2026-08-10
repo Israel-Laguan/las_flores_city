@@ -5,8 +5,8 @@ import {
 } from '../middleware/auth.js';
 import {
   queryOLTP,
-} from '../database/connection.js';
-import { getCache, setCache, deleteCache } from '../database/redis.js';
+} from '@las-flores/infra';
+import { getCache, setCache, deleteCache } from '@las-flores/infra';
 import { userStateCacheKey } from './player-helpers.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { performStartThreadTransaction, emitStartThreadAnalytics } from './comms-start-helpers.js';

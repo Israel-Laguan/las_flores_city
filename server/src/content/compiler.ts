@@ -9,7 +9,7 @@
 // wrapper so it's testable without Postgres.
 // ============================================================
 
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import {
   ChunkSchema,
   evaluateBoundary,

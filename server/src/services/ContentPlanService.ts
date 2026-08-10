@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import * as yaml from 'js-yaml';
 import { glob } from 'glob';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { finiteInt } from '../utils/env.js';
 import { createLLMProvider } from './LLMService.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';

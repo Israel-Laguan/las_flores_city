@@ -4,7 +4,7 @@ import path from 'node:path';
 import * as jsYaml from 'js-yaml';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
 import { resolveContentDir, validateContentPath } from './admin-content.helpers.js';
-import { getCache, setCache, invalidatePattern } from '../database/redis.js';
+import { getCache, setCache, invalidatePattern } from '@las-flores/infra';
 
 /**
  * Admin Content Resolver Router

@@ -1,4 +1,4 @@
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { sanitizeText } from './validate-xss.js';
 import { normalizeUuid } from './uuid-utils.js';
 

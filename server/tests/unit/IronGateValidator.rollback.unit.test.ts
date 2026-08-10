@@ -28,7 +28,7 @@ const fakePgClient = {
 } as unknown as import('pg').PoolClient;
 
 // Mock withOLTPTransaction to model real commit/rollback semantics.
-jestGlobals.mock('../../src/database/connection.js', () => ({
+jestGlobals.mock('@las-flores/infra', () => ({
   withOLTPTransaction: jestGlobals.fn(async (cb: (client: unknown) => Promise<unknown>) => {
     try {
       const result = await cb(fakePgClient);
@@ -40,6 +40,12 @@ jestGlobals.mock('../../src/database/connection.js', () => ({
     }
   }),
   queryOLTP: jestGlobals.fn(),
+  getCache: jestGlobals.fn(async () => null),
+  setCache: jestGlobals.fn(async () => undefined),
+  deleteCache: jestGlobals.fn(async () => true),
+  invalidatePattern: jestGlobals.fn(async () => 0),
+  getRedis: jestGlobals.fn(),
+  closeRedis: jestGlobals.fn(async () => undefined),
 }));
 
 jestGlobals.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
@@ -61,19 +67,10 @@ jestGlobals.mock('../../src/routes/dialogue-helpers.js', () => ({
   applyEffects: jestGlobals.fn(async () => undefined),
 }));
 
-jestGlobals.mock('../../src/database/redis.js', () => ({
-  getCache: jestGlobals.fn(async () => null),
-  setCache: jestGlobals.fn(async () => undefined),
-  deleteCache: jestGlobals.fn(async () => true),
-  invalidatePattern: jestGlobals.fn(async () => 0),
-  getRedis: jestGlobals.fn(),
-  closeRedis: jestGlobals.fn(async () => undefined),
-}));
-
 import { IronGateValidator } from '../../src/services/IronGateValidator.js';
 import { PlayerStateRepository } from '../../src/database/repositories/PlayerStateRepository.js';
 import { applyEffects } from '../../src/routes/dialogue-helpers.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 beforeEach(() => {
   jestGlobals.clearAllMocks();

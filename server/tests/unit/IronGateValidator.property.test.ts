@@ -26,12 +26,18 @@ import fc from 'fast-check';
 
 // Mock withOLTPTransaction to run the callback immediately with a
 // fake client. This prevents any real DB connection.
-jestGlobals.mock('../../src/database/connection.js', () => ({
+jestGlobals.mock('@las-flores/infra', () => ({
   withOLTPTransaction: jestGlobals.fn(
     async (cb: (client: unknown) => Promise<unknown>) => {
       return cb(fakePgClient);
     }
   ),
+  getCache: jestGlobals.fn(async () => null),
+  setCache: jestGlobals.fn(async () => undefined),
+  deleteCache: jestGlobals.fn(async () => true),
+  invalidatePattern: jestGlobals.fn(async () => 0),
+  getRedis: jestGlobals.fn(),
+  closeRedis: jestGlobals.fn(async () => undefined),
 }));
 
 jestGlobals.mock('../../src/database/repositories/PlayerStateRepository.js', () => ({
@@ -40,21 +46,6 @@ jestGlobals.mock('../../src/database/repositories/PlayerStateRepository.js', () 
     mergeFlags: jestGlobals.fn(async () => undefined),
     setStoryBeat: jestGlobals.fn(async () => undefined),
   },
-}));
-
-// Mock Redis so the mystery_solve guard path (processBreakthroughSolve →
-// invalidatePattern → getRedis) never opens a real ioredis connection.
-// A real connection would store a handle on globalThis that
-// jest-environment-node soft-deletes at worker teardown, crashing the
-// worker (see redis.ts handle.closed comment). Unit tests must stay
-// DB/Redis-free.
-jestGlobals.mock('../../src/database/redis.js', () => ({
-  getCache: jestGlobals.fn(async () => null),
-  setCache: jestGlobals.fn(async () => undefined),
-  deleteCache: jestGlobals.fn(async () => true),
-  invalidatePattern: jestGlobals.fn(async () => 0),
-  getRedis: jestGlobals.fn(),
-  closeRedis: jestGlobals.fn(async () => undefined),
 }));
 
 // mystery_solve guard calls client.query directly — mock returns
@@ -67,7 +58,7 @@ const fakePgClient = {
 
 import { IronGateValidator } from '../../src/services/IronGateValidator.js';
 import { PlayerStateRepository } from '../../src/database/repositories/PlayerStateRepository.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 import type { FreeLeaf, GuardedLeaf, BoundaryReason } from '@las-flores/shared';
 
 // ── Arbitraries ───────────────────────────────────────────────
@@ -159,7 +150,7 @@ describe('Free leaf allows seamless transition', () => {
           expect(result.error).toBeUndefined();
 
           // No DB or transaction should be touched for a FREE leaf.
-          const { withOLTPTransaction } = await import('../../src/database/connection.js');
+          const { withOLTPTransaction } = await import('@las-flores/infra');
           expect(withOLTPTransaction).not.toHaveBeenCalled();
           expect(PlayerStateRepository.spendTimeBlocks).not.toHaveBeenCalled();
         }

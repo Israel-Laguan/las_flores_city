@@ -26,26 +26,23 @@ import { stringOf } from './__utils__/fastCheckV4';
 // ── Module mocks ──────────────────────────────────────────────
 
 // Mock queryOLTP / queryContent — each test overrides their return value per-run.
-jestGlobals.mock('../../src/database/connection.js', () => ({
+jestGlobals.mock('@las-flores/infra', () => ({ ...(() => ({
   queryOLTP: jestGlobals.fn(),
   queryContent: jestGlobals.fn(),
   withOLTPTransaction: jestGlobals.fn(
     async (cb: (client: unknown) => Promise<unknown>) => cb({}),
   ),
-}));
-
-// Mock Redis so no real connection is attempted.
-jestGlobals.mock('../../src/database/redis.js', () => ({
+}))(), ...(() => ({
   getCache: jestGlobals.fn(async () => null),   // always cache-miss
   setCache: jestGlobals.fn(async () => undefined),
   closeRedis: jestGlobals.fn(async () => undefined),
-}));
+}))() }));
 
 // ── Imports (after mocks) ─────────────────────────────────────
 
 import { DialogueResolver, deepMergeNodes } from '../../src/services/DialogueResolver.js';
-import { queryOLTP, queryContent } from '../../src/database/connection.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, queryContent } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 import type { DialogueNode, Leaf } from '@las-flores/shared';
 
 // ── Arbitraries ───────────────────────────────────────────────

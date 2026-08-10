@@ -1,5 +1,5 @@
 import express from 'express';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 
 export const settingsRouter = express.Router();

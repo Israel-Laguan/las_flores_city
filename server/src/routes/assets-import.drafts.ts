@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { uploadToMinio } from '../services/StorageService.js';
 import { getPromptRoot, parsePromptFile, resolvePromptFile } from './assets.helpers.js';
 import { sanitizePromptRel } from '../utils/sanitize.js';

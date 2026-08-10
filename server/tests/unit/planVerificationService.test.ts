@@ -4,7 +4,7 @@ import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 
 // Mock database
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
 }));
 
@@ -34,7 +34,7 @@ jest.mock('../../src/services/ContentSkeletonGenerator.js', () => ({
   }),
 }));
 
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { verifyPlanCrossReferences } from '../../src/services/PlanVerificationService.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
