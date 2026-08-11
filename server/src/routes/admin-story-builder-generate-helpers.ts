@@ -39,6 +39,15 @@ export async function scaffoldPlanItems(
       }
       await fs.link(tempPath, fullPath);
       createdFiles.push(filePath);
+    } catch (err) {
+      // A failure on a 2nd or later item would otherwise leave the earlier
+      // successfully published scaffold files behind while the function
+      // rethrows (so its `return createdFiles` never runs). Clean them up here
+      // so a retry cannot hit EEXIST file conflicts claiming nothing was
+      // committed. The caller's removeScaffoldedFiles is then a redundant but
+      // harmless no-op.
+      await removeScaffoldedFiles(createdFiles, contentDir);
+      throw err;
     } finally {
       await fs.rm(tempPath, { force: true });
     }

@@ -211,7 +211,10 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
       } catch (cleanupErr: any) {
         console.warn(`[story-builder] Failed to delete content_plans row ${planId} during rollback:`, (cleanupErr as Error).message);
       }
-      await cancelPlanFillStatus(planId).catch(() => {});
+      const cacheDeleted = await cancelPlanFillStatus(planId);
+      if (!cacheDeleted) {
+        console.warn(`[story-builder] Failed to delete fill-job cache for ${planId} during rollback`);
+      }
       await removeScaffoldedFiles(createdFiles, contentDir);
       res.status(500).json({
         success: false,

@@ -69,7 +69,12 @@ jest.mock('node:fs/promises', () => ({
   rm: jest.fn(async () => undefined),
 }));
 
-import { runPlanFill, resetOrphanedFillJobs, getPlanFillJobStatus } from '../../src/services/PlanGenerationJob.js';
+import {
+  runPlanFill,
+  resetOrphanedFillJobs,
+  getPlanFillJobStatus,
+  cancelPlanFillStatus,
+} from '../../src/services/PlanGenerationJob.js';
 
 let tmpDir: string;
 let contentDir: string;
@@ -184,5 +189,61 @@ describe('resetOrphanedFillJobs', () => {
   it('returns 0 when no scaffolded draft plans exist', async () => {
     const reset = await resetOrphanedFillJobs();
     expect(reset).toBe(0);
+  });
+});
+
+describe('cancelPlanFillStatus', () => {
+  it('returns the deleteCache result so failures remain observable', async () => {
+    const { deleteCache } = await import('@las-flores/infra');
+    const planId = 'cccccccc-1111-2222-3333-444444444444';
+
+    // Test success case
+    (deleteCache as jest.Mock).mockResolvedValueOnce(true);
+    const deleted = await cancelPlanFillStatus(planId);
+    expect(deleted).toBe(true);
+
+    // Test failure case
+    (deleteCache as jest.Mock).mockResolvedValueOnce(false);
+    const notDeleted = await cancelPlanFillStatus(planId);
+    expect(notDeleted).toBe(false);
+  });
+});
+
+describe('runPlanFill update-only transition', () => {
+  it('reverts cache when DB promotion fails so cache and DB remain consistent', async () => {
+    const planId = 'dddddddd-1111-2222-3333-444444444444';
+    (globalThis as any).__planForFill = {
+      id: planId,
+      description: 'update-only plan',
+      items: [], // no create items => update-only path
+      links: [],
+      status: 'draft',
+      _meta: { scaffolded_at: new Date().toISOString() },
+    } as any;
+
+    const { withOLTPTransaction } = await import('@las-flores/infra');
+    // Make the DB transaction fail
+    (withOLTPTransaction as jest.Mock).mockImplementationOnce(async (cb: any) => {
+      throw new Error('DB connection lost');
+    });
+
+    // Verify cache starts empty
+    const initialCache = await getPlanFillJobStatus(planId);
+    expect(initialCache).toBeNull();
+
+    // Run the fill - it will fail at the DB promotion step, but the outer
+    // catch block compensates by marking cache as 'failed'.
+    // The function completes without throwing because compensation succeeds.
+    await runPlanFill(planId);
+
+    // After failure, cache should be 'failed' (compensated), NOT 'done'.
+    // This is the key assertion: a failed transition cannot leave cache='done'
+    // while the plan remains draft.
+    const finalCache = await getPlanFillJobStatus(planId);
+    expect(finalCache?.status).toBe('failed');
+    expect(finalCache?.error).toContain('DB connection lost');
+
+    // Verify the DB status update was attempted via the transaction
+    expect(withOLTPTransaction).toHaveBeenCalled();
   });
 });

@@ -54,8 +54,8 @@ export async function getPlanFillJobStatus(planId: string): Promise<PlanFillJobS
 }
 
 /** Best-effort cancel: drop the cached fill-job status so generation-status polling stops reporting this plan as filling. */
-export async function cancelPlanFillStatus(planId: string): Promise<void> {
-  await deleteCache(`${GEN_CACHE_PREFIX}${planId}`);
+export async function cancelPlanFillStatus(planId: string): Promise<boolean> {
+  return deleteCache(`${GEN_CACHE_PREFIX}${planId}`);
 }
 
 export async function runPlanFill(planId: string, _userId?: string): Promise<void> {
@@ -83,10 +83,12 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
       // is no async fill to await. Promote the row straight to 'proposed' so the
       // plan becomes approvable — otherwise it would be stuck in 'draft' forever
       // and the approve-and-solidify worker would reject it.
-      await queryOLTP(
-        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-        ['proposed', planId],
-      );
+      await withOLTPTransaction(async (client) => {
+        await client.query(
+          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+          ['proposed', planId],
+        );
+      });
       return;
     }
 
@@ -146,14 +148,34 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
     });
   } catch (error: any) {
     console.error(`[plan-fill] Job failed for ${planId}:`, error);
-    await setPlanFillJobStatus(planId, {
-      status: 'failed',
-      error: error.message,
-    });
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['failed', planId],
-    );
+    // Compensation: mark cache as failed first, then mark DB as failed.
+    // If either compensation step fails, the error is not swallowed — the
+    // caller must know the transition is incomplete.
+    let cacheCompensationOk = false;
+    let dbCompensationOk = false;
+    try {
+      await setPlanFillJobStatus(planId, {
+        status: 'failed',
+        error: error.message,
+      });
+      cacheCompensationOk = true;
+    } catch (cacheErr) {
+      console.error(`[plan-fill] Failed to mark cache as failed for ${planId}:`, cacheErr);
+    }
+    try {
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['failed', planId],
+      );
+      dbCompensationOk = true;
+    } catch (dbErr) {
+      console.error(`[plan-fill] Failed to mark DB as failed for ${planId}:`, dbErr);
+    }
+    if (!cacheCompensationOk || !dbCompensationOk) {
+      throw new Error(
+        `[plan-fill] Incomplete compensation for ${planId}: cache=${cacheCompensationOk}, db=${dbCompensationOk}: ${error.message}`,
+      );
+    }
   }
 }
 

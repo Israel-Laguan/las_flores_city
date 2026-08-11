@@ -158,7 +158,7 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
 jest.mock('../../src/services/PlanGenerationJob.js', () => ({
   runPlanFill: jest.fn(async () => {}),
   getPlanFillJobStatus: jest.fn(async () => null),
-  cancelPlanFillStatus: jest.fn(async () => {}),
+  cancelPlanFillStatus: jest.fn(async () => true),
 }));
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
@@ -293,6 +293,26 @@ describe('POST /admin/story-builder/plan/scaffold', () => {
         ([text]) => typeof text === 'string' && /^\s*DELETE/i.test(text),
       ),
     ).toBe(true);
+  });
+
+  test('logs a warning when cancelPlanFillStatus delete fails during rollback', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { cancelPlanFillStatus } = await import('../../src/services/PlanGenerationJob.js');
+    (cancelPlanFillStatus as jest.Mock).mockResolvedValueOnce(false);
+
+    mockQueryOLTP.mockRejectedValueOnce(new Error('connection lost'));
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    // The failed cache deletion must be observable via console warning
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to delete fill-job cache'),
+      expect.any(String),
+    );
+    consoleWarnSpy.mockRestore();
   });
 });
 
