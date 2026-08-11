@@ -21,8 +21,8 @@ describe('Smoke: game-server process', () => {
 
   test('game route exists (player/state returns 401, not 404)', async () => {
     const res = await request(app).get('/player/state');
-    // Not 404 means the route is mounted; 401 is expected without auth.
-    expect(res.status).not.toBe(404);
+    // 401 is expected without auth; 404 would mean the route is not mounted.
+    expect(res.status).toBe(401);
   });
 
   test('admin route is absent on game-server (404)', async () => {

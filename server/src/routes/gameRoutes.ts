@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'node:path';
 import { healthRouter } from './health.js';
 import { authRouter } from './auth.js';
 import { playerRouter } from './player.js';
@@ -27,9 +28,15 @@ import './comms-reply.js';
  * those live on the intake-worker so AI generation and content authoring can
  * never starve the game event loop or its DB pool.
  */
-export function registerGameRoutes(app: express.Express): void {
-  app.use('/health', healthRouter);
-  app.use('/auth', authRouter);
+export function registerGameRoutes(app: express.Express, opts?: { skipShared?: boolean }): void {
+  // Serve local content assets as fallback when CDN is not configured.
+  app.use('/assets', express.static(path.resolve(process.cwd(), 'content')));
+
+  if (!opts?.skipShared) {
+    app.use('/health', healthRouter);
+    app.use('/auth', authRouter);
+  }
+
   app.use('/player', playerRouter);
   app.use('/location', locationRouter);
   app.use('/dialogue', dialogueRouter);

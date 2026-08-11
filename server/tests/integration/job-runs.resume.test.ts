@@ -1,5 +1,8 @@
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from '@jest/globals';
+import fs from 'fs';
+import path from 'path';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import {
   startJobRun,
@@ -10,37 +13,32 @@ import {
   getJobRun,
 } from '../../src/services/JobRunService.js';
 
+// Dedicated synthetic UUIDs reserved for this suite. They must not collide with
+// seed data or with fixtures in other integration suites.
 const TEST_PLAN_ID = 'e0000000-e29b-41d4-a716-446655440099';
-const TEST_USER_ID = 'e0000000-e29b-41d4-a716-446655440098';
 
 async function cleanUp() {
   await queryOLTP('DELETE FROM job_runs WHERE plan_id = $1', [TEST_PLAN_ID]);
   await queryOLTP('DELETE FROM content_plans WHERE id = $1', [TEST_PLAN_ID]);
 }
 
+async function applyMigration(filename: string): Promise<void> {
+  const sql = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/database/migrations', filename),
+    'utf-8'
+  );
+  try {
+    await withSchemaLock(async () => {
+      await queryOLTP(sql);
+    });
+  } catch {
+    // Migrations are idempotent; ignore duplicate-object errors.
+  }
+}
+
 beforeAll(async () => {
-  await withSchemaLock(async () => {
-    // Ensure job_runs table exists (idempotent)
-    await queryOLTP(`
-      CREATE TABLE IF NOT EXISTS job_runs (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        plan_id UUID REFERENCES content_plans(id) ON DELETE CASCADE,
-        job_type TEXT NOT NULL CHECK (job_type IN ('solidify', 'plan_fill', 'asset_generation')),
-        status TEXT NOT NULL DEFAULT 'running' CHECK (status IN ('running', 'resumable', 'succeeded', 'failed')),
-        attempt INTEGER NOT NULL DEFAULT 1,
-        max_attempts INTEGER NOT NULL DEFAULT 3,
-        stage TEXT,
-        committed_stages JSONB NOT NULL DEFAULT '[]'::jsonb,
-        partial_result JSONB,
-        error TEXT,
-        next_retry_at TIMESTAMPTZ,
-        created_at TIMESTAMPTZ DEFAULT NOW(),
-        updated_at TIMESTAMPTZ DEFAULT NOW()
-      )
-    `);
-    await queryOLTP('CREATE INDEX IF NOT EXISTS idx_job_runs_plan ON job_runs(plan_id, job_type)');
-    await queryOLTP('CREATE INDEX IF NOT EXISTS idx_job_runs_status ON job_runs(status)');
-  });
+  await applyMigration('047_content_plans.sql');
+  await applyMigration('062_job_runs.sql');
 
   await cleanUp();
   await queryOLTP(

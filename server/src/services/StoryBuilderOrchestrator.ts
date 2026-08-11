@@ -26,11 +26,11 @@ import {
   startJobRun,
   updateJobRun,
   commitStage,
-  hasCommittedStage,
+  hasCommittedStageById,
   getJobRun,
+  getJobRunById,
   nextAttempt,
 } from './JobRunService.js';
-import { sleep } from '../utils/retryBackoff.js';
 
 
 export {
@@ -358,24 +358,39 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
         [plan, planId],
       );
       if (jobId) await commitStage(jobId, 'staging');
+      if (jobId) {
+        await updateJobRun(jobId, { partialResult: { stage: stageResult } });
+      }
 
       // Publish chosen drafts (idempotent: dev-label URL entry updated in place;
       // already-published plans are skipped via the committed-stage guard).
-      if (jobId && (await hasCommittedStage(planId, 'solidify', 'publish'))) {
-        publishResult = undefined;
+      if (jobId && (await hasCommittedStageById(jobId, 'publish'))) {
+        // Load existing publish result from durable state so we don't overwrite
+        // it with an empty value in the cache below.
+        const run = await getJobRunById(jobId);
+        if (run?.partialResult && typeof run.partialResult === 'object') {
+          publishResult = (run.partialResult as Record<string, unknown>).publish as PublishResult | undefined;
+        }
       } else {
         publishResult = await publishChosenDrafts(planId);
-        if (jobId) await commitStage(jobId, 'publish');
       }
-      await setJobStatus(planId, {
-        status: 'staging',
-        stage: stageResult,
-        publish: publishResult ?? { success: true, published: [], errors: [] } as PublishResult,
-      });
-
       if (publishResult && !publishResult.success) {
         throw new Error('Asset publish failed');
       }
+      if (jobId) await commitStage(jobId, 'publish');
+      if (jobId && publishResult !== undefined) {
+        const run = await getJobRunById(jobId);
+        const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
+        await updateJobRun(jobId, { partialResult: { ...partial, publish: publishResult } });
+      }
+      const statusPatch: Partial<SolidifyJobStatus> = {
+        status: 'staging',
+        stage: stageResult,
+      };
+      if (publishResult !== undefined) {
+        statusPatch.publish = publishResult;
+      }
+      await setJobStatus(planId, statusPatch);
 
       // --- Stage complete → mark as 'staged' for migrateStagedPlan validation ---
       await queryOLTP(
@@ -385,9 +400,18 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
       if (jobId) await commitStage(jobId, 'staged');
     } else {
       // Resuming from a persisted stage — staging/publish already completed.
-      const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
-      stageResult = cached?.stage;
-      publishResult = cached?.publish;
+      // Prefer durable partial_result over the ephemeral cache.
+      const run = jobId ? await getJobRunById(jobId) : null;
+      if (run?.partialResult && typeof run.partialResult === 'object') {
+        const pr = run.partialResult as Record<string, unknown>;
+        stageResult = pr.stage as StagingResult | undefined;
+        publishResult = pr.publish as PublishResult | undefined;
+      }
+      if (!stageResult || !publishResult) {
+        const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
+        stageResult = stageResult ?? cached?.stage;
+        publishResult = publishResult ?? cached?.publish;
+      }
     }
 
     // --- Migrate (idempotent via migration_log + content_migration lock) ---
@@ -408,6 +432,17 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
           'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
           ['staged', planId],
         );
+      }
+      if (currentStatus === 'failed') {
+        const run = jobId ? await getJobRunById(jobId) : null;
+        if (run?.status === 'resumable') {
+          await queryOLTP(
+            'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+            ['staged', planId],
+          );
+        } else {
+          throw new PlanStatusError(`Plan ${planId} has failed and cannot be resumed.`);
+        }
       }
       if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'migrating' });
       await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
@@ -479,7 +514,12 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
       status: 'failed',
       error: error.message,
     });
-    if (jobId) await updateJobRun(jobId, { status: 'resumable', error: error.message });
+    if (jobId) {
+      const isPermanent = error instanceof PlanNotFoundError ||
+        error instanceof PlanStatusError ||
+        error.name === 'ZodError';
+      await updateJobRun(jobId, { status: isPermanent ? 'failed' : 'resumable', error: error.message });
+    }
     emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
   }
 }
@@ -500,7 +540,14 @@ export async function resumeSolidify(planId: string, userId?: string): Promise<v
     await setJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' });
     return;
   }
-  if (adv.delayMs && adv.delayMs > 0) await sleep(adv.delayMs);
+  if (adv.delayMs && adv.delayMs > 0) {
+    setTimeout(() => {
+      runSolidify(planId, userId, run.id).catch((err) => {
+        console.error(`[story-builder] Resumed runSolidify failed for ${planId}:`, err);
+      });
+    }, adv.delayMs).unref?.();
+    return;
+  }
   await runSolidify(planId, userId, run.id);
 }
 

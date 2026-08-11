@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import fs from 'node:fs';
 import { createApp } from './app.js';
 import { registerIntakeRoutes } from './routes/intakeRoutes.js';
 import { testConnections, closeConnections } from '@las-flores/infra';
@@ -10,54 +9,9 @@ import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { resumeSolidify } from './services/StoryBuilderOrchestrator.js';
 import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
 import { markOrphanedResumable } from './services/JobRunService.js';
+import { resolveFileEnvVars } from './config/resolveFileEnvVars.js';
 
 dotenv.config();
-
-/**
- * Resolve _FILE environment variables to their plain counterparts.
- * (Duplicated from index.ts so each entrypoint remains self-bootstrapping
- * without pulling in the game app's module graph.)
- */
-function resolveFileEnvVars() {
-  const fileEnvMap: Record<string, string> = {
-    JWT_SECRET_FILE: 'JWT_SECRET',
-    PATREON_CLIENT_SECRET_FILE: 'PATREON_CLIENT_SECRET',
-    PAYPAL_SECRET_FILE: 'PAYPAL_SECRET',
-    MINIO_ACCESS_KEY_FILE: 'MINIO_ACCESS_KEY',
-    MINIO_SECRET_KEY_FILE: 'MINIO_SECRET_KEY',
-    CDN_SIGNING_SECRET_FILE: 'CDN_SIGNING_SECRET',
-    POSTGRES_PASSWORD_FILE: 'POSTGRES_PASSWORD',
-    POSTGRES_ANALYTICS_PASSWORD_FILE: 'POSTGRES_ANALYTICS_PASSWORD',
-    MINIO_ROOT_USER_FILE: 'MINIO_ROOT_USER',
-    MINIO_ROOT_PASSWORD_FILE: 'MINIO_ROOT_PASSWORD',
-  };
-
-  for (const [fileVar, targetVar] of Object.entries(fileEnvMap)) {
-    const filePath = process.env[fileVar];
-    if (filePath && !process.env[targetVar]) {
-      try {
-        const value = fs.readFileSync(filePath, 'utf8').trim();
-        process.env[targetVar] = value;
-        console.log(`🔐 Loaded ${targetVar} from ${fileVar}`);
-      } catch (err) {
-        console.warn(`⚠️ Could not read ${fileVar} at ${filePath}:`, err);
-      }
-    }
-  }
-
-  // Construct database URLs if passwords were loaded from _FILE secrets
-  if (process.env.POSTGRES_PASSWORD && process.env.DATABASE_URL?.includes('${POSTGRES_PASSWORD}')) {
-    const baseUrl = process.env.DATABASE_URL.replace('${POSTGRES_PASSWORD}', process.env.POSTGRES_PASSWORD);
-    process.env.DATABASE_URL = baseUrl;
-    console.log(`🔐 Constructed DATABASE_URL from POSTGRES_PASSWORD`);
-  }
-
-  if (process.env.POSTGRES_ANALYTICS_PASSWORD && process.env.ANALYTICS_DATABASE_URL?.includes('${POSTGRES_ANALYTICS_PASSWORD}')) {
-    const baseUrl = process.env.ANALYTICS_DATABASE_URL.replace('${POSTGRES_ANALYTICS_PASSWORD}', process.env.POSTGRES_ANALYTICS_PASSWORD);
-    process.env.ANALYTICS_DATABASE_URL = baseUrl;
-    console.log(`🔐 Constructed ANALYTICS_DATABASE_URL from POSTGRES_ANALYTICS_PASSWORD`);
-  }
-}
 
 resolveFileEnvVars();
 
@@ -90,30 +44,6 @@ async function initializeServer() {
     process.exit(1);
   }
 
-  // Startup reconciliation: reset stalled `generating` asset needs to `pending`
-  // so ContentAssetWorker can retry them on the first tick.
-  await ContentAssetWorker.reclaimStalledNeeds();
-
-  // Startup recovery: flip orphaned in-flight jobs to `resumable` and dispatch
-  // resume entry points (M22). `resetOrphanedFillJobs` also handles its own
-  // resumable dispatch internally.
-  const orphaned = await markOrphanedResumable();
-  const orphanedSolidify = orphaned.filter(o => o.jobType === 'solidify');
-  if (orphanedSolidify.length > 0) {
-    console.log(`[story-builder] Resuming ${orphanedSolidify.length} orphaned solidify job(s)`);
-    for (const { planId } of orphanedSolidify) {
-      try {
-        await resumeSolidify(planId);
-      } catch (err: any) {
-        console.error(`[story-builder] Resume failed for ${planId}:`, err.message);
-      }
-    }
-  }
-
-  // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
-  // resume any resumable plan_fill jobs.
-  await resetOrphanedFillJobs();
-
   // Seed player accounts in non-production environments (dev convenience;
   // never fatal — keeps boot from aborting on refusal).
   try {
@@ -128,6 +58,44 @@ async function initializeServer() {
     console.log(`📊 Health check: http://localhost:${PORT}/health`);
     console.log(`   (admin/content-authoring routes — game-server is on port 3000)`);
   });
+
+  // Startup reconciliation: run after listener is bound so a failure here
+  // cannot prevent the health endpoint from answering.
+  try {
+    await ContentAssetWorker.reclaimStalledNeeds();
+  } catch (err: any) {
+    console.warn('[startup] reclaimStalledNeeds failed:', err.message);
+  }
+
+  // Startup recovery: flip orphaned in-flight jobs to `resumable` and dispatch
+  // resume entry points (M22).
+  let orphaned: Array<{ planId: string; jobType: 'solidify' | 'plan_fill' | 'asset_generation' }> = [];
+  try {
+    orphaned = await markOrphanedResumable();
+  } catch (err: any) {
+    console.warn('[startup] markOrphanedResumable failed:', err.message);
+  }
+
+  const orphanedSolidify = orphaned.filter(o => o.jobType === 'solidify');
+  if (orphanedSolidify.length > 0) {
+    console.log(`[story-builder] Resuming ${orphanedSolidify.length} orphaned solidify job(s)`);
+    for (const { planId } of orphanedSolidify) {
+      try {
+        await resumeSolidify(planId);
+      } catch (err: any) {
+        console.error(`[story-builder] Resume failed for ${planId}:`, err.message);
+      }
+    }
+  }
+
+  // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
+  // resume any resumable plan_fill jobs. Pass the already-claimed orphans so
+  // plan_fill rows are not lost (they were flipped to `resumable` above).
+  try {
+    await resetOrphanedFillJobs(orphaned);
+  } catch (err: any) {
+    console.warn('[startup] resetOrphanedFillJobs failed:', err.message);
+  }
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;
@@ -165,6 +133,9 @@ process.on('unhandledRejection', (reason) => {
 });
 
 // Start server
-initializeServer().catch(console.error);
+initializeServer().catch((err) => {
+  console.error('❌ intake-worker failed to start:', err);
+  process.exit(1);
+});
 
 export default app;

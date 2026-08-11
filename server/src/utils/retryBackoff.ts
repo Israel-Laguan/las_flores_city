@@ -24,5 +24,7 @@ export function sleep(ms: number): Promise<void> {
  */
 export function backoffDelayMs(attempt: number): number {
   const raw = RETRY_INITIAL_BACKOFF_MS * 1.5 ** (attempt - 1);
-  return Math.min(raw, RETRY_MAX_BACKOFF_MS);
+  const capped = Math.min(raw, RETRY_MAX_BACKOFF_MS);
+  // Equal jitter: half fixed, half random, to avoid synchronized retries.
+  return Math.round(capped / 2 + Math.random() * (capped / 2));
 }

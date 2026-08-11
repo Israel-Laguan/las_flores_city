@@ -35,7 +35,7 @@ jest.mock('@las-flores/infra', () => ({
     if (text.includes('select * from job_runs') && text.includes('plan_id')) {
       const matches = Array.from(dbRows.values())
         .filter(r => r.plan_id === params?.[0] && r.job_type === params?.[1])
-        .sort((a, b) => b.id.localeCompare(a.id));
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime() || b.id.localeCompare(a.id));
       return { rows: matches.slice(0, 1), rowCount: matches.length > 0 ? 1 : 0 };
     }
 
@@ -45,22 +45,31 @@ jest.mock('@las-flores/infra', () => ({
         for (const r of matches) r.status = 'resumable';
         return { rows: matches, rowCount: matches.length };
       }
+      // commitStage uses a CASE expression that the regex below cannot parse.
+      if (text.includes('committed_stages') && text.includes('case')) {
+        const jobId = params?.[0];
+        const stage = params?.[1];
+        const row = dbRows.get(jobId);
+        if (!row) return { rows: [], rowCount: 0 };
+        if (stage && !row.committed_stages.includes(stage)) {
+          row.committed_stages.push(stage);
+        }
+        row.updated_at = new Date().toISOString();
+        return { rows: [row], rowCount: 1 };
+      }
       const jobId = params?.[params.length - 1];
       const row = dbRows.get(jobId);
       if (!row) return { rows: [], rowCount: 0 };
 
-      // Best-effort mutation: if params contains a non-1 number, treat as attempt
-      const numParam = params?.find(p => typeof p === 'number' && p !== 1 && p >= 0 && p < 100);
-      if (numParam !== undefined) row.attempt = numParam;
-      if (params?.includes('succeeded')) row.status = 'succeeded';
-      if (params?.includes('failed')) row.status = 'failed';
-      if (params?.includes('resumable')) row.status = 'resumable';
-      if (params?.includes('running')) row.status = 'running';
-      const isoParam = params?.find(p => typeof p === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(p));
-      if (isoParam !== undefined) row.next_retry_at = isoParam;
-      const jsonParam = params?.find(p => typeof p === 'string' && (p.startsWith('[') || p.startsWith('{')));
-      if (jsonParam !== undefined) {
-        try { const parsed = JSON.parse(jsonParam); if (Array.isArray(parsed)) row.committed_stages = parsed; else row.partial_result = parsed; } catch { /* ignore */ }
+      // Map each `SET col = $n` assignment to its positional parameter, so the
+      // fake only mutates columns the service really writes.
+      for (const [, col, idx] of _text.matchAll(/(\w+)\s*=\s*\$(\d+)/g)) {
+        const value = params?.[Number(idx) - 1];
+        if (col === 'committed_stages' || col === 'partial_result') {
+          row[col] = typeof value === 'string' ? JSON.parse(value) : value;
+        } else {
+          row[col] = value;
+        }
       }
       row.updated_at = new Date().toISOString();
       return { rows: [row], rowCount: 1 };
@@ -77,6 +86,7 @@ import {
   updateJobRun,
   commitStage,
   hasCommittedStage,
+  nextAttempt,
   markOrphanedResumable,
 } from '../../src/services/JobRunService.js';
 
@@ -124,6 +134,17 @@ describe('JobRunService', () => {
     expect(await hasCommittedStage('plan-y', 'solidify', 'staging')).toBe(true);
     expect(await hasCommittedStage('plan-y', 'solidify', 'verified')).toBe(false);
     expect(await hasCommittedStage('plan-y', 'plan_fill', 'staging')).toBe(false);
+  });
+
+  it('nextAttempt increments attempt and applies backoff', async () => {
+    const run = await startJobRun('plan-z', 'solidify');
+    const adv = await nextAttempt('plan-z', 'solidify');
+    expect(adv.exhausted).toBe(false);
+    expect(adv.delayMs).toBeGreaterThan(0);
+    const updated = dbRows.get(run.id);
+    expect(updated.attempt).toBe(2);
+    expect(updated.status).toBe('running');
+    expect(updated.next_retry_at).toMatch(/^\d{4}-/);
   });
 
   it('markOrphanedResumable flips running jobs to resumable', async () => {

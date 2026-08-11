@@ -1,9 +1,8 @@
 import { signMinioUrl } from './StorageService.js';
 import {
   RETRY_MAX_ATTEMPTS,
-  RETRY_INITIAL_BACKOFF_MS,
-  RETRY_MAX_BACKOFF_MS,
   sleep,
+  backoffDelayMs,
 } from '../utils/retryBackoff.js';
 
 const NIM_INVOKE_URL = 'https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b';
@@ -141,8 +140,6 @@ export async function generateImageBuffer(params: {
     steps: 4,
   };
 
-  let wait = RETRY_INITIAL_BACKOFF_MS;
-
   for (let attempt = 1; attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
     try {
       await nimBucket.take();
@@ -166,10 +163,11 @@ export async function generateImageBuffer(params: {
       }
 
       return buffer;
-    } catch {
+    } catch (err) {
       if (attempt < RETRY_MAX_ATTEMPTS) {
-        await sleep(wait);
-        wait = Math.min(wait * 1.5, RETRY_MAX_BACKOFF_MS);
+        await sleep(backoffDelayMs(attempt));
+      } else {
+        console.warn('  ⚠️  NIM failed on final attempt:', (err as Error).message);
       }
     }
   }
@@ -235,8 +233,6 @@ export async function generateVariantImage(options: {
         payload.strength = strength;
       }
 
-      let wait = RETRY_INITIAL_BACKOFF_MS;
-
       for (let attempt = 1; attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
         try {
           await nimBucket.take();
@@ -259,10 +255,11 @@ export async function generateVariantImage(options: {
           }
 
           return buffer;
-        } catch {
+        } catch (err) {
           if (attempt < RETRY_MAX_ATTEMPTS) {
-            await sleep(wait);
-            wait = Math.min(wait * 1.5, RETRY_MAX_BACKOFF_MS);
+            await sleep(backoffDelayMs(attempt));
+          } else {
+            console.warn('  ⚠️  NIM failed on final attempt:', (err as Error).message);
           }
         }
       }

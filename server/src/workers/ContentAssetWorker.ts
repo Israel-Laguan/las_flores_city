@@ -8,6 +8,7 @@ import {
   startJobRun,
   updateJobRun,
   getJobRun,
+  nextAttempt,
 } from '../services/JobRunService.js';
 
 const IMAGE_GEN_GRACE_PERIOD_MINUTES = 5;
@@ -89,21 +90,30 @@ export class ContentAssetWorker {
     const plan = row.plan_json as any;
     if (!plan.items || !Array.isArray(plan.items)) return;
 
-    // M22: skip plans whose asset_generation job is already marked succeeded.
+    // M22: a succeeded run does not close the plan permanently, because new
+    // asset needs can be appended later. Skip only when there is no work.
     const existingRun = await getJobRun(row.id, 'asset_generation');
-    if (existingRun?.status === 'succeeded') return;
 
     // Create or resume a job run for this plan.
     let jobId: string | undefined;
     try {
-      if (!existingRun || existingRun.status === 'failed') {
+      if (!existingRun) {
         const run = await startJobRun(row.id, 'asset_generation');
         jobId = run.id;
+      } else if (existingRun.status === 'failed' || existingRun.status === 'resumable') {
+        const adv = await nextAttempt(row.id, 'asset_generation', { existingRun });
+        if (adv.exhausted) {
+          console.log(`[ContentAssetWorker] Attempt budget exhausted for plan=${row.id}`);
+          return;
+        }
+        jobId = existingRun.id;
+      } else if (existingRun.status === 'running') {
+        return;
       } else {
         jobId = existingRun.id;
       }
     } catch (err) {
-      console.warn(`[ContentAssetWorker] Could not create job run for plan=${row.id}:`, (err as Error).message);
+      console.warn(`[ContentAssetWorker] Could not create/resume job run for ${row.id}:`, (err as Error).message);
     }
 
     // First: reclaim any stalled `generating` needs
@@ -129,10 +139,15 @@ export class ContentAssetWorker {
       await ContentPlanService.updatePlanJson(row.id, plan);
     }
 
-    // Then: generate for remaining `pending` needs
+    // Then: generate for remaining `pending` and `failed` needs
     const needsToGenerate = this.extractPendingNeeds(plan.items);
-    if (needsToGenerate.length === 0) {
-      if (jobId) await updateJobRun(jobId, { status: 'succeeded', stage: 'done' }).catch(() => {});
+    const hasGenerating = plan.items.some((item: any) =>
+      item.assetNeeds?.some((need: any) => need.status === 'generating')
+    );
+    if (needsToGenerate.length === 0 && !hasGenerating) {
+      if (existingRun && existingRun.status !== 'succeeded') {
+        await updateJobRun(existingRun.id, { status: 'succeeded', stage: 'done' }).catch(() => {});
+      }
       return;
     }
 
@@ -179,7 +194,7 @@ export class ContentAssetWorker {
       }
       // Persist partial result after each need (best-effort).
       if (jobId) {
-        updateJobRun(jobId, {
+        await updateJobRun(jobId, {
           stage: 'generating',
           partialResult: { processed, failed, total: needsToGenerate.length },
         }).catch(() => {});
@@ -187,7 +202,7 @@ export class ContentAssetWorker {
     }
 
     if (jobId) {
-      const finalStatus = failed > 0 && processed === 0 ? 'failed' : 'succeeded';
+      const finalStatus = failed > 0 ? 'failed' : 'succeeded';
       await updateJobRun(jobId, {
         status: finalStatus,
         stage: finalStatus === 'succeeded' ? 'done' : 'generating',
@@ -219,7 +234,7 @@ export class ContentAssetWorker {
       if (!item.assetNeeds) continue;
       for (const need of item.assetNeeds) {
         const normalized = need as AssetNeed;
-        if (normalized.status === 'pending') {
+        if (normalized.status === 'pending' || normalized.status === 'failed') {
           result.push({ item: item as ContentPlanItem, need: normalized });
         }
       }

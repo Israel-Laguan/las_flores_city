@@ -32,9 +32,12 @@ import { adminSettingsRouter } from './admin-settings.js';
  * because admin-auth endpoints (`/auth/admin-login`, `/auth/admin-me`, etc.)
  * live in the same module as player login.
  */
-export function registerIntakeRoutes(app: express.Express): void {
-  app.use('/health', healthRouter);
-  app.use('/auth', authRouter);
+export function registerIntakeRoutes(app: express.Express, opts?: { skipShared?: boolean }): void {
+  if (!opts?.skipShared) {
+    app.use('/health', healthRouter);
+    app.use('/auth', authRouter);
+  }
+
   app.use('/assets', assetsRouter);
   app.use('/assets', assetsImportRouter);
   app.use('/admin/content', adminContentRouter);
@@ -44,6 +47,11 @@ export function registerIntakeRoutes(app: express.Express): void {
   app.use('/admin/coverage', adminCoverageRouter);
   app.use('/admin/lore', adminLoreRouter);
   app.use('/admin/story-beats', adminStoryBeatsRouter);
+  // Also expose story-arc at the path the admin client expects
+  app.use('/admin/story-arc', (req, res, next) => {
+    req.url = '/story-arc' + req.url;
+    adminStoryBeatsRouter(req, res, next);
+  });
   app.use('/admin/ai-config', adminAiConfigRouter);
   app.use('/admin', adminListViewsRouter);
   app.use('/admin/story-builder', adminStoryBuilderRouter);

@@ -23,7 +23,8 @@ describe('Smoke: intake-worker process', () => {
 
   test('admin route exists on intake-worker (returns 401, not 404)', async () => {
     const res = await request(app).get('/admin/stats');
-    expect(res.status).not.toBe(404);
+    // 401 is expected without auth; 404 would mean the route is not mounted.
+    expect(res.status).toBe(401);
   });
 
   test('player route is absent on intake-worker (404)', async () => {

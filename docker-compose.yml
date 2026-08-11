@@ -230,9 +230,9 @@ services:
         condition: service_healthy
     extra_hosts:
       - "host.containers.internal:host-gateway"
-    # `npm run start:intake` resolves to `node dist/server/src/intake.js`.
-    # In dev the source bind-mount above is used by the server Dockerfile; we
-    # reuse `npx tsx watch src/intake.ts` so edits hot-reload.
+    # `npm run dev:intake --workspace=server` resolves to `npx tsx watch
+    # src/intake.ts`, so edits hot-reload via the source bind-mount above.
+    # (Production uses `npm run start:intake --workspace=server` instead.)
     command: npm run dev:intake --workspace=server
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]

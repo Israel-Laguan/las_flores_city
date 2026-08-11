@@ -1,4 +1,4 @@
-import { ContentPlanSchema, type ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlanItem, type JobType } from '@las-flores/shared';
 import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { setCache, getCache, deleteCache } from '@las-flores/infra';
 import {
@@ -144,7 +144,9 @@ async function runPlanFillCore(planId: string, jobId?: string): Promise<void> {
     return;
   }
 
-  // Resume: skip items whose filled_fields already exist (persisted by prior attempt).
+  // Resume: skip items whose filled_fields already exist (persisted incrementally
+  // after each successful fillAndWriteItem, so non-empty filled_fields implies
+  // both a successful file commit and completion of the relevant fill targets).
   const items: PlanFillJobStatus['items'] = createItems.map(item => ({
     itemId: item.id,
     status: (item.filled_fields?.length ?? 0) > 0 ? 'done' : 'pending',
@@ -175,6 +177,13 @@ async function runPlanFillCore(planId: string, jobId?: string): Promise<void> {
 
           await fillAndWriteItem(item, provider, context, contentDir, timeoutMs);
 
+          // Persist filled_fields incrementally so a crash-resumed run can skip
+          // this item without regenerating completed content.
+          await queryOLTP(
+            'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+            [plan, planId],
+          ).catch(err => console.warn(`[plan-fill] Item progress persist failed for ${planId}:`, (err as Error).message));
+
           items[itemStatusIdx].status = 'done';
           await setPlanFillJobStatus(planId, { items: [...items] });
         } catch (err: any) {
@@ -183,18 +192,27 @@ async function runPlanFillCore(planId: string, jobId?: string): Promise<void> {
           items[itemStatusIdx].error = err.message;
           await setPlanFillJobStatus(planId, { items: [...items] });
         }
-        // Persist partial result after each item (best-effort; never block on DB).
-        if (jobId) {
-          updateJobRun(jobId, {
-            partialResult: {
-              completed: items.filter(it => it.status === 'done').length,
-              failed: items.filter(it => it.status === 'failed').length,
-              items: items.map(it => ({ itemId: it.itemId, status: it.status })),
-            },
-          }).catch(() => {});
-        }
       }),
     );
+
+    // Persist partial result once per batch so concurrent updates cannot
+    // commit out of order.
+    if (jobId) {
+      await updateJobRun(jobId, {
+        partialResult: {
+          completed: items.filter(it => it.status === 'done').length,
+          failed: items.filter(it => it.status === 'failed').length,
+          items: items.map(it => ({ itemId: it.itemId, status: it.status })),
+        },
+      }).catch(() => {});
+    }
+
+    // Persist merged fields after each batch so a crash-resumed run can skip
+    // items whose `filled_fields` are already committed.
+    await queryOLTP(
+      'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+      [plan, planId],
+    ).catch(err => console.warn(`[plan-fill] Batch progress persist failed for ${planId}:`, (err as Error).message));
   }
 
   const completed = items.filter(i => i.status === 'done').length;
@@ -235,7 +253,7 @@ export async function resumePlanFill(planId: string): Promise<void> {
   const run = await getJobRun(planId, 'plan_fill');
   if (!run || run.status !== 'resumable') return;
 
-  const adv = await nextAttempt(planId, 'plan_fill');
+  const adv = await nextAttempt(planId, 'plan_fill', { existingRun: run });
   if (adv.exhausted) {
     await updateJobRun(run.id, { status: 'failed', error: 'Attempts exhausted during resume' }).catch(() => {});
     await setPlanFillJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' });
@@ -306,7 +324,7 @@ async function fillFieldsWithTimeout(
   }
 }
 
-export async function resetOrphanedFillJobs(): Promise<number> {
+export async function resetOrphanedFillJobs(orphanedRuns?: Array<{ planId: string; jobType: JobType }>): Promise<number> {
   const result = await queryOLTP<{ id: string; plan_json: any; updated_at: string }>(
     `SELECT id, plan_json, updated_at FROM content_plans WHERE status = 'draft'`,
   );
@@ -345,7 +363,7 @@ export async function resetOrphanedFillJobs(): Promise<number> {
   }
 
   // M22: resume any `plan_fill` runs left `running` after a crash.
-  const orphaned = await markOrphanedResumable();
+  const orphaned = orphanedRuns ?? await markOrphanedResumable();
   const orphanedFills = orphaned.filter(o => o.jobType === 'plan_fill');
   if (orphanedFills.length > 0) {
     console.log(`[plan-fill] Resuming ${orphanedFills.length} orphaned plan-fill job(s)`);

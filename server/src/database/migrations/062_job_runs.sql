@@ -11,26 +11,27 @@
 --   persisted. A resumed run consults it (via JobRunService.hasCommittedStage) so
 --   it never re-enters an already-committed stage -> no double-apply on retry.
 -- * A unique (plan_id, job_type) key is NOT used because a plan legitimately runs a
---   job multiple times across attempts; each attempt is a separate `job_runs` row.
+--   job multiple times across attempts; attempts are tracked by incrementing
+--   `attempt` on the same `job_runs` row (see `nextAttempt` in JobRunService).
 -- * `attempt` / `max_attempts` / `next_retry_at` implement the retry/backoff budget
 --   consistent with AssetGenerationService's exponential policy.
 
 CREATE TABLE IF NOT EXISTS job_runs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  plan_id UUID REFERENCES content_plans(id) ON DELETE CASCADE,
+  plan_id UUID NOT NULL REFERENCES content_plans(id) ON DELETE CASCADE,
   job_type TEXT NOT NULL
     CHECK (job_type IN ('solidify', 'plan_fill', 'asset_generation')),
   status TEXT NOT NULL DEFAULT 'running'
     CHECK (status IN ('running', 'resumable', 'succeeded', 'failed')),
-  attempt INTEGER NOT NULL DEFAULT 1,
-  max_attempts INTEGER NOT NULL DEFAULT 3,
+  attempt INTEGER NOT NULL DEFAULT 1 CHECK (attempt >= 1),
+  max_attempts INTEGER NOT NULL DEFAULT 3 CHECK (max_attempts >= 1),
   stage TEXT,
   committed_stages JSONB NOT NULL DEFAULT '[]'::jsonb,
   partial_result JSONB,
   error TEXT,
   next_retry_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_job_runs_plan ON job_runs(plan_id, job_type);

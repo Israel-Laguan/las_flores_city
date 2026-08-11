@@ -33,9 +33,9 @@ RUN npm run build --workspace=shared && npm run build --workspace=infra && npm r
 
 # EXPOSE 3000 = game-server (slim), 3001 = intake-worker (admin + AI + content).
 # The same image runs both processes; docker-compose selects the entrypoint via
-# `command:`. See docs/milestones/M21-process-split.md.
+# `command:`. See docs/milestones/M22-durable-jobs.md.
 EXPOSE 3000 3001
 
 # Default entrypoint is the slim game-server. The intake-worker is started with
-# `npm run start:intake --workspace=server` (see docker-compose.yml).
+# `npm run start:intake --workspace=server` (see docker-compose.prod.yml).
 CMD ["npm", "run", "dev", "--workspace=server"]

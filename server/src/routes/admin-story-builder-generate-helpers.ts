@@ -182,9 +182,9 @@ export async function scaffoldPlanFiles(
       error: (scaffoldErr as Error).message,
       createItems: createItems.map((i) => i.id),
     });
-    // Roll back only this request's successfully created files, then stop
+    // `scaffoldPlanItems` already removed every file it published before it
+    // rethrew, so no additional filesystem rollback is required here. Stop
     // BEFORE inserting content_plans or queuing the fill job.
-    await removeScaffoldedFiles(createItems.map((i) => i.id), contentDir).catch(() => undefined);
     return {
       error: (res) => {
         res.status(500).json({
@@ -217,18 +217,20 @@ export async function persistScaffoldPlan(
 ): Promise<PersistResult> {
   try {
     const insertResult = await queryOLTP<{ id: string }>(
-      `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at)
-       VALUES ($1, $2, $3, 'draft', NOW(), NOW())
+      `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at, created_by)
+       VALUES ($1, $2, $3, 'draft', NOW(), NOW(), $4)
        RETURNING id`,
-      [planId, trimmedDesc, repairedPlan],
+      [planId, trimmedDesc, repairedPlan, userId ?? null],
     );
     const insertedId = insertResult.rows[0].id;
 
+    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, userId);
+
+    // Dispatch last: nothing after this point can trigger the compensating
+    // DELETE while the fill job is already reading the plan row.
     runPlanFill(insertedId, userId).catch((err) => {
       console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
     });
-
-    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, userId);
     return { ok: true };
   } catch (postScaffoldErr: any) {
     console.error(`[story-builder] Post-scaffold failure for plan "${trimmedDesc.substring(0, 80)}" — rolling back scaffolded files:`, {

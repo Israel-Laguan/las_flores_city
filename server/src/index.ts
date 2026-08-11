@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import fs from 'node:fs';
 import { createApp } from './app.js';
 import { registerGameRoutes } from './routes/gameRoutes.js';
 import { testConnections, closeConnections } from '@las-flores/infra';
@@ -7,50 +6,9 @@ import { closeRedis } from '@las-flores/infra';
 import { seedPlayers } from './database/seedPlayers.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
 import { RelationshipDecayWorker } from './workers/RelationshipDecayWorker.js';
+import { resolveFileEnvVars } from './config/resolveFileEnvVars.js';
 
 dotenv.config();
-
-// Resolve _FILE environment variables to their plain counterparts
-// This allows Docker secrets to work with code that reads plain env vars
-function resolveFileEnvVars() {
-  const fileEnvMap: Record<string, string> = {
-    JWT_SECRET_FILE: 'JWT_SECRET',
-    PATREON_CLIENT_SECRET_FILE: 'PATREON_CLIENT_SECRET',
-    PAYPAL_SECRET_FILE: 'PAYPAL_SECRET',
-    MINIO_ACCESS_KEY_FILE: 'MINIO_ACCESS_KEY',
-    MINIO_SECRET_KEY_FILE: 'MINIO_SECRET_KEY',
-    CDN_SIGNING_SECRET_FILE: 'CDN_SIGNING_SECRET',
-    POSTGRES_PASSWORD_FILE: 'POSTGRES_PASSWORD',
-    POSTGRES_ANALYTICS_PASSWORD_FILE: 'POSTGRES_ANALYTICS_PASSWORD',
-    MINIO_ROOT_USER_FILE: 'MINIO_ROOT_USER',
-    MINIO_ROOT_PASSWORD_FILE: 'MINIO_ROOT_PASSWORD',
-  };
-
-  for (const [fileVar, targetVar] of Object.entries(fileEnvMap)) {
-    const filePath = process.env[fileVar];
-    if (filePath && !process.env[targetVar]) {
-      try {
-        const value = fs.readFileSync(filePath, 'utf8').trim();
-        process.env[targetVar] = value;
-        console.log(`\u{1F510} Loaded ${targetVar} from ${fileVar}`);
-      } catch (err) {
-        console.warn(`\u26A0\uFE0F Could not read ${fileVar} at ${filePath}:`, err);
-      }
-    }
-  }
-
-  if (process.env.POSTGRES_PASSWORD && process.env.DATABASE_URL?.includes('${POSTGRES_PASSWORD}')) {
-    const baseUrl = process.env.DATABASE_URL.replace('${POSTGRES_PASSWORD}', process.env.POSTGRES_PASSWORD);
-    process.env.DATABASE_URL = baseUrl;
-    console.log(`\u{1F510} Constructed DATABASE_URL from POSTGRES_PASSWORD`);
-  }
-
-  if (process.env.POSTGRES_ANALYTICS_PASSWORD && process.env.ANALYTICS_DATABASE_URL?.includes('${POSTGRES_ANALYTICS_PASSWORD}')) {
-    const baseUrl = process.env.ANALYTICS_DATABASE_URL.replace('${POSTGRES_ANALYTICS_PASSWORD}', process.env.POSTGRES_ANALYTICS_PASSWORD);
-    process.env.ANALYTICS_DATABASE_URL = baseUrl;
-    console.log(`\u{1F510} Constructed ANALYTICS_DATABASE_URL from POSTGRES_ANALYTICS_PASSWORD`);
-  }
-}
 
 resolveFileEnvVars();
 
@@ -81,10 +39,17 @@ async function initializeServer() {
   });
 
   const LEADERBOARD_INTERVAL_MS = 5 * 60 * 1000;
-  setInterval(() => {
-    LeaderboardWorker.processExpiredMysteries().catch((err) =>
-      console.error('[LeaderboardWorker] cron tick error:', err)
-    );
+  let isLeaderboardWorkerRunning = false;
+  setInterval(async () => {
+    if (isLeaderboardWorkerRunning) return;
+    isLeaderboardWorkerRunning = true;
+    try {
+      await LeaderboardWorker.processExpiredMysteries();
+    } catch (err) {
+      console.error('[LeaderboardWorker] cron tick error:', err);
+    } finally {
+      isLeaderboardWorkerRunning = false;
+    }
   }, LEADERBOARD_INTERVAL_MS);
   console.log(`\u{1F3C6} LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
 

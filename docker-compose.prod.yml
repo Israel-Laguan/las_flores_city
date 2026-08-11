@@ -100,17 +100,15 @@ services:
     ports: !reset []
     # Production: Remove source code volume mounts - use built image
     volumes: !reset []
-    # In production we use the production CMD from the Dockerfile (dev server),
-    # which for this image resolves to `npm run start --workspace=server`.
-    # The intake-worker is a separate process; in production this should be
-    # overridden to `npm run start:intake --workspace=server` by the orchestrator.
+    # The Dockerfile's default CMD is the dev server (`npm run dev --workspace=server`);
+    # the intake-worker service explicitly overrides it to the production start script.
     command: npm run start:intake --workspace=server
     healthcheck:
       start_period: 10s
     environment:
       PORT: 3001
-      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
-      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
+      DATABASE_URL: postgresql://las_flores:$${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:$${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
@@ -127,7 +125,7 @@ services:
       PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS}
       CLIENT_BASE_URL: ${CLIENT_BASE_URL}
       LITELLM_BASE_URL: ${LITELLM_BASE_URL}
-      LITELLM_API_KEY: ${LITELLM_API_KEY}
+      LITELLM_API_KEY_FILE: /run/secrets/litellm_api_key
       LLM_MODEL: ${LLM_MODEL}
       LLM_PROVIDER: litellm
     secrets:
@@ -139,6 +137,7 @@ services:
       - patreon_client_id
       - patreon_client_secret
       - paypal_secret
+      - litellm_api_key
 
 # Docker Secrets - Use external secrets in production (e.g., Swarm mode, Kubernetes)
 # Example secrets file structure (create per-environment):
@@ -163,3 +162,5 @@ services:
 #     file: ./secrets/patreon_client_secret.txt
 #   paypal_secret:
 #     file: ./secrets/paypal_secret.txt
+#   litellm_api_key:
+#     file: ./secrets/litellm_api_key.txt

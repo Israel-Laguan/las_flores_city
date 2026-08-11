@@ -1,5 +1,5 @@
 import { queryOLTP } from '@las-flores/infra';
-import type { JobRun } from '@las-flores/shared';
+import type { JobRun, JobType, JobStatus } from '@las-flores/shared';
 import { backoffDelayMs } from '../utils/retryBackoff.js';
 
 /**
@@ -14,9 +14,6 @@ import { backoffDelayMs } from '../utils/retryBackoff.js';
  * entry point re-enters from the last persisted stage (skipping already
  * committed stages via `hasCommittedStage`) instead of from scratch.
  */
-
-export type JobType = 'solidify' | 'plan_fill' | 'asset_generation';
-export type JobStatus = 'running' | 'resumable' | 'succeeded' | 'failed';
 
 export type JobRunStage = string;
 
@@ -41,9 +38,9 @@ interface JobRunRow {
   committed_stages: string[];
   partial_result: unknown | null;
   error: string | null;
-  next_retry_at: string | null;
-  created_at: string;
-  updated_at: string;
+  next_retry_at: Date | string | null;
+  created_at: Date | string;
+  updated_at: Date | string;
 }
 
 function mapRow(row: JobRunRow): JobRun {
@@ -58,9 +55,9 @@ function mapRow(row: JobRunRow): JobRun {
     committedStages: Array.isArray(row.committed_stages) ? row.committed_stages : [],
     partialResult: row.partial_result ?? undefined,
     error: row.error ?? undefined,
-    nextRetryAt: row.next_retry_at ?? undefined,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    nextRetryAt: row.next_retry_at instanceof Date ? row.next_retry_at.toISOString() : row.next_retry_at ?? undefined,
+    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+    updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at,
   };
 }
 
@@ -116,6 +113,7 @@ export async function updateJobRun(jobId: string, patch: JobRunPatch): Promise<J
     sets.push(`${col} = $${params.length}${jsonb ? '::jsonb' : ''}`);
   };
 
+  if (patch.attempt !== undefined) push('attempt', patch.attempt);
   if (patch.status !== undefined) push('status', patch.status);
   if (patch.stage !== undefined) push('stage', patch.stage);
   if (patch.committedStages !== undefined) push('committed_stages', JSON.stringify(patch.committedStages), true);
@@ -141,10 +139,24 @@ export async function updateJobRun(jobId: string, patch: JobRunPatch): Promise<J
  * never re-applies an already-committed stage.
  */
 export async function commitStage(jobId: string, stage: JobRunStage): Promise<JobRun | null> {
+  const result = await queryOLTP<JobRunRow>(
+    `UPDATE job_runs
+        SET committed_stages = CASE
+              WHEN committed_stages @> to_jsonb($2::text) THEN committed_stages
+              ELSE committed_stages || to_jsonb($2::text)
+            END,
+            updated_at = NOW()
+      WHERE id = $1
+      RETURNING *`,
+    [jobId, stage],
+  );
+  return result.rows[0] ? mapRow(result.rows[0]) : null;
+}
+
+/** Read-only guard by job ID: has the given stage already been committed? */
+export async function hasCommittedStageById(jobId: string, stage: JobRunStage): Promise<boolean> {
   const run = await getJobRunById(jobId);
-  if (!run) return null;
-  if (run.committedStages.includes(stage)) return run;
-  return updateJobRun(jobId, { committedStages: [...run.committedStages, stage] });
+  return run ? run.committedStages.includes(stage) : false;
 }
 
 /** Read-only guard: has the given stage already been committed for this plan/job? */
@@ -165,9 +177,9 @@ export async function hasCommittedStage(
 export async function nextAttempt(
   planId: string,
   jobType: JobType,
-  opts?: { maxAttempts?: number },
+  opts?: { maxAttempts?: number; existingRun?: JobRun },
 ): Promise<{ exhausted: boolean; delayMs?: number }> {
-  const run = await getJobRun(planId, jobType);
+  const run = opts?.existingRun ?? await getJobRun(planId, jobType);
   if (!run) {
     return { exhausted: true };
   }
@@ -177,7 +189,7 @@ export async function nextAttempt(
     return { exhausted: true };
   }
   const nextNum = run.attempt + 1;
-  const delayMs = backoffDelayMs(nextNum);
+  const delayMs = backoffDelayMs(run.attempt);
   await updateJobRun(run.id, {
     attempt: nextNum,
     status: 'running',
