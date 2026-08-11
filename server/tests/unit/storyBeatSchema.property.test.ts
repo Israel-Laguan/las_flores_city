@@ -194,8 +194,6 @@ describe('Schema rejects unknown keys (strict)', () => {
 // Validates: Requirements 3.3, 3.6, 4.1
 // ─────────────────────────────────────────────────────────────
 
-import { jest as jestGlobals } from '@jest/globals';
-
 // ── Arbitraries (re-declared locally for scope) ───────────────
 
 const genValidSlug = (): fc.Arbitrary<string> =>

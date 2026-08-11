@@ -13,9 +13,9 @@ updates:
       # New vite majors/minors break the client build; pin until fixed
       - dependency-name: "vite"
         update-types:
-          - "major"
-          - "minor"
-          - "patch"
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     groups:
       # Patch updates (bug fixes, security) — auto-merge candidate
       patches:
