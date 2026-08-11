@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
+import type { IntakeConflictPreview } from '@las-flores/shared';
 import type { Step, GenerationStatus } from '../types';
 import { loadPlanFromDb, fetchTemplates, fetchContentTree, refinePlan } from './useStoryBuilderApi';
 import { useStoryPlanApi } from './useStoryPlanApi';
@@ -25,7 +26,8 @@ function buildHandlers(
 ) {
   return {
     handleGeneratePlan: apiCallbacks.handleGeneratePlan,
-    handleRefine: () => { if (planId) apiCallbacks.handleRefine(planId, refineFeedback); },
+    handleGenerateFullPlan: apiCallbacks.handleGenerateFullPlan,
+    handleRefine: () => apiCallbacks.handleRefine(planId, refineFeedback),
     handleApproveAndSolidify: () => { if (planId) apiCallbacks.handleApproveAndSolidify(planId); },
     handleSelectTemplate: apiCallbacks.handleSelectTemplate,
     handleClone: apiCallbacks.handleClone,
@@ -60,12 +62,15 @@ export function useStoryBuilder(initialPlanId: string | null) {
   const [showRefine, setShowRefine] = useState(false);
   const [solidifyResult, setSolidifyResult] = useState<SolidifyResultLite | null>(null);
   const [genStatus, setGenStatus] = useState<GenerationStatus | null>(null);
+  const [conflicts, setConflicts] = useState<IntakeConflictPreview[]>([]);
+  const [fileConflicts, setFileConflicts] = useState<string[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [contentTree, setContentTree] = useState<Array<{ path: string; name: string; type: string }>>([]);
 
   const apiCallbacks = useStoryPlanApi({
     setLoading, setError, setPlan, setStep, setPlanId,
     setRefineFeedback, setShowRefine, setSolidifyResult, setGenStatus,
+    setConflicts, setFileConflicts,
     description, plan,
   });
 
@@ -151,6 +156,7 @@ export function useStoryBuilder(initialPlanId: string | null) {
     step, description, setDescription, plan, loading, error, planId,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
     solidifyResult, genStatus, templates, contentTree,
+    conflicts, fileConflicts,
     ...handlers,
   };
 }

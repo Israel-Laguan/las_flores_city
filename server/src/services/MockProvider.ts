@@ -1,4 +1,4 @@
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
 
@@ -199,6 +199,34 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
       entities.push({ name: 'Central Plaza', type: 'scene', description: 'The bustling heart of Las Flores.' });
     }
     return { entities };
+  }
+
+  async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const conflicts: IntakeConflictPreview[] = [];
+    const existingNames = new Set([
+      ...context.characters.map(c => c.name.toLowerCase()),
+      ...context.scenes.map(s => s.name.toLowerCase()),
+      ...context.dialogues.map(d => d.name.toLowerCase()),
+      ...context.missions.map(m => m.title.toLowerCase()),
+      ...context.overlays.map(o => o.name.toLowerCase()),
+      ...context.locations.map(l => l.name.toLowerCase()),
+    ]);
+
+    // Deterministic surrogate: flag plan items whose name collides with existing canon.
+    for (const item of plan.items) {
+      const norm = (item.name || '').toLowerCase().trim();
+      if (norm && existingNames.has(norm)) {
+        conflicts.push({
+          type: 'duplicate_name',
+          severity: 'error',
+          description: `"${item.name}" matches an existing entity in canon.`,
+          relatedItems: [item.id],
+          relatedExisting: [item.name],
+        });
+      }
+    }
+
+    return { conflicts, usage: null };
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {

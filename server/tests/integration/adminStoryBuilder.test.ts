@@ -114,6 +114,12 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
     validateAndRepairOutline: jest.fn((plan, _description) => plan),
     gatherContext: jest.fn(async () => ({})),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
+    analyzeIntakeConflicts: jest.fn(async () => ({ conflicts: [], usage: null })),
+    refinePlanPreview: jest.fn(async (plan, feedback) => ({
+      plan: { ...plan, description: `${plan.description} [refined: ${feedback}]` },
+      conflicts: [],
+      usage: null,
+    })),
     getLastUsage: jest.fn(() => null),
     provider: {
       generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
@@ -173,18 +179,77 @@ describe('POST /admin/story-builder/plan', () => {
     expect(res.body.success).toBe(false);
   });
 
-  test('returns a plan for a valid description', async () => {
+  test('returns a preview plan (phase 1) for a valid description', async () => {
     const res = await request(app)
       .post('/admin/story-builder/plan')
       .send({ description: 'Add a bartender named Diego' });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.planId).toBeDefined();
     expect(res.body.data.plan).toBeDefined();
     expect(res.body.data.plan.items.length).toBeGreaterThan(0);
     expect(res.body.data.plan.items[0].name).toBe('Diego');
+    // Phase 1 is preview-only: NO planId, NO scaffold, NO DB insert.
+    expect(res.body.data.planId).toBeUndefined();
+    expect(res.body.data.status).toBe('preview');
+    expect(Array.isArray(res.body.data.conflicts)).toBe(true);
+    expect(Array.isArray(res.body.data.fileConflicts)).toBe(true);
+  });
+});
+describe('POST /admin/story-builder/plan/scaffold', () => {
+  const app = makeApp();
+  const validPlan = MOCK_PLAN;
+
+  test('returns 400 when plan is missing', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/plan/i);
+  });
+
+  test('commits the plan: scaffolds, inserts, returns planId + status generating', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.planId).toBeDefined();
+    expect(res.body.data.plan).toBeDefined();
     expect(res.body.data.status).toBe('generating');
+    expect(mockQueryOLTP).toHaveBeenCalledWith(
+      expect.stringContaining('INSERT INTO content_plans'),
+      expect.arrayContaining([expect.any(String)]),
+    );
+  });
+});
+
+describe('POST /admin/story-builder/plan/refine-preview', () => {
+  const app = makeApp();
+
+  test('returns 400 for empty feedback', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/refine-preview')
+      .send({ plan: MOCK_PLAN, feedback: '' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/feedback/i);
+  });
+
+  test('refines the plan in-memory and returns conflicts', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/refine-preview')
+      .send({ plan: MOCK_PLAN, feedback: 'make it more cynical' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.plan).toBeDefined();
+    expect(res.body.data.plan.description).toContain('make it more cynical');
+    expect(Array.isArray(res.body.data.conflicts)).toBe(true);
   });
 });
 

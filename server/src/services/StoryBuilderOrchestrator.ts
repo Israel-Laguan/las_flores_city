@@ -6,6 +6,8 @@ import { ContentPlanService } from './ContentPlanService.js';
 import { publishChosenDrafts } from './AssetPublishService.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from './PlanVerificationService.js';
+import { runValidationHarness } from './ValidationHarnessService.js';
+import type { HarnessReport } from '@las-flores/shared';
 import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import {
   executePlan,
@@ -236,6 +238,29 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
     }
     const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
 
+    // --- Deterministic pre-approve harness gate ---
+    // Runs cheap, reproducible rules (duplicate slug/name, timeline overlap, FK
+    // integrity, ordering/succession) BEFORE any staging. Blocks only on
+    // `error`-severity findings; warnings pass through. Persist the report for
+    // observability, then abort to `failed` if the gate is not passed.
+    const context = await contentPlanService.gatherContext();
+    const harnessReport: HarnessReport = runValidationHarness(plan, context);
+
+    if (!harnessReport.passed) {
+      const blocking = harnessReport.findings.filter(f => f.severity === 'error');
+      const message = blocking.map(f => f.message).join('; ');
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
+        ['failed', JSON.stringify({ harnessReport }), planId],
+      );
+      await setJobStatus(planId, {
+        status: 'failed',
+        error: `Validation harness blocked approval: ${message}`,
+      });
+      emitAdminEvent('plan_failed', { status: 'failed', error: message, harness: harnessReport }, planId, userId);
+      return;
+    }
+
     // --- Stage: write YAML + lore + prompt files to disk ---
     await setJobStatus(planId, { status: 'staging' });
     await queryOLTP(
@@ -244,7 +269,6 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
     );
 
     const provider = createLLMProvider();
-    const context = await contentPlanService.gatherContext();
     const stageResult = await stagePlan(plan, { provider, context });
     if (!stageResult.success) {
       throw new Error(stageResult.error ?? 'Staging failed');

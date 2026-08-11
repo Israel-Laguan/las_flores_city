@@ -1,6 +1,6 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
-import type { ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
@@ -104,7 +104,9 @@ function buildPlanErrorResponse(error: any, description?: string): { status: num
   };
 }
 
-// POST /admin/story-builder/plan — Generate a plan from description (outline → scaffold → async fill)
+// POST /admin/story-builder/plan — PHASE 1 (preview only): generate outline + conflict scan.
+// Does NOT scaffold files, does NOT insert into content_plans, and returns NO planId.
+// The author explicitly commits via POST /plan/scaffold ("Generate Full Plan").
 adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
   try {
     const { description } = req.body;
@@ -120,13 +122,71 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
 
     const trimmedDesc = description.trim();
 
-    const { plan: outlinePlan, usage } = await contentPlanService.generateOutline(trimmedDesc);
+    const { plan: outlinePlan } = await contentPlanService.generateOutline(trimmedDesc);
     const repairedPlan = outlinePlan;
+
+    // Advisory filesystem collision check — surface as a warning, never a hard block at intake.
+    const contentDir = resolveContentDir();
+    let fileConflicts: string[] = [];
+    try {
+      fileConflicts = await checkCreateConflicts(repairedPlan, contentDir);
+    } catch (conflictErr) {
+      console.warn('[story-builder] Advisory file-conflict scan failed; continuing with empty fileConflicts:', (conflictErr as Error).message);
+      fileConflicts = [];
+    }
+
+    // LLM conflict preview (Moment 1) — advisory only.
+    let conflicts: IntakeConflictPreview[] = [];
+    try {
+      const scan = await contentPlanService.analyzeIntakeConflicts(repairedPlan);
+      conflicts = scan.conflicts;
+    } catch (conflictErr) {
+      console.warn('[story-builder] Intake conflict scan failed; continuing with empty conflicts:', (conflictErr as Error).message);
+    }
+
+    res.json({
+      success: true,
+      data: { plan: repairedPlan, conflicts, fileConflicts, status: 'preview' },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    const { status, body } = buildPlanErrorResponse(error, req.body.description);
+    res.status(status).json(body);
+  }
+});
+// POST /admin/story-builder/plan/scaffold — PHASE 2 (commit): scaffold files + insert content_plans + kick off async fill.
+// Takes the outline produced by POST /plan. This is the explicit "Generate Full Plan" action.
+adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, res) => {
+  try {
+    const { plan: rawPlan } = req.body;
+
+    if (!rawPlan || typeof rawPlan !== 'object') {
+      res.status(400).json({
+        success: false,
+        error: 'plan is required',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    let repairedPlan: ContentPlan;
+    try {
+      repairedPlan = ContentPlanSchema.parse(rawPlan);
+    } catch (parseErr: any) {
+      res.status(400).json({
+        success: false,
+        error: `Invalid plan: ${parseErr.message}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const trimmedDesc = (repairedPlan.description || '').trim();
 
     const contentDir = resolveContentDir();
     const conflicts = await checkCreateConflicts(repairedPlan, contentDir);
     if (conflicts.length > 0) {
-      console.warn(`[story-builder] Conflict detection blocked plan creation for description: "${description.substring(0, 80)}"...`, {
+      console.warn(`[story-builder] Conflict detection blocked scaffold for plan: "${trimmedDesc.substring(0, 80)}"...`, {
         conflicts,
         itemCount: repairedPlan.items.length,
         contentDir,
@@ -165,7 +225,7 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
       console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
     });
 
-    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length, usage), planId, req.userId);
+    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, req.userId);
 
     res.json({
       success: true,
@@ -173,7 +233,55 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    const { status, body } = buildPlanErrorResponse(error, req.body.description);
+    const { status, body } = buildPlanErrorResponse(error, req.body.plan?.description);
+    res.status(status).json(body);
+  }
+});
+
+// POST /admin/story-builder/plan/refine-preview — in-memory refine of a phase-1 outline ("Refine Instead").
+// Returns the refined plan + re-scanned conflicts. No persistence.
+adminStoryBuilderGenerateRouter.post('/plan/refine-preview', async (req: AuthRequest, res) => {
+  try {
+    const { plan: rawPlan, feedback } = req.body;
+
+    if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
+      res.status(400).json({
+        success: false,
+        error: 'feedback is required and must be a non-empty string',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    if (!rawPlan || typeof rawPlan !== 'object') {
+      res.status(400).json({
+        success: false,
+        error: 'plan is required',
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    let plan: ContentPlan;
+    try {
+      plan = ContentPlanSchema.parse(rawPlan);
+    } catch (parseErr: any) {
+      res.status(400).json({
+        success: false,
+        error: `Invalid plan: ${parseErr.message}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const result = await contentPlanService.refinePlanPreview(plan, feedback.trim());
+
+    res.json({
+      success: true,
+      data: { plan: result.plan, conflicts: result.conflicts },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    const { status, body } = buildPlanErrorResponse(error, req.body.plan?.description);
     res.status(status).json(body);
   }
 });

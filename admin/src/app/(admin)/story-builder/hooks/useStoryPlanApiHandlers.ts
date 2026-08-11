@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import type { ContentPlan } from '@las-flores/shared';
+import type { IntakeConflictPreview } from '@las-flores/shared';
 import type { Step, GenerationStatus } from '../types';
 import type { SolidifyResultLite } from '../components/ResultsStep';
 import * as api from './useStoryBuilderApi';
@@ -17,6 +18,8 @@ export interface Callbacks {
   setShowRefine: SetState<boolean>;
   setSolidifyResult: SetState<SolidifyResultLite | null>;
   setGenStatus: SetState<GenerationStatus | null>;
+  setConflicts: SetState<IntakeConflictPreview[]>;
+  setFileConflicts: SetState<string[]>;
   description: string;
   plan: ContentPlan | null;
 }
@@ -52,7 +55,7 @@ async function persistGenerate(
 }
 
 function makeGeneratePlan(cb: HandlersDeps) {
-  const { setLoading, setError, setPlan, setStep, setPlanId, setGenStatus, description } = cb;
+  const { setLoading, setError, setPlan, setStep, setConflicts, setFileConflicts, description } = cb;
   return useCallback(async () => {
     // Cancel any pending poll timer from a previous generation
     if (_activePollTimer !== null) {
@@ -66,8 +69,33 @@ function makeGeneratePlan(cb: HandlersDeps) {
       return;
     }
 
-    const { planId, plan, status } = data.data;
+    // Phase 1: preview only. No planId, no scaffold, no fill. The author commits
+    // via "Generate Full Plan" (handleGenerateFullPlan → POST /plan/scaffold).
+    const { plan, conflicts, fileConflicts } = data.data;
     setPlan(plan);
+    setConflicts(conflicts ?? []);
+    setFileConflicts(fileConflicts ?? []);
+    setStep(2);
+  }, [description, setLoading, setError, setPlan, setStep, setConflicts, setFileConflicts]);
+}
+
+function makeGenerateFullPlan(cb: HandlersDeps) {
+  const { setLoading, setError, setPlan, setStep, setPlanId, setGenStatus, plan } = cb;
+  return useCallback(async () => {
+    if (!plan) return;
+    if (_activePollTimer !== null) {
+      clearTimeout(_activePollTimer);
+      _activePollTimer = null;
+    }
+
+    const data = await withLoading(setLoading, setError, () => api.scaffoldPlan(plan));
+    if (!data?.success || !data.data) {
+      if (data) setError(data.error || 'Failed to generate full plan');
+      return;
+    }
+
+    const { planId, plan: committedPlan, status } = data.data;
+    setPlan(committedPlan);
     setPlanId(planId);
     setStep(2);
 
@@ -106,34 +134,43 @@ function makeGeneratePlan(cb: HandlersDeps) {
       setGenStatus(data.data as GenerationStatus);
       await refreshPlanFromDb(planId, setPlan);
     }
-  }, [description, setLoading, setError, setPlan, setStep, setPlanId, setGenStatus]);
+  }, [plan, setLoading, setError, setPlan, setStep, setPlanId, setGenStatus]);
 }
 
 function makeRefine(cb: HandlersDeps) {
-  const { setLoading, setError, setPlan, setPlanId, setRefineFeedback, setShowRefine, plan } = cb;
-  return useCallback(async (planId: string, refineFeedback: string) => {
+  const { setLoading, setError, setPlan, setPlanId, setRefineFeedback, setShowRefine, setConflicts, plan } = cb;
+  return useCallback(async (planId: string | null, refineFeedback: string) => {
     const data = await withLoading(setLoading, setError, async () => {
+      // Pre-scaffold (phase-1 outline, no planId yet): refine in-memory and re-scan
+      // conflicts. No persistence, no DB write.
+      if (!planId && plan) {
+        return api.refinePlanPreview(plan, refineFeedback);
+      }
       // Persist author edits first so refine runs against the edited plan (server
       // reloads the stored plan_json; without this, edits would be discarded).
-      if (plan) {
+      if (planId && plan) {
         const saveRes = await api.updatePlan(planId, plan);
         if (!saveRes.success) {
           throw new Error(saveRes.error || 'Failed to save plan edits before refining');
         }
       }
+      if (!planId) return null;
       return api.refinePlan(planId, refineFeedback);
     });
     if (!data) return;
     if (data.success && data.data) {
       setPlan(data.data.plan);
-      // refinePlan versions the plan into a new row; adopt the new id.
-      setPlanId(data.data.plan.id);
+      // refinePlan versions the plan into a new row; adopt the new id when present.
+      if (data.data.plan.id) setPlanId(data.data.plan.id);
+      if ('conflicts' in data.data && Array.isArray(data.data.conflicts)) {
+        setConflicts(data.data.conflicts as IntakeConflictPreview[]);
+      }
       setRefineFeedback('');
       setShowRefine(false);
     } else {
       setError(data.error || 'Failed to refine plan');
     }
-  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, plan]);
+  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, setConflicts, plan]);
 }
 
 function makeApproveAndSolidify(cb: HandlersDeps) {
@@ -228,6 +265,7 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   } = cb;
 
   const handleGeneratePlan = makeGeneratePlan(cb);
+  const handleGenerateFullPlan = makeGenerateFullPlan(cb);
   const handleRefine = makeRefine(cb);
   const handleApproveAndSolidify = makeApproveAndSolidify(cb);
   const handleSelectTemplate = makeSelectTemplate(cb);
@@ -237,7 +275,7 @@ export function createStoryPlanHandlers(cb: Callbacks) {
   const { handleGenerateDrafts, handleChooseDraft } = createDraftPlanHandlers({ setLoading, setError, setPlan });
 
   return {
-    handleGeneratePlan, handleRefine, handleSelectTemplate, handleClone,
+    handleGeneratePlan, handleGenerateFullPlan, handleRefine, handleSelectTemplate, handleClone,
     handleRegenerateLore, handleGenerateDrafts, handleChooseDraft,
     handleApproveAndSolidify,
   };

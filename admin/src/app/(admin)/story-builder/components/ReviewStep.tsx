@@ -1,6 +1,7 @@
 'use client';
 
 import type { ContentPlan } from '@las-flores/shared';
+import type { IntakeConflictPreview } from '@las-flores/shared';
 import { cn } from '@las-flores/ui';
 import type { GenerationStatus } from '../types';
 import * as api from '../hooks/useStoryBuilderApi';
@@ -8,6 +9,7 @@ import ContentCard from './ContentCard';
 import PlanSummary from './PlanSummary';
 import RefineSection from './RefineSection';
 import LinksSection from './LinksSection';
+import ConflictPreview from './ConflictPreview';
 import styles from './ReviewStep.module.css';
 
 interface ReviewStepProps {
@@ -37,6 +39,10 @@ interface ReviewStepProps {
   onApproveAndShip?: () => void;
   approving?: boolean;
   genStatus?: GenerationStatus | null;
+  conflicts?: IntakeConflictPreview[];
+  fileConflicts?: string[];
+  onGenerateFullPlan?: () => void;
+  onRefineInstead?: () => void;
 }
 
 function ProgressSection({ genStatus }: { genStatus: import('../types').GenerationStatus }) {
@@ -156,6 +162,7 @@ export default function ReviewStep({
   onDependsOnChange, onUpdateLink, onAddLink, onRemoveLink,
   onGenerateDrafts, onChooseDraft, draftAssetsByItem, draftLoading,
   onApproveAndShip, approving, genStatus,
+  conflicts = [], fileConflicts = [], onGenerateFullPlan, onRefineInstead,
 }: ReviewStepProps) {
   // Asset needs that were never given a selected draft. The system will
   // auto-pick the `<slug>__default.png` historical default for these.
@@ -198,6 +205,15 @@ export default function ReviewStep({
           and consider using &ldquo;Refine&rdquo; to improve it.
         </div>
       )}
+
+      <ConflictPreview
+        conflicts={conflicts}
+        fileConflicts={fileConflicts}
+        hasPlanId={!!planId}
+        loading={loading}
+        onGenerateFullPlan={() => onGenerateFullPlan?.()}
+        onRefineInstead={() => onRefineInstead?.()}
+      />
 
       {isGenerationActive && <ProgressSection genStatus={genStatus} />}
 

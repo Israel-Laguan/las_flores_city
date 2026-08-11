@@ -1,6 +1,7 @@
 'use client';
 
 import type { ContentPlan } from '@las-flores/shared';
+import type { IntakeConflictPreview } from '@las-flores/shared';
 import { adminFetch } from '@/lib/client-api';
 
 async function postJSON<T>(url: string, payload: unknown): Promise<T> {
@@ -17,9 +18,49 @@ export async function loadPlanFromDb(id: string) {
 }
 
 export async function generatePlan(description: string) {
-  return postJSON<{ success: boolean; data?: { planId: string; plan: ContentPlan; status: string }; error?: string }>(
+  return postJSON<{
+    success: boolean;
+    data?: {
+      plan: ContentPlan;
+      conflicts?: IntakeConflictPreview[];
+      fileConflicts?: string[];
+      status: string;
+    };
+    error?: string;
+  }>(
     '/admin/story-builder/plan',
     { description },
+  );
+}
+
+/**
+ * Phase-2 commit ("Generate Full Plan"). Takes the phase-1 outline, scaffolds the
+ * create items, inserts the content_plans row, and kicks off the async fill job.
+ * Returns a planId and status 'generating'.
+ */
+export async function scaffoldPlan(plan: ContentPlan) {
+  return postJSON<{
+    success: boolean;
+    data?: { planId: string; plan: ContentPlan; status: string };
+    error?: string;
+  }>(
+    '/admin/story-builder/plan/scaffold',
+    { plan },
+  );
+}
+
+/**
+ * In-memory refine of a phase-1 outline ("Refine Instead"). Returns the refined
+ * plan + re-scanned conflicts. No persistence.
+ */
+export async function refinePlanPreview(plan: ContentPlan, feedback: string) {
+  return postJSON<{
+    success: boolean;
+    data?: { plan: ContentPlan; conflicts: IntakeConflictPreview[] };
+    error?: string;
+  }>(
+    '/admin/story-builder/plan/refine-preview',
+    { plan, feedback },
   );
 }
 

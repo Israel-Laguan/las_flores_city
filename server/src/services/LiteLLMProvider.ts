@@ -1,7 +1,7 @@
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, IntakeConflictPreviewSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
-import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 import { finiteInt } from '../utils/env.js';
 
@@ -297,6 +297,19 @@ export class LiteLLMProvider implements LLMProvider {
       typeof e.type === 'string' && e.type.trim()
     );
     return { entities };
+  }
+
+  async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const systemPrompt = buildIntakeConflictPrompt(plan, context);
+    const maxTokens = finiteInt(process.env.LLM_INTAKE_CONFLICT_MAX_TOKENS, 2048);
+    const { result, usage } = await this.callLLM(systemPrompt, plan.description, undefined, maxTokens);
+    const raw = Array.isArray((result as any).conflicts) ? (result as any).conflicts : [];
+    // Tolerate malformed entries — keep only those that pass the schema.
+    const conflicts = raw
+      .map((c: any) => IntakeConflictPreviewSchema.safeParse(c))
+      .filter((r: any) => r.success)
+      .map((r: any) => r.data);
+    return { conflicts, usage };
   }
 
 }
