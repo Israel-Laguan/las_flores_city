@@ -11,7 +11,7 @@ This directory contains SQL migration files for the Las Flores 2077 databases.
 
 Each migration file has a target database indicated by its content:
 
-### OLTP Migrations (56 migrations)
+### OLTP Migrations (54 migrations)
 Apply to: `postgres-oltp` container, `las_flores` database
 
 | Version | Migration | Description |

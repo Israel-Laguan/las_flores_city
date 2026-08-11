@@ -71,6 +71,11 @@ export async function startJobRun(
   jobType: JobType,
   opts?: StartJobRunOptions,
 ): Promise<JobRun> {
+  // NOTE: the default job budget (max_attempts = 3) is intentionally smaller
+  // than RETRY_MAX_ATTEMPTS (6), which is the per-request retry cap used inside
+  // AssetGenerationService. Each *job attempt* re-enters the whole pipeline
+  // (re-running many LLM calls), so the job budget is a separate, tighter policy
+  // than the per-call retry curve. Callers may override via `opts.maxAttempts`.
   const result = await queryOLTP<JobRunRow>(
     `INSERT INTO job_runs (plan_id, job_type, status, attempt, max_attempts)
      VALUES ($1, $2, 'running', 1, $3)
