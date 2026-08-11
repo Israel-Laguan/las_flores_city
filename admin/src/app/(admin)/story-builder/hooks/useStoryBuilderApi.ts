@@ -56,7 +56,7 @@ export async function scaffoldPlan(plan: ContentPlan) {
 export async function refinePlanPreview(plan: ContentPlan, feedback: string) {
   return postJSON<{
     success: boolean;
-    data?: { plan: ContentPlan; conflicts: IntakeConflictPreview[] };
+    data?: { plan: ContentPlan; conflicts: IntakeConflictPreview[]; fileConflicts?: string[] };
     error?: string;
   }>(
     '/admin/story-builder/plan/refine-preview',

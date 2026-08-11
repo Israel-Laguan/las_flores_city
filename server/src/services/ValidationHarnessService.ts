@@ -71,6 +71,27 @@ function checkDuplicateSlugOrName(
     }
   }
 
+  // Within-plan slug collisions (slug drives on-disk file names). Only flag when
+  // the colliding items have distinct names — identical name+slug is already
+  // reported by the name check above, so we avoid double-reporting one cause.
+  const bySlug = new Map<string, ContentPlanItem[]>();
+  for (const item of plan.items) {
+    const key = normalize(item.slug ?? '');
+    if (!key) continue;
+    const arr = bySlug.get(key) ?? [];
+    arr.push(item);
+    bySlug.set(key, arr);
+  }
+  for (const [slug, items] of bySlug) {
+    if (items.length > 1 && new Set(items.map((i) => normalize(i.name || ''))).size > 1) {
+      findings.push({
+        code: 'duplicate_slug_or_name',
+        severity: 'error',
+        message: `Duplicate item slug "${slug}" appears ${items.length} times in the plan.`,
+        itemIds: items.map((i) => i.id),
+      });
+    }
+  }
   // create-vs-existing collisions keyed by (type -> normalized name).
   const existingByType = existingEntitiesByType(context);
   for (const item of plan.items) {
@@ -182,6 +203,12 @@ function checkTimelineOverlap(plan: ContentPlan): HarnessFinding[] {
   const ranges = plan.items.map(parseRange).filter((r): r is Range => r !== null);
   if (ranges.length < 2) return findings;
 
+  // Bound the number of unrelated (advisory) overlap warnings so a plan with
+  // many dated items can't emit O(n²) noise to the admin UI. Related overlaps
+  // are real errors and are never capped.
+  const MAX_UNRELATED_OVERLAP_WARNINGS = 50;
+  let unrelatedWarnings = 0;
+
   for (let i = 0; i < ranges.length; i++) {
     for (let j = i + 1; j < ranges.length; j++) {
       const a = ranges[i];
@@ -195,14 +222,23 @@ function checkTimelineOverlap(plan: ContentPlan): HarnessFinding[] {
         (a.item.lore_refs ?? []).some((r) => (b.item.lore_refs ?? []).includes(r)) ||
         (asRecord(a.item.fields).district && asRecord(a.item.fields).district === asRecord(b.item.fields).district);
 
-      findings.push({
-        code: 'timeline_overlap',
-        severity: related ? 'error' : 'warning',
-        message: related
-          ? `Timeline overlap: "${a.item.name}" (${a.start}-${a.end}) and "${b.item.name}" (${b.start}-${b.end}) clash and are related.`
-          : `Potential timeline overlap: "${a.item.name}" (${a.start}-${a.end}) and "${b.item.name}" (${b.start}-${b.end}).`,
-        itemIds: [a.item.id, b.item.id],
-      });
+      if (related) {
+        findings.push({
+          code: 'timeline_overlap',
+          severity: 'error',
+          message: `Timeline overlap: "${a.item.name}" (${a.start}-${a.end}) and "${b.item.name}" (${b.start}-${b.end}) clash and are related.`,
+          itemIds: [a.item.id, b.item.id],
+        });
+      } else {
+        if (unrelatedWarnings >= MAX_UNRELATED_OVERLAP_WARNINGS) continue;
+        unrelatedWarnings++;
+        findings.push({
+          code: 'timeline_overlap',
+          severity: 'warning',
+          message: `Potential timeline overlap: "${a.item.name}" (${a.start}-${a.end}) and "${b.item.name}" (${b.start}-${b.end}).`,
+          itemIds: [a.item.id, b.item.id],
+        });
+      }
     }
   }
 
@@ -240,6 +276,8 @@ function checkForeignKeyIntegrity(
   const findings: HarnessFinding[] = [];
   const planItemIds = new Set(plan.items.map((i) => i.id));
   const existingIds = existingEntityIds(context);
+  // Built once up-front (not per scene item) so construction cost is O(1) per plan.
+  const knownDistricts = new Set(context.scenes.map((s) => s.district).filter(Boolean));
 
   for (const item of plan.items) {
     for (const depId of item.dependsOn ?? []) {
@@ -266,7 +304,6 @@ function checkForeignKeyIntegrity(
     }
 
     if (item.type === 'scene' && f.district) {
-      const knownDistricts = new Set(context.scenes.map((s) => s.district).filter(Boolean));
       if (!knownDistricts.has(String(f.district))) {
         findings.push({
           code: 'foreign_key_integrity',
@@ -316,6 +353,7 @@ function checkOrderingSuccession(plan: ContentPlan): HarnessFinding[] {
     color.set(item.id, GRAY);
     stack.push(item);
     for (const depId of item.dependsOn ?? []) {
+      if (depId === item.id) continue; // self-dependency already reported above
       const dep = byId.get(depId);
       if (!dep) continue; // external/existing dependency — not part of the plan graph
       const depColor = color.get(depId);

@@ -301,7 +301,12 @@ export class ContentPlanService {
    */
   async refinePlanPreview(plan: ContentPlan, feedback: string): Promise<{ plan: ContentPlan; conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
     const context = await this.gatherContext();
-    const { plan: refined, usage } = await this.provider.refinePlan(plan, feedback, context);
+    const { plan: rawRefined, usage } = await this.provider.refinePlan(plan, feedback, context);
+    // Re-inject asset needs so any new visual items get portrait/background
+    // needs (Zod defaults missing assetNeeds to [], which would scaffold with
+    // nothing to generate).
+    const refined = ContentPlanSchema.parse(rawRefined);
+    injectAssetNeeds(refined.items);
     const { conflicts } = await this.provider.analyzeIntakeConflicts(refined, context);
     return { plan: refined, conflicts, usage };
   }

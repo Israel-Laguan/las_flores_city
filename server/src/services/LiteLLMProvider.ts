@@ -303,7 +303,12 @@ export class LiteLLMProvider implements LLMProvider {
     const systemPrompt = buildIntakeConflictPrompt(plan, context);
     const maxTokens = finiteInt(process.env.LLM_INTAKE_CONFLICT_MAX_TOKENS, 2048);
     const { result, usage } = await this.callLLM(systemPrompt, plan.description, undefined, maxTokens);
-    const raw = Array.isArray((result as any).conflicts) ? (result as any).conflicts : [];
+    // callLLM can parse valid JSON that is not an object (e.g. null). Treat a
+    // non-object response as an empty conflict list rather than throwing.
+    const candidate = result && typeof result === 'object'
+      ? (result as Record<string, unknown>).conflicts
+      : undefined;
+    const raw = Array.isArray(candidate) ? candidate : [];
     // Tolerate malformed entries — keep only those that pass the schema.
     const conflicts = raw
       .map((c: any) => IntakeConflictPreviewSchema.safeParse(c))

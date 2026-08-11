@@ -1,5 +1,5 @@
 /**
- * Integration test for the M20 deterministic validation-harness gate.
+ * Unit test for the M20 deterministic validation-harness gate.
  *
  * Drives the REAL StoryBuilderOrchestrator.runSolidify (via approveAndSolidifyPlan)
  * with @las-flores/infra and the downstream materializers mocked. A plan carrying a
@@ -118,7 +118,13 @@ const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 const mockStagePlan = stagePlan as jest.MockedFunction<typeof stagePlan>;
 const mockPublishDrafts = publishChosenDrafts as jest.MockedFunction<typeof publishChosenDrafts>;
 
-const waitForRunSolidify = () => new Promise<void>((r) => setTimeout(r, 50));
+const waitFor = async (predicate: () => boolean, timeoutMs = 2000): Promise<void> => {
+  const deadline = Date.now() + timeoutMs;
+  while (!predicate()) {
+    if (Date.now() > deadline) throw new Error('Timed out waiting for runSolidify to settle');
+    await new Promise((r) => setTimeout(r, 10));
+  }
+};
 
 describe('approveAndSolidifyPlan — validation harness gate (M20)', () => {
   beforeEach(() => {
@@ -131,7 +137,11 @@ describe('approveAndSolidifyPlan — validation harness gate (M20)', () => {
     expect(result.success).toBe(true);
     expect(result.status).toBe('pending');
 
-    await waitForRunSolidify();
+    await waitFor(() =>
+      mockQueryOLTP.mock.calls.some(
+        ([text]) => typeof text === 'string' && text.includes('verification_report'),
+      ),
+    );
 
     // The gate must have written status='failed' via an UPDATE.
     const failedUpdate = mockQueryOLTP.mock.calls.find(

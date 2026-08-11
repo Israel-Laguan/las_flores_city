@@ -22,26 +22,28 @@ async function scaffoldPlanItems(
 ): Promise<string[]> {
   const createdFiles: string[] = [];
   for (const item of items) {
-    let filePath = '';
-    let fullPath = '';
-    try {
-      filePath = resolveFilePath(item);
-      fullPath = path.join(contentDir, filePath);
-      await fs.mkdir(path.dirname(fullPath), { recursive: true });
-      const yamlContent = generateYaml(item);
-      await fs.writeFile(fullPath, yamlContent, 'utf-8');
-      createdFiles.push(filePath);
-
-    } catch (writeErr) {
-      console.error(`[story-builder] CRITICAL: Failed to write scaffold file for ${item.name} (type=${item.type}, slug=${item.slug}):`, {
-        error: (writeErr as Error).message,
-        path: filePath,
-        fullPath,
-        stack: (writeErr as Error).stack?.substring(0, 300),
-      });
-    }
+    const filePath = resolveFilePath(item);
+    const fullPath = path.join(contentDir, filePath);
+    await fs.mkdir(path.dirname(fullPath), { recursive: true });
+    const yamlContent = generateYaml(item);
+    // Exclusive create ('wx') — never overwrite a target that appeared since the
+    // conflict scan. Any failure throws and aborts the whole scaffold, letting
+    // the caller roll back this request's already-created files.
+    await fs.writeFile(fullPath, yamlContent, { encoding: 'utf-8', flag: 'wx' });
+    createdFiles.push(filePath);
   }
   return createdFiles;
+}
+
+/** Best-effort removal of files created by THIS request (rollback on failure). */
+async function removeScaffoldedFiles(createdFiles: string[], contentDir: string): Promise<void> {
+  for (const file of createdFiles) {
+    try {
+      await fs.rm(path.join(contentDir, file), { force: true });
+    } catch (err) {
+      console.warn(`[story-builder] Failed to clean up scaffolded file ${file}:`, (err as Error).message);
+    }
+  }
 }
 
 function buildPlanEventData(
@@ -208,7 +210,24 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
     };
 
     const createItems = repairedPlan.items.filter(i => i.action === 'create');
-    const createdFiles = await scaffoldPlanItems(createItems, contentDir);
+    let createdFiles: string[] = [];
+    try {
+      createdFiles = await scaffoldPlanItems(createItems, contentDir);
+    } catch (scaffoldErr: any) {
+      console.error(`[story-builder] Scaffold aborted for plan "${trimmedDesc.substring(0, 80)}":`, {
+        error: (scaffoldErr as Error).message,
+        createdFiles,
+      });
+      // Roll back only this request's successfully created files, then stop
+      // BEFORE inserting content_plans or queuing the fill job.
+      await removeScaffoldedFiles(createdFiles, contentDir);
+      res.status(500).json({
+        success: false,
+        error: `Failed to scaffold plan files: ${(scaffoldErr as Error).message}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
 
     const planId = crypto.randomUUID();
     repairedPlan.id = planId;
@@ -275,9 +294,18 @@ adminStoryBuilderGenerateRouter.post('/plan/refine-preview', async (req: AuthReq
 
     const result = await contentPlanService.refinePlanPreview(plan, feedback.trim());
 
+    // Refresh filesystem conflicts against the refined plan so a rename/new item
+    // shows an up-to-date collision (or clears an obsolete one) immediately.
+    let fileConflicts: string[] = [];
+    try {
+      fileConflicts = await checkCreateConflicts(result.plan, resolveContentDir());
+    } catch (conflictErr: any) {
+      console.warn('[story-builder] Refine-preview file-conflict scan failed; continuing with empty fileConflicts:', (conflictErr as Error).message);
+    }
+
     res.json({
       success: true,
-      data: { plan: result.plan, conflicts: result.conflicts },
+      data: { plan: result.plan, conflicts: result.conflicts, fileConflicts },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

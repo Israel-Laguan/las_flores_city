@@ -249,12 +249,30 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
     if (!harnessReport.passed) {
       const blocking = harnessReport.findings.filter(f => f.severity === 'error');
       const message = blocking.map(f => f.message).join('; ');
+      // Persist a VerificationReport-compatible payload so the admin
+      // VerificationReport component can render it (it calls checks.filter and
+      // reads top-level passed/errors). Keep harnessReport as an extra field for
+      // observability/tests.
+      const verificationReport: VerificationReport = {
+        planId,
+        checkedAt: new Date().toISOString(),
+        passed: false,
+        checks: harnessReport.findings.map(f => ({
+          name: f.code,
+          description: f.message,
+          status: f.severity === 'error' ? 'fail' : 'warn',
+          details: f.itemIds,
+        })),
+        errors: blocking.map(f => f.message),
+        warnings: harnessReport.findings.filter(f => f.severity === 'warning').map(f => f.message),
+      };
       await queryOLTP(
         'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
-        ['failed', JSON.stringify({ harnessReport }), planId],
+        ['failed', JSON.stringify({ ...verificationReport, harnessReport }), planId],
       );
       await setJobStatus(planId, {
         status: 'failed',
+        verificationReport,
         error: `Validation harness blocked approval: ${message}`,
       });
       emitAdminEvent('plan_failed', { status: 'failed', error: message, harness: harnessReport }, planId, userId);

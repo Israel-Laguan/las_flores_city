@@ -63,6 +63,16 @@ describe('runValidationHarness', () => {
       expect(dup!.severity).toBe('error');
     });
 
+    it('flags duplicate slugs within the plan as error even when names differ', () => {
+      // Two different names sharing a slug would collide on disk at staging time.
+      const plan = makePlan({ items: [item({ name: 'Diego One', slug: 'diego' }), item({ id: B, name: 'Diego Two', slug: 'diego' })] });
+      const report = runValidationHarness(plan, makeContext());
+      expect(report.passed).toBe(false);
+      const dup = report.findings.find(f => f.code === 'duplicate_slug_or_name' && f.message.includes('slug'));
+      expect(dup).toBeDefined();
+      expect(dup!.severity).toBe('error');
+    });
+
     it('flags a create item matching an existing same-type entity as error', () => {
       const plan = makePlan({ items: [item({ name: 'Alicia' })] });
       const context = makeContext({ characters: [{ id: EXISTING_CHAR, name: 'alicia' }] });
@@ -114,9 +124,8 @@ describe('runValidationHarness', () => {
       expect(o!.severity).toBe('warning');
     });
   });
-});
 
-describe('foreign_key_integrity', () => {
+  describe('foreign_key_integrity', () => {
     it('flags a dependsOn id that resolves to nothing as error', () => {
       const plan = makePlan({
         items: [item({ dependsOn: ['a0000000-e000-4000-8000-0000000000ff'] })],
@@ -204,5 +213,6 @@ describe('foreign_key_integrity', () => {
       expect(report.passed).toBe(true);
       expect(report.findings.some(f => f.code === 'ordering_succession')).toBe(false);
     });
+  });
   });
 });

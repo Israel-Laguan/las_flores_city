@@ -55,7 +55,7 @@ async function persistGenerate(
 }
 
 function makeGeneratePlan(cb: HandlersDeps) {
-  const { setLoading, setError, setPlan, setStep, setConflicts, setFileConflicts, description } = cb;
+  const { setLoading, setError, setPlan, setStep, setConflicts, setFileConflicts, setPlanId, setGenStatus, setSolidifyResult, description } = cb;
   return useCallback(async () => {
     // Cancel any pending poll timer from a previous generation
     if (_activePollTimer !== null) {
@@ -72,11 +72,16 @@ function makeGeneratePlan(cb: HandlersDeps) {
     // Phase 1: preview only. No planId, no scaffold, no fill. The author commits
     // via "Generate Full Plan" (handleGenerateFullPlan → POST /plan/scaffold).
     const { plan, conflicts, fileConflicts } = data.data;
+    // Phase 1 preview: clear any previously-scaffolded plan state so this new
+    // preview can't ship/approve over the prior plan's id.
+    setPlanId(null);
+    setGenStatus(null);
+    setSolidifyResult(null);
     setPlan(plan);
     setConflicts(conflicts ?? []);
     setFileConflicts(fileConflicts ?? []);
     setStep(2);
-  }, [description, setLoading, setError, setPlan, setStep, setConflicts, setFileConflicts]);
+  }, [description, setLoading, setError, setPlan, setStep, setConflicts, setFileConflicts, setPlanId, setGenStatus, setSolidifyResult]);
 }
 
 function makeGenerateFullPlan(cb: HandlersDeps) {
@@ -138,8 +143,11 @@ function makeGenerateFullPlan(cb: HandlersDeps) {
 }
 
 function makeRefine(cb: HandlersDeps) {
-  const { setLoading, setError, setPlan, setPlanId, setRefineFeedback, setShowRefine, setConflicts, plan } = cb;
+  const { setLoading, setError, setPlan, setPlanId, setRefineFeedback, setShowRefine, setConflicts, setFileConflicts, plan } = cb;
   return useCallback(async (planId: string | null, refineFeedback: string) => {
+    // Phase-1 previews have no persisted content_plans row; only adopt a new
+    // plan id when refinement started from a persisted plan (it versions a row).
+    const startedWithPersistedPlan = Boolean(planId);
     const data = await withLoading(setLoading, setError, async () => {
       // Pre-scaffold (phase-1 outline, no planId yet): refine in-memory and re-scan
       // conflicts. No persistence, no DB write.
@@ -160,17 +168,22 @@ function makeRefine(cb: HandlersDeps) {
     if (!data) return;
     if (data.success && data.data) {
       setPlan(data.data.plan);
-      // refinePlan versions the plan into a new row; adopt the new id when present.
-      if (data.data.plan.id) setPlanId(data.data.plan.id);
+      // refinePlan versions the plan into a new row; adopt the new id when
+      // present — but only when we started from a persisted plan.
+      if (startedWithPersistedPlan && data.data.plan.id) setPlanId(data.data.plan.id);
       if ('conflicts' in data.data && Array.isArray(data.data.conflicts)) {
         setConflicts(data.data.conflicts as IntakeConflictPreview[]);
+      }
+      // Refresh file conflicts returned by the server (refine-preview path).
+      if ('fileConflicts' in data.data && Array.isArray(data.data.fileConflicts)) {
+        setFileConflicts(data.data.fileConflicts);
       }
       setRefineFeedback('');
       setShowRefine(false);
     } else {
       setError(data.error || 'Failed to refine plan');
     }
-  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, setConflicts, plan]);
+  }, [setLoading, setError, setPlan, setRefineFeedback, setShowRefine, setPlanId, setConflicts, setFileConflicts, plan]);
 }
 
 function makeApproveAndSolidify(cb: HandlersDeps) {

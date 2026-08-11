@@ -194,6 +194,11 @@ describe('POST /admin/story-builder/plan', () => {
     expect(res.body.data.status).toBe('preview');
     expect(Array.isArray(res.body.data.conflicts)).toBe(true);
     expect(Array.isArray(res.body.data.fileConflicts)).toBe(true);
+    // Phase-1 preview must perform no DB mutation — no INSERT/UPDATE/DELETE.
+    const writes = mockQueryOLTP.mock.calls.filter(
+      ([text]) => typeof text === 'string' && /^\s*(INSERT|UPDATE|DELETE)/i.test(text),
+    );
+    expect(writes).toHaveLength(0);
   });
 });
 describe('POST /admin/story-builder/plan/scaffold', () => {
@@ -250,6 +255,11 @@ describe('POST /admin/story-builder/plan/refine-preview', () => {
     expect(res.body.data.plan).toBeDefined();
     expect(res.body.data.plan.description).toContain('make it more cynical');
     expect(Array.isArray(res.body.data.conflicts)).toBe(true);
+    // Refine-preview is in-memory only — must issue no INSERT/UPDATE/DELETE SQL.
+    const writes = mockQueryOLTP.mock.calls.filter(
+      ([text]) => typeof text === 'string' && /^\s*(INSERT|UPDATE|DELETE)/i.test(text),
+    );
+    expect(writes).toHaveLength(0);
   });
 });
 
