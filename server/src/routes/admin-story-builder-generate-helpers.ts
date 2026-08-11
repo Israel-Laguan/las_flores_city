@@ -46,21 +46,17 @@ export async function removeScaffoldedFiles(createdFiles: string[], contentDir: 
  * Deterministic pre-approve harness gate (M20) run at the scaffold boundary —
  * BEFORE any file is written. Enforces the same hard gate the approve-and-solidify
  * worker runs, so a plan can never be scaffolded/staged with an error-severity
- * finding. Returns the blocking (error-severity) findings, or `null` when the
- * harness could not be evaluated (fail-open: log + continue, since the
- * approve-and-solidify worker still enforces the gate authoritatively).
+ * finding. Throws if the harness context cannot be gathered so the caller can
+ * fail CLOSED (503) rather than silently scaffold a plan whose gate could not be
+ * evaluated — a fail-open here would let high-severity plans (duplicate
+ * slugs/names, broken FKs) reach disk, which is exactly what this gate prevents.
  */
 export async function runScaffoldHarnessGate(
   plan: ContentPlan,
-): Promise<HarnessFinding[] | null> {
-  try {
-    const context = await contentPlanService.gatherContext();
-    const report = runValidationHarness(plan, context);
-    return report.findings.filter((f) => f.severity === 'error');
-  } catch (harnessErr: any) {
-    console.warn('[story-builder] Validation harness context failed; skipping scaffold gate (approve-and-solidify still enforces):', (harnessErr as Error).message);
-    return null;
-  }
+): Promise<HarnessFinding[]> {
+  const context = await contentPlanService.gatherContext();
+  const report = runValidationHarness(plan, context);
+  return report.findings.filter((f) => f.severity === 'error');
 }
 
 export function buildPlanEventData(

@@ -1,6 +1,7 @@
 import { describe, test, expect, jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
+import * as fsPromises from 'node:fs/promises';
 
 const MOCK_PLAN_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
 const MOCK_ITEM_ID = '11111111-2222-3333-4444-555555555555';
@@ -38,6 +39,7 @@ jest.mock('node:fs/promises', () => ({
     writeFile: jest.fn(async () => undefined),
     close: jest.fn(async () => undefined),
   })),
+  rm: jest.fn(async () => undefined),
 }));
 
 jest.mock('@las-flores/infra', () => ({
@@ -116,7 +118,17 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       usage: null,
     })),
     validateAndRepairOutline: jest.fn((plan, _description) => plan),
-    gatherContext: jest.fn(async () => ({})),
+    // Full ExistingContentContext shape — the validation harness iterates
+    // context.characters/locations/etc, so an empty `{}` would throw and now
+    // (correctly) fail the scaffold gate closed.
+    gatherContext: jest.fn(async () => ({
+      characters: [],
+      scenes: [],
+      dialogues: [],
+      missions: [],
+      overlays: [],
+      locations: [],
+    })),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
     analyzeIntakeConflicts: jest.fn(async () => ({ conflicts: [], usage: null })),
     refinePlanPreview: jest.fn(async (plan, feedback) => ({
@@ -237,6 +249,38 @@ describe('POST /admin/story-builder/plan/scaffold', () => {
       expect.stringContaining('INSERT INTO content_plans'),
       expect.arrayContaining([expect.any(String)]),
     );
+  });
+
+  test('fails closed (503) when the validation harness cannot be evaluated', async () => {
+    const gatherContext = contentPlanService.gatherContext as jest.Mock;
+    gatherContext.mockRejectedValueOnce(new Error('context boom'));
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(503);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/validation harness/i);
+    // Fail-closed: the gate must NOT proceed to DB insert / file write.
+    const writes = mockQueryOLTP.mock.calls.filter(
+      ([text]) => typeof text === 'string' && /^\s*INSERT/i.test(text),
+    );
+    expect(writes).toHaveLength(0);
+  });
+
+  test('rolls back scaffolded files when the DB insert fails', async () => {
+    const rm = fsPromises.rm as jest.Mock;
+    rm.mockClear();
+    mockQueryOLTP.mockRejectedValueOnce(new Error('connection lost'));
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/rolled back/i);
+    // The scaffolded files must be removed so a retry can succeed.
+    expect(rm).toHaveBeenCalled();
   });
 });
 

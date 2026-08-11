@@ -321,7 +321,10 @@ export class LiteLLMProvider implements LLMProvider {
     // response. The intake endpoint surfaces `conflicts` to the author as
     // "N potential conflicts", so silently returning [] on a bad response would
     // show a misleading clean bill of health.
-    if (raw.length === 0 && result && typeof result === 'object') {
+    // Gate on the `conflicts` field being genuinely missing/non-array (rather than
+    // on `raw.length === 0`), so a legitimate `{ "conflicts": [] }` clean scan does
+    // not log noise while a malformed response still warns.
+    if (result && typeof result === 'object' && !Array.isArray(candidate)) {
       console.warn('[LiteLLM] Intake conflict scan returned no "conflicts" array; treating as empty (plan ' +
         `description preview: "${(plan.description || '').substring(0, 80)}", raw keys: ${Object.keys(result).join(',') || '(none)'})`);
     } else if (raw.length > 0 && conflicts.length === 0) {

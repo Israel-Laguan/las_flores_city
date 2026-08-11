@@ -1,6 +1,6 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
-import { ContentPlanSchema, type ContentPlan, type IntakeConflictPreview } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan, type HarnessFinding, type IntakeConflictPreview } from '@las-flores/shared';
 import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
@@ -118,8 +118,25 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
     }
 
     // Deterministic pre-approve harness gate (M20) — block before any file write.
-    const blockingFindings = await runScaffoldHarnessGate(repairedPlan);
-    if (blockingFindings && blockingFindings.length > 0) {
+    // Fail CLOSED: if the harness cannot be evaluated, refuse to scaffold (503)
+    // instead of silently proceeding without the gate (which would let
+    // high-severity plans reach disk before the approve-and-solidify worker runs).
+    let blockingFindings: HarnessFinding[];
+    try {
+      blockingFindings = await runScaffoldHarnessGate(repairedPlan);
+    } catch (gateErr: any) {
+      console.error(`[story-builder] Validation harness could not be evaluated for plan "${trimmedDesc.substring(0, 80)}" — failing closed (503); no files were written.`, {
+        error: (gateErr as Error).message,
+        itemCount: repairedPlan.items.length,
+      });
+      res.status(503).json({
+        success: false,
+        error: `Validation harness could not be evaluated; scaffold deferred. No files were written. Please retry. (${(gateErr as Error).message})`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    if (blockingFindings.length > 0) {
       console.warn(`[story-builder] Validation harness blocked scaffold for plan: "${trimmedDesc.substring(0, 80)}"...`, {
         findings: blockingFindings.map((f) => f.message),
         itemCount: repairedPlan.items.length,
@@ -162,19 +179,36 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
     const planId = crypto.randomUUID();
     repairedPlan.id = planId;
 
-    const insertResult = await queryOLTP<{ id: string }>(
-      `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at)
-       VALUES ($1, $2, $3, 'draft', NOW(), NOW())
-       RETURNING id`,
-      [planId, trimmedDesc, repairedPlan],
-    );
-    const insertedId = insertResult.rows[0].id;
+    // Insert + event setup live in the same rollback scope as the scaffold so a
+    // DB or post-scaffold failure removes this request's files rather than
+    // leaving them orphaned on disk (keeps filesystem state consistent + retryable).
+    try {
+      const insertResult = await queryOLTP<{ id: string }>(
+        `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at)
+         VALUES ($1, $2, $3, 'draft', NOW(), NOW())
+         RETURNING id`,
+        [planId, trimmedDesc, repairedPlan],
+      );
+      const insertedId = insertResult.rows[0].id;
 
-    runPlanFill(insertedId, req.userId).catch((err) => {
-      console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
-    });
+      runPlanFill(insertedId, req.userId).catch((err) => {
+        console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
+      });
 
-    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, req.userId);
+      emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, req.userId);
+    } catch (postScaffoldErr: any) {
+      console.error(`[story-builder] Post-scaffold failure for plan "${trimmedDesc.substring(0, 80)}" — rolling back scaffolded files:`, {
+        error: (postScaffoldErr as Error).message,
+        createdFiles,
+      });
+      await removeScaffoldedFiles(createdFiles, contentDir);
+      res.status(500).json({
+        success: false,
+        error: `Plan files were rolled back after a persistence failure: ${(postScaffoldErr as Error).message}`,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
 
     res.json({
       success: true,
