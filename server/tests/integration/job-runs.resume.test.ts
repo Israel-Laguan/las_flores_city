@@ -27,13 +27,13 @@ async function applyMigration(filename: string): Promise<void> {
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
   );
-  try {
-    await withSchemaLock(async () => {
-      await queryOLTP(sql);
-    });
-  } catch {
-    // Migrations are idempotent; ignore duplicate-object errors.
-  }
+  // Run on the locked client so the DDL actually executes under the advisory
+  // lock (a separate pool connection via queryOLTP would not be). No catch:
+  // migrations 047/062 are fully idempotent (CREATE ... IF NOT EXISTS), so any
+  // thrown error is a genuine connection/syntax failure that must not be swallowed.
+  await withSchemaLock(async (client) => {
+    await client.query(sql);
+  });
 }
 
 beforeAll(async () => {

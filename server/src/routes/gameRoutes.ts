@@ -29,7 +29,18 @@ import './comms-reply.js';
  * never starve the game event loop or its DB pool.
  */
 export function registerGameRoutes(app: express.Express, opts?: { skipShared?: boolean }): void {
-  // Serve local content assets as fallback when CDN is not configured.
+  // Serve local content assets as a fallback when CDN is not configured. This
+  // is a fallback for PUBLISHED asset files only — gate the mount so raw
+  // authoring source files (.yaml, lore .md, .prompt.md image prompts, etc.)
+  // sitting elsewhere in `content/` are never served to the public.
+  const PUBLISHED_ASSET_EXT = /\.(png|jpe?g|gif|webp|avif|svg|mp4|webm|ogg|mp3|wav|woff2?|ttf)$/i;
+  app.use('/assets', (req, res, next) => {
+    if (!PUBLISHED_ASSET_EXT.test(req.path)) {
+      res.status(403).json({ success: false, error: 'Forbidden' });
+      return;
+    }
+    next();
+  });
   app.use('/assets', express.static(path.resolve(process.cwd(), 'content')));
 
   if (!opts?.skipShared) {

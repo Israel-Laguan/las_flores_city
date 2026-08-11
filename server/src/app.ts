@@ -19,8 +19,9 @@ export function createApp(registerRoutes: RouteRegistrar): express.Express {
   // Cookie parser — populates req.cookies from the Cookie header (no cookie-parser dep)
   app.use(cookieParserMiddleware);
 
-  // CORS — env-driven allowlist; in production fail closed when unset.
-  const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+  // CORS — env-driven allowlist; in production fail closed when unset. Only an
+  // explicitly configured development environment is permissive.
+  const isDev = process.env.NODE_ENV === 'development';
   const corsOrigins = process.env.CLIENT_ORIGIN_URL
     ? process.env.CLIENT_ORIGIN_URL.split(',').map((s: string) => s.trim())
     : null;

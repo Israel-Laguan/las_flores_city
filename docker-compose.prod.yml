@@ -140,6 +140,12 @@ services:
       - litellm_api_key
 
 # Docker Secrets - Use external secrets in production (e.g., Swarm mode, Kubernetes)
+# Active top-level secrets: all secrets referenced by services must be defined here.
+# They are provisioned externally in production, hence `external: true`.
+secrets:
+  litellm_api_key:
+    external: true
+
 # Example secrets file structure (create per-environment):
 # secrets:
 #   postgres_password:

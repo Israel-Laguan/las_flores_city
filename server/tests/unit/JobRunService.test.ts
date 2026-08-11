@@ -89,6 +89,7 @@ import {
   nextAttempt,
   markOrphanedResumable,
 } from '../../src/services/JobRunService.js';
+import { queryOLTP } from '@las-flores/infra';
 
 beforeEach(() => {
   dbRows.clear();
@@ -157,5 +158,16 @@ describe('JobRunService', () => {
     for (const row of dbRows.values()) {
       expect(row.status).toBe('resumable');
     }
+  });
+
+  it('markOrphanedResumable passes a cutoff as a bound param so only pre-existing runs are claimed', async () => {
+    await startJobRun('plan-1', 'solidify');
+    const cutoff = new Date('2024-01-01T00:00:00.000Z');
+    await markOrphanedResumable(cutoff);
+    const calls = (queryOLTP as jest.MockedFunction<typeof queryOLTP>).mock.calls;
+    const updateCall = calls.find(c => typeof c[0] === 'string' && c[0].includes('UPDATE job_runs SET status'));
+    expect(updateCall).toBeDefined();
+    expect(updateCall![0] as string).toContain('created_at <= $1');
+    expect(updateCall![1]).toEqual([cutoff.toISOString()]);
   });
 });

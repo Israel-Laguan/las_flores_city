@@ -208,12 +208,26 @@ export async function nextAttempt(
  * Startup recovery: flip every `running` job run to `resumable` so workers can
  * resume from their last persisted stage instead of being reset to failed.
  * Returns the orphaned runs (plan_id + job_type) for dispatch.
+ *
+ * Pass an optional `cutoff` to claim only runs created before it. The intake
+ * worker uses this to avoid re-claiming a job run that an intake route starts
+ * while startup recovery is still running (a run created after the cutoff
+ * belongs to this process and is legitimately active, not orphaned).
  */
-export async function markOrphanedResumable(): Promise<Array<{ planId: string; jobType: JobType }>> {
+export async function markOrphanedResumable(
+  cutoff?: Date,
+): Promise<Array<{ planId: string; jobType: JobType }>> {
+  const params: any[] = [];
+  let where = `status = 'running'`;
+  if (cutoff) {
+    params.push(cutoff.toISOString());
+    where += ` AND created_at <= $${params.length}`;
+  }
   const result = await queryOLTP<JobRunRow>(
     `UPDATE job_runs SET status = 'resumable', updated_at = NOW()
-     WHERE status = 'running'
+     WHERE ${where}
      RETURNING plan_id, job_type`,
+    params,
   );
   return result.rows.map(r => ({ planId: r.plan_id, jobType: r.job_type }));
 }

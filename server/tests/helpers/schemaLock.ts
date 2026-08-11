@@ -32,7 +32,10 @@ import { oltpPool, olapPool } from '@las-flores/infra';
  */
 const SCHEMA_MUTATION_LOCK_KEY = 'content_migration';
 
-async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promise<T> {
+async function withPoolSchemaLock<T>(
+  pool: pg.Pool,
+  fn: (client: pg.PoolClient) => Promise<T>,
+): Promise<T> {
   const client = await pool.connect();
   try {
     await client.query(`SELECT pg_advisory_lock(hashtext($1))`, [
@@ -47,7 +50,11 @@ async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promi
 
   let succeeded = false;
   try {
-    const value = await fn();
+    // Hand the locked client to the callback so callers run their DDL on the
+    // SAME connection that holds the advisory lock. Acquiring a separate pool
+    // connection here (e.g. via queryOLTP) would run the DDL without the lock,
+    // defeating the mutual exclusion this helper exists to provide.
+    const value = await fn(client);
     succeeded = true;
     return value;
   } finally {

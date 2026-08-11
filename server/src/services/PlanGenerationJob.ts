@@ -165,6 +165,27 @@ async function runPlanFillCore(planId: string, jobId?: string): Promise<void> {
   const concurrency = Math.max(1, finiteInt(process.env.PLAN_FILL_CONCURRENCY, 3));
   const timeoutMs = finiteInt(process.env.PLAN_FILL_TIMEOUT_MS, 120000);
 
+  // Serialize the incremental plan_json checkpoints: each write replaces the
+  // ENTIRE shared plan_json, so two in-flight item completes during a concurrent
+  // batch could otherwise overwrite one another and lose a completed item. The
+  // shared in-memory `plan` accumulates every completed item, so serialized
+  // writes preserve the fullest committed state (a crash mid-batch keeps each
+  // finished item resumable).
+  let planPersistChain: Promise<unknown> = Promise.resolve();
+  const persistPlanProgress = (): Promise<unknown> => {
+    planPersistChain = planPersistChain
+      .then(() =>
+        queryOLTP(
+          'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+          [plan, planId],
+        ),
+      )
+      .catch((err) => {
+        console.warn(`[plan-fill] Item progress persist failed for ${planId}:`, (err as Error).message);
+      });
+    return planPersistChain;
+  };
+
   for (let i = 0; i < createItems.length; i += concurrency) {
     const batch = createItems.slice(i, i + concurrency);
     await Promise.all(
@@ -179,10 +200,7 @@ async function runPlanFillCore(planId: string, jobId?: string): Promise<void> {
 
           // Persist filled_fields incrementally so a crash-resumed run can skip
           // this item without regenerating completed content.
-          await queryOLTP(
-            'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-            [plan, planId],
-          ).catch(err => console.warn(`[plan-fill] Item progress persist failed for ${planId}:`, (err as Error).message));
+          await persistPlanProgress();
 
           items[itemStatusIdx].status = 'done';
           await setPlanFillJobStatus(planId, { items: [...items] });

@@ -2,7 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-change-in-production';
+// Read lazily (per call) so `_FILE` secrets resolved by `resolveFileEnvVars()`
+// during startup are honored even though this module (and its import) are
+// evaluated before the resolver runs in the entrypoints.
+function getJwtSecret(): string {
+  return process.env.JWT_SECRET || 'your-jwt-secret-change-in-production';
+}
 
 export interface AuthRequest extends Request {
   userId?: string;
@@ -14,7 +19,7 @@ export interface AuthRequest extends Request {
 }
 
 export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '24h' });
+  return jwt.sign({ userId }, getJwtSecret(), { expiresIn: '24h' });
 }
 
 export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
@@ -38,7 +43,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const decoded = jwt.verify(token, getJwtSecret()) as { userId: string };
     req.userId = decoded.userId;
     next();
   } catch {
@@ -65,7 +70,7 @@ export function optionalAuth(req: AuthRequest, res: Response, next: NextFunction
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const decoded = jwt.verify(token, getJwtSecret()) as { userId: string };
     req.userId = decoded.userId;
   } catch {
     // Token invalid, continue without auth

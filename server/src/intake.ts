@@ -23,10 +23,43 @@ resolveFileEnvVars();
 const app = createApp(registerIntakeRoutes);
 const PORT = process.env.PORT || 3001;
 
+/**
+ * Retry a startup reconciliation a few times so a transient DB hiccup does not
+ * permanently strand durable jobs for this worker lifetime. Returns the value,
+ * or `undefined` if every attempt failed (startup continues, but the failure is
+ * logged loudly rather than silently swallowed).
+ */
+async function withStartupRetry<T>(
+  fn: () => Promise<T>,
+  label: string,
+  retries = 3,
+): Promise<T | undefined> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      lastErr = err;
+      if (attempt < retries) {
+        console.warn(`[startup] ${label} attempt ${attempt} failed; retrying:`, err.message);
+        await new Promise((r) => setTimeout(r, 1000 * attempt));
+      }
+    }
+  }
+  console.error(`[startup] ${label} failed after ${retries} attempts:`, (lastErr as Error)?.message);
+  return undefined;
+}
+
 // Startup bootstrap: only the intake-worker migrates schema + content. This
 // enforces the content_migration advisory-lock firewall (one writer).
 async function initializeServer() {
   console.log('🛠️  Initializing Las Flores 2077 intake-worker...');
+
+  // Startup recovery boundary. Any job run created at/after this instant belongs
+  // to THIS process (started via an intake route once the port is bound below),
+  // so it must never be reclaimed as orphaned by the startup recovery. Passing
+  // this cutoff to markOrphanedResumable() makes it claim only pre-existing runs.
+  const startupCutoff = new Date();
 
   const dbConnected = await testConnections();
   if (!dbConnected) {
@@ -68,15 +101,22 @@ async function initializeServer() {
   }
 
   // Startup recovery: flip orphaned in-flight jobs to `resumable` and dispatch
-  // resume entry points (M22).
-  let orphaned: Array<{ planId: string; jobType: 'solidify' | 'plan_fill' | 'asset_generation' }> = [];
-  try {
-    orphaned = await markOrphanedResumable();
-  } catch (err: any) {
-    console.warn('[startup] markOrphanedResumable failed:', err.message);
-  }
+  // resume entry points (M22). Runs created at/after `startupCutoff` belong to
+  // THIS process (started via an intake route once the port is bound below), so
+  // they are never reclaimed — a live request cannot be misclassified as a
+  // crash orphan and double-executed. Transient failures are retried so the
+  // recovery is not silently skipped.
+  const orphaned = await withStartupRetry(
+    () => markOrphanedResumable(startupCutoff),
+    'markOrphanedResumable',
+  );
 
-  const orphanedSolidify = orphaned.filter(o => o.jobType === 'solidify');
+  // A failed claim yields `undefined`; do NOT coerce it to an empty array here,
+  // otherwise resetOrphanedFillJobs() below would treat it as "no orphans" and
+  // skip the fill reconciliation. Passing undefined lets that reconciliation
+  // attempt its own orphan scan
+  // (PlanGenerationJob: `orphanedRuns ?? await markOrphanedResumable()`).
+  const orphanedSolidify = (orphaned ?? []).filter(o => o.jobType === 'solidify');
   if (orphanedSolidify.length > 0) {
     console.log(`[story-builder] Resuming ${orphanedSolidify.length} orphaned solidify job(s)`);
     for (const { planId } of orphanedSolidify) {
@@ -91,11 +131,12 @@ async function initializeServer() {
   // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
   // resume any resumable plan_fill jobs. Pass the already-claimed orphans so
   // plan_fill rows are not lost (they were flipped to `resumable` above).
-  try {
-    await resetOrphanedFillJobs(orphaned);
-  } catch (err: any) {
-    console.warn('[startup] resetOrphanedFillJobs failed:', err.message);
-  }
+  // Retried so a transient failure cannot strand durable fill jobs until the
+  // next process restart.
+  await withStartupRetry(
+    () => resetOrphanedFillJobs(orphaned),
+    'resetOrphanedFillJobs',
+  );
 
   // Content asset worker — generate pending image drafts for verified plans every 30 seconds
   const ASSET_WORKER_INTERVAL_MS = 30 * 1000;

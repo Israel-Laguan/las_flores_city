@@ -10,6 +10,7 @@ import {
   getJobRun,
   nextAttempt,
 } from '../services/JobRunService.js';
+import { sleep } from '../utils/retryBackoff.js';
 
 const IMAGE_GEN_GRACE_PERIOD_MINUTES = 5;
 
@@ -106,9 +107,18 @@ export class ContentAssetWorker {
           console.log(`[ContentAssetWorker] Attempt budget exhausted for plan=${row.id}`);
           return;
         }
+        // Honor the shared retry backoff persisted as `next_retry_at` so a
+        // fresh cron tick cannot start the next attempt early (burning the
+        // attempt budget faster than the retry policy).
+        if (adv.delayMs && adv.delayMs > 0) await sleep(adv.delayMs);
         jobId = existingRun.id;
       } else if (existingRun.status === 'running') {
-        return;
+        // A `running` run is normally still owned by the worker that started it —
+        // skip unless it has gone stale (plan untouched past the grace period),
+        // in which case let it re-enter processPlan so the stalled-need reclaim
+        // below can reset `generating` needs and progress the run.
+        if (!(await this.checkStall(row.updated_at))) return;
+        jobId = existingRun.id;
       } else {
         jobId = existingRun.id;
       }
@@ -151,6 +161,14 @@ export class ContentAssetWorker {
       return;
     }
 
+    // There is work. If we're reusing a previously-`succeeded` run (new asset
+    // needs were appended), mark it `running` so a crash mid-processing is
+    // recognized by durable orphan recovery and the run is finalized only
+    // after the new work commits below.
+    if (jobId && existingRun && existingRun.status === 'succeeded') {
+      await updateJobRun(jobId, { status: 'running', stage: 'generating' }).catch(() => {});
+    }
+
     let processed = 0;
     let failed = 0;
     for (const { item, need } of needsToGenerate) {
@@ -161,9 +179,10 @@ export class ContentAssetWorker {
         (await this.defaultExists(item, entityRoot));
       if (hasExisting) {
         await autoSelectDefaultDrafts(plan, contentDir);
-        if (need.status === 'pending') {
-          markDrafted(need);
-        }
+        // A draft already exists — resolve the need for both eligible statuses.
+        // `failed` needs must also be marked drafted, or extractPendingNeeds()
+        // keeps re-selecting them on every tick and the run stays failed forever.
+        markDrafted(need);
         await ContentPlanService.updatePlanJson(row.id, plan);
         processed++;
         continue;
@@ -234,7 +253,15 @@ export class ContentAssetWorker {
       if (!item.assetNeeds) continue;
       for (const need of item.assetNeeds) {
         const normalized = need as AssetNeed;
-        if (normalized.status === 'pending' || normalized.status === 'failed') {
+        if (normalized.status === 'failed') {
+          // Retrying a failed need must re-enter through `pending` before it can
+          // be generating or drafted (VALID_TRANSITIONS allows only failed →
+          // pending). This mutation is persisted via updatePlanJson whenever the
+          // need is resolved below. Without it, the downstream state machine
+          // would abort the plan instead of retrying the need.
+          transitionAssetNeed(normalized, 'pending');
+        }
+        if (normalized.status === 'pending') {
           result.push({ item: item as ContentPlanItem, need: normalized });
         }
       }

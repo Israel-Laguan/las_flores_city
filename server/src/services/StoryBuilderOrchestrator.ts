@@ -313,7 +313,7 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
       throw new PlanNotFoundError(planId);
     }
     const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
-    const currentStatus = load.rows[0].status;
+    let currentStatus = load.rows[0].status;
 
     // Already fully verified — nothing to do (idempotent resume).
     if (currentStatus === 'verified') {
@@ -326,7 +326,56 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
     let publishResult: PublishResult | undefined;
     let migrationResult: MigrationResult | undefined;
 
-    // --- Deterministic pre-approve harness gate + staging (skipped on resume) ---
+    // Prefer durable cross-stage state (partial_result) over the ephemeral cache.
+    const resumingRun = jobId ? await getJobRunById(jobId) : null;
+    if (resumingRun?.partialResult && typeof resumingRun.partialResult === 'object') {
+      const pr = resumingRun.partialResult as Record<string, unknown>;
+      stageResult = pr.stage as StagingResult | undefined;
+      publishResult = pr.publish as PublishResult | undefined;
+    }
+    if (!stageResult || !publishResult) {
+      const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
+      stageResult = stageResult ?? cached?.stage;
+      publishResult = publishResult ?? cached?.publish;
+    }
+
+    // --- Resume rewind (M22) ---
+    // A `failed` plan is re-entered from its last COMMITTED stage (the job's
+    // idempotency guard), not blindly treated as already staged + published:
+    //   * staging + publish committed → rewind to `staged` and migrate
+    //   * otherwise                   → rewind to `staging` so the harness /
+    //     stage / publish block below re-runs the missing stages first.
+    // `migrating` is always rewound to `staged` so migration can complete.
+    if (currentStatus === 'failed') {
+      if (!resumingRun) {
+        throw new PlanStatusError(`Plan ${planId} has failed and cannot be resumed.`);
+      }
+      const committed = resumingRun.committedStages ?? [];
+      if (committed.includes('staging') && committed.includes('publish')) {
+        await queryOLTP(
+          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+          ['staged', planId],
+        );
+        currentStatus = 'staged';
+      } else {
+        await queryOLTP(
+          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+          ['staging', planId],
+        );
+        currentStatus = 'staging';
+      }
+    } else if (currentStatus === 'migrating') {
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['staged', planId],
+      );
+      currentStatus = 'staged';
+    }
+
+    // --- Deterministic pre-approve harness gate + staging ---
+    // Runs for a fresh approve, or for a resume whose staging/publish had not
+    // fully committed (rewound to `staging` above) so the missing stages are
+    // re-run before migration.
     if (currentStatus === 'pending' || currentStatus === 'staging') {
       if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'harness' });
 
@@ -377,12 +426,14 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
       if (publishResult && !publishResult.success) {
         throw new Error('Asset publish failed');
       }
-      if (jobId) await commitStage(jobId, 'publish');
+      // Persist the publish result BEFORE committing the stage guard, so a crash
+      // between the two still leaves the publish result durable for resume (M22).
       if (jobId && publishResult !== undefined) {
         const run = await getJobRunById(jobId);
         const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
         await updateJobRun(jobId, { partialResult: { ...partial, publish: publishResult } });
       }
+      if (jobId) await commitStage(jobId, 'publish');
       const statusPatch: Partial<SolidifyJobStatus> = {
         status: 'staging',
         stage: stageResult,
@@ -398,20 +449,7 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
         ['staged', planId],
       );
       if (jobId) await commitStage(jobId, 'staged');
-    } else {
-      // Resuming from a persisted stage — staging/publish already completed.
-      // Prefer durable partial_result over the ephemeral cache.
-      const run = jobId ? await getJobRunById(jobId) : null;
-      if (run?.partialResult && typeof run.partialResult === 'object') {
-        const pr = run.partialResult as Record<string, unknown>;
-        stageResult = pr.stage as StagingResult | undefined;
-        publishResult = pr.publish as PublishResult | undefined;
-      }
-      if (!stageResult || !publishResult) {
-        const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
-        stageResult = stageResult ?? cached?.stage;
-        publishResult = publishResult ?? cached?.publish;
-      }
+      currentStatus = 'staged';
     }
 
     // --- Migrate (idempotent via migration_log + content_migration lock) ---
@@ -427,23 +465,8 @@ async function runSolidify(planId: string, userId?: string, jobId?: string): Pro
         );
       }
     } else {
-      if (currentStatus === 'migrating') {
-        await queryOLTP(
-          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-          ['staged', planId],
-        );
-      }
-      if (currentStatus === 'failed') {
-        const run = jobId ? await getJobRunById(jobId) : null;
-        if (run?.status === 'resumable') {
-          await queryOLTP(
-            'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-            ['staged', planId],
-          );
-        } else {
-          throw new PlanStatusError(`Plan ${planId} has failed and cannot be resumed.`);
-        }
-      }
+      // Note: rewind of `failed` / `migrating` plans happens at the top of
+      // runSolidify so the correct stage gate runs on this very resume.
       if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'migrating' });
       await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
 
