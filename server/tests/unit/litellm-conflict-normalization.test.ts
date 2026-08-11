@@ -86,6 +86,24 @@ describe('LiteLLMProvider.analyzeIntakeConflicts — conflict normalization', ()
     );
   });
 
+  it('warns and returns empty conflicts when the provider returns null', async () => {
+    stubCallLLM(null);
+    const { conflicts } = await provider.analyzeIntakeConflicts(makePlan(), makeContext());
+    expect(conflicts).toHaveLength(0);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('no "conflicts" array'),
+    );
+  });
+
+  it('warns and returns empty conflicts when the provider returns a primitive (non-object) value', async () => {
+    stubCallLLM('just-a-string');
+    const { conflicts } = await provider.analyzeIntakeConflicts(makePlan(), makeContext());
+    expect(conflicts).toHaveLength(0);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('no "conflicts" array'),
+    );
+  });
+
   it('keeps only schema-valid entries and warns when all are dropped as malformed', async () => {
     stubCallLLM({ conflicts: ['not-an-object', { type: 'bad' }] });
     const { conflicts } = await provider.analyzeIntakeConflicts(makePlan(), makeContext());

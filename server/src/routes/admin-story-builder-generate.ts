@@ -6,7 +6,7 @@ import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { checkCreateConflicts } from '../services/StoryBuilderPlanOps.js';
 import { resolveContentDir } from '../services/StoryBuilderLore.js';
-import { runPlanFill, getPlanFillJobStatus } from '../services/PlanGenerationJob.js';
+import { runPlanFill, getPlanFillJobStatus, cancelPlanFillStatus } from '../services/PlanGenerationJob.js';
 import { fillAllTodoPlaceholders, scanForTodoPlaceholders } from '../services/FillPlaceholders.js';
 import { createLLMProvider } from '../services/LLMService.js';
 import crypto from 'node:crypto';
@@ -131,7 +131,7 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
       });
       res.status(503).json({
         success: false,
-        error: `Validation harness could not be evaluated; scaffold deferred. No files were written. Please retry. (${(gateErr as Error).message})`,
+        error: 'Validation harness could not be evaluated; scaffold deferred. No files were written. Please retry.',
         timestamp: new Date().toISOString(),
       });
       return;
@@ -170,7 +170,7 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
       await removeScaffoldedFiles(createdFiles, contentDir);
       res.status(500).json({
         success: false,
-        error: `Failed to scaffold plan files: ${(scaffoldErr as Error).message}`,
+        error: 'Failed to scaffold plan files. No files were committed and the plan was not persisted. Please retry.',
         timestamp: new Date().toISOString(),
       });
       return;
@@ -201,10 +201,21 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
         error: (postScaffoldErr as Error).message,
         createdFiles,
       });
+      // Compensate for the row already inserted: delete it (and its cached
+      // fill-job status) so generation-status polling does not keep reporting a
+      // 'draft' plan as 'filling' after its files were rolled back. Best-effort —
+      // the filesystem rollback below is the primary guarantee; a failed delete
+      // leaves a row that resetOrphanedFillJobs can later reclaim.
+      try {
+        await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
+      } catch (cleanupErr: any) {
+        console.warn(`[story-builder] Failed to delete content_plans row ${planId} during rollback:`, (cleanupErr as Error).message);
+      }
+      await cancelPlanFillStatus(planId).catch(() => {});
       await removeScaffoldedFiles(createdFiles, contentDir);
       res.status(500).json({
         success: false,
-        error: `Plan files were rolled back after a persistence failure: ${(postScaffoldErr as Error).message}`,
+        error: 'A persistence error occurred after scaffolding. The plan was not committed and scaffold cleanup was attempted; please retry.',
         timestamp: new Date().toISOString(),
       });
       return;

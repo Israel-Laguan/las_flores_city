@@ -305,9 +305,10 @@ export class LiteLLMProvider implements LLMProvider {
     const systemPrompt = buildIntakeConflictPrompt(plan, context);
     const maxTokens = finiteInt(process.env.LLM_INTAKE_CONFLICT_MAX_TOKENS, 2048);
     const { result, usage } = await this.callLLM(systemPrompt, plan.description, undefined, maxTokens);
-    // callLLM can parse valid JSON that is not an object (e.g. null). Treat a
-    // non-object response as an empty conflict list rather than throwing.
-    const candidate = result && typeof result === 'object'
+    // callLLM can parse valid JSON that is not an object (e.g. null or a string).
+    // Treat a non-object response as an empty conflict list rather than throwing.
+    const isObject = result !== null && typeof result === 'object' && !Array.isArray(result);
+    const candidate = isObject
       ? (result as Record<string, unknown>).conflicts
       : undefined;
     const raw = Array.isArray(candidate) ? candidate : [];
@@ -321,12 +322,15 @@ export class LiteLLMProvider implements LLMProvider {
     // response. The intake endpoint surfaces `conflicts` to the author as
     // "N potential conflicts", so silently returning [] on a bad response would
     // show a misleading clean bill of health.
-    // Gate on the `conflicts` field being genuinely missing/non-array (rather than
-    // on `raw.length === 0`), so a legitimate `{ "conflicts": [] }` clean scan does
-    // not log noise while a malformed response still warns.
-    if (result && typeof result === 'object' && !Array.isArray(candidate)) {
+    // Gate on `result` NOT being a valid object with an array `conflicts` field
+    // (rather than on `raw.length === 0`), so a legitimate `{ "conflicts": [] }`
+    // clean scan does not log noise while a malformed response — whether an
+    // object missing/mistyping `conflicts`, or a non-object like `null`/a string —
+    // still warns.
+    if (!isObject || !Array.isArray(candidate)) {
+      const rawKeys = isObject ? Object.keys(result).join(',') || '(none)' : '(non-object response)';
       console.warn('[LiteLLM] Intake conflict scan returned no "conflicts" array; treating as empty (plan ' +
-        `description preview: "${(plan.description || '').substring(0, 80)}", raw keys: ${Object.keys(result).join(',') || '(none)'})`);
+        `description preview: "${(plan.description || '').substring(0, 80)}", raw keys: ${rawKeys})`);
     } else if (raw.length > 0 && conflicts.length === 0) {
       console.warn('[LiteLLM] Intake conflict scan dropped all entries as malformed; treating as empty. Raw preview: ' +
         JSON.stringify(raw).substring(0, 300));

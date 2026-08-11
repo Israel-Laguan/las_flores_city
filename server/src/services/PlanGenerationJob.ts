@@ -53,6 +53,11 @@ export async function getPlanFillJobStatus(planId: string): Promise<PlanFillJobS
   return getCache<PlanFillJobStatus>(`${GEN_CACHE_PREFIX}${planId}`);
 }
 
+/** Best-effort cancel: drop the cached fill-job status so generation-status polling stops reporting this plan as filling. */
+export async function cancelPlanFillStatus(planId: string): Promise<void> {
+  await deleteCache(`${GEN_CACHE_PREFIX}${planId}`);
+}
+
 export async function runPlanFill(planId: string, _userId?: string): Promise<void> {
   try {
     await setPlanFillJobStatus(planId, { status: 'filling' });

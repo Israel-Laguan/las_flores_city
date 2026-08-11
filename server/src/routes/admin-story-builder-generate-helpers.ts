@@ -1,6 +1,7 @@
 import { type ContentPlan, type ContentPlanItem, type HarnessFinding } from '@las-flores/shared';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { resolveFilePath, generateYaml } from '../services/ContentSkeletonGenerator.js';
 import { runValidationHarness } from '../services/ValidationHarnessService.js';
@@ -15,17 +16,31 @@ export async function scaffoldPlanItems(
     const fullPath = path.join(contentDir, filePath);
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
     const yamlContent = generateYaml(item);
-    // Exclusive create ('wx') — never overwrite a target that appeared since the
-    // conflict scan. Open the handle and record the path BEFORE writing so that a
-    // mid-write failure (e.g. ENOSPC) leaves a partial file whose path is already
-    // in `createdFiles` — the caller's rollback (removeScaffoldedFiles) then covers
-    // it instead of leaving an orphaned partial scaffold file behind.
-    const fileHandle = await fs.open(fullPath, 'wx');
-    createdFiles.push(filePath);
+    // Publish each scaffold file atomically without ever exposing the destination
+    // path (`fullPath`) while it is being written. We write to a unique temporary
+    // file in the target directory, flush it to disk, then publish with a
+    // no-clobber hard link — `fs.link` throws EEXIST if the target appeared since
+    // the conflict scan, so it cannot overwrite a concurrently-created file (plain
+    // `rename` could silently replace it). A mid-write failure (e.g. ENOSPC) can
+    // therefore never leave a partial file visible under the published name.
+    //
+    // The temporary file is removed in ALL paths (success and failure); only a
+    // successfully published `fullPath` is recorded in `createdFiles`, so the
+    // caller's rollback (removeScaffoldedFiles) removes exactly what this request
+    // created and never an orphaned temp file.
+    const tempPath = `${fullPath}.scaffold-tmp-${crypto.randomUUID()}`;
     try {
-      await fileHandle.writeFile(yamlContent, { encoding: 'utf-8' });
+      const fileHandle = await fs.open(tempPath, 'wx');
+      try {
+        await fileHandle.writeFile(yamlContent, { encoding: 'utf-8' });
+        await fileHandle.sync();
+      } finally {
+        await fileHandle.close();
+      }
+      await fs.link(tempPath, fullPath);
+      createdFiles.push(filePath);
     } finally {
-      await fileHandle.close();
+      await fs.rm(tempPath, { force: true });
     }
   }
   return createdFiles;
@@ -54,9 +69,16 @@ export async function removeScaffoldedFiles(createdFiles: string[], contentDir: 
 export async function runScaffoldHarnessGate(
   plan: ContentPlan,
 ): Promise<HarnessFinding[]> {
-  const context = await contentPlanService.gatherContext();
-  const report = runValidationHarness(plan, context);
-  return report.findings.filter((f) => f.severity === 'error');
+  try {
+    const context = await contentPlanService.gatherContext();
+    const report = runValidationHarness(plan, context);
+    return report.findings.filter((f) => f.severity === 'error');
+  } catch (error) {
+    // Wrap the underlying cause in a stable, generic error so a DB/context
+    // failure surfaces only as a fail-closed 503 without leaking schema,
+    // filesystem, or connection details to the scaffold client.
+    throw new Error('Validation harness could not be evaluated', { cause: error });
+  }
 }
 
 export function buildPlanEventData(

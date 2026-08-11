@@ -37,8 +37,10 @@ jest.mock('node:fs/promises', () => ({
   readFile: jest.fn(async () => ''),
   open: jest.fn(async () => ({
     writeFile: jest.fn(async () => undefined),
+    sync: jest.fn(async () => undefined),
     close: jest.fn(async () => undefined),
   })),
+  link: jest.fn(async () => undefined),
   rm: jest.fn(async () => undefined),
 }));
 
@@ -156,6 +158,7 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
 jest.mock('../../src/services/PlanGenerationJob.js', () => ({
   runPlanFill: jest.fn(async () => {}),
   getPlanFillJobStatus: jest.fn(async () => null),
+  cancelPlanFillStatus: jest.fn(async () => {}),
 }));
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
@@ -278,9 +281,18 @@ describe('POST /admin/story-builder/plan/scaffold', () => {
 
     expect(res.status).toBe(500);
     expect(res.body.success).toBe(false);
-    expect(res.body.error).toMatch(/rolled back/i);
-    // The scaffolded files must be removed so a retry can succeed.
+    // The client gets a stable, non-leaking message (no raw DB driver detail).
+    expect(res.body.error).toMatch(/persistence error/i);
+    expect(res.body.error).not.toMatch(/connection lost/);
+    // The scaffolded files must be removed so a retry can succeed, and the
+    // compensation must best-effort delete the (never-inserted) row so polling
+    // does not report a phantom plan.
     expect(rm).toHaveBeenCalled();
+    expect(
+      mockQueryOLTP.mock.calls.some(
+        ([text]) => typeof text === 'string' && /^\s*DELETE/i.test(text),
+      ),
+    ).toBe(true);
   });
 });
 
