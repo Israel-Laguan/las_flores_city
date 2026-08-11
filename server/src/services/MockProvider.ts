@@ -1,4 +1,4 @@
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
 
@@ -199,6 +199,46 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
       entities.push({ name: 'Central Plaza', type: 'scene', description: 'The bustling heart of Las Flores.' });
     }
     return { entities };
+  }
+
+  async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const conflicts: IntakeConflictPreview[] = [];
+    // Build a normalized-name -> existing display name map. Names are trimmed on
+    // both sides so equivalent names with surrounding whitespace are detected
+    // consistently (plan names are trimmed before comparison).
+    const existingByName = new Map<string, string>();
+    const add = (name: string) => {
+      const norm = (name || '').toLowerCase().trim();
+      if (norm && !existingByName.has(norm)) existingByName.set(norm, (name || '').trim());
+    };
+    context.characters.forEach((c) => add(c.name));
+    context.scenes.forEach((s) => add(s.name));
+    context.dialogues.forEach((d) => add(d.name));
+    context.missions.forEach((m) => add(m.title));
+    context.overlays.forEach((o) => add(o.name));
+    context.locations.forEach((l) => add(l.name));
+
+    // Deterministic surrogate: flag plan items whose name collides with existing
+    // canon. Only `create` items allocate a new slug, so an `update` that
+    // intentionally targets an existing entity must not be flagged as a conflict.
+    for (const item of plan.items) {
+      if (item.action !== 'create') continue;
+      const norm = (item.name || '').toLowerCase().trim();
+      const matched = norm ? existingByName.get(norm) : undefined;
+      if (matched) {
+        conflicts.push({
+          type: 'duplicate_name',
+          severity: 'error',
+          description: `"${item.name}" matches an existing entity "${matched}" in canon.`,
+          relatedItems: [item.id],
+          // Preserve the matched existing display name so consumers can identify
+          // the canon entity (not the proposed spelling).
+          relatedExisting: [matched],
+        });
+      }
+    }
+
+    return { conflicts, usage: null };
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {

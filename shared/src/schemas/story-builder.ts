@@ -98,6 +98,38 @@ export const FeedbackLogEntrySchema = z.object({
 
 export type FeedbackLogEntry = z.infer<typeof FeedbackLogEntrySchema>;
 
+// ── Intake conflict preview (Moment 1 — LLM surface-level conflict scan) ──
+// Produced by `LLMProvider.analyzeIntakeConflicts`. Advisory, non-blocking at
+// intake; surfaced to the author as "⚠️ N potential conflicts".
+export const IntakeConflictPreviewSchema = z.object({
+  type: z.enum(['duplicate_name', 'lore_contradiction', 'timeline_clash', 'scope_overlap']),
+  severity: z.enum(['error', 'warning']),
+  description: z.string().min(1),
+  relatedItems: z.array(z.string()).default([]),
+  relatedExisting: z.array(z.string()).optional(),
+});
+
+export type IntakeConflictPreview = z.infer<typeof IntakeConflictPreviewSchema>;
+
+// ── Deterministic validation harness (M15.5 — pre-approve gate) ──
+// Cheap, reproducible rules the LLM can't be trusted to do faithfully.
+// `passed` is false iff any finding has severity === 'error'. Warnings never block.
+export const HarnessFindingSchema = z.object({
+  code: z.string().min(1),          // stable machine-readable rule id, e.g. 'duplicate_slug_or_name'
+  severity: z.enum(['error', 'warning']),
+  message: z.string().min(1),
+  itemIds: z.array(z.string()).default([]),
+});
+
+export type HarnessFinding = z.infer<typeof HarnessFindingSchema>;
+
+export const HarnessReportSchema = z.object({
+  passed: z.boolean(),
+  findings: z.array(HarnessFindingSchema).default([]),
+});
+
+export type HarnessReport = z.infer<typeof HarnessReportSchema>;
+
 // Inferred types
 export type AssetNeed = z.infer<typeof AssetNeedSchema>;
 export type ContentPlanItem = z.infer<typeof ContentPlanItemSchema>;

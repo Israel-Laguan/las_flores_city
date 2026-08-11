@@ -1,7 +1,7 @@
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
+import { ContentPlanSchema, IntakeConflictPreviewSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
-import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 import { finiteInt } from '../utils/env.js';
 
@@ -127,9 +127,11 @@ export class LiteLLMProvider implements LLMProvider {
 
         const finishReason = data.choices?.[0]?.finish_reason;
         if (finishReason === 'length') {
+          // The max-token cap is call-specific (e.g. outline vs intake conflict
+          // scan), so avoid naming a single env var that may not govern this call.
           const truncError = new Error(
             `LLM output truncated (finish_reason=length, max_tokens=${maxTokens}). ` +
-            `Consider increasing LLM_OUTLINE_MAX_TOKENS or reducing input size.`
+            `Consider increasing the max token limit for this call or reducing input size.`
           );
           (truncError as any).isRetryable = false;
           throw truncError;
@@ -297,6 +299,44 @@ export class LiteLLMProvider implements LLMProvider {
       typeof e.type === 'string' && e.type.trim()
     );
     return { entities };
+  }
+
+  async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const systemPrompt = buildIntakeConflictPrompt(plan, context);
+    const maxTokens = finiteInt(process.env.LLM_INTAKE_CONFLICT_MAX_TOKENS, 2048);
+    const { result, usage } = await this.callLLM(systemPrompt, plan.description, undefined, maxTokens);
+    // callLLM can parse valid JSON that is not an object (e.g. null or a string).
+    // Treat a non-object response as an empty conflict list rather than throwing.
+    const isObject = result !== null && typeof result === 'object' && !Array.isArray(result);
+    const candidate = isObject
+      ? (result as Record<string, unknown>).conflicts
+      : undefined;
+    const raw = Array.isArray(candidate) ? candidate : [];
+    // Tolerate malformed entries — keep only those that pass the schema.
+    const conflicts = raw
+      .map((c: any) => IntakeConflictPreviewSchema.safeParse(c))
+      .filter((r: any) => r.success)
+      .map((r: any) => r.data);
+
+    // Distinguish a real "no conflicts" result from a malformed/unsupported model
+    // response. The intake endpoint surfaces `conflicts` to the author as
+    // "N potential conflicts", so silently returning [] on a bad response would
+    // show a misleading clean bill of health.
+    // Gate on `result` NOT being a valid object with an array `conflicts` field
+    // (rather than on `raw.length === 0`), so a legitimate `{ "conflicts": [] }`
+    // clean scan does not log noise while a malformed response — whether an
+    // object missing/mistyping `conflicts`, or a non-object like `null`/a string —
+    // still warns.
+    if (!isObject || !Array.isArray(candidate)) {
+      const rawKeys = isObject ? Object.keys(result).join(',') || '(none)' : '(non-object response)';
+      console.warn('[LiteLLM] Intake conflict scan returned no "conflicts" array; treating as empty (plan ' +
+        `description preview: "${(plan.description || '').substring(0, 80)}", raw keys: ${rawKeys})`);
+    } else if (raw.length > 0 && conflicts.length === 0) {
+      console.warn('[LiteLLM] Intake conflict scan dropped all entries as malformed; treating as empty. Raw preview: ' +
+        JSON.stringify(raw).substring(0, 300));
+    }
+
+    return { conflicts, usage };
   }
 
 }

@@ -223,6 +223,9 @@ export {
   ContentLinkSchema,
   ContentPlanSchema,
   FeedbackLogEntrySchema,
+  IntakeConflictPreviewSchema,
+  HarnessFindingSchema,
+  HarnessReportSchema,
 } from './schemas/story-builder.js';
 export type {
   AssetNeed,
@@ -230,6 +233,9 @@ export type {
   ContentLink,
   ContentPlan,
   FeedbackLogEntry,
+  IntakeConflictPreview,
+  HarnessFinding,
+  HarnessReport,
 } from './schemas/story-builder.js';
 
 export {

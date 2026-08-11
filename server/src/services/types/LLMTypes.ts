@@ -1,4 +1,4 @@
-import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, IntakeConflictPreview } from '@las-flores/shared';
 import type { EntityCandidate } from '../OutlineChunking.js';
 
 export interface ExistingLocation {
@@ -35,4 +35,5 @@ export interface LLMProvider {
   generateLore(item: ContentPlanItem, context: ExistingContentContext): Promise<string>;
   generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }>;
   extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }>;
+  analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }>;
 }

@@ -6,6 +6,7 @@ import { queryOLTP } from '@las-flores/infra';
 import { finiteInt } from '../utils/env.js';
 import { createLLMProvider } from './LLMService.js';
 import type { LLMProvider, ExistingContentContext, LLMUsage, ExistingLocation } from './types/LLMTypes.js';
+import type { IntakeConflictPreview } from '@las-flores/shared';
 import { injectAssetNeeds } from './AssetNeedsService.js';
 import { generateForPlan } from './LoreGenerator.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
@@ -282,6 +283,41 @@ export class ContentPlanService {
 
   async generateLore(item: ContentPlan['items'][number], context: ExistingContentContext): Promise<string> {
     return this.provider.generateLore(item, context);
+  }
+
+  /**
+   * Surface-level LLM conflict preview (Moment 1). Reuses `gatherContext()`
+   * to build the `ExistingContentContext` — no new data plumbing. Advisory only.
+   */
+  async analyzeIntakeConflicts(plan: ContentPlan): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const context = await this.gatherContext();
+    return this.provider.analyzeIntakeConflicts(plan, context);
+  }
+
+  /**
+   * In-memory refine for the two-phase intake "Refine Instead" path. Refines the
+   * outline without persisting anything, then re-runs the intake conflict scan on
+   * the refined plan so the author sees an updated preview.
+   */
+  async refinePlanPreview(plan: ContentPlan, feedback: string): Promise<{ plan: ContentPlan; conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
+    const context = await this.gatherContext();
+    const { plan: rawRefined, usage } = await this.provider.refinePlan(plan, feedback, context);
+    // Re-inject asset needs so any new visual items get portrait/background
+    // needs (Zod defaults missing assetNeeds to [], which would scaffold with
+    // nothing to generate).
+    const refined = ContentPlanSchema.parse(rawRefined);
+    injectAssetNeeds(refined.items);
+    // The conflict re-scan is advisory (Moment 1) — a scan outage must not fail
+    // the refinement. Fall back to an empty conflict list so the author still
+    // receives the refined outline.
+    let conflicts: IntakeConflictPreview[] = [];
+    try {
+      const scan = await this.provider.analyzeIntakeConflicts(refined, context);
+      conflicts = scan.conflicts;
+    } catch (conflictErr) {
+      console.warn('[ContentPlanService] Intake conflict scan failed; continuing with empty conflicts:', (conflictErr as Error).message);
+    }
+    return { plan: refined, conflicts, usage };
   }
 
   /**

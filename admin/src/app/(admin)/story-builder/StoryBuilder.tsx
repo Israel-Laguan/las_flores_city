@@ -19,13 +19,13 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     step, description, setDescription, plan, loading, error,
     refineFeedback, setRefineFeedback, showRefine, setShowRefine,
     templates,
-    handleGeneratePlan, handleRefine,
+    handleGeneratePlan, handleGenerateFullPlan, handleRefine,
     handleApproveAndSolidify, handleSelectTemplate, handleClone, contentTree,
     handleRegenerateLore,
     handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem, addItemFromRoster, handleRefineItem,
-    goBack, planId, solidifyResult, genStatus,
+    goBack, planId, solidifyResult, genStatus, conflicts, fileConflicts,
   } = useStoryBuilder(initialPlanId);
 
   const { draftAssetsByItem, draftLoading, onGenerateDrafts, onChooseDraft } = useDraftManager({
@@ -88,6 +88,10 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           onApproveAndShip={handleApproveAndSolidify}
           approving={loading}
           genStatus={genStatus}
+          conflicts={conflicts}
+          fileConflicts={fileConflicts}
+          onGenerateFullPlan={handleGenerateFullPlan}
+          onRefineInstead={() => setShowRefine(true)}
         />
       )}
 

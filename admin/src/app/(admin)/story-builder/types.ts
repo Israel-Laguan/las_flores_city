@@ -16,3 +16,5 @@ export interface GenerationStatus {
   updatedAt?: string;
 }
 
+export type { IntakeConflictPreview } from '@las-flores/shared';
+

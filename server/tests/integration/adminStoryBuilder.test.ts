@@ -1,6 +1,7 @@
 import { describe, test, expect, jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
+import * as fsPromises from 'node:fs/promises';
 
 const MOCK_PLAN_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
 const MOCK_ITEM_ID = '11111111-2222-3333-4444-555555555555';
@@ -34,6 +35,13 @@ jest.mock('node:fs/promises', () => ({
   writeFile: jest.fn(async () => undefined),
   access: jest.fn(async () => { throw { code: 'ENOENT' }; }),
   readFile: jest.fn(async () => ''),
+  open: jest.fn(async () => ({
+    writeFile: jest.fn(async () => undefined),
+    sync: jest.fn(async () => undefined),
+    close: jest.fn(async () => undefined),
+  })),
+  link: jest.fn(async () => undefined),
+  rm: jest.fn(async () => undefined),
 }));
 
 jest.mock('@las-flores/infra', () => ({
@@ -112,8 +120,24 @@ jest.mock('../../src/services/ContentPlanService.js', () => ({
       usage: null,
     })),
     validateAndRepairOutline: jest.fn((plan, _description) => plan),
-    gatherContext: jest.fn(async () => ({})),
+    // Full ExistingContentContext shape — the validation harness iterates
+    // context.characters/locations/etc, so an empty `{}` would throw and now
+    // (correctly) fail the scaffold gate closed.
+    gatherContext: jest.fn(async () => ({
+      characters: [],
+      scenes: [],
+      dialogues: [],
+      missions: [],
+      overlays: [],
+      locations: [],
+    })),
     generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
+    analyzeIntakeConflicts: jest.fn(async () => ({ conflicts: [], usage: null })),
+    refinePlanPreview: jest.fn(async (plan, feedback) => ({
+      plan: { ...plan, description: `${plan.description} [refined: ${feedback}]` },
+      conflicts: [],
+      usage: null,
+    })),
     getLastUsage: jest.fn(() => null),
     provider: {
       generateLore: jest.fn(async () => '# Diego\n\nA friendly bartender.'),
@@ -134,15 +158,17 @@ jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
 jest.mock('../../src/services/PlanGenerationJob.js', () => ({
   runPlanFill: jest.fn(async () => {}),
   getPlanFillJobStatus: jest.fn(async () => null),
+  cancelPlanFillStatus: jest.fn(async () => true),
 }));
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { resolveContentDir } from '../../src/services/StoryBuilderLore.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
+const mockWithOLTPTransaction = withOLTPTransaction as jest.MockedFunction<typeof withOLTPTransaction>;
 
 function makeApp() {
   const app = express();
@@ -173,18 +199,153 @@ describe('POST /admin/story-builder/plan', () => {
     expect(res.body.success).toBe(false);
   });
 
-  test('returns a plan for a valid description', async () => {
+  test('returns a preview plan (phase 1) for a valid description', async () => {
     const res = await request(app)
       .post('/admin/story-builder/plan')
       .send({ description: 'Add a bartender named Diego' });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.planId).toBeDefined();
     expect(res.body.data.plan).toBeDefined();
     expect(res.body.data.plan.items.length).toBeGreaterThan(0);
     expect(res.body.data.plan.items[0].name).toBe('Diego');
+    // Phase 1 is preview-only: NO planId, NO scaffold, NO DB insert.
+    expect(res.body.data.planId).toBeUndefined();
+    expect(res.body.data.status).toBe('preview');
+    expect(Array.isArray(res.body.data.conflicts)).toBe(true);
+    expect(Array.isArray(res.body.data.fileConflicts)).toBe(true);
+    // Phase-1 preview must perform no DB mutation — no INSERT/UPDATE/DELETE.
+    const writes = mockQueryOLTP.mock.calls.filter(
+      ([text]) => typeof text === 'string' && /^\s*(INSERT|UPDATE|DELETE)/i.test(text),
+    );
+    expect(writes).toHaveLength(0);
+    // Transaction-scoped writes are also forbidden — the guard must cover
+    // withOLTPTransaction, not just queryOLTP.
+    expect(mockWithOLTPTransaction).not.toHaveBeenCalled();
+  });
+});
+describe('POST /admin/story-builder/plan/scaffold', () => {
+  const app = makeApp();
+  const validPlan = MOCK_PLAN;
+
+  test('returns 400 when plan is missing', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/plan/i);
+  });
+
+  test('commits the plan: scaffolds, inserts, returns planId + status generating', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.planId).toBeDefined();
+    expect(res.body.data.plan).toBeDefined();
     expect(res.body.data.status).toBe('generating');
+    expect(mockQueryOLTP).toHaveBeenCalledWith(
+      expect.stringContaining('INSERT INTO content_plans'),
+      expect.arrayContaining([expect.any(String)]),
+    );
+  });
+
+  test('fails closed (503) when the validation harness cannot be evaluated', async () => {
+    const gatherContext = contentPlanService.gatherContext as jest.Mock;
+    gatherContext.mockRejectedValueOnce(new Error('context boom'));
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(503);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/validation harness/i);
+    // Fail-closed: the gate must NOT proceed to DB insert / file write.
+    const writes = mockQueryOLTP.mock.calls.filter(
+      ([text]) => typeof text === 'string' && /^\s*INSERT/i.test(text),
+    );
+    expect(writes).toHaveLength(0);
+  });
+
+  test('rolls back scaffolded files when the DB insert fails', async () => {
+    const rm = fsPromises.rm as jest.Mock;
+    rm.mockClear();
+    mockQueryOLTP.mockRejectedValueOnce(new Error('connection lost'));
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    // The client gets a stable, non-leaking message (no raw DB driver detail).
+    expect(res.body.error).toMatch(/persistence error/i);
+    expect(res.body.error).not.toMatch(/connection lost/);
+    // The scaffolded files must be removed so a retry can succeed, and the
+    // compensation must best-effort delete the (never-inserted) row so polling
+    // does not report a phantom plan.
+    expect(rm).toHaveBeenCalled();
+    expect(
+      mockQueryOLTP.mock.calls.some(
+        ([text]) => typeof text === 'string' && /^\s*DELETE/i.test(text),
+      ),
+    ).toBe(true);
+  });
+
+  test('logs a warning when cancelPlanFillStatus delete fails during rollback', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { cancelPlanFillStatus } = await import('../../src/services/PlanGenerationJob.js');
+    (cancelPlanFillStatus as jest.Mock).mockResolvedValueOnce(false);
+
+    mockQueryOLTP.mockRejectedValueOnce(new Error('connection lost'));
+    const res = await request(app)
+      .post('/admin/story-builder/plan/scaffold')
+      .send({ plan: validPlan });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    // The failed cache deletion must be observable via console warning
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to delete fill-job cache'),
+    );
+    consoleWarnSpy.mockRestore();
+  });
+});
+
+describe('POST /admin/story-builder/plan/refine-preview', () => {
+  const app = makeApp();
+
+  test('returns 400 for empty feedback', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/refine-preview')
+      .send({ plan: MOCK_PLAN, feedback: '' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/feedback/i);
+  });
+
+  test('refines the plan in-memory and returns conflicts', async () => {
+    const res = await request(app)
+      .post('/admin/story-builder/plan/refine-preview')
+      .send({ plan: MOCK_PLAN, feedback: 'make it more cynical' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.plan).toBeDefined();
+    expect(res.body.data.plan.description).toContain('make it more cynical');
+    expect(Array.isArray(res.body.data.conflicts)).toBe(true);
+    // Refine-preview is in-memory only — must issue no INSERT/UPDATE/DELETE SQL.
+    const writes = mockQueryOLTP.mock.calls.filter(
+      ([text]) => typeof text === 'string' && /^\s*(INSERT|UPDATE|DELETE)/i.test(text),
+    );
+    expect(writes).toHaveLength(0);
+    // Transaction-scoped writes are also forbidden — the guard must cover
+    // withOLTPTransaction, not just queryOLTP.
+    expect(mockWithOLTPTransaction).not.toHaveBeenCalled();
   });
 });
 
