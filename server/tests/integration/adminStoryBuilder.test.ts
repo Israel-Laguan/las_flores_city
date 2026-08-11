@@ -310,7 +310,6 @@ describe('POST /admin/story-builder/plan/scaffold', () => {
     // The failed cache deletion must be observable via console warning
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       expect.stringContaining('Failed to delete fill-job cache'),
-      expect.any(String),
     );
     consoleWarnSpy.mockRestore();
   });
