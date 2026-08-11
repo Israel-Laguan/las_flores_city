@@ -231,6 +231,7 @@ describe('runValidationHarness', () => {
       expect(fk).toBeDefined();
       expect(fk!.severity).toBe('warning');
     });
+  });
 
   describe('ordering_succession', () => {
     it('flags a self-dependency as error', () => {
@@ -269,6 +270,5 @@ describe('runValidationHarness', () => {
       expect(report.passed).toBe(true);
       expect(report.findings.some(f => f.code === 'ordering_succession')).toBe(false);
     });
-  });
   });
 });

@@ -150,11 +150,13 @@ describe('approveAndSolidifyPlan — validation harness gate (M20)', () => {
     expect(failedUpdate).toBeDefined();
     const [sql, params] = failedUpdate as [string, any[]];
     expect(params[0]).toBe('failed');
-    // verification_report JSON carries the harness report.
+    // verification_report JSON carries the VerificationReport (gate-abort shape).
+    // The raw harness findings are folded into `checks`/`errors`/`warnings`; the
+    // raw harness report is NOT persisted so the DB column matches the job-cache
+    // shape (getSolidifyJobStatus reads the column verbatim on a cache miss).
     const report = JSON.parse(params[1]);
-    expect(report.harnessReport).toBeDefined();
-    expect(report.harnessReport.passed).toBe(false);
-    expect(report.harnessReport.findings.some((f: any) => f.code === 'duplicate_slug_or_name')).toBe(true);
+    expect(report.passed).toBe(false);
+    expect(report.checks.some((c: any) => c.name === 'duplicate_slug_or_name' && c.status === 'fail')).toBe(true);
 
     // Downstream materializers must never run when the gate blocks. If the gate
     // passed, staging would begin and stagePlan would be called first.

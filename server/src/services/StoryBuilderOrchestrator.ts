@@ -248,7 +248,7 @@ async function failWithHarnessReport(
   };
   await queryOLTP(
     'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
-    ['failed', JSON.stringify({ ...verificationReport, harnessReport }), planId],
+    ['failed', JSON.stringify(verificationReport), planId],
   );
   await setJobStatus(planId, {
     status: 'failed',

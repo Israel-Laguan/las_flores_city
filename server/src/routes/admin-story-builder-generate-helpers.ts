@@ -16,10 +16,17 @@ export async function scaffoldPlanItems(
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
     const yamlContent = generateYaml(item);
     // Exclusive create ('wx') — never overwrite a target that appeared since the
-    // conflict scan. Any failure throws and aborts the whole scaffold, letting
-    // the caller roll back this request's already-created files.
-    await fs.writeFile(fullPath, yamlContent, { encoding: 'utf-8', flag: 'wx' });
+    // conflict scan. Open the handle and record the path BEFORE writing so that a
+    // mid-write failure (e.g. ENOSPC) leaves a partial file whose path is already
+    // in `createdFiles` — the caller's rollback (removeScaffoldedFiles) then covers
+    // it instead of leaving an orphaned partial scaffold file behind.
+    const fileHandle = await fs.open(fullPath, 'wx');
     createdFiles.push(filePath);
+    try {
+      await fileHandle.writeFile(yamlContent, { encoding: 'utf-8' });
+    } finally {
+      await fileHandle.close();
+    }
   }
   return createdFiles;
 }

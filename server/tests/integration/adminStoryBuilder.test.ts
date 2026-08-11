@@ -34,6 +34,10 @@ jest.mock('node:fs/promises', () => ({
   writeFile: jest.fn(async () => undefined),
   access: jest.fn(async () => { throw { code: 'ENOENT' }; }),
   readFile: jest.fn(async () => ''),
+  open: jest.fn(async () => ({
+    writeFile: jest.fn(async () => undefined),
+    close: jest.fn(async () => undefined),
+  })),
 }));
 
 jest.mock('@las-flores/infra', () => ({
@@ -145,10 +149,11 @@ jest.mock('../../src/services/PlanGenerationJob.js', () => ({
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { resolveContentDir } from '../../src/services/StoryBuilderLore.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
+const mockWithOLTPTransaction = withOLTPTransaction as jest.MockedFunction<typeof withOLTPTransaction>;
 
 function makeApp() {
   const app = express();
@@ -199,6 +204,9 @@ describe('POST /admin/story-builder/plan', () => {
       ([text]) => typeof text === 'string' && /^\s*(INSERT|UPDATE|DELETE)/i.test(text),
     );
     expect(writes).toHaveLength(0);
+    // Transaction-scoped writes are also forbidden — the guard must cover
+    // withOLTPTransaction, not just queryOLTP.
+    expect(mockWithOLTPTransaction).not.toHaveBeenCalled();
   });
 });
 describe('POST /admin/story-builder/plan/scaffold', () => {
@@ -260,6 +268,9 @@ describe('POST /admin/story-builder/plan/refine-preview', () => {
       ([text]) => typeof text === 'string' && /^\s*(INSERT|UPDATE|DELETE)/i.test(text),
     );
     expect(writes).toHaveLength(0);
+    // Transaction-scoped writes are also forbidden — the guard must cover
+    // withOLTPTransaction, not just queryOLTP.
+    expect(mockWithOLTPTransaction).not.toHaveBeenCalled();
   });
 });
 
