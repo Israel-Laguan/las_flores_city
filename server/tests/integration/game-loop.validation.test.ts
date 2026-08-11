@@ -18,7 +18,7 @@ import { commsRouter } from '../../src/routes/comms.js';
 import { feedRouter } from '../../src/routes/feed.js';
 import { authRouter } from '../../src/routes/auth.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { getCache, deleteCache, closeRedis } from '../../src/database/redis.js';
+import { getCache, deleteCache, closeRedis } from '@las-flores/infra';
 import { SocialFeedService } from '../../src/services/SocialFeedService.js';
 
 const { Pool } = pg;

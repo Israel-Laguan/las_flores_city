@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { ContentPlan, ContentPlanItem, VerificationReport, CheckResult } from '@las-flores/shared';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 
 function yamlDir(item: ContentPlanItem, contentDir: string): string {

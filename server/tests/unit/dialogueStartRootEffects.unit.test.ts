@@ -69,7 +69,7 @@ const queryOLTPMock = jest.fn(async (sql: string) => {
   return { rows: [] };
 });
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: queryOLTPMock,
   queryOLAP: jest.fn(),
   withOLTPTransaction: withOLTPTransactionMock,

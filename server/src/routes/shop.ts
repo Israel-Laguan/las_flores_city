@@ -5,8 +5,8 @@ import {
   type PlayerInventoryItem,
 } from '@las-flores/shared';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { queryOLTP } from '../database/connection.js';
-import { getCache, setCache, deleteCache } from '../database/redis.js';
+import { queryOLTP } from '@las-flores/infra';
+import { getCache, setCache, deleteCache } from '@las-flores/infra';
 import { userStateCacheKey } from './player-helpers.js';
 import { recordIapCompletedEvent, recordShopPurchaseEvent } from '../services/MarketplaceEvents.js';
 import { dbRowToShopItem, shopCatalogRouter } from './shop.catalog.js';

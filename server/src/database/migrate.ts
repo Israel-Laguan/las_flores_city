@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
-import { queryOLTP, queryOLAP } from './connection.js';
+import { queryOLTP, queryOLAP } from '@las-flores/infra';
 import { migrateContent } from '../content/migrate.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

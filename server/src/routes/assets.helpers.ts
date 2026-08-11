@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { signMinioUrl, uploadToMinio } from '../services/StorageService.js';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { PromptCatalogResponseSchema } from '@las-flores/shared';
 import { z } from 'zod';
 import { resolveContentDir } from '../services/StoryBuilderLore.js';

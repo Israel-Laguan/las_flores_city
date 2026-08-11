@@ -3,7 +3,7 @@ import pg from 'pg';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { queryOLTP, closeConnections } from '../../src/database/connection.js';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { commsRouter } from '../../src/routes/comms.js';
 import '../../src/routes/comms-reply.js';
@@ -13,7 +13,7 @@ import { locationRouter } from '../../src/routes/location.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { vaultRouter } from '../../src/routes/vault.js';
-import { deleteCache, closeRedis } from '../../src/database/redis.js';
+import { deleteCache, closeRedis } from '@las-flores/infra';
 
 const { Pool } = pg;
 

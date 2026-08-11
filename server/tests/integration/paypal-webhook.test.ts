@@ -20,7 +20,7 @@ import express from 'express';
 import { withSchemaLock, withOlapSchemaLock } from '../helpers/schemaLock.js';
 import { paypalRouter } from '../../src/routes/paypal.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis, deleteCache } from '../../src/database/redis.js';
+import { closeRedis, deleteCache } from '@las-flores/infra';
 
 const { Pool } = pg;
 

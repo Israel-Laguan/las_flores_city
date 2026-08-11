@@ -11,8 +11,8 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import * as yaml from 'js-yaml';
-import { queryOLTP, closeConnections } from '../../src/database/connection.js';
-import { deleteCache, closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
+import { deleteCache, closeRedis } from '@las-flores/infra';
 import { authMiddleware, AuthRequest, generateToken } from '../../src/middleware/auth.js';
 import { locationRouter } from '../../src/routes/location.js';
 

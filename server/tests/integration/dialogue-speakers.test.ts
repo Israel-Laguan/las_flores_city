@@ -1,5 +1,5 @@
-import { queryOLTP, closeConnections } from '../../src/database/connection.js';
-import { invalidatePattern, closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
+import { invalidatePattern, closeRedis } from '@las-flores/infra';
 import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
@@ -53,7 +53,7 @@ describe('Dialogue speakers enrichment', () => {
     // applied the full migration set; these are idempotent safety nets).
     const fs = await import('fs');
     const path = await import('path');
-    const { queryOLTP } = await import('../../src/database/connection.js');
+    const { queryOLTP } = await import('@las-flores/infra');
     const applyMigration = async (filename: string) => {
       const sql = fs.readFileSync(
         path.resolve(process.cwd(), 'src/database/migrations', filename),

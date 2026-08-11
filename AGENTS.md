@@ -4,7 +4,7 @@ This file captures durable agent-facing guidance for Las Flores 2077. Human-faci
 
 ## Hard constraints
 
-- Use the existing database/cache/event patterns: `oltpPool` / `withOLTPTransaction`, `getCache` / `setCache` / `deleteCache`, and `queryOLAP(...)`. Do not introduce new pools or alternate cache layers.
+- Use the existing database/cache/event patterns: `oltpPool` / `withOLTPTransaction`, `getCache` / `setCache` / `deleteCache`, and `queryOLAP(...)`. Do not introduce new pools or alternate cache layers. The only sanctioned exception is a single additional **read-only** content pool (`contentPool` / `queryContent`, defined in `@las-flores/infra`) used exclusively for content reads (dialogue trees/overlays/chunks, scenes, characters, districts, mysteries); all player reads AND writes still go through `oltpPool` / `withOLTPTransaction`. Do not add further pools or cache layers beyond these two.
 - If a task spec conflicts with established codebase patterns, follow the established pattern and surface the drift before changing behavior.
 - Verify alleged missing variables by reading the relevant file end-to-end or grepping before scheduling a fix.
 - Sudo operations require user confirmation. Present the exact command, explain the expected result, wait for the user to confirm it ran, then verify the fix.

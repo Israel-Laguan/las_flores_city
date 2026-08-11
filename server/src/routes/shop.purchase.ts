@@ -3,7 +3,7 @@ import {
   type ShopItem,
   type PlayerInventoryItem,
 } from '@las-flores/shared';
-import { withOLTPTransaction } from '../database/connection.js';
+import { withOLTPTransaction } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import { dbRowToShopItem } from './shop.catalog.js';
 

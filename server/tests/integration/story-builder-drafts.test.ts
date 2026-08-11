@@ -39,11 +39,8 @@ const mockListLocalAssets = jest.fn(async () => [
 const mockChooseDraft = jest.fn(async () => {});
 const mockGeneratePromptFiles = jest.fn(async () => []);
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
-}));
-
-jest.mock('../../src/database/redis.js', () => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
@@ -79,7 +76,7 @@ afterAll(() => {
 });
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 

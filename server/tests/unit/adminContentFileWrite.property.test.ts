@@ -37,7 +37,7 @@ import * as jsYaml from 'js-yaml';
 // never opens a real ioredis connection in unit tests.  Without this, the
 // valid-YAML spot-check creates a Redis client that fires connection errors
 // after the test has already finished.
-jest.mock('../../src/database/redis.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => undefined),
   deleteCache: jest.fn(async () => true),

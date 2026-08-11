@@ -1,5 +1,5 @@
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
-import { deleteCache, invalidatePattern } from '../database/redis.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
+import { deleteCache, invalidatePattern } from '@las-flores/infra';
 import { userStateCacheKey } from './player-helpers.js';
 import { emitBreakthroughSideEffects } from './dialogue-breakthrough-helpers.js';
 import { joinMystery } from './dialogue-helpers.js';

@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { generateToken, authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { adminMiddleware } from '../middleware/adminAuth.js';
 import { setSessionCookie, clearSessionCookie } from '../utils/cookies.js';

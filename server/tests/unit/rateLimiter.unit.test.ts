@@ -18,7 +18,7 @@ const mockRedis = {
   ttl: jestGlobals.fn(async (..._args: any[]) => 45),
 };
 
-jestGlobals.mock('../../src/database/redis.js', () => ({
+jestGlobals.mock('@las-flores/infra', () => ({
   getRedis: () => mockRedis,
 }));
 

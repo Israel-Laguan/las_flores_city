@@ -1,5 +1,5 @@
 import { type ContentPlan, type ContentPlanItem } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 export function uuidv4(): string {
   return crypto.randomUUID();

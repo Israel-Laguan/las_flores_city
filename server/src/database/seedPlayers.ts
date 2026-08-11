@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { queryOLTP } from './connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 // Load env the same way the server does (cwd is the server workspace, .env lives at repo root).
 dotenv.config();

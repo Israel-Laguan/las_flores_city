@@ -1,4 +1,4 @@
-import { queryOLTP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
+import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { compileDialogueTree } from '../../src/content/compiler.js';
 import type { DialogueNode } from '@las-flores/shared';
 

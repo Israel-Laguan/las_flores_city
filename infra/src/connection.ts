@@ -12,6 +12,7 @@ const { Pool } = pg;
 // transitively pull in this file without actually querying the database.
 let _oltpPool: pg.Pool | null = null;
 let _olapPool: pg.Pool | null = null;
+let _contentPool: pg.Pool | null = null;
 
 function getOltpPool(): pg.Pool {
   if (!_oltpPool) {
@@ -43,6 +44,35 @@ function getOlapPool(): pg.Pool {
   return _olapPool;
 }
 
+function getContentPool(): pg.Pool {
+  if (!_contentPool) {
+    connectionsClosed = false;
+    // Dedicated read-only content pool (M19 "A1 — Content-read pool"). Same OLTP
+    // Postgres as the gameplay `oltpPool`, but used exclusively for *content* reads
+    // (dialogue trees/overlays/chunks, scenes, characters, districts, mysteries) so
+    // the gameplay pool's connection peak stays flat under read-heavy authoring/data
+    // bursts. Player WRITES still go through `oltpPool`/`withOLTPTransaction`.
+    //
+    // NOTE: The current AGENTS.md hard constraint says "Do not introduce new pools".
+    // This additive read-only pool is an intentional milestone override (M19) per
+    // explicit direction — see docs/milestones/M19-foundation.md "Implementation
+    // decision record". Player writes are never routed here.
+    _contentPool = new Pool({
+      // CONTENT_DATABASE_URL lets operators point this pool at a true read
+      // replica/role; defaults to the OLTP URL when unset.
+      connectionString: process.env.CONTENT_DATABASE_URL || process.env.DATABASE_URL,
+      // Enforce read-only at the Postgres session level so an accidental
+      // `queryContent` write is rejected, even though it shares the OLTP
+      // credential. Player writes must go through `oltpPool`/`withOLTPTransaction`.
+      options: '-c default_transaction_read_only=on',
+      max: 10,                  // Small read-only pool; content reads are mostly cache-friendly
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
+  }
+  return _contentPool;
+}
+
 // Proxy-based lazy exports: `oltpPool.query()` / `oltpPool.connect()` etc.
 // delegate to the real pool only when first called — no TCPWRAP handle created
 // at module-import time.
@@ -55,6 +85,14 @@ export const oltpPool: pg.Pool = new Proxy({} as pg.Pool, {
 export const olapPool: pg.Pool = new Proxy({} as pg.Pool, {
   get(_, prop, receiver) {
     return Reflect.get(getOlapPool(), prop, receiver);
+  },
+});
+
+// Proxy-based lazy export mirroring `oltpPool`/`olapPool`: no TCPWRAP handle is
+// created until a `.query()`/`.connect()` is actually invoked.
+export const contentPool: pg.Pool = new Proxy({} as pg.Pool, {
+  get(_, prop, receiver) {
+    return Reflect.get(getContentPool(), prop, receiver);
   },
 });
 
@@ -95,12 +133,26 @@ export async function closeConnections(): Promise<void> {
     await _olapPool.end();
     _olapPool = null;
   }
+  if (_contentPool) {
+    await _contentPool.end();
+    _contentPool = null;
+  }
   console.log('🔌 Database connections closed');
 }
 
 // Query helpers
 export async function queryOLTP<T extends pg.QueryResultRow = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
   return getOltpPool().query<T>(text, params);
+}
+
+/**
+ * Content read query wrapper (M19 A1). Routes content-table reads through
+ * `contentPool` so the gameplay `oltpPool` peak stays flat. Intended for
+ * read-only content queries only — player writes must keep using
+ * `queryOLTP`/`withOLTPTransaction`/`oltpPool`.
+ */
+export async function queryContent<T extends pg.QueryResultRow = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
+  return getContentPool().query<T>(text, params);
 }
 
 /**

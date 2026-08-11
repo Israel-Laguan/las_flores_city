@@ -1,7 +1,7 @@
 import express from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
 import { ContentPlanSchema, type ContentPlan } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 

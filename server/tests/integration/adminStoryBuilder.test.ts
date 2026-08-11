@@ -36,7 +36,7 @@ jest.mock('node:fs/promises', () => ({
   readFile: jest.fn(async () => ''),
 }));
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async (text: string) => {
     if (text.includes('INSERT INTO content_plans')) {
       return { rows: [{ id: MOCK_PLAN_ID }], rowCount: 1 };
@@ -48,9 +48,6 @@ jest.mock('../../src/database/connection.js', () => ({
   }),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
   withOLTPTransaction: jest.fn(async (cb: any) => cb({ query: jest.fn() })),
-}));
-
-jest.mock('../../src/database/redis.js', () => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
@@ -142,7 +139,7 @@ jest.mock('../../src/services/PlanGenerationJob.js', () => ({
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 import { executePlan } from '../../src/services/StoryBuilderOrchestrator.js';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { resolveContentDir } from '../../src/services/StoryBuilderLore.js';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;

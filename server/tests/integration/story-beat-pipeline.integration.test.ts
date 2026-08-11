@@ -13,13 +13,19 @@ import pg from 'pg';
 import path from 'path';
 import fs from 'fs/promises';
 
-// Mock Redis cache operations to avoid Redis dependency in integration tests
-jest.mock('../../src/database/redis.js', () => ({
-  setCache: jest.fn() as any,
-  getCache: jest.fn() as any,
-  deleteCache: jest.fn() as any,
-  invalidatePattern: jest.fn() as any,
-}));
+// Mock Redis cache operations to avoid Redis dependency in integration tests.
+// Keep the real `queryOLTP` (used by processContentFile for actual DB upserts/reads)
+// and mock only the cache helpers.
+jest.mock('@las-flores/infra', () => {
+  const actual = jest.requireActual('@las-flores/infra');
+  return {
+    ...actual,
+    setCache: jest.fn() as any,
+    getCache: jest.fn() as any,
+    deleteCache: jest.fn() as any,
+    invalidatePattern: jest.fn() as any,
+  };
+});
 
 import * as yaml from 'js-yaml';
 import crypto from 'crypto';
@@ -279,7 +285,7 @@ describe('Story Beat Pipeline Integration', () => {
     expect(beatResult.rows[0].description).toContain('intercept him');
 
     // Verify the cache was refreshed (mocked setCache should have been called with all slugs)
-    const { setCache } = await import('../../src/database/redis.js');
+    const { setCache } = await import('@las-flores/infra');
     const cacheCall = (setCache as jest.Mock).mock.calls.find(
       (call: any[]) => call[0] === 'story_beats:slugs',
     );

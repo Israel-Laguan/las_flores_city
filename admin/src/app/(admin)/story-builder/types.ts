@@ -8,7 +8,7 @@ export type GenerationPlanStatus = 'idle' | 'generating' | 'filling' | 'pending'
 export type GenerationItemStatus = 'pending' | 'filling' | 'done' | 'failed';
 
 export interface GenerationStatus {
-  planId: string;
+  planId?: string;
   status: GenerationPlanStatus;
   progress?: { total: number; completed: number; failed: number };
   items?: Array<{ itemId: string; status: GenerationItemStatus; error?: string }>;

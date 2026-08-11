@@ -1,4 +1,4 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import {
   filterChoices,
   processChoiceInTransaction,
@@ -10,7 +10,7 @@ import { DialogueResolver } from '../services/DialogueResolver.js';
 import { IronGateValidator } from '../services/IronGateValidator.js';
 import { appendTBReceipt } from '../services/ReceiptRenderer.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
-import { deleteCache } from '../database/redis.js';
+import { deleteCache } from '@las-flores/infra';
 import { handleAlignmentSideEffects, handleBreakthroughSideEffects, handleJoinMystery } from './dialogue-side-effects.js';
 import { handleLegacyChoiceIndex } from './dialogue-legacy.js';
 import { mapDialogueWriteError } from './dialogue-errors.js';

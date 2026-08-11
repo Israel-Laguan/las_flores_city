@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
-import { queryOLTP } from '../../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 export interface DiffFile {
   filePath: string;

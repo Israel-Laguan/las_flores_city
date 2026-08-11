@@ -147,7 +147,7 @@ beforeAll(async () => {
 
   const { assetsRouter } = await import('../../src/routes/assets.js');
   const { authRouter } = await import('../../src/routes/auth.js');
-  const redisModule = await import('../../src/database/redis.js');
+  const redisModule = await import('@las-flores/infra');
   const { cookieParserMiddleware } = await import('../../src/utils/cookies.js');
   const { generateToken } = await import('../../src/middleware/auth.js');
   closeRedis = redisModule.closeRedis;

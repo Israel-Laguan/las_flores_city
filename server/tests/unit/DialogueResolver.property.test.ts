@@ -25,16 +25,13 @@ import { stringOf } from './__utils__/fastCheckV4';
 
 // ── Module mocks ──────────────────────────────────────────────
 
-// Mock queryOLTP — each test overrides its return value per-run.
-jestGlobals.mock('../../src/database/connection.js', () => ({
+// Mock queryOLTP / queryContent — each test overrides their return value per-run.
+jestGlobals.mock('@las-flores/infra', () => ({
   queryOLTP: jestGlobals.fn(),
+  queryContent: jestGlobals.fn(),
   withOLTPTransaction: jestGlobals.fn(
     async (cb: (client: unknown) => Promise<unknown>) => cb({}),
   ),
-}));
-
-// Mock Redis so no real connection is attempted.
-jestGlobals.mock('../../src/database/redis.js', () => ({
   getCache: jestGlobals.fn(async () => null),   // always cache-miss
   setCache: jestGlobals.fn(async () => undefined),
   closeRedis: jestGlobals.fn(async () => undefined),
@@ -43,8 +40,8 @@ jestGlobals.mock('../../src/database/redis.js', () => ({
 // ── Imports (after mocks) ─────────────────────────────────────
 
 import { DialogueResolver, deepMergeNodes } from '../../src/services/DialogueResolver.js';
-import { queryOLTP } from '../../src/database/connection.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, queryContent } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 import type { DialogueNode, Leaf } from '@las-flores/shared';
 
 // ── Arbitraries ───────────────────────────────────────────────
@@ -138,23 +135,25 @@ beforeEach(() => {
 });
 
 /**
- * Wire queryOLTP to return the expected rows for one call to
+ * Wire queryOLTP / queryContent to return the expected rows for one call to
  * resolveChunkForUser.
  *
- * resolveChunkForUser makes these queryOLTP calls (in order):
- *   1. loadBaseChunk        → SELECT … FROM dialogue_chunks WHERE id = ?
- *   2. getActiveMysteryIds  → SELECT mystery_id FROM player_mysteries … (Promise.all[0])
- *   3. getActiveMysteries   → SELECT id FROM mysteries …             (Promise.all[1])
- *   4. getUserNsfwStatus    → SELECT is_nsfw_unlocked …              (Promise.all[2])
- *   5. getUserAlignment     → SELECT alignment …                     (Promise.all[3])
- *   6. loadMysteryOverlays  → SELECT … FROM dialogue_overlays …
+ * resolveChunkForUser makes these calls, split across the two pools:
+ *   queryContent (content reads):
+ *     1. loadBaseChunk        → SELECT … FROM dialogue_chunks WHERE id = ?   (awaited first)
+ *     2. getActiveMysteries   → SELECT id FROM mysteries …                   (Promise.all[1])
+ *     3. loadMysteryOverlays  → SELECT … FROM dialogue_overlays …
+ *   queryOLTP (player reads):
+ *     a. getActiveMysteryIds → SELECT mystery_id FROM player_mysteries …    (Promise.all[0])
+ *     b. getUserNsfwStatus   → SELECT is_nsfw_unlocked …                     (Promise.all[2])
+ *     c. getUserState        → SELECT alignment, story_beat …                (Promise.all[3])
  *
- * loadBaseChunk is awaited first (step 1), THEN the four user-context
- * queries run in parallel via Promise.all (steps 2-5), THEN
- * loadMysteryOverlays (step 6).
+ * loadBaseChunk is awaited first (queryContent step 1), THEN the four user-context
+ * queries run in parallel via Promise.all (queryContent step 2 interleaves with the
+ * queryOLTP a/b/c steps), THEN loadMysteryOverlays (queryContent step 3).
  *
- * Jest mock returns are consumed in call order, so we push them
- * in the exact execution order above.
+ * Jest mock returns are consumed in call order, so we push them in the exact
+ * execution order above per-mock (order is independent across the two mocks).
  */
 function wireQueryOLTP(
   chunkRow: {
@@ -166,23 +165,19 @@ function wireQueryOLTP(
   },
   overlayNodes: Record<string, DialogueNode> = {},
 ): void {
-  const mock = queryOLTP as jest.Mock<any>;
+  const mockContent = queryContent as jest.Mock<any>;
+  const mockPlayer = queryOLTP as jest.Mock<any>;
 
   const hasOverlay = Object.keys(overlayNodes).length > 0;
 
-  // 1. loadBaseChunk (called first, before Promise.all)
-  mock.mockResolvedValueOnce({ rows: [chunkRow] });
-  // 2. getActiveMysteryIds (Promise.all[0])
-  mock.mockResolvedValueOnce({ rows: [] });
-  // 3. getActiveMysteries (Promise.all[1])
-  mock.mockResolvedValueOnce({ rows: [] });
-  // 4. getUserNsfwStatus (Promise.all[2])
-  mock.mockResolvedValueOnce({ rows: [{ is_nsfw_unlocked: false }] });
-  // 5. getUserAlignment (Promise.all[3])
-  mock.mockResolvedValueOnce({ rows: [{ alignment: 'neutral' }] });
-  // 6. loadMysteryOverlays — optionally inject overlay
+  // queryContent: content reads
+  // 1. loadBaseChunk (called before Promise.all)
+  mockContent.mockResolvedValueOnce({ rows: [chunkRow] });
+  // 2. getActiveMysteries (Promise.all[1])
+  mockContent.mockResolvedValueOnce({ rows: [] });
+  // 3. loadMysteryOverlays — optionally inject overlay
   if (hasOverlay) {
-    mock.mockResolvedValueOnce({
+    mockContent.mockResolvedValueOnce({
       rows: [
         {
           nodes: overlayNodes,
@@ -193,8 +188,16 @@ function wireQueryOLTP(
       ],
     });
   } else {
-    mock.mockResolvedValueOnce({ rows: [] });
+    mockContent.mockResolvedValueOnce({ rows: [] });
   }
+
+  // queryOLTP: player reads (user context)
+  // a. getActiveMysteryIds (Promise.all[0])
+  mockPlayer.mockResolvedValueOnce({ rows: [] });
+  // b. getUserNsfwStatus (Promise.all[2])
+  mockPlayer.mockResolvedValueOnce({ rows: [{ is_nsfw_unlocked: false }] });
+  // c. getUserState (Promise.all[3]) — story_beat undefined → defaults to 'prologue'
+  mockPlayer.mockResolvedValueOnce({ rows: [{ alignment: 'neutral' }] });
 }
 
 // ── Chunk contains only allowed nodes ────────────────────────

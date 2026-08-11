@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import type { AssetNeed, ContentPlanItem } from '@las-flores/shared';
 import { markGenerating, markDrafted, transitionAssetNeed } from '../services/AssetNeedsService.js';
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';

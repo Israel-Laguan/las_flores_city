@@ -1,7 +1,7 @@
 import express from 'express';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { getCache, setCache, deleteCache } from '../database/redis.js';
+import { getCache, setCache, deleteCache } from '@las-flores/infra';
 import {
   userStateCacheKey,
   assemblePlayerState,

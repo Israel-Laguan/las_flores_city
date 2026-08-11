@@ -1,6 +1,6 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { oltpPool, queryOLAP, closeConnections } from '../src/database/connection.js';
+import { oltpPool, queryOLAP, closeConnections } from '@las-flores/infra';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });

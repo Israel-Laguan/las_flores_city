@@ -1,6 +1,6 @@
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
 }));
 
@@ -24,7 +24,7 @@ let handleDevLogin: (req: any, res: any) => Promise<void>;
 
 beforeEach(async () => {
   jest.resetModules();
-  const { queryOLTP } = require('../../src/database/connection.js');
+  const { queryOLTP } = require('@las-flores/infra');
   queryOLTP.mockReset();
   const mod = await import('../../src/routes/auth.dev-handlers.js');
   handleDevLogin = mod.handleDevLogin;
@@ -58,7 +58,7 @@ describe('handleDevLogin', () => {
   test('does not touch the database when NODE_ENV is production', async () => {
     const prev = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
-    const { queryOLTP } = require('../../src/database/connection.js');
+    const { queryOLTP } = require('@las-flores/infra');
     const req = { body: {} };
     const res = makeRes();
 

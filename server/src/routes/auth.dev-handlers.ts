@@ -1,5 +1,5 @@
 import express from 'express';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { generateToken } from '../middleware/auth.js';
 import { setSessionCookie } from '../utils/cookies.js';
 

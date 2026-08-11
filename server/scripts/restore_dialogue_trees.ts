@@ -3,7 +3,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import * as yaml from 'js-yaml';
-import { queryOLTP, oltpPool } from '../src/database/connection.js';
+import { queryOLTP, oltpPool } from '@las-flores/infra';
 
 // Map: filename -> (tree id, optional source yaml's own id)
 // For the test suite to work, the tree at the scene's

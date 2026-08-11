@@ -21,7 +21,7 @@ jestGlobals.doMock('../../src/services/StorageService.js', () => ({
   uploadToMinio: mockUploadToMinio,
   default: { uploadToMinio: mockUploadToMinio },
 }));
-jestGlobals.doMock('../../src/database/connection.js', () => ({
+jestGlobals.doMock('@las-flores/infra', () => ({
   queryOLTP: (...args: any[]) => mockQueryOLTP(...args),
 }));
 

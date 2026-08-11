@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { settingsRouter } from '../../src/routes/settings.js';
 import { authRouter } from '../../src/routes/auth.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 const { Pool } = pg;
 

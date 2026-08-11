@@ -1,5 +1,5 @@
 import express from 'express';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { deleteFromMinio } from '../services/StorageService.js';
 import fs from 'node:fs';
 import { adminMiddleware } from '../middleware/adminAuth.js';

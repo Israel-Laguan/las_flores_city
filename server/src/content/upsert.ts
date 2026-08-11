@@ -2,8 +2,8 @@ import * as yaml from 'js-yaml';
 import fs from 'fs/promises';
 import path from 'path';
 import { VaultFileSchema, YAMLMissionSchema, ShopItemFileSchema } from '@las-flores/shared';
-import { queryOLTP } from '../database/connection.js';
-import { setCache, deleteCache } from '../database/redis.js';
+import { queryOLTP } from '@las-flores/infra';
+import { setCache, deleteCache } from '@las-flores/infra';
 import { sanitizeText } from './validate-xss.js';
 import type { AppliedMigration } from './migrate.js';
 import {
@@ -162,7 +162,7 @@ async function processMapTileData(data: any): Promise<string> {
   return tileIds.join(',');
 }
 
-async function processStoryBeatData(data: any): Promise<string> {
+export async function processStoryBeatData(data: any): Promise<string> {
   const slugs: string[] = [];
 
   if (data.beats) {

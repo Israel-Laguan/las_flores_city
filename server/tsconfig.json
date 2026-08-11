@@ -16,9 +16,10 @@
     "isolatedModules": true,
     "noEmit": false,
     "paths": {
-      "@las-flores/shared": ["../shared/src/index.ts"]
+      "@las-flores/shared": ["../shared/src/index.ts"],
+      "@las-flores/infra": ["../infra/src/index.ts"]
     }
   },
-  "include": ["src/**/*", "../shared/src/**/*"],
+  "include": ["src/**/*", "../shared/src/**/*", "../infra/src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

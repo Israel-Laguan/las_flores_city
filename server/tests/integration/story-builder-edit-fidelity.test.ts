@@ -8,12 +8,9 @@ import express from 'express';
 import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
-}));
-
-jest.mock('../../src/database/redis.js', () => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
@@ -48,7 +45,7 @@ jest.mock('../../src/services/LoreGenerator.js', () => ({
 
 import { adminStoryBuilderPlansRouter } from '../../src/routes/admin-story-builder-plans.js';
 import { adminStoryBuilderActionsRouter } from '../../src/routes/admin-story-builder-actions.js';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 

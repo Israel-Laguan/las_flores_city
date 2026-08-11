@@ -6,7 +6,7 @@ import { uploadToMinio } from './StorageService.js';
 import { markPublished } from './AssetNeedsService.js';
 import { resolveEntityRootDir } from './LocalDraftService.js';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import type pg from 'pg';
 

@@ -3,7 +3,7 @@ import express from 'express';
 import pg from 'pg';
 import { settingsRouter } from '../../src/routes/settings.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { closeRedis } from '@las-flores/infra';
 
 // ============================================================
 // BYOK Settings Route Integration Tests

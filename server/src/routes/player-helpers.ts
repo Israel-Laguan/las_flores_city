@@ -1,5 +1,5 @@
 import type { PoolClient } from 'pg';
-import { queryOLAP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLAP, withOLTPTransaction } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 
 export function userStateCacheKey(userId: string): string {

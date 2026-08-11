@@ -1,7 +1,7 @@
 import { Router, Response, NextFunction } from 'express';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
 import { SocialFeedService } from '../services/SocialFeedService.js';
-import { queryOLAP } from '../database/connection.js';
+import { queryOLAP } from '@las-flores/infra';
 import { SocialPost } from '../../../shared/src/types/feed.js';
 
 export const feedRouter = Router();

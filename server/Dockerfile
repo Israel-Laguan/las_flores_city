@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json ./package.json
 COPY server/package.json ./server/package.json
 COPY shared/package.json ./shared/package.json
+COPY infra/package.json ./infra/package.json
 COPY client/package.json ./client/package.json
 COPY admin/package.json ./admin/package.json
 
@@ -19,6 +20,7 @@ COPY client ./client
 COPY admin ./admin
 COPY server ./server
 COPY shared ./shared
+COPY infra ./infra
 COPY docs ./docs
 # Content directory holds the world lore markdown (content/lore/), entity YAML
 # files, and staged assets needed by the server in production (content migration,
@@ -27,7 +29,7 @@ COPY docs ./docs
 COPY content ./content
 
 # Build workspaces
-RUN npm run build --workspace=shared && npm run build --workspace=server
+RUN npm run build --workspace=shared && npm run build --workspace=infra && npm run build --workspace=server
 
 EXPOSE 3000
 

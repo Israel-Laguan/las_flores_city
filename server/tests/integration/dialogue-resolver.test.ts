@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
-import { getCache, invalidatePattern, closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+import { getCache, invalidatePattern, closeRedis } from '@las-flores/infra';
 import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
 import express from 'express';
@@ -107,7 +107,7 @@ describe('DialogueResolver', () => {
     // Apply schema migrations for columns the resolver needs
     const fs = await import('fs');
     const path = await import('path');
-    const { queryOLTP } = await import('../../src/database/connection.js');
+    const { queryOLTP } = await import('@las-flores/infra');
     const applyMigration = async (filename: string) => {
       const sql = fs.readFileSync(
         path.resolve(process.cwd(), 'src/database/migrations', filename),

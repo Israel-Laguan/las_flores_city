@@ -1,5 +1,5 @@
 import pg from 'pg';
-import { queryOLTP } from '../connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 export type MoveResultOk = {

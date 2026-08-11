@@ -23,8 +23,8 @@
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import dotenv from 'dotenv';
-import { oltpPool, closeConnections } from '../src/database/connection.js';
-import { closeRedis } from '../src/database/redis.js';
+import { oltpPool, closeConnections } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), '../.env') });

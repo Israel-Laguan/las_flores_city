@@ -1,5 +1,5 @@
-import { withOLTPTransaction, queryOLTP } from '../database/connection.js';
-import { deleteCache } from '../database/redis.js';
+import { withOLTPTransaction, queryOLTP } from '@las-flores/infra';
+import { deleteCache } from '@las-flores/infra';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
 import type { BankLedgerResponse } from '../../../shared/src/types/bank.js';
 

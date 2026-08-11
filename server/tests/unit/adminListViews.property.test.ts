@@ -24,7 +24,7 @@ import express from 'express';
 
 // ── Module mocks (hoisted by Jest) ──────────────────────────
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
 }));
 
@@ -34,7 +34,7 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 
 // ── Imports (after mocks) ────────────────────────────────────
 
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { adminListViewsRouter } from '../../src/routes/admin-list-views.js';
 
 // ── App fixture ──────────────────────────────────────────────

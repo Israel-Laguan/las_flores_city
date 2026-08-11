@@ -1,10 +1,10 @@
 import { describe, it, expect, jest as jestGlobals, beforeEach } from '@jest/globals';
 import { ContentPlanService } from '../../src/services/ContentPlanService.js';
 import type { LLMProvider, ExistingContentContext } from '../../src/services/types/LLMTypes.js';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 // Mock queryOLTP to avoid database connection
-jestGlobals.mock('../../src/database/connection.js');
+jestGlobals.mock('@las-flores/infra');
 
 const mockQueryOLTP = jestGlobals.mocked(queryOLTP);
 

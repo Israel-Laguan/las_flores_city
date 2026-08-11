@@ -14,7 +14,7 @@ import express from 'express';
 import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [], rowCount: 0, command: '', oid: 0, fields: [] })),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
 }));
@@ -27,7 +27,7 @@ jest.mock('../../src/middleware/adminAuth.js', () => ({
 }));
 
 import { adminListViewsRouter } from '../../src/routes/admin-list-views.js';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 const mockQueryOLTP = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
 

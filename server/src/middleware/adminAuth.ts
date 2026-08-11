@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { authMiddleware, AuthRequest } from './auth.js';
 
 /**

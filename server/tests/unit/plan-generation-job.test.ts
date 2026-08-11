@@ -6,7 +6,7 @@ import os from 'node:os';
 const cacheStore = new Map<string, any>();
 const dbStore: any = { planForFill: null };
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async (text: string) => {
     if (text.includes('INSERT INTO content_plans')) {
       return { rows: [{ id: 'aaaaaaaa-1111-2222-3333-444444444444' }], rowCount: 1 };
@@ -24,9 +24,6 @@ jest.mock('../../src/database/connection.js', () => ({
   }),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
   withOLTPTransaction: jest.fn(async (cb: any) => cb({ query: jest.fn() })),
-}));
-
-jest.mock('../../src/database/redis.js', () => ({
   getCache: jest.fn(async (key: string) => cacheStore.get(key) ?? null),
   setCache: jest.fn(async (key: string, val: any) => { cacheStore.set(key, val); return true; }),
   deleteCache: jest.fn(async (key: string) => { cacheStore.delete(key); return true; }),
@@ -120,7 +117,7 @@ describe('runPlanFill', () => {
 
     // Capture the plan written back to the DB
     let writtenPlan: any = null;
-    const { withOLTPTransaction } = await import('../../src/database/connection.js');
+    const { withOLTPTransaction } = await import('@las-flores/infra');
     (withOLTPTransaction as jest.Mock).mockImplementation(async (cb: any) => {
       const mockClient = { query: jest.fn((text: string, params?: any[]) => {
         if (text.includes('UPDATE content_plans SET plan_json')) {
@@ -159,7 +156,7 @@ describe('runPlanFill', () => {
 
     // Capture the plan written back to the DB
     let writtenPlan: any = null;
-    const { withOLTPTransaction } = await import('../../src/database/connection.js');
+    const { withOLTPTransaction } = await import('@las-flores/infra');
     (withOLTPTransaction as jest.Mock).mockImplementation(async (cb: any) => {
       const mockClient = { query: jest.fn((text: string, params?: any[]) => {
         if (text.includes('UPDATE content_plans SET plan_json')) {

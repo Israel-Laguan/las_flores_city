@@ -1,4 +1,4 @@
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP, queryContent } from '@las-flores/infra';
 import { resolveAssetUrl } from '../services/AssetStageResolver.js';
 
 // Portrait base path convention: /assets/portraits/{slug}/
@@ -33,7 +33,7 @@ export async function getOverlayNpcs(sceneId: string, _userId: string): Promise<
   atlas_url?: string | null;
 }>> {
   // Get user's active mysteries from dialogue_overlays conditions
-  const overlayResult = await queryOLTP(
+  const overlayResult = await queryContent(
     `SELECT DISTINCT
       do2.id as overlay_id,
       do2.conditions
@@ -60,7 +60,7 @@ export async function getOverlayNpcs(sceneId: string, _userId: string): Promise<
     const conditions = overlay.conditions as any;
     if (conditions?.presence?.character_id) {
       // Fetch character details from the characters table
-      const characterResult = await queryOLTP(
+      const characterResult = await queryContent(
         `SELECT
           character_name,
           portrait_urls,

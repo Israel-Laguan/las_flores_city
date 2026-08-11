@@ -1,8 +1,8 @@
 /**
  * Test utilities for cleaning up resources after tests
  */
-import { closeConnections } from '../database/connection.js';
-import { closeRedis } from '../database/redis.js';
+import { closeConnections } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 
 /**
  * Close all database and cache connections

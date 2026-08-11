@@ -7,8 +7,9 @@ export default {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@las-flores/shared$': '<rootDir>/../shared/src/index.ts',
+    '^@las-flores/infra$': '<rootDir>/../infra/src/index.ts',
   },
-  transformIgnorePatterns: ['/node_modules/(?!@las-flores/shared/)'],
+  transformIgnorePatterns: ['/node_modules/(?!@las-flores/shared/|@las-flores/infra/)'],
   transform: {
     '^.+\\.tsx?$': [
       'ts-jest',

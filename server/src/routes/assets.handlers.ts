@@ -6,7 +6,7 @@ import {
   PublishAssetRequestSchema,
   ApproveBaseRequestSchema,
 } from '@las-flores/shared';
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { signMinioUrl, deleteFromMinio } from '../services/StorageService.js';
 import { executePublishAsset } from './assets.helpers.js';
 import { sanitizePromptRel } from '../utils/sanitize.js';

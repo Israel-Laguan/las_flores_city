@@ -1,5 +1,5 @@
-import { oltpPool, queryOLAP } from '../database/connection.js';
-import { invalidatePattern } from '../database/redis.js';
+import { oltpPool, queryOLAP } from '@las-flores/infra';
+import { invalidatePattern } from '@las-flores/infra';
 import { SocialFeedService } from '../services/SocialFeedService.js';
 import type { LeaderboardBadgeType } from '../../../shared/src/types/leaderboard.js';
 

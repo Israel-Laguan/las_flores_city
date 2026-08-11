@@ -302,13 +302,15 @@ generation with token-bucket rate limiting and 6 retries at 60s backoff
 and competes for libuv threadpool resources that the game server also needs.
 
 Node default `UV_THREADPOOL_SIZE=4` handles `dns.lookup()`, filesystem I/O,
-crypto/compression, and CPU-heavy parsing (e.g. image processing, JSON decoding of
-large chunks) for **both** the LLM pipeline and the game. Standard `fetch`/HTTP sockets
-and non-blocking database traffic are handled by the event loop's non-blocking I/O
-(epoll/kqueue/IOCP) and do **not** consume threadpool slots. However, the LLM pipeline's
-`dns.lookup()` calls (provider endpoints), file reads of prompt/lore files, and
-image-processing work in `AssetGenerationService` can still occupy the threadpool and
-reduce headroom for the game's I/O during bursts.
+and crypto/compression for **both** the LLM pipeline and the game. Standard `fetch`/HTTP
+sockets, non-blocking database traffic, and remote image-generation responses (NIM /
+Pollinations) are handled by the event loop's non-blocking I/O (epoll/kqueue/IOCP) and
+do **not** consume threadpool slots — parsing those responses or decoding large JSON
+chunks runs synchronously on the event loop and is best characterized as event-loop CPU
+contention, not threadpool work. Only local `fs` operations (reads/writes) count as
+libuv threadpool work: the LLM pipeline's `dns.lookup()` calls (provider endpoints),
+local file reads of prompt/lore files, and `AssetGenerationService`'s local file reads
+can occupy the threadpool and reduce headroom for the game's I/O during bursts.
 
 ### Options for content read optimization
 
@@ -465,7 +467,11 @@ authoring canvas be a real graph DB instead of `plan_json` JSONB?
 **Approach B — Graph DB as authoring canvas:**
 - Plans = subgraphs (`plan_id` property); approved lore = nodes with `plan_id: NULL`
   (deltas promoted from `plan_id=$pid` on approve — equivalent to `status='approved'`;
-  `approve` = transaction promoting plan nodes to `plan_id: NULL`).
+  `approve` = transaction promoting plan nodes to `plan_id: NULL`). A sparse **MODIFY**
+  shadow is an explicit **field-level merge**: before promotion, its changed fields are
+  written onto the production node it `modifies` (inherited fields are preserved), and
+  retrieval returns base + shadow together, merges changed fields, then selects a single
+  canonical node — so promotion never loses inherited fields or creates duplicates.
 - ★★★★☆ for relationship analysis, ★★★☆☆ for branching/merging (reinventing git).
 
 **Approach C — Hybrid (recommended): git for branching, graph for analysis:**
@@ -578,17 +584,18 @@ WHERE NOT EXISTS((t:Tombstone {
   target_slug: candidate.slug,
   target_type: labels(candidate)[0]   // stable type key per candidate
 }))
-// 4. Resolve each candidate's plan shadow; application layer merges shadow
-//    fields onto the base to preserve unchanged production properties
+// 4. Resolve each candidate's plan shadow. The production base IS the effective
+//    node; the shadow carries only the plan's changed fields, which the app
+//    overlays onto the base so unchanged production properties are preserved.
 OPTIONAL MATCH (shadow {plan_id:$planId, modifies: id(candidate)})
-WITH coalesce(shadow, candidate) AS effectiveNode
+WITH candidate AS effectiveNode, shadow AS shadowDelta
 // 5. Aggregate: one effective node per canonical entity (type, slug).
-//    When both a production base and its shadow delta appear, prefer the
-//    production base (plan_id IS NULL) so unchanged fields are preserved.
-WITH effectiveNode, effectiveNode.slug AS slug, labels(effectiveNode)[0] AS type
+//    Prefer the production base (plan_id IS NULL) so unchanged fields survive;
+//    hand shadowDelta to the app to overlay only the changed fields.
+WITH effectiveNode, shadowDelta, effectiveNode.slug AS slug, labels(effectiveNode)[0] AS type
 ORDER BY slug, type, effectiveNode.plan_id NULLS FIRST
-WITH slug, type, collect(effectiveNode)[0] AS finalNode
-RETURN finalNode AS effectiveNode
+WITH slug, type, collect(effectiveNode)[0] AS finalNode, collect(shadowDelta)[0] AS delta
+RETURN finalNode AS effectiveNode, delta AS shadowDelta
 ```
 **This merged view is a live preview of post-migration production** — the admin can *see*
 the merged graph before approving. When `approveAndSolidifyPlan()` runs, the materialized
@@ -649,7 +656,8 @@ All the pieces compose into a single coherent target:
               │  - LeaderboardWorker, RelationshipDecayWorker          │
               │  - serves: client (game), future clients              │
               │  OLTP pool (max 50) ──► player_* writes               │
-              │  content-read pool (A1) ──► characters/dialogue_*     │
+              │  content reads via OLTP pool — A2/A4 (replica or       │
+              │  Redis snapshot); A1 read-pool only if contract allows │
               │  OLAP pool (max 20) ──► player_events, leaderboards   │
               └──────────────┬───────────────────────┬───────────────┘
                              │                        │
@@ -712,7 +720,8 @@ MATERIALIZE (existing pipeline, UNCHANGED)
   - stagePlan → writePlanItems + applyLink (YAML files)
   - publishChosenDrafts → MinIO
   - migrateContent → SQL upserts + chunk compile
-  - verifyPlan → cross-ref check (merged graph == production)
+  - verifyPlan → cross-ref check of materialized content (path/FK/story)
+    (it does NOT compare against the graph — graph-to-production comparison is future work)
   - invalidatePattern → game drops cache
   - content_plans.status='verified'
         │ (only on success)
@@ -724,6 +733,28 @@ COMMIT GRAPH (advance production base — idempotent)
         │
         ▼
 production SQL + MinIO + refreshed graph base
+
+> **New-code requirement — thread the merged snapshot, don't reload stale JSON:**
+> the current `publishChosenDrafts(planId)` / `stagePlan` objects reload
+> `content_plans.plan_json` (`AssetPublishService.ts:97-204`). In the graph flow the
+> exporter must **persist the merged ContentPlan** (write it back to
+> `content_plans.plan_json` at the start of materialize, using one revision identity
+> — e.g. a `plan_revision` field set from the graph-merge step) and pass that exact
+> snapshot through every step (`stagePlan` → `writePlanItems`/`applyLink` →
+> `publishChosenDrafts` → `migrateContent`) so all materialization operations target
+> one revision and never re-read a stale blob mid-pipeline.
+
+> **Recovery on a failed graph commit:** production SQL + MinIO are the
+> authoritative state and are written *before* the graph base commit. The graph
+> base is **derived and disposable** (Approach C), so a failed commit never
+> corrupts production — it only leaves the graph base stale. Recovery: retry the
+> commit after confirming the plan reached `verified`; the promotion is idempotent
+> (a `plan_id` node either exists or is promoted), and duplicate-edge handling is a
+> no-op on re-run because edges are keyed on their endpoints + type and re-derived
+> from the durable merged revision in `content_plans.plan_json`. If the base is
+> irreconcilably stale, `SEED` rebuilds it from the YAML working tree + DB FKs, so
+> any in-flight delta is re-planned. No durable commit-state/outbox is needed on
+> this path because the graph is not the source of truth.
 ```
 
 **Only new code:** (1) seed/import script, (2) delta-writing API (admin writes
@@ -737,8 +768,11 @@ untouched** — they already implement criterion 3.
 
 Each phase builds on the last. Lowest-risk-first:
 
-1. **A1 — Content-read pool** (1 day, ~20 lines in `connection.ts`). Immediate pool
-   isolation, zero behavior change. Point `DialogueResolver` at a second pg `Pool`.
+1. **Content-read separation (A2 read-replica or A4 Redis snapshot)** (1–2 days). Drop A1
+   (a second pg `Pool`) — it violates the `AGENTS.md` hard constraint. If contention is
+   real, prefer A4 (denormalized Redis/disk snapshot per dialogue, already cached with
+   `CACHE_TTL_SECONDS = 3600`) or A2 (streaming read-replica) to keep the OLTP pool
+   single and contract-compliant. Point `DialogueResolver` at the snapshot/replica.
 2. **B1 — Extract intake-worker process** (~1 week). The foundation for all content
    publishing. Reuse the existing fire-and-forget + cache-status pattern; move `runSolidify`
    and LLM services into a process that doesn't serve game traffic. Extract
@@ -759,9 +793,11 @@ Phase 4 reuses phases 2 and 3's infrastructure entirely. The graph DB is a bette
 
 ### Architecture decisions still open
 
-- **AGE vs Neo4j for the graph store**: AGE = zero new containers (runs in existing
-  Postgres); Neo4j = Bloom visual editing (game-changing for admin UX). Decide based on
-  whether drag-to-connect editing is essential.
+- **AGE vs Neo4j for the graph store — ✅ RESOLVED → Neo4j** (decision recorded in
+  `docs/milestones/M19-foundation.md`). Neo4j wins on visual relationship authoring
+  (Bloom/Neodash drag-to-connect), which is the whole point of the authoring canvas;
+  Apache AGE (zero new containers) is retained only as a fallback if a future constraint
+  rules out another container. M27/M28 may build on this without re-opening the decision.
 - **Git-branch-per-plan vs graph-delta model**: the hybrid (git for branching + graph
   for analysis) was recommended, but the delta model (§8) is cleaner if the graph becomes
   the authoring canvas. The delta model subsumes the branching concern if shadow-node
@@ -953,6 +989,15 @@ source. The prompt includes: `[{type, severity, description, evidence:
 {node_ids, content_url, checksum}}]`. Write the parsed output back as `:Conflict` /
 `:Suggestion` nodes linked to their content nodes.
 
+> **Checksum lifecycle is future work (not yet implemented).** `AssetPublishService`
+> (`server/src/services/AssetPublishService.ts:97-204`) persists asset URLs and returns
+> object keys but does **not** compute or store object checksums today. When implemented,
+> the lifecycle is: (1) compute a checksum (e.g. SHA-256) at publish time, (2) persist it
+> alongside the corresponding graph pointer and `content_url`/`lore_url`, and (3)
+> propagate it through preview, critique prompts, and materialization so the `evidence.checksum`
+> field references the exact canonical object. Until then, the critique prompt's
+> `checksum` field is a contract placeholder, not a live value.
+
 Trigger points: on-save (event-driven), manual "Analyze" (deep, on demand), **pre-approve
 gate** ("AI found 3 conflicts — approve anyway?" safety net before `approveAndSolidifyPlan`),
 and/or a nightly batch against the production graph to catch cross-plan drift.
@@ -1043,7 +1088,7 @@ All claims in this document are grounded in the codebase. Key file references:
 
 | Claim | Evidence |
 |---|---|
-| AI/intake never touches player tables | `grep -rE 'player_states\|player_dialogue\|users\|player_events\|...' server/src/services/StoryBuilder*.ts server/src/services/Content*.ts server/src/services/Plan*.ts` → 0 hits |
+| AI/intake never touches player tables | Authoring writes go through `StoryBuilderOrchestrator.ts` (`stagePlan`/`publishChosenDrafts`/`migrateStagedPlan`/`verifyPlan`) and the intake-worker diagram above (§9), which explicitly states it "NEVER touches: player_*, users, bank_*, player_events". Validate with `git grep -n -E 'player_states|player_dialogue|player_events|player_vault|update users' server/src/services/StoryBuilder*.ts server/src/routes/admin-story-builder-*.ts` → 0 hits; note this is a qualitative boundary claim enforced by the write-path fixtures, not a formal dependency trace through shared helpers/aliases and dynamic SQL |
 | `ContentPlan` is graph-shaped (items=nodes, links=edges) | `shared/src/schemas/story-builder.ts:14-33` (`ContentPlanItemSchema`, `ContentLinkSchema`) |
 | Cross-link validation already exists | `shared/src/schemas/story-builder.ts:55-90` (`ContentPlanSchema.superRefine`) |
 | Plan lifecycle status | `server/src/database/migrations/047_content_plans.sql:8-9` (`CHECK status IN (...)`) |

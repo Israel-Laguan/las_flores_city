@@ -12,7 +12,7 @@
  */
 
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { createMissionRewardFixture } from '../helpers/missionReward.js';
 import type { DialogueNode } from '@las-flores/shared';
 

@@ -1,4 +1,4 @@
-import { oltpPool } from '../database/connection.js';
+import { oltpPool } from '@las-flores/infra';
 import { RELATIONSHIP_STAT_PREFIXES } from '@las-flores/shared';
 
 /**

@@ -1,4 +1,4 @@
-import { queryOLTP, withOLTPTransaction } from '../database/connection.js';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import {
   resolveDialogueTree,
   filterChoices,

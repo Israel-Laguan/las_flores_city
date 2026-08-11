@@ -3,7 +3,7 @@ import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 // Mock the DB/Redis-bearing modules so no real TCP connection is opened
 // (AGENTS.md rule 7). grantDialogueRewards only touches the passed-in
 // `client` and PlayerStateRepository.modifyBalance at runtime.
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
   withOLTPTransaction: jest.fn(),
 }));

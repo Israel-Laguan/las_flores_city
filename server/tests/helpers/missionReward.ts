@@ -15,10 +15,10 @@
  */
 
 import express from 'express';
-import { queryOLTP, closeConnections } from '../../src/database/connection.js';
+import { queryOLTP, closeConnections } from '@las-flores/infra';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { deleteCache, invalidatePattern, closeRedis } from '../../src/database/redis.js';
+import { deleteCache, invalidatePattern, closeRedis } from '@las-flores/infra';
 import { compileDialogueTree } from '../../src/content/compiler.js';
 import type { DialogueNode } from '@las-flores/shared';
 

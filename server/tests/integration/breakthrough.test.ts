@@ -1,5 +1,5 @@
-import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '../../src/database/connection.js';
-import { closeRedis } from '../../src/database/redis.js';
+import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+import { closeRedis } from '@las-flores/infra';
 import {
   processBreakthroughSolve,
   emitBreakthroughSideEffects,

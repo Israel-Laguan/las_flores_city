@@ -26,12 +26,9 @@ const MOCK_PLAN = {
   links: [],
 };
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [], rowCount: 0, command: '', oid: 0, fields: [] })),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
-}));
-
-jest.mock('../../src/database/redis.js', () => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
@@ -133,7 +130,7 @@ jest.mock('../../src/routes/admin-story-builder-staging.js', () => {
 });
 
 import { adminStoryBuilderRouter } from '../../src/routes/admin-story-builder.js';
-import { queryOLTP } from '../../src/database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 import { previewPlan, migrateStagedPlan } from '../../src/services/StoryBuilderOrchestrator.js';
 import { loadPlanForStaging, runStagingPipeline } from '../../src/routes/admin-story-builder-staging.js';
 

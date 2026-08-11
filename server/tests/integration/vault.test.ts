@@ -11,7 +11,7 @@ import { withSchemaLock } from '../helpers/schemaLock.js';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
-import { closeRedis, deleteCache, invalidatePattern } from '../../src/database/redis.js';
+import { closeRedis, deleteCache, invalidatePattern } from '@las-flores/infra';
 import { MediaSigner } from '../../src/services/MediaSigner.js';
 
 const { Pool } = pg;

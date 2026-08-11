@@ -40,7 +40,7 @@ const defaultQueryImpl = async (sql: string, params: any[] = []) => {
   return { rows: [] };
 };
 
-jest.mock('../../src/database/connection.js', () => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async () => ({ rows: [] })),
   // Model real transaction semantics: commit on normal return,
   // rollback + rethrow on a thrown error.

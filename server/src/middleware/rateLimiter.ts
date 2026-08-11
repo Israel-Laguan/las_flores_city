@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from 'express';
 import type { AuthRequest } from '../middleware/auth.js';
-import { getRedis } from '../database/redis.js';
+import { getRedis } from '@las-flores/infra';
 
 // ============================================================
 // Rate Limiter Middleware Factory

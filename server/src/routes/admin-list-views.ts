@@ -1,6 +1,6 @@
 import express from 'express';
 import { authAndAdminMiddleware } from '../middleware/adminAuth.js';
-import { queryOLTP } from '../database/connection.js';
+import { queryOLTP } from '@las-flores/infra';
 
 /**
  * Admin List Views Router

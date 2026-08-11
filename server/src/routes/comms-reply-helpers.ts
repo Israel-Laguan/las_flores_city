@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import type { PoolClient } from 'pg';
-import { withOLTPTransaction, queryOLAP } from '../database/connection.js';
+import { withOLTPTransaction, queryOLAP } from '@las-flores/infra';
 import { processRelationshipChange } from './dialogue-helpers.js';
 import { THREAD_BASE_SELECT, ThreadRow, applyChoiceFilters } from './comms.js';
 import { PlayerStateRepository } from '../database/repositories/PlayerStateRepository.js';
