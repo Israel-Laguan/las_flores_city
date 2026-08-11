@@ -33,7 +33,7 @@ export interface PlanFillJobStatus {
   error?: string;
 }
 
-export async function setPlanFillJobStatus(planId: string, status: Partial<PlanFillJobStatus>): Promise<void> {
+export async function setPlanFillJobStatus(planId: string, status: Partial<PlanFillJobStatus>): Promise<boolean> {
   const now = new Date().toISOString();
   const existing = await getCache<PlanFillJobStatus>(`${GEN_CACHE_PREFIX}${planId}`);
   const nextStatus = status.status ?? existing?.status ?? 'pending';
@@ -46,7 +46,7 @@ export async function setPlanFillJobStatus(planId: string, status: Partial<PlanF
     updatedAt: now,
     error: status.error ?? (nextStatus === 'failed' ? existing?.error : undefined),
   };
-  await setCache(`${GEN_CACHE_PREFIX}${planId}`, merged, 1800);
+  return setCache(`${GEN_CACHE_PREFIX}${planId}`, merged, 1800);
 }
 
 export async function getPlanFillJobStatus(planId: string): Promise<PlanFillJobStatus | null> {
@@ -154,10 +154,13 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
     let cacheCompensationOk = false;
     let dbCompensationOk = false;
     try {
-      await setPlanFillJobStatus(planId, {
+      const cacheSetOk = await setPlanFillJobStatus(planId, {
         status: 'failed',
         error: error.message,
       });
+      if (!cacheSetOk) {
+        throw new Error('setCache returned false (Redis write not acknowledged)');
+      }
       cacheCompensationOk = true;
     } catch (cacheErr) {
       console.error(`[plan-fill] Failed to mark cache as failed for ${planId}:`, cacheErr);

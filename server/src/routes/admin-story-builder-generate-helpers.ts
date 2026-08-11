@@ -14,7 +14,6 @@ export async function scaffoldPlanItems(
   for (const item of items) {
     const filePath = resolveFilePath(item);
     const fullPath = path.join(contentDir, filePath);
-    await fs.mkdir(path.dirname(fullPath), { recursive: true });
     const yamlContent = generateYaml(item);
     // Publish each scaffold file atomically without ever exposing the destination
     // path (`fullPath`) while it is being written. We write to a unique temporary
@@ -30,6 +29,11 @@ export async function scaffoldPlanItems(
     // created and never an orphaned temp file.
     const tempPath = `${fullPath}.scaffold-tmp-${crypto.randomUUID()}`;
     try {
+      // Directory creation is inside the rollback scope: a failure on a 2nd or
+      // later item would otherwise leave earlier scaffold files committed while
+      // the function rethrows before returning. The catch below removes all
+      // prior files so a retry cannot hit EEXIST conflicts.
+      await fs.mkdir(path.dirname(fullPath), { recursive: true });
       const fileHandle = await fs.open(tempPath, 'wx');
       try {
         await fileHandle.writeFile(yamlContent, { encoding: 'utf-8' });
