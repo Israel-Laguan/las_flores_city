@@ -8,15 +8,14 @@ import express from 'express';
 import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
-jest.mock('@las-flores/infra', () => ({ ...(() => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
-}))(), ...(() => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
   invalidatePattern: jest.fn(async () => true),
-}))() }));
+}));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => {

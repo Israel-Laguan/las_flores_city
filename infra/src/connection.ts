@@ -58,7 +58,13 @@ function getContentPool(): pg.Pool {
     // explicit direction — see docs/milestones/M19-foundation.md "Implementation
     // decision record". Player writes are never routed here.
     _contentPool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      // CONTENT_DATABASE_URL lets operators point this pool at a true read
+      // replica/role; defaults to the OLTP URL when unset.
+      connectionString: process.env.CONTENT_DATABASE_URL || process.env.DATABASE_URL,
+      // Enforce read-only at the Postgres session level so an accidental
+      // `queryContent` write is rejected, even though it shares the OLTP
+      // credential. Player writes must go through `oltpPool`/`withOLTPTransaction`.
+      options: '-c default_transaction_read_only=on',
       max: 10,                  // Small read-only pool; content reads are mostly cache-friendly
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,

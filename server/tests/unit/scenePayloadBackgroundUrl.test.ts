@@ -11,7 +11,7 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 const cacheStore = new Map<string, any>();
 
-jest.mock('@las-flores/infra', () => ({ ...(() => {
+jest.mock('@las-flores/infra', () => (() => {
   const handler = jest.fn(async (text: string) => {
     if (text.includes('FROM scenes WHERE id = $1')) {
       // Main scene query (SELECT id, name, background_url, background_urls, ...).
@@ -34,18 +34,17 @@ jest.mock('@las-flores/infra', () => ({ ...(() => {
     // so the mock must serve the same fixture rows on the content pool.
     queryContent: handler,
     queryOLAP: jest.fn(async () => ({ rows: [] })),
+    getCache: jest.fn(async (key: string) => cacheStore.get(key) ?? null),
+    setCache: jest.fn(async (key: string, val: any) => {
+      cacheStore.set(key, val);
+      return true;
+    }),
+    deleteCache: jest.fn(async (key: string) => {
+      cacheStore.delete(key);
+      return true;
+    }),
   };
-})(), ...(() => ({
-  getCache: jest.fn(async (key: string) => cacheStore.get(key) ?? null),
-  setCache: jest.fn(async (key: string, val: any) => {
-    cacheStore.set(key, val);
-    return true;
-  }),
-  deleteCache: jest.fn(async (key: string) => {
-    cacheStore.delete(key);
-    return true;
-  }),
-}))() }));
+})());
 
 jest.mock('../../src/routes/location.npcs.js', () => ({
   getOverlayNpcs: jest.fn(async () => []),

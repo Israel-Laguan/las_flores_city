@@ -4,14 +4,13 @@ import { adminStoryBuilderActionsRouter } from '../../src/routes/admin-story-bui
 import { contentPlanService } from '../../src/services/ContentPlanService.js';
 
 // Mock DB/Redis per AGENTS.md unit-test rule 7
-jest.mock('@las-flores/infra', () => ({ ...(() => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
-}))(), ...(() => ({
   getCache: jest.fn(),
   setCache: jest.fn(),
   deleteCache: jest.fn(),
   invalidatePattern: jest.fn(),
-}))() }));
+}));
 
 jest.mock('../../src/services/StoryBuilderOrchestrator.js', () => ({
   previewPlan: jest.fn(),

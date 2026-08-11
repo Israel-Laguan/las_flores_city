@@ -27,13 +27,12 @@ import express from 'express';
 
 // ── Module mocks (hoisted by Jest) ──────────────────────────
 
-jest.mock('@las-flores/infra', () => ({ ...(() => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
-}))(), ...(() => ({
   deleteCache: jest.fn(async () => true),
   setCache: jest.fn(async () => true),
   getCache: jest.fn(async () => null),
-}))() }));
+}));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => next(),

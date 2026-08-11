@@ -26,15 +26,14 @@ const MOCK_PLAN = {
   links: [],
 };
 
-jest.mock('@las-flores/infra', () => ({ ...(() => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
-}))(), ...(() => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
   invalidatePattern: jest.fn(async () => true),
-}))() }));
+}));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => {

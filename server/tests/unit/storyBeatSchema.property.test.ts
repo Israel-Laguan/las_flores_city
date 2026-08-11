@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, jest } from '@jest/globals';
 import fc from 'fast-check';
 import { stringOf } from './__utils__/fastCheckV4';
 import { StoryBeatRegistrySchema } from '@las-flores/shared';
@@ -222,73 +222,70 @@ const genUniqueBeatsArray = (minLength = 1, maxLength = 8) =>
     return new Set(slugs).size === slugs.length && new Set(orders).size === orders.length;
   });
 
+// Mock the infra barrel used by upsert.ts / content-upserts.ts so the real
+// processStoryBeatData path is exercised without a database or Redis.
+jest.mock('@las-flores/infra', () => ({
+  queryOLTP: jest.fn(),
+  setCache: jest.fn(async () => true),
+  deleteCache: jest.fn(async () => true),
+  getCache: jest.fn(),
+  invalidatePattern: jest.fn(),
+}));
+
+import { queryOLTP, setCache, deleteCache } from '@las-flores/infra';
+import { processStoryBeatData } from '../../src/content/upsert.js';
+
+const mockQuery = queryOLTP as jest.MockedFunction<typeof queryOLTP>;
+const mockSet = setCache as jest.MockedFunction<typeof setCache>;
+const mockDelete = deleteCache as jest.MockedFunction<typeof deleteCache>;
+
 describe('Beat upsert round-trip', () => {
   it('upserts every slug and writes slugs to cache via setCache', async () => {
-    // Mock modules before importing the module under test
-    const queryOLTPMock = jestGlobals.fn<(...args: any[]) => Promise<{ rows: unknown[] }>>().mockResolvedValue({ rows: [] });
-    const deleteCacheMock = jestGlobals.fn<(...args: any[]) => Promise<boolean>>().mockResolvedValue(true);
-
-    // Track setCache calls: key → value
+    // Tracks INSERTed slugs so the cache-refresh SELECT in processStoryBeatData
+    // returns the full story_beats table contents.
+    const insertedSlugs: string[] = [];
     const cacheStore: Record<string, unknown> = {};
-    const setCacheMock = jestGlobals.fn<(...args: any[]) => Promise<boolean>>()
-      .mockImplementation(async (key: string, value: unknown) => {
-        cacheStore[key] = value;
-        return true;
-      });
 
-    // Dynamically mock the modules used by processStoryBeatData
-    jestGlobals.unstable_mockModule('@las-flores/shared', async () => {
-      const actual = await jestGlobals.requireActual<typeof import('@las-flores/shared')>('@las-flores/shared');
-      return { ...actual };
+    mockQuery.mockImplementation(async (text: string, params?: unknown[]) => {
+      if (text.includes('SELECT slug FROM story_beats')) {
+        return { rows: insertedSlugs.map((slug) => ({ slug })) } as any;
+      }
+      if (text.includes('INSERT INTO story_beats') && params) {
+        insertedSlugs.push(params[0] as string);
+      }
+      return { rows: [] } as any;
     });
-    jestGlobals.unstable_mockModule('@las-flores/infra', () => ({
-      queryOLTP: queryOLTPMock,
-      setCache: setCacheMock,
-      deleteCache: deleteCacheMock,
-      getCache: jestGlobals.fn(),
-      invalidatePattern: jestGlobals.fn(),
-    }));
+    mockSet.mockImplementation(async (key: string, value: unknown) => {
+      cacheStore[key] = value;
+      return true;
+    });
+    mockDelete.mockResolvedValue(true);
 
     await fc.assert(
       fc.asyncProperty(genUniqueBeatsArray(1, 6), async (beats) => {
-        queryOLTPMock.mockClear();
-        deleteCacheMock.mockClear();
-        setCacheMock.mockClear();
+        mockQuery.mockClear();
+        mockDelete.mockClear();
+        mockSet.mockClear();
+        insertedSlugs.length = 0;
         cacheStore['story_beats:slugs'] = undefined;
 
-        const data = { beats };
+        // Exercise the real upsert + cache-refresh path
+        const result = await processStoryBeatData({ beats });
 
-        // Directly test the upsert logic: one queryOLTP call per beat
-        // Simulate what processStoryBeatData does:
-        const { StoryBeatRegistrySchema } = await import('@las-flores/shared');
-        StoryBeatRegistrySchema.parse(data); // must not throw
+        // Every beat was upserted (one INSERT per beat, plus the refresh SELECT)
+        const insertCalls = mockQuery.mock.calls.filter(
+          (call) => typeof call[0] === 'string' && (call[0] as string).includes('INSERT INTO story_beats'),
+        );
+        expect(insertCalls).toHaveLength(beats.length);
 
-        const slugs: string[] = [];
-        for (const beat of beats) {
-          await queryOLTPMock(
-            `INSERT INTO story_beats (slug, label, "order", description)
-             VALUES ($1, $2, $3, $4)
-             ON CONFLICT (slug) DO UPDATE SET
-               label       = EXCLUDED.label,
-               "order"     = EXCLUDED."order",
-               description = EXCLUDED.description,
-               updated_at  = NOW()`,
-            [beat.slug, beat.label, beat.order, beat.description]
-          );
-          slugs.push(beat.slug);
-        }
-        await deleteCacheMock('story_beats:slugs');
-        await setCacheMock('story_beats:slugs', slugs, 0);
-
-        // Assertions
-        // Every beat was upserted (one queryOLTP call per beat)
-        expect(queryOLTPMock).toHaveBeenCalledTimes(beats.length);
+        // The returned id list is the comma-joined slugs
+        expect(result).toBe(beats.map(b => b.slug).join(','));
 
         // deleteCache was called once before setCache
-        expect(deleteCacheMock).toHaveBeenCalledWith('story_beats:slugs');
+        expect(mockDelete).toHaveBeenCalledWith('story_beats:slugs');
 
         // setCache was called with the correct slugs
-        expect(setCacheMock).toHaveBeenCalledWith(
+        expect(mockSet).toHaveBeenCalledWith(
           'story_beats:slugs',
           expect.arrayContaining(beats.map(b => b.slug)),
           0
@@ -299,8 +296,8 @@ describe('Beat upsert round-trip', () => {
         expect(cachedSlugs).toHaveLength(beats.length);
         expect(new Set(cachedSlugs)).toEqual(new Set(beats.map(b => b.slug)));
 
-        // Each queryOLTP call passed the correct slug
-        const upsertedSlugs = queryOLTPMock.mock.calls.map((call: any) => (call[1] as unknown[])[0]);
+        // Each INSERT passed the correct slug
+        const upsertedSlugs = insertCalls.map((call) => (call[1] as unknown[])[0]);
         expect(new Set(upsertedSlugs)).toEqual(new Set(beats.map(b => b.slug)));
       }),
       { numRuns: 100, verbose: false },

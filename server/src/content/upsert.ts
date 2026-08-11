@@ -162,7 +162,7 @@ async function processMapTileData(data: any): Promise<string> {
   return tileIds.join(',');
 }
 
-async function processStoryBeatData(data: any): Promise<string> {
+export async function processStoryBeatData(data: any): Promise<string> {
   const slugs: string[] = [];
 
   if (data.beats) {

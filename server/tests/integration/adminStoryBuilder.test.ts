@@ -36,7 +36,7 @@ jest.mock('node:fs/promises', () => ({
   readFile: jest.fn(async () => ''),
 }));
 
-jest.mock('@las-flores/infra', () => ({ ...(() => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async (text: string) => {
     if (text.includes('INSERT INTO content_plans')) {
       return { rows: [{ id: MOCK_PLAN_ID }], rowCount: 1 };
@@ -48,12 +48,11 @@ jest.mock('@las-flores/infra', () => ({ ...(() => ({
   }),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
   withOLTPTransaction: jest.fn(async (cb: any) => cb({ query: jest.fn() })),
-}))(), ...(() => ({
   getCache: jest.fn(async () => null),
   setCache: jest.fn(async () => true),
   deleteCache: jest.fn(async () => true),
   invalidatePattern: jest.fn(async () => true),
-}))() }));
+}));
 
 jest.mock('../../src/middleware/adminAuth.js', () => ({
   authAndAdminMiddleware: (_req: any, _res: any, next: any) => {

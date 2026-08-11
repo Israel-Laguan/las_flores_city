@@ -10,7 +10,7 @@ updates:
     ignore:
       # TypeScript 7+ is not yet compatible with Next.js 16
       - dependency-name: "typescript"
-      # New vite majors/minors break the admin panel build; pin until fixed
+      # New vite majors/minors break the client build; pin until fixed
       - dependency-name: "vite"
         update-types:
           - "major"

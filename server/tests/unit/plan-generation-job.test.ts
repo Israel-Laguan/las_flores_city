@@ -6,7 +6,7 @@ import os from 'node:os';
 const cacheStore = new Map<string, any>();
 const dbStore: any = { planForFill: null };
 
-jest.mock('@las-flores/infra', () => ({ ...(() => ({
+jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(async (text: string) => {
     if (text.includes('INSERT INTO content_plans')) {
       return { rows: [{ id: 'aaaaaaaa-1111-2222-3333-444444444444' }], rowCount: 1 };
@@ -24,11 +24,10 @@ jest.mock('@las-flores/infra', () => ({ ...(() => ({
   }),
   queryOLAP: jest.fn(async () => ({ rows: [] })),
   withOLTPTransaction: jest.fn(async (cb: any) => cb({ query: jest.fn() })),
-}))(), ...(() => ({
   getCache: jest.fn(async (key: string) => cacheStore.get(key) ?? null),
   setCache: jest.fn(async (key: string, val: any) => { cacheStore.set(key, val); return true; }),
   deleteCache: jest.fn(async (key: string) => { cacheStore.delete(key); return true; }),
-}))() }));
+}));
 
 jest.mock('../../src/services/StoryBuilderLore.js', () => ({
   resolveContentDir: () => (globalThis as any).__contentDir,

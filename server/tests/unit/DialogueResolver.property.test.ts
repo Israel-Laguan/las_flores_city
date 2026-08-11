@@ -26,17 +26,16 @@ import { stringOf } from './__utils__/fastCheckV4';
 // ── Module mocks ──────────────────────────────────────────────
 
 // Mock queryOLTP / queryContent — each test overrides their return value per-run.
-jestGlobals.mock('@las-flores/infra', () => ({ ...(() => ({
+jestGlobals.mock('@las-flores/infra', () => ({
   queryOLTP: jestGlobals.fn(),
   queryContent: jestGlobals.fn(),
   withOLTPTransaction: jestGlobals.fn(
     async (cb: (client: unknown) => Promise<unknown>) => cb({}),
   ),
-}))(), ...(() => ({
   getCache: jestGlobals.fn(async () => null),   // always cache-miss
   setCache: jestGlobals.fn(async () => undefined),
   closeRedis: jestGlobals.fn(async () => undefined),
-}))() }));
+}));
 
 // ── Imports (after mocks) ─────────────────────────────────────
 
