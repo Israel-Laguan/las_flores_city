@@ -18,13 +18,3 @@ export interface GenerationStatus {
 
 export type { IntakeConflictPreview } from '@las-flores/shared';
 
-/**
- * Phase-1 intake preview state. `conflicts` are the LLM conflict scan (Moment 1);
- * `fileConflicts` are the advisory filesystem collision check. Both are advisory
- * until the author explicitly commits via "Generate Full Plan" (POST /plan/scaffold).
- */
-export interface IntakePreview {
-  conflicts: import('@las-flores/shared').IntakeConflictPreview[];
-  fileConflicts: string[];
-}
-

@@ -51,44 +51,82 @@ function checkDuplicateSlugOrName(
 ): HarnessFinding[] {
   const findings: HarnessFinding[] = [];
 
-  // Within-plan name collisions.
-  const byName = new Map<string, ContentPlanItem[]>();
-  for (const item of plan.items) {
-    const key = normalize(item.name || '');
+  // Within-plan collisions only matter for `create` items — they allocate new
+  // slugs on disk. `update` items reference existing entities and write no new
+  // slug, so two updates that legitimately share a name (refreshing two distinct
+  // existing entities) are NOT a collision. Real file/slug collisions are keyed
+  // on (type, slug) — matching ContentPlanSchema's superRefine — and a name that
+  // recurs across different content types (e.g. character "Plaza" + location
+  // "Plaza") is downgraded to a warning, consistent with the create-vs-existing
+  // branch below.
+  const creates = plan.items.filter((i) => i.action === 'create');
+
+  // Same-type slug collisions (identical (type, slug) would overwrite the same
+  // on-disk file). Only flag when the colliding items have distinct names —
+  // identical name+slug is reported by the name check below, avoiding a duplicate
+  // finding for one cause.
+  const byTypeSlug = new Map<string, ContentPlanItem[]>();
+  for (const item of creates) {
+    const key = normalize(item.slug ?? '');
     if (!key) continue;
-    const arr = byName.get(key) ?? [];
+    const mapKey = `${item.type}:${key}`;
+    const arr = byTypeSlug.get(mapKey) ?? [];
     arr.push(item);
-    byName.set(key, arr);
+    byTypeSlug.set(mapKey, arr);
   }
-  for (const [name, items] of byName) {
-    if (items.length > 1) {
+  for (const [mapKey, items] of byTypeSlug) {
+    if (items.length > 1 && new Set(items.map((i) => normalize(i.name || ''))).size > 1) {
       findings.push({
         code: 'duplicate_slug_or_name',
         severity: 'error',
-        message: `Duplicate item name "${items[0].name}" (normalized "${name}") appears ${items.length} times in the plan.`,
+        message: `Duplicate item slug "${mapKey.split(':')[1]}" (${items[0].type}) appears ${items.length} times in the plan.`,
         itemIds: items.map((i) => i.id),
       });
     }
   }
 
-  // Within-plan slug collisions (slug drives on-disk file names). Only flag when
-  // the colliding items have distinct names — identical name+slug is already
-  // reported by the name check above, so we avoid double-reporting one cause.
-  const bySlug = new Map<string, ContentPlanItem[]>();
-  for (const item of plan.items) {
-    const key = normalize(item.slug ?? '');
+  // Same-type name collisions (same type + same name produce the same slug).
+  const byTypeName = new Map<string, ContentPlanItem[]>();
+  for (const item of creates) {
+    const key = normalize(item.name || '');
     if (!key) continue;
-    const arr = bySlug.get(key) ?? [];
+    const mapKey = `${item.type}:${key}`;
+    const arr = byTypeName.get(mapKey) ?? [];
     arr.push(item);
-    bySlug.set(key, arr);
+    byTypeName.set(mapKey, arr);
   }
-  for (const [slug, items] of bySlug) {
-    if (items.length > 1 && new Set(items.map((i) => normalize(i.name || ''))).size > 1) {
+  for (const items of byTypeName.values()) {
+    if (items.length > 1) {
       findings.push({
         code: 'duplicate_slug_or_name',
         severity: 'error',
-        message: `Duplicate item slug "${slug}" appears ${items.length} times in the plan.`,
+        message: `Duplicate item name "${items[0].name}" (${items[0].type}) appears ${items.length} times in the plan.`,
         itemIds: items.map((i) => i.id),
+      });
+    }
+  }
+
+  // Cross-type name collisions within the plan → advisory warning only (a
+  // character and a location may legitimately share a display name).
+  const crossTypeCount = new Map<string, Set<string>>();
+  const nameToItems = new Map<string, ContentPlanItem[]>();
+  for (const item of plan.items) {
+    const key = normalize(item.name || '');
+    if (!key) continue;
+    const types = crossTypeCount.get(key) ?? new Set<string>();
+    types.add(item.type);
+    crossTypeCount.set(key, types);
+    const arr = nameToItems.get(key) ?? [];
+    arr.push(item);
+    nameToItems.set(key, arr);
+  }
+  for (const [name, types] of crossTypeCount) {
+    if (types.size > 1) {
+      findings.push({
+        code: 'duplicate_slug_or_name',
+        severity: 'warning',
+        message: `Item name "${name}" is used across multiple content types (${[...types].join(', ')}). Confirm this is intentional.`,
+        itemIds: (nameToItems.get(name) ?? []).map((i) => i.id),
       });
     }
   }
@@ -276,6 +314,10 @@ function checkForeignKeyIntegrity(
   const findings: HarnessFinding[] = [];
   const planItemIds = new Set(plan.items.map((i) => i.id));
   const existingIds = existingEntityIds(context);
+  // Overlay target_tree_id must resolve to a dialogue (planned or existing) —
+  // it is a FK to dialogue_trees. Build the accepted sets once up-front.
+  const plannedDialogueIds = new Set(plan.items.filter((i) => i.type === 'dialogue').map((i) => i.id));
+  const existingDialogueIds = new Set(context.dialogues.map((d) => d.id));
   // Built once up-front (not per scene item) so construction cost is O(1) per plan.
   const knownDistricts = new Set(context.scenes.map((s) => s.district).filter(Boolean));
 
@@ -293,13 +335,24 @@ function checkForeignKeyIntegrity(
     const f = asRecord(item.fields);
     if (item.type === 'overlay') {
       const target = f.target_tree_id;
-      if (target && !planItemIds.has(String(target)) && !existingIds.has(String(target))) {
-        findings.push({
-          code: 'foreign_key_integrity',
-          severity: 'error',
-          message: `Overlay "${item.name}" references unknown target_tree_id "${target}".`,
-          itemIds: [item.id],
-        });
+      if (target) {
+        // dialogue_overlays.target_tree_id is a FK to dialogue_trees, so a target
+        // that is NOT a dialogue (planned or existing) would fail during migration.
+        // Restrict accepted targets to planned `dialogue` items and existing
+        // `context.dialogues` ids.
+        const isDialogue =
+          plannedDialogueIds.has(String(target)) || existingDialogueIds.has(String(target));
+        if (!isDialogue) {
+          const known = planItemIds.has(String(target)) || existingIds.has(String(target));
+          findings.push({
+            code: 'foreign_key_integrity',
+            severity: 'error',
+            message: known
+              ? `Overlay "${item.name}" references non-dialogue target_tree_id "${target}".`
+              : `Overlay "${item.name}" references unknown target_tree_id "${target}".`,
+            itemIds: [item.id],
+          });
+        }
       }
     }
 

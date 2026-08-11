@@ -338,7 +338,7 @@ ${JSON.stringify({
 - Locations: ${e.locations}
 
 ## Conflict types (use exactly one per conflict)
-- duplicate_name: a proposed item's name/slug duplicates an existing or proposed entity.
+- duplicate_name: a proposed *create* item's name/slug duplicates an existing or proposed entity; do NOT flag an update item matching its intended existing entity.
 - lore_contradiction: the proposed content contradicts established lore/facts.
 - timeline_clash: dates/periods in the plan collide with existing canon or each other.
 - scope_overlap: two proposed items would overlap in purpose/scope.
@@ -347,8 +347,10 @@ ${JSON.stringify({
 1. Each conflict must have a severity of "error" or "warning" (error = must fix before approve).
 2. relatedItems must reference item ids from the proposed plan (may be empty).
 3. relatedExisting, if present, should reference existing entity names/slugs.
-4. Be conservative — prefer fewer, high-confidence flags over speculative ones.
-5. Return ONLY a JSON object with a "conflicts" key, no markdown fences or explanation.
+4. Compare proposed names/slugs against existing names case-insensitively (trim surrounding whitespace). An exact name/slug match against an existing entity is a duplicate_name for create items only.
+5. For timeline_clash, compare the "period", "start"/"end", "born"/"died", or "coversFrom"/"coversTo" fields of proposed items against each other and against any dated existing canon you can infer.
+6. Be conservative — prefer fewer, high-confidence flags over speculative ones.
+7. Return ONLY a JSON object with a "conflicts" key, no markdown fences or explanation.
 
 ## Output format
 {

@@ -74,6 +74,14 @@ export async function runPlanFill(planId: string, _userId?: string): Promise<voi
         progress: { total: 0, completed: 0, failed: 0 },
         items: [],
       });
+      // Update-only plans write no new files and have nothing to fill, so there
+      // is no async fill to await. Promote the row straight to 'proposed' so the
+      // plan becomes approvable — otherwise it would be stuck in 'draft' forever
+      // and the approve-and-solidify worker would reject it.
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['proposed', planId],
+      );
       return;
     }
 

@@ -127,9 +127,11 @@ export class LiteLLMProvider implements LLMProvider {
 
         const finishReason = data.choices?.[0]?.finish_reason;
         if (finishReason === 'length') {
+          // The max-token cap is call-specific (e.g. outline vs intake conflict
+          // scan), so avoid naming a single env var that may not govern this call.
           const truncError = new Error(
             `LLM output truncated (finish_reason=length, max_tokens=${maxTokens}). ` +
-            `Consider increasing LLM_OUTLINE_MAX_TOKENS or reducing input size.`
+            `Consider increasing the max token limit for this call or reducing input size.`
           );
           (truncError as any).isRetryable = false;
           throw truncError;
@@ -314,6 +316,19 @@ export class LiteLLMProvider implements LLMProvider {
       .map((c: any) => IntakeConflictPreviewSchema.safeParse(c))
       .filter((r: any) => r.success)
       .map((r: any) => r.data);
+
+    // Distinguish a real "no conflicts" result from a malformed/unsupported model
+    // response. The intake endpoint surfaces `conflicts` to the author as
+    // "N potential conflicts", so silently returning [] on a bad response would
+    // show a misleading clean bill of health.
+    if (raw.length === 0 && result && typeof result === 'object') {
+      console.warn('[LiteLLM] Intake conflict scan returned no "conflicts" array; treating as empty (plan ' +
+        `description preview: "${(plan.description || '').substring(0, 80)}", raw keys: ${Object.keys(result).join(',') || '(none)'})`);
+    } else if (raw.length > 0 && conflicts.length === 0) {
+      console.warn('[LiteLLM] Intake conflict scan dropped all entries as malformed; treating as empty. Raw preview: ' +
+        JSON.stringify(raw).substring(0, 300));
+    }
+
     return { conflicts, usage };
   }
 

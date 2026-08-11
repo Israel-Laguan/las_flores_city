@@ -83,4 +83,32 @@ describe('MockProvider.analyzeIntakeConflicts', () => {
     expect(dup!.severity).toBe('error');
     expect(dup!.relatedItems).toContain(PLAN_ITEM_ID);
   });
+
+  it('does not flag an update item that intentionally targets an existing entity', async () => {
+    const provider = new MockProvider();
+    const context = makeContext({ characters: [{ id: 'c1', name: 'Diego' }] });
+    const plan = makePlan({
+      items: [{
+        id: PLAN_ITEM_ID,
+        type: 'character',
+        action: 'update',
+        name: 'Diego',
+        slug: 'diego',
+        fields: { title: 'Bartender' },
+        assetNeeds: [],
+        dependsOn: [],
+      }],
+    });
+    const { conflicts } = await provider.analyzeIntakeConflicts(plan, context);
+    expect(conflicts).toHaveLength(0);
+  });
+
+  it('preserves the matched existing display name in relatedExisting', async () => {
+    const provider = new MockProvider();
+    const context = makeContext({ characters: [{ id: 'c1', name: '  Diego  ' }] });
+    const { conflicts } = await provider.analyzeIntakeConflicts(makePlan(), context);
+    const dup = conflicts.find(c => c.type === 'duplicate_name');
+    expect(dup).toBeDefined();
+    expect(dup!.relatedExisting).toEqual(['Diego']);
+  });
 });

@@ -5,12 +5,15 @@ vi.mock('../hooks/useStoryBuilderApi', () => {
   const updatePlan = vi.fn(async () => ({ success: true, data: {} }));
   const refinePlan = vi.fn(async () => ({ success: true, data: { plan: { id: 'new-plan', items: [] } } }));
   const refinePlanPreview = vi.fn(async () => ({ success: true, data: { plan: { id: 'preview-plan', items: [] }, conflicts: [] } }));
-  const scaffoldPlan = vi.fn(async () => ({ success: true, data: { planId: 'scaffold-plan', status: 'generating' } }));
+  const scaffoldPlan = vi.fn(async () => ({ success: true, data: { planId: 'scaffold-plan', status: 'done' } }));
   const approveAndSolidify = vi.fn(async () => ({ success: true, data: { status: 'verified' } }));
   const generatePlan = vi.fn(async () => ({ success: true, data: { plan: { id: 'preview', items: [] }, conflicts: [], fileConflicts: [], status: 'preview' } }));
   const savePlan = vi.fn();
   const selectTemplate = vi.fn();
-  return { updatePlan, refinePlan, refinePlanPreview, scaffoldPlan, approveAndSolidify, generatePlan, savePlan, selectTemplate, __esModule: true };
+  // refreshPlanFromDb (real, from useDraftPlanApi) calls api.loadPlanFromDb; the
+  // scaffold 'done' path exercises it, so provide a stub to avoid an undefined call.
+  const loadPlanFromDb = vi.fn(async () => ({ success: true, data: { plan_json: { id: 'scaffold-plan', items: [] }, description: '' } }));
+  return { updatePlan, refinePlan, refinePlanPreview, scaffoldPlan, approveAndSolidify, generatePlan, savePlan, selectTemplate, loadPlanFromDb, __esModule: true };
 });
 
 import { createStoryPlanHandlers } from '../hooks/useStoryPlanApiHandlers';
@@ -40,6 +43,7 @@ function makeCallbacks(extras: Record<string, unknown> = {}) {
     setSolidifyResult: vi.fn(),
     setConflicts: vi.fn(),
     setFileConflicts: vi.fn(),
+    setGenStatus: vi.fn(),
     description: 'desc',
     plan: makePlan(),
     ...extras,
@@ -101,9 +105,10 @@ describe('two-phase intake (M20)', () => {
     expect(setConflicts).toHaveBeenCalledWith([]);
     expect(setFileConflicts).toHaveBeenCalledWith([]);
     expect(setStep).toHaveBeenCalledWith(2);
-    // preview-only: no planId, no scaffold
-    expect(setPlanId).not.toHaveBeenCalled();
     expect(api.scaffoldPlan).not.toHaveBeenCalled();
+    // preview-only: planId is deliberately reset to null so a new preview can't
+    // ship/approve over a previously-scaffolded plan's id (generation isolation).
+    expect(setPlanId).toHaveBeenCalledWith(null);
   });
 
   it('handleGenerateFullPlan scaffolds the outline and adopts the planId', async () => {

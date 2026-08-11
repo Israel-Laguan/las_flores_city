@@ -93,6 +93,29 @@ describe('runValidationHarness', () => {
       expect(dup).toBeDefined();
       expect(dup!.severity).toBe('warning');
     });
+
+    it('downgrades a cross-type name match within the plan to warning (not error)', () => {
+      // A character "Plaza" and a location "Plaza" legitimately coexist — no error.
+      const plan = makePlan({ items: [
+        item({ id: A, type: 'character', name: 'Plaza', slug: 'plaza_char' }),
+        item({ id: B, type: 'location', name: 'Plaza', slug: 'plaza_loc' }),
+      ] });
+      const report = runValidationHarness(plan, makeContext());
+      expect(report.passed).toBe(true);
+      const dup = report.findings.find(f => f.code === 'duplicate_slug_or_name');
+      expect(dup).toBeDefined();
+      expect(dup!.severity).toBe('warning');
+    });
+
+    it('does not flag update items that share a name (they write no new slug)', () => {
+      const plan = makePlan({ items: [
+        item({ id: A, action: 'update', name: 'Diego', slug: 'diego' }),
+        item({ id: B, action: 'update', name: 'Diego', slug: 'diego2' }),
+      ] });
+      const report = runValidationHarness(plan, makeContext());
+      expect(report.passed).toBe(true);
+      expect(report.findings.filter(f => f.code === 'duplicate_slug_or_name')).toHaveLength(0);
+    });
   });
 
   describe('timeline_overlap', () => {
@@ -160,6 +183,39 @@ describe('runValidationHarness', () => {
       const fk = report.findings.find(f => f.code === 'foreign_key_integrity');
       expect(fk).toBeDefined();
       expect(fk!.severity).toBe('error');
+    });
+
+    it('flags an overlay targeting a planned non-dialogue item as error', () => {
+      // target_tree_id is a FK to dialogue_trees — a planned character is not valid.
+      const plan = makePlan({
+        items: [
+          item({ id: A, type: 'character', name: 'Diego', slug: 'diego' }),
+          item({
+            id: B,
+            type: 'overlay',
+            slug: 'overlay_y',
+            fields: { target_tree_id: A },
+          }),
+        ],
+      });
+      const report = runValidationHarness(plan, makeContext());
+      expect(report.passed).toBe(false);
+      const fk = report.findings.find(f => f.code === 'foreign_key_integrity');
+      expect(fk).toBeDefined();
+      expect(fk!.severity).toBe('error');
+      expect(fk!.message).toContain('non-dialogue');
+    });
+
+    it('allows an overlay targeting a planned dialogue item', () => {
+      const dialogueId = 'a0000000-e000-4000-8000-0000000000dd';
+      const plan = makePlan({
+        items: [
+          item({ id: dialogueId, type: 'dialogue', name: 'Street Encounter', slug: 'street_encounter' }),
+          item({ id: B, type: 'overlay', slug: 'overlay_z', fields: { target_tree_id: dialogueId } }),
+        ],
+      });
+      const report = runValidationHarness(plan, makeContext());
+      expect(report.findings.filter(f => f.code === 'foreign_key_integrity')).toHaveLength(0);
     });
 
     it('flags a scene referencing an unknown district as warning only', () => {

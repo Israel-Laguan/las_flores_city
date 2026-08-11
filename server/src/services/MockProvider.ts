@@ -203,25 +203,37 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
 
   async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
     const conflicts: IntakeConflictPreview[] = [];
-    const existingNames = new Set([
-      ...context.characters.map(c => c.name.toLowerCase()),
-      ...context.scenes.map(s => s.name.toLowerCase()),
-      ...context.dialogues.map(d => d.name.toLowerCase()),
-      ...context.missions.map(m => m.title.toLowerCase()),
-      ...context.overlays.map(o => o.name.toLowerCase()),
-      ...context.locations.map(l => l.name.toLowerCase()),
-    ]);
+    // Build a normalized-name -> existing display name map. Names are trimmed on
+    // both sides so equivalent names with surrounding whitespace are detected
+    // consistently (plan names are trimmed before comparison).
+    const existingByName = new Map<string, string>();
+    const add = (name: string) => {
+      const norm = (name || '').toLowerCase().trim();
+      if (norm && !existingByName.has(norm)) existingByName.set(norm, (name || '').trim());
+    };
+    context.characters.forEach((c) => add(c.name));
+    context.scenes.forEach((s) => add(s.name));
+    context.dialogues.forEach((d) => add(d.name));
+    context.missions.forEach((m) => add(m.title));
+    context.overlays.forEach((o) => add(o.name));
+    context.locations.forEach((l) => add(l.name));
 
-    // Deterministic surrogate: flag plan items whose name collides with existing canon.
+    // Deterministic surrogate: flag plan items whose name collides with existing
+    // canon. Only `create` items allocate a new slug, so an `update` that
+    // intentionally targets an existing entity must not be flagged as a conflict.
     for (const item of plan.items) {
+      if (item.action !== 'create') continue;
       const norm = (item.name || '').toLowerCase().trim();
-      if (norm && existingNames.has(norm)) {
+      const matched = norm ? existingByName.get(norm) : undefined;
+      if (matched) {
         conflicts.push({
           type: 'duplicate_name',
           severity: 'error',
-          description: `"${item.name}" matches an existing entity in canon.`,
+          description: `"${item.name}" matches an existing entity "${matched}" in canon.`,
           relatedItems: [item.id],
-          relatedExisting: [item.name],
+          // Preserve the matched existing display name so consumers can identify
+          // the canon entity (not the proposed spelling).
+          relatedExisting: [matched],
         });
       }
     }

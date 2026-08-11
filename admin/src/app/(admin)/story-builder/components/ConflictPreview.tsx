@@ -26,6 +26,9 @@ function ConflictItem({ conflict }: { conflict: IntakeConflictPreview }) {
       </span>
       <span className={styles.type}>{conflict.type.replace(/_/g, ' ')}</span>
       <span className={styles.desc}>{conflict.description}</span>
+      {conflict.relatedExisting && conflict.relatedExisting.length > 0 && (
+        <span className={styles.related}>existing: {conflict.relatedExisting.join(', ')}</span>
+      )}
       {conflict.relatedItems.length > 0 && (
         <span className={styles.related}>in: {conflict.relatedItems.join(', ')}</span>
       )}

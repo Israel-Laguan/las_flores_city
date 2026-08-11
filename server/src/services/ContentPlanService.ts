@@ -307,7 +307,16 @@ export class ContentPlanService {
     // nothing to generate).
     const refined = ContentPlanSchema.parse(rawRefined);
     injectAssetNeeds(refined.items);
-    const { conflicts } = await this.provider.analyzeIntakeConflicts(refined, context);
+    // The conflict re-scan is advisory (Moment 1) — a scan outage must not fail
+    // the refinement. Fall back to an empty conflict list so the author still
+    // receives the refined outline.
+    let conflicts: IntakeConflictPreview[] = [];
+    try {
+      const scan = await this.provider.analyzeIntakeConflicts(refined, context);
+      conflicts = scan.conflicts;
+    } catch (conflictErr) {
+      console.warn('[ContentPlanService] Intake conflict scan failed; continuing with empty conflicts:', (conflictErr as Error).message);
+    }
     return { plan: refined, conflicts, usage };
   }
 
