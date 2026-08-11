@@ -22,6 +22,15 @@ import type {
 import { createLLMProvider } from './LLMService.js';
 import { contentPlanService } from './ContentPlanService.js';
 import { emitAdminEvent } from './AdminEventEmitter.js';
+import {
+  startJobRun,
+  updateJobRun,
+  commitStage,
+  hasCommittedStage,
+  getJobRun,
+  nextAttempt,
+} from './JobRunService.js';
+import { sleep } from '../utils/retryBackoff.js';
 
 
 export {
@@ -210,9 +219,21 @@ export async function approveAndSolidifyPlan(planId: string, userId?: string): P
   //    commit failure cannot leave a stale pending cache entry.
   await setJobStatus(planId, { status: 'pending' });
 
+  // 2b. Create a durable job-runs row so the solidify job can be resumed from
+  //     its last persisted stage if this process dies mid-way (M22). Best-effort:
+  //     if the job_runs table is unavailable we fall back to the legacy
+  //     fire-and-forget behavior (no resume).
+  let jobRunId: string | undefined;
+  try {
+    const run = await startJobRun(planId, 'solidify');
+    jobRunId = run.id;
+  } catch (err) {
+    console.warn(`[story-builder] Could not create job run for ${planId}:`, (err as Error).message);
+  }
+
   // 3. Fire async solidify OUTSIDE the transaction.
   //    Errors are caught and persisted to status by runSolidify.
-  runSolidify(planId, userId).catch((err) => {
+  runSolidify(planId, userId, jobRunId).catch((err) => {
     console.error(`[story-builder] Unhandled runSolidify error for ${planId}:`, err);
   });
 
@@ -281,7 +302,7 @@ async function failWithVerificationReport(
   emitAdminEvent('plan_failed', { status: 'failed', error: verificationReport.errors[0] }, planId, userId);
 }
 
-async function runSolidify(planId: string, userId?: string): Promise<void> {
+async function runSolidify(planId: string, userId?: string, jobId?: string): Promise<void> {
   try {
     // Load plan
     const load = await queryOLTP<{ plan_json: any; status: string }>(
@@ -292,78 +313,138 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
       throw new PlanNotFoundError(planId);
     }
     const plan = ContentPlanSchema.parse(load.rows[0].plan_json);
+    const currentStatus = load.rows[0].status;
 
-    // --- Deterministic pre-approve harness gate ---
-    // Runs cheap, reproducible rules (duplicate slug/name, timeline overlap, FK
-    // integrity, ordering/succession) BEFORE any staging. Blocks only on
-    // `error`-severity findings; warnings pass through. Persist the report for
-    // observability, then abort to `failed` if the gate is not passed.
-    const context = await contentPlanService.gatherContext();
-    const harnessReport: HarnessReport = runValidationHarness(plan, context);
-
-    if (!harnessReport.passed) {
-      await failWithHarnessReport(planId, harnessReport, userId);
+    // Already fully verified — nothing to do (idempotent resume).
+    if (currentStatus === 'verified') {
+      await setJobStatus(planId, { status: 'verified' });
+      if (jobId) await updateJobRun(jobId, { status: 'succeeded', stage: 'verified' });
       return;
     }
 
-    // --- Stage: write YAML + lore + prompt files to disk ---
-    await setJobStatus(planId, { status: 'staging' });
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['staging', planId],
-    );
+    let stageResult: StagingResult | undefined;
+    let publishResult: PublishResult | undefined;
+    let migrationResult: MigrationResult | undefined;
 
-    const provider = createLLMProvider();
-    const stageResult = await stagePlan(plan, { provider, context });
-    if (!stageResult.success) {
-      throw new Error(stageResult.error ?? 'Staging failed');
+    // --- Deterministic pre-approve harness gate + staging (skipped on resume) ---
+    if (currentStatus === 'pending' || currentStatus === 'staging') {
+      if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'harness' });
+
+      const context = await contentPlanService.gatherContext();
+      const harnessReport: HarnessReport = runValidationHarness(plan, context);
+      if (!harnessReport.passed) {
+        await failWithHarnessReport(planId, harnessReport, userId);
+        if (jobId) await updateJobRun(jobId, { status: 'failed', stage: 'harness', error: 'Validation harness blocked approval' });
+        return;
+      }
+      if (jobId) await commitStage(jobId, 'harness');
+
+      // --- Stage: write YAML + lore + prompt files to disk ---
+      await setJobStatus(planId, { status: 'staging' });
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['staging', planId],
+      );
+
+      const provider = createLLMProvider();
+      stageResult = await stagePlan(plan, { provider, context });
+      if (!stageResult.success) {
+        throw new Error(stageResult.error ?? 'Staging failed');
+      }
+
+      // Persist LLM-filled fields
+      await queryOLTP(
+        'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
+        [plan, planId],
+      );
+      if (jobId) await commitStage(jobId, 'staging');
+
+      // Publish chosen drafts (idempotent: dev-label URL entry updated in place;
+      // already-published plans are skipped via the committed-stage guard).
+      if (jobId && (await hasCommittedStage(planId, 'solidify', 'publish'))) {
+        publishResult = undefined;
+      } else {
+        publishResult = await publishChosenDrafts(planId);
+        if (jobId) await commitStage(jobId, 'publish');
+      }
+      await setJobStatus(planId, {
+        status: 'staging',
+        stage: stageResult,
+        publish: publishResult ?? { success: true, published: [], errors: [] } as PublishResult,
+      });
+
+      if (publishResult && !publishResult.success) {
+        throw new Error('Asset publish failed');
+      }
+
+      // --- Stage complete → mark as 'staged' for migrateStagedPlan validation ---
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['staged', planId],
+      );
+      if (jobId) await commitStage(jobId, 'staged');
+    } else {
+      // Resuming from a persisted stage — staging/publish already completed.
+      const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
+      stageResult = cached?.stage;
+      publishResult = cached?.publish;
     }
 
-    // Persist LLM-filled fields
-    await queryOLTP(
-      'UPDATE content_plans SET plan_json = $1, updated_at = NOW() WHERE id = $2',
-      [plan, planId],
-    );
+    // --- Migrate (idempotent via migration_log + content_migration lock) ---
+    // migrateStagedPlan requires status 'staged'/'approved'; a run that died
+    // mid-migrate is rewound to 'staged' so migration can complete (already
+    // migrated files are skipped by checksum inside migrateContent).
+    if (currentStatus === 'migrated' || currentStatus === 'verifying' || currentStatus === 'verified') {
+      // already migrated — resume directly to verify (rewind 'verifying' for verifyPlan)
+      if (currentStatus === 'verifying') {
+        await queryOLTP(
+          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+          ['migrated', planId],
+        );
+      }
+    } else {
+      if (currentStatus === 'migrating') {
+        await queryOLTP(
+          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+          ['staged', planId],
+        );
+      }
+      if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'migrating' });
+      await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
 
-    // Publish chosen drafts
-    const publishResult = await publishChosenDrafts(planId);
-    await setJobStatus(planId, { status: 'staging', stage: stageResult, publish: publishResult });
+      migrationResult = await migrateStagedPlan(planId, undefined, stageResult?.createdFiles);
+      await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult, migration: migrationResult });
 
-    if (!publishResult.success) {
-      throw new Error('Asset publish failed');
+      if (!migrationResult.success) {
+        if (jobId) await updateJobRun(jobId, { status: 'resumable', stage: 'migrating', error: migrationResult.error });
+        throw new Error(migrationResult.error ?? 'Migration failed');
+      }
+      if (jobId) await commitStage(jobId, 'migrated');
     }
 
-    // --- Stage complete → mark as 'staged' for migrateStagedPlan validation ---
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['staged', planId],
-    );
-
-    // --- Migrate ---
-    // migrateStagedPlan validates DB status is 'staged'/'approved',
-    // then takes ownership of the 'migrating' transition internally.
-    // (A 'failed' plan must be re-staged before migration is retried.)
-    await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult });
-
-    const migrationResult = await migrateStagedPlan(planId, undefined, stageResult.createdFiles);
-    await setJobStatus(planId, { status: 'migrating', stage: stageResult, publish: publishResult, migration: migrationResult });
-
-    if (!migrationResult.success) {
-      throw new Error(migrationResult.error ?? 'Migration failed');
-    }
-
-    // --- Verify ---
+    // --- Verify (read-only; no double-apply risk) ---
+    if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'verifying' });
     await setJobStatus(planId, { status: 'verifying', stage: stageResult, publish: publishResult, migration: migrationResult });
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['verifying', planId],
-    );
+    if (currentStatus !== 'verifying') {
+      await queryOLTP(
+        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+        ['verifying', planId],
+      );
+    }
 
     const verificationReport = await verifyPlan(planId);
 
     // --- Terminal: verified or failed ---
     if (!verificationReport.passed) {
-      await failWithVerificationReport(planId, stageResult, publishResult, migrationResult, verificationReport, userId);
+      await failWithVerificationReport(
+        planId,
+        stageResult ?? { success: false, createdFiles: [], updatedFiles: [], validationErrors: [], warnings: [] },
+        publishResult ?? { success: false, published: [], errors: [] },
+        migrationResult ?? { success: false, migrationResult: null },
+        verificationReport,
+        userId,
+      );
+      if (jobId) await updateJobRun(jobId, { status: 'failed', stage: 'verifying', error: verificationReport.errors[0] });
       return;
     }
 
@@ -371,6 +452,10 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
       'UPDATE content_plans SET status = $1, verification_report = $2, updated_at = NOW() WHERE id = $3',
       ['verified', JSON.stringify(verificationReport), planId],
     );
+    if (jobId) {
+      await commitStage(jobId, 'verified');
+      await updateJobRun(jobId, { status: 'succeeded', stage: 'verified' });
+    }
     await setJobStatus(planId, {
       status: 'verified',
       stage: stageResult,
@@ -394,29 +479,29 @@ async function runSolidify(planId: string, userId?: string): Promise<void> {
       status: 'failed',
       error: error.message,
     });
+    if (jobId) await updateJobRun(jobId, { status: 'resumable', error: error.message });
     emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
   }
 }
 
 /**
- * Reset orphaned in-flight plans to failed on server startup.
- * Plans stuck in pending/staging/migrating/verifying are from a previous
- * process that was interrupted.
+ * Resume a solidify job that was left `resumable` after a crash (M22). Consumes
+ * one attempt with exponential backoff, then re-enters `runSolidify`, which
+ * resumes from the last persisted stage (content_plans.status) instead of from
+ * scratch. No-op when there is no resumable solidify run for the plan.
  */
-export async function resetOrphanedSolidifyJobs(): Promise<number> {
-  const result = await queryOLTP(
-    `UPDATE content_plans SET status = 'failed', updated_at = NOW()
-     WHERE status IN ('pending', 'staging', 'migrating', 'verifying')
-     RETURNING id`,
-  );
-  if (result.rowCount && result.rowCount > 0) {
-    console.log(`[story-builder] Reset ${result.rowCount} orphaned in-flight plan(s) to failed`);
-    // Also update cache for each
-    for (const row of result.rows) {
-      await setJobStatus(row.id, { status: 'failed', error: 'Server restarted during solidify' });
-    }
+export async function resumeSolidify(planId: string, userId?: string): Promise<void> {
+  const run = await getJobRun(planId, 'solidify');
+  if (!run || run.status !== 'resumable') return;
+
+  const adv = await nextAttempt(planId, 'solidify');
+  if (adv.exhausted) {
+    await updateJobRun(run.id, { status: 'failed', error: 'Attempts exhausted during resume' });
+    await setJobStatus(planId, { status: 'failed', error: 'Attempts exhausted during resume' });
+    return;
   }
-  return result.rowCount ?? 0;
+  if (adv.delayMs && adv.delayMs > 0) await sleep(adv.delayMs);
+  await runSolidify(planId, userId, run.id);
 }
 
 /**

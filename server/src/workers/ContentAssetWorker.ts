@@ -4,6 +4,11 @@ import type { AssetNeed, ContentPlanItem } from '@las-flores/shared';
 import { markGenerating, markDrafted, transitionAssetNeed } from '../services/AssetNeedsService.js';
 import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
 import { ContentPlanService } from '../services/ContentPlanService.js';
+import {
+  startJobRun,
+  updateJobRun,
+  getJobRun,
+} from '../services/JobRunService.js';
 
 const IMAGE_GEN_GRACE_PERIOD_MINUTES = 5;
 
@@ -84,6 +89,23 @@ export class ContentAssetWorker {
     const plan = row.plan_json as any;
     if (!plan.items || !Array.isArray(plan.items)) return;
 
+    // M22: skip plans whose asset_generation job is already marked succeeded.
+    const existingRun = await getJobRun(row.id, 'asset_generation');
+    if (existingRun?.status === 'succeeded') return;
+
+    // Create or resume a job run for this plan.
+    let jobId: string | undefined;
+    try {
+      if (!existingRun || existingRun.status === 'failed') {
+        const run = await startJobRun(row.id, 'asset_generation');
+        jobId = run.id;
+      } else {
+        jobId = existingRun.id;
+      }
+    } catch (err) {
+      console.warn(`[ContentAssetWorker] Could not create job run for plan=${row.id}:`, (err as Error).message);
+    }
+
     // First: reclaim any stalled `generating` needs
     const contentDir = process.cwd().endsWith('server')
       ? path.resolve(process.cwd(), '..', 'content')
@@ -109,8 +131,13 @@ export class ContentAssetWorker {
 
     // Then: generate for remaining `pending` needs
     const needsToGenerate = this.extractPendingNeeds(plan.items);
-    if (needsToGenerate.length === 0) return;
+    if (needsToGenerate.length === 0) {
+      if (jobId) await updateJobRun(jobId, { status: 'succeeded', stage: 'done' }).catch(() => {});
+      return;
+    }
 
+    let processed = 0;
+    let failed = 0;
     for (const { item, need } of needsToGenerate) {
       // Check if draft already exists (idempotent)
       const entityRoot = resolveEntityRootDir(item, contentDir);
@@ -118,12 +145,12 @@ export class ContentAssetWorker {
       const hasExisting = existingAssets.length > 0 ||
         (await this.defaultExists(item, entityRoot));
       if (hasExisting) {
-        // Auto-select if we have a default
         await autoSelectDefaultDrafts(plan, contentDir);
         if (need.status === 'pending') {
           markDrafted(need);
         }
         await ContentPlanService.updatePlanJson(row.id, plan);
+        processed++;
         continue;
       }
 
@@ -132,7 +159,6 @@ export class ContentAssetWorker {
       await ContentPlanService.updatePlanJson(row.id, plan);
 
       try {
-        // Generate one draft
         const generated = await generateLocalDrafts(item, entityRoot, 1);
         if (generated.length > 0) {
           const draftedFilename = generated[0];
@@ -143,12 +169,30 @@ export class ContentAssetWorker {
           (item.fields as any).asset_paths[fieldName] = draftedFilename;
           markDrafted(need);
           await ContentPlanService.updatePlanJson(row.id, plan);
+          processed++;
         }
       } catch (err) {
         console.error(`[ContentAssetWorker] draft gen failed for plan=${row.id}, item=${item.id}:`, err);
         transitionAssetNeed(need, 'failed');
         await ContentPlanService.updatePlanJson(row.id, plan);
+        failed++;
       }
+      // Persist partial result after each need (best-effort).
+      if (jobId) {
+        updateJobRun(jobId, {
+          stage: 'generating',
+          partialResult: { processed, failed, total: needsToGenerate.length },
+        }).catch(() => {});
+      }
+    }
+
+    if (jobId) {
+      const finalStatus = failed > 0 && processed === 0 ? 'failed' : 'succeeded';
+      await updateJobRun(jobId, {
+        status: finalStatus,
+        stage: finalStatus === 'succeeded' ? 'done' : 'generating',
+        partialResult: { processed, failed, total: needsToGenerate.length },
+      }).catch(() => {});
     }
   }
 

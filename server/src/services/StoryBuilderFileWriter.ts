@@ -241,6 +241,10 @@ export async function applyLink(
       data[link.field].push(link.toItem);
     }
   } else if (link.action === 'set') {
+    if (data[link.field] === link.toItem) {
+      // Already set — idempotent no-op (M22).
+      return;
+    }
     data[link.field] = link.toItem;
   }
 

@@ -48,7 +48,7 @@ services:
       - minio_root_user
       - minio_root_password
 
-  # Server - Node.js/Express API
+  # Server - Node.js/Express API (game-server, slim)
   server:
     restart: unless-stopped
     # Production: Remove source code volume mounts - use built image
@@ -81,6 +81,55 @@ services:
       PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI}
       PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS}
       CLIENT_BASE_URL: ${CLIENT_BASE_URL}
+    secrets:
+      - postgres_password
+      - postgres_analytics_password
+      - minio_access_key
+      - minio_secret_key
+      - jwt_secret
+      - patreon_client_id
+      - patreon_client_secret
+      - paypal_secret
+
+  # intake-worker - Node.js/Express API (admin + AI + content engine)
+  # M21: the ONLY process that runs `runAllMigrations()` (schema + content migration,
+  # including the `content_migration` advisory-lock reconcile) and schedules
+  # ContentAssetWorker / StoryBuilder / LLM generation.
+  intake-worker:
+    restart: unless-stopped
+    ports: !reset []
+    # Production: Remove source code volume mounts - use built image
+    volumes: !reset []
+    # In production we use the production CMD from the Dockerfile (dev server),
+    # which for this image resolves to `npm run start --workspace=server`.
+    # The intake-worker is a separate process; in production this should be
+    # overridden to `npm run start:intake --workspace=server` by the orchestrator.
+    command: npm run start:intake --workspace=server
+    healthcheck:
+      start_period: 10s
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
+      REDIS_URL: redis://redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_ANALYTICS_PASSWORD_FILE: /run/secrets/postgres_analytics_password
+      MINIO_ACCESS_KEY_FILE: /run/secrets/minio_access_key
+      MINIO_SECRET_KEY_FILE: /run/secrets/minio_secret_key
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      PATREON_CLIENT_ID_FILE: /run/secrets/patreon_client_id
+      PATREON_CLIENT_SECRET_FILE: /run/secrets/patreon_client_secret
+      PAYPAL_SECRET_FILE: /run/secrets/paypal_secret
+      SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
+      PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI}
+      PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS}
+      CLIENT_BASE_URL: ${CLIENT_BASE_URL}
+      LITELLM_BASE_URL: ${LITELLM_BASE_URL}
+      LITELLM_API_KEY: ${LITELLM_API_KEY}
+      LLM_MODEL: ${LLM_MODEL}
+      LLM_PROVIDER: litellm
     secrets:
       - postgres_password
       - postgres_analytics_password

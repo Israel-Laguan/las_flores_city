@@ -246,3 +246,6 @@ export type {
   CheckResult,
   VerificationReport,
 } from './schemas/verification.js';
+
+export { JobRunSchema } from './schemas/job-run.js';
+export type { JobRun } from './schemas/job-run.js';

@@ -1,12 +1,16 @@
 import { signMinioUrl } from './StorageService.js';
+import {
+  RETRY_MAX_ATTEMPTS,
+  RETRY_INITIAL_BACKOFF_MS,
+  RETRY_MAX_BACKOFF_MS,
+  sleep,
+} from '../utils/retryBackoff.js';
 
 const NIM_INVOKE_URL = 'https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.2-klein-4b';
 const POLLINATIONS_BASE = 'https://image.pollinations.ai/prompt';
 
 const RPM_LIMIT = 35;
 const WINDOW_MS = 60000;
-const MAX_RETRIES = 6;
-const INITIAL_BACKOFF_MS = 60000;
 const MIN_FILE_SIZE = 5000;
 
 class TokenBucket {
@@ -40,10 +44,6 @@ class TokenBucket {
 }
 
 const nimBucket = new TokenBucket(RPM_LIMIT, WINDOW_MS);
-
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function httpGet(url: string, timeoutMs = 30000): Promise<Buffer> {
   const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
@@ -141,9 +141,9 @@ export async function generateImageBuffer(params: {
     steps: 4,
   };
 
-  let wait = INITIAL_BACKOFF_MS;
+  let wait = RETRY_INITIAL_BACKOFF_MS;
 
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+  for (let attempt = 1; attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
     try {
       await nimBucket.take();
 
@@ -167,14 +167,14 @@ export async function generateImageBuffer(params: {
 
       return buffer;
     } catch {
-      if (attempt < MAX_RETRIES) {
+      if (attempt < RETRY_MAX_ATTEMPTS) {
         await sleep(wait);
-        wait = Math.min(wait * 1.5, 300000);
+        wait = Math.min(wait * 1.5, RETRY_MAX_BACKOFF_MS);
       }
     }
   }
 
-  console.warn(`  ⚠️  NIM failed after ${MAX_RETRIES} attempts, falling back to Pollinations`);
+  console.warn(`  ⚠️  NIM failed after ${RETRY_MAX_ATTEMPTS} attempts, falling back to Pollinations`);
   return generatePollinationsFallback(prompt, width, height);
 }
 
@@ -235,9 +235,9 @@ export async function generateVariantImage(options: {
         payload.strength = strength;
       }
 
-      let wait = INITIAL_BACKOFF_MS;
+      let wait = RETRY_INITIAL_BACKOFF_MS;
 
-      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      for (let attempt = 1; attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
         try {
           await nimBucket.take();
           const body = await httpPost(NIM_INVOKE_URL, payload);
@@ -260,9 +260,9 @@ export async function generateVariantImage(options: {
 
           return buffer;
         } catch {
-          if (attempt < MAX_RETRIES) {
+          if (attempt < RETRY_MAX_ATTEMPTS) {
             await sleep(wait);
-            wait = Math.min(wait * 1.5, 300000);
+            wait = Math.min(wait * 1.5, RETRY_MAX_BACKOFF_MS);
           }
         }
       }

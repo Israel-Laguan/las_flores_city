@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": {
+    "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:intake": "tsx watch src/intake.ts",
     "build": "tsc && node scripts/copyMigrations.js",
     "start": "node dist/server/src/index.js",
+    "start:intake": "node dist/server/src/intake.js",
     "schema:migrate": "tsx src/database/migrate.ts",
     "migrate": "tsx src/content/cli.ts ../content",
     "validate": "tsx src/content/validate.ts ../content",
