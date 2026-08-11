@@ -37,6 +37,9 @@ jobs:
       - name: Build shared types
         run: npm run build --workspace=shared
 
+      - name: Build infra
+        run: npm run build --workspace=infra
+
       - name: Lint all workspaces
         run: npm run lint
 
@@ -135,6 +138,9 @@ jobs:
 
       - name: Build shared types
         run: npm run build --workspace=shared
+
+      - name: Build infra
+        run: npm run build --workspace=infra
 
       - name: Build server
         run: npm run build --workspace=server
