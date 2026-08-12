@@ -214,6 +214,49 @@ export async function fetchCdnMedia(mediaUrl: string): Promise<{ buffer: Buffer;
   return { buffer: Buffer.from(arrayBuffer), contentType };
 }
 
+/**
+ * Fetch a content blob's UTF-8 string from MinIO/CDN.
+ *
+ * `s3://bucket/key` locations are resolved via the MinIO S3 client
+ * (server-to-server, no presigned-URL round trip). HTTP(S) URLs are
+ * fetched directly. Used by DialogueResolver to load dialogue tree
+ * nodes / chunk sub-graphs by `content_url`.
+ */
+export async function fetchContentString(mediaUrl: string): Promise<string> {
+  const location = mediaUrl.startsWith('s3://') ? parseS3Location(mediaUrl) : null;
+  if (location) {
+    const { GetObjectCommand } = await import('@aws-sdk/client-s3');
+    const response = await getS3Client().send(
+      new GetObjectCommand({ Bucket: location.bucket, Key: location.key })
+    );
+    const body = response.Body as NodeJS.ReadableStream | undefined;
+    if (!body) throw new Error(`MinIO object body empty: ${mediaUrl}`);
+    const chunks: Buffer[] = [];
+    for await (const chunk of body as AsyncIterable<Buffer>) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks).toString('utf-8');
+  }
+
+  if (!/^https?:\/\//i.test(mediaUrl)) {
+    throw new Error(`Unsupported content URL: ${mediaUrl}`);
+  }
+
+  const response = await fetch(mediaUrl);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch content: ${response.status}`);
+  }
+  return response.text();
+}
+
+/**
+ * Fetch and JSON-parse a content blob by its `content_url`.
+ */
+export async function fetchContentJson(mediaUrl: string): Promise<unknown> {
+  const raw = await fetchContentString(mediaUrl);
+  return JSON.parse(raw);
+}
+
 // Cache for bucket existence checks
 let bucketExistsCache: boolean | null = null;
 

@@ -16,6 +16,7 @@ import {
   type Leaf,
 } from '@las-flores/shared';
 import type { DialogueNode } from '@las-flores/shared';
+import { publishDialogueTree, publishDialogueChunk } from '../services/ContentPublishService.js';
 
 // ---- constants ----
 
@@ -170,8 +171,29 @@ export function compileTree(
 // ---- DB write wrapper ----
 
 /**
+ * Best-effort content publish: returns the `s3://` content URL on
+ * success, or `null` when MinIO is unavailable/unreachable. Publishing
+ * is never fatal to a migration — the resolver falls back to the
+ * in-DB JSONB when `content_url` is NULL.
+ */
+async function safePublish(publish: () => Promise<string>): Promise<string | null> {
+  try {
+    return await publish();
+  } catch (error: any) {
+    console.warn(`[compiler] Content publish skipped (MinIO unavailable?): ${error?.message}`);
+    return null;
+  }
+}
+
+/**
  * Compile a single dialogue tree and write chunks to the database.
  * Uses DELETE+INSERT per tree for stale-free idempotency.
+ *
+ * Publish-first ordering (M23): the tree nodes blob + each compiled
+ * chunk blob are externalized to MinIO/CDN BEFORE the DB rows are
+ * written, so the DB `content_url` pointer always references an object
+ * that already exists. Cache invalidation for these pointers runs after
+ * the full migration (see migrate.ts `invalidateCaches`).
  */
 export async function compileDialogueTree(treeId: string): Promise<CompiledChunk[]> {
   const result = await queryOLTP<{
@@ -201,17 +223,34 @@ export async function compileDialogueTree(treeId: string): Promise<CompiledChunk
   // Pure compile
   const chunks = compileTree(treeId, start_node_id, nodes, gateSet);
 
-  // DB write: delete stale + insert fresh, in one transaction
+  // M23 publish-first: externalize tree nodes + chunk sub-graphs to MinIO.
+  const treeContentUrl = await safePublish(() => publishDialogueTree(treeId, JSON.stringify({ nodes })));
+  const chunkContentUrls = new Map<string, string>();
+  for (const chunk of chunks) {
+    const payload = JSON.stringify({ nodes: chunk.nodes, leaves: chunk.leaves });
+    const url = await safePublish(() => publishDialogueChunk(treeId, chunk.chunk_key, payload));
+    if (url) chunkContentUrls.set(chunk.chunk_key, url);
+  }
+
+  // DB write: delete stale + insert fresh, in one transaction.
+  // `content_url` references the (already-published) CDN objects; the
+  // nodes/leaves JSONB columns are kept for backward-compat fallback.
   await withOLTPTransaction(async (client) => {
     await client.query('DELETE FROM dialogue_chunks WHERE tree_id = $1', [treeId]);
 
     for (const chunk of chunks) {
       await client.query(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves)
-         VALUES ($1, $2, $3, $4)`,
-        [chunk.tree_id, chunk.chunk_key, JSON.stringify(chunk.nodes), JSON.stringify(chunk.leaves)]
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves, content_url)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [chunk.tree_id, chunk.chunk_key, JSON.stringify(chunk.nodes), JSON.stringify(chunk.leaves), chunkContentUrls.get(chunk.chunk_key) ?? null]
       );
     }
+
+    // Point the tree row at its externalized nodes blob.
+    await client.query(
+      'UPDATE dialogue_trees SET content_url = $1 WHERE id = $2',
+      [treeContentUrl, treeId]
+    );
   });
 
   return chunks;
