@@ -22,6 +22,9 @@ const OVERLAY_FILE = 'overlays/great_lithium_leak/overlay_great_lithium_leak.yam
 // rows that should persist; deleting them would corrupt the beat registry relied on
 // by dialogue/scene beat-slug validation. Only the migration_log row is cleaned up.
 const STORY_FILE = 'stories/real_heroism_in_latam/real_heroism_in_latam.yaml';
+// Legacy 046-mystery fixture (unique synthetic IDs). Cleaned up in afterAll.
+const LEGACY_MIGRATION_FILE = 'migrations/drift-046-legacy-mystery.yaml';
+const LEGACY_ID = 'e0000000-e29b-41d4-a716-446655440099';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
@@ -86,8 +89,8 @@ describe('Migration drift guard', () => {
 
   afterAll(async () => {
     await pool.query(
-      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3, $4)`,
-      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE, STORY_FILE]
+      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3, $4, $5)`,
+      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE, STORY_FILE, LEGACY_MIGRATION_FILE]
     );
     await pool.end();
     await closeRedis();
@@ -196,8 +199,8 @@ describe('Migration drift guard', () => {
     // fallback must drop the constraint, migrate mystery→mission, and re-add
     // the constraint + re-run the rest of the script. This test reproduces that
     // legacy state and verifies the fallback converges the row.
-    const legacyFile = 'migrations/drift-046-legacy-mystery.yaml';
-    const legacyId = 'e0000000-e29b-41d4-a716-446655440099';
+    const legacyFile = LEGACY_MIGRATION_FILE;
+    const legacyId = LEGACY_ID;
 
     await withSchemaLock(async (client) => {
       // Simulate a pre-046 legacy row: relax the constraint, insert a legacy
@@ -231,7 +234,25 @@ describe('Migration drift guard', () => {
       expect(row.rows).toHaveLength(1);
       expect(row.rows[0].content_type).toBe('mission');
     } finally {
-      await pool.query('DELETE FROM migration_log WHERE file_path = $1', [legacyFile]);
+      // Restore the shared schema on every exit path so a failure here cannot
+      // leave the restrictive legacy CHECK constraint (or the recreated dead
+      // `stories` table) on the shared DB and break sibling suites. The fallback
+      // above re-runs 046's CREATE TABLE IF NOT EXISTS stories (which 058 drops),
+      // so drop it idempotently, then replace whatever constraint state remains
+      // with the canonical full whitelist. These are schema mutations, so they run
+      // under the shared advisory lock. (The legacy migration_log row is removed
+      // in afterAll.)
+      await withSchemaLock(async (client) => {
+        await client.query(`DROP TABLE IF EXISTS public.stories`);
+        await client.query(`
+          ALTER TABLE migration_log DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
+          ALTER TABLE migration_log ADD CONSTRAINT migration_log_content_type_check
+            CHECK (content_type IN (
+              'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
+              'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
+            ));
+        `);
+      });
     }
   });
 });

@@ -190,22 +190,24 @@ export class ContentAssetWorker {
       const hasExisting = existingAssets.length > 0 ||
         (await this.defaultExists(item, entityRoot));
       if (hasExisting) {
-        const resolvedByDefault = await autoSelectDefaultDrafts(plan, contentDir);
-        // autoSelectDefaultDrafts() resolves a still-`pending` need ONLY when a
-        // `<slug>__default.png` exists (writing asset_paths.<field> and marking
-        // the need `chosen`). Preserve `chosen` — downgrading it to `drafted`
-        // would make publishChosenDrafts() skip the auto-selected asset and it
-        // would never reach MinIO.
+        await autoSelectDefaultDrafts(plan, contentDir);
+        // autoSelectDefaultDrafts() resolves still-`pending` needs ONLY when a
+        // `<slug>__default.png` exists — and when it fires it resolves EVERY
+        // pending need of the item at once (writing asset_paths.<field> and
+        // marking each one `chosen`). Preserve `chosen` — downgrading it to
+        // `drafted` would make publishChosenDrafts() skip the auto-selected asset
+        // and it would never reach MinIO.
         //
-        // A file that autoSelectDefaultDrafts did NOT select (a non-default,
-        // hand-placed asset) carries no reliable filename→field mapping, so it
-        // must resolve only a need whose target asset_paths.<field> is actually
-        // recorded. Otherwise resolve the need by generating below instead of
-        // marking it `drafted` without a path (or leaving it pending forever).
+        // Each need is then resolved against its OWN recorded target field, not a
+        // single per-item flag. autoSelectDefaultDrafts writes asset_paths.<field>
+        // for every selected need, so even though the helper only returns one
+        // boolean, a LATER same-item need must still be skipped because ITS field
+        // was recorded. Gating on the recorded field also covers a non-default,
+        // hand-placed asset whose asset_paths.<field> is already present; a need
+        // with no recorded field falls through to real generation below.
         const fieldName = getAssetFieldName(need);
         const fieldRecorded = Boolean((item.fields as any)?.asset_paths?.[fieldName]);
-        if ((need.status === 'pending' && fieldRecorded) ||
-            (need.status === 'chosen' && resolvedByDefault)) {
+        if (fieldRecorded && (need.status === 'pending' || need.status === 'chosen')) {
           if (need.status === 'pending') markDrafted(need);
           await ContentPlanService.updatePlanJson(row.id, plan);
           processed++;
@@ -251,13 +253,19 @@ export class ContentAssetWorker {
     }
 
     if (jobId) {
-      // A run that still has any unresolved `generating` need must not be
-      // reported `succeeded` — only a terminal `succeeded`/`failed` reflects
-      // the real remaining work.
+      // A residual `generating` need here means a worker crashed mid-generation
+      // and the need is simply awaiting reclamation (its grace period hasn't
+      // elapsed). Do NOT mark the run terminal `failed` in that case — on the next
+      // tick a failed run advances through `nextAttempt`, consuming the attempt
+      // budget without ever processing that need, so the run can exhaust and never
+      // resume. Keep the run `running` so the next scan (once the plan passes its
+      // grace period) reclaims the need back to `pending` and actually processes
+      // it. Only genuine persisted failures (failed > 0 with no residual
+      // generation) are terminal.
       const stillGenerating = plan.items.some((item: any) =>
         item.assetNeeds?.some((need: any) => need.status === 'generating')
       );
-      const finalStatus = failed > 0 || stillGenerating ? 'failed' : 'succeeded';
+      const finalStatus = stillGenerating ? 'running' : failed > 0 ? 'failed' : 'succeeded';
       await updateJobRun(jobId, {
         status: finalStatus,
         stage: finalStatus === 'succeeded' ? 'done' : 'generating',

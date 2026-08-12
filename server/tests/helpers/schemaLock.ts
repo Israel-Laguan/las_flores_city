@@ -59,6 +59,19 @@ async function withPoolSchemaLock<T>(
     return value;
   } finally {
     try {
+      // `fn` (the DDL) ran as an implicit transaction on this same client. A
+      // benign error inside it (e.g. `CREATE ... IF NOT EXISTS` already exists,
+      // or `42P07` "relation already exists") aborts that transaction, leaving
+      // the session in an aborted state. The advisory lock is *session*-level,
+      // so it survives a rollback — but the subsequent unlock query would
+      // otherwise fail with `25P02` ("current transaction is aborted"). Roll
+      // back first so the unlock runs in a fresh, valid transaction.
+      await client.query(`ROLLBACK`);
+    } catch {
+      // No open transaction to roll back (DDL succeeded and committed, or
+      // there was nothing to undo) — fall through to the unlock.
+    }
+    try {
       await client.query(`SELECT pg_advisory_unlock(hashtext($1))`, [
         SCHEMA_MUTATION_LOCK_KEY,
       ]);
