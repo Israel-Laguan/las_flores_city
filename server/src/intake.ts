@@ -111,17 +111,19 @@ async function initializeServer() {
     'markOrphanedResumable',
   );
 
-  // If the initial claim failed all retries (transient DB hiccup), make one more
-  // bounded claim now that the listener is live, so orphaned `solidify` runs
-  // (which only the loop below resumes) are not stranded as `resumable` until
-  // the next restart. The fallback stays bounded by `startupCutoff`, so a live
-  // request started after boot is never reclaimed and double-executed. When this
-  // fallback also fails, `orphanedList` is `undefined` and each reconciliation
-  // below retries its own bounded claim.
-  const orphanedList =
-    orphaned ?? (await markOrphanedResumable(startupCutoff).catch(() => undefined));
+  // If the initial claim failed all retries (transient DB hiccup), retry a
+  // bounded claim now that the listener is live, so orphaned durable runs
+  // (solidify AND plan_fill) are not stranded as `resumable` until the next
+  // restart. The claim stays bounded by `startupCutoff`, so a live request
+  // started after boot is never reclaimed and double-executed. A single claimed
+  // list is shared by BOTH reconciliations below so no already-claimed row is
+  // lost between them.
+  const claimedOrphans = await withStartupRetry(async () => {
+    if (orphaned) return orphaned;
+    return await markOrphanedResumable(startupCutoff);
+  }, 'markOrphanedResumable-recheck');
 
-  const orphanedSolidify = (orphanedList ?? []).filter(o => o.jobType === 'solidify');
+  const orphanedSolidify = (claimedOrphans ?? []).filter(o => o.jobType === 'solidify');
   if (orphanedSolidify.length > 0) {
     console.log(`[story-builder] Resuming ${orphanedSolidify.length} orphaned solidify job(s)`);
     for (const { planId } of orphanedSolidify) {
@@ -135,11 +137,11 @@ async function initializeServer() {
 
   // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
   // resume any resumable plan_fill jobs. Pass the already-claimed orphans so
-  // plan_fill rows are not lost (they were flipped to `resumable` above), and the
-  // startUp cutoff so any fallback claim stays bounded. Retried so a transient
-  // failure cannot strand durable fill jobs until the next process restart.
+  // plan_fill rows are not lost (they were flipped to `resumable` above), and
+  // the startup cutoff so any fallback claim stays bounded. Retried so a
+  // transient failure cannot strand durable fill jobs until the next restart.
   await withStartupRetry(
-    () => resetOrphanedFillJobs(orphanedList, startupCutoff),
+    () => resetOrphanedFillJobs(claimedOrphans, startupCutoff),
     'resetOrphanedFillJobs',
   );
 

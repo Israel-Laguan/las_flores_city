@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { queryOLTP } from '@las-flores/infra';
-import type { AssetNeed, ContentPlanItem } from '@las-flores/shared';
+import type { AssetNeed, ContentPlanItem, JobRun } from '@las-flores/shared';
 import { markGenerating, markDrafted, transitionAssetNeed } from '../services/AssetNeedsService.js';
-import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, autoSelectDefaultDrafts } from '../services/LocalDraftService.js';
+import { generateLocalDrafts, listLocalAssets, resolveEntityRootDir, autoSelectDefaultDrafts, getAssetFieldName } from '../services/LocalDraftService.js';
 import { ContentPlanService } from '../services/ContentPlanService.js';
 import {
   startJobRun,
@@ -93,7 +93,15 @@ export class ContentAssetWorker {
 
     // M22: a succeeded run does not close the plan permanently, because new
     // asset needs can be appended later. Skip only when there is no work.
-    const existingRun = await getJobRun(row.id, 'asset_generation');
+    // A job_runs lookup error must not abort the whole plan — leave
+    // `existingRun` null so we fall through to the failure-tolerant
+    // create/resume path below (and the asset-processing fallback can still run).
+    let existingRun: JobRun | null = null;
+    try {
+      existingRun = await getJobRun(row.id, 'asset_generation');
+    } catch (err) {
+      console.warn(`[ContentAssetWorker] getJobRun failed for plan=${row.id}, proceeding without a prior run:`, (err as Error).message);
+    }
 
     // Create or resume a job run for this plan.
     let jobId: string | undefined;
@@ -155,8 +163,12 @@ export class ContentAssetWorker {
       item.assetNeeds?.some((need: any) => need.status === 'generating')
     );
     if (needsToGenerate.length === 0 && !hasGenerating) {
-      if (existingRun && existingRun.status !== 'succeeded') {
-        await updateJobRun(existingRun.id, { status: 'succeeded', stage: 'done' }).catch(() => {});
+      // Finalize the *active* run into `succeeded`. This covers both a
+      // previously-created run and a run this pass just created (when
+      // `existingRun` was null) — otherwise a fresh run with no remaining work
+      // would be left `running` forever.
+      if (jobId && (!existingRun || existingRun.status !== 'succeeded')) {
+        await updateJobRun(jobId, { status: 'succeeded', stage: 'done' }).catch(() => {});
       }
       return;
     }
@@ -178,18 +190,27 @@ export class ContentAssetWorker {
       const hasExisting = existingAssets.length > 0 ||
         (await this.defaultExists(item, entityRoot));
       if (hasExisting) {
-        await autoSelectDefaultDrafts(plan, contentDir);
-        // A draft already exists — resolve the need for the still-`pending`
-        // case (including needs transited from `failed` by extractPendingNeeds),
-        // so they are not re-selected on every tick. But if
-        // autoSelectDefaultDrafts() just auto-selected a `<slug>__default.png`
-        // and transitioned this need to `chosen`, PRESERVE `chosen` — downgrading
-        // it to `drafted` would make publishChosenDrafts() skip the auto-selected
-        // asset and it would never reach MinIO.
-        if (need.status === 'pending') markDrafted(need);
-        await ContentPlanService.updatePlanJson(row.id, plan);
-        processed++;
-        continue;
+        const resolvedByDefault = await autoSelectDefaultDrafts(plan, contentDir);
+        // autoSelectDefaultDrafts() resolves a still-`pending` need ONLY when a
+        // `<slug>__default.png` exists (writing asset_paths.<field> and marking
+        // the need `chosen`). Preserve `chosen` — downgrading it to `drafted`
+        // would make publishChosenDrafts() skip the auto-selected asset and it
+        // would never reach MinIO.
+        //
+        // A file that autoSelectDefaultDrafts did NOT select (a non-default,
+        // hand-placed asset) carries no reliable filename→field mapping, so it
+        // must resolve only a need whose target asset_paths.<field> is actually
+        // recorded. Otherwise resolve the need by generating below instead of
+        // marking it `drafted` without a path (or leaving it pending forever).
+        const fieldName = getAssetFieldName(need);
+        const fieldRecorded = Boolean((item.fields as any)?.asset_paths?.[fieldName]);
+        if ((need.status === 'pending' && fieldRecorded) ||
+            (need.status === 'chosen' && resolvedByDefault)) {
+          if (need.status === 'pending') markDrafted(need);
+          await ContentPlanService.updatePlanJson(row.id, plan);
+          processed++;
+          continue;
+        }
       }
 
       // Claim this need
@@ -198,17 +219,22 @@ export class ContentAssetWorker {
 
       try {
         const generated = await generateLocalDrafts(item, entityRoot, 1);
-        if (generated.length > 0) {
-          const draftedFilename = generated[0];
-          const fieldName = need.targetField.split('.').pop() || 'asset';
-          if (!(item.fields as any).asset_paths) {
-            (item.fields as any).asset_paths = {};
-          }
-          (item.fields as any).asset_paths[fieldName] = draftedFilename;
-          markDrafted(need);
-          await ContentPlanService.updatePlanJson(row.id, plan);
-          processed++;
+        if (!generated || generated.length === 0) {
+          // Headless generation produced no file — the need is still
+          // `generating` with nothing on disk. Treat it as a failure so it is
+          // not hidden behind a `succeeded` run (the next scan would otherwise
+          // wait for stale reclamation before retrying).
+          throw new Error('No local draft was generated');
         }
+        const draftedFilename = generated[0];
+        const fieldName = getAssetFieldName(need) || 'asset';
+        if (!(item.fields as any).asset_paths) {
+          (item.fields as any).asset_paths = {};
+        }
+        (item.fields as any).asset_paths[fieldName] = draftedFilename;
+        markDrafted(need);
+        await ContentPlanService.updatePlanJson(row.id, plan);
+        processed++;
       } catch (err) {
         console.error(`[ContentAssetWorker] draft gen failed for plan=${row.id}, item=${item.id}:`, err);
         transitionAssetNeed(need, 'failed');
@@ -225,7 +251,13 @@ export class ContentAssetWorker {
     }
 
     if (jobId) {
-      const finalStatus = failed > 0 ? 'failed' : 'succeeded';
+      // A run that still has any unresolved `generating` need must not be
+      // reported `succeeded` — only a terminal `succeeded`/`failed` reflects
+      // the real remaining work.
+      const stillGenerating = plan.items.some((item: any) =>
+        item.assetNeeds?.some((need: any) => need.status === 'generating')
+      );
+      const finalStatus = failed > 0 || stillGenerating ? 'failed' : 'succeeded';
       await updateJobRun(jobId, {
         status: finalStatus,
         stage: finalStatus === 'succeeded' ? 'done' : 'generating',

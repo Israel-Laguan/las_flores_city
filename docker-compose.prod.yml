@@ -59,11 +59,23 @@ services:
     environment:
       NODE_ENV: production
       # Production: Use _FILE secrets that the server's startup resolver will read
-      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
-      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
+      # `$${...}` keeps the literal placeholder so resolveFileEnvVars() substitutes
+      # the mounted secret at runtime instead of Compose baking a host/dev value in.
+      DATABASE_URL: postgresql://las_flores:$${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:$${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
+      # Clear the plain secrets inherited from the base compose so the _FILE
+      # variants below are actually consumed by resolveFileEnvVars() (the resolver
+      # skips a _FILE var when its plain counterpart is already set, which would
+      # otherwise keep the publicly-known dev fallbacks in production).
+      JWT_SECRET: !reset null
+      MINIO_ACCESS_KEY: !reset null
+      MINIO_SECRET_KEY: !reset null
+      PATREON_CLIENT_ID: !reset null
+      PATREON_CLIENT_SECRET: !reset null
+      PAYPAL_SECRET: !reset null
       # Database passwords via _FILE (resolver will read and set POSTGRES_PASSWORD, etc.)
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_ANALYTICS_PASSWORD_FILE: /run/secrets/postgres_analytics_password
@@ -114,6 +126,15 @@ services:
       REDIS_URL: redis://redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
+      # Clear the plain secrets inherited from the base compose so the _FILE
+      # variants below are actually consumed by resolveFileEnvVars() (same reason
+      # as the `server` service above — otherwise the dev fallbacks win).
+      JWT_SECRET: !reset null
+      MINIO_ACCESS_KEY: !reset null
+      MINIO_SECRET_KEY: !reset null
+      PATREON_CLIENT_ID: !reset null
+      PATREON_CLIENT_SECRET: !reset null
+      PAYPAL_SECRET: !reset null
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_ANALYTICS_PASSWORD_FILE: /run/secrets/postgres_analytics_password
       MINIO_ACCESS_KEY_FILE: /run/secrets/minio_access_key

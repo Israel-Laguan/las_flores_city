@@ -18,7 +18,7 @@ import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
 import express from 'express';
-import { withSchemaLock } from '../helpers/schemaLock.js';
+import { withSchemaLock, withOlapSchemaLock } from '../helpers/schemaLock.js';
 import { shopRouter } from '../../src/routes/shop.js';
 import { generateToken } from '../../src/middleware/auth.js';
 import { closeRedis, deleteCache } from '@las-flores/infra';
@@ -50,13 +50,22 @@ function auth() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
 }
 
-async function applyMigration(pool: pg.Pool, filename: string) {
+async function applyMigration(
+  pool: pg.Pool,
+  filename: string,
+  database: 'oltp' | 'olap' = 'oltp'
+) {
   const sql = fs.readFileSync(
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
   );
+  // Advisory locks are per-database, so OLAP migrations must lock on the
+  // analytics DB (withOlapSchemaLock), not the OLTP-bound withSchemaLock —
+  // otherwise the DDL would run on the wrong database (or with no mutual
+  // exclusion against sibling workers mutating player_events).
+  const withLock = database === 'olap' ? withOlapSchemaLock : withSchemaLock;
   try {
-    await withSchemaLock(async (client) => {
+    await withLock(async (client) => {
       await client.query(sql);
     });
   } catch {
@@ -81,7 +90,7 @@ beforeAll(async () => {
   // Apply migration 024 (OLTP) and 025 (OLAP). Best-effort — earlier
   // tests may have already applied them. Migrations are idempotent.
   await applyMigration(oltpPool, '024_marketplace.sql');
-  await applyMigration(olapPool, '025_marketplace_olap.sql');
+  await applyMigration(olapPool, '025_marketplace_olap.sql', 'olap');
 
   // Create the dedicated test user with 200 credits, 0 gold_credits.
   await oltpPool.query(
