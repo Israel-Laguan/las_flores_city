@@ -63,9 +63,15 @@ afterAll(async () => {
 
 describe('Asset cascade resolution', () => {
   const originalEnv = process.env.NODE_ENV;
+  const originalJwtSecret = process.env.JWT_SECRET;
 
   afterEach(() => {
     process.env.NODE_ENV = originalEnv;
+    if (originalJwtSecret === undefined) {
+      delete process.env.JWT_SECRET;
+    } else {
+      process.env.JWT_SECRET = originalJwtSecret;
+    }
   });
 
   describe('character portrait cascade', () => {
@@ -122,6 +128,11 @@ describe('Asset cascade resolution', () => {
 
     it('in production: same character returns production URL', async () => {
       process.env.NODE_ENV = 'production';
+      // generateToken() now fails closed in production without a secret (see
+      // middleware/auth.ts getJwtSecret). Provide a test secret so the
+      // asset-cascade URL assertion can still run under NODE_ENV=production —
+      // the guard itself is covered by its own tests.
+      process.env.JWT_SECRET = 'asset-cascade-test-secret';
 
       // Invalidate user-specific cache from test 1 (which cached dev URLs)
       await deleteCache(`user:location:${TEST_USER_ID}:${TEST_SCENE_ID}`);

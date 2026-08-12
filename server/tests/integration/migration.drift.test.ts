@@ -244,6 +244,13 @@ describe('Migration drift guard', () => {
       // in afterAll.)
       await withSchemaLock(async (client) => {
         await client.query(`DROP TABLE IF EXISTS public.stories`);
+        // Remove the synthetic legacy row BEFORE re-adding the canonical CHECK.
+        // If applyMigration threw for a non-fallback reason (connection error,
+        // SIGTERM, unrelated SQL error), the row is still `content_type='mystery'`,
+        // and ADD CONSTRAINT (validating existing rows, no `NOT VALID`) would
+        // reject it and leave the constraint dropped for every sibling suite.
+        // afterAll removes this row too, but it runs after this finally.
+        await client.query(`DELETE FROM migration_log WHERE file_path = $1`, [legacyFile]);
         await client.query(`
           ALTER TABLE migration_log DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
           ALTER TABLE migration_log ADD CONSTRAINT migration_log_content_type_check
