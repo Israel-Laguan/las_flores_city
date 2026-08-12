@@ -1,10 +1,14 @@
 import { type ContentPlan, type ContentPlanItem, type HarnessFinding } from '@las-flores/shared';
+import { queryOLTP } from '@las-flores/infra';
+import express from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { resolveFilePath, generateYaml } from '../services/ContentSkeletonGenerator.js';
 import { runValidationHarness } from '../services/ValidationHarnessService.js';
+import { runPlanFill, cancelPlanFillStatus } from '../services/PlanGenerationJob.js';
+import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 
 export async function scaffoldPlanItems(
   items: ContentPlanItem[],
@@ -152,4 +156,110 @@ export function buildPlanErrorResponse(error: any, description?: string): { stat
       timestamp: new Date().toISOString(),
     },
   };
+}
+
+type ScaffoldFilesResult =
+  | { createdFiles: string[] }
+  | { error: (res: express.Response) => void };
+
+/**
+ * Scaffold the `create` items of a repaired plan to disk. On failure this rolls
+ * back every file this request created (and only those) BEFORE any
+ * content_plans insert or fill job is queued, then returns an `error` thunk the
+ * caller invokes to write the 500 response. Returns `{ createdFiles }` on success.
+ */
+export async function scaffoldPlanFiles(
+  repairedPlan: ContentPlan,
+  trimmedDesc: string,
+  contentDir: string,
+): Promise<ScaffoldFilesResult> {
+  const createItems = repairedPlan.items.filter((i) => i.action === 'create');
+  try {
+    const createdFiles = await scaffoldPlanItems(createItems, contentDir);
+    return { createdFiles };
+  } catch (scaffoldErr: any) {
+    console.error(`[story-builder] Scaffold aborted for plan "${trimmedDesc.substring(0, 80)}":`, {
+      error: (scaffoldErr as Error).message,
+      createItems: createItems.map((i) => i.id),
+    });
+    // `scaffoldPlanItems` already removed every file it published before it
+    // rethrew, so no additional filesystem rollback is required here. Stop
+    // BEFORE inserting content_plans or queuing the fill job.
+    return {
+      error: (res) => {
+        res.status(500).json({
+          success: false,
+          error: 'Failed to scaffold plan files. No files were committed and the plan was not persisted. Please retry.',
+          timestamp: new Date().toISOString(),
+        });
+      },
+    };
+  }
+}
+
+type PersistResult =
+  | { ok: true }
+  | { error: (res: express.Response) => void };
+
+/**
+ * Insert the scaffolded plan row, kick off the async fill job, and emit the
+ * admin event. On a persistence/event failure this compensates by deleting the
+ * row (and its cached fill-job status) and rolling back the scaffolded files,
+ * then returns an `error` thunk the caller invokes to write the 500 response.
+ */
+export async function persistScaffoldPlan(
+  planId: string,
+  repairedPlan: ContentPlan,
+  trimmedDesc: string,
+  createdFiles: string[],
+  userId: string | undefined,
+  contentDir: string,
+): Promise<PersistResult> {
+  try {
+    const insertResult = await queryOLTP<{ id: string }>(
+      `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at, created_by)
+       VALUES ($1, $2, $3, 'draft', NOW(), NOW(), $4)
+       RETURNING id`,
+      [planId, trimmedDesc, repairedPlan, userId ?? null],
+    );
+    const insertedId = insertResult.rows[0].id;
+
+    emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, userId);
+
+    // Dispatch last: nothing after this point can trigger the compensating
+    // DELETE while the fill job is already reading the plan row.
+    runPlanFill(insertedId, userId).catch((err) => {
+      console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
+    });
+    return { ok: true };
+  } catch (postScaffoldErr: any) {
+    console.error(`[story-builder] Post-scaffold failure for plan "${trimmedDesc.substring(0, 80)}" — rolling back scaffolded files:`, {
+      error: (postScaffoldErr as Error).message,
+      createdFiles,
+    });
+    // Compensate for the row already inserted: delete it (and its cached
+    // fill-job status) so generation-status polling does not keep reporting a
+    // 'draft' plan as 'filling' after its files were rolled back. Best-effort —
+    // the filesystem rollback below is the primary guarantee; a failed delete
+    // leaves a row that resetOrphanedFillJobs can later reclaim.
+    try {
+      await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
+    } catch (cleanupErr: any) {
+      console.warn(`[story-builder] Failed to delete content_plans row ${planId} during rollback:`, (cleanupErr as Error).message);
+    }
+    const cacheDeleted = await cancelPlanFillStatus(planId);
+    if (!cacheDeleted) {
+      console.warn(`[story-builder] Failed to delete fill-job cache for ${planId} during rollback`);
+    }
+    await removeScaffoldedFiles(createdFiles, contentDir);
+    return {
+      error: (res) => {
+        res.status(500).json({
+          success: false,
+          error: 'A persistence error occurred after scaffolding. The plan was not committed and scaffold cleanup was attempted; please retry.',
+          timestamp: new Date().toISOString(),
+        });
+      },
+    };
+  }
 }

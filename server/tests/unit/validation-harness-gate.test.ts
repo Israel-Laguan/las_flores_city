@@ -55,7 +55,11 @@ jest.mock('@las-flores/infra', () => {
   return {
     queryOLTP: jest.fn(async (text: string) => {
       if (text.includes('SELECT plan_json')) {
-        return { rows: [{ plan_json: CONFLICTING_PLAN, status: 'proposed' }] };
+        // runSolidify reads the plan after approveAndSolidifyPlan set it to pending.
+        // The FOR-UPDATE row lock in approveAndSolidifyPlan runs inside the
+        // transaction against the fakeClient (withOLTPTransaction invokes
+        // cb(fakeClient)), so queryOLTP never sees a FOR UPDATE statement.
+        return { rows: [{ plan_json: CONFLICTING_PLAN, status: 'pending' }] };
       }
       // UPDATE ... SET status = $1 ... — the harness-blocked finalize
       return { rows: [], rowCount: 1 };
@@ -107,6 +111,29 @@ jest.mock('../../src/content/migrate.js', () => ({
 
 jest.mock('../../src/services/AdminEventEmitter.js', () => ({
   emitAdminEvent: jest.fn(),
+}));
+
+jest.mock('../../src/services/JobRunService.js', () => ({
+  startJobRun: jest.fn(async () => ({
+    id: 'mock-job-run-id',
+    planId: TEST_PLAN_ID,
+    jobType: 'solidify',
+    status: 'running',
+    attempt: 1,
+    maxAttempts: 3,
+    stage: null,
+    committedStages: [],
+    partialResult: null,
+    error: null,
+    nextRetryAt: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  })),
+  updateJobRun: jest.fn(async () => ({})),
+  commitStage: jest.fn(async () => ({})),
+  hasCommittedStageById: jest.fn(async () => false),
+  getJobRun: jest.fn(async () => null),
+  getJobRunById: jest.fn(async () => null),
 }));
 
 import { approveAndSolidifyPlan } from '../../src/services/StoryBuilderOrchestrator.js';

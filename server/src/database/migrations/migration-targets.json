@@ -52,7 +52,8 @@
     "057_dialogue_ownership.sql",
     "058_drop_stories_table.sql",
     "060_admin_events_solidified.sql",
-    "061_admin_events_validate.sql"
+    "061_admin_events_validate.sql",
+    "062_job_runs.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

@@ -58,8 +58,8 @@ async function applyMigration(
   );
   const withLock = database === 'olap' ? withOlapSchemaLock : withSchemaLock;
   try {
-    await withLock(async () => {
-      await pool.query(sql);
+    await withLock(async (client) => {
+      await client.query(sql);
     });
   } catch {
     // Migration may already be applied

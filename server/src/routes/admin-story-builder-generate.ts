@@ -6,16 +6,15 @@ import { contentPlanService } from '../services/ContentPlanService.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { checkCreateConflicts } from '../services/StoryBuilderPlanOps.js';
 import { resolveContentDir } from '../services/StoryBuilderLore.js';
-import { runPlanFill, getPlanFillJobStatus, cancelPlanFillStatus } from '../services/PlanGenerationJob.js';
+import { getPlanFillJobStatus } from '../services/PlanGenerationJob.js';
 import { fillAllTodoPlaceholders, scanForTodoPlaceholders } from '../services/FillPlaceholders.js';
 import { createLLMProvider } from '../services/LLMService.js';
 import crypto from 'node:crypto';
 import {
-  scaffoldPlanItems,
-  removeScaffoldedFiles,
   runScaffoldHarnessGate,
-  buildPlanEventData,
   buildPlanErrorResponse,
+  scaffoldPlanFiles,
+  persistScaffoldPlan,
 } from './admin-story-builder-generate-helpers.js';
 
 export const adminStoryBuilderGenerateRouter = express.Router();
@@ -72,7 +71,9 @@ adminStoryBuilderGenerateRouter.post('/plan', async (req: AuthRequest, res) => {
 });
 // POST /admin/story-builder/plan/scaffold — PHASE 2 (commit): scaffold files + insert content_plans + kick off async fill.
 // Takes the outline produced by POST /plan. This is the explicit "Generate Full Plan" action.
-adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, res) => {
+adminStoryBuilderGenerateRouter.post('/plan/scaffold', handleScaffoldPlan);
+
+async function handleScaffoldPlan(req: AuthRequest, res: express.Response): Promise<void> {
   try {
     const { plan: rawPlan } = req.body;
 
@@ -156,25 +157,12 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
       jobPrefix: 'story-builder:gen:',
     };
 
-    const createItems = repairedPlan.items.filter(i => i.action === 'create');
-    let createdFiles: string[] = [];
-    try {
-      createdFiles = await scaffoldPlanItems(createItems, contentDir);
-    } catch (scaffoldErr: any) {
-      console.error(`[story-builder] Scaffold aborted for plan "${trimmedDesc.substring(0, 80)}":`, {
-        error: (scaffoldErr as Error).message,
-        createdFiles,
-      });
-      // Roll back only this request's successfully created files, then stop
-      // BEFORE inserting content_plans or queuing the fill job.
-      await removeScaffoldedFiles(createdFiles, contentDir);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to scaffold plan files. No files were committed and the plan was not persisted. Please retry.',
-        timestamp: new Date().toISOString(),
-      });
+    const scaffoldResult = await scaffoldPlanFiles(repairedPlan, trimmedDesc, contentDir);
+    if ('error' in scaffoldResult) {
+      scaffoldResult.error(res);
       return;
     }
+    const { createdFiles } = scaffoldResult;
 
     const planId = crypto.randomUUID();
     repairedPlan.id = planId;
@@ -182,45 +170,9 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
     // Insert + event setup live in the same rollback scope as the scaffold so a
     // DB or post-scaffold failure removes this request's files rather than
     // leaving them orphaned on disk (keeps filesystem state consistent + retryable).
-    try {
-      const insertResult = await queryOLTP<{ id: string }>(
-        `INSERT INTO content_plans (id, description, plan_json, status, created_at, updated_at)
-         VALUES ($1, $2, $3, 'draft', NOW(), NOW())
-         RETURNING id`,
-        [planId, trimmedDesc, repairedPlan],
-      );
-      const insertedId = insertResult.rows[0].id;
-
-      runPlanFill(insertedId, req.userId).catch((err) => {
-        console.error(`[story-builder] Background fill job failed for ${insertedId}:`, err);
-      });
-
-      emitAdminEvent('plan_created', buildPlanEventData(trimmedDesc, repairedPlan, createdFiles.length), planId, req.userId);
-    } catch (postScaffoldErr: any) {
-      console.error(`[story-builder] Post-scaffold failure for plan "${trimmedDesc.substring(0, 80)}" — rolling back scaffolded files:`, {
-        error: (postScaffoldErr as Error).message,
-        createdFiles,
-      });
-      // Compensate for the row already inserted: delete it (and its cached
-      // fill-job status) so generation-status polling does not keep reporting a
-      // 'draft' plan as 'filling' after its files were rolled back. Best-effort —
-      // the filesystem rollback below is the primary guarantee; a failed delete
-      // leaves a row that resetOrphanedFillJobs can later reclaim.
-      try {
-        await queryOLTP('DELETE FROM content_plans WHERE id = $1', [planId]);
-      } catch (cleanupErr: any) {
-        console.warn(`[story-builder] Failed to delete content_plans row ${planId} during rollback:`, (cleanupErr as Error).message);
-      }
-      const cacheDeleted = await cancelPlanFillStatus(planId);
-      if (!cacheDeleted) {
-        console.warn(`[story-builder] Failed to delete fill-job cache for ${planId} during rollback`);
-      }
-      await removeScaffoldedFiles(createdFiles, contentDir);
-      res.status(500).json({
-        success: false,
-        error: 'A persistence error occurred after scaffolding. The plan was not committed and scaffold cleanup was attempted; please retry.',
-        timestamp: new Date().toISOString(),
-      });
+    const persistResult = await persistScaffoldPlan(planId, repairedPlan, trimmedDesc, createdFiles, req.userId, contentDir);
+    if ('error' in persistResult) {
+      persistResult.error(res);
       return;
     }
 
@@ -233,7 +185,7 @@ adminStoryBuilderGenerateRouter.post('/plan/scaffold', async (req: AuthRequest, 
     const { status, body } = buildPlanErrorResponse(error, req.body.plan?.description);
     res.status(status).json(body);
   }
-});
+}
 
 // POST /admin/story-builder/plan/refine-preview — in-memory refine of a phase-1 outline ("Refine Instead").
 // Returns the refined plan + re-scanned conflicts. No persistence.

@@ -111,6 +111,7 @@ services:
     ports:
       - "3000:3000"
     environment:
+      NODE_ENV: development
       DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
@@ -157,6 +158,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      # M21: the game-server never migrates; it reads content tables. Gate on the
+      # intake-worker being healthy so schema + content migrations (the only
+      # content_migration advisory-lock holder) have completed first.
+      intake-worker:
+        condition: service_healthy
     extra_hosts:
       - "host.containers.internal:host-gateway"
     healthcheck:
@@ -168,6 +174,75 @@ services:
       start_period: ${DEV_MODE:-20}s
     volumes:
       # Production: Remove volume mounts for source code
+      - ./server/src:/app/server/src
+      - ./shared:/app/shared
+      - ./infra:/app/infra
+      - ./content:/app/content
+      - ./docs:/app/docs:ro
+
+  # --- intake-worker (M21 process split) ---
+  # Owns admin/* authoring routes, the content engine, StoryBuilder/LLM, and
+  # ContentAssetWorker. This is the ONLY process that runs `runAllMigrations()`
+  # (which calls migrateContent + the content_migration advisory lock), and the
+  # only process that schedules AI generation. Game routes live on `server`.
+  intake-worker:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: las-flores-intake-worker
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics
+      REDIS_URL: redis://redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
+      CDN_BASE_URL: ${CDN_BASE_URL}
+      CDN_KEY_PAIR_ID: ${CDN_KEY_PAIR_ID}
+      CDN_PRIVATE_KEY_PATH: ${CDN_PRIVATE_KEY_PATH}
+      SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
+      PATREON_CLIENT_ID: ${PATREON_CLIENT_ID}
+      PATREON_CLIENT_SECRET: ${PATREON_CLIENT_SECRET}
+      PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI:-http://localhost:3000/patreon/callback}
+      PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS:-}
+      CLIENT_BASE_URL: ${CLIENT_BASE_URL:-http://localhost:5173}
+      PAYPAL_MODE: ${PAYPAL_MODE:-sandbox}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_SECRET: ${PAYPAL_SECRET}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID:-}
+      GOLD_CREDITS_PER_USD: ${GOLD_CREDITS_PER_USD:-100}
+      LITELLM_BASE_URL: http://host.containers.internal:4000
+      LITELLM_API_KEY: ${LITELLM_API_KEY:-local-key}
+      LLM_MODEL: ${LLM_MODEL:-poolside/laguna-m.1}
+      LLM_PROVIDER: litellm
+    depends_on:
+      postgres-oltp:
+        condition: service_healthy
+      postgres-olap:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.containers.internal:host-gateway"
+    # `npm run dev:intake --workspace=server` resolves to `npx tsx watch
+    # src/intake.ts`, so edits hot-reload via the source bind-mount above.
+    # (Production uses `npm run start:intake --workspace=server` instead.)
+    command: npm run dev:intake --workspace=server
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
       - ./server/src:/app/server/src
       - ./shared:/app/shared
       - ./infra:/app/infra
@@ -192,7 +267,11 @@ services:
     working_dir: /app/client
     command: npx playwright test --config playwright.docker.config.ts
 
-  # Admin Panel - Next.js 16 (new, direct-fetch to Express)
+  # Admin Panel - Next.js 16 (content-authoring front-end).
+  # Per M21, the admin panel talks ONLY to the intake-worker: browser-side
+  # adminFetch uses NEXT_PUBLIC_SERVER_URL (host:3001) and server-side route
+  # handlers use INTERNAL_SERVER_URL (intake-worker:3001). The game-server on
+  # port 3000 is not part of the admin data path.
   admin:
     build:
       context: .
@@ -202,10 +281,10 @@ services:
     ports:
       - "3002:3000"
     environment:
-      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
-      INTERNAL_SERVER_URL: http://server:3000
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3001
+      INTERNAL_SERVER_URL: http://intake-worker:3001
     depends_on:
-      server:
+      intake-worker:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]

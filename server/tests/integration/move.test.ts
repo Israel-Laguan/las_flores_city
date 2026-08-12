@@ -36,8 +36,8 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await withSchemaLock(async () => {
-      await pool.query(sql);
+    await withSchemaLock(async (client) => {
+      await client.query(sql);
     });
   } catch (err: any) {
     if (err.code === '42P07' || err.code === '42701') {

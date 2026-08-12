@@ -98,6 +98,9 @@ export async function publishChosenDrafts(
   planId: string,
   client?: pg.PoolClient,
 ): Promise<PublishResult> {
+  // Idempotent: only processes needs with status 'chosen' or 'pending'.
+  // Already-published needs are skipped, and existing 'dev' label URL entries
+  // are updated in place rather than appended (M22).
   const exec = <T extends pg.QueryResultRow = any>(text: string, params?: any[]) =>
     client ? client.query<T>(text, params) : queryOLTP<T>(text, params);
 

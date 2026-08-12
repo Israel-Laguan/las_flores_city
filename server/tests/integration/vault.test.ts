@@ -7,7 +7,7 @@ import path from 'path';
 import pg from 'pg';
 import * as yaml from 'js-yaml';
 import express from 'express';
-import { withSchemaLock } from '../helpers/schemaLock.js';
+import { withSchemaLock, withOlapSchemaLock } from '../helpers/schemaLock.js';
 import { vaultRouter } from '../../src/routes/vault.js';
 import { dialogueRouter } from '../../src/routes/dialogue.js';
 import { generateToken } from '../../src/middleware/auth.js';
@@ -39,14 +39,23 @@ function auth() {
   return { Authorization: `Bearer ${generateToken(TEST_USER_ID)}` };
 }
 
-async function applyMigration(pool: pg.Pool, filename: string) {
+async function applyMigration(
+  pool: pg.Pool,
+  filename: string,
+  database: 'oltp' | 'olap' = 'oltp'
+) {
   const sql = fs.readFileSync(
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
   );
+  // Advisory locks are per-database, so OLAP migrations must lock on the
+  // analytics DB (withOlapSchemaLock), not the OLTP-bound withSchemaLock —
+  // otherwise the DDL would run on the wrong database (or with no mutual
+  // exclusion).
+  const withLock = database === 'olap' ? withOlapSchemaLock : withSchemaLock;
   try {
-    await withSchemaLock(async () => {
-      await pool.query(sql);
+    await withLock(async (client) => {
+      await client.query(sql);
     });
   } catch {
     // Migration may already be applied
@@ -70,7 +79,7 @@ beforeAll(async () => {
     // Migration may already be applied
   }
   try {
-    await applyMigration(olapPool, '019_add_vault_event_type.sql');
+    await applyMigration(olapPool, '019_add_vault_event_type.sql', 'olap');
   } catch {
     // OLAP migration may already be applied with compatible constraint
   }

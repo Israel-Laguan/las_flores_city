@@ -12,11 +12,21 @@ const MINIO_PORT = process.env.MINIO_PORT || '9000';
 // still uses MINIO_ENDPOINT for the actual request). When unset, presigned
 // URLs keep the configured endpoint (legacy behavior).
 const MINIO_PUBLIC_URL = (process.env.MINIO_PUBLIC_URL || '').trim();
-const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';
-const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'minioadmin';
 const MINIO_BUCKET = process.env.MINIO_BUCKET || 'las-flores';
-const CDN_SIGNING_SECRET = process.env.CDN_SIGNING_SECRET || process.env.JWT_SECRET || 'dev-signing-secret';
 const API_BASE_URL = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+
+// Credentials and the CDN signing secret are read lazily (per call) so `_FILE`
+// secrets resolved by `resolveFileEnvVars()` during startup are honored even
+// though this module is imported before the resolver runs in the entrypoints.
+function getMinioCredentials(): { accessKeyId: string; secretAccessKey: string } {
+  return {
+    accessKeyId: process.env.MINIO_ACCESS_KEY || 'minioadmin',
+    secretAccessKey: process.env.MINIO_SECRET_KEY || 'minioadmin',
+  };
+}
+function getCdnSigningSecret(): string {
+  return process.env.CDN_SIGNING_SECRET || process.env.JWT_SECRET || 'dev-signing-secret';
+}
 
 let s3Client: S3Client | null = null;
 let publicS3Client: S3Client | null = null;
@@ -35,10 +45,7 @@ function getS3Client(): S3Client {
     s3Client = new S3Client({
       endpoint: getMinioEndpointUrl(),
       region: 'us-east-1',
-      credentials: {
-        accessKeyId: MINIO_ACCESS_KEY,
-        secretAccessKey: MINIO_SECRET_KEY,
-      },
+      credentials: getMinioCredentials(),
       forcePathStyle: true,
     });
   }
@@ -135,10 +142,7 @@ function getPublicS3Client(): S3Client {
     publicS3Client = new S3Client({
       endpoint,
       region: 'us-east-1',
-      credentials: {
-        accessKeyId: MINIO_ACCESS_KEY,
-        secretAccessKey: MINIO_SECRET_KEY,
-      },
+      credentials: getMinioCredentials(),
       forcePathStyle: true,
     });
   }
@@ -161,7 +165,7 @@ export async function signMinioUrl(mediaUrl: string, expiresInSeconds = DEFAULT_
 export function createCdnProxyUrl(itemId: string, userId: string, expiresInSeconds = DEFAULT_TTL_SECONDS): string {
   const expires = Math.floor(Date.now() / 1000) + expiresInSeconds;
   const payload = `${itemId}:${userId}:${expires}`;
-  const sig = crypto.createHmac('sha256', CDN_SIGNING_SECRET).update(payload).digest('hex');
+  const sig = crypto.createHmac('sha256', getCdnSigningSecret()).update(payload).digest('hex');
   return `${API_BASE_URL}/vault/media/${itemId}?expires=${expires}&sig=${sig}`;
 }
 
@@ -173,7 +177,7 @@ export function verifyCdnProxySignature(
 ): boolean {
   if (expires < Math.floor(Date.now() / 1000)) return false;
   const payload = `${itemId}:${userId}:${expires}`;
-  const expected = crypto.createHmac('sha256', CDN_SIGNING_SECRET).update(payload).digest('hex');
+  const expected = crypto.createHmac('sha256', getCdnSigningSecret()).update(payload).digest('hex');
   if (sig.length !== expected.length) return false;
   return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
 }

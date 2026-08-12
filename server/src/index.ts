@@ -1,250 +1,59 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import fs from 'node:fs';
-import { cookieParserMiddleware } from './utils/cookies.js';
-import { healthRouter } from './routes/health.js';
-import { authRouter } from './routes/auth.js';
-import { playerRouter } from './routes/player.js';
-import { locationRouter } from './routes/location.js';
-import { dialogueRouter } from './routes/dialogue.js';
-import { bankRouter } from './routes/bank.js';
-import { gigsRouter } from './routes/gigs.js';
-import { commsRouter } from './routes/comms.js';
-import './routes/comms-reply.js';
-import { feedRouter } from './routes/feed.js';
-import { vaultRouter } from './routes/vault.js';
-import { settingsRouter } from './routes/settings.js';
-import { patreonRouter } from './routes/patreon.js';
-import { shopRouter } from './routes/shop.js';
-import { paypalRouter } from './routes/paypal.js';
-import { archiveRouter } from './routes/archive.js';
-import { devRouter } from './routes/dev.js';
-import { mapRouter } from './routes/map.js';
-import { assetsRouter } from './routes/assets.js';
-import { assetsImportRouter } from './routes/assets-import.js';
-import { adminContentRouter } from './routes/admin-content.js';
-import { adminContentLinkRouter } from './routes/admin-content-link.js';
-import { adminContentAssetRouter } from './routes/admin-content-asset.js';
-import { adminContentResolverRouter } from './routes/admin-content-resolver.js';
-import { adminCoverageRouter } from './routes/admin-coverage.js';
-import { adminLoreRouter } from './routes/admin-lore.js';
-import { adminStoryBeatsRouter } from './routes/admin-story-beats.js';
-import { adminAiConfigRouter } from './routes/admin-ai-config.js';
-import { adminListViewsRouter } from './routes/admin-list-views.js';
-import { adminStoryBuilderRouter } from './routes/admin-story-builder.js';
-import { adminAssetRouter } from './routes/admin-asset.js';
-import { adminStatsRouter } from './routes/admin-stats.js';
-import { adminAnalyticsRouter } from './routes/admin-analytics.js';
-import { adminUsersRouter } from './routes/admin-users.js';
-import { adminSettingsRouter } from './routes/admin-settings.js';
+import { createApp } from './app.js';
+import { registerGameRoutes } from './routes/gameRoutes.js';
 import { testConnections, closeConnections } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
-import { runAllMigrations } from './database/migrate.js';
 import { seedPlayers } from './database/seedPlayers.js';
 import { LeaderboardWorker } from './workers/LeaderboardWorker.js';
-import { ContentAssetWorker } from './workers/ContentAssetWorker.js';
 import { RelationshipDecayWorker } from './workers/RelationshipDecayWorker.js';
-import { resetOrphanedSolidifyJobs } from './services/StoryBuilderOrchestrator.js';
-import { resetOrphanedFillJobs } from './services/PlanGenerationJob.js';
+import { resolveFileEnvVars } from './config/resolveFileEnvVars.js';
 
 dotenv.config();
 
-// Resolve _FILE environment variables to their plain counterparts
-// This allows Docker secrets to work with code that reads plain env vars
-function resolveFileEnvVars() {
-  const fileEnvMap: Record<string, string> = {
-    JWT_SECRET_FILE: 'JWT_SECRET',
-    PATREON_CLIENT_SECRET_FILE: 'PATREON_CLIENT_SECRET',
-    PAYPAL_SECRET_FILE: 'PAYPAL_SECRET',
-    MINIO_ACCESS_KEY_FILE: 'MINIO_ACCESS_KEY',
-    MINIO_SECRET_KEY_FILE: 'MINIO_SECRET_KEY',
-    CDN_SIGNING_SECRET_FILE: 'CDN_SIGNING_SECRET',
-    POSTGRES_PASSWORD_FILE: 'POSTGRES_PASSWORD',
-    POSTGRES_ANALYTICS_PASSWORD_FILE: 'POSTGRES_ANALYTICS_PASSWORD',
-    MINIO_ROOT_USER_FILE: 'MINIO_ROOT_USER',
-    MINIO_ROOT_PASSWORD_FILE: 'MINIO_ROOT_PASSWORD',
-  };
-
-  for (const [fileVar, targetVar] of Object.entries(fileEnvMap)) {
-    const filePath = process.env[fileVar];
-    if (filePath && !process.env[targetVar]) {
-      try {
-        const value = fs.readFileSync(filePath, 'utf8').trim();
-        process.env[targetVar] = value;
-        console.log(`🔐 Loaded ${targetVar} from ${fileVar}`);
-      } catch (err) {
-        console.warn(`⚠️ Could not read ${fileVar} at ${filePath}:`, err);
-      }
-    }
-  }
-
-  // Construct database URLs if passwords were loaded from _FILE secrets
-  if (process.env.POSTGRES_PASSWORD && process.env.DATABASE_URL?.includes('${POSTGRES_PASSWORD}')) {
-    const baseUrl = process.env.DATABASE_URL.replace('${POSTGRES_PASSWORD}', process.env.POSTGRES_PASSWORD);
-    process.env.DATABASE_URL = baseUrl;
-    console.log(`🔐 Constructed DATABASE_URL from POSTGRES_PASSWORD`);
-  }
-
-  if (process.env.POSTGRES_ANALYTICS_PASSWORD && process.env.ANALYTICS_DATABASE_URL?.includes('${POSTGRES_ANALYTICS_PASSWORD}')) {
-    const baseUrl = process.env.ANALYTICS_DATABASE_URL.replace('${POSTGRES_ANALYTICS_PASSWORD}', process.env.POSTGRES_ANALYTICS_PASSWORD);
-    process.env.ANALYTICS_DATABASE_URL = baseUrl;
-    console.log(`🔐 Constructed ANALYTICS_DATABASE_URL from POSTGRES_ANALYTICS_PASSWORD`);
-  }
-}
-
 resolveFileEnvVars();
 
-const app = express();
+const app = createApp(registerGameRoutes);
 const PORT = process.env.PORT || 3000;
 
-// Cookie parser — populates req.cookies from the Cookie header (no cookie-parser dep)
-app.use(cookieParserMiddleware);
-
-// CORS — env-driven allowlist; true = reflect request origin (dev / same-domain prod)
-const corsOrigins = process.env.CLIENT_ORIGIN_URL
-  ? process.env.CLIENT_ORIGIN_URL.split(',').map((s: string) => s.trim())
-  : null;
-app.use(cors({
-  origin: corsOrigins ?? true,
-  credentials: true,
-}));
-app.use(express.json({ limit: '512kb' }));
-
-// Accept /api prefix on all routes — used by test direct-backend calls in CI
-// and by production reverse proxies. The Vite dev server strips /api before
-// forwarding, so this middleware is a no-op when running behind Vite.
-app.use((req, _res, next) => {
-  if (req.url.startsWith('/api/')) {
-    req.url = req.url.slice(4);
-  }
-  next();
-});
-
-// Routes
-app.use('/health', healthRouter);
-app.use('/auth', authRouter);
-app.use('/player', playerRouter);
-app.use('/location', locationRouter);
-app.use('/dialogue', dialogueRouter);
-app.use('/bank', bankRouter);
-app.use('/gigs', gigsRouter);
-app.use('/comms', commsRouter);
-app.use('/network/feed', feedRouter);
-app.use('/vault', vaultRouter);
-app.use('/settings', settingsRouter);
-app.use('/patreon', patreonRouter);
-app.use('/shop', shopRouter);
-app.use('/paypal', paypalRouter);
-app.use('/dev', devRouter);
-app.use('/archive', archiveRouter);
-app.use('/map', mapRouter);
-app.use('/assets', assetsRouter);
-app.use('/assets', assetsImportRouter);
-app.use('/admin/content', adminContentRouter);
-app.use('/admin/content', adminContentLinkRouter);
-app.use('/admin/content', adminContentAssetRouter);
-app.use('/admin/content', adminContentResolverRouter);
-app.use('/admin/coverage', adminCoverageRouter);
-app.use('/admin/lore', adminLoreRouter);
-app.use('/admin/story-beats', adminStoryBeatsRouter);
-app.use('/admin/stats', adminStatsRouter);
-app.use('/admin/story-builder', adminStoryBuilderRouter);
-app.use('/admin/asset', adminAssetRouter);
-app.use('/admin/analytics', adminAnalyticsRouter);
-app.use('/admin/users', adminUsersRouter);
-app.use('/admin/settings', adminSettingsRouter);
-app.use('/admin/ai-config', adminAiConfigRouter);
-app.use('/admin', adminListViewsRouter);
-
-// Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  // Handle payload too large (body-parser entity.too.large)
-  if ((err as any).type === 'entity.too.large' || (err as any).status === 413) {
-    res.status(413).json({
-      success: false,
-      error: 'Your input is too large. Try breaking it into a shorter description (under 512KB).',
-      timestamp: new Date().toISOString(),
-    });
-    return;
-  }
-
-  // Handle malformed JSON body parse errors
-  if (err instanceof SyntaxError && 'status' in err && (err as any).status === 400) {
-    res.status(400).json({
-      success: false,
-      error: 'Malformed JSON in request body.',
-      timestamp: new Date().toISOString(),
-    });
-    return;
-  }
-
-  console.error('Unhandled error:', err);
-  res.status(500).json({
-    success: false,
-    error: 'Internal server error',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// Initialize database connections
 async function initializeServer() {
-  console.log('🎮 Initializing Las Flores 2077 Server...');
-  
-  // Test database connections
+  console.log('\u{1F3AE} Initializing Las Flores 2077 game-server (slim)...');
+
   const dbConnected = await testConnections();
   if (!dbConnected) {
-    console.error('❌ Failed to connect to databases. Exiting...');
+    console.error('\u274C Failed to connect to databases. Exiting...');
     process.exit(1);
   }
 
-  // Run pending schema + content migrations
-  try {
-    await runAllMigrations();
-  } catch (err) {
-    console.error('❌ Migration failed. Exiting...', err);
-    process.exit(1);
-  }
-
-  // Startup reconciliation: reset stalled `generating` asset needs to `pending`
-  // so ContentAssetWorker can retry them on the first tick.
-  await ContentAssetWorker.reclaimStalledNeeds();
-
-  // Startup recovery: reset orphaned in-flight solidify jobs to failed.
-  await resetOrphanedSolidifyJobs();
-
-  // Startup recovery: reset orphaned fill jobs to failed.
-  await resetOrphanedFillJobs();
-
-  // Seed player accounts in non-production environments.
-  // Seeding is an optional dev convenience — a refusal (e.g. NODE_ENV unset or
-  // production) or a DB hiccup must never abort server boot, otherwise the
-  // process stays alive but never reaches app.listen() below.
   try {
     await seedPlayers();
   } catch (err) {
     console.warn('[seed:players] skipped:', (err as Error).message || err);
   }
 
-  // Start server
   app.listen(PORT, () => {
-    console.log(`🎮 Las Flores 2077 Server running on port ${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`🔐 Auth: http://localhost:${PORT}/auth/dev-login`);
-    console.log(`🎯 Player state: http://localhost:${PORT}/player/state`);
+    console.log(`\u{1F3AE} Las Flores 2077 game-server running on port ${PORT}`);
+    console.log(`\u{1F4CA} Health check: http://localhost:${PORT}/health`);
+    console.log(`\u{1F510} Auth: http://localhost:${PORT}/auth/dev-login`);
+    console.log(`\u{1F3AF} Player state: http://localhost:${PORT}/player/state`);
+    console.log('   (admin/content-authoring routes live on the intake-worker at port 3001)');
   });
 
-  // Leaderboard worker — finalize expired 24h Breakthrough windows every 5 minutes
   const LEADERBOARD_INTERVAL_MS = 5 * 60 * 1000;
-  setInterval(() => {
-    LeaderboardWorker.processExpiredMysteries().catch((err) =>
-      console.error('[LeaderboardWorker] cron tick error:', err)
-    );
+  let isLeaderboardWorkerRunning = false;
+  setInterval(async () => {
+    if (isLeaderboardWorkerRunning) return;
+    isLeaderboardWorkerRunning = true;
+    try {
+      await LeaderboardWorker.processExpiredMysteries();
+    } catch (err) {
+      console.error('[LeaderboardWorker] cron tick error:', err);
+    } finally {
+      isLeaderboardWorkerRunning = false;
+    }
   }, LEADERBOARD_INTERVAL_MS);
-  console.log(`🏆 LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
+  console.log(`\u{1F3C6} LeaderboardWorker scheduled every ${LEADERBOARD_INTERVAL_MS / 1000}s`);
 
-  // Relationship decay worker — decay relationship stats daily
-  const DECAY_INTERVAL_MS = 24 * 60 * 60 * 1000; // Once per day
+  const DECAY_INTERVAL_MS = 24 * 60 * 60 * 1000;
   let isDecayWorkerRunning = false;
   const runDecayTick = async () => {
     if (isDecayWorkerRunning) return;
@@ -259,28 +68,11 @@ async function initializeServer() {
   };
   void runDecayTick();
   setInterval(runDecayTick, DECAY_INTERVAL_MS);
-  console.log(`💔 RelationshipDecayWorker scheduled every ${DECAY_INTERVAL_MS / 1000 / 60 / 60}h`);
-
-  // Content asset worker — generate pending image drafts for verified plans every 30 seconds
-  const ASSET_WORKER_INTERVAL_MS = 30 * 1000;
-  let isAssetWorkerRunning = false;
-  setInterval(async () => {
-    if (isAssetWorkerRunning) return;
-    isAssetWorkerRunning = true;
-    try {
-      await ContentAssetWorker.processPendingImageGeneration();
-    } catch (err) {
-      console.error('[ContentAssetWorker] cron tick error:', err);
-    } finally {
-      isAssetWorkerRunning = false;
-    }
-  }, ASSET_WORKER_INTERVAL_MS);
-  console.log(`🎨 ContentAssetWorker scheduled every ${ASSET_WORKER_INTERVAL_MS / 1000}s`);
+  console.log(`\u{1F493} RelationshipDecayWorker scheduled every ${DECAY_INTERVAL_MS / 1000 / 60 / 60}h`);
 }
 
-// Graceful shutdown
 async function shutdown() {
-  console.log('\n🛑 Shutting down server...');
+  console.log('\n\u{1F6D1} Shutting down game-server...');
   await closeConnections();
   await closeRedis();
   process.exit(0);
@@ -289,10 +81,6 @@ async function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-// Prevent unhandled promise rejections from crashing the server process.
-// Express 4 does not catch async route handler rejections; without this
-// guard a single FK violation or other DB error kills the entire process,
-// causing cascading test failures.
 process.on('unhandledRejection', (reason) => {
   console.error('[UNHANDLED REJECTION]', reason);
   if (process.env.NODE_ENV === 'production') {
@@ -300,7 +88,6 @@ process.on('unhandledRejection', (reason) => {
   }
 });
 
-// Start server
 initializeServer().catch(console.error);
 
 export default app;
