@@ -179,10 +179,14 @@ export class ContentAssetWorker {
         (await this.defaultExists(item, entityRoot));
       if (hasExisting) {
         await autoSelectDefaultDrafts(plan, contentDir);
-        // A draft already exists — resolve the need for both eligible statuses.
-        // `failed` needs must also be marked drafted, or extractPendingNeeds()
-        // keeps re-selecting them on every tick and the run stays failed forever.
-        markDrafted(need);
+        // A draft already exists — resolve the need for the still-`pending`
+        // case (including needs transited from `failed` by extractPendingNeeds),
+        // so they are not re-selected on every tick. But if
+        // autoSelectDefaultDrafts() just auto-selected a `<slug>__default.png`
+        // and transitioned this need to `chosen`, PRESERVE `chosen` — downgrading
+        // it to `drafted` would make publishChosenDrafts() skip the auto-selected
+        // asset and it would never reach MinIO.
+        if (need.status === 'pending') markDrafted(need);
         await ContentPlanService.updatePlanJson(row.id, plan);
         processed++;
         continue;

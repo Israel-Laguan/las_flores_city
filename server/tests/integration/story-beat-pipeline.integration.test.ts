@@ -61,10 +61,10 @@ describe('Story Beat Pipeline Integration', () => {
     // Run the SQL migration first so the table exists before we clean it. The
     // DDL + reconcile are serialized against other suites' schema mutation
     // (and migrateContent) via the shared schema lock.
-    await withSchemaLock(async () => {
+    await withSchemaLock(async (client) => {
       const migrationPath = path.resolve(process.cwd(), 'src/database/migrations/044_story_beats.sql');
       const migrationSql = await fs.readFile(migrationPath, 'utf-8');
-      await pool.query(migrationSql);
+      await client.query(migrationSql);
 
       // Delete ONLY the canonical slugs defined by story_beats.yaml, never the
       // whole table. story_beats is a shared registry that other suites (e.g.
@@ -75,7 +75,7 @@ describe('Story Beat Pipeline Integration', () => {
       // restore). Scoping the delete to the yaml's own slugs keeps the blast
       // radius to exactly the rows this suite re-creates itself.
       const canonicalSlugs = (await readCanonicalBeats()).map(beat => beat.slug);
-      await pool.query('DELETE FROM story_beats WHERE slug = ANY($1::text[])', [canonicalSlugs]);
+      await client.query('DELETE FROM story_beats WHERE slug = ANY($1::text[])', [canonicalSlugs]);
     });
   });
 

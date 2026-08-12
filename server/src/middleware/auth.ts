@@ -6,7 +6,16 @@ import jwt from 'jsonwebtoken';
 // during startup are honored even though this module (and its import) are
 // evaluated before the resolver runs in the entrypoints.
 function getJwtSecret(): string {
-  return process.env.JWT_SECRET || 'your-jwt-secret-change-in-production';
+  const secret = process.env.JWT_SECRET;
+  if (secret) return secret;
+  // Fail closed in production: signing with the publicly-known fallback lets an
+  // attacker forge tokens accepted by authMiddleware / optionalAuth, so a
+  // missing secret must never silently fall back to it in a production runtime.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET is required in production; refusing to sign/verify tokens.');
+  }
+  // Non-production fallback (dev/test convenience only — NOT valid in prod).
+  return 'your-jwt-secret-change-in-production';
 }
 
 export interface AuthRequest extends Request {

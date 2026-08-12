@@ -29,7 +29,6 @@ let pool: pg.Pool;
 async function applyMigration(filename: string): Promise<void> {
   const fs = await import('fs');
   const path = await import('path');
-  const { queryOLTP } = await import('@las-flores/infra');
   const sql = fs.readFileSync(
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
@@ -38,13 +37,13 @@ async function applyMigration(filename: string): Promise<void> {
   // (which alters the shared migration_log table) is serialized too. Doing the
   // fallback outside the lock would reintroduce exactly the concurrent-DDL
   // deadlock this helper exists to prevent.
-  await withSchemaLock(async () => {
+  await withSchemaLock(async (client) => {
     try {
-      await queryOLTP(sql);
+      await client.query(sql);
     } catch (error: any) {
       // For migration_log constraint updates, force apply even if it "fails"
       if (filename === '046_stories.sql' && error.message?.includes('migration_log_content_type_check')) {
-        await queryOLTP(`
+        await client.query(`
           ALTER TABLE migration_log
             DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
           ALTER TABLE migration_log

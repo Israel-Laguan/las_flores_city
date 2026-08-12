@@ -42,8 +42,8 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await withSchemaLock(async () => {
-      await queryOLTP(sql);
+    await withSchemaLock(async (client) => {
+      await client.query(sql);
     });
   } catch {
     // Column may already exist — that's fine

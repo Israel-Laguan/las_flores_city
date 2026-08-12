@@ -268,7 +268,9 @@ async function handleChunkBoundaryChoice(
 
   const nextNode = finalNodes[nextNodeId];
 
-  await persistChunkBoundaryState(userId, dialogueId, nextNodeId, nextChunkId, choiceId, currentChunkId);
+  await persistChunkBoundaryState(
+    userId, currentChunk.tree_id, nextNodeId, nextChunkId, choiceId, currentChunkId
+  );
 
   await handleChunkBoundarySideEffects(
     userId, choiceId, dialogueId,
@@ -334,14 +336,21 @@ function applyTBReceipt(mergedNodes: Record<string, any>, nextNodeId: string, tb
   return { mergedNodes: finalNodes, receiptString };
 }
 
-async function persistChunkBoundaryState(
-  userId: string, dialogueId: string, nextNodeId: string,
+export async function persistChunkBoundaryState(
+  userId: string, treeId: string, nextNodeId: string,
   nextChunkId: string, choiceId: string, currentChunkId: string
 ) {
+  // `active_dialogue_id` is FK-constrained to dialogue_trees(id), but the route's
+  // `:id` (`dialogueId` from handleChoose) is the *chunk* id the client posts as
+  // /dialogue/<chunk-id>/choose — never a dialogue_trees id. Persist the owning
+  // tree (dialogue_chunks.tree_id) for both cursor writes so the FK holds and
+  // `player_dialogue_states` matches the row seeded at dialogue start. Writing
+  // the chunk id here is exactly what produced the uncaught
+  // `player_states_active_dialogue_id_fkey` violation on chunk-boundary crossings.
   await withOLTPTransaction(async (client) => {
-    await PlayerStateRepository.setDialogueCursor(client, userId, nextNodeId, dialogueId);
+    await PlayerStateRepository.setDialogueCursor(client, userId, nextNodeId, treeId);
     await PlayerStateRepository.setDialogueChunkCursor(
-      client, userId, dialogueId, nextChunkId, nextNodeId,
+      client, userId, treeId, nextChunkId, nextNodeId,
       { choice_id: choiceId, chunk_id: currentChunkId, timestamp: new Date().toISOString() }
     );
   });

@@ -25,14 +25,22 @@ export function resolveFileEnvVars(): void {
     if (filePath && !process.env[targetVar]) {
       try {
         const value = fs.readFileSync(filePath, 'utf8').trim();
+        if (!value) {
+          // A mounted-but-empty secret must not be assigned: doing so would let
+          // the plain lookup fall through to a known/dev credential (e.g. the
+          // publicly-known JWT fallback). Treat it as unreadable so the
+          // fail-closed path below rejects it consistently in production.
+          throw new Error('secret file is empty');
+        }
         process.env[targetVar] = value;
         console.log(`🔐 Loaded ${targetVar} from ${fileVar}`);
       } catch (err) {
         // Fail-closed in production: serving with a known/dev credential (or a
-        // forgeable JWT) because a mounted secret was unreadable is unsafe.
+        // forgeable JWT) because a mounted secret was unreadable or empty is
+        // unsafe.
         if (process.env.NODE_ENV === 'production') {
           console.error(`❌ Could not read required secret ${fileVar} at ${filePath}:`, err);
-          throw new Error(`Required secret ${fileVar} (${filePath}) is unreadable; refusing to start.`);
+          throw new Error(`Required secret ${fileVar} (${filePath}) is unreadable or empty; refusing to start.`);
         }
         console.warn(`⚠️ Could not read ${fileVar} at ${filePath}:`, err);
       }

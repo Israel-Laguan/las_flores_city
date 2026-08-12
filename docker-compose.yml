@@ -111,6 +111,7 @@ services:
     ports:
       - "3000:3000"
     environment:
+      NODE_ENV: development
       DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
@@ -193,6 +194,7 @@ services:
     ports:
       - "3001:3001"
     environment:
+      NODE_ENV: development
       PORT: 3001
       DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD:-las_flores_dev_password}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD:-las_flores_analytics_dev_password}@postgres-olap:5432/las_flores_analytics

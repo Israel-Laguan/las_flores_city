@@ -342,7 +342,10 @@ async function fillFieldsWithTimeout(
   }
 }
 
-export async function resetOrphanedFillJobs(orphanedRuns?: Array<{ planId: string; jobType: JobType }>): Promise<number> {
+export async function resetOrphanedFillJobs(
+  orphanedRuns?: Array<{ planId: string; jobType: JobType }>,
+  cutoff?: Date,
+): Promise<number> {
   const result = await queryOLTP<{ id: string; plan_json: any; updated_at: string }>(
     `SELECT id, plan_json, updated_at FROM content_plans WHERE status = 'draft'`,
   );
@@ -380,8 +383,11 @@ export async function resetOrphanedFillJobs(orphanedRuns?: Array<{ planId: strin
     console.log(`[plan-fill] Reset ${reset} orphaned fill job(s) to failed`);
   }
 
-  // M22: resume any `plan_fill` runs left `running` after a crash.
-  const orphaned = orphanedRuns ?? await markOrphanedResumable();
+  // M22: resume any `plan_fill` runs left `running` after a crash. When the caller
+  // did not supply the already-claimed orphans, perform a fallback claim bounded
+  // by `cutoff` (when provided) so this reconciliation can never reclaim a live
+  // run that an intake route created after the startupCutoff.
+  const orphaned = orphanedRuns ?? await markOrphanedResumable(cutoff);
   const orphanedFills = orphaned.filter(o => o.jobType === 'plan_fill');
   if (orphanedFills.length > 0) {
     console.log(`[plan-fill] Resuming ${orphanedFills.length} orphaned plan-fill job(s)`);

@@ -41,7 +41,18 @@ jest.mock('@las-flores/infra', () => ({
 
     if (text.includes('update job_runs')) {
       if (text.includes("status = 'resumable'") && text.includes("status = 'running'")) {
-        const matches = Array.from(dbRows.values()).filter(r => r.status === 'running');
+        // Emulate the real query's cutoff bound (created_at <= $n) so the
+        // "only pre-existing runs are claimed" guarantee is actually exercised
+        // by the tests (the mock otherwise ignores the cutoff).
+        const cutoffMatch = _text.match(/created_at\s*<=\s*\$(\d+)/i);
+        const cutoff = cutoffMatch
+          ? new Date(params?.[Number(cutoffMatch[1]) - 1] as string)
+          : null;
+        const matches = Array.from(dbRows.values()).filter(
+          (r: any) =>
+            r.status === 'running' &&
+            (!cutoff || new Date(r.created_at).getTime() <= cutoff.getTime())
+        );
         for (const r of matches) r.status = 'resumable';
         return { rows: matches, rowCount: matches.length };
       }
@@ -160,10 +171,22 @@ describe('JobRunService', () => {
     }
   });
 
-  it('markOrphanedResumable passes a cutoff as a bound param so only pre-existing runs are claimed', async () => {
-    await startJobRun('plan-1', 'solidify');
-    const cutoff = new Date('2024-01-01T00:00:00.000Z');
-    await markOrphanedResumable(cutoff);
+  it('markOrphanedResumable passes a cutoff as a bound param and claims only pre-existing runs', async () => {
+    const preexisting = await startJobRun('plan-1', 'solidify');
+    const postCutoff = await startJobRun('plan-2', 'plan_fill');
+    // Simulate plan-1 as a run that existed before the cutoff; plan-2 was created
+    // after it (these rows' created_at default to "now", which is after the cutoff).
+    dbRows.get(preexisting.id).created_at = '2020-01-01T00:00:00.000Z';
+    dbRows.get(postCutoff.id).created_at = '2026-01-01T00:00:00.000Z';
+    const cutoff = new Date('2023-06-01T00:00:00.000Z');
+
+    const orphaned = await markOrphanedResumable(cutoff);
+
+    // Only the pre-existing run is claimed; the post-cutoff run stays `running`.
+    expect(orphaned.map(o => o.planId).sort()).toEqual(['plan-1']);
+    expect(dbRows.get(preexisting.id).status).toBe('resumable');
+    expect(dbRows.get(postCutoff.id).status).toBe('running');
+
     const calls = (queryOLTP as jest.MockedFunction<typeof queryOLTP>).mock.calls;
     const updateCall = calls.find(c => typeof c[0] === 'string' && c[0].includes('UPDATE job_runs SET status'));
     expect(updateCall).toBeDefined();

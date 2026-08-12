@@ -60,8 +60,8 @@ describe('Dialogue speakers enrichment', () => {
         'utf-8'
       );
       try {
-        await withSchemaLock(async () => {
-          await queryOLTP(sql);
+        await withSchemaLock(async (client) => {
+          await client.query(sql);
         });
       } catch (err: any) {
         // Swallow only the already-applied SQLSTATEs (duplicate table/object),

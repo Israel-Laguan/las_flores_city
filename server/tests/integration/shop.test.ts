@@ -56,8 +56,8 @@ async function applyMigration(pool: pg.Pool, filename: string) {
     'utf-8'
   );
   try {
-    await withSchemaLock(async () => {
-      await pool.query(sql);
+    await withSchemaLock(async (client) => {
+      await client.query(sql);
     });
   } catch {
     // Migration may already be applied

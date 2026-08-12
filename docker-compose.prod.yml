@@ -57,6 +57,7 @@ services:
     healthcheck:
       start_period: 10s
     environment:
+      NODE_ENV: production
       # Production: Use _FILE secrets that the server's startup resolver will read
       DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
@@ -106,6 +107,7 @@ services:
     healthcheck:
       start_period: 10s
     environment:
+      NODE_ENV: production
       PORT: 3001
       DATABASE_URL: postgresql://las_flores:$${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
       ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:$${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
@@ -143,6 +145,26 @@ services:
 # Active top-level secrets: all secrets referenced by services must be defined here.
 # They are provisioned externally in production, hence `external: true`.
 secrets:
+  postgres_password:
+    external: true
+  postgres_analytics_password:
+    external: true
+  minio_root_user:
+    external: true
+  minio_root_password:
+    external: true
+  minio_access_key:
+    external: true
+  minio_secret_key:
+    external: true
+  jwt_secret:
+    external: true
+  patreon_client_id:
+    external: true
+  patreon_client_secret:
+    external: true
+  paypal_secret:
+    external: true
   litellm_api_key:
     external: true
 

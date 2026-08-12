@@ -111,12 +111,17 @@ async function initializeServer() {
     'markOrphanedResumable',
   );
 
-  // A failed claim yields `undefined`; do NOT coerce it to an empty array here,
-  // otherwise resetOrphanedFillJobs() below would treat it as "no orphans" and
-  // skip the fill reconciliation. Passing undefined lets that reconciliation
-  // attempt its own orphan scan
-  // (PlanGenerationJob: `orphanedRuns ?? await markOrphanedResumable()`).
-  const orphanedSolidify = (orphaned ?? []).filter(o => o.jobType === 'solidify');
+  // If the initial claim failed all retries (transient DB hiccup), make one more
+  // bounded claim now that the listener is live, so orphaned `solidify` runs
+  // (which only the loop below resumes) are not stranded as `resumable` until
+  // the next restart. The fallback stays bounded by `startupCutoff`, so a live
+  // request started after boot is never reclaimed and double-executed. When this
+  // fallback also fails, `orphanedList` is `undefined` and each reconciliation
+  // below retries its own bounded claim.
+  const orphanedList =
+    orphaned ?? (await markOrphanedResumable(startupCutoff).catch(() => undefined));
+
+  const orphanedSolidify = (orphanedList ?? []).filter(o => o.jobType === 'solidify');
   if (orphanedSolidify.length > 0) {
     console.log(`[story-builder] Resuming ${orphanedSolidify.length} orphaned solidify job(s)`);
     for (const { planId } of orphanedSolidify) {
@@ -130,11 +135,11 @@ async function initializeServer() {
 
   // Startup recovery: reset orphaned fill jobs to failed (legacy reclaim) +
   // resume any resumable plan_fill jobs. Pass the already-claimed orphans so
-  // plan_fill rows are not lost (they were flipped to `resumable` above).
-  // Retried so a transient failure cannot strand durable fill jobs until the
-  // next process restart.
+  // plan_fill rows are not lost (they were flipped to `resumable` above), and the
+  // startUp cutoff so any fallback claim stays bounded. Retried so a transient
+  // failure cannot strand durable fill jobs until the next process restart.
   await withStartupRetry(
-    () => resetOrphanedFillJobs(orphaned),
+    () => resetOrphanedFillJobs(orphanedList, startupCutoff),
     'resetOrphanedFillJobs',
   );
 

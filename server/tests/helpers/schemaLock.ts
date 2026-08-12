@@ -99,7 +99,7 @@ async function withPoolSchemaLock<T>(
  *
  * Locks on the OLTP database — use for DDL against OLTP only.
  */
-export async function withSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
+export async function withSchemaLock<T>(fn: (client: pg.PoolClient) => Promise<T>): Promise<T> {
   return withPoolSchemaLock(oltpPool, fn);
 }
 
@@ -110,6 +110,6 @@ export async function withSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
  * must serialize on a lock held in that same database — a lock taken on OLTP
  * would not exclude anything.
  */
-export async function withOlapSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
+export async function withOlapSchemaLock<T>(fn: (client: pg.PoolClient) => Promise<T>): Promise<T> {
   return withPoolSchemaLock(olapPool, fn);
 }
