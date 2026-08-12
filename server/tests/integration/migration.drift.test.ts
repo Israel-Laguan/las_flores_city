@@ -22,6 +22,9 @@ const OVERLAY_FILE = 'overlays/great_lithium_leak/overlay_great_lithium_leak.yam
 // rows that should persist; deleting them would corrupt the beat registry relied on
 // by dialogue/scene beat-slug validation. Only the migration_log row is cleaned up.
 const STORY_FILE = 'stories/real_heroism_in_latam/real_heroism_in_latam.yaml';
+// Legacy 046-mystery fixture (unique synthetic IDs). Cleaned up in afterAll.
+const LEGACY_MIGRATION_FILE = 'migrations/drift-046-legacy-mystery.yaml';
+const LEGACY_ID = 'e0000000-e29b-41d4-a716-446655440099';
 const CONTENT_DIR = path.resolve(process.cwd(), '../content');
 
 let pool: pg.Pool;
@@ -29,7 +32,6 @@ let pool: pg.Pool;
 async function applyMigration(filename: string): Promise<void> {
   const fs = await import('fs');
   const path = await import('path');
-  const { queryOLTP } = await import('@las-flores/infra');
   const sql = fs.readFileSync(
     path.resolve(process.cwd(), 'src/database/migrations', filename),
     'utf-8'
@@ -38,22 +40,25 @@ async function applyMigration(filename: string): Promise<void> {
   // (which alters the shared migration_log table) is serialized too. Doing the
   // fallback outside the lock would reintroduce exactly the concurrent-DDL
   // deadlock this helper exists to prevent.
-  await withSchemaLock(async () => {
+  await withSchemaLock(async (client) => {
     try {
-      await queryOLTP(sql);
+      await client.query(sql);
     } catch (error: any) {
-      // For migration_log constraint updates, force apply even if it "fails"
+      // 046 runs all statements in one simple-query (implicit transaction). The
+      // in-script `UPDATE migration_log SET content_type='mission' ...` cannot
+      // run under the OLD constraint (which lists 'mystery' but not 'mission'),
+      // so the whole script aborts (stories table + data change roll back
+      // together). Complete the migration in a valid order: drop the old
+      // constraint, migrate mystery→mission rows, then re-run the original sql
+      // (which re-adds the new constraint now that 'mission' is allowed, and
+      // creates the `stories` table).
       if (filename === '046_stories.sql' && error.message?.includes('migration_log_content_type_check')) {
-        await queryOLTP(`
+        await client.query(`
           ALTER TABLE migration_log
             DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
-          ALTER TABLE migration_log
-            ADD CONSTRAINT migration_log_content_type_check
-            CHECK (content_type IN (
-              'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
-              'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
-            ));
+          UPDATE migration_log SET content_type = 'mission' WHERE content_type = 'mystery';
         `);
+        await client.query(sql);
       } else {
         throw error;
       }
@@ -84,8 +89,8 @@ describe('Migration drift guard', () => {
 
   afterAll(async () => {
     await pool.query(
-      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3, $4)`,
-      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE, STORY_FILE]
+      `DELETE FROM migration_log WHERE file_path IN ($1, $2, $3, $4, $5)`,
+      [MISSION_FILE, VAULT_FILE, OVERLAY_FILE, STORY_FILE, LEGACY_MIGRATION_FILE]
     );
     await pool.end();
     await closeRedis();
@@ -185,5 +190,76 @@ describe('Migration drift guard', () => {
     );
     expect(log.rows[0]?.content_type).toBe('story');
     expect(log.rows[0]?.content_id).toBe('beat_sofia_intro');
+  });
+
+  test('046 fallback converges a legacy mystery migration_log row to mission', async () => {
+    // Legacy pre-046 DBs store the content type as 'mystery' under a CHECK
+    // constraint that lists 'mystery' (not 'mission'). The 046 script's first
+    // data statement cannot UPDATE such rows under that constraint, so its
+    // fallback must drop the constraint, migrate mystery→mission, and re-add
+    // the constraint + re-run the rest of the script. This test reproduces that
+    // legacy state and verifies the fallback converges the row.
+    const legacyFile = LEGACY_MIGRATION_FILE;
+    const legacyId = LEGACY_ID;
+
+    await withSchemaLock(async (client) => {
+      // Simulate a pre-046 legacy row: relax the constraint, insert a legacy
+      // `mystery` row, then restore a restrictive (no `mission`) constraint so
+      // 046's in-script `content_type='mission'` UPDATE fails exactly as it
+      // would on a real legacy DB. `NOT VALID` skips re-validating the already
+      // migrated (mission/story/...) rows on this shared DB, yet PostgreSQL still
+      // enforces it on subsequent INSERT/UPDATE — which is what makes 046's
+      // UPDATE fail and triggers the fallback.
+      await client.query('ALTER TABLE migration_log DROP CONSTRAINT IF EXISTS migration_log_content_type_check');
+      // Defensive: remove any leftover row from a previously interrupted run so
+      // this test is deterministic regardless of prior failures.
+      await client.query('DELETE FROM migration_log WHERE file_path = $1', [legacyFile]);
+      await client.query(
+        `INSERT INTO migration_log (file_path, file_checksum, content_type, content_id)
+         VALUES ($1, 'drift-046-legacy-checksum', 'mystery', $2)`,
+        [legacyFile, legacyId]
+      );
+      await client.query(
+        `ALTER TABLE migration_log ADD CONSTRAINT migration_log_content_type_check
+         CHECK (content_type IN ('character','dialogue','overlay','scene','gig','vault','mystery')) NOT VALID`
+      );
+    });
+
+    try {
+      await applyMigration('046_stories.sql');
+      const row = await pool.query(
+        'SELECT content_type FROM migration_log WHERE file_path = $1',
+        [legacyFile]
+      );
+      expect(row.rows).toHaveLength(1);
+      expect(row.rows[0].content_type).toBe('mission');
+    } finally {
+      // Restore the shared schema on every exit path so a failure here cannot
+      // leave the restrictive legacy CHECK constraint (or the recreated dead
+      // `stories` table) on the shared DB and break sibling suites. The fallback
+      // above re-runs 046's CREATE TABLE IF NOT EXISTS stories (which 058 drops),
+      // so drop it idempotently, then replace whatever constraint state remains
+      // with the canonical full whitelist. These are schema mutations, so they run
+      // under the shared advisory lock. (The legacy migration_log row is removed
+      // in afterAll.)
+      await withSchemaLock(async (client) => {
+        await client.query(`DROP TABLE IF EXISTS public.stories`);
+        // Remove the synthetic legacy row BEFORE re-adding the canonical CHECK.
+        // If applyMigration threw for a non-fallback reason (connection error,
+        // SIGTERM, unrelated SQL error), the row is still `content_type='mystery'`,
+        // and ADD CONSTRAINT (validating existing rows, no `NOT VALID`) would
+        // reject it and leave the constraint dropped for every sibling suite.
+        // afterAll removes this row too, but it runs after this finally.
+        await client.query(`DELETE FROM migration_log WHERE file_path = $1`, [legacyFile]);
+        await client.query(`
+          ALTER TABLE migration_log DROP CONSTRAINT IF EXISTS migration_log_content_type_check;
+          ALTER TABLE migration_log ADD CONSTRAINT migration_log_content_type_check
+            CHECK (content_type IN (
+              'character', 'dialogue', 'overlay', 'scene', 'gig', 'vault',
+              'mission', 'story', 'shop_item', 'location', 'map_tile', 'story_beat'
+            ));
+        `);
+      });
+    }
   });
 });

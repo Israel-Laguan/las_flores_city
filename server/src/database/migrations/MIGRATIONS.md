@@ -11,7 +11,7 @@ This directory contains SQL migration files for the Las Flores 2077 databases.
 
 Each migration file has a target database indicated by its content:
 
-### OLTP Migrations (23 migrations)
+### OLTP Migrations (54 migrations)
 Apply to: `postgres-oltp` container, `las_flores` database
 
 | Version | Migration | Description |
@@ -21,17 +21,13 @@ Apply to: `postgres-oltp` container, `las_flores` database
 | 003 | player_state_schema.sql | Player state table |
 | 004 | scene_payload.sql | Scene enhancements |
 | 005 | dialogue_service.sql | Dialogue trees and overlays |
-| 006 | add_move_event_type.sql | Event type: move |
 | 007 | sleep_reset_schema.sql | Sleep/time block system |
-| 008 | add_sleep_event_type.sql | Event type: sleep |
 | 009 | add_user_relationships.sql | NPC relationships |
 | 010 | metadata_readiness.sql | Metadata tracking |
 | 011 | bank_constraints.sql | Bank transaction constraints |
 | 012 | gigs_schema.sql | Gig/minigame system |
-| 013 | add_gig_event_type.sql | Event type: gig_completed |
 | 014 | social_feed.sql | Social posts table |
 | 015 | player_sms_threads_v2.sql | SMS thread system |
-| 016 | add_sms_event_types.sql | SMS event types |
 | 017 | mystery_state.sql | Mystery tracking |
 | 018 | vault_system.sql | Vault items and player vault |
 | 021 | leaderboards.sql | Leaderboard tables |
@@ -39,7 +35,41 @@ Apply to: `postgres-oltp` container, `las_flores` database
 | 023 | patreon_entitlements.sql | Patreon OAuth integration |
 | 024 | marketplace.sql | Shop items, inventory, cosmetics |
 | 026 | vault_signed_urls.sql | Vault media signed URL support |
+| 027 | aftermath.sql | Mystery aftermath system |
+| 028 | metaplot_alignment.sql | Metaplot alignment tracking |
+| 029 | player_state_decoupling.sql | Player state decoupling |
+| 030 | dialogue_chunks.sql | Dialogue chunk storage |
+| 031 | allow_player_state_credit_overdraft.sql | Credit overdraft support |
+| 032 | dialogue_chunk_tracking.sql | Dialogue chunk tracking |
+| 033 | district_travel_costs.sql | District travel costs |
+| 034 | seed_districts.sql | Seed district data |
+| 035 | seed_districts_extended.sql | Extended district seed data |
 | 036 | add_location_content_type.sql | Add 'location' to migration_log.content_type CHECK |
+| 037 | map_tiles.sql | Map tile system |
+| 038 | character_portrait_urls.sql | Character portrait URLs |
+| 039 | character_atlas_url.sql | Character atlas URL |
+| 040 | asset_generation.sql | Asset generation tables |
+| 041 | asset_generation_enhancements.sql | Asset generation enhancements |
+| 042 | asset_unique_constraints.sql | Asset unique constraints |
+| 043 | user_roles.sql | User roles |
+| 044 | story_beats.sql | Story beats |
+| 045 | migration_log_text_id.sql | Migration log text ID |
+| 046 | stories.sql | Stories table |
+| 047 | content_plans.sql | Content plans |
+| 048 | content_plans_versioning.sql | Content plans versioning |
+| 049 | content_plans_verified.sql | Content plans verified status |
+| 050 | content_plans_verification.sql | Content plans verification |
+| 051 | scene_location_asset_cascade.sql | Scene location asset cascade |
+| 052 | mission_reward_claims.sql | Mission reward claims |
+| 053 | admin_events.sql | Admin events |
+| 054 | admin_settings.sql | Admin settings |
+| 055 | content_plans_async.sql | Async content plans |
+| 056 | player_state_and_stats.sql | Player state and stats |
+| 057 | dialogue_ownership.sql | Dialogue ownership |
+| 058 | drop_stories_table.sql | Drop stories table |
+| 060 | admin_events_solidified.sql | Admin events solidified |
+| 061 | admin_events_validate.sql | Admin events validation |
+| 062 | job_runs.sql | Durable/resumable/idempotent job tracking for intake-worker (M22) |
 
 ### OLAP Migrations (5 migrations)
 Apply to: `postgres-olap` container, `las_flores_analytics` database

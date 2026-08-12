@@ -32,7 +32,10 @@ import { oltpPool, olapPool } from '@las-flores/infra';
  */
 const SCHEMA_MUTATION_LOCK_KEY = 'content_migration';
 
-async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promise<T> {
+async function withPoolSchemaLock<T>(
+  pool: pg.Pool,
+  fn: (client: pg.PoolClient) => Promise<T>,
+): Promise<T> {
   const client = await pool.connect();
   try {
     await client.query(`SELECT pg_advisory_lock(hashtext($1))`, [
@@ -47,10 +50,27 @@ async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promi
 
   let succeeded = false;
   try {
-    const value = await fn();
+    // Hand the locked client to the callback so callers run their DDL on the
+    // SAME connection that holds the advisory lock. Acquiring a separate pool
+    // connection here (e.g. via queryOLTP) would run the DDL without the lock,
+    // defeating the mutual exclusion this helper exists to provide.
+    const value = await fn(client);
     succeeded = true;
     return value;
   } finally {
+    try {
+      // `fn` (the DDL) ran as an implicit transaction on this same client. A
+      // benign error inside it (e.g. `CREATE ... IF NOT EXISTS` already exists,
+      // or `42P07` "relation already exists") aborts that transaction, leaving
+      // the session in an aborted state. The advisory lock is *session*-level,
+      // so it survives a rollback — but the subsequent unlock query would
+      // otherwise fail with `25P02` ("current transaction is aborted"). Roll
+      // back first so the unlock runs in a fresh, valid transaction.
+      await client.query(`ROLLBACK`);
+    } catch {
+      // No open transaction to roll back (DDL succeeded and committed, or
+      // there was nothing to undo) — fall through to the unlock.
+    }
     try {
       await client.query(`SELECT pg_advisory_unlock(hashtext($1))`, [
         SCHEMA_MUTATION_LOCK_KEY,
@@ -92,7 +112,7 @@ async function withPoolSchemaLock<T>(pool: pg.Pool, fn: () => Promise<T>): Promi
  *
  * Locks on the OLTP database — use for DDL against OLTP only.
  */
-export async function withSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
+export async function withSchemaLock<T>(fn: (client: pg.PoolClient) => Promise<T>): Promise<T> {
   return withPoolSchemaLock(oltpPool, fn);
 }
 
@@ -103,6 +123,6 @@ export async function withSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
  * must serialize on a lock held in that same database — a lock taken on OLTP
  * would not exclude anything.
  */
-export async function withOlapSchemaLock<T>(fn: () => Promise<T>): Promise<T> {
+export async function withOlapSchemaLock<T>(fn: (client: pg.PoolClient) => Promise<T>): Promise<T> {
   return withPoolSchemaLock(olapPool, fn);
 }

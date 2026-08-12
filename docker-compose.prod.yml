@@ -48,7 +48,7 @@ services:
       - minio_root_user
       - minio_root_password
 
-  # Server - Node.js/Express API
+  # Server - Node.js/Express API (game-server, slim)
   server:
     restart: unless-stopped
     # Production: Remove source code volume mounts - use built image
@@ -57,12 +57,25 @@ services:
     healthcheck:
       start_period: 10s
     environment:
+      NODE_ENV: production
       # Production: Use _FILE secrets that the server's startup resolver will read
-      DATABASE_URL: postgresql://las_flores:${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
-      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
+      # `$${...}` keeps the literal placeholder so resolveFileEnvVars() substitutes
+      # the mounted secret at runtime instead of Compose baking a host/dev value in.
+      DATABASE_URL: postgresql://las_flores:$${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:$${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
       REDIS_URL: redis://redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
+      # Clear the plain secrets inherited from the base compose so the _FILE
+      # variants below are actually consumed by resolveFileEnvVars() (the resolver
+      # skips a _FILE var when its plain counterpart is already set, which would
+      # otherwise keep the publicly-known dev fallbacks in production).
+      JWT_SECRET: !reset null
+      MINIO_ACCESS_KEY: !reset null
+      MINIO_SECRET_KEY: !reset null
+      PATREON_CLIENT_ID: !reset null
+      PATREON_CLIENT_SECRET: !reset null
+      PAYPAL_SECRET: !reset null
       # Database passwords via _FILE (resolver will read and set POSTGRES_PASSWORD, etc.)
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_ANALYTICS_PASSWORD_FILE: /run/secrets/postgres_analytics_password
@@ -91,7 +104,91 @@ services:
       - patreon_client_secret
       - paypal_secret
 
+  # intake-worker - Node.js/Express API (admin + AI + content engine)
+  # M21: the ONLY process that runs `runAllMigrations()` (schema + content migration,
+  # including the `content_migration` advisory-lock reconcile) and schedules
+  # ContentAssetWorker / StoryBuilder / LLM generation.
+  intake-worker:
+    restart: unless-stopped
+    ports: !reset []
+    # Production: Remove source code volume mounts - use built image
+    volumes: !reset []
+    # The Dockerfile's default CMD is the dev server (`npm run dev --workspace=server`);
+    # the intake-worker service explicitly overrides it to the production start script.
+    command: npm run start:intake --workspace=server
+    healthcheck:
+      start_period: 10s
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://las_flores:$${POSTGRES_PASSWORD}@postgres-oltp:5432/las_flores
+      ANALYTICS_DATABASE_URL: postgresql://las_flores_analytics:$${POSTGRES_ANALYTICS_PASSWORD}@postgres-olap:5432/las_flores_analytics
+      REDIS_URL: redis://redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      # Clear the plain secrets inherited from the base compose so the _FILE
+      # variants below are actually consumed by resolveFileEnvVars() (same reason
+      # as the `server` service above — otherwise the dev fallbacks win).
+      JWT_SECRET: !reset null
+      MINIO_ACCESS_KEY: !reset null
+      MINIO_SECRET_KEY: !reset null
+      PATREON_CLIENT_ID: !reset null
+      PATREON_CLIENT_SECRET: !reset null
+      PAYPAL_SECRET: !reset null
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_ANALYTICS_PASSWORD_FILE: /run/secrets/postgres_analytics_password
+      MINIO_ACCESS_KEY_FILE: /run/secrets/minio_access_key
+      MINIO_SECRET_KEY_FILE: /run/secrets/minio_secret_key
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      PATREON_CLIENT_ID_FILE: /run/secrets/patreon_client_id
+      PATREON_CLIENT_SECRET_FILE: /run/secrets/patreon_client_secret
+      PAYPAL_SECRET_FILE: /run/secrets/paypal_secret
+      SIGNED_URL_TTL_SECONDS: ${SIGNED_URL_TTL_SECONDS:-900}
+      PATREON_REDIRECT_URI: ${PATREON_REDIRECT_URI}
+      PATREON_NSFW_TIER_IDS: ${PATREON_NSFW_TIER_IDS}
+      CLIENT_BASE_URL: ${CLIENT_BASE_URL}
+      LITELLM_BASE_URL: ${LITELLM_BASE_URL}
+      LITELLM_API_KEY_FILE: /run/secrets/litellm_api_key
+      LLM_MODEL: ${LLM_MODEL}
+      LLM_PROVIDER: litellm
+    secrets:
+      - postgres_password
+      - postgres_analytics_password
+      - minio_access_key
+      - minio_secret_key
+      - jwt_secret
+      - patreon_client_id
+      - patreon_client_secret
+      - paypal_secret
+      - litellm_api_key
+
 # Docker Secrets - Use external secrets in production (e.g., Swarm mode, Kubernetes)
+# Active top-level secrets: all secrets referenced by services must be defined here.
+# They are provisioned externally in production, hence `external: true`.
+secrets:
+  postgres_password:
+    external: true
+  postgres_analytics_password:
+    external: true
+  minio_root_user:
+    external: true
+  minio_root_password:
+    external: true
+  minio_access_key:
+    external: true
+  minio_secret_key:
+    external: true
+  jwt_secret:
+    external: true
+  patreon_client_id:
+    external: true
+  patreon_client_secret:
+    external: true
+  paypal_secret:
+    external: true
+  litellm_api_key:
+    external: true
+
 # Example secrets file structure (create per-environment):
 # secrets:
 #   postgres_password:
@@ -114,3 +211,5 @@ services:
 #     file: ./secrets/patreon_client_secret.txt
 #   paypal_secret:
 #     file: ./secrets/paypal_secret.txt
+#   litellm_api_key:
+#     file: ./secrets/litellm_api_key.txt

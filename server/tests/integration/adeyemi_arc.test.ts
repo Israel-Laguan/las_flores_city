@@ -51,8 +51,8 @@ async function applyMigration(filename: string): Promise<void> {
     'utf-8'
   );
   try {
-    await withSchemaLock(async () => {
-      await queryOLTP(sql);
+    await withSchemaLock(async (client) => {
+      await client.query(sql);
     });
   } catch (err) {
     // 42P07 duplicate_table / 42701 duplicate_column are expected on re-runs.
