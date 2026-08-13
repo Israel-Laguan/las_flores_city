@@ -122,6 +122,7 @@ export const navSections: NavSection[] = [
       { href: '/ai-config', label: 'AI Config', icon: 'cpu' },
       { href: '/settings', label: 'Settings', icon: 'cog' },
       { href: '/users', label: 'Users', icon: 'shield' },
+      { href: '/audit', label: 'Audit', icon: 'clipboard' },
     ],
   },
 ];

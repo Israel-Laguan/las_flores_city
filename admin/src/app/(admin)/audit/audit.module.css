@@ -1,0 +1,135 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  border: 1px solid var(--color-border-default, #d8dee4);
+  border-radius: 8px;
+  background: var(--color-canvas-default, #ffffff);
+  overflow: hidden;
+}
+
+.panelHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-default, #d8dee4);
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.panelBody {
+  padding: 12px 16px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.td {
+  padding: 8px;
+  border-bottom: 1px solid var(--color-border-muted, #eaeef2);
+  vertical-align: top;
+}
+
+.th {
+  text-align: left;
+  padding: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--color-fg-muted, #6e7781);
+  border-bottom: 1px solid var(--color-border-default, #d8dee4);
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.muted {
+  color: var(--color-fg-muted, #6e7781);
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.evidenceList {
+  list-style: none;
+  padding-left: 0;
+  margin: 4px 0 0;
+}
+
+.evidenceList li {
+  font-size: 13px;
+  padding: 2px 0;
+}
+
+.empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--color-fg-muted, #6e7781);
+}
+
+.error {
+  padding: 12px 16px;
+  color: #b62324;
+  background: #ffebe9;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.patchStatus {
+  display: inline-flex;
+  align-items: center;
+}
+
+.formRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-default, #d8dee4);
+  background: transparent;
+  cursor: pointer;
+}
+
+.tabActive {
+  background: var(--color-accent-muted, rgba(9, 105, 218, 0.1));
+  border-color: var(--color-accent, #0969da);
+  color: var(--color-accent, #0969da);
+  font-weight: 600;
+}

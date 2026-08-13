@@ -54,7 +54,11 @@
     "060_admin_events_solidified.sql",
     "061_admin_events_validate.sql",
     "062_job_runs.sql",
-    "063_content_url.sql"
+    "063_content_url.sql",
+    "064_patch_versioning.sql",
+    "066_claims.sql",
+    "067_admin_events_audit.sql",
+    "068_admin_events_audit_validate.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

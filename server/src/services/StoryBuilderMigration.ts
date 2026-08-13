@@ -12,6 +12,7 @@ import { queryOLTP } from '@las-flores/infra';
 import { migrateContent } from '../content/migrate.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from './PlanVerificationService.js';
+import { recordMigrationCanon } from './RevisionService.js';
 import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import type { MigrationResult } from './StoryBuilderOrchestrator.js';
 
@@ -58,6 +59,26 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
         migrationResult,
         error: migrationResult.errors.join('; '),
       };
+    }
+
+    // M24: Record the canon changes produced by this migration as a patch +
+    // per-entity canon revisions so rollback is a lookup, not inverse reasoning.
+    // Best-effort: a failure to record versioning must not fail the migration.
+    try {
+      const applied = (migrationResult.appliedMigrations ?? []).map((m) => ({
+        contentType: m.contentType,
+        contentId: m.contentId,
+        action: m.action,
+      }));
+      await recordMigrationCanon({
+        planId,
+        title: `Migrate plan ${planId}`,
+        description: `Snapshot canon produced by content migration for plan ${planId}`,
+        userId: undefined,
+        appliedMigrations: applied,
+      });
+    } catch (verr: any) {
+      console.warn(`[revision] Could not record migration canon for plan ${planId}:`, verr?.message);
     }
 
     const newStatus = 'migrated';
