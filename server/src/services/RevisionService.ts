@@ -67,14 +67,22 @@ async function readSnapshot(
 ): Promise<{ table: string; snapshot: unknown } | null> {
   const table = SNAPSHOT_TABLE_BY_TYPE[contentType];
   if (!table) return null;
+
+  // Run the snapshot SELECT inside a savepoint so a failed read (which leaves the
+  // enclosing transaction in the aborted state) is scoped and rolled back here,
+  // letting later statements in the same withOLTPTransaction continue.
+  const savepoint = `snap_${Math.random().toString(36).slice(2, 10)}`;
+  await exec(`SAVEPOINT ${savepoint}`, []);
   try {
     const result = await exec(
       `SELECT row_to_json(t) AS snapshot FROM ${table} t WHERE t.id = $1::uuid`,
       [entityId],
     );
+    await exec(`RELEASE SAVEPOINT ${savepoint}`, []);
     if (result.rows.length === 0) return null;
     return { table, snapshot: result.rows[0].snapshot };
   } catch (err) {
+    await exec(`ROLLBACK TO SAVEPOINT ${savepoint}`, []);
     console.warn(`[revision] Could not snapshot ${contentType}/${entityId}:`, (err as Error).message);
     return null;
   }
@@ -113,7 +121,7 @@ export async function createPatch(input: PatchCreate, userId?: string): Promise<
     ],
   );
   const patchId = result.rows[0].id;
-  emitAdminEvent('claim_created', { patchId, title: input.title, status: 'proposed' }, input.planId ?? undefined, userId);
+  emitAdminEvent('patch_created', { patchId, title: input.title, status: 'proposed' }, input.planId ?? undefined, userId);
   return patchId;
 }
 /**
@@ -124,17 +132,12 @@ export async function createPatch(input: PatchCreate, userId?: string): Promise<
 export async function applyPatch(patchId: string, userId?: string): Promise<void> {
   await withOLTPTransaction(async (client) => {
     const exec = (text: string, params: any[]): Promise<pg.QueryResult> => client.query(text, params);
-    const load = await exec('SELECT id, status FROM patches WHERE id = $1', [patchId]);
+    const load = await exec('SELECT id, status, patch_json FROM patches WHERE id = $1 FOR UPDATE', [patchId]);
     if (load.rows.length === 0) throw new PatchNotFoundError(patchId);
     if (load.rows[0].status !== 'proposed') {
       throw new PatchStatusError(`Patch must be 'proposed' to apply. Current: ${load.rows[0].status}`);
     }
-
-    const patchRow = await exec(
-      `SELECT patch_json FROM patches WHERE id = $1 FOR UPDATE`,
-      [patchId],
-    );
-    const ops: PatchOp[] = patchRow.rows[0].patch_json?.ops ?? [];
+    const ops: PatchOp[] = load.rows[0].patch_json?.ops ?? [];
 
     for (const op of ops) {
       const after = await readSnapshot(op.entityType, op.entityId, exec);
@@ -165,7 +168,7 @@ export async function applyPatch(patchId: string, userId?: string): Promise<void
 export async function rejectPatch(patchId: string, conflictReason: string, userId?: string): Promise<void> {
   await withOLTPTransaction(async (client) => {
     const exec = (text: string, params: any[]): Promise<pg.QueryResult> => client.query(text, params);
-    const load = await exec('SELECT status FROM patches WHERE id = $1', [patchId]);
+    const load = await exec('SELECT status FROM patches WHERE id = $1 FOR UPDATE', [patchId]);
     if (load.rows.length === 0) throw new PatchNotFoundError(patchId);
     if (load.rows[0].status === 'rolled_back') {
       throw new PatchStatusError(`Patch already rolled back cannot be rejected`);
@@ -188,7 +191,7 @@ export async function rejectPatch(patchId: string, conflictReason: string, userI
 export async function rollbackPatch(patchId: string, userId?: string): Promise<RollbackResult> {
   return withOLTPTransaction(async (client) => {
     const exec = (text: string, params: any[]): Promise<pg.QueryResult> => client.query(text, params);
-    const load = await exec('SELECT id, status, plan_id FROM patches WHERE id = $1', [patchId]);
+    const load = await exec('SELECT id, status, plan_id FROM patches WHERE id = $1 FOR UPDATE', [patchId]);
     if (load.rows.length === 0) throw new PatchNotFoundError(patchId);
     if (load.rows[0].status !== 'applied') {
       throw new PatchStatusError(`Only applied patches can be rolled back. Current: ${load.rows[0].status}`);

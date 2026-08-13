@@ -4,6 +4,10 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const DEFAULT_TTL_SECONDS = 300;
 
+// Bound the HTTP content-fetch wait so a stalled CDN cannot hold a dialogue
+// resolver request thread indefinitely (contentFetch falls back to the DB).
+const CONTENT_FETCH_TIMEOUT_MS = 5000;
+
 const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'localhost';
 const MINIO_PORT = process.env.MINIO_PORT || '9000';
 // Browser-reachable endpoint for MinIO. In Compose deployments MINIO_ENDPOINT
@@ -242,7 +246,9 @@ export async function fetchContentString(mediaUrl: string): Promise<string> {
     throw new Error(`Unsupported content URL: ${mediaUrl}`);
   }
 
-  const response = await fetch(mediaUrl);
+  const response = await fetch(mediaUrl, {
+    signal: AbortSignal.timeout(CONTENT_FETCH_TIMEOUT_MS),
+  });
   if (!response.ok) {
     throw new Error(`Failed to fetch content: ${response.status}`);
   }

@@ -95,7 +95,7 @@ function buildOverlayFingerprint(overlays: OverlayRow[]): string {
  */
 function contentVersionFromUrl(contentUrl?: string | null): string {
   if (!contentUrl) return 'base';
-  return createHash('sha1').update(contentUrl).digest('hex').slice(0, 16);
+  return createHash('sha256').update(contentUrl).digest('hex').slice(0, 16);
 }
 
 /**
@@ -545,19 +545,20 @@ export class DialogueResolver {
    * `content_url` when present; otherwise falls back to the in-DB JSONB.
    */
   private static async loadBaseChunkRow(
-    where: string,
+    column: 'id' | 'chunk_key',
     param: string
   ): Promise<BaseDialogueChunkRow> {
+    const where = column === 'id' ? 'id' : 'chunk_key';
     const result = await queryContent<BaseDialogueChunkRow>(
       `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
           FROM dialogue_chunks
-         WHERE ${where}
+         WHERE ${where} = $1
          LIMIT 1`,
       [param]
     );
 
     if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found for ${where} = ${param}`);
+      throw new Error(`Dialogue chunk not found for ${column} = ${param}`);
     }
 
     const row = result.rows[0];
@@ -579,7 +580,7 @@ export class DialogueResolver {
    * when present; otherwise falls back to the in-DB JSONB.
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
-    return DialogueResolver.loadBaseChunkRow('id = $1', chunkId);
+    return DialogueResolver.loadBaseChunkRow('id', chunkId);
   }
 
   /**
@@ -587,6 +588,6 @@ export class DialogueResolver {
    * Used by resolveNextChunk when crossing boundaries.
    */
   private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
-    return DialogueResolver.loadBaseChunkRow('chunk_key = $1', chunkKey);
+    return DialogueResolver.loadBaseChunkRow('chunk_key', chunkKey);
   }
 }

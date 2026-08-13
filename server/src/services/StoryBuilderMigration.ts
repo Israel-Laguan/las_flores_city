@@ -20,7 +20,7 @@ import type { MigrationResult } from './StoryBuilderOrchestrator.js';
  * Migrate a staged/approved plan to the database. Takes ownership of the
  * `migrating` transition here so callers do not flip status before validation.
  */
-export async function migrateStagedPlan(planId: string, client?: import('pg').PoolClient, files?: string[]): Promise<MigrationResult> {
+export async function migrateStagedPlan(planId: string, client?: import('pg').PoolClient, files?: string[], userId?: string): Promise<MigrationResult> {
   const exec = (text: string, params: any[]) =>
     client ? client.query<any>(text, params) : queryOLTP<any>(text, params);
   try {
@@ -74,7 +74,7 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
         planId,
         title: `Migrate plan ${planId}`,
         description: `Snapshot canon produced by content migration for plan ${planId}`,
-        userId: undefined,
+        userId,
         appliedMigrations: applied,
       });
     } catch (verr: any) {
@@ -99,6 +99,12 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
         ['failed', planId]
       );
     } catch { /* ignore */ }
+
+    // Permanent failures must stay typed so runSolidify's isPermanent check can
+    // classify them instead of burning the whole attempt budget on an impossible retry.
+    if (error instanceof PlanNotFoundError || error instanceof PlanStatusError) {
+      throw error;
+    }
 
     return {
       success: false,

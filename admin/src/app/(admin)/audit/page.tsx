@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+/* eslint-disable max-lines */
+
+import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
 import styles from './audit.module.css';
@@ -53,10 +56,12 @@ function PatchRow({
   patch,
   onReject,
   onRollback,
+  isInFlight,
 }: {
   patch: Patch;
   onReject: (id: string) => void;
   onRollback: (id: string) => void;
+  isInFlight: boolean;
 }) {
   return (
     <tr>
@@ -81,6 +86,7 @@ function PatchRow({
             <button
               className={cn('btn', 'btn--danger', 'btn--sm')}
               onClick={() => onReject(patch.id)}
+              disabled={isInFlight}
             >
               Reject
             </button>
@@ -89,6 +95,7 @@ function PatchRow({
             <button
               className={cn('btn', 'btn--warning', 'btn--sm')}
               onClick={() => onRollback(patch.id)}
+              disabled={isInFlight}
             >
               Rollback
             </button>
@@ -102,9 +109,11 @@ function PatchRow({
 function ClaimRow({
   claim,
   onTransition,
+  isInFlight,
 }: {
   claim: Claim;
   onTransition: (id: string, to: string) => void;
+  isInFlight: boolean;
 }) {
   return (
     <tr>
@@ -136,6 +145,7 @@ function ClaimRow({
             <button
               className={cn('btn', 'btn--success', 'btn--sm')}
               onClick={() => onTransition(claim.id, 'accepted')}
+              disabled={isInFlight}
             >
               Accept
             </button>
@@ -145,12 +155,14 @@ function ClaimRow({
               <button
                 className={cn('btn', 'btn--primary', 'btn--sm')}
                 onClick={() => onTransition(claim.id, 'merged')}
+                disabled={isInFlight}
               >
                 Merge
               </button>
               <button
                 className={cn('btn', 'btn--danger', 'btn--sm')}
                 onClick={() => onTransition(claim.id, 'rejected')}
+                disabled={isInFlight}
               >
                 Reject
               </button>
@@ -162,14 +174,17 @@ function ClaimRow({
   );
 }
 
-export default function AuditPage({ searchParams }: { searchParams?: { plan_id?: string } }) {
-  const initialPlan = searchParams?.plan_id || '';
+// eslint-disable-next-line max-lines-per-function
+function AuditPageView() {
+  const searchParams = useSearchParams();
+  const initialPlan = searchParams.get('plan_id') || '';
   const [planId, setPlanId] = useState(initialPlan);
   const [query, setQuery] = useState(initialPlan);
   const [patches, setPatches] = useState<Patch[]>([]);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [inFlightId, setInFlightId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!query) {
@@ -198,31 +213,44 @@ export default function AuditPage({ searchParams }: { searchParams?: { plan_id?:
   }, [load]);
 
   const onRejectPatch = async (id: string) => {
+    const reason = window.prompt('Conflict reason for rejection:');
+    if (reason === null) return;
+    setInFlightId(id);
     try {
-      const reason = window.prompt('Conflict reason for rejection:');
       await adminFetch(`/admin/audit/patches/${id}/reject`, {
         method: 'POST',
-        body: JSON.stringify({ conflictReason: reason || '' }),
+        body: JSON.stringify({ conflictReason: reason }),
       });
       load();
     } catch (e: any) {
       setError(e.message || 'Failed to reject patch');
+    } finally {
+      setInFlightId(null);
     }
   };
 
   const onRollbackPatch = async (id: string) => {
     if (!window.confirm('Roll back this patch (restores prior canon snapshot)?')) return;
+    setInFlightId(id);
     try {
       await adminFetch(`/admin/audit/patches/${id}/rollback`, { method: 'POST' });
       load();
     } catch (e: any) {
       setError(e.message || 'Failed to rollback patch');
+    } finally {
+      setInFlightId(null);
     }
   };
 
   const onTransitionClaim = async (id: string, to: string) => {
+    const conflictReason =
+      to === 'merged' || to === 'rejected' ? window.prompt('Conflict / merge reason:') : '';
+    if (to === 'merged' || to === 'rejected') {
+      // A cancelled prompt aborts the action; an explicit empty string still proceeds.
+      if (conflictReason === null) return;
+    }
+    setInFlightId(id);
     try {
-      const conflictReason = to === 'merged' || to === 'rejected' ? (window.prompt('Conflict / merge reason:') || '') : '';
       await adminFetch(`/admin/audit/claims/${id}/transition`, {
         method: 'POST',
         body: JSON.stringify({ to, conflictReason }),
@@ -230,86 +258,140 @@ export default function AuditPage({ searchParams }: { searchParams?: { plan_id?:
       load();
     } catch (e: any) {
       setError(e.message || 'Failed to transition claim');
+    } finally {
+      setInFlightId(null);
     }
   };
+
+  if (loading) {
+    return (
+      <div>
+        <Toolbar planId={planId} setPlanId={setPlanId} setQuery={setQuery} />
+        <div className={styles.empty}>Loading…</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <h1>Audit</h1>
       <p className="muted">Patch/revision history and claim provenance for a content plan.</p>
       {error ? <div className={styles.error}>{error}</div> : null}
-      <div className={styles.toolbar}>
-        <input
-          className="input"
-          placeholder="Plan UUID"
-          aria-label="Plan UUID"
-          value={planId}
-          onChange={(e) => setPlanId(e.target.value)}
-        />
-        <button className={cn('btn', 'btn--primary')} onClick={() => setQuery(planId)}>
-          Load
-        </button>
-      </div>
-      {loading ? <div className={styles.empty}>Loading…</div> : null}
-      {!loading && query ? (
+      <Toolbar planId={planId} setPlanId={setPlanId} setQuery={setQuery} />
+      {query ? (
         <div className={styles.layout}>
-          <section className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span>Patches / Revisions</span>
-              <span className={styles.muted}>{patches.length}</span>
-            </div>
-            <div className={styles.panelBody}>
-              {patches.length === 0 ? (
-                <div className={styles.empty}>No patches for this plan.</div>
-              ) : (
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th className={styles.th}>Patch</th>
-                      <th className={styles.th}>Status</th>
-                      <th className={styles.th}>Entities</th>
-                      <th className={styles.th}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {patches.map((p) => (
-                      <PatchRow key={p.id} patch={p} onReject={onRejectPatch} onRollback={onRollbackPatch} />
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </section>
-
-          <section className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span>Claims / Evidence</span>
-              <span className={styles.muted}>{claims.length}</span>
-            </div>
-            <div className={styles.panelBody}>
-              {claims.length === 0 ? (
-                <div className={styles.empty}>No claims for this plan.</div>
-              ) : (
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th className={styles.th}>Claim</th>
-                      <th className={styles.th}>Status</th>
-                      <th className={styles.th}>Conflict</th>
-                      <th className={styles.th}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {claims.map((c) => (
-                      <ClaimRow key={c.id} claim={c} onTransition={onTransitionClaim} />
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </section>
+          <PatchesPanel patches={patches} onReject={onRejectPatch} onRollback={onRollbackPatch} inFlightId={inFlightId} />
+          <ClaimsPanel claims={claims} onTransition={onTransitionClaim} inFlightId={inFlightId} />
         </div>
       ) : null}
     </div>
+  );
+}
+
+function Toolbar({
+  planId, setPlanId, setQuery,
+}: {
+  planId: string;
+  setPlanId: (v: string) => void;
+  setQuery: (v: string) => void;
+}) {
+  return (
+    <div className={styles.toolbar}>
+      <input
+        className="input"
+        placeholder="Plan UUID"
+        aria-label="Plan UUID"
+        value={planId}
+        onChange={(e) => setPlanId(e.target.value)}
+      />
+      <button className={cn('btn', 'btn--primary')} onClick={() => setQuery(planId)}>
+        Load
+      </button>
+    </div>
+  );
+}
+
+function PatchesPanel({
+  patches, onReject, onRollback, inFlightId,
+}: {
+  patches: Patch[];
+  onReject: (id: string) => void;
+  onRollback: (id: string) => void;
+  inFlightId: string | null;
+}) {
+  return (
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <span>Patches / Revisions</span>
+        <span className={styles.muted}>{patches.length}</span>
+      </div>
+      <div className={styles.panelBody}>
+        {patches.length === 0 ? (
+          <div className={styles.empty}>No patches for this plan.</div>
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.th}>Patch</th>
+                <th className={styles.th}>Status</th>
+                <th className={styles.th}>Entities</th>
+                <th className={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patches.map((p) => (
+                <PatchRow key={p.id} patch={p} onReject={onReject} onRollback={onRollback} isInFlight={inFlightId === p.id} />
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ClaimsPanel({
+  claims, onTransition, inFlightId,
+}: {
+  claims: Claim[];
+  onTransition: (id: string, to: string) => void;
+  inFlightId: string | null;
+}) {
+  return (
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <span>Claims / Evidence</span>
+        <span className={styles.muted}>{claims.length}</span>
+      </div>
+      <div className={styles.panelBody}>
+        {claims.length === 0 ? (
+          <div className={styles.empty}>No claims for this plan.</div>
+        ) : (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.th}>Claim</th>
+                <th className={styles.th}>Status</th>
+                <th className={styles.th}>Conflict</th>
+                <th className={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {claims.map((c) => (
+                <ClaimRow key={c.id} claim={c} onTransition={onTransition} isInFlight={inFlightId === c.id} />
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </section>
+  );
+}
+
+export default function AuditPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuditPageView />
+    </Suspense>
   );
 }

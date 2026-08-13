@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 
@@ -7,10 +7,17 @@ vi.mock('@/lib/client-api', () => ({
   adminFetch: (...args: unknown[]) => mockAdminFetch(...args),
 }));
 
+const mockSearchParams = vi.fn<(key: string) => string | null>(() => null);
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => ({ get: mockSearchParams }),
+}));
+
 import AuditPage from '../page';
 
 beforeEach(() => {
   mockAdminFetch.mockReset();
+  mockSearchParams.mockReset();
+  mockSearchParams.mockImplementation(() => null);
   mockAdminFetch.mockImplementation(async (url: string) => {
     if (url.startsWith('/admin/audit/patches')) {
       return {
@@ -50,7 +57,8 @@ beforeEach(() => {
 
 describe('AuditPage', () => {
   it('renders patches and claims for a plan', async () => {
-    render(<AuditPage searchParams={{ plan_id: 'a0000000-0000-4000-8000-000000000011' }} />);
+    mockSearchParams.mockImplementation((key) => (key === 'plan_id' ? 'a0000000-0000-4000-8000-000000000011' : null));
+    render(<AuditPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Add character lore')).toBeInTheDocument();
@@ -61,6 +69,34 @@ describe('AuditPage', () => {
     const calledUrls = mockAdminFetch.mock.calls.map((c) => c[0]);
     expect(calledUrls.some((u) => u.includes('/admin/audit/patches?plan_id='))).toBe(true);
     expect(calledUrls.some((u) => u.includes('/admin/audit/claims?plan_id='))).toBe(true);
+  });
+
+  it('calls rollback endpoint when Rollback is confirmed', async () => {
+    mockSearchParams.mockImplementation((key) => (key === 'plan_id' ? 'plan-1' : null));
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    render(<AuditPage />);
+
+    const rollbackBtn = await screen.findByRole('button', { name: /rollback/i });
+    fireEvent.click(rollbackBtn);
+
+    await waitFor(() => {
+      expect(mockAdminFetch).toHaveBeenCalledWith(
+        '/admin/audit/patches/a0000000-0000-4000-8000-000000000001/rollback',
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+
+    confirmSpy.mockRestore();
+  });
+
+  it('renders an error message when data loading fails', async () => {
+    mockSearchParams.mockImplementation((key) => (key === 'plan_id' ? 'plan-1' : null));
+    mockAdminFetch.mockRejectedValue(new Error('Network failure'));
+    render(<AuditPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Network failure')).toBeInTheDocument();
+    });
   });
 
   it('shows an empty state when the query is empty', async () => {

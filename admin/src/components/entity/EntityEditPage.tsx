@@ -100,29 +100,18 @@ export default function EntityEditPage({
   useBreadcrumbLabel(id, editLabel);
 
   if (yamlLoading) {
-    return (
-      <main className={styles.main}>
-        <Link href={`/${routeBase}/${id}`} className={styles.backLink}>&larr; Back to {entityLabel}</Link>
-        <p className={styles.muted}>Loading...</p>
-      </main>
-    );
+    return <EditState id={id} routeBase={routeBase} entityLabel={entityLabel}><p className={styles.muted}>Loading...</p></EditState>;
   }
 
   if (yamlError || !yaml) {
-    return (
-      <main className={styles.main}>
-        <Link href={`/${routeBase}/${id}`} className={styles.backLink}>&larr; Back to {entityLabel}</Link>
-        <div className={styles.errorBox}>{yamlError || 'Not found'}</div>
-      </main>
-    );
+    return <EditState id={id} routeBase={routeBase} entityLabel={entityLabel}><div className={styles.errorBox}>{yamlError || 'Not found'}</div></EditState>;
   }
 
   const yamlRecord = yaml as Record<string, unknown>;
   const displayTitle = draft ? String(draft.name ?? yamlRecord.name ?? id) : String(yamlRecord.name ?? id);
 
   return (
-    <main className={styles.main}>
-      <Link href={`/${routeBase}/${id}`} className={styles.backLink}>&larr; Back to {entityLabel}</Link>
+    <EditState id={id} routeBase={routeBase} entityLabel={entityLabel}>
       <h1>Edit {entityLabel}: {displayTitle}</h1>
       {validationErrors && (
         <div className={styles.validationErrors}>
@@ -146,6 +135,22 @@ export default function EntityEditPage({
         />
       )}
       {footer}
+    </EditState>
+  );
+}
+
+function EditState({
+  id, routeBase, entityLabel, children,
+}: {
+  id: string;
+  routeBase: string;
+  entityLabel: string;
+  children: ReactNode;
+}) {
+  return (
+    <main className={styles.main}>
+      <Link href={`/${routeBase}/${id}`} className={styles.backLink}>&larr; Back to {entityLabel}</Link>
+      {children}
     </main>
   );
 }

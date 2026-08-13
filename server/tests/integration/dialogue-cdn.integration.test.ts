@@ -42,8 +42,11 @@ jest.doMock('../../src/services/StorageService.js', () => ({
   fetchContentJson: mockFetchContentJson,
 }));
 
-import { compileDialogueTree } from '../../src/content/compiler.js';
-import { DialogueResolver } from '../../src/services/DialogueResolver.js';
+// Loaded dynamically inside beforeAll so the StorageService mock above is
+// registered before these modules (which transitively import StorageService)
+// are evaluated — mirrors the asset-promotion.test.ts pattern.
+let compileDialogueTree: typeof import('../../src/content/compiler.js').compileDialogueTree;
+let DialogueResolver: typeof import('../../src/services/DialogueResolver.js').DialogueResolver;
 import type { DialogueNode } from '@las-flores/shared';
 
 // Dedicated synthetic UUIDs + a read-only resolver user (no player rows
@@ -87,6 +90,13 @@ async function loadChunkRow() {
 }
 
 beforeAll(async () => {
+  // Dynamic import AFTER the StorageService doMock so the in-memory MinIO
+  // simulation is used instead of the real implementation.
+  const compilerMod = await import('../../src/content/compiler.js');
+  compileDialogueTree = compilerMod.compileDialogueTree;
+  const resolverMod = await import('../../src/services/DialogueResolver.js');
+  DialogueResolver = resolverMod.DialogueResolver;
+
   await seedTree(baseNodes('v1'));
   await compileDialogueTree(TEST_TREE_ID);
 
@@ -108,7 +118,7 @@ afterAll(async () => {
       await client.query('DELETE FROM dialogue_overlays WHERE target_tree_id = $1', [TEST_TREE_ID]);
       await client.query('DELETE FROM dialogue_trees WHERE id = $1', [TEST_TREE_ID]);
     });
-    await invalidatePattern(`dialogue:resolved:chunk:*:content:*`);
+    await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
     await invalidatePattern(`dialogue:resolved:${TEST_TREE_ID}:*`);
   } finally {
     objectStore.clear();
@@ -206,7 +216,7 @@ describe('M23 dialogue CDN externalization', () => {
         tb_cost: 3,
       },
     };
-    const leafKey = 'chunks/e3000000-0000-4000-8000-000000000001/leaf_chunk__deadbeefdeadbeef.json';
+    const leafKey = `chunks/${TEST_TREE_ID}/leaf_chunk__deadbeefdeadbeef.json`;
     objectStore.set(leafKey, JSON.stringify({ nodes: cdnNodes, leaves: cdnLeaves }));
     const leafUrl = `s3://las-flores/${leafKey}`;
 

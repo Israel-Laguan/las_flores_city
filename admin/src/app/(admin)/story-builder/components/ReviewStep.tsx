@@ -156,6 +156,75 @@ function ShipFooter({
   );
 }
 
+function PlanItems({
+  plan, planId, loading, onRegenerateLore, onRefineItem, onUpdateItem, onRemoveItem,
+  onAssetPathRemove, onDependsOnChange, onGenerateDrafts, onChooseDraft,
+  draftAssetsByItem, draftLoading, genStatusByItem,
+}: {
+  plan: ContentPlan;
+  planId: string | null;
+  loading: boolean;
+  onRegenerateLore: (itemId: string) => void;
+  onRefineItem?: (itemId: string) => void;
+  onUpdateItem: (index: number, field: string, value: string) => void;
+  onRemoveItem: (index: number) => void;
+  onAssetPathRemove: (index: number, key: string) => void;
+  onDependsOnChange: (index: number, dependsOn: string[]) => void;
+  onGenerateDrafts?: (count?: number) => void;
+  onChooseDraft?: (itemId: string, promptType: string, filename: string) => void;
+  draftAssetsByItem?: Record<string, api.DraftAsset[]>;
+  draftLoading?: boolean;
+  genStatusByItem: Map<string, { status: import('../types').GenerationItemStatus; error?: string }>;
+}) {
+  return (
+    <>
+      {plan.items.map((item, i) => (
+        <ContentCard
+          key={item.id}
+          item={item}
+          index={i}
+          allItems={plan.items}
+          planId={planId}
+          disabled={loading}
+          onRegenerateLore={onRegenerateLore}
+          onRefineItem={onRefineItem}
+          onFieldChange={onUpdateItem}
+          onRemove={onRemoveItem}
+          onAssetPathRemove={onAssetPathRemove}
+          onDependsOnChange={onDependsOnChange}
+          onGenerateDrafts={() => onGenerateDrafts?.()}
+          onChooseDraft={onChooseDraft}
+          draftAssets={draftAssetsByItem?.[item.id]}
+          draftLoading={draftLoading}
+          fillStatus={genStatusByItem.get(item.id)}
+        />
+      ))}
+    </>
+  );
+}
+
+function buildGenStatusByItem(genStatus: import('../types').GenerationStatus | null | undefined) {
+  const map = new Map<string, { status: import('../types').GenerationItemStatus; error?: string }>();
+  if (genStatus?.items) {
+    for (const item of genStatus.items) {
+      map.set(item.itemId, item);
+    }
+  }
+  return map;
+}
+
+function computeUnplannedEntities(plan: ContentPlan, items: ContentPlan['items']) {
+  const roster = plan._meta?.entity_roster;
+  if (!roster) return [];
+  const normalizeForCompare = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  return roster.filter(r =>
+    !items.some(item =>
+      normalizeForCompare(item.name) === normalizeForCompare(r.name) &&
+      item.type === r.type
+    )
+  );
+}
+
 export default function ReviewStep({
   plan, planId, loading, onRegenerateLore, refineFeedback, setRefineFeedback, showRefine, setShowRefine,
   onRefine, onUpdateItem, onRemoveItem, onAddItem, onAddFromRoster, onRefineItem, onAssetPathRemove,
@@ -164,32 +233,15 @@ export default function ReviewStep({
   onApproveAndShip, approving, genStatus,
   conflicts = [], fileConflicts = [], onGenerateFullPlan, onRefineInstead,
 }: ReviewStepProps) {
-  // Asset needs that were never given a selected draft. The system will
-  // auto-pick the `<slug>__default.png` historical default for these.
   const items = plan?.items ?? [];
   const allNeeds = items.flatMap(item => item.assetNeeds ?? []);
   const pendingNeeds = allNeeds.filter(n => n.status === 'pending');
   const chosenNeeds = allNeeds.filter(n => n.status === 'chosen');
   const publishedNeeds = allNeeds.filter(n => n.status === 'published');
 
-  // Build a lookup from genStatus items for quick access per ContentCard
-  const genStatusByItem = new Map<string, { status: import('../types').GenerationItemStatus; error?: string }>();
-  if (genStatus?.items) {
-    for (const item of genStatus.items) {
-      genStatusByItem.set(item.itemId, item);
-    }
-  }
+  const genStatusByItem = buildGenStatusByItem(genStatus);
   const isGenerationActive = !!(genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating'));
-
-  // Coverage check: entities extracted from the description but not in the plan
-  const roster = plan._meta?.entity_roster;
-  const normalizeForCompare = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  const unplannedEntities = roster?.filter(r =>
-    !items.some(item =>
-      normalizeForCompare(item.name) === normalizeForCompare(r.name) &&
-      item.type === r.type
-    )
-  ) ?? [];
+  const unplannedEntities = computeUnplannedEntities(plan, items);
 
   return (
     <div className={styles.section}>
@@ -221,27 +273,22 @@ export default function ReviewStep({
 
       <CoverageSection unplannedEntities={unplannedEntities} onAddFromRoster={onAddFromRoster} />
 
-      {plan.items.map((item, i) => (
-        <ContentCard
-          key={item.id}
-          item={item}
-          index={i}
-          allItems={plan.items}
-          planId={planId}
-          disabled={loading}
-          onRegenerateLore={onRegenerateLore}
-          onRefineItem={onRefineItem}
-          onFieldChange={onUpdateItem}
-          onRemove={onRemoveItem}
-          onAssetPathRemove={onAssetPathRemove}
-          onDependsOnChange={onDependsOnChange}
-          onGenerateDrafts={() => onGenerateDrafts?.()}
-          onChooseDraft={onChooseDraft}
-          draftAssets={draftAssetsByItem?.[item.id]}
-          draftLoading={draftLoading}
-          fillStatus={genStatusByItem.get(item.id)}
-        />
-      ))}
+      <PlanItems
+        plan={plan}
+        planId={planId}
+        loading={loading}
+        onRegenerateLore={onRegenerateLore}
+        onRefineItem={onRefineItem}
+        onUpdateItem={onUpdateItem}
+        onRemoveItem={onRemoveItem}
+        onAssetPathRemove={onAssetPathRemove}
+        onDependsOnChange={onDependsOnChange}
+        onGenerateDrafts={onGenerateDrafts}
+        onChooseDraft={onChooseDraft}
+        draftAssetsByItem={draftAssetsByItem}
+        draftLoading={draftLoading}
+        genStatusByItem={genStatusByItem}
+      />
 
       <button className={cn(styles.button, styles.secondaryButton)} onClick={onAddItem}>
         + Add Item

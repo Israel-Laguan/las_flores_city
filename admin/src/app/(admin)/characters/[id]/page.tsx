@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { adminFetch } from '@/lib/client-api';
@@ -108,32 +108,25 @@ export default function CharacterDetailPage() {
   useBreadcrumbLabel(id, loadedId === id ? record?.name ?? null : null);
 
   if (loading || loadedId !== id) {
-    return (
-      <main className={styles.main}>
-        <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
-        <p className={styles.muted}>Loading...</p>
-      </main>
-    );
+    return <StateView message={<p className={styles.muted}>Loading...</p>} />;
   }
-
   if (notFound) {
-    return (
-      <main className={styles.main}>
-        <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
-        <p>Not found.</p>
-      </main>
-    );
+    return <StateView message={<p>Not found.</p>} />;
   }
-
   if (error || !record) {
-    return (
-      <main className={styles.main}>
-        <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
-        <div className={styles.errorBox}>{error || 'Character not found'}</div>
-      </main>
-    );
+    return <StateView message={<div className={styles.errorBox}>{error || 'Character not found'}</div>} />;
   }
 
+  return <CharacterBody id={id} record={record} dialoguesMap={dialoguesMap} />;
+}
+
+function CharacterBody({
+  id, record, dialoguesMap,
+}: {
+  id: string;
+  record: CharacterRecord;
+  dialoguesMap: Record<string, string>;
+}) {
   const hasPortraits = Array.isArray(record.portrait_urls) && record.portrait_urls.length > 0;
   const portraitStatus = hasPortraits ? 'ready' : 'missing';
   const dialogueIds: string[] = Array.isArray(record.available_dialogues) ? record.available_dialogues : [];
@@ -160,6 +153,15 @@ export default function CharacterDetailPage() {
         </div>
         <LinkedDialogues dialogueIds={dialogueIds} dialoguesMap={dialoguesMap} />
       </div>
+    </main>
+  );
+}
+
+function StateView({ message }: { message: ReactNode }) {
+  return (
+    <main className={styles.main}>
+      <Link href="/characters" className={styles.backLink}>&larr; Back to Characters</Link>
+      {message}
     </main>
   );
 }

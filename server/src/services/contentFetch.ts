@@ -63,10 +63,8 @@ export async function fetchChunkFromContentUrl(
       | { nodes?: Record<string, DialogueNode>; leaves?: Record<string, Leaf> }
       | null
       | undefined;
-    const nodes =
-      parsed?.nodes && Object.keys(parsed.nodes).length > 0 ? parsed.nodes : null;
-    const leaves =
-      parsed?.leaves && Object.keys(parsed.leaves).length > 0 ? parsed.leaves : null;
+    const nodes = parsed?.nodes ?? null;
+    const leaves = parsed?.leaves ?? null;
     if (nodes === null && leaves === null) return fallback;
     return {
       nodes: nodes ?? fallback.nodes,

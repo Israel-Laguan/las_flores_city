@@ -42,12 +42,12 @@ export type Patch = z.infer<typeof PatchSchema>;
 
 /** Create-payload shape accepted by the service/route (id/audit timestamp omitted). */
 export const PatchCreateSchema = z.object({
-  planId: zodUuidNullable(),
+  planId: zodUuidNullable().optional(),
   title: z.string().min(1),
   description: z.string().optional(),
   patchJson: z.object({
     ops: z.array(PatchOpSchema).default([]),
-  }),
+  }).optional(),
 });
 export type PatchCreate = z.infer<typeof PatchCreateSchema>;
 

@@ -9,7 +9,7 @@
 // state remains directly queryable.
 // ============================================================
 
-import { queryOLTP } from '@las-flores/infra';
+import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import type {
   Claim,
   ClaimCreate,
@@ -50,28 +50,33 @@ export async function createClaim(
   input: Omit<ClaimCreate, 'planId' | 'patchId'> & { planId?: string | null; patchId?: string | null },
   userId?: string,
 ): Promise<string> {
-  const result = await queryOLTP<{ id: string }>(
-    `INSERT INTO claims
-       (plan_id, patch_id, source_span, source_ref, confidence, status, conflict_reason, claim_text, created_by)
-     VALUES ($1, $2, $3, $4, $5, 'proposed', $6, $7, $8)
-     RETURNING id`,
-    [
-      input.planId || null,
-      input.patchId || null,
-      input.sourceSpan || null,
-      input.sourceRef || null,
-      input.confidence ?? null,
-      input.conflictReason || null,
-      input.claimText,
-      userId || null,
-    ],
-  );
-  const claimId = result.rows[0].id;
-  await queryOLTP(
-    `INSERT INTO claim_transitions (claim_id, from_status, to_status, created_by)
-     VALUES ($1, NULL, 'proposed', $2)`,
-    [claimId, userId || null],
-  );
+  // Both the claims insert and its initial journal row must commit together so a
+  // failed transition insert can never leave an unjournaled claim.
+  const claimId = await withOLTPTransaction(async (client) => {
+    const result = await client.query<{ id: string }>(
+      `INSERT INTO claims
+         (plan_id, patch_id, source_span, source_ref, confidence, status, conflict_reason, claim_text, created_by)
+       VALUES ($1, $2, $3, $4, $5, 'proposed', $6, $7, $8)
+       RETURNING id`,
+      [
+        input.planId || null,
+        input.patchId || null,
+        input.sourceSpan || null,
+        input.sourceRef || null,
+        input.confidence ?? null,
+        input.conflictReason || null,
+        input.claimText,
+        userId || null,
+      ],
+    );
+    const createdId = result.rows[0].id;
+    await client.query(
+      `INSERT INTO claim_transitions (claim_id, from_status, to_status, created_by)
+       VALUES ($1, NULL, 'proposed', $2)`,
+      [createdId, userId || null],
+    );
+    return createdId;
+  });
   emitAdminEvent('claim_created', { claimId, status: 'proposed' }, input.planId ?? undefined, userId);
   return claimId;
 }
@@ -111,26 +116,40 @@ export async function transitionClaim(
   conflictReason?: string,
   userId?: string,
 ): Promise<Claim> {
-  const existing = await getClaim(claimId);
-  const from = existing.status as ClaimStatus;
-  const allowed = VALID_TRANSITIONS[from] ?? [];
-  if (!allowed.includes(to)) {
-    throw new ClaimTransitionError(`Invalid transition ${from} -> ${to}`);
-  }
+  // Lock the claim row, validate the transition, and write both the journal row
+  // and the status update in one transaction so concurrent transitions cannot
+  // record conflicting edges from the same status.
+  const { claim, from } = await withOLTPTransaction(async (client) => {
+    const locked = await client.query<Record<string, any>>(
+      `SELECT id, plan_id, patch_id, source_span, source_ref, confidence, status,
+              conflict_reason, claim_text, created_by, created_at
+         FROM claims WHERE id = $1
+         FOR UPDATE`,
+      [claimId],
+    );
+    if (locked.rows.length === 0) throw new ClaimNotFoundError(claimId);
+    const row = locked.rows[0];
+    const fromStatus = row.status as ClaimStatus;
+    const allowed = VALID_TRANSITIONS[fromStatus] ?? [];
+    if (!allowed.includes(to)) {
+      throw new ClaimTransitionError(`Invalid transition ${fromStatus} -> ${to}`);
+    }
 
-  await queryOLTP(
-    `INSERT INTO claim_transitions (claim_id, from_status, to_status, conflict_reason, created_by)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [claimId, from, to, conflictReason || null, userId || null],
-  );
-  await queryOLTP(
-    `UPDATE claims SET status = $1, conflict_reason = $2 WHERE id = $3`,
-    [to, conflictReason || null, claimId],
-  );
+    await client.query(
+      `INSERT INTO claim_transitions (claim_id, from_status, to_status, conflict_reason, created_by)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [claimId, fromStatus, to, conflictReason || null, userId || null],
+    );
+    await client.query(
+      `UPDATE claims SET status = $1, conflict_reason = $2 WHERE id = $3`,
+      [to, conflictReason || null, claimId],
+    );
+    const updated = mapClaim({ ...row, status: to, conflict_reason: conflictReason || null });
+    return { claim: updated, from: fromStatus };
+  });
 
-  const updated = await getClaim(claimId);
-  emitAdminEvent('claim_updated', { claimId, from, to }, feedbackPlanId(existing), userId);
-  return updated;
+  emitAdminEvent('claim_updated', { claimId, from, to }, feedbackPlanId(claim), userId);
+  return claim;
 }
 
 function feedbackPlanId(claim: Claim): string | undefined {
@@ -236,12 +255,12 @@ export async function listClaims(opts?: {
   return result.rows.map(mapClaim);
 }
 
-/** Mark all proposed/merged claims for a patch as rejected (used on patch rejection). */
+/** Mark all proposed claims for a patch as rejected (used on patch rejection). */
 export async function rejectClaimsForPatch(patchId: string, conflictReason: string, userId?: string): Promise<number> {
   const claims = await listClaims({ patchId });
   let count = 0;
   for (const c of claims) {
-    if (c.status === 'proposed' || c.status === 'merged') {
+    if (c.status === 'proposed') {
       await transitionClaim(c.id, 'rejected', conflictReason, userId);
       count += 1;
     }

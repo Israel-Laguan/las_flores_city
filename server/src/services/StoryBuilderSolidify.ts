@@ -117,7 +117,7 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
         );
       }
     } else {
-      await runMigrationStage(planId, state, jobId);
+      await runMigrationStage(planId, state, jobId, userId);
     }
 
     // --- Verify (read-only; no double-apply risk) ---
@@ -266,11 +266,12 @@ async function runMigrationStage(
   planId: string,
   state: SolidifyState,
   jobId: string | undefined,
+  userId?: string,
 ): Promise<void> {
   if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'migrating' });
   await setJobStatus(planId, { status: 'migrating', stage: state.stageResult, publish: state.publishResult });
 
-  const migrationResult = await migrateStagedPlan(planId, undefined, state.stageResult?.createdFiles);
+  const migrationResult = await migrateStagedPlan(planId, undefined, state.stageResult?.createdFiles, userId);
   await setJobStatus(planId, { status: 'migrating', stage: state.stageResult, publish: state.publishResult, migration: migrationResult });
 
   if (!migrationResult.success) {
@@ -318,8 +319,11 @@ async function runVerifyAndTerminal(
     ['verified', JSON.stringify(verificationReport), planId],
   );
   if (jobId) {
-    await commitStage(jobId, 'verified');
-    await updateJobRun(jobId, { status: 'succeeded', stage: 'verified' });
+    // Post-commit job_runs bookkeeping is best-effort: a write failure here must
+    // not propagate into the enclosing compensation handler and invert an already
+    // successful, fully-committed verification.
+    await commitStage(jobId, 'verified').catch(() => {});
+    await updateJobRun(jobId, { status: 'succeeded', stage: 'verified' }).catch(() => {});
   }
   await setJobStatus(planId, {
     status: 'verified',

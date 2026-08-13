@@ -154,7 +154,7 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthReques
   try {
     const { id } = req.params as Record<string, string>;
 
-    const migrationResult = await migrateStagedPlan(id);
+    const migrationResult = await migrateStagedPlan(id, undefined, undefined, req.userId);
 
     emitAdminEvent(
       migrationResult.success ? 'plan_migrated' : 'plan_failed',

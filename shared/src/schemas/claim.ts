@@ -27,8 +27,8 @@ export const ClaimSchema = z.object({
 export type Claim = z.infer<typeof ClaimSchema>;
 
 export const ClaimCreateSchema = z.object({
-  planId: zodUuidNullable(),
-  patchId: zodUuidNullable(),
+  planId: zodUuidNullable().optional(),
+  patchId: zodUuidNullable().optional(),
   sourceSpan: z.string().optional(),
   sourceRef: z.string().optional(),
   confidence: z.number().min(0).max(1).optional(),

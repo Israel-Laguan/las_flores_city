@@ -7,12 +7,11 @@
 // file within the eslint max-lines budget.
 // ============================================================
 
-import { queryOLTP, getCache, deleteCache } from '@las-flores/infra';
+import { queryOLTP, deleteCache } from '@las-flores/infra';
 import type { JobType } from '@las-flores/shared';
 import { markOrphanedResumable, getJobRun, nextAttempt, updateJobRun } from './JobRunService.js';
 import { sleep } from '../utils/retryBackoff.js';
 import { GEN_CACHE_PREFIX, runPlanFillCore, setPlanFillJobStatus } from './PlanGenerationJob.js';
-import type { PlanFillJobStatus } from './PlanGenerationJob.js';
 
 /**
  * Resume a plan-fill job that was left `resumable` after a crash (M22). Consumes
@@ -56,12 +55,14 @@ export async function resetOrphanedFillJobs(
     try {
       const planJson = row.plan_json as any;
       if (planJson?._meta?.scaffolded_at) {
-        const cached = await getCache<PlanFillJobStatus>(`${GEN_CACHE_PREFIX}${row.id}`);
         const updatedAt = new Date(row.updated_at).getTime();
         const now = Date.now();
         const fiveMin = 5 * 60 * 1000;
 
-        if (!cached || (now - updatedAt) > fiveMin) {
+        // Reclaim only when the plan itself is stale. A missing cache entry alone
+        // is not proof of a dead job (best-effort cache writes, TTL expiry), so the
+        // age check must always hold before a recent draft is marked failed.
+        if ((now - updatedAt) > fiveMin) {
           const items = planJson.items?.filter((i: any) => i.action === 'create') || [];
           const hasProcessed = items.some((i: any) => i.filled_fields?.length > 0);
 

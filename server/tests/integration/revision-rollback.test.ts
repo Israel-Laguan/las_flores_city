@@ -28,6 +28,7 @@ const { Pool } = pg;
 
 // Dedicated synthetic IDs (collision-avoidance per AGENTS.md).
 const CHARACTER_ID = 'f0000000-0000-4000-8000-000000000001';
+const NEW_CHARACTER_ID = 'f0000000-0000-4000-8000-0000000000bb';
 const PLAN_ID = 'f0000000-0000-4000-8000-0000000000aa';
 
 let pool: pg.Pool;
@@ -51,7 +52,9 @@ async function clearState(): Promise<void> {
     `DELETE FROM patches WHERE plan_id = $1`,
     [PLAN_ID],
   );
-  await pool.query(`DELETE FROM characters WHERE id = $1::uuid`, [CHARACTER_ID]);
+  await pool.query(`DELETE FROM characters WHERE id = ANY($1::uuid[])`, [
+    [CHARACTER_ID, NEW_CHARACTER_ID],
+  ]);
   await pool.query(`DELETE FROM content_plans WHERE id = $1::uuid`, [PLAN_ID]);
 }
 
@@ -140,7 +143,7 @@ test('rollback restores the prior canon snapshot via lookup', async () => {
 
   test('rollback of a patch that created an entity removes the row (toRevision null)', async () => {
     // Fresh synthetic id created by a single patch with no prior revision.
-    const newCharId = 'f0000000-0000-4000-8000-0000000000bb';
+    const newCharId = NEW_CHARACTER_ID;
     await pool.query(
       `INSERT INTO characters (id, name, description)
        VALUES ($1::uuid, 'Newborn', 'freshly created')`,

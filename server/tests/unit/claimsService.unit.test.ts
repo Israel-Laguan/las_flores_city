@@ -9,16 +9,23 @@
 //   * listClaims / getClaimDetail → mapping + filtering
 //   * rejectClaimsForPatch → rejects a patch's proposed/merged claims
 //
-// DB is mocked via @las-flores/infra (queryOLTP only).
+// DB is mocked via @las-flores/infra (queryOLTP + withOLTPTransaction).
 // ============================================================
 
 import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 
 jest.mock('@las-flores/infra', () => ({
   queryOLTP: jest.fn(),
+  withOLTPTransaction: jest.fn(async (cb: (client: any) => Promise<any>) => {
+    // Invoke the transaction callback with a fake client whose `.query`
+    // delegates to the same queryOLTP mock used by non-transactional calls.
+    return cb({ query: queryOLTPMock });
+  }),
 }));
 
-import { queryOLTP } from '@las-flores/infra';
+const { queryOLTP } = jest.requireMock('@las-flores/infra') as { queryOLTP: jest.Mock };
+const queryOLTPMock = queryOLTP;
+
 import {
   createClaim,
   transitionClaim,
@@ -167,7 +174,7 @@ describe('listClaims / getClaimDetail', () => {
 });
 
 describe('rejectClaimsForPatch', () => {
-  test('rejects a patch\u2019s proposed/merged claims', async () => {
+  test("rejects a patch's proposed claims", async () => {
     resetQueue([
       [claimRow()], // listClaims(patch) → proposed claim
       [claimRow({ status: 'proposed' })], // transition read

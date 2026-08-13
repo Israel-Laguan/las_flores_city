@@ -22,11 +22,6 @@ jest.mock('@las-flores/infra', () => ({
   }),
 }));
 
-jest.mock('@las-flores/shared', () => {
-  const actual = jest.requireActual('@las-flores/shared');
-  return { ...actual };
-});
-
 // Wire the hoisted mock reference for the fake transaction client.
 const { queryOLTP } = jest.requireMock('@las-flores/infra') as { queryOLTP: jest.Mock };
 const queryOLTPMock = queryOLTP;

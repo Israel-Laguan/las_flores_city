@@ -185,6 +185,9 @@ async function finalizePlanFill(
   });
 
   if (jobId) {
+    // Best-effort: a failure to record the final succeeded job run must not
+    // propagate into runPlanFillCore's compensation handler and overwrite the
+    // just-committed `proposed` plan status with `failed`.
     await updateJobRun(jobId, {
       status: finalStatus === 'failed' ? 'failed' : 'succeeded',
       stage: finalStatus,
@@ -193,7 +196,7 @@ async function finalizePlanFill(
         failed,
         items: items.map(it => ({ itemId: it.itemId, status: it.status })),
       },
-    });
+    }).catch(() => {});
   }
 }
 

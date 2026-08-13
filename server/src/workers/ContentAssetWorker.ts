@@ -89,7 +89,7 @@ export class ContentAssetWorker {
 
   private static async resolveAssetJobRun(
     row: PlanRow,
-  ): Promise<{ jobId: string | undefined; existingRun: JobRun | null; exhausted: boolean }> {
+  ): Promise<{ jobId: string | undefined; existingRun: JobRun | null; exhausted: boolean; skip?: boolean }> {
     // M22: a succeeded run does not close the plan permanently, because new
     // asset needs can be appended later. Skip only when there is no work.
     // A job_runs lookup error must not abort the whole plan — leave
@@ -125,7 +125,8 @@ export class ContentAssetWorker {
         // in which case let it re-enter processPlan so the stalled-need reclaim
         // below can reset `generating` needs and progress the run.
         if (!(await this.checkStall(row.updated_at))) {
-          return { jobId: undefined, existingRun, exhausted: false };
+          // Still owned by the worker that started it — do not process.
+          return { jobId: undefined, existingRun, exhausted: false, skip: true };
         }
         jobId = existingRun.id;
       } else {
@@ -145,10 +146,13 @@ export class ContentAssetWorker {
     need: AssetNeed,
     contentDir: string,
   ): Promise<{ processed: number; failed: number }> {
-    // Check if draft already exists (idempotent)
+    // Check if draft already exists (idempotent). Derive the default-exists
+    // check from the listing we just fetched to avoid a second directory scan.
     const entityRoot = resolveEntityRootDir(item, contentDir);
     const existingAssets = await listLocalAssets(entityRoot);
-    const hasExisting = existingAssets.length > 0 || (await this.defaultExists(item, entityRoot));
+    const hasExisting =
+      existingAssets.length > 0 ||
+      existingAssets.some((a: { filename: string }) => a.filename === `${item.slug}__default.png`);
     if (hasExisting) {
       await autoSelectDefaultDrafts(plan, contentDir);
       // autoSelectDefaultDrafts() resolves still-`pending` needs ONLY when a
@@ -208,8 +212,8 @@ export class ContentAssetWorker {
     const plan = row.plan_json as any;
     if (!plan.items || !Array.isArray(plan.items)) return;
 
-    const { jobId, existingRun, exhausted } = await this.resolveAssetJobRun(row);
-    if (exhausted) return;
+    const { jobId, existingRun, exhausted, skip } = await this.resolveAssetJobRun(row);
+    if (exhausted || skip) return;
 
     // First: reclaim any stalled `generating` needs
     const contentDir = process.cwd().endsWith('server')
@@ -301,15 +305,6 @@ export class ContentAssetWorker {
     const now = new Date();
     const diffMs = now.getTime() - updated.getTime();
     return diffMs > IMAGE_GEN_GRACE_PERIOD_MINUTES * 60 * 1000;
-  }
-
-  private static async defaultExists(item: ContentPlanItem, entityRoot: string): Promise<boolean> {
-    try {
-      const assets = await listLocalAssets(entityRoot);
-      return assets.some((a: { filename: string }) => a.filename === `${item.slug}__default.png`);
-    } catch {
-      return false;
-    }
   }
 
   private static extractPendingNeeds(items: any[]): Array<{ item: ContentPlanItem; need: AssetNeed }> {
