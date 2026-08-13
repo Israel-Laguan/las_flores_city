@@ -38,10 +38,8 @@ export interface ResolvedChunk {
 
 interface BaseDialogueTree {
   start_node_id: string;
-  updated_at: string;
+  updated_at: Date;
   nodes: Record<string, DialogueNode>;
-  // M23: pointer to the externalized nodes blob in MinIO/CDN. When set,
-  // `loadBaseTree` fetches nodes from the CDN; NULL falls back to `nodes`.
   content_url?: string | null;
 }
 
@@ -91,11 +89,24 @@ function buildOverlayFingerprint(overlays: OverlayRow[]): string {
  * pointer → a changed version token. Including this in the resolver
  * cache key makes the cache self-healing: a re-migration that bumps
  * the pointer forces fresh resolution even if the pattern invalidate
- * didn't fire. Falls back to `'base'` when content_url is NULL/empty.
+ * didn't fire.
+ *
+ * When `content_url` is NULL/empty, `fallbackRevision` is hashed as a
+ * substitute revision token; if the caller passes a non-empty
+ * `fallbackRevision`, a changed revision still forces fresh resolution.
+ * Only when BOTH are absent does this return the constant `'base'`.
  */
-function contentVersionFromUrl(contentUrl?: string | null, fallbackRevision?: string): string {
+function coerceRevision(revision: unknown): string | undefined {
+  if (revision == null) return undefined;
+  if (typeof revision === 'string') return revision;
+  if (revision instanceof Date) return revision.toISOString();
+  return String(revision);
+}
+
+function contentVersionFromUrl(contentUrl?: string | null, fallbackRevision?: unknown): string {
   if (!contentUrl) {
-    return fallbackRevision ? createHash('sha256').update(fallbackRevision).digest('hex').slice(0, 16) : 'base';
+    const rev = coerceRevision(fallbackRevision);
+    return rev ? createHash('sha256').update(rev).digest('hex').slice(0, 16) : 'base';
   }
   return createHash('sha256').update(contentUrl).digest('hex').slice(0, 16);
 }
@@ -371,7 +382,7 @@ export class DialogueResolver {
   ): Promise<BaseDialogueTree> {
     const result = await queryContent<{
       start_node_id: string;
-      updated_at: string;
+      updated_at: Date;
       nodes: Record<string, DialogueNode>;
       content_url: string | null;
     }>(`SELECT start_node_id, updated_at, nodes, content_url FROM dialogue_trees WHERE id = $1`, [

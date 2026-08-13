@@ -158,6 +158,7 @@ describe('listClaims / getClaimDetail', () => {
 
   test('getClaimDetail maps evidence + transitions', async () => {
     resetQueue([
+      [{ rowCount: 0, rows: [] }], // SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
       [claimRow()],
       [{
         id: 'e0000000-0000-4000-8000-000000000001', claim_id: CLAIM_ID, source_span: null, source_ref: null,

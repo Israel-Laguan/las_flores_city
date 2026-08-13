@@ -175,14 +175,19 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthReques
     console.error('[story-builder] POST /plans/:id/migrate error:', error);
     // migrateStagedPlan re-throws PlanNotFoundError/PlanStatusError for permanent
     // failures (rather than returning `{ success: false }`), so handle them here
-    // to return 404/400 and still emit the `plan_failed` audit event.
+    // to return 404/400. These are validation / claim-conflict errors, NOT
+    // migration failures, so we do NOT emit a `plan_failed` audit event for them
+    // (the plan status is preserved by the service). `plan_failed` is only emitted
+    // for an unexpected error that reached the generic migration-failure path.
     const message = error.message || 'Failed to migrate plan';
     const statusCode = isPlanNotFoundError(error) || message.includes('not found')
       ? 404
       : isPlanStatusError(error) || message.includes('must be')
         ? 400
         : 500;
-    emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    if (!isPlanNotFoundError(error) && !isPlanStatusError(error)) {
+      emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    }
     res.status(statusCode).json({
       success: false,
       error: message,

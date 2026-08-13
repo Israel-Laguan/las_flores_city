@@ -13,6 +13,36 @@ import { markOrphanedResumable, getJobRun, nextAttempt, updateJobRun } from './J
 import { sleep } from '../utils/retryBackoff.js';
 import { GEN_CACHE_PREFIX, runPlanFillCore, setPlanFillJobStatus } from './PlanGenerationJob.js';
 
+// Bound the number of plan-fill resumes run concurrently. Each resumePlanFill
+// can re-enter runPlanFillCore and issue up to three LLM fills per batch, so
+// an unbounded burst after an outage would overload the LLM or database.
+const MAX_CONCURRENT_RESUMES = 4;
+
+/**
+ * Run `worker` over `items` with at most `concurrency` active workers. Preserves
+ * item order only to the extent the bound allows; workers pull from a shared queue.
+ */
+async function runBounded<T>(
+  items: readonly T[],
+  concurrency: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  const queue = [...items];
+  const runners: Promise<void>[] = [];
+  const active = Math.min(concurrency, queue.length);
+  for (let i = 0; i < active; i++) {
+    runners.push(
+      (async () => {
+        while (queue.length > 0) {
+          const item = queue.shift() as T;
+          await worker(item);
+        }
+      })(),
+    );
+  }
+  await Promise.all(runners);
+}
+
 /**
  * Resume a plan-fill job that was left `resumable` after a crash (M22). Consumes
  * one attempt with exponential backoff, then re-enters `runPlanFillCore`, which
@@ -88,12 +118,20 @@ export async function resetOrphanedFillJobs(
     console.log(`[plan-fill] Resuming ${orphanedFills.length} orphaned plan-fill job(s) asynchronously`);
     // Dispatch asynchronously (fire-and-forget) so these resumes never block
     // initializeServer / ContentAssetWorker scheduling. Each plan keeps its own
-    // per-plan error handling; failures are logged and never propagate.
-    for (const { planId } of orphanedFills) {
-      void resumePlanFill(planId).catch((err: any) => {
-        console.error(`[plan-fill] Resume failed for ${planId}:`, err?.message ?? err);
-      });
-    }
+    // per-plan error handling; failures are logged and never propagate. A bounded
+    // worker pool caps how many resumes run in parallel so a large orphan backlog
+    // cannot launch an unbounded burst of LLM/database work (M22).
+    void runBounded(
+      orphanedFills,
+      MAX_CONCURRENT_RESUMES,
+      async ({ planId }) => {
+        try {
+          await resumePlanFill(planId);
+        } catch (err: any) {
+          console.error(`[plan-fill] Resume failed for ${planId}:`, err?.message ?? err);
+        }
+      },
+    );
   }
 
   return reset + orphanedFills.length;

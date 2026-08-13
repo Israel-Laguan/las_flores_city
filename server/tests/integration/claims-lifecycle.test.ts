@@ -54,13 +54,44 @@ describe('claims-lifecycle', () => {
   });
 
   afterAll(async () => {
-    if (CLAIM_IDS.length) {
-      await pool.query(`DELETE FROM claim_transitions WHERE claim_id = ANY($1::uuid[])`, [CLAIM_IDS]);
-      await pool.query(`DELETE FROM evidence WHERE claim_id = ANY($1::uuid[])`, [CLAIM_IDS]);
-      await pool.query(`DELETE FROM claims WHERE id = ANY($1::uuid[])`, [CLAIM_IDS]);
-    }
-    if (PATCH_IDS.length) {
-      await pool.query(`DELETE FROM patches WHERE id = ANY($1::uuid[])`, [PATCH_IDS]);
+    if (CLAIM_IDS.length || PATCH_IDS.length) {
+      // The evidence / claim_transitions immutability triggers block direct
+      // DELETE by default. Bypass within an explicit transaction via
+      // `SET LOCAL claim_utils.allow_mutation = 'true'` for fixture cleanup.
+      // node-postgres disallows parameters across multiple statements in a
+      // single pooled query, so drive the transaction through a client and
+      // issue each statement separately.
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        await client.query(`SET LOCAL claim_utils.allow_mutation = 'true'`);
+        if (CLAIM_IDS.length) {
+          await client.query(
+            `DELETE FROM claim_transitions WHERE claim_id = ANY($1::uuid[])`,
+            [CLAIM_IDS],
+          );
+          await client.query(
+            `DELETE FROM evidence WHERE claim_id = ANY($1::uuid[])`,
+            [CLAIM_IDS],
+          );
+          await client.query(
+            `DELETE FROM claims WHERE id = ANY($1::uuid[])`,
+            [CLAIM_IDS],
+          );
+        }
+        if (PATCH_IDS.length) {
+          await client.query(
+            `DELETE FROM patches WHERE id = ANY($1::uuid[])`,
+            [PATCH_IDS],
+          );
+        }
+        await client.query('COMMIT');
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
+      }
     }
     await pool.end();
   });

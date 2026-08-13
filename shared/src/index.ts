@@ -287,3 +287,5 @@ export type {
   ClaimTransitionRequest,
   ClaimDetail,
 } from './schemas/claim.js';
+
+export { isUuid } from './schemas/uuid.js';

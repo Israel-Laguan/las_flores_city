@@ -128,18 +128,23 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
       error: undefined,
     };
   } catch (error: any) {
+    // Permanent validation/claim failures must stay typed so runSolidify's
+    // isPermanent check can classify them and preserve plan status. They must be
+    // rethrown BEFORE the generic failure-status update: a request for an already
+    // migrated plan, or a concurrent request that lost the conditional claim, is
+    // NOT a migration failure and must never flip a valid plan to `failed`.
+    if (error instanceof PlanNotFoundError || error instanceof PlanStatusError) {
+      throw error;
+    }
+
+    // Only an attempted migration that reached the generic failure path (an
+    // unexpected error) marks the plan `failed`.
     try {
       await exec(
         'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
         ['failed', planId]
       );
     } catch { /* ignore */ }
-
-    // Permanent failures must stay typed so runSolidify's isPermanent check can
-    // classify them instead of burning the whole attempt budget on an impossible retry.
-    if (error instanceof PlanNotFoundError || error instanceof PlanStatusError) {
-      throw error;
-    }
 
     return {
       success: false,

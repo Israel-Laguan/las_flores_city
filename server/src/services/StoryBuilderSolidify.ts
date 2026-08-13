@@ -48,6 +48,18 @@ export async function setJobStatus(planId: string, status: Partial<SolidifyJobSt
     planId,
     updatedAt: now,
   };
+  // When a NEW run is initialized (`pending` is only ever written at the start
+  // of a solidify run in approveAndSolidifyPlan), discard per-run fields from a
+  // prior run (error / verificationReport / stage / publish / migration) so a
+  // retry within the cache TTL never surfaces a stale failure on a fresh,
+  // pending or later success.
+  if (merged.status === 'pending') {
+    merged.stage = undefined;
+    merged.publish = undefined;
+    merged.migration = undefined;
+    merged.verificationReport = undefined;
+    merged.error = undefined;
+  }
   // Cache TTL: 30 minutes — long enough for slow plans, short enough to not leak
   await setCache(`${JOB_CACHE_PREFIX}${planId}`, merged, 1800);
 }
@@ -92,10 +104,16 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
       state.publishResult = pr.publish as PublishResult | undefined;
       state.migrationResult = pr.migration as MigrationResult | undefined;
     }
-    if (!state.stageResult || !state.publishResult) {
+    if (!state.stageResult || !state.publishResult || state.migrationResult === undefined) {
       const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
       state.stageResult = state.stageResult ?? cached?.stage;
       state.publishResult = state.publishResult ?? cached?.publish;
+      // Recover migrationResult from the job cache when it is not yet durable in
+      // partialResult: runMigrationStage writes migration into the cache (status
+      // `migrating`, line before the success check) immediately after
+      // migrateStagedPlan returns, so a crash between the DB `migrated` commit and
+      // the partialResult write still leaves the result recoverable here on resume.
+      state.migrationResult = state.migrationResult ?? cached?.migration;
     }
 
     // --- Resume rewind (M22) ---

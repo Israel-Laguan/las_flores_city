@@ -28,7 +28,7 @@ const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 // tree that other integration tests depend on.
 const TEST_TREE_ID = '9e8d7c6b-5a4f-4e3d-2c1b-0a9b8c7d6e5f';
 const TEST_MYSTERY_ID = 'a1b2c3d4-1111-4111-8111-aaaaaaaaaaaa';
-let baseUpdatedAt = '';
+let baseUpdatedAt: Date;
 
 function buildOverlayFingerprint(overlays: Array<{ nodes: Record<string, DialogueNode>; updated_at: Date }>): string {
   const fingerprints = overlays
@@ -150,7 +150,7 @@ describe('DialogueResolver', () => {
        ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
       [TEST_TREE_ID, 'test_resolver_tree', 'root', JSON.stringify(baseNodes)]
     );
-    const treeRow = await queryOLTP<{ updated_at: string }>(
+    const treeRow = await queryOLTP<{ updated_at: Date }>(
       'SELECT updated_at FROM dialogue_trees WHERE id = $1',
       [TEST_TREE_ID]
     );
@@ -340,7 +340,11 @@ describe('DialogueResolver', () => {
       await DialogueResolver.resolveTreeForUser(TEST_USER_ID, TEST_TREE_ID);
 
       const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, [TEST_MYSTERY_ID]);
-      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}:content:base`;
+      const expectedContentVersion = createHash('sha256')
+        .update(baseUpdatedAt.toISOString())
+        .digest('hex')
+        .slice(0, 16);
+      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}:content:${expectedContentVersion}`;
       const cached = await getCache(expectedKey);
       expect(cached).toBeDefined();
       expect((cached as any).rootId).toBe('root');
@@ -372,7 +376,11 @@ describe('DialogueResolver', () => {
         TEST_TREE_ID
       );
       const cacheSuffix = await buildExpectedCacheSuffix(TEST_USER_ID, []);
-      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}:content:base`;
+      const expectedContentVersion = createHash('sha256')
+        .update(baseUpdatedAt.toISOString())
+        .digest('hex')
+        .slice(0, 16);
+      const expectedKey = `dialogue:resolved:${TEST_TREE_ID}:nsfw:false:align:neutral:beat:prologue:mysteries:${cacheSuffix}:content:${expectedContentVersion}`;
       const cached = await getCache(expectedKey);
       expect(cached).toBeDefined();
       expect((cached as any).nodes.root.text).toBe('Base text');

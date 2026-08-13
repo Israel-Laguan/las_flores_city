@@ -90,4 +90,94 @@ ALTER TABLE claim_transitions
 
 CREATE INDEX IF NOT EXISTS idx_claim_transitions_claim_id ON claim_transitions(claim_id);
 
+-- ------------------------------------------------------------------
+-- 4. Append-only enforcement for evidence + claim_transitions
+-- ------------------------------------------------------------------
+-- Direct UPDATE/DELETE of immutable audit rows is blocked by default. Controlled
+-- cleanup (test fixtures, approved retention workflows) may bypass by setting
+-- `SET LOCAL claim_utils.allow_mutation = 'true'` inside a transaction.
+
+CREATE SCHEMA IF NOT EXISTS claim_utils;
+
+CREATE OR REPLACE FUNCTION claim_utils.block_evidence_mutation()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF current_setting('claim_utils.allow_mutation', true) = 'true' THEN
+    RETURN COALESCE(NEW, OLD);
+  END IF;
+  RAISE EXCEPTION 'evidence rows are immutable; set claim_utils.allow_mutation to mutate';
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS evidence_immutable ON evidence;
+CREATE TRIGGER evidence_immutable
+BEFORE UPDATE OR DELETE ON evidence
+FOR EACH ROW EXECUTE FUNCTION claim_utils.block_evidence_mutation();
+
+CREATE OR REPLACE FUNCTION claim_utils.block_claim_transition_mutation()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF current_setting('claim_utils.allow_mutation', true) = 'true' THEN
+    RETURN COALESCE(NEW, OLD);
+  END IF;
+  RAISE EXCEPTION 'claim_transitions rows are immutable; set claim_utils.allow_mutation to mutate';
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS claim_transitions_immutable ON claim_transitions;
+CREATE TRIGGER claim_transitions_immutable
+BEFORE UPDATE OR DELETE ON claim_transitions
+FOR EACH ROW EXECUTE FUNCTION claim_utils.block_claim_transition_mutation();
+
+-- ------------------------------------------------------------------
+-- 5. Valid transition edges + claim-state consistency
+-- ------------------------------------------------------------------
+-- The CHECK constraints above only restrict the value *set*, not the permitted
+-- edges. This trigger enforces the same transition matrix as
+-- `VALID_TRANSITIONS` in ClaimsService.ts, and requires each journal row's
+-- `from_status` to match the claim's current `status`. The claim row is locked
+-- with FOR UPDATE so a concurrent transition cannot create divergent history.
+CREATE OR REPLACE FUNCTION claim_utils.validate_claim_transition()
+RETURNS TRIGGER AS $$
+DECLARE
+  current_status VARCHAR(20);
+BEGIN
+  SELECT status INTO current_status
+    FROM claims
+   WHERE id = NEW.claim_id
+   FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Claim % does not exist', NEW.claim_id;
+  END IF;
+
+  -- Initial transition: NULL -> proposed when the claim status is proposed.
+  IF NEW.from_status IS NULL THEN
+    IF NEW.to_status <> 'proposed' OR current_status <> 'proposed' THEN
+      RAISE EXCEPTION 'Invalid initial transition from NULL to % for claim status %', NEW.to_status, current_status;
+    END IF;
+    RETURN NEW;
+  END IF;
+
+  IF NEW.from_status <> current_status THEN
+    RAISE EXCEPTION 'Transition from_status % does not match claim status %', NEW.from_status, current_status;
+  END IF;
+
+  IF NOT (
+    (current_status = 'proposed' AND NEW.to_status IN ('accepted', 'rejected', 'merged')) OR
+    (current_status = 'accepted' AND NEW.to_status IN ('rejected', 'merged')) OR
+    (current_status = 'rejected' AND NEW.to_status IN ('accepted', 'merged'))
+  ) THEN
+    RAISE EXCEPTION 'Invalid transition from % to %', current_status, NEW.to_status;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS claim_transitions_validate ON claim_transitions;
+CREATE TRIGGER claim_transitions_validate
+BEFORE INSERT ON claim_transitions
+FOR EACH ROW EXECUTE FUNCTION claim_utils.validate_claim_transition();
+
 COMMIT;

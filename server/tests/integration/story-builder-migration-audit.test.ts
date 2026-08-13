@@ -11,7 +11,7 @@
  * @las-flores/infra. Dedicated synthetic UUIDs; schema DDL runs under
  * withSchemaLock; cleanup in afterAll (per AGENTS.md test-isolation rules).
  */
-import { describe, test, expect, beforeAll, afterAll, jest } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
@@ -31,6 +31,7 @@ const PLAN_ID = 'c7f2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c7e';
 const USER_ID = 'c7f2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c7f';
 const CHAR_OK = 'c7a2b3c4-0000-4000-8000-0000000000aa';
 const SCENE_OK = 'c7a2b3c4-0000-4000-8000-0000000000bb';
+const DISTRICT_ID = 'd7f2a3b4-0000-4000-8000-0000000000cc';
 
 let pool: pg.Pool;
 
@@ -52,6 +53,8 @@ async function clearState(): Promise<void> {
   await pool.query(`DELETE FROM patches WHERE plan_id = $1::uuid`, [PLAN_ID]);
   await pool.query(`DELETE FROM characters WHERE id = $1::uuid`, [CHAR_OK]);
   await pool.query(`DELETE FROM scenes WHERE id = $1::uuid`, [SCENE_OK]);
+  await pool.query(`DELETE FROM districts WHERE id = $1::uuid`, [DISTRICT_ID]);
+  await pool.query(`DELETE FROM users WHERE id = $1::uuid`, [USER_ID]);
   await pool.query(`DELETE FROM content_plans WHERE id = $1::uuid`, [PLAN_ID]);
 }
 
@@ -74,21 +77,53 @@ describe('story-builder-migration — partial failure audit', () => {
        VALUES ($1::uuid, 'partial migration fixture', '{"items":[],"links":[]}'::jsonb, 'staged')`,
       [PLAN_ID],
     );
+    // USER_ID is passed to recordMigrationCanon → patches.applied_by, which has
+    // an FK to users(id); seed a user row so the FK is satisfied.
+    await pool.query(
+      `INSERT INTO users (id, email, username, display_name, ai_enabled, is_in_simulation)
+       VALUES ($1::uuid, 'migration-audit@example.com', 'migration-audit', 'Migration Audit', false, false)`,
+      [USER_ID],
+    );
     // Seed the two entities that migrateContent "succeeded" on (already committed
     // to canon tables, simulating the partial-success state before recordMigrationCanon).
+    // A district row is required for the scenes.district_id FK (schema uses
+    // district_id, not the legacy `district` text column).
+    await pool.query(
+      `INSERT INTO districts (id, name, slug, description, x, y)
+       VALUES ($1::uuid, 'Migration Audit District', 'migration-audit', 'fixture', 0, 0)`,
+      [DISTRICT_ID],
+    );
     await pool.query(
       `INSERT INTO characters (id, name, description) VALUES ($1::uuid, 'Good', 'committed')`,
       [CHAR_OK],
     );
     await pool.query(
-      `INSERT INTO scenes (id, name, district, description) VALUES ($1::uuid, 'Good Scene', 'downtown', 'committed')`,
-      [SCENE_OK],
+      `INSERT INTO scenes (id, name, district_id, description) VALUES ($1::uuid, 'Good Scene', $2::uuid, 'committed')`,
+      [SCENE_OK, DISTRICT_ID],
     );
   });
 
   afterAll(async () => {
     await clearState();
     await pool.end();
+  });
+
+  // Each migration test needs independent plan state. The first test flips
+  // PLAN_ID to `failed`, which would make follow-up tests hit PlanStatusError;
+  // reset the plan to `staged` and remove any partial-migration audit rows so
+  // every case starts cleanly.
+  beforeEach(async () => {
+    await pool.query(
+      `DELETE FROM canon_revisions WHERE plan_id = $1::uuid OR entity_id = ANY($2::uuid[])`,
+      [PLAN_ID, [CHAR_OK, SCENE_OK]],
+    );
+    await pool.query(`DELETE FROM patches WHERE plan_id = $1::uuid`, [PLAN_ID]);
+    await pool.query(
+      `INSERT INTO content_plans (id, description, plan_json, status)
+       VALUES ($1::uuid, 'partial migration fixture', '{"items":[],"links":[]}'::jsonb, 'staged')
+       ON CONFLICT (id) DO UPDATE SET status = 'staged', plan_json = EXCLUDED.plan_json, updated_at = NOW()`,
+      [PLAN_ID],
+    );
   });
 
   test('records canon_revisions for succeeded entities and marks plan failed on partial migration failure', async () => {
@@ -157,7 +192,8 @@ describe('story-builder-migration — partial failure audit', () => {
       `SELECT id FROM patches WHERE plan_id = $1::uuid`,
       [PLAN_ID],
     );
-    // Still only the single patch from the prior test — no new patch recorded.
-    expect(patchRes.rows).toHaveLength(1);
+    // This isolated plan has a clean state (reset in beforeEach): a migration with
+    // only skipped applied migrations must not have recorded any patch for it.
+    expect(patchRes.rows).toHaveLength(0);
   });
 });

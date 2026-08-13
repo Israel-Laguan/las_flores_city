@@ -169,8 +169,12 @@ export async function getClaim(claimId: string): Promise<Claim> {
 export async function getClaimDetail(claimId: string): Promise<ClaimDetail> {
   // Read the claim, evidence, and transition journal under one database snapshot
   // so a concurrent transitionClaim cannot produce a claim row whose `status`
-  // predates the journal entries we return.
+  // predates the journal entries we return. `withOLTPTransaction` only issues
+  // BEGIN (default Read Committed), where each statement gets its own snapshot;
+  // raise to REPEATABLE READ before the first query so the separate SELECTs all
+  // share one snapshot.
   return withOLTPTransaction(async (client) => {
+    await client.query('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
     const claimResult = await client.query<Record<string, any>>(
       `SELECT id, plan_id, patch_id, source_span, source_ref, confidence, status,
               conflict_reason, claim_text, created_by, created_at

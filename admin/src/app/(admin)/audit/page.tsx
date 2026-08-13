@@ -204,6 +204,13 @@ function AuditPageView() {
 
   const load = useCallback(async () => {
     if (!query) {
+      // Invalidate any in-flight load BEFORE the early return: a slow response
+      // from a previously entered plan would otherwise pass the staleness check
+      // (its requestToken would still equal loadTokenRef.current) and repopulate
+      // patches/claims / flip loading. Bump the token and reset loading/error too.
+      loadTokenRef.current += 1;
+      setLoading(false);
+      setError(null);
       setPatches([]);
       setClaims([]);
       return;

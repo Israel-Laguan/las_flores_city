@@ -27,14 +27,9 @@ import {
   transitionClaim,
 } from '../services/ClaimsService.js';
 import { PatchNotFoundError, PatchStatusError, ClaimNotFoundError, ClaimTransitionError } from '../services/errors.js';
-import { ClaimStatusSchema, type ClaimStatus } from '@las-flores/shared';
+import { ClaimStatusSchema, type ClaimStatus, isUuid } from '@las-flores/shared';
 
 export const adminAuditRouter = express.Router();
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function isUuid(v: unknown): boolean {
-  return typeof v === 'string' && UUID_RE.test(v);
-}
 
 function badRequest(res: any, message: string): void {
   res.status(400).json({ success: false, error: message, timestamp: new Date().toISOString() });
