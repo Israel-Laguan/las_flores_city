@@ -257,13 +257,36 @@ export async function listClaims(opts?: {
 
 /** Mark all proposed claims for a patch as rejected (used on patch rejection). */
 export async function rejectClaimsForPatch(patchId: string, conflictReason: string, userId?: string): Promise<number> {
-  const claims = await listClaims({ patchId });
-  let count = 0;
-  for (const c of claims) {
-    if (c.status === 'proposed') {
-      await transitionClaim(c.id, 'rejected', conflictReason, userId);
-      count += 1;
+  // Perform claim selection, transition-row insertion, and status updates in a
+  // single transaction so a middle failure cannot leave earlier claims rejected
+  // and later ones proposed. `FOR UPDATE` locks every matching proposed claim,
+  // so a concurrent transitionClaim cannot slip one through during rejection.
+  const rejected: Array<{ id: string; planId: string | null }> = [];
+  await withOLTPTransaction(async (client) => {
+    const result = await client.query<{ id: string; plan_id: string | null }>(
+      `SELECT id, plan_id FROM claims
+        WHERE patch_id = $1 AND status = 'proposed'
+        FOR UPDATE`,
+      [patchId],
+    );
+    for (const row of result.rows) {
+      await client.query(
+        `INSERT INTO claim_transitions (claim_id, from_status, to_status, conflict_reason, created_by)
+         VALUES ($1, 'proposed', 'rejected', $2, $3)`,
+        [row.id, conflictReason, userId || null],
+      );
+      await client.query(
+        `UPDATE claims SET status = 'rejected', conflict_reason = $2 WHERE id = $1`,
+        [row.id, conflictReason],
+      );
+      rejected.push({ id: row.id, planId: row.plan_id });
     }
+  });
+
+  // Emit lifecycle events only after the transaction commits (mirrors
+  // applyPatch / rejectPatch). fire-and-forget; never blocks the caller.
+  for (const c of rejected) {
+    emitAdminEvent('claim_updated', { claimId: c.id, from: 'proposed', to: 'rejected' }, c.planId ?? undefined, userId);
   }
-  return count;
+  return rejected.length;
 }

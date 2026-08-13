@@ -18,24 +18,25 @@ jest.mock('@las-flores/infra', () => ({
   withOLTPTransaction: jest.fn(async (cb: (client: any) => Promise<any>) => {
     // Invoke the transaction callback with a fake client whose `.query`
     // delegates to the same queryOLTP mock used by non-transactional calls.
-    return cb({ query: queryOLTPMock });
+    return cb({ query: mockQueryOLTP });
   }),
 }));
 
 // Wire the hoisted mock reference for the fake transaction client.
 const { queryOLTP } = jest.requireMock('@las-flores/infra') as { queryOLTP: jest.Mock };
-const queryOLTPMock = queryOLTP;
+// `mockQueryOLTP` (mock prefix) is hoist-safe: babel-plugin-jest-hoist allows
+// factory references to identifiers prefixed `mock`.
+const mockQueryOLTP = queryOLTP as jest.MockedFunction<any>;
 
 // ── Imports (after mocks) ───────────────────────────────────
 import {
   createPatch,
+  applyPatch,
   rejectPatch,
   rollbackPatch,
   getPatch,
 } from '../../src/services/RevisionService.js';
 import { PatchNotFoundError, PatchStatusError } from '../../src/services/errors.js';
-
-const mockQueryOLTP = queryOLTP as jest.MockedFunction<any>;
 
 /** Queue-based mock: returns queued row-sets in order, then a fallback. */
 function queueRows(rows: any[][]) {
@@ -64,10 +65,48 @@ describe('RevisionService — createPatch', () => {
   });
 });
 
+describe('RevisionService — applyPatch', () => {
+  test('applies a proposed patch and records a canon revision for each updated entity', async () => {
+    const C = 'a0000000-0000-4000-8000-00000000000c';
+    const patchRow = {
+      id: 'p-1',
+      status: 'proposed',
+      patch_json: { ops: [{ entityType: 'character', entityId: C, op: 'update' }] },
+    };
+    // Query order inside the transaction for one `update` op:
+    //  FOR UPDATE select → SAVEPOINT → row_to_json → RELEASE → nextRevision →
+    //  INSERT canon_revisions → UPDATE patches → (emitAdminEvent fallback)
+    queueRows([
+      [patchRow],                                 // 1. SELECT patch FOR UPDATE
+      [{ rows: [] }],                             // 2. SAVEPOINT (readSnapshot)
+      [{ snapshot: { id: C, name: 'Charlie' } }], // 3. row_to_json (readSnapshot)
+      [{ rows: [] }],                             // 4. RELEASE SAVEPOINT
+      [{ next: 3 }],                              // 5. nextRevisionNumber
+      [{ rowCount: 1, rows: [] }],                // 6. INSERT canon_revisions
+      [{ rowCount: 1, rows: [] }],                // 7. UPDATE patches → applied
+    ]);
+    await expect(applyPatch('p-1', 'u-1')).resolves.toBeUndefined();
+
+    const canonInsert = mockQueryOLTP.mock.calls.find((c) =>
+      (c[0] as string).includes('INSERT INTO canon_revisions'),
+    );
+    expect(canonInsert).toBeDefined();
+    expect(canonInsert![1]).toEqual([
+      'character', C, 3, JSON.stringify({ id: C, name: 'Charlie' }), 'p-1', 'u-1',
+    ]);
+
+    const appliedUpdate = mockQueryOLTP.mock.calls.find((c) =>
+      (c[0] as string).includes("status = 'applied'"),
+    );
+    expect(appliedUpdate).toBeDefined();
+    expect(appliedUpdate![1]).toEqual(['u-1', 'p-1']);
+  });
+});
+
 describe('RevisionService — rejectPatch (no-op on canon)', () => {
-  test('transitions an applied patch to rejected and stores the conflict reason', async () => {
-    // SELECT status → applied, then UPDATE
-    queueRows([[{ status: 'applied' }]]);
+  test('transitions a proposed patch to rejected and stores the conflict reason', async () => {
+    // SELECT status → proposed, then UPDATE
+    queueRows([[{ status: 'proposed' }]]);
     await expect(rejectPatch('p-1', 'conflicts with existing lore', 'u-1')).resolves.toBeUndefined();
 
     const updateCall = mockQueryOLTP.mock.calls.find((c) => (c[0] as string).includes('UPDATE patches'));
@@ -75,6 +114,13 @@ describe('RevisionService — rejectPatch (no-op on canon)', () => {
     expect(updateCall![0]).toContain("status = 'rejected'");
     expect(updateCall![0]).toContain('conflict_reason = $1');
     expect(updateCall![1]).toEqual(['conflicts with existing lore', 'p-1']);
+  });
+
+  test('throws PatchStatusError when rejecting an applied patch (would strand canon revisions)', async () => {
+    // Rejecting anything but `proposed` is a no-op-on-canon violation: an applied
+    // patch's canon revisions would be stranded in an unreachable state.
+    queueRows([[{ status: 'applied' }]]);
+    await expect(rejectPatch('p-1', 'x', 'u-1')).rejects.toBeInstanceOf(PatchStatusError);
   });
 
   test('throws PatchStatusError when rejecting an already rolled-back patch', async () => {

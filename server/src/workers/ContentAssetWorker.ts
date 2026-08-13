@@ -170,8 +170,16 @@ export class ContentAssetWorker {
       // hand-placed asset whose asset_paths.<field> is already present; a need
       // with no recorded field falls through to real generation below.
       const fieldName = getAssetFieldName(need);
-      const fieldRecorded = Boolean((item.fields as any)?.asset_paths?.[fieldName]);
-      if (fieldRecorded && (need.status === 'pending' || need.status === 'chosen')) {
+      // Only treat a need as already-resolved when the *specific* filename
+      // recorded in asset_paths[fieldName] actually exists on disk. A recorded
+      // path pointing at a missing/renamed file is not proof of a completed
+      // draft — allowing it to persist would skip real generation and leave a
+      // dangling asset path in the plan.
+      const recordedFilename = (item.fields as any)?.asset_paths?.[fieldName];
+      const recordedAssetExists =
+        typeof recordedFilename === 'string' &&
+        existingAssets.some((a: { filename: string }) => a.filename === recordedFilename);
+      if (recordedAssetExists && (need.status === 'pending' || need.status === 'chosen')) {
         if (need.status === 'pending') markDrafted(need);
         await ContentPlanService.updatePlanJson(row.id, plan);
         return { processed: 1, failed: 0 };

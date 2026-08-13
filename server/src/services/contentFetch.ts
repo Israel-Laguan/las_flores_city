@@ -11,6 +11,16 @@
 import { DialogueNode, Leaf } from '@las-flores/shared';
 import { fetchContentJson } from './StorageService.js';
 
+/** True when the value is a non-empty map whose values are records. */
+function isNodeMap(v: Record<string, DialogueNode>): boolean {
+  return Object.keys(v).length > 0
+    && Object.values(v).every((n) => typeof n === 'object' && n !== null && !Array.isArray(n));
+}
+function isLeafMap(v: Record<string, Leaf>): boolean {
+  return Object.keys(v).length > 0
+    && Object.values(v).every((l) => typeof l === 'object' && l !== null && !Array.isArray(l));
+}
+
 /**
  * Fetch a `nodes` map from CDN via `content_url`. Content blobs are
  * stored uniformly as `{ nodes: Record<nodeId, DialogueNode> }` (chunk
@@ -30,7 +40,13 @@ export async function fetchNodesFromContentUrl(
       | { nodes?: Record<string, DialogueNode> }
       | null
       | undefined;
-    const nodes = parsed?.nodes && Object.keys(parsed.nodes).length > 0 ? parsed.nodes : null;
+    const candidates = parsed?.nodes;
+    // Accept a CDN node map only when it is a non-empty record of records; a
+    // missing/empty/malformed (e.g. array) section falls back to the DB JSONB.
+    const nodes =
+      candidates && isNodeMap(candidates) && Object.keys(candidates).length > 0
+        ? candidates
+        : null;
     return nodes ?? fallback;
   } catch (error: any) {
     console.warn(`[DialogueResolver] CDN content fetch failed for ${contentUrl}: ${error?.message}`);
@@ -63,8 +79,20 @@ export async function fetchChunkFromContentUrl(
       | { nodes?: Record<string, DialogueNode>; leaves?: Record<string, Leaf> }
       | null
       | undefined;
-    const nodes = parsed?.nodes ?? null;
-    const leaves = parsed?.leaves ?? null;
+    // A present-but-empty section is treated as missing so an empty CDN blob
+    // falls back to the in-DB JSONB value — matching the sibling
+    // `fetchNodesFromContentUrl` and this function's doc comment. A malformed
+    // (array / non-record) section is likewise discarded.
+    const candidateNodes = parsed?.nodes;
+    const candidateLeaves = parsed?.leaves;
+    const nodes =
+      candidateNodes && isNodeMap(candidateNodes) && Object.keys(candidateNodes).length > 0
+        ? candidateNodes
+        : null;
+    const leaves =
+      candidateLeaves && isLeafMap(candidateLeaves) && Object.keys(candidateLeaves).length > 0
+        ? candidateLeaves
+        : null;
     if (nodes === null && leaves === null) return fallback;
     return {
       nodes: nodes ?? fallback.nodes,

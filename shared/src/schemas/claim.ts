@@ -75,7 +75,7 @@ export type ClaimTransitionRequest = z.infer<typeof ClaimTransitionRequestSchema
 /** A claim with its append-only evidence + transition journal. */
 export const ClaimDetailSchema = z.object({
   claim: ClaimSchema,
-  evidence: z.array(EvidenceSchema).default([]),
-  transitions: z.array(ClaimTransitionSchema).default([]),
+  evidence: z.array(EvidenceSchema).default(() => []),
+  transitions: z.array(ClaimTransitionSchema).default(() => []),
 });
 export type ClaimDetail = z.infer<typeof ClaimDetailSchema>;

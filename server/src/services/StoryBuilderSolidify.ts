@@ -33,12 +33,20 @@ export const JOB_CACHE_PREFIX = 'story-builder:job:';
 export async function setJobStatus(planId: string, status: Partial<SolidifyJobStatus>): Promise<void> {
   const now = new Date().toISOString();
   const existing = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
+  // Preserve previously cached fields (stage / publish / migration /
+  // verificationReport / error) then overlay only the *defined* values from
+  // `status`. Callers such as runMigrationStage and runVerifyAndTerminal pass
+  // `stage`/`publish`/`migration` unconditionally even when they have no value
+  // to report — stripping those undefined keys here keeps the last known value
+  // for polling instead of erasing it. status/startedAt/planId/updatedAt are
+  // pinned last so a stale `existing` spread can never win.
   const merged: SolidifyJobStatus = {
-    planId,
+    ...existing,
+    ...Object.fromEntries(Object.entries(status).filter(([, v]) => v !== undefined)),
     status: status.status ?? existing?.status ?? 'pending',
     startedAt: existing?.startedAt ?? now,
+    planId,
     updatedAt: now,
-    ...status,
   };
   // Cache TTL: 30 minutes — long enough for slow plans, short enough to not leak
   await setCache(`${JOB_CACHE_PREFIX}${planId}`, merged, 1800);
@@ -108,7 +116,10 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
     // migrateStagedPlan requires status 'staged'/'approved'; a run that died
     // mid-migrate is rewound to 'staged' so migration can complete (already
     // migrated files are skipped by checksum inside migrateContent).
-    if (state.currentStatus === 'migrated' || state.currentStatus === 'verifying' || state.currentStatus === 'verified') {
+    // `verified` is intentionally NOT listed here — runSolidify already returns
+    // early for a fully-verified plan (idempotent resume), so it is unreachable
+    // at this point.
+    if (state.currentStatus === 'migrated' || state.currentStatus === 'verifying') {
       // already migrated — resume directly to verify (rewind 'verifying' for verifyPlan)
       if (state.currentStatus === 'verifying') {
         await queryOLTP(
@@ -291,12 +302,13 @@ async function runVerifyAndTerminal(
 ): Promise<boolean> {
   if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'verifying' });
   await setJobStatus(planId, { status: 'verifying', stage: state.stageResult, publish: state.publishResult, migration: state.migrationResult });
-  if (state.currentStatus !== 'verifying') {
-    await queryOLTP(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-      ['verifying', planId],
-    );
-  }
+  // NOTE: do NOT flip the DB row to `verifying` here. `verifyPlan` requires the
+  // row to be `migrated` (StoryBuilderMigration.ts), so switching it to
+  // `verifying` would make every normal solidify run fail before verification.
+  // The cache (setJobStatus above) already reports `verifying` for polling; the
+  // DB row stays `migrated` so a crash mid-verify resumes cleanly and the
+  // `verifying` resume-rewind in runSolidify (which rewinds to `migrated`) stays
+  // a no-op safety net for any DB row that somehow carries `verifying`.
 
   const verificationReport = await verifyPlan(planId);
 

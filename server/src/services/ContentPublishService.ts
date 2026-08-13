@@ -22,8 +22,14 @@ import { uploadToMinio } from './StorageService.js';
 
 const CONTENT_TYPE_JSON = 'application/json';
 
-function shortHash(payload: string): string {
-  return createHash('sha256').update(payload).digest('hex').slice(0, 16);
+/**
+ * Content-addressed object-key suffix. Uses the FULL SHA-256 digest (64 hex
+ * chars) rather than a 64-bit prefix: a truncated prefix allows two distinct
+ * payloads to collide, which would reuse the same object key and let the
+ * resolver keep a stale versioned cache entry, breaking immutability.
+ */
+function contentHash(payload: string): string {
+  return createHash('sha256').update(payload).digest('hex');
 }
 
 /**
@@ -39,7 +45,7 @@ export async function publishDialogueTree(
   treeId: string,
   payload: string
 ): Promise<string> {
-  const hash = shortHash(payload);
+  const hash = contentHash(payload);
   const objectKey = `dialogues/${treeId}__${hash}.json`;
   return uploadToMinio(Buffer.from(payload, 'utf-8'), objectKey, CONTENT_TYPE_JSON);
 }
@@ -59,7 +65,7 @@ export async function publishDialogueChunk(
   chunkKey: string,
   payload: string
 ): Promise<string> {
-  const hash = shortHash(payload);
+  const hash = contentHash(payload);
   // chunkKey originates from YAML/compiler node ids; keep it URL-safe.
   const safeChunkKey = encodeURIComponent(chunkKey);
   const objectKey = `chunks/${treeId}/${safeChunkKey}__${hash}.json`;

@@ -80,7 +80,15 @@ export default function CharacterDetailPage() {
           setError('Failed to fetch character');
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          // Record the request identity for every non-cancelled request (success,
+          // 404, and generic failure alike) before clearing loading. This lets
+          // the notFound / error views render after a failed request while the
+          // `loadedId !== id` guard still prevents a stale response from
+          // displaying content for the wrong character.
+          setLoadedId(id);
+          setLoading(false);
+        }
       }
     }
     fetchRecord();

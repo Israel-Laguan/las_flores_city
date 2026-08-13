@@ -93,8 +93,10 @@ function buildOverlayFingerprint(overlays: OverlayRow[]): string {
  * the pointer forces fresh resolution even if the pattern invalidate
  * didn't fire. Falls back to `'base'` when content_url is NULL/empty.
  */
-function contentVersionFromUrl(contentUrl?: string | null): string {
-  if (!contentUrl) return 'base';
+function contentVersionFromUrl(contentUrl?: string | null, fallbackRevision?: string): string {
+  if (!contentUrl) {
+    return fallbackRevision ? createHash('sha256').update(fallbackRevision).digest('hex').slice(0, 16) : 'base';
+  }
   return createHash('sha256').update(contentUrl).digest('hex').slice(0, 16);
 }
 
@@ -233,7 +235,7 @@ export class DialogueResolver {
     // M23: include the tree's content version (derived from its content_url
     // pointer) so a re-migration that republishes nodes under a new key — even
     // if the pattern invalidate didn't fire — produces a fresh cache key.
-    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(baseTree.content_url)}`;
+    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(baseTree.content_url, baseTree.updated_at)}`;
 
     const cachedTree = await getCache<ResolvedTree>(versionedCacheKey);
     if (cachedTree) {
@@ -284,7 +286,7 @@ export class DialogueResolver {
     const overlayFingerprint =
       overlays.length > 0 ? buildOverlayFingerprint(overlays) : baseTree.updated_at;
     const cacheKey = `dialogue:archive:${baseTreeId}:${mysteryId}:nsfw:${isNsfwUnlocked}:${overlayFingerprint}`;
-    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(baseTree.content_url)}`;
+    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(baseTree.content_url, baseTree.updated_at)}`;
 
     const cachedTree = await getCache<ResolvedTree>(versionedCacheKey);
     if (cachedTree) {
@@ -478,7 +480,7 @@ export class DialogueResolver {
     const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
     // M23: include the chunk's content version (from its content_url pointer)
     // so re-published chunks under a new key force fresh resolution.
-    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(chunkRow.content_url)}`;
+    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(chunkRow.content_url, JSON.stringify({ nodes: chunkRow.nodes, leaves: chunkRow.leaves }))}`;
 
     const cachedChunk = await getCache<ResolvedChunk>(versionedCacheKey);
     if (cachedChunk) {

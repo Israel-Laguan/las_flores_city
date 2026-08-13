@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { queryOLTP, withOLTPTransaction, closeConnections, invalidatePattern, closeRedis } from '@las-flores/infra';
+import { queryOLTP, closeConnections, invalidatePattern, closeRedis } from '@las-flores/infra';
 
 // ============================================================
 // M23 Dialogue CDN Integration Tests
@@ -53,6 +53,11 @@ import type { DialogueNode } from '@las-flores/shared';
 // are created — the resolver's player queries safely return empty).
 const TEST_TREE_ID = 'e3000000-0000-4000-8000-000000000001';
 const TEST_USER_ID = 'e3000000-0000-4000-8000-000000000002';
+// Private fixture UUIDs for the chunk rows inserted explicitly in the CDN
+// fallback / leaves tests (collision-avoidance per AGENTS.md). Cleaned up in
+// afterAll.
+const FALLBACK_CHUNK_ID = 'e3000000-0000-4000-8000-000000000003';
+const LEAF_CHUNK_ID = 'e3000000-0000-4000-8000-000000000004';
 
 let treeContentUrl: string | null = null;
 let chunkId = '';
@@ -71,14 +76,12 @@ function baseNodes(text = 'v1'): Record<string, DialogueNode> {
 }
 
 async function seedTree(nodes: Record<string, DialogueNode>): Promise<void> {
-  await withOLTPTransaction(async (client) => {
-    await client.query(
-      `INSERT INTO dialogue_trees (id, name, start_node_id, nodes, content_url)
-       VALUES ($1, 'M23 CDN Tree', 'start', $2, NULL)
-       ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes, start_node_id = EXCLUDED.start_node_id, content_url = NULL, updated_at = NOW()`,
-      [TEST_TREE_ID, JSON.stringify(nodes)]
-    );
-  });
+  await queryOLTP(
+    `INSERT INTO dialogue_trees (id, name, start_node_id, nodes, content_url)
+     VALUES ($1, 'M23 CDN Tree', 'start', $2, NULL)
+     ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes, start_node_id = EXCLUDED.start_node_id, content_url = NULL, updated_at = NOW()`,
+    [TEST_TREE_ID, JSON.stringify(nodes)],
+  );
 }
 
 async function loadChunkRow() {
@@ -113,11 +116,14 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await withOLTPTransaction(async (client) => {
-      await client.query('DELETE FROM dialogue_chunks WHERE tree_id = $1', [TEST_TREE_ID]);
-      await client.query('DELETE FROM dialogue_overlays WHERE target_tree_id = $1', [TEST_TREE_ID]);
-      await client.query('DELETE FROM dialogue_trees WHERE id = $1', [TEST_TREE_ID]);
-    });
+    // Delete chunk fixtures by their explicit private UUIDs as well as the
+    // whole tree's chunks (covers fallback_chunk / leaf_chunk tied to the tree).
+    await queryOLTP(
+      'DELETE FROM dialogue_chunks WHERE tree_id = $1 OR id = ANY($2::uuid[])',
+      [TEST_TREE_ID, [FALLBACK_CHUNK_ID, LEAF_CHUNK_ID]],
+    );
+    await queryOLTP('DELETE FROM dialogue_overlays WHERE target_tree_id = $1', [TEST_TREE_ID]);
+    await queryOLTP('DELETE FROM dialogue_trees WHERE id = $1', [TEST_TREE_ID]);
     await invalidatePattern(`dialogue:resolved:chunk:${TEST_TREE_ID}:*`);
     await invalidatePattern(`dialogue:resolved:${TEST_TREE_ID}:*`);
   } finally {
@@ -183,19 +189,16 @@ describe('M23 dialogue CDN externalization', () => {
   });
 
   it('falls back to in-DB nodes when content_url is NULL', async () => {
-    // Insert a chunk row with content_url NULL (no externalized blob).
-    const fallbackId = await withOLTPTransaction(async (client) => {
-      const ins = await client.query<{ id: string }>(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves, content_url)
-         VALUES ($1, 'fallback_chunk', $2, '{}', NULL)
-         RETURNING id`,
-        [TEST_TREE_ID, JSON.stringify({ root: { id: 'root', type: 'narrator', text: 'from-db' } })]
-      );
-      return ins.rows[0].id;
-    });
+    // Insert a chunk row with content_url NULL (no externalized blob) using a
+    // private fixture UUID, inserted explicitly (no transaction wrapper).
+    await queryOLTP(
+      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, nodes, leaves, content_url)
+       VALUES ($1, $2, 'fallback_chunk', $3, '{}', NULL)`,
+      [FALLBACK_CHUNK_ID, TEST_TREE_ID, JSON.stringify({ root: { id: 'root', type: 'narrator', text: 'from-db' } })],
+    );
 
     // loadBaseChunk resolves by the chunk's UUID id, which has content_url NULL.
-    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, fallbackId, 'fallback_chunk');
+    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, FALLBACK_CHUNK_ID, 'fallback_chunk');
     expect(resolved.mergedNodes.root.text).toBe('from-db');
   });
 
@@ -220,17 +223,15 @@ describe('M23 dialogue CDN externalization', () => {
     objectStore.set(leafKey, JSON.stringify({ nodes: cdnNodes, leaves: cdnLeaves }));
     const leafUrl = `s3://las-flores/${leafKey}`;
 
-    const leafChunkId = await withOLTPTransaction(async (client) => {
-      const ins = await client.query<{ id: string }>(
-        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves, content_url)
-               VALUES ($1, 'leaf_chunk', $2, '{}', $3)
-               RETURNING id`,
-        [TEST_TREE_ID, JSON.stringify(cdnNodes), leafUrl]
-      );
-      return ins.rows[0].id;
-    });
+    // Insert a leaf chunk fixture with its own private UUID (no transaction
+    // wrapper), pointing at the published blob via content_url.
+    await queryOLTP(
+      `INSERT INTO dialogue_chunks (id, tree_id, chunk_key, nodes, leaves, content_url)
+       VALUES ($1, $2, 'leaf_chunk', $3, '{}', $4)`,
+      [LEAF_CHUNK_ID, TEST_TREE_ID, JSON.stringify(cdnNodes), leafUrl],
+    );
 
-    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, leafChunkId, 'leaf_chunk');
+    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, LEAF_CHUNK_ID, 'leaf_chunk');
 
     // leaves served from the published blob, NOT the in-DB '{}' column:
     expect(resolved.chunk.leaves).toEqual(cdnLeaves);

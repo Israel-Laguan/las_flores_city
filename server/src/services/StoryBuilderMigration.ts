@@ -38,11 +38,17 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
     }
 
     // Take ownership of the migrating transition here so callers do not set
-    // status to migrating before this function validates the plan.
-    await exec(
-      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+    // status to migrating before this function validates the plan. The UPDATE is
+    // conditional on the plan still being staged/approved so two concurrent
+    // migration requests cannot both claim the row: exactly one caller observes
+    // a rowCount of 1 and proceeds, the loser throws PlanStatusError below.
+    const claim = await exec(
+      'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2 AND status IN (\'staged\', \'approved\')',
       ['migrating', planId]
     );
+    if (claim.rowCount === 0) {
+      throw new PlanStatusError(`Plan was already claimed by another migration. Current status: ${result.rows[0].status}`);
+    }
 
     const contentDir = resolveContentDir();
 

@@ -27,10 +27,31 @@ import {
   transitionClaim,
 } from '../services/ClaimsService.js';
 import { PatchNotFoundError, PatchStatusError, ClaimNotFoundError, ClaimTransitionError } from '../services/errors.js';
+import { ClaimStatusSchema, type ClaimStatus } from '@las-flores/shared';
 
 export const adminAuditRouter = express.Router();
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function isUuid(v: unknown): boolean {
+  return typeof v === 'string' && UUID_RE.test(v);
+}
+
+function badRequest(res: any, message: string): void {
+  res.status(400).json({ success: false, error: message, timestamp: new Date().toISOString() });
+}
+
 adminAuditRouter.use(authAndAdminMiddleware);
+
+// Reject malformed `:id` path values at the route boundary so they never reach
+// the database (where they would otherwise surface as 500s from a uuid cast).
+adminAuditRouter.use('/patches/:id', (req: any, res, next) => {
+  if (!isUuid(req.params.id)) return badRequest(res, `Invalid UUID: ${req.params.id}`);
+  next();
+});
+adminAuditRouter.use('/claims/:id', (req: any, res, next) => {
+  if (!isUuid(req.params.id)) return badRequest(res, `Invalid UUID: ${req.params.id}`);
+  next();
+});
 
 // -------------------------------------------------------------------
 // Patches
@@ -57,7 +78,11 @@ adminAuditRouter.get('/patches', async (req: any, res) => {
   try {
     const planId = req.query.plan_id as string | undefined;
     if (!planId) {
-      res.status(400).json({ success: false, error: 'plan_id query param is required', timestamp: new Date().toISOString() });
+      badRequest(res, 'plan_id query param is required');
+      return;
+    }
+    if (!isUuid(planId)) {
+      badRequest(res, `Invalid plan_id UUID: ${planId}`);
       return;
     }
     const patches = await listPatchesForPlan(planId);
@@ -149,10 +174,22 @@ adminAuditRouter.post('/patches/:id/rollback', async (req: any, res) => {
 // GET /admin/audit/claims?plan_id=&status=&patch_id=
 adminAuditRouter.get('/claims', async (req: any, res) => {
   try {
-    const opts: { planId?: string; status?: any; patchId?: string } = {};
-    if (req.query.plan_id) opts.planId = req.query.plan_id as string;
-    if (req.query.patch_id) opts.patchId = req.query.patch_id as string;
-    if (req.query.status) opts.status = req.query.status as string;
+    const opts: { planId?: string; status?: ClaimStatus; patchId?: string } = {};
+    if (req.query.plan_id) {
+      if (!isUuid(req.query.plan_id)) return badRequest(res, `Invalid plan_id UUID: ${req.query.plan_id}`);
+      opts.planId = req.query.plan_id as string;
+    }
+    if (req.query.patch_id) {
+      if (!isUuid(req.query.patch_id)) return badRequest(res, `Invalid patch_id UUID: ${req.query.patch_id}`);
+      opts.patchId = req.query.patch_id as string;
+    }
+    if (req.query.status) {
+      const parsedStatus = ClaimStatusSchema.safeParse(req.query.status);
+      if (!parsedStatus.success) {
+        return badRequest(res, `Invalid status: ${req.query.status}`);
+      }
+      opts.status = parsedStatus.data;
+    }
     const claims = await listClaims(opts);
     res.json({ success: true, data: claims, timestamp: new Date().toISOString() });
   } catch (error: any) {

@@ -83,6 +83,11 @@ async function readSnapshot(
     return { table, snapshot: result.rows[0].snapshot };
   } catch (err) {
     await exec(`ROLLBACK TO SAVEPOINT ${savepoint}`, []);
+    // Release the savepoint after rolling back to it so a later failed read in
+    // the same transaction does not accumulate stale savepoints (each failed
+    // snapshot would otherwise leave its guard savepoint active until the
+    // enclosing withOLTPTransaction finishes).
+    await exec(`RELEASE SAVEPOINT ${savepoint}`, []);
     console.warn(`[revision] Could not snapshot ${contentType}/${entityId}:`, (err as Error).message);
     return null;
   }
@@ -141,13 +146,18 @@ export async function applyPatch(patchId: string, userId?: string): Promise<void
 
     for (const op of ops) {
       const after = await readSnapshot(op.entityType, op.entityId, exec);
-      if (!after) continue;
+      // For a `delete` op the live row is already gone at apply time, so there
+      // is no post-patch snapshot to read — but rollback needs the *pre-delete*
+      // state to restore the entity, so fall back to op.before. Non-delete ops
+      // keep using the live snapshot; ops with no recoverable state are skipped.
+      const snapshot = after ? after.snapshot : (op.op === 'delete' ? op.before : undefined);
+      if (snapshot === undefined) continue;
       const rev = await nextRevisionNumber(op.entityType, op.entityId, exec);
       await exec(
         `INSERT INTO canon_revisions
            (entity_type, entity_id, revision_number, content_snapshot, applied_patch_id, created_by)
          VALUES ($1, $2::uuid, $3, $4::jsonb, $5, $6)`,
-        [op.entityType, op.entityId, rev, JSON.stringify(after.snapshot), patchId, userId || null],
+        [op.entityType, op.entityId, rev, JSON.stringify(snapshot), patchId, userId || null],
       );
     }
 
@@ -170,8 +180,11 @@ export async function rejectPatch(patchId: string, conflictReason: string, userI
     const exec = (text: string, params: any[]): Promise<pg.QueryResult> => client.query(text, params);
     const load = await exec('SELECT status FROM patches WHERE id = $1 FOR UPDATE', [patchId]);
     if (load.rows.length === 0) throw new PatchNotFoundError(patchId);
-    if (load.rows[0].status === 'rolled_back') {
-      throw new PatchStatusError(`Patch already rolled back cannot be rejected`);
+    // Only a `proposed` patch may be rejected. Rejecting an `applied` patch
+    // would strand its canon_revisions in an unreachable state (rollback only
+    // accepts `applied`), so restrict the transition here.
+    if (load.rows[0].status !== 'proposed') {
+      throw new PatchStatusError(`Only proposed patches can be rejected. Current: ${load.rows[0].status}`);
     }
     await exec(
       `UPDATE patches
@@ -189,7 +202,7 @@ export async function rejectPatch(patchId: string, conflictReason: string, userI
  * recorded snapshot.
  */
 export async function rollbackPatch(patchId: string, userId?: string): Promise<RollbackResult> {
-  return withOLTPTransaction(async (client) => {
+  const { planId, restored } = await withOLTPTransaction(async (client) => {
     const exec = (text: string, params: any[]): Promise<pg.QueryResult> => client.query(text, params);
     const load = await exec('SELECT id, status, plan_id FROM patches WHERE id = $1 FOR UPDATE', [patchId]);
     if (load.rows.length === 0) throw new PatchNotFoundError(patchId);
@@ -240,15 +253,44 @@ export async function rollbackPatch(patchId: string, userId?: string): Promise<R
       const priorSnapshot = prior[0].content_snapshot;
       if (priorSnapshot == null) continue;
 
-      // Restore via jsonb_populate_record (type-safe, generic). The DELETE and
-      // INSERT run as separate statements because pg's parameterized query uses
-      // a prepared statement, which cannot contain multiple commands.
-      await exec(`DELETE FROM ${table} WHERE id = $1::uuid`, [entityId]);
-      await exec(
-        `INSERT INTO ${table}
-           SELECT * FROM jsonb_populate_record(NULL::${table}, $1::jsonb)`,
-        [JSON.stringify(priorSnapshot)],
+      // Determine whether the live row still exists. Three distinct cases:
+      //   1) updated by this patch  → row exists → restore IN PLACE
+      //      (preserves the primary key / generated columns and keeps any
+      //      ON DELETE CASCADE dependents attached)
+      //   2) created by this patch  → handled above by DELETE when prior is empty
+      //   3) deleted by this patch  → row is gone but has a prior snapshot → we
+      //      must re-INSERT it (an in-place UPDATE would match 0 rows).
+      const existsResult = await exec(
+        `SELECT 1 FROM ${table} WHERE id = $1::uuid`,
+        [entityId],
       );
+      if (existsResult.rows.length === 0) {
+        // Case 3 — restore a deleted entity by re-inserting its prior snapshot.
+        await exec(
+          `INSERT INTO ${table}
+             SELECT * FROM jsonb_populate_record(NULL::${table}, $1::jsonb)`,
+          [JSON.stringify(priorSnapshot)],
+        );
+      } else {
+        const colResult = await exec(
+          `SELECT column_name FROM information_schema.columns
+            WHERE table_schema = 'public' AND table_name = $1
+              AND is_identity = 'NO' AND is_generated = 'NEVER'
+            ORDER BY ordinal_position`,
+          [table],
+        );
+        const cols: string[] = colResult.rows.map((r) => r.column_name as string);
+        if (cols.length > 0) {
+          const setList = cols.map((c) => `${c} = (p).${c}`).join(', ');
+          await exec(
+            `UPDATE ${table} t
+                SET ${setList}
+               FROM jsonb_populate_record(NULL::${table}, $1::jsonb) AS p
+              WHERE t.id = $2::uuid`,
+            [JSON.stringify(priorSnapshot), entityId],
+          );
+        }
+      }
       restored.push({ entityType, entityId, toRevision: prior[0].revision_number });
     }
 
@@ -257,9 +299,14 @@ export async function rollbackPatch(patchId: string, userId?: string): Promise<R
       [patchId],
     );
 
-    emitAdminEvent('patch_rolled_back', { patchId, restored }, planId ?? undefined, userId);
-    return { patchId, restored };
+    return { planId, restored };
   });
+
+  // Emit only after the transaction has committed: a rollback that fails mid-way
+  // must not record a patch_rolled_back event for an audit entry that never
+  // happened (matches applyPatch / rejectPatch post-commit emission).
+  emitAdminEvent('patch_rolled_back', { patchId, restored }, planId ?? undefined, userId);
+  return { patchId, restored };
 }
 /**
  * Record canon changes produced by a successful `migrateContent`. Creates a
@@ -292,24 +339,33 @@ export async function recordMigrationCanon(input: MigrationPatchInput): Promise<
       if (m.action === 'skipped') continue;
       const table = SNAPSHOT_TABLE_BY_TYPE[m.contentType];
       if (!table) continue;
-      const after = await readSnapshot(m.contentType, m.contentId, exec);
-      if (!after) continue;
 
-      const op: PatchOp = {
-        entityType: m.contentType,
-        entityId: m.contentId,
-        op: m.action === 'updated' ? 'update' : 'create',
-        after: after.snapshot,
-      };
-      ops.push(op);
+      // A single content FILE can migrate multiple entities; migrate.ts joins
+      // their ids into a comma-separated `contentId`. Split and record one
+      // snapshot + revision per entity so a multi-entity file keeps full patch
+      // coverage (passing the joined string as one ::uuid would fail the cast
+      // and silently skip every entity in the batch).
+      const entityIds = m.contentId.split(',').map((s) => s.trim()).filter(Boolean);
+      for (const entityId of entityIds) {
+        const after = await readSnapshot(m.contentType, entityId, exec);
+        if (!after) continue;
 
-      const rev = await nextRevisionNumber(m.contentType, m.contentId, exec);
-      await exec(
-        `INSERT INTO canon_revisions
-           (entity_type, entity_id, revision_number, content_snapshot, applied_patch_id, plan_id, created_by)
-         VALUES ($1, $2::uuid, $3, $4::jsonb, $5, $6, $7)`,
-        [m.contentType, m.contentId, rev, JSON.stringify(after.snapshot), patchId, input.planId || null, input.userId || null],
-      );
+        const op: PatchOp = {
+          entityType: m.contentType,
+          entityId,
+          op: m.action === 'updated' ? 'update' : 'create',
+          after: after.snapshot,
+        };
+        ops.push(op);
+
+        const rev = await nextRevisionNumber(m.contentType, entityId, exec);
+        await exec(
+          `INSERT INTO canon_revisions
+             (entity_type, entity_id, revision_number, content_snapshot, applied_patch_id, plan_id, created_by)
+           VALUES ($1, $2::uuid, $3, $4::jsonb, $5, $6, $7)`,
+          [m.contentType, entityId, rev, JSON.stringify(after.snapshot), patchId, input.planId || null, input.userId || null],
+        );
+      }
     }
 
     // Persist the collected ops onto the patch row (we were inside a txn and

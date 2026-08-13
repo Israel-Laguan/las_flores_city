@@ -230,8 +230,12 @@ export async function fetchContentString(mediaUrl: string): Promise<string> {
   const location = mediaUrl.startsWith('s3://') ? parseS3Location(mediaUrl) : null;
   if (location) {
     const { GetObjectCommand } = await import('@aws-sdk/client-s3');
+    // Bound the S3/MinIO GetObject too: this is the production CDN path for
+    // dialogue content, and a stalled MinIO request must not hold a resolver
+    // thread indefinitely (the HTTP(S) branch below already has a timeout).
     const response = await getS3Client().send(
-      new GetObjectCommand({ Bucket: location.bucket, Key: location.key })
+      new GetObjectCommand({ Bucket: location.bucket, Key: location.key }),
+      { abortSignal: AbortSignal.timeout(CONTENT_FETCH_TIMEOUT_MS) },
     );
     const body = response.Body as NodeJS.ReadableStream | undefined;
     if (!body) throw new Error(`MinIO object body empty: ${mediaUrl}`);

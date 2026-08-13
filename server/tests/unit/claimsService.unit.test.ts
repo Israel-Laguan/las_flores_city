@@ -19,12 +19,14 @@ jest.mock('@las-flores/infra', () => ({
   withOLTPTransaction: jest.fn(async (cb: (client: any) => Promise<any>) => {
     // Invoke the transaction callback with a fake client whose `.query`
     // delegates to the same queryOLTP mock used by non-transactional calls.
-    return cb({ query: queryOLTPMock });
+    return cb({ query: mockQueryOLTP });
   }),
 }));
 
 const { queryOLTP } = jest.requireMock('@las-flores/infra') as { queryOLTP: jest.Mock };
-const queryOLTPMock = queryOLTP;
+// `mockQueryOLTP` (mock prefix) is hoist-safe: babel-plugin-jest-hoist allows
+// factory references to identifiers prefixed `mock`.
+const mockQueryOLTP = queryOLTP as jest.MockedFunction<any>;
 
 import {
   createClaim,
@@ -35,8 +37,6 @@ import {
   rejectClaimsForPatch,
 } from '../../src/services/ClaimsService.js';
 import { ClaimNotFoundError, ClaimTransitionError } from '../../src/services/errors.js';
-
-const mockQueryOLTP = queryOLTP as jest.MockedFunction<any>;
 
 function resetQueue(rows: any[][]) {
   mockQueryOLTP.mockReset();
@@ -119,6 +119,8 @@ describe('transitionClaim', () => {
     resetQueue([[]]);
     await expect(transitionClaim('c999', 'accepted')).rejects.toBeInstanceOf(ClaimNotFoundError);
   });
+});
+
 describe('recordEvidence', () => {
   test('appends immutable evidence to a claim', async () => {
     resetQueue([
@@ -174,16 +176,17 @@ describe('listClaims / getClaimDetail', () => {
 });
 
 describe('rejectClaimsForPatch', () => {
-  test("rejects a patch's proposed claims", async () => {
+  test("atomically rejects a patch's proposed claims in one transaction", async () => {
     resetQueue([
-      [claimRow()], // listClaims(patch) → proposed claim
-      [claimRow({ status: 'proposed' })], // transition read
-      [{ rowCount: 1, rows: [] }],        // transition insert
-      [{ rowCount: 1, rows: [] }],        // transition update
-      [claimRow({ status: 'rejected' })], // transition re-read
+      [claimRow()],            // SELECT ... FOR UPDATE → one proposed claim
+      [{ rowCount: 1, rows: [] }], // claim_transitions INSERT
+      [{ rowCount: 1, rows: [] }], // claims status UPDATE
     ]);
     const count = await rejectClaimsForPatch('p-1', 'patch rejected');
     expect(count).toBe(1);
+    const select = mockQueryOLTP.mock.calls[0][0] as string;
+    expect(select).toContain('FOR UPDATE');
+    // A single wrapping transaction → no per-claim transitionClaim calls.
+    expect(select.toLowerCase()).toContain('from claims');
   });
-});
 });

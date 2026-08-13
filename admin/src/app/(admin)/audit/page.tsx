@@ -2,7 +2,7 @@
 
 /* eslint-disable max-lines */
 
-import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useState, useCallback, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@las-flores/ui';
 import { adminFetch } from '@/lib/client-api';
@@ -184,7 +184,23 @@ function AuditPageView() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [inFlightId, setInFlightId] = useState<string | null>(null);
+  // Monotonic token for the latest load request: only the most recent request
+  // may write patches/claims/error/loading, so a slow response from a previous
+  // plan query can never overwrite the currently-selected plan's data.
+  const loadTokenRef = useRef(0);
+  // Track ALL active action requests (not a single ID) so a slower earlier
+  // request completing can never re-enable the controls of a still-pending one.
+  const [inFlight, setInFlight] = useState<ReadonlySet<string>>(new Set());
+  const beginFlight = useCallback((id: string) => {
+    setInFlight((prev) => new Set(prev).add(id));
+  }, []);
+  const endFlight = useCallback((id: string) => {
+    setInFlight((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
 
   const load = useCallback(async () => {
     if (!query) {
@@ -192,6 +208,9 @@ function AuditPageView() {
       setClaims([]);
       return;
     }
+    // Invalidate any in-flight load: bump the token so a stale response from a
+    // previous query is ignored (only the latest request can update state).
+    const requestToken = ++loadTokenRef.current;
     setLoading(true);
     setError(null);
     try {
@@ -199,12 +218,14 @@ function AuditPageView() {
         adminFetch<{ success: boolean; data: Patch[] }>(`/admin/audit/patches?plan_id=${encodeURIComponent(query)}`),
         adminFetch<{ success: boolean; data: Claim[] }>(`/admin/audit/claims?plan_id=${encodeURIComponent(query)}`),
       ]);
+      if (requestToken !== loadTokenRef.current) return; // stale — drop it
       setPatches(patchRes.success ? patchRes.data : []);
       setClaims(claimRes.success ? claimRes.data : []);
     } catch (e: any) {
+      if (requestToken !== loadTokenRef.current) return; // stale — drop it
       setError(e.message || 'Failed to load audit data');
     } finally {
-      setLoading(false);
+      if (requestToken === loadTokenRef.current) setLoading(false);
     }
   }, [query]);
 
@@ -215,7 +236,7 @@ function AuditPageView() {
   const onRejectPatch = async (id: string) => {
     const reason = window.prompt('Conflict reason for rejection:');
     if (reason === null) return;
-    setInFlightId(id);
+    beginFlight(id);
     try {
       await adminFetch(`/admin/audit/patches/${id}/reject`, {
         method: 'POST',
@@ -225,20 +246,20 @@ function AuditPageView() {
     } catch (e: any) {
       setError(e.message || 'Failed to reject patch');
     } finally {
-      setInFlightId(null);
+      endFlight(id);
     }
   };
 
   const onRollbackPatch = async (id: string) => {
     if (!window.confirm('Roll back this patch (restores prior canon snapshot)?')) return;
-    setInFlightId(id);
+    beginFlight(id);
     try {
       await adminFetch(`/admin/audit/patches/${id}/rollback`, { method: 'POST' });
       load();
     } catch (e: any) {
       setError(e.message || 'Failed to rollback patch');
     } finally {
-      setInFlightId(null);
+      endFlight(id);
     }
   };
 
@@ -249,7 +270,7 @@ function AuditPageView() {
       // A cancelled prompt aborts the action; an explicit empty string still proceeds.
       if (conflictReason === null) return;
     }
-    setInFlightId(id);
+    beginFlight(id);
     try {
       await adminFetch(`/admin/audit/claims/${id}/transition`, {
         method: 'POST',
@@ -259,19 +280,13 @@ function AuditPageView() {
     } catch (e: any) {
       setError(e.message || 'Failed to transition claim');
     } finally {
-      setInFlightId(null);
+      endFlight(id);
     }
   };
 
-  if (loading) {
-    return (
-      <div>
-        <Toolbar planId={planId} setPlanId={setPlanId} setQuery={setQuery} />
-        <div className={styles.empty}>Loading…</div>
-      </div>
-    );
-  }
-
+  // Keep the heading/toolbar chrome stable while loading; only the panel area
+  // swaps to a loading placeholder (loading is triggered on mount and after
+  // every action, so an early return here would drop the heading/error display).
   return (
     <div>
       <h1>Audit</h1>
@@ -279,10 +294,14 @@ function AuditPageView() {
       {error ? <div className={styles.error}>{error}</div> : null}
       <Toolbar planId={planId} setPlanId={setPlanId} setQuery={setQuery} />
       {query ? (
-        <div className={styles.layout}>
-          <PatchesPanel patches={patches} onReject={onRejectPatch} onRollback={onRollbackPatch} inFlightId={inFlightId} />
-          <ClaimsPanel claims={claims} onTransition={onTransitionClaim} inFlightId={inFlightId} />
-        </div>
+        loading ? (
+          <div className={styles.empty}>Loading…</div>
+        ) : (
+          <div className={styles.layout}>
+            <PatchesPanel patches={patches} onReject={onRejectPatch} onRollback={onRollbackPatch} inFlight={inFlight} />
+            <ClaimsPanel claims={claims} onTransition={onTransitionClaim} inFlight={inFlight} />
+          </div>
+        )
       ) : null}
     </div>
   );
@@ -312,12 +331,12 @@ function Toolbar({
 }
 
 function PatchesPanel({
-  patches, onReject, onRollback, inFlightId,
+  patches, onReject, onRollback, inFlight,
 }: {
   patches: Patch[];
   onReject: (id: string) => void;
   onRollback: (id: string) => void;
-  inFlightId: string | null;
+  inFlight: ReadonlySet<string>;
 }) {
   return (
     <section className={styles.panel}>
@@ -340,7 +359,7 @@ function PatchesPanel({
             </thead>
             <tbody>
               {patches.map((p) => (
-                <PatchRow key={p.id} patch={p} onReject={onReject} onRollback={onRollback} isInFlight={inFlightId === p.id} />
+                <PatchRow key={p.id} patch={p} onReject={onReject} onRollback={onRollback} isInFlight={inFlight.has(p.id)} />
               ))}
             </tbody>
           </table>
@@ -351,11 +370,11 @@ function PatchesPanel({
 }
 
 function ClaimsPanel({
-  claims, onTransition, inFlightId,
+  claims, onTransition, inFlight,
 }: {
   claims: Claim[];
   onTransition: (id: string, to: string) => void;
-  inFlightId: string | null;
+  inFlight: ReadonlySet<string>;
 }) {
   return (
     <section className={styles.panel}>
@@ -378,7 +397,7 @@ function ClaimsPanel({
             </thead>
             <tbody>
               {claims.map((c) => (
-                <ClaimRow key={c.id} claim={c} onTransition={onTransition} isInFlight={inFlightId === c.id} />
+                <ClaimRow key={c.id} claim={c} onTransition={onTransition} isInFlight={inFlight.has(c.id)} />
               ))}
             </tbody>
           </table>

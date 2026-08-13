@@ -47,7 +47,9 @@ export async function resetOrphanedFillJobs(
   cutoff?: Date,
 ): Promise<number> {
   const result = await queryOLTP<{ id: string; plan_json: any; updated_at: string }>(
-    `SELECT id, plan_json, updated_at FROM content_plans WHERE status = 'draft'`,
+    `SELECT id, plan_json, updated_at FROM content_plans
+      WHERE status = 'draft'
+        AND updated_at < NOW() - INTERVAL '5 minutes'`,
   );
 
   let reset = 0;
@@ -55,25 +57,16 @@ export async function resetOrphanedFillJobs(
     try {
       const planJson = row.plan_json as any;
       if (planJson?._meta?.scaffolded_at) {
-        const updatedAt = new Date(row.updated_at).getTime();
-        const now = Date.now();
-        const fiveMin = 5 * 60 * 1000;
+        const items = planJson.items?.filter((i: any) => i.action === 'create') || [];
+        const hasProcessed = items.some((i: any) => i.filled_fields?.length > 0);
 
-        // Reclaim only when the plan itself is stale. A missing cache entry alone
-        // is not proof of a dead job (best-effort cache writes, TTL expiry), so the
-        // age check must always hold before a recent draft is marked failed.
-        if ((now - updatedAt) > fiveMin) {
-          const items = planJson.items?.filter((i: any) => i.action === 'create') || [];
-          const hasProcessed = items.some((i: any) => i.filled_fields?.length > 0);
-
-          if (!hasProcessed) {
-            await queryOLTP(
-              'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-              ['failed', row.id],
-            );
-            await deleteCache(`${GEN_CACHE_PREFIX}${row.id}`);
-            reset++;
-          }
+        if (!hasProcessed) {
+          await queryOLTP(
+            'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+            ['failed', row.id],
+          );
+          await deleteCache(`${GEN_CACHE_PREFIX}${row.id}`);
+          reset++;
         }
       }
     } catch (err) {
@@ -92,13 +85,14 @@ export async function resetOrphanedFillJobs(
   const orphaned = orphanedRuns ?? await markOrphanedResumable(cutoff);
   const orphanedFills = orphaned.filter(o => o.jobType === 'plan_fill');
   if (orphanedFills.length > 0) {
-    console.log(`[plan-fill] Resuming ${orphanedFills.length} orphaned plan-fill job(s)`);
+    console.log(`[plan-fill] Resuming ${orphanedFills.length} orphaned plan-fill job(s) asynchronously`);
+    // Dispatch asynchronously (fire-and-forget) so these resumes never block
+    // initializeServer / ContentAssetWorker scheduling. Each plan keeps its own
+    // per-plan error handling; failures are logged and never propagate.
     for (const { planId } of orphanedFills) {
-      try {
-        await resumePlanFill(planId);
-      } catch (err: any) {
-        console.error(`[plan-fill] Resume failed for ${planId}:`, err.message);
-      }
+      void resumePlanFill(planId).catch((err: any) => {
+        console.error(`[plan-fill] Resume failed for ${planId}:`, err?.message ?? err);
+      });
     }
   }
 

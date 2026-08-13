@@ -1,5 +1,5 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 
 const mockAdminFetch = vi.fn();
@@ -55,6 +55,10 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe('AuditPage', () => {
   it('renders patches and claims for a plan', async () => {
     mockSearchParams.mockImplementation((key) => (key === 'plan_id' ? 'a0000000-0000-4000-8000-000000000011' : null));
@@ -73,7 +77,8 @@ describe('AuditPage', () => {
 
   it('calls rollback endpoint when Rollback is confirmed', async () => {
     mockSearchParams.mockImplementation((key) => (key === 'plan_id' ? 'plan-1' : null));
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    // Restored automatically by the afterEach vi.restoreAllMocks() hook.
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
     render(<AuditPage />);
 
     const rollbackBtn = await screen.findByRole('button', { name: /rollback/i });
@@ -85,8 +90,6 @@ describe('AuditPage', () => {
         expect.objectContaining({ method: 'POST' }),
       );
     });
-
-    confirmSpy.mockRestore();
   });
 
   it('renders an error message when data loading fails', async () => {
