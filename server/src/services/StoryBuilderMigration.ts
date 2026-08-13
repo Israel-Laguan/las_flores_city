@@ -60,6 +60,35 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
         'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
         ['failed', planId]
       );
+
+      // M24 audit gap: earlier files may already be committed to canon tables +
+      // migration_log, but no patch/canon_revisions row was recorded for them.
+      // Record an applied patch + per-entity canon revisions for every file that
+      // did succeed (action !== 'skipped' and not in the error list) so a failed
+      // migration still has full audit/rollback coverage for the partial canon
+      // change. Best-effort: a recording failure must not mask the original
+      // migration error.
+      try {
+        const applied = (migrationResult.appliedMigrations ?? [])
+          .filter((m) => m.action === 'created' || m.action === 'updated')
+          .map((m) => ({
+            contentType: m.contentType,
+            contentId: m.contentId,
+            action: m.action,
+          }));
+        if (applied.length > 0) {
+          await recordMigrationCanon({
+            planId,
+            title: `Migrate plan ${planId} (partial)`,
+            description: `Snapshot canon produced by content migration for plan ${planId} (partial — migration failed after ${applied.length} file(s) succeeded)`,
+            userId,
+            appliedMigrations: applied,
+          });
+        }
+      } catch (verr: any) {
+        console.warn(`[revision] Could not record partial migration canon for plan ${planId}:`, verr?.message);
+      }
+
       return {
         success: false,
         migrationResult,

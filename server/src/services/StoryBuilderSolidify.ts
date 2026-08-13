@@ -90,6 +90,7 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
       const pr = resumingRun.partialResult as Record<string, unknown>;
       state.stageResult = pr.stage as StagingResult | undefined;
       state.publishResult = pr.publish as PublishResult | undefined;
+      state.migrationResult = pr.migration as MigrationResult | undefined;
     }
     if (!state.stageResult || !state.publishResult) {
       const cached = await getCache<SolidifyJobStatus>(`${JOB_CACHE_PREFIX}${planId}`);
@@ -288,6 +289,16 @@ async function runMigrationStage(
   if (!migrationResult.success) {
     if (jobId) await updateJobRun(jobId, { status: 'resumable', stage: 'migrating', error: migrationResult.error });
     throw new Error(migrationResult.error ?? 'Migration failed');
+  }
+  // Persist the migration result BEFORE committing the `migrated` stage guard, so
+  // a crash between the DB `migrated` commit and commitStage() leaves the result
+  // durable for resume (matches the publish path). `state.migrationResult` is kept
+  // authoritative on resume so failure reports never describe a successful
+  // migration as absent.
+  if (jobId && state.migrationResult === undefined) {
+    const run = await getJobRunById(jobId);
+    const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
+    await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } });
   }
   if (jobId) await commitStage(jobId, 'migrated');
   state.migrationResult = migrationResult;

@@ -45,7 +45,11 @@ CREATE INDEX IF NOT EXISTS idx_claims_source_ref ON claims(source_ref);
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS evidence (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  claim_id UUID NOT NULL REFERENCES claims(id) ON DELETE CASCADE,
+  -- The audit trail is append-only: a claim with evidence must never be
+  -- cascade-deleted out of existence. `ON DELETE RESTRICT` forces callers to
+  -- explicitly delete (or retain) the evidence rows before removing a claim,
+  -- so history cannot be silently erased by removing the parent row.
+  claim_id UUID NOT NULL REFERENCES claims(id) ON DELETE RESTRICT,
   source_span TEXT,
   source_ref TEXT,
   evidence_text TEXT NOT NULL,
@@ -60,13 +64,29 @@ CREATE INDEX IF NOT EXISTS idx_evidence_claim_id ON evidence(claim_id);
 -- ------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS claim_transitions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  claim_id UUID NOT NULL REFERENCES claims(id) ON DELETE CASCADE,
+  -- Same append-only guard as `evidence`: removing a claim must require the
+  -- journal rows to be explicitly handled, not cascaded away.
+  claim_id UUID NOT NULL REFERENCES claims(id) ON DELETE RESTRICT,
   from_status VARCHAR(20),
   to_status VARCHAR(20) NOT NULL,
   conflict_reason TEXT,
   created_by UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Mirror the shared ClaimTransition status enum at the DB level so direct SQL
+-- (or a buggy writer) cannot insert an arbitrary value into the journal and
+-- poison detail reads. `from_status` is nullable (the initial null→proposed
+-- transition has no prior status), so the CHECK must allow NULL explicitly
+-- (PostgreSQL CHECK returns UNKNOWN for NULL operands, which is accepted).
+ALTER TABLE claim_transitions DROP CONSTRAINT IF EXISTS claim_transitions_from_status_check;
+ALTER TABLE claim_transitions
+  ADD CONSTRAINT claim_transitions_from_status_check
+  CHECK (from_status IS NULL OR from_status IN ('proposed', 'accepted', 'rejected', 'merged'));
+ALTER TABLE claim_transitions DROP CONSTRAINT IF EXISTS claim_transitions_to_status_check;
+ALTER TABLE claim_transitions
+  ADD CONSTRAINT claim_transitions_to_status_check
+  CHECK (to_status IN ('proposed', 'accepted', 'rejected', 'merged'));
 
 CREATE INDEX IF NOT EXISTS idx_claim_transitions_claim_id ON claim_transitions(claim_id);
 

@@ -71,9 +71,9 @@ export async function createClaim(
     );
     const createdId = result.rows[0].id;
     await client.query(
-      `INSERT INTO claim_transitions (claim_id, from_status, to_status, created_by)
-       VALUES ($1, NULL, 'proposed', $2)`,
-      [createdId, userId || null],
+      `INSERT INTO claim_transitions (claim_id, from_status, to_status, conflict_reason, created_by)
+       VALUES ($1, NULL, 'proposed', $2, $3)`,
+      [createdId, input.conflictReason || null, userId || null],
     );
     return createdId;
   });
@@ -167,37 +167,51 @@ export async function getClaim(claimId: string): Promise<Claim> {
   return mapClaim(result.rows[0]);
 }
 export async function getClaimDetail(claimId: string): Promise<ClaimDetail> {
-  const claim = await getClaim(claimId);
-  const ev = await queryOLTP<Record<string, any>>(
-    `SELECT id, claim_id, source_span, source_ref, evidence_text, created_by, created_at
-       FROM evidence WHERE claim_id = $1 ORDER BY created_at ASC`,
-    [claimId],
-  );
-  const tr = await queryOLTP<Record<string, any>>(
-    `SELECT id, claim_id, from_status, to_status, conflict_reason, created_by, created_at
-       FROM claim_transitions WHERE claim_id = $1 ORDER BY created_at ASC`,
-    [claimId],
-  );
-  return ClaimDetailSchema.parse({
-    claim,
-    evidence: ev.rows.map((r) => EvidenceSchema.parse({
-      id: r.id,
-      claimId: r.claim_id,
-      sourceSpan: r.source_span,
-      sourceRef: r.source_ref,
-      evidenceText: r.evidence_text,
-      createdBy: r.created_by,
-      createdAt: new Date(r.created_at).toISOString(),
-    })),
-    transitions: tr.rows.map((r) => ClaimTransitionSchema.parse({
-      id: r.id,
-      claimId: r.claim_id,
-      fromStatus: r.from_status,
-      toStatus: r.to_status,
-      conflictReason: r.conflict_reason,
-      createdBy: r.created_by,
-      createdAt: new Date(r.created_at).toISOString(),
-    })),
+  // Read the claim, evidence, and transition journal under one database snapshot
+  // so a concurrent transitionClaim cannot produce a claim row whose `status`
+  // predates the journal entries we return.
+  return withOLTPTransaction(async (client) => {
+    const claimResult = await client.query<Record<string, any>>(
+      `SELECT id, plan_id, patch_id, source_span, source_ref, confidence, status,
+              conflict_reason, claim_text, created_by, created_at
+         FROM claims WHERE id = $1`,
+      [claimId],
+    );
+    if (claimResult.rows.length === 0) throw new ClaimNotFoundError(claimId);
+    const claim = mapClaim(claimResult.rows[0]);
+
+    const ev = await client.query<Record<string, any>>(
+      `SELECT id, claim_id, source_span, source_ref, evidence_text, created_by, created_at
+         FROM evidence WHERE claim_id = $1 ORDER BY created_at ASC`,
+      [claimId],
+    );
+    const tr = await client.query<Record<string, any>>(
+      `SELECT id, claim_id, from_status, to_status, conflict_reason, created_by, created_at
+         FROM claim_transitions WHERE claim_id = $1 ORDER BY created_at ASC`,
+      [claimId],
+    );
+
+    return ClaimDetailSchema.parse({
+      claim,
+      evidence: ev.rows.map((r) => EvidenceSchema.parse({
+        id: r.id,
+        claimId: r.claim_id,
+        sourceSpan: r.source_span,
+        sourceRef: r.source_ref,
+        evidenceText: r.evidence_text,
+        createdBy: r.created_by,
+        createdAt: new Date(r.created_at).toISOString(),
+      })),
+      transitions: tr.rows.map((r) => ClaimTransitionSchema.parse({
+        id: r.id,
+        claimId: r.claim_id,
+        fromStatus: r.from_status,
+        toStatus: r.to_status,
+        conflictReason: r.conflict_reason,
+        createdBy: r.created_by,
+        createdAt: new Date(r.created_at).toISOString(),
+      })),
+    });
   });
 }
 
