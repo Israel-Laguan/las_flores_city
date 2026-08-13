@@ -277,7 +277,12 @@ describe('POST /admin/story-builder/plans/:id/migrate', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.migrationResult).toBeDefined();
-    expect(mockMigrateStagedPlan).toHaveBeenCalledWith(TEST_PLAN_ID);
+    expect(mockMigrateStagedPlan).toHaveBeenCalledWith(
+      TEST_PLAN_ID,
+      undefined,
+      undefined,
+      TEST_USER_ID,
+    );
   });
 
   test('handles migration failure from non-staged plan', async () => {
