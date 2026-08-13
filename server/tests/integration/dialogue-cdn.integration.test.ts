@@ -188,4 +188,44 @@ describe('M23 dialogue CDN externalization', () => {
     const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, fallbackId, 'fallback_chunk');
     expect(resolved.mergedNodes.root.text).toBe('from-db');
   });
+
+  it('hydrates chunk.leaves from content_url when the DB leaves column holds no content', async () => {
+    // Regression for M23 Phase 2: the resolver must read BOTH nodes and
+    // leaves from the CDN blob, not the DB `leaves` column.
+    // `dialogue_chunks.leaves` is `NOT NULL DEFAULT '{}'`, so the faithful
+    // "DB has no leaves" signal we assert against is the empty `'{}'` value.
+    // The resolver's `??` fallback treats NULL and empty identically, so this
+    // covers the NULL case too (and the CDN fetch path is unchanged either way).
+    const cdnNodes = { leaf: { id: 'leaf', type: 'narrator' as const, text: 'from-cdn-nodes' } };
+    const cdnLeaves = {
+      leaf_exit: { type: 'FREE' as const, target_chunk: 'next_chunk' },
+      leaf_guard: {
+        type: 'GUARDED' as const,
+        target_chunk: 'guarded_chunk',
+        reasons: ['time_block_cost'],
+        tb_cost: 3,
+      },
+    };
+    const leafKey = 'chunks/e3000000-0000-4000-8000-000000000001/leaf_chunk__deadbeefdeadbeef.json';
+    objectStore.set(leafKey, JSON.stringify({ nodes: cdnNodes, leaves: cdnLeaves }));
+    const leafUrl = `s3://las-flores/${leafKey}`;
+
+    const leafChunkId = await withOLTPTransaction(async (client) => {
+      const ins = await client.query<{ id: string }>(
+        `INSERT INTO dialogue_chunks (tree_id, chunk_key, nodes, leaves, content_url)
+               VALUES ($1, 'leaf_chunk', $2, '{}', $3)
+               RETURNING id`,
+        [TEST_TREE_ID, JSON.stringify(cdnNodes), leafUrl]
+      );
+      return ins.rows[0].id;
+    });
+
+    const resolved = await DialogueResolver.resolveChunkForUser(TEST_USER_ID, leafChunkId, 'leaf_chunk');
+
+    // leaves served from the published blob, NOT the in-DB '{}' column:
+    expect(resolved.chunk.leaves).toEqual(cdnLeaves);
+    expect(Object.keys(resolved.chunk.leaves).length).toBe(2);
+    // nodes also come from the CDN blob:
+    expect(resolved.chunk.nodes.leaf.text).toBe('from-cdn-nodes');
+  });
 });

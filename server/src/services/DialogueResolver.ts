@@ -17,7 +17,7 @@ import { createHash } from 'node:crypto';
 import { queryOLTP, queryContent } from '@las-flores/infra';
 import { getCache, setCache } from '@las-flores/infra';
 import { DialogueNode, Leaf } from '@las-flores/shared';
-import { fetchContentJson } from './StorageService.js';
+import { fetchNodesFromContentUrl, fetchChunkFromContentUrl } from './contentFetch.js';
 
 export interface ResolvedTree {
   rootId: string;
@@ -96,33 +96,6 @@ function buildOverlayFingerprint(overlays: OverlayRow[]): string {
 function contentVersionFromUrl(contentUrl?: string | null): string {
   if (!contentUrl) return 'base';
   return createHash('sha1').update(contentUrl).digest('hex').slice(0, 16);
-}
-
-/**
- * Fetch a `nodes` map from CDN via `content_url`. Content blobs are
- * stored uniformly as `{ nodes: Record<nodeId, DialogueNode> }` (chunk
- * blobs additionally carry `leaves`, which the resolver does not need
- * for merging). On any failure (missing pointer, MINIO fetch error,
- * JSON parse error) this returns `null` so the caller can fall back to
- * the in-DB JSONB — the key to keeping the resolver resilient and the
- * existing tests green.
- */
-async function fetchNodesFromContentUrl(
-  contentUrl: string | null | undefined,
-  fallback: Record<string, DialogueNode>
-): Promise<Record<string, DialogueNode> | null> {
-  if (!contentUrl) return null;
-  try {
-    const parsed = (await fetchContentJson(contentUrl)) as
-      | { nodes?: Record<string, DialogueNode> }
-      | null
-      | undefined;
-    const nodes = parsed?.nodes && Object.keys(parsed.nodes).length > 0 ? parsed.nodes : null;
-    return nodes ?? fallback;
-  } catch (error: any) {
-    console.warn(`[DialogueResolver] CDN content fetch failed for ${contentUrl}: ${error?.message}`);
-    return null;
-  }
 }
 
 /**
@@ -564,29 +537,49 @@ export class DialogueResolver {
   }
 
   /**
+   * Load a base chunk row from dialogue_chunks via an arbitrary WHERE
+   * clause. Shared by `loadBaseChunk` (lookup by id) and
+   * `loadBaseChunkByKey` (lookup by chunk_key).
+   *
+   * M23: hydrates the heavy `{nodes, leaves}` map from the CDN via
+   * `content_url` when present; otherwise falls back to the in-DB JSONB.
+   */
+  private static async loadBaseChunkRow(
+    where: string,
+    param: string
+  ): Promise<BaseDialogueChunkRow> {
+    const result = await queryContent<BaseDialogueChunkRow>(
+      `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
+          FROM dialogue_chunks
+         WHERE ${where}
+         LIMIT 1`,
+      [param]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error(`Dialogue chunk not found for ${where} = ${param}`);
+    }
+
+    const row = result.rows[0];
+    const cdn = await fetchChunkFromContentUrl(row.content_url, {
+      nodes: row.nodes,
+      leaves: row.leaves,
+    });
+    return {
+      ...row,
+      nodes: cdn?.nodes ?? row.nodes,
+      leaves: cdn?.leaves ?? row.leaves,
+    };
+  }
+
+  /**
    * Load a base chunk from dialogue_chunks by its UUID id.
    *
    * M23: fetches the heavy `{nodes, leaves}` map from CDN via `content_url`
    * when present; otherwise falls back to the in-DB JSONB.
    */
   private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
-    const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
-         FROM dialogue_chunks
-        WHERE id = $1`,
-      [chunkId]
-    );
-
-    if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found: ${chunkId}`);
-    }
-
-    const row = result.rows[0];
-    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, row.nodes);
-    return {
-      ...row,
-      nodes: cdnNodes ?? row.nodes,
-    };
+    return DialogueResolver.loadBaseChunkRow('id = $1', chunkId);
   }
 
   /**
@@ -594,23 +587,6 @@ export class DialogueResolver {
    * Used by resolveNextChunk when crossing boundaries.
    */
   private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
-    const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
-         FROM dialogue_chunks
-        WHERE chunk_key = $1
-        LIMIT 1`,
-      [chunkKey]
-    );
-
-    if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found for key: ${chunkKey}`);
-    }
-
-    const row = result.rows[0];
-    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, row.nodes);
-    return {
-      ...row,
-      nodes: cdnNodes ?? row.nodes,
-    };
+    return DialogueResolver.loadBaseChunkRow('chunk_key = $1', chunkKey);
   }
 }
