@@ -134,68 +134,57 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION claim_utils.block_evidence_mutation()
+-- Consolidated immutable guard: parameterized function for all four
+-- trigger cases. Row-level triggers (UPDATE/DELETE) return COALESCE(NEW, OLD)
+-- to skip the mutation; statement-level triggers (TRUNCATE) return NULL to
+-- allow the statement. The table_name parameter customizes the error message.
+CREATE OR REPLACE FUNCTION claim_utils.block_immutable_mutation(
+  p_table_name TEXT,
+  p_is_truncate BOOLEAN DEFAULT false
+)
 RETURNS TRIGGER AS $$
 BEGIN
   IF claim_utils.mutation_allowed() THEN
-    RETURN COALESCE(NEW, OLD);
+    -- Row-level: return the row (COALESCE handles UPDATE vs DELETE);
+    -- Statement-level (TRUNCATE): return NULL to proceed.
+    IF p_is_truncate THEN
+      RETURN NULL;
+    ELSE
+      RETURN COALESCE(NEW, OLD);
+    END IF;
   END IF;
-  RAISE EXCEPTION 'evidence rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate';
+  IF p_is_truncate THEN
+    RAISE EXCEPTION '% rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate', p_table_name;
+  ELSE
+    RAISE EXCEPTION '% rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate', p_table_name;
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
+-- Row-level triggers (UPDATE/DELETE): block mutation, return row on bypass
 DROP TRIGGER IF EXISTS evidence_immutable ON evidence;
 CREATE TRIGGER evidence_immutable
 BEFORE UPDATE OR DELETE ON evidence
-FOR EACH ROW EXECUTE FUNCTION claim_utils.block_evidence_mutation();
-
-CREATE OR REPLACE FUNCTION claim_utils.block_claim_transition_mutation()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF claim_utils.mutation_allowed() THEN
-    RETURN COALESCE(NEW, OLD);
-  END IF;
-  RAISE EXCEPTION 'claim_transitions rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate';
-END;
-$$ LANGUAGE plpgsql;
+FOR EACH ROW EXECUTE FUNCTION claim_utils.block_immutable_mutation('evidence', false);
 
 DROP TRIGGER IF EXISTS claim_transitions_immutable ON claim_transitions;
 CREATE TRIGGER claim_transitions_immutable
 BEFORE UPDATE OR DELETE ON claim_transitions
-FOR EACH ROW EXECUTE FUNCTION claim_utils.block_claim_transition_mutation();
+FOR EACH ROW EXECUTE FUNCTION claim_utils.block_immutable_mutation('claim_transitions', false);
 
+-- Statement-level triggers (TRUNCATE): block truncate, return NULL on bypass
 -- TRUNCATE is statement-level and would otherwise bypass the row-level
 -- UPDATE/DELETE guards above and erase the whole audit history. Gate it with the
 -- same privilege check so a non-privileged session cannot wipe the store.
-CREATE OR REPLACE FUNCTION claim_utils.block_evidence_truncate()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF claim_utils.mutation_allowed() THEN
-    RETURN NULL;
-  END IF;
-  RAISE EXCEPTION 'evidence rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate';
-END;
-$$ LANGUAGE plpgsql;
-
 DROP TRIGGER IF EXISTS evidence_immutable_truncate ON evidence;
 CREATE TRIGGER evidence_immutable_truncate
 BEFORE TRUNCATE ON evidence
-EXECUTE FUNCTION claim_utils.block_evidence_truncate();
-
-CREATE OR REPLACE FUNCTION claim_utils.block_claim_transition_truncate()
-RETURNS TRIGGER AS $$
-BEGIN
-  IF claim_utils.mutation_allowed() THEN
-    RETURN NULL;
-  END IF;
-  RAISE EXCEPTION 'claim_transitions rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate';
-END;
-$$ LANGUAGE plpgsql;
+EXECUTE FUNCTION claim_utils.block_immutable_mutation('evidence', true);
 
 DROP TRIGGER IF EXISTS claim_transitions_immutable_truncate ON claim_transitions;
 CREATE TRIGGER claim_transitions_immutable_truncate
 BEFORE TRUNCATE ON claim_transitions
-EXECUTE FUNCTION claim_utils.block_claim_transition_truncate();
+EXECUTE FUNCTION claim_utils.block_immutable_mutation('claim_transitions', true);
 
 -- ------------------------------------------------------------------
 -- 5. Valid transition edges + claim-state consistency

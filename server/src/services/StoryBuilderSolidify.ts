@@ -173,17 +173,15 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
           ['failed', planId],
         );
       } catch { /* ignore — best-effort persistence */ }
+      await setJobStatus(planId, {
+        status: 'failed',
+        error: error.message,
+      });
+      emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
     }
-    await setJobStatus(planId, {
-      status: 'failed',
-      error: error.message,
-    });
     if (jobId) {
       const isPermanent = preservesPlanStatus || error.name === 'ZodError';
       await updateJobRun(jobId, { status: isPermanent ? 'failed' : 'resumable', error: error.message });
-    }
-    if (!preservesPlanStatus) {
-      emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
     }
   }
 }
@@ -329,12 +327,15 @@ async function runMigrationStage(
   // between the DB `migrated` commit and the earlier partialResult write), but the
   // value computed by THIS run is authoritative and must overwrite any stale entry
   // so durable state always matches the migrated run.
+  // Post-commit job_runs bookkeeping is best-effort: a write failure here must not
+  // propagate into the enclosing compensation handler and invert an already
+  // successful, fully-committed migration.
   if (jobId) {
     const run = await getJobRunById(jobId);
     const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
-    await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } });
+    await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } }).catch(() => {});
+    await commitStage(jobId, 'migrated').catch(() => {});
   }
-  if (jobId) await commitStage(jobId, 'migrated');
   state.migrationResult = migrationResult;
 }
 
