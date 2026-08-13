@@ -140,7 +140,7 @@ describe('M23 dialogue CDN externalization', () => {
     expect(keys.length).toBeGreaterThanOrEqual(2);
     expect(keys.some((k) => k.startsWith('dialogues/'))).toBe(true);
     expect(keys.some((k) => k.startsWith('chunks/'))).toBe(true);
-    keys.forEach((k) => expect(k).toMatch(/__[0-9a-f]{16}\.json$/));
+    keys.forEach((k) => expect(k).toMatch(/__[0-9a-f]{64}\.json$/));
 
     // DB pointers were set AFTER publish.
     expect(treeContentUrl).toMatch(/^s3:\/\/las-flores\/dialogues\//);

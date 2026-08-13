@@ -155,23 +155,36 @@ export async function runSolidify(planId: string, userId?: string, jobId?: strin
     if (verificationFailed) return;
   } catch (error: any) {
     console.error(`[story-builder] runSolidify failed for ${planId}:`, error.message);
-    try {
-      await queryOLTP(
-        'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-        ['failed', planId],
-      );
-    } catch { /* ignore — best-effort persistence */ }
+    // Claim/ownership conflicts (PlanStatusError) and a missing plan
+    // (PlanNotFoundError) are NOT migration failures of *this* run: a concurrent
+    // direct /migrate request may have won the conditional `migrating` claim and
+    // legitimately own the row, or the plan may have been archived away. Setting
+    // the DB row to `failed` here would corrupt the winner's valid `migrating`
+    // plan (and emitting `plan_failed` would misreport a real failure). Match the
+    // direct /migrate route, which already preserves plan status for these typed
+    // errors, and only flip the plan to `failed` for genuine failures (ZodError /
+    // unexpected runtime errors).
+    const preservesPlanStatus =
+      error instanceof PlanStatusError || error instanceof PlanNotFoundError;
+    if (!preservesPlanStatus) {
+      try {
+        await queryOLTP(
+          'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
+          ['failed', planId],
+        );
+      } catch { /* ignore — best-effort persistence */ }
+    }
     await setJobStatus(planId, {
       status: 'failed',
       error: error.message,
     });
     if (jobId) {
-      const isPermanent = error instanceof PlanNotFoundError ||
-        error instanceof PlanStatusError ||
-        error.name === 'ZodError';
+      const isPermanent = preservesPlanStatus || error.name === 'ZodError';
       await updateJobRun(jobId, { status: isPermanent ? 'failed' : 'resumable', error: error.message });
     }
-    emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
+    if (!preservesPlanStatus) {
+      emitAdminEvent('plan_failed', { status: 'failed', error: error.message }, planId, userId);
+    }
   }
 }
 
@@ -310,10 +323,13 @@ async function runMigrationStage(
   }
   // Persist the migration result BEFORE committing the `migrated` stage guard, so
   // a crash between the DB `migrated` commit and commitStage() leaves the result
-  // durable for resume (matches the publish path). `state.migrationResult` is kept
-  // authoritative on resume so failure reports never describe a successful
-  // migration as absent.
-  if (jobId && state.migrationResult === undefined) {
+  // durable for resume (matches the publish path). Persist unconditionally rather
+  // than gating on `state.migrationResult === undefined`: on resume `migrationResult`
+  // may already be populated from the job cache / partialResult (recovery of a crash
+  // between the DB `migrated` commit and the earlier partialResult write), but the
+  // value computed by THIS run is authoritative and must overwrite any stale entry
+  // so durable state always matches the migrated run.
+  if (jobId) {
     const run = await getJobRunById(jobId);
     const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
     await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } });

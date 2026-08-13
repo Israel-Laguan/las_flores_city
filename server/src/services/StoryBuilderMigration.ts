@@ -128,11 +128,16 @@ export async function migrateStagedPlan(planId: string, client?: import('pg').Po
       error: undefined,
     };
   } catch (error: any) {
-    // Permanent validation/claim failures must stay typed so runSolidify's
-    // isPermanent check can classify them and preserve plan status. They must be
-    // rethrown BEFORE the generic failure-status update: a request for an already
-    // migrated plan, or a concurrent request that lost the conditional claim, is
-    // NOT a migration failure and must never flip a valid plan to `failed`.
+    // Claim/validation errors must stay typed and be rethrown BEFORE this
+    // function's own generic failure-status update (which would set `failed`).
+    // A request for an already-migrated plan, or a concurrent request that lost
+    // the conditional claim, is NOT a migration failure and must never flip a
+    // valid plan to `failed`. Both callers guard on the type:
+    //   * direct /migrate route — maps them to 404/400 and skips `plan_failed`;
+    //   * runSolidify — its catch skips the plan-`failed` DB update + `plan_failed`
+    //     event for PlanStatusError/PlanNotFoundError so a concurrent winner's
+    //     in-flight `migrating` plan is preserved (isPermanent only classifies the
+    //     job-run row as failed vs resumable, it does not touch the plan row).
     if (error instanceof PlanNotFoundError || error instanceof PlanStatusError) {
       throw error;
     }

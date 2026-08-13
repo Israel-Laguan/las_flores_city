@@ -93,19 +93,54 @@ CREATE INDEX IF NOT EXISTS idx_claim_transitions_claim_id ON claim_transitions(c
 -- ------------------------------------------------------------------
 -- 4. Append-only enforcement for evidence + claim_transitions
 -- ------------------------------------------------------------------
--- Direct UPDATE/DELETE of immutable audit rows is blocked by default. Controlled
--- cleanup (test fixtures, approved retention workflows) may bypass by setting
--- `SET LOCAL claim_utils.allow_mutation = 'true'` inside a transaction.
+-- Direct UPDATE/DELETE (and TRUNCATE) of immutable audit rows is blocked by
+-- default. Controlled cleanup (test fixtures, approved retention workflows) may
+-- bypass by setting `SET LOCAL claim_utils.allow_mutation = 'true'` inside a
+-- transaction — but ONLY from a privileged session (a superuser or a member of
+-- the dedicated `las_flores_claims_retention` role). The custom GUC alone is
+-- NOT a gate: custom GUCs can be set by any role, so `mutation_allowed()`
+-- additionally requires that the calling role actually hold the privilege. This
+-- scopes the bypass to authorized cleanup operators instead of letting any code
+-- path silently blanket-unlock the audit tables for the whole transaction.
 
 CREATE SCHEMA IF NOT EXISTS claim_utils;
+
+-- Dedicated retention role: the only non-superuser allowed to bypass the
+-- append-only guards for controlled cleanup. Created idempotently as a NOLOGIN
+-- group role; an operator grants membership (e.g. `GRANT las_flores_claims_retention
+-- TO <operator_role>`) when a non-superuser session needs to run retention jobs.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'las_flores_claims_retention') THEN
+    CREATE ROLE las_flores_claims_retention NOLOGIN;
+  END IF;
+END
+$$;
+
+CREATE OR REPLACE FUNCTION claim_utils.mutation_allowed()
+RETURNS boolean AS $$
+BEGIN
+  -- Bypass requires BOTH the GUC and a privilege. The custom GUC alone is not
+  -- sufficient (any role can set a custom GUC), so the caller must also be a
+  -- superuser or a member of the retention role. `IS DISTINCT FROM` makes the
+  -- guard treat an unset GUC (current_setting(..., true) -> NULL) as "not
+  -- enabled" so even a privileged session must opt in via SET LOCAL.
+  IF current_setting('claim_utils.allow_mutation', true) IS DISTINCT FROM 'true' THEN
+    RETURN false;
+  END IF;
+  RETURN
+    (SELECT rolsuper FROM pg_roles WHERE rolname = current_user)
+    OR pg_has_role(current_user, 'las_flores_claims_retention', 'USAGE');
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION claim_utils.block_evidence_mutation()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF current_setting('claim_utils.allow_mutation', true) = 'true' THEN
+  IF claim_utils.mutation_allowed() THEN
     RETURN COALESCE(NEW, OLD);
   END IF;
-  RAISE EXCEPTION 'evidence rows are immutable; set claim_utils.allow_mutation to mutate';
+  RAISE EXCEPTION 'evidence rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate';
 END;
 $$ LANGUAGE plpgsql;
 
@@ -117,10 +152,10 @@ FOR EACH ROW EXECUTE FUNCTION claim_utils.block_evidence_mutation();
 CREATE OR REPLACE FUNCTION claim_utils.block_claim_transition_mutation()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF current_setting('claim_utils.allow_mutation', true) = 'true' THEN
+  IF claim_utils.mutation_allowed() THEN
     RETURN COALESCE(NEW, OLD);
   END IF;
-  RAISE EXCEPTION 'claim_transitions rows are immutable; set claim_utils.allow_mutation to mutate';
+  RAISE EXCEPTION 'claim_transitions rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate';
 END;
 $$ LANGUAGE plpgsql;
 
@@ -128,6 +163,39 @@ DROP TRIGGER IF EXISTS claim_transitions_immutable ON claim_transitions;
 CREATE TRIGGER claim_transitions_immutable
 BEFORE UPDATE OR DELETE ON claim_transitions
 FOR EACH ROW EXECUTE FUNCTION claim_utils.block_claim_transition_mutation();
+
+-- TRUNCATE is statement-level and would otherwise bypass the row-level
+-- UPDATE/DELETE guards above and erase the whole audit history. Gate it with the
+-- same privilege check so a non-privileged session cannot wipe the store.
+CREATE OR REPLACE FUNCTION claim_utils.block_evidence_truncate()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF claim_utils.mutation_allowed() THEN
+    RETURN NULL;
+  END IF;
+  RAISE EXCEPTION 'evidence rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate';
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS evidence_immutable_truncate ON evidence;
+CREATE TRIGGER evidence_immutable_truncate
+BEFORE TRUNCATE ON evidence
+EXECUTE FUNCTION claim_utils.block_evidence_truncate();
+
+CREATE OR REPLACE FUNCTION claim_utils.block_claim_transition_truncate()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF claim_utils.mutation_allowed() THEN
+    RETURN NULL;
+  END IF;
+  RAISE EXCEPTION 'claim_transitions rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate';
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS claim_transitions_immutable_truncate ON claim_transitions;
+CREATE TRIGGER claim_transitions_immutable_truncate
+BEFORE TRUNCATE ON claim_transitions
+EXECUTE FUNCTION claim_utils.block_claim_transition_truncate();
 
 -- ------------------------------------------------------------------
 -- 5. Valid transition edges + claim-state consistency
