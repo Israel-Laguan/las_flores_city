@@ -17,6 +17,7 @@ import { createHash } from 'node:crypto';
 import { queryOLTP, queryContent } from '@las-flores/infra';
 import { getCache, setCache } from '@las-flores/infra';
 import { DialogueNode, Leaf } from '@las-flores/shared';
+import { fetchNodesFromContentUrl, fetchChunkFromContentUrl } from './contentFetch.js';
 
 export interface ResolvedTree {
   rootId: string;
@@ -37,8 +38,9 @@ export interface ResolvedChunk {
 
 interface BaseDialogueTree {
   start_node_id: string;
-  updated_at: string;
+  updated_at: Date;
   nodes: Record<string, DialogueNode>;
+  content_url?: string | null;
 }
 
 interface BaseDialogueChunkRow {
@@ -47,6 +49,10 @@ interface BaseDialogueChunkRow {
   chunk_key: string;
   nodes: Record<string, DialogueNode>;
   leaves: Record<string, Leaf>;
+  // M23: pointer to the externalized `{nodes, leaves}` blob in MinIO/CDN.
+  // When set, `loadBaseChunk` fetches from the CDN; NULL falls back to the
+  // in-DB `nodes`/`leaves` columns.
+  content_url?: string | null;
 }
 
 interface OverlayRow {
@@ -74,6 +80,35 @@ function buildOverlayFingerprint(overlays: OverlayRow[]): string {
     .sort();
 
   return createHash('sha1').update(fingerprints.join('|')).digest('hex').slice(0, 16);
+}
+
+/**
+ * Derive a stable short content-version token from a `content_url`
+ * pointer. Because M23 object keys are content-addressed
+ * (`<scope>/<id>__<hash>.json`), a changed blob yields a changed
+ * pointer → a changed version token. Including this in the resolver
+ * cache key makes the cache self-healing: a re-migration that bumps
+ * the pointer forces fresh resolution even if the pattern invalidate
+ * didn't fire.
+ *
+ * When `content_url` is NULL/empty, `fallbackRevision` is hashed as a
+ * substitute revision token; if the caller passes a non-empty
+ * `fallbackRevision`, a changed revision still forces fresh resolution.
+ * Only when BOTH are absent does this return the constant `'base'`.
+ */
+function coerceRevision(revision: unknown): string | undefined {
+  if (revision == null) return undefined;
+  if (typeof revision === 'string') return revision;
+  if (revision instanceof Date) return revision.toISOString();
+  return String(revision);
+}
+
+function contentVersionFromUrl(contentUrl?: string | null, fallbackRevision?: unknown): string {
+  if (!contentUrl) {
+    const rev = coerceRevision(fallbackRevision);
+    return rev ? createHash('sha256').update(rev).digest('hex').slice(0, 16) : 'base';
+  }
+  return createHash('sha256').update(contentUrl).digest('hex').slice(0, 16);
 }
 
 /**
@@ -208,8 +243,12 @@ export class DialogueResolver {
     // partitioned correctly when the resolver is called from
     // other paths (e.g. /dialogue/active fallback).
     const cacheKey = `dialogue:resolved:${baseTreeId}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
+    // M23: include the tree's content version (derived from its content_url
+    // pointer) so a re-migration that republishes nodes under a new key — even
+    // if the pattern invalidate didn't fire — produces a fresh cache key.
+    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(baseTree.content_url, baseTree.updated_at)}`;
 
-    const cachedTree = await getCache<ResolvedTree>(cacheKey);
+    const cachedTree = await getCache<ResolvedTree>(versionedCacheKey);
     if (cachedTree) {
       return cachedTree;
     }
@@ -233,7 +272,7 @@ export class DialogueResolver {
 
     const finalTree: ResolvedTree = { rootId: baseTree.start_node_id, nodes: resolvedNodes };
 
-    await setCache(cacheKey, finalTree, CACHE_TTL_SECONDS);
+    await setCache(versionedCacheKey, finalTree, CACHE_TTL_SECONDS);
 
     return finalTree;
   }
@@ -258,8 +297,9 @@ export class DialogueResolver {
     const overlayFingerprint =
       overlays.length > 0 ? buildOverlayFingerprint(overlays) : baseTree.updated_at;
     const cacheKey = `dialogue:archive:${baseTreeId}:${mysteryId}:nsfw:${isNsfwUnlocked}:${overlayFingerprint}`;
+    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(baseTree.content_url, baseTree.updated_at)}`;
 
-    const cachedTree = await getCache<ResolvedTree>(cacheKey);
+    const cachedTree = await getCache<ResolvedTree>(versionedCacheKey);
     if (cachedTree) {
       return cachedTree;
     }
@@ -275,7 +315,7 @@ export class DialogueResolver {
     }
 
     const finalTree: ResolvedTree = { rootId: baseTree.start_node_id, nodes: resolvedNodes };
-    await setCache(cacheKey, finalTree, CACHE_TTL_SECONDS);
+    await setCache(versionedCacheKey, finalTree, CACHE_TTL_SECONDS);
     return finalTree;
   }
 
@@ -332,15 +372,20 @@ export class DialogueResolver {
 
   /**
    * Load the base dialogue tree (raw, no overlays).
+   *
+   * M23: fetches the heavy `nodes` map from CDN via `content_url` when a
+   * pointer is present; otherwise falls back to the in-DB JSONB. `start_node_id`
+   * and `updated_at` always come from the DB (cheap references, not heavy blobs).
    */
   private static async loadBaseTree(
     baseTreeId: string
   ): Promise<BaseDialogueTree> {
     const result = await queryContent<{
       start_node_id: string;
-      updated_at: string;
+      updated_at: Date;
       nodes: Record<string, DialogueNode>;
-    }>(`SELECT start_node_id, updated_at, nodes FROM dialogue_trees WHERE id = $1`, [
+      content_url: string | null;
+    }>(`SELECT start_node_id, updated_at, nodes, content_url FROM dialogue_trees WHERE id = $1`, [
       baseTreeId,
     ]);
 
@@ -348,7 +393,14 @@ export class DialogueResolver {
       throw new Error(`Base dialogue tree not found: ${baseTreeId}`);
     }
 
-    return result.rows[0];
+    const row = result.rows[0];
+    const cdnNodes = await fetchNodesFromContentUrl(row.content_url, row.nodes);
+    return {
+      start_node_id: row.start_node_id,
+      updated_at: row.updated_at,
+      nodes: cdnNodes ?? row.nodes,
+      content_url: row.content_url,
+    };
   }
 
   /**
@@ -437,8 +489,11 @@ export class DialogueResolver {
     // the same (tree, chunk) pair for different users. `storyBeat`
     // is included so a player whose beat advances re-resolves.
     const cacheKey = `dialogue:resolved:chunk:${chunkRow.tree_id}:${chunkKey}:nsfw:${isNsfwUnlocked}:align:${alignment}:beat:${storyBeat}:mysteries:${cacheSuffix}`;
+    // M23: include the chunk's content version (from its content_url pointer)
+    // so re-published chunks under a new key force fresh resolution.
+    const versionedCacheKey = `${cacheKey}:content:${contentVersionFromUrl(chunkRow.content_url, JSON.stringify({ nodes: chunkRow.nodes, leaves: chunkRow.leaves }))}`;
 
-    const cachedChunk = await getCache<ResolvedChunk>(cacheKey);
+    const cachedChunk = await getCache<ResolvedChunk>(versionedCacheKey);
     if (cachedChunk) {
       return cachedChunk;
     }
@@ -469,7 +524,7 @@ export class DialogueResolver {
       mergedNodes,
     };
 
-    await setCache(cacheKey, resolvedChunk, CACHE_TTL_SECONDS);
+    await setCache(versionedCacheKey, resolvedChunk, CACHE_TTL_SECONDS);
 
     return resolvedChunk;
   }
@@ -495,21 +550,50 @@ export class DialogueResolver {
   }
 
   /**
-   * Load a base chunk from dialogue_chunks by its UUID id.
+   * Load a base chunk row from dialogue_chunks via an arbitrary WHERE
+   * clause. Shared by `loadBaseChunk` (lookup by id) and
+   * `loadBaseChunkByKey` (lookup by chunk_key).
+   *
+   * M23: hydrates the heavy `{nodes, leaves}` map from the CDN via
+   * `content_url` when present; otherwise falls back to the in-DB JSONB.
    */
-  private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
+  private static async loadBaseChunkRow(
+    column: 'id' | 'chunk_key',
+    param: string
+  ): Promise<BaseDialogueChunkRow> {
+    const where = column === 'id' ? 'id' : 'chunk_key';
     const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, nodes, leaves
-         FROM dialogue_chunks
-        WHERE id = $1`,
-      [chunkId]
+      `SELECT id, tree_id, chunk_key, nodes, leaves, content_url
+          FROM dialogue_chunks
+         WHERE ${where} = $1
+         LIMIT 1`,
+      [param]
     );
 
     if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found: ${chunkId}`);
+      throw new Error(`Dialogue chunk not found for ${column} = ${param}`);
     }
 
-    return result.rows[0];
+    const row = result.rows[0];
+    const cdn = await fetchChunkFromContentUrl(row.content_url, {
+      nodes: row.nodes,
+      leaves: row.leaves,
+    });
+    return {
+      ...row,
+      nodes: cdn?.nodes ?? row.nodes,
+      leaves: cdn?.leaves ?? row.leaves,
+    };
+  }
+
+  /**
+   * Load a base chunk from dialogue_chunks by its UUID id.
+   *
+   * M23: fetches the heavy `{nodes, leaves}` map from CDN via `content_url`
+   * when present; otherwise falls back to the in-DB JSONB.
+   */
+  private static async loadBaseChunk(chunkId: string): Promise<BaseDialogueChunkRow> {
+    return DialogueResolver.loadBaseChunkRow('id', chunkId);
   }
 
   /**
@@ -517,18 +601,6 @@ export class DialogueResolver {
    * Used by resolveNextChunk when crossing boundaries.
    */
   private static async loadBaseChunkByKey(chunkKey: string): Promise<BaseDialogueChunkRow> {
-    const result = await queryContent<BaseDialogueChunkRow>(
-      `SELECT id, tree_id, chunk_key, nodes, leaves
-         FROM dialogue_chunks
-        WHERE chunk_key = $1
-        LIMIT 1`,
-      [chunkKey]
-    );
-
-    if (result.rows.length === 0) {
-      throw new Error(`Dialogue chunk not found for key: ${chunkKey}`);
-    }
-
-    return result.rows[0];
+    return DialogueResolver.loadBaseChunkRow('chunk_key', chunkKey);
   }
 }

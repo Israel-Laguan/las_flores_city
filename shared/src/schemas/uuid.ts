@@ -14,6 +14,11 @@ export function zodUuid(message?: string) {
   return z.string().regex(UUID_REGEX, message ?? 'Invalid UUID');
 }
 
+/** Boolean type guard matching the same canonical UUID rule used by the schemas. */
+export function isUuid(value: unknown): value is string {
+  return typeof value === 'string' && UUID_REGEX.test(value);
+}
+
 export function zodUuidOptional(message?: string) {
   return zodUuid(message).optional();
 }

@@ -4,6 +4,10 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const DEFAULT_TTL_SECONDS = 300;
 
+// Bound the HTTP content-fetch wait so a stalled CDN cannot hold a dialogue
+// resolver request thread indefinitely (contentFetch falls back to the DB).
+const CONTENT_FETCH_TIMEOUT_MS = 5000;
+
 const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'localhost';
 const MINIO_PORT = process.env.MINIO_PORT || '9000';
 // Browser-reachable endpoint for MinIO. In Compose deployments MINIO_ENDPOINT
@@ -212,6 +216,55 @@ export async function fetchCdnMedia(mediaUrl: string): Promise<{ buffer: Buffer;
   const contentType = response.headers.get('content-type') || 'application/octet-stream';
   const arrayBuffer = await response.arrayBuffer();
   return { buffer: Buffer.from(arrayBuffer), contentType };
+}
+
+/**
+ * Fetch a content blob's UTF-8 string from MinIO/CDN.
+ *
+ * `s3://bucket/key` locations are resolved via the MinIO S3 client
+ * (server-to-server, no presigned-URL round trip). HTTP(S) URLs are
+ * fetched directly. Used by DialogueResolver to load dialogue tree
+ * nodes / chunk sub-graphs by `content_url`.
+ */
+export async function fetchContentString(mediaUrl: string): Promise<string> {
+  const location = mediaUrl.startsWith('s3://') ? parseS3Location(mediaUrl) : null;
+  if (location) {
+    const { GetObjectCommand } = await import('@aws-sdk/client-s3');
+    // Bound the S3/MinIO GetObject too: this is the production CDN path for
+    // dialogue content, and a stalled MinIO request must not hold a resolver
+    // thread indefinitely (the HTTP(S) branch below already has a timeout).
+    const response = await getS3Client().send(
+      new GetObjectCommand({ Bucket: location.bucket, Key: location.key }),
+      { abortSignal: AbortSignal.timeout(CONTENT_FETCH_TIMEOUT_MS) },
+    );
+    const body = response.Body as NodeJS.ReadableStream | undefined;
+    if (!body) throw new Error(`MinIO object body empty: ${mediaUrl}`);
+    const chunks: Buffer[] = [];
+    for await (const chunk of body as AsyncIterable<Buffer>) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks).toString('utf-8');
+  }
+
+  if (!/^https?:\/\//i.test(mediaUrl)) {
+    throw new Error(`Unsupported content URL: ${mediaUrl}`);
+  }
+
+  const response = await fetch(mediaUrl, {
+    signal: AbortSignal.timeout(CONTENT_FETCH_TIMEOUT_MS),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch content: ${response.status}`);
+  }
+  return response.text();
+}
+
+/**
+ * Fetch and JSON-parse a content blob by its `content_url`.
+ */
+export async function fetchContentJson(mediaUrl: string): Promise<unknown> {
+  const raw = await fetchContentString(mediaUrl);
+  return JSON.parse(raw);
 }
 
 // Cache for bucket existence checks

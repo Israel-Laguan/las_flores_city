@@ -151,10 +151,10 @@ adminStoryBuilderActionsRouter.post('/plans/:id/stage', async (req: AuthRequest,
 
 // POST /admin/story-builder/plans/:id/migrate — Run DB migration for staged plan
 adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthRequest, res) => {
+  const { id } = req.params as Record<string, string>;
   try {
-    const { id } = req.params as Record<string, string>;
 
-    const migrationResult = await migrateStagedPlan(id);
+    const migrationResult = await migrateStagedPlan(id, undefined, undefined, req.userId);
 
     emitAdminEvent(
       migrationResult.success ? 'plan_migrated' : 'plan_failed',
@@ -173,7 +173,26 @@ adminStoryBuilderActionsRouter.post('/plans/:id/migrate', async (req: AuthReques
     });
   } catch (error: any) {
     console.error('[story-builder] POST /plans/:id/migrate error:', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to migrate plan', timestamp: new Date().toISOString() });
+    // migrateStagedPlan re-throws PlanNotFoundError/PlanStatusError for permanent
+    // failures (rather than returning `{ success: false }`), so handle them here
+    // to return 404/400. These are validation / claim-conflict errors, NOT
+    // migration failures, so we do NOT emit a `plan_failed` audit event for them
+    // (the plan status is preserved by the service). `plan_failed` is only emitted
+    // for an unexpected error that reached the generic migration-failure path.
+    const message = error.message || 'Failed to migrate plan';
+    const statusCode = isPlanNotFoundError(error) || message.includes('not found')
+      ? 404
+      : isPlanStatusError(error) || message.includes('must be')
+        ? 400
+        : 500;
+    if (!isPlanNotFoundError(error) && !isPlanStatusError(error)) {
+      emitAdminEvent('plan_failed', { success: false, error: message }, id, req.userId);
+    }
+    res.status(statusCode).json({
+      success: false,
+      error: message,
+      timestamp: new Date().toISOString(),
+    });
   }
 });
 

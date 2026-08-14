@@ -1,9 +1,17 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pg from 'pg';
-import { queryOLTP, queryOLAP } from '@las-flores/infra';
+import { oltpPool, olapPool } from '@las-flores/infra';
+import type { PoolClient } from 'pg';
 import { migrateContent } from '../content/migrate.js';
+
+function hashText(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0;
+  }
+  return hash === 0 ? 1 : hash;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MIGRATIONS_DIR = path.resolve(__dirname, 'migrations');
@@ -16,41 +24,48 @@ interface MigrateTargets {
 }
 
 async function ensureSchemaMigrationsTable(): Promise<void> {
-  await queryOLTP(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      version TEXT NOT NULL,
-      filename TEXT NOT NULL,
-      checksum TEXT NOT NULL,
-      database_name TEXT NOT NULL,
-      applied_at TIMESTAMPTZ DEFAULT NOW(),
-      PRIMARY KEY (version, database_name)
-    )
-  `);
-  await queryOLAP(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      version TEXT NOT NULL,
-      filename TEXT NOT NULL,
-      checksum TEXT NOT NULL,
-      database_name TEXT NOT NULL,
-      applied_at TIMESTAMPTZ DEFAULT NOW(),
-      PRIMARY KEY (version, database_name)
-    )
-  `);
+  const oltp = await oltpPool.connect();
+  try {
+    await oltp.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        checksum TEXT NOT NULL,
+        database_name TEXT NOT NULL,
+        applied_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (version, database_name)
+      )
+    `);
+  } finally {
+    oltp.release();
+  }
+  const olap = await olapPool.connect();
+  try {
+    await olap.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        checksum TEXT NOT NULL,
+        database_name TEXT NOT NULL,
+        applied_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (version, database_name)
+      )
+    `);
+  } finally {
+    olap.release();
+  }
 }
 
-async function isApplied(dbName: string, version: string): Promise<boolean> {
-  const q = dbName === 'las_flores' ? queryOLTP : queryOLAP;
-  const result = await q(
+async function isAppliedOn(client: PoolClient, dbName: string, version: string): Promise<boolean> {
+  const result = await client.query(
     'SELECT COUNT(*)::int AS count FROM schema_migrations WHERE version = $1 AND database_name = $2',
     [version, dbName]
   );
-  if (!result) return false;
   return result.rows[0].count > 0;
 }
 
-async function recordMigration(dbName: string, version: string, filename: string, checksum: string): Promise<void> {
-  const q = dbName === 'las_flores' ? queryOLTP : queryOLAP;
-  await q(
+async function recordMigration(client: PoolClient, dbName: string, version: string, filename: string, checksum: string): Promise<void> {
+  await client.query(
     `INSERT INTO schema_migrations (version, filename, checksum, database_name)
      VALUES ($1, $2, $3, $4)
      ON CONFLICT (version, database_name)
@@ -70,17 +85,43 @@ async function calculateChecksum(filePath: string): Promise<string> {
   return crypto.createHash('sha256').update(content).digest('hex');
 }
 
+// Migration files historically wrapped themselves in a top-level BEGIN/COMMIT so
+// the wrapper transaction in withOLTPTransaction/withOLAPTransaction would then
+// open a *nested* transaction. A file-level COMMIT inside that wrapper can close
+// the inner savepoint before recordMigration runs, leaving schema changes
+// applied without matching bookkeeping on a later failure. We now let the
+// wrapper own the single transaction and strip the file-level transaction
+// control statements here — but only those at the top level, never the
+// BEGIN/COMMIT/ROLLBACK that appear inside PL/pgSQL `$$` ... `$$` bodies.
+function stripFileLevelTransactionControl(sql: string): string {
+  const lines = sql.split('\n');
+  let inDollarBlock = false;
+  const out: string[] = [];
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    const trimmed = line.trim();
+    if (/\$\$/.test(trimmed)) {
+      const dollars = (trimmed.match(/\$\$/g) || []).length;
+      // Toggle per pair; an odd count within a line keeps us in/out of a block.
+      if (dollars % 2 === 1) inDollarBlock = !inDollarBlock;
+    }
+    if (!inDollarBlock && /^(BEGIN|COMMIT|ROLLBACK)\s*;?\s*$/i.test(trimmed)) {
+      continue;
+    }
+    out.push(line);
+  }
+  return out.join('\n');
+}
+
 async function applySQLMigrations(): Promise<void> {
   const targetsRaw = await fs.readFile(TARGETS_PATH, 'utf-8');
   const targets: MigrateTargets = JSON.parse(targetsRaw);
 
   await ensureSchemaMigrationsTable();
 
-  type QueryFn = <T extends pg.QueryResultRow = any>(text: string, params?: any[]) => Promise<pg.QueryResult<T> | null>;
-
-  const dbConfigs: Array<{ name: string; key: 'oltp' | 'olap'; queryFn: QueryFn }> = [
-    { name: 'las_flores', key: 'oltp', queryFn: queryOLTP },
-    { name: 'las_flores_analytics', key: 'olap', queryFn: queryOLAP },
+  const dbConfigs: Array<{ name: string; key: 'oltp' | 'olap' }> = [
+    { name: 'las_flores', key: 'oltp' },
+    { name: 'las_flores_analytics', key: 'olap' },
   ];
 
   for (const db of dbConfigs) {
@@ -103,20 +144,70 @@ async function applySQLMigrations(): Promise<void> {
         continue;
       }
 
-      if (await isApplied(db.name, version)) continue;
+      const pool = db.key === 'oltp' ? oltpPool : olapPool;
 
-      const checksum = await calculateChecksum(filePath);
-      const sql = await fs.readFile(filePath, 'utf-8');
-
-      console.log(`[migrate] Applying ${filename} to ${db.name}...`);
-
+      // Pin ONE client for the entire check/apply/record sequence so the
+      // advisory lock and the migration transaction share the same session.
+      // A plain `pool.query` advisory lock would live on a different pooled
+      // session than the transaction client — PostgreSQL advisory locks are
+      // session-scoped, so that would NOT reliably serialize concurrent runners
+      // and an unlock could run on the wrong session.
+      //
+      // The lock is taken as a *transaction-scoped* advisory lock
+      // (pg_advisory_xact_lock) on this same pinned client: it is held for the
+      // duration of the transaction below and released automatically on COMMIT
+      // or ROLLBACK. This both serializes concurrent runners (e.g. multiple
+      // intake-worker instances) and guarantees the lock can never leak if the
+      // applied-check / checksum / file read throws before we reach the
+      // transaction — the pinning `try/finally` always releases the client.
+      const client = await pool.connect();
       try {
-        await db.queryFn(sql);
-        await recordMigration(db.name, version, filename, checksum);
-        console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
-      } catch (err: any) {
-        console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
-        throw err;
+        const lockKey = hashText(`migration:${db.name}`);
+
+        // Open a single transaction immediately and acquire the migration lock
+        // INSIDE it. A transaction-scoped advisory lock (pg_advisory_xact_lock)
+        // is only meaningful within a transaction — issuing it in autocommit
+        // mode would commit and release it instantly, defeating serialization.
+        // Running the applied-check, SQL apply, and recordMigration inside the
+        // same transaction also guarantees the lock (and the migration) release
+        // atomically on COMMIT/ROLLBACK and can never leak if any step throws.
+        await client.query('BEGIN');
+        try {
+          await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
+
+          const alreadyApplied = await isAppliedOn(client, db.name, version);
+          if (alreadyApplied) {
+            await client.query('COMMIT');
+            continue;
+          }
+
+          const checksum = await calculateChecksum(filePath);
+          const rawSql = await fs.readFile(filePath, 'utf-8');
+          // Strip the file-level BEGIN/COMMIT so the wrapper's own transaction
+          // is the only one; schema changes and the schema_migrations record
+          // then commit atomically.
+          const sql = stripFileLevelTransactionControl(rawSql);
+
+          console.log(`[migrate] Applying ${filename} to ${db.name}...`);
+
+          // Run the whole file in a single transaction so a failure (or an
+          // interrupted run) can never strand a half-applied migration — e.g. a
+          // partially-created PL/pgSQL function that would fail to recompile on
+          // the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
+          // The schema_migrations record is written inside the same transaction,
+          // so success and bookkeeping are atomic. The advisory lock is held for
+          // the duration of this transaction and released automatically on COMMIT.
+          await client.query(sql);
+          await recordMigration(client, db.name, version, filename, checksum);
+          await client.query('COMMIT');
+          console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
+        } catch (err: any) {
+          await client.query('ROLLBACK');
+          console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
+          throw err;
+        }
+      } finally {
+        client.release();
       }
     }
   }

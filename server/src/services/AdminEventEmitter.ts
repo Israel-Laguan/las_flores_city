@@ -5,7 +5,9 @@ export type AdminEventType =
   | 'plan_created' | 'plan_refined' | 'plan_staged'
   | 'plan_migrated' | 'plan_verified' | 'plan_failed' | 'plan_solidified'
   | 'user_role_changed' | 'settings_updated'
-  | 'placeholders_filled';
+  | 'placeholders_filled'
+  | 'patch_created' | 'patch_applied' | 'patch_rejected' | 'patch_rolled_back'
+  | 'claim_created' | 'claim_updated';
 
 /**
  * Fire-and-forget admin event emitter.

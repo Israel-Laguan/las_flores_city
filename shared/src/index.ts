@@ -249,3 +249,43 @@ export type {
 
 export { JobRunSchema, JobTypeSchema, JobStatusSchema } from './schemas/job-run.js';
 export type { JobRun, JobType, JobStatus } from './schemas/job-run.js';
+
+export {
+  PatchSchema,
+  PatchCreateSchema,
+  PatchStatusSchema,
+  PatchOpSchema,
+  CanonRevisionSchema,
+  RollbackResultSchema,
+} from './schemas/revision.js';
+export type {
+  Patch,
+  PatchCreate,
+  PatchStatus,
+  PatchOp,
+  CanonRevision,
+  RollbackResult,
+} from './schemas/revision.js';
+
+export {
+  ClaimSchema,
+  ClaimCreateSchema,
+  ClaimStatusSchema,
+  EvidenceSchema,
+  EvidenceCreateSchema,
+  ClaimTransitionSchema,
+  ClaimTransitionRequestSchema,
+  ClaimDetailSchema,
+} from './schemas/claim.js';
+export type {
+  Claim,
+  ClaimCreate,
+  ClaimStatus,
+  Evidence,
+  EvidenceCreate,
+  ClaimTransition,
+  ClaimTransitionRequest,
+  ClaimDetail,
+} from './schemas/claim.js';
+
+export { isUuid } from './schemas/uuid.js';

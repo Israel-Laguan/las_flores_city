@@ -59,6 +59,7 @@ describe('Sidebar', () => {
     expect(screen.getByRole('link', { name: 'Shop' })).toHaveAttribute('href', '/shop');
     expect(screen.getByRole('link', { name: 'Dialogues' })).toHaveAttribute('href', '/dialogues');
     expect(screen.getByRole('link', { name: 'AI Config' })).toHaveAttribute('href', '/ai-config');
+    expect(screen.getByRole('link', { name: 'Audit' })).toHaveAttribute('href', '/audit');
   });
 
   it('marks the active top-level link with aria-current="page"', () => {
