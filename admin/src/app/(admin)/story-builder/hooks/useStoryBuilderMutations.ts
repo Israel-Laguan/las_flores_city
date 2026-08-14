@@ -1,4 +1,5 @@
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
+import type { ResolutionAlternative } from '@las-flores/shared';
 
 export function updateItemField(plan: ContentPlan, index: number, fieldPath: string, value: string): ContentPlan {
   const items = [...plan.items];
@@ -14,6 +15,48 @@ export function updateItemField(plan: ContentPlan, index: number, fieldPath: str
   current[parts[parts.length - 1]] = value;
 
   items[index] = { ...item, fields };
+  return { ...plan, items };
+}
+
+/**
+ * M25 — resolve an ambiguous identity by explicit author choice. Resolving to
+ * an existing entity marks the item `update` with a stable `entity_id`; choosing
+ * the new-variant alternative commits the item as a fresh `create`. In both
+ * cases `resolution` is collapsed to the resolved status so it leaves the picker.
+ */
+export function resolveItemIdentity(
+  plan: ContentPlan,
+  index: number,
+  alternative: ResolutionAlternative,
+): ContentPlan {
+  const items = [...plan.items];
+  const item = { ...items[index] };
+
+  if (alternative.kind === 'existing' && alternative.id) {
+    items[index] = {
+      ...item,
+      entity_id: alternative.id,
+      action: 'update',
+      // Preserve the concrete matched identity instead of the ambiguous dispatch.
+      resolution: {
+        status: 'matched',
+        entityType: item.type,
+        entityId: alternative.id,
+        alias: alternative.name,
+      },
+    };
+  } else {
+    // Author chose a new variant — keep it a create proposal, drop ambiguity.
+    items[index] = {
+      ...item,
+      resolution: {
+        status: 'new_candidate',
+        entityType: item.type,
+        suggestedName: item.name,
+      },
+    };
+  }
+
   return { ...plan, items };
 }
 

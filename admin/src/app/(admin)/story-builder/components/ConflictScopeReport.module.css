@@ -1,0 +1,145 @@
+.section {
+  border: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+  background: var(--panel-bg);
+}
+
+.heading {
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.planRef {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.badge {
+  font-size: 0.68rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.badgePass {
+  background: var(--success-bg, var(--panel-bg));
+  color: var(--success, var(--accent));
+  border: 1px solid var(--border);
+}
+
+.badgeWarn {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+.clean {
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.findings {
+  list-style: none;
+  margin: 0 0 0.75rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.finding {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.rule {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+
+.ruleError {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.ruleWarn {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+.findingDesc {
+  color: var(--text-secondary);
+  flex: 1 1 auto;
+}
+
+.scopeBlock {
+  border-top: 1px dashed var(--border);
+  padding-top: 0.6rem;
+}
+
+.scopeTitle {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+}
+
+.scopeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.scopeItem {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.scopeRule {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.scopeDesc {
+  color: var(--text-secondary);
+  flex: 1 1 auto;
+}
+
+.scopeCount {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  flex: 0 0 auto;
+}
+
+.checkedAt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.5rem;
+}

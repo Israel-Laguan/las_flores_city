@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { zodUuid, zodUuidArray } from './uuid.js';
 import { ContentTypeSchema } from './content-validation.js';
+import { IdentityResolutionSchema } from './entity-identity.js';
 
 // Reuse the existing ContentType enum
 const contentType = ContentTypeSchema;
@@ -23,6 +24,15 @@ export const ContentPlanItemSchema = z.object({
   dependsOn: zodUuidArray().default([]),  // Optional for MVP
   lore_refs: z.array(z.string()).optional(),  // LLM-suggested related lore items
   filled_fields: z.array(z.string()).optional(),  // dot-paths of fields filled by the LLM fill pass (provenance)
+  // ── M25: entity identity resolution ──────────────────────────────────
+  // `entity_id` is the stable identity the item resolves to (present when the
+  // IdentityResolver returned `matched`). `aliases` are the known names/epithets
+  // surfaced for this item, separate from the canonical identity. `resolution`
+  // records the resolver's verdict (matched / new_candidate / ambiguous) so an
+  // ambiguous identity is surfaced to the author instead of silently decided.
+  entity_id: z.string().optional(),
+  aliases: z.array(z.string()).optional(),
+  resolution: IdentityResolutionSchema.optional(),
 });
 
 export const ContentLinkSchema = z.object({
@@ -43,6 +53,12 @@ const ContentPlanMetaSchema = z.object({
     type: z.string().min(1),
     description: z.string().optional(),
   })).optional(),
+  // M25: counts from the dedicated IdentityResolver pass (matched/new/ambiguous).
+  identity_summary: z.object({
+    matched: z.number().int().nonnegative(),
+    newCandidates: z.number().int().nonnegative(),
+    ambiguous: z.number().int().nonnegative(),
+  }).optional(),
 }).optional();
 
 export const ContentPlanSchema = z.object({

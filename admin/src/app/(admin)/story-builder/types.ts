@@ -17,4 +17,6 @@ export interface GenerationStatus {
 }
 
 export type { IntakeConflictPreview } from '@las-flores/shared';
+// M25 — entity identity resolution + bounded conflict report types.
+export type { IdentityResolution, ResolutionAlternative, CheckedScope, BoundedConflict, ConflictReport } from '@las-flores/shared';
 

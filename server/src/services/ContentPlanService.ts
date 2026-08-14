@@ -13,6 +13,7 @@ import { resolveContentDir } from './StoryBuilderLore.js';
 import { chunkDescription, mergeCandidates, buildSynopsisFromCandidates, type EntityCandidate } from './OutlineChunking.js';
 import { buildEntityExtractionPrompt } from './LLMPrompts.js';
 import { validateAndRepairOutline, generateFallbackPlan, setStatus, updatePlanJson, uuidv4 } from './ContentPlanValidation.js';
+import { identityResolver } from './IdentityResolver.js';
 
 export interface PlanWithUsage {
   plan: ContentPlan;
@@ -40,6 +41,8 @@ export class ContentPlanService {
     generateForPlan(validated, this.provider, context).catch(err => {
       console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
     });
+
+    await this.attachIdentityResolutions(validated);
 
     return { plan: validated, usage };
   }
@@ -75,6 +78,8 @@ export class ContentPlanService {
     }
 
     injectAssetNeeds(validated.items);
+
+    await this.attachIdentityResolutions(validated);
 
     return { plan: validated, usage };
   }
@@ -351,6 +356,31 @@ export class ContentPlanService {
     } catch {
       return [];
     }
+  }
+
+/**
+   * M25 — the dedicated, deterministic identity-resolution pass. Runs after the
+   * LLM outline so a name is never silently merged: `IdentityResolver` returns
+   * `matched` / `new_candidate` / `ambiguous` per item. Ambiguous items keep
+   * `resolution.status === 'ambiguous'` so the admin can pick; a summary count
+   * is surfaced on `_meta.identity_summary`.
+   */
+  private async attachIdentityResolutions(plan: ContentPlan): Promise<void> {
+    const resolved = await identityResolver.resolvePlanItems(plan);
+    plan.items = resolved.items;
+
+    let matched = 0;
+    let ambiguous = 0;
+    let newCandidates = 0;
+    for (const item of resolved.items) {
+      if (item.resolution?.status === 'matched') matched += 1;
+      else if (item.resolution?.status === 'ambiguous') ambiguous += 1;
+      else newCandidates += 1;
+    }
+    plan._meta = {
+      ...plan._meta,
+      identity_summary: { matched, newCandidates, ambiguous },
+    };
   }
 
   async gatherContext(): Promise<ExistingContentContext> {

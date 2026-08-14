@@ -38,6 +38,8 @@ function buildHandlers(
     },
     updateItemField: (i: number, f: string, v: string) => applyMutation(p => mutations.updateItemField(p, i, f, v)),
     updateItemDependsOn: (i: number, d: string[]) => applyMutation(p => mutations.updateItemDependsOn(p, i, d)),
+    resolveItemIdentity: (i: number, a: import('@las-flores/shared').ResolutionAlternative) =>
+      applyMutation(p => mutations.resolveItemIdentity(p, i, a)),
     addLink: () => applyMutation(mutations.addLink),
     updateLink: (i: number, f: string, v: string) => applyMutation(p => mutations.updateLink(p, i, f, v)),
     removeLink: (i: number) => applyMutation(p => mutations.removeLink(p, i)),
