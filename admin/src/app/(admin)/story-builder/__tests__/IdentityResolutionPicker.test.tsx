@@ -15,7 +15,7 @@ const ambiguous = (name: string): AmbiguousItem => ({
     status: 'ambiguous',
     entityType: 'character',
     alternatives: [
-      { kind: 'existing', id: 'a1930000-1111-4111-8111-111111111111', name: 'a193 Marcus' },
+      { kind: 'existing', id: 'a1930000-1111-4111-8111-111111111111', name: 'a193 Marcus', alias: 'Marcus' },
       { kind: 'new', name: 'new: Marcus II' },
     ],
   },
