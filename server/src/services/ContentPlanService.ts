@@ -13,6 +13,7 @@ import { resolveContentDir } from './StoryBuilderLore.js';
 import { chunkDescription, mergeCandidates, buildSynopsisFromCandidates, type EntityCandidate } from './OutlineChunking.js';
 import { buildEntityExtractionPrompt } from './LLMPrompts.js';
 import { validateAndRepairOutline, generateFallbackPlan, setStatus, updatePlanJson, uuidv4 } from './ContentPlanValidation.js';
+import { identityResolver } from './IdentityResolver.js';
 
 export interface PlanWithUsage {
   plan: ContentPlan;
@@ -36,6 +37,11 @@ export class ContentPlanService {
     validated.description = description;
 
     injectAssetNeeds(validated.items);
+
+    // Resolve identities BEFORE dispatching the background lore job so the lore
+    // job generates against the identity-resolved item set (canonical slug /
+    // entity_id / new_candidate) rather than the pre-resolution aliases.
+    await this.attachIdentityResolutions(validated);
 
     generateForPlan(validated, this.provider, context).catch(err => {
       console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
@@ -75,6 +81,8 @@ export class ContentPlanService {
     }
 
     injectAssetNeeds(validated.items);
+
+    await this.attachIdentityResolutions(validated);
 
     return { plan: validated, usage };
   }
@@ -156,6 +164,10 @@ export class ContentPlanService {
 
     // 4. Validate
     const validated = ContentPlanSchema.parse(rawRefined);
+
+    // 5. Re-run the dedicated identity pass so refinements that add or rename an
+    //    item never bypass resolution (and existing names retain identity).
+    await this.attachIdentityResolutions(validated);
 
     // 6. Re-inject asset needs for any new items
     injectAssetNeeds(validated.items);
@@ -244,6 +256,10 @@ export class ContentPlanService {
     // 7. Validate
     const validated = ContentPlanSchema.parse(mergedPlan);
 
+    // 7b. Re-run the identity pass: item-scoped refinement must also resolve any
+    //     newly added/renamed identities instead of bypassing resolution.
+    await this.attachIdentityResolutions(validated);
+
     // 8. Re-inject asset needs
     injectAssetNeeds(validated.items);
 
@@ -307,6 +323,9 @@ export class ContentPlanService {
     // nothing to generate).
     const refined = ContentPlanSchema.parse(rawRefined);
     injectAssetNeeds(refined.items);
+    // Re-run the identity pass on the in-memory refine so new/renamed identities
+    // are resolved (and surfaced) here too, not only on the persisted paths.
+    await this.attachIdentityResolutions(refined);
     // The conflict re-scan is advisory (Moment 1) — a scan outage must not fail
     // the refinement. Fall back to an empty conflict list so the author still
     // receives the refined outline.
@@ -351,6 +370,41 @@ export class ContentPlanService {
     } catch {
       return [];
     }
+  }
+
+/**
+   * M25 — the dedicated, deterministic identity-resolution pass. Runs after the
+   * LLM outline so a name is never silently merged: `IdentityResolver` returns
+   * `matched` / `new_candidate` / `ambiguous` per item. Ambiguous items keep
+   * `resolution.status === 'ambiguous'` so the admin can pick; a summary count
+   * is surfaced on `_meta.identity_summary`.
+   */
+  private async attachIdentityResolutions(plan: ContentPlan): Promise<void> {
+    let resolved: ContentPlan;
+    try {
+      resolved = await identityResolver.resolvePlanItems(plan);
+    } catch (err) {
+      // Fail closed (matching prior behavior — an identity failure must not
+      // silently ship an un-resolved outline), but name the pass so the admin
+      // error is diagnosable instead of a bare DB/Filesystem rejection.
+      throw new Error(`Identity resolution pass failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    plan.items = resolved.items;
+
+    let matched = 0;
+    let ambiguous = 0;
+    let newCandidates = 0;
+    for (const item of resolved.items) {
+      if (item.resolution?.status === 'matched') matched += 1;
+      else if (item.resolution?.status === 'ambiguous') ambiguous += 1;
+      // Only genuine new candidates count; items with no resolution status are
+      // pre-existing/identity-stable `update` references, not new entities.
+      else if (item.resolution?.status === 'new_candidate') newCandidates += 1;
+    }
+    plan._meta = {
+      ...plan._meta,
+      identity_summary: { matched, newCandidates, ambiguous },
+    };
   }
 
   async gatherContext(): Promise<ExistingContentContext> {

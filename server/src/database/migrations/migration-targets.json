@@ -58,7 +58,8 @@
     "064_patch_versioning.sql",
     "066_claims.sql",
     "067_admin_events_audit.sql",
-    "068_admin_events_audit_validate.sql"
+    "068_admin_events_audit_validate.sql",
+    "069_entity_identity.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

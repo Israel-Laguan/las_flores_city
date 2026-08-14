@@ -6,7 +6,8 @@ import { cn } from '@las-flores/ui';
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
 import VerificationReport from './VerificationReport';
 import type { VerificationReport as VerificationReportData } from '@las-flores/shared';
-import { getJobStatus } from '../hooks/useStoryBuilderApi';
+import ConflictScopeReport, { type ConflictScopeReportData } from './ConflictScopeReport';
+import { getJobStatus, fetchVerificationReport } from '../hooks/useStoryBuilderApi';
 import styles from './ResultsStep.module.css';
 
 /** Shape of the result returned by POST /plans/:id/approve-and-solidify. */
@@ -175,6 +176,37 @@ function ActionLinks({ planId }: { planId?: string | null }) {
 
 const ASYNC_STATUSES = ['pending', 'staging', 'migrating', 'verifying'];
 
+/**
+ * M25 — surface the bounded conflict report (recorded checked-scope + findings)
+ * once a plan reaches a terminal `verified` state. Fetched from the
+ * verification route, which returns the latest `conflict_reports` row.
+ */
+function ConflictScopeSection({ planId, result }: { planId: string; result: SolidifyResultLite | null }) {
+  const [conflictReport, setConflictReport] = useState<ConflictScopeReportData | null>(null);
+
+  useEffect(() => {
+    if (!result || result.status !== 'verified') {
+      setConflictReport(null);
+      return;
+    }
+    let cancelled = false;
+    // Clear any stale report before starting the request so the previous plan's
+    // conflict report can never render as the current plan's.
+    setConflictReport(null);
+    fetchVerificationReport(planId).then((res) => {
+      if (cancelled) return;
+      // Only show a report when the request succeeded AND carried one;
+      // a success without a conflict_report (or a failure) clears any state.
+      setConflictReport(res.success ? res.data?.conflict_report ?? null : null);
+    }).catch(() => {
+      if (!cancelled) setConflictReport(null);
+    });
+    return () => { cancelled = true; };
+  }, [planId, result?.status]);
+
+  return <ConflictScopeReport report={conflictReport} planId={planId} />;
+}
+
 export default function ResultsStep({ result, plan, planId }: ResultsStepProps) {
   const [pollResult, setPollResult] = useState<SolidifyResultLite | null>(null);
   const [polling, setPolling] = useState(false);
@@ -274,6 +306,8 @@ export default function ResultsStep({ result, plan, planId }: ResultsStepProps) 
           <VerificationReport report={activeResult.verificationReport as unknown as VerificationReportData} />
         </div>
       )}
+
+      {planId && <ConflictScopeSection planId={planId} result={activeResult} />}
 
       {plan && <LiveContent plan={plan} />}
 

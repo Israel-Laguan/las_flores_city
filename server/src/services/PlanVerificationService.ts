@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ContentPlan, ContentPlanItem, VerificationReport, CheckResult } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, VerificationReport, CheckResult, ConflictReport } from '@las-flores/shared';
 import { resolveFilePath } from './ContentSkeletonGenerator.js';
 import { queryOLTP } from '@las-flores/infra';
 
@@ -310,11 +310,57 @@ function checkAssetNeedStatus(items: ContentPlanItem[]): CheckResult {
   };
 }
 
+// ─── Advisory: bounded conflict report (M25) ───────────────────────────────
+
+/**
+ * Fold a M25 `ConflictReport` into the deterministic report as an *advisory*
+ * check row. Error-severity bounded conflicts are surfaced to the author but do
+ * NOT flip `passed` — the canonical gate remains the deterministic harness
+ * (§15.5). The checked-scope is reported verbatim so "how much did we check?"
+ * stays answerable.
+ */
+function boundedConflictCheck(conflict: ConflictReport | undefined): CheckResult {
+  if (!conflict) {
+    return {
+      name: 'bounded-conflicts',
+      description: 'Bounded neighborhood-scoped conflict detection.',
+      status: 'warn',
+      details: ['Conflict detection did not run (no report was recorded) — checked scope unavailable.'],
+    };
+  }
+  const errors = conflict.findings.filter((f) => f.severity === 'error');
+  const warnings = conflict.findings.filter((f) => f.severity === 'warning');
+
+  if (conflict.findings.length === 0) {
+    return {
+      name: 'bounded-conflicts',
+      description: 'Bounded neighborhood-scoped conflict detection.',
+      status: 'pass',
+      details: conflict.checkedScopes.map((s) => `${s.rule} checked ${s.scopeDescriptor}`),
+    };
+  }
+
+  const details = [
+    ...conflict.findings.map((f) => `[${f.severity}] ${f.description}`),
+    ...conflict.checkedScopes.map((s) => `${s.rule} checked ${s.scopeDescriptor}`),
+  ];
+
+  // Advisory only: bounded conflicts surface warning/error counts but never
+  // flip `passed` — the canonical gate is the deterministic harness (§15.5).
+  return {
+    name: 'bounded-conflicts',
+    description: `Bounded neighborhood-scoped conflict detection (${errors.length} error, ${warnings.length} warning).`,
+    status: 'warn',
+    details,
+  };
+}
+
 // ─── Main entry point ───────────────────────────────────────────────────────
 
 export async function verifyPlanCrossReferences(
   plan: ContentPlan,
   contentDir: string,
+  boundedConflict?: ConflictReport,
 ): Promise<VerificationReport> {
   const checks: CheckResult[] = [];
 
@@ -325,6 +371,11 @@ export async function verifyPlanCrossReferences(
   checks.push(await checkStoryBeatReferences(plan.items));
   checks.push(checkCrossPlanConsistency(plan));
   checks.push(checkAssetNeedStatus(plan.items));
+  // Always fold in the bounded-conflict check. When detection was skipped or
+  // failed (no report recorded), the zero-report row still tells the author an
+  // advisory check ran and that no conflict report was recorded, rather than
+  // silently omitting it.
+  checks.push(boundedConflictCheck(boundedConflict));
 
   const errors = checks
     .filter(c => c.status === 'fail')

@@ -247,6 +247,23 @@ export type {
   VerificationReport,
 } from './schemas/verification.js';
 
+export {
+  EntityAliasSchema,
+  ResolutionAlternativeSchema,
+  IdentityResolutionSchema,
+  CheckedScopeSchema,
+  BoundedConflictSchema,
+  ConflictReportSchema,
+} from './schemas/entity-identity.js';
+export type {
+  EntityAlias,
+  ResolutionAlternative,
+  IdentityResolution,
+  CheckedScope,
+  BoundedConflict,
+  ConflictReport,
+} from './schemas/entity-identity.js';
+
 export { JobRunSchema, JobTypeSchema, JobStatusSchema } from './schemas/job-run.js';
 export type { JobRun, JobType, JobStatus } from './schemas/job-run.js';
 

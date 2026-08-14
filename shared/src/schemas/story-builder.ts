@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { zodUuid, zodUuidArray } from './uuid.js';
+import { zodUuid, zodUuidArray, UUID_REGEX } from './uuid.js';
 import { ContentTypeSchema } from './content-validation.js';
+import { IdentityResolutionSchema } from './entity-identity.js';
 
 // Reuse the existing ContentType enum
 const contentType = ContentTypeSchema;
@@ -23,6 +24,61 @@ export const ContentPlanItemSchema = z.object({
   dependsOn: zodUuidArray().default([]),  // Optional for MVP
   lore_refs: z.array(z.string()).optional(),  // LLM-suggested related lore items
   filled_fields: z.array(z.string()).optional(),  // dot-paths of fields filled by the LLM fill pass (provenance)
+  // ── M25: entity identity resolution ──────────────────────────────────
+  // `entity_id` is the stable identity the item resolves to. For DB-backed
+  // entity types (character, scene, dialogue, …) it is a UUID; for the
+  // text-slug-PK types (`story`, `story_beat`) it is the canonical slug, e.g.
+  // `beat_sofia_intro`. Both forms are accepted so a pre-verified `update`
+  // reference to an existing story beat parses without forcing a UUID. The
+  // IdentityResolver only emits UUID `matched` entityIds (from `entity_aliases`),
+  // so the `matched` superRefine below stays UUID-to-UUID consistent.
+  entity_id: z
+    .string()
+    .refine(
+      (v) => UUID_REGEX.test(v) || /^[a-z0-9_]+$/.test(v),
+      { message: 'entity_id must be a UUID or a lowercase slug (a-z0-9_)' },
+    )
+    .optional(),
+  aliases: z.array(z.string()).optional(),
+  resolution: IdentityResolutionSchema.optional(),
+}).superRefine((item, ctx) => {
+  // A lowercase slug `entity_id` is only valid for the text-slug-PK types
+  // (`story`, `story_beat`), whose canonical identity is a slug rather than a
+  // UUID. For every other (DB-backed) entity type a slug `entity_id` would be
+  // accepted here and then treated by `IdentityResolver` as an already-verified
+  // stable id, silently bypassing identity resolution. Require a UUID for those.
+  if (
+    item.entity_id &&
+    !UUID_REGEX.test(item.entity_id) &&
+    item.type !== 'story' &&
+    item.type !== 'story_beat'
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['entity_id'],
+      message: 'A slug entity_id is only valid for story and story_beat items',
+    });
+  }
+
+  // A `matched` resolution pins a stable identity, so the item's `entity_id`
+  // must actually be present and equal to the resolution's entityId. Allowing
+  // a mismatch would let one consumer update via `entity_id` while another
+  // follows resolution.entityId to a different entity.
+  if (item.resolution?.status === 'matched') {
+    if (!item.entity_id) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['entity_id'],
+        message: 'A matched resolution requires entity_id to be set',
+      });
+    } else if (item.entity_id !== item.resolution.entityId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['entity_id'],
+        message: 'entity_id must equal resolution.entityId when resolution is matched',
+      });
+    }
+  }
 });
 
 export const ContentLinkSchema = z.object({
@@ -43,6 +99,12 @@ const ContentPlanMetaSchema = z.object({
     type: z.string().min(1),
     description: z.string().optional(),
   })).optional(),
+  // M25: counts from the dedicated IdentityResolver pass (matched/new/ambiguous).
+  identity_summary: z.object({
+    matched: z.number().int().nonnegative(),
+    newCandidates: z.number().int().nonnegative(),
+    ambiguous: z.number().int().nonnegative(),
+  }).optional(),
 }).optional();
 
 export const ContentPlanSchema = z.object({

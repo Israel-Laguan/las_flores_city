@@ -13,6 +13,7 @@ import { migrateContent } from '../content/migrate.js';
 import { resolveContentDir } from './StoryBuilderLore.js';
 import { verifyPlanCrossReferences } from './PlanVerificationService.js';
 import { recordMigrationCanon } from './RevisionService.js';
+import { conflictDetector } from './ConflictDetector.js';
 import { PlanNotFoundError, PlanStatusError } from './errors.js';
 import type { MigrationResult } from './StoryBuilderOrchestrator.js';
 
@@ -180,5 +181,22 @@ export async function verifyPlan(planId: string): Promise<VerificationReport> {
   const plan = ContentPlanSchema.parse(result.rows[0].plan_json);
   const contentDir = resolveContentDir();
 
-  return verifyPlanCrossReferences(plan, contentDir);
+  // M25 — bounded, neighborhood-scoped conflict detection (recorded checked
+  // scope). Best-effort: a detector failure (e.g. missing neighborhood data)
+  // must never fail verification — the honest checked scope is still persisted
+  // when possible, and the deterministic cross-reference report is authoritative
+  // for path/FK integrity. Error-severity bounded conflicts may be surfaced to
+  // the author but do not block the deterministic gate here.
+  let boundedConflict: import('@las-flores/shared').ConflictReport | undefined;
+  try {
+    const audit = await queryOLTP<{ patch_id: string | null }>(
+      `SELECT id AS patch_id FROM patches WHERE plan_id = $1 ORDER BY created_at DESC LIMIT 1`,
+      [planId],
+    );
+    boundedConflict = await conflictDetector.detectConflicts(plan, { patchId: audit.rows[0]?.patch_id ?? null });
+  } catch (err) {
+    console.warn(`[story-builder] Bounded conflict detection skipped for ${planId}:`, (err as Error).message);
+  }
+
+  return verifyPlanCrossReferences(plan, contentDir, boundedConflict);
 }

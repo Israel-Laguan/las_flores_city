@@ -213,9 +213,18 @@ export async function getJobStatus(planId: string) {
 
 /** Fetch the saved verification report for a plan. */
 export async function getVerification(planId: string) {
-  return adminFetch<{ success: boolean; data?: { verification_report: any }; error?: string }>(
+  return adminFetch<{ success: boolean; data?: { verification_report: any; conflict_report?: any }; error?: string }>(
     `/admin/story-builder/plans/${planId}/verification`,
   );
+}
+
+/**
+ * M25 — fetch the latest bounded conflict report (checked-scope + findings) for
+ * a plan. Thin wrapper over the verification route so ResultsStep can render the
+ * dedicated `ConflictScopeReport` surface.
+ */
+export async function fetchVerificationReport(planId: string) {
+  return getVerification(planId);
 }
 
 export async function regenerateLore(planId: string, itemId: string) {

@@ -2,6 +2,7 @@
 
 import type { ContentPlan } from '@las-flores/shared';
 import type { IntakeConflictPreview } from '@las-flores/shared';
+import type { ResolutionAlternative } from '@las-flores/shared';
 import { cn } from '@las-flores/ui';
 import type { GenerationStatus } from '../types';
 import * as api from '../hooks/useStoryBuilderApi';
@@ -10,6 +11,7 @@ import PlanSummary from './PlanSummary';
 import RefineSection from './RefineSection';
 import LinksSection from './LinksSection';
 import ConflictPreview from './ConflictPreview';
+import IdentityResolutionPicker, { type AmbiguousItem } from './IdentityResolutionPicker';
 import styles from './ReviewStep.module.css';
 
 interface ReviewStepProps {
@@ -43,6 +45,7 @@ interface ReviewStepProps {
   fileConflicts?: string[];
   onGenerateFullPlan?: () => void;
   onRefineInstead?: () => void;
+  onResolveIdentity?: (index: number, chosen: ResolutionAlternative) => void;
 }
 
 function ProgressSection({ genStatus }: { genStatus: import('../types').GenerationStatus }) {
@@ -232,6 +235,7 @@ export default function ReviewStep({
   onGenerateDrafts, onChooseDraft, draftAssetsByItem, draftLoading,
   onApproveAndShip, approving, genStatus,
   conflicts = [], fileConflicts = [], onGenerateFullPlan, onRefineInstead,
+  onResolveIdentity,
 }: ReviewStepProps) {
   const items = plan?.items ?? [];
   const allNeeds = items.flatMap(item => item.assetNeeds ?? []);
@@ -242,6 +246,13 @@ export default function ReviewStep({
   const genStatusByItem = buildGenStatusByItem(genStatus);
   const isGenerationActive = !!(genStatus && (genStatus.status === 'filling' || genStatus.status === 'pending' || genStatus.status === 'generating'));
   const unplannedEntities = computeUnplannedEntities(plan, items);
+  const ambiguousItems: AmbiguousItem[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const res = items[i].resolution;
+    if (res && res.status === 'ambiguous') {
+      ambiguousItems.push({ index: i, name: items[i].name, type: items[i].type, resolution: res });
+    }
+  }
 
   return (
     <div className={styles.section}>
@@ -272,6 +283,14 @@ export default function ReviewStep({
       <PlanSummary plan={plan} />
 
       <CoverageSection unplannedEntities={unplannedEntities} onAddFromRoster={onAddFromRoster} />
+
+      {onResolveIdentity && ambiguousItems.length > 0 && (
+        <IdentityResolutionPicker
+          items={ambiguousItems}
+          loading={loading}
+          onResolve={onResolveIdentity}
+        />
+      )}
 
       <PlanItems
         plan={plan}

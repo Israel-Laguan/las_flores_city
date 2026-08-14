@@ -25,6 +25,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     handleGenerateDrafts, handleChooseDraft,
     updateItemField, updateItemDependsOn,
     addLink, updateLink, removeLink, removeItem, removeAssetPath, addItem, addItemFromRoster, handleRefineItem,
+    resolveItemIdentity,
     goBack, planId, solidifyResult, genStatus, conflicts, fileConflicts,
   } = useStoryBuilder(initialPlanId);
 
@@ -92,6 +93,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           fileConflicts={fileConflicts}
           onGenerateFullPlan={handleGenerateFullPlan}
           onRefineInstead={() => setShowRefine(true)}
+          onResolveIdentity={resolveItemIdentity}
         />
       )}
 
