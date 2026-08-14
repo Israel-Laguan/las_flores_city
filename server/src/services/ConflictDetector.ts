@@ -207,7 +207,7 @@ export class ConflictDetector {
     const sceneItems = plan.items.filter((i) => i.type === 'scene');
     const scenesByOrder = new Map<number, ContentPlanItem[]>();
     for (const it of sceneItems) {
-      for (const ref of collectBeatRefs(it)) {
+      for (const ref of new Set(collectBeatRefs(it))) {
         const order = orderBySlug.get(ref);
         if (order === undefined) continue;
         const list = scenesByOrder.get(order) ?? [];
@@ -244,7 +244,8 @@ export class ConflictDetector {
 
   /**
    * lineage_conflict — two characters claim the same exclusive relationship
-   * slot (spouse/partner/sibling) to the same target entity. Bounded to the
+   * slot (spouse/partner/mother/father/patron — NOT `sibling`, which is
+   * intentionally non-exclusive) to the same target entity. Bounded to the
    * plan's character items.
    */
   private checkLineageConflicts(plan: ContentPlan, checkedAt: string): RuleResult {

@@ -117,6 +117,17 @@ BEGIN
   -- Dynamic reference to the canonical name column ('name' or 'title').
   EXECUTE format('SELECT $1.%I::text', name_col) INTO name_val USING NEW;
   IF name_val IS NOT NULL AND length(name_val) > 0 THEN
+    -- A rename updates the canonical name: demote the prior primary alias so an
+    -- entity never has multiple primary aliases. The old value stays as a
+    -- non-primary alias. A case-only rename is unaffected because the equality
+    -- comparison is case-insensitive, so the matching alias stays primary.
+    UPDATE entity_aliases
+       SET is_primary = FALSE
+     WHERE entity_type = ent_type
+       AND entity_id = NEW.id
+       AND is_primary
+       AND lower(alias) <> lower(name_val);
+
     INSERT INTO entity_aliases (entity_type, entity_id, alias, source, is_primary)
     VALUES (ent_type, NEW.id, name_val, 'canonical_name', TRUE)
     ON CONFLICT (entity_type, entity_id, lower(alias))

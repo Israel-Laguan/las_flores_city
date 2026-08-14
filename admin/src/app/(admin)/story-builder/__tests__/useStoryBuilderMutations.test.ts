@@ -83,6 +83,22 @@ describe('resolveItemIdentity (M25)', () => {
     if (item.resolution?.status === 'matched') expect(item.resolution.alias).toBe('Alice');
   });
 
+  it('refuses an existing alternative that carries no entity id', () => {
+    expect(() =>
+      resolveItemIdentity(ambiguousPlan(), 0, { kind: 'existing', id: '', name: 'a193 Alice', alias: 'Alice' }),
+    ).toThrow(/missing its entity id/);
+  });
+
+  it('forces a new variant back to a create even when the item arrived as an update', () => {
+    const source = ambiguousPlan();
+    source.items[0] = { ...source.items[0], action: 'update' };
+    const plan = resolveItemIdentity(source, 0, { kind: 'new', name: 'new: Alice II' });
+    const item = plan.items[0];
+    expect(item.action).toBe('create');
+    expect(item.name).toBe('Alice II');
+    expect(item.resolution?.status).toBe('new_candidate');
+  });
+
   it('resolving to a new variant commits the chosen name and keeps the item a create (no silent merge)', () => {
     const plan = resolveItemIdentity(ambiguousPlan(), 0, { kind: 'new', name: 'new: Alice II' });
     const item = plan.items[0];

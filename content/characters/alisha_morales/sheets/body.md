@@ -65,6 +65,7 @@
 ## Skin Details
 
 ### Complexion Variation
+
 | Area | Tone | Notes |
 |------|------|-------|
 | Face/neck | Clear deep brown | Even tone, healthy appearance despite thinness |

@@ -164,10 +164,12 @@ function existingAliasesFor(
 /** Roman suffix sequence used by `suggestNextName` (client names: I, II, III…). */
 const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'] as const;
 
-/** Derive a "name II" style suggestion for a new variant of an existing name. */
-function suggestNextName(name: string): string {
+/** Derive a "name N…" suggestion for a new variant of an existing name. */
+function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): string {
   // Split an existing trailing Roman/Jr./Sr. suffix off so we can increment it.
-  const match = name.trim().match(/^(.*?)\s*(II|III|IV|Jr\.?|Sr\.?)$/i);
+  // Longest-first alternation so e.g. "III" is not mis-parsed as "II"; covers the
+  // full ROMAN_NUMERALS sequence (I, II, III, IV, V, VI, VII, VIII, IX, X) + Jr./Sr.
+  const match = name.trim().match(/^(.*?)\s*(VIII|VII|VI|IX|IV|III|II|I|X|V|Jr\.?|Sr\.?)$/i);
   let base: string;
   let currentSuffix: string | undefined;
   if (match) {
@@ -178,9 +180,17 @@ function suggestNextName(name: string): string {
   }
   if (!base) return 'Unnamed';
 
-  const idx = ROMAN_NUMERALS.indexOf(currentSuffix as (typeof ROMAN_NUMERALS)[number]);
-  const nextSuffix = idx >= 0 ? ((ROMAN_NUMERALS[idx + 1] ?? 'II') as string) : 'II';
-  return `${base} ${nextSuffix}`;
+  // If no known trailing suffix, we start proposing "II" (the first increment).
+  const startIdx = ROMAN_NUMERALS.indexOf(currentSuffix as (typeof ROMAN_NUMERALS)[number]);
+  let cursor = startIdx >= 0 ? startIdx + 1 : ROMAN_NUMERALS.indexOf('II');
+  // Walk the numeral sequence until the suggested name is not already in use.
+  for (let offset = 0; offset < ROMAN_NUMERALS.length; offset += 1) {
+    const candidate = `${base} ${ROMAN_NUMERALS[cursor % ROMAN_NUMERALS.length]}`;
+    if (!used.has(normalizeName(candidate))) return candidate;
+    cursor += 1;
+  }
+  // Bounded walk exhausted; return the next candidate regardless.
+  return `${base} ${ROMAN_NUMERALS[cursor % ROMAN_NUMERALS.length]}`;
 }
 
 /** Folder directory for each content type (mirrors `resolveFilePath`'s dirMap). */
@@ -199,58 +209,85 @@ const TYPE_DIR: Record<string, string> = {
   vault: 'vault',
 };
 
-/**
- * Find the canonical content slug (the per-folder name) for a matched entity by
- * scanning the entity type's content folder for a file whose `id` matches
- * `entityId`. The DB stores no slug — it is the folder name under
- * content/<type>/ — so this is how we learn the real file path for a `matched`
- * identity. Locations live under content/districts/…, so they fall back to a
- * full-tree scan. Returns null when unknown (best-effort).
- */
-async function resolveCanonicalSlug(entityType: string, entityId: string): Promise<string | null> {
-  const contentDir = resolveContentDir();
-  const dir = TYPE_DIR[entityType];
-  // Locations (and any unknown type) are nested deeper and must be scanned
-  // across the whole tree to locate their file by id.
-  const pattern = dir && entityType !== 'location'
-    ? `${contentDir}/${dir}/*/*.yaml`
-    : `${contentDir}/**/*.yaml`;
-  try {
-    const files = await glob(pattern, { absolute: true });
-    for (const file of files) {
-      try {
-        const raw = await fs.readFile(file, 'utf-8');
-        const data: any = yaml.load(raw);
-        if (!data || typeof data !== 'object') continue;
-        if (String(data.id ?? '') !== entityId) continue;
-        const folder = path.basename(path.dirname(file));
-        // The folder name is the slug `resolveFilePath` expects; only return
-        // if it would pass the slug validation.
-        if (/^[a-z0-9_]+$/.test(folder)) return folder;
-      } catch {
-        // skip files that fail to parse
-      }
-    }
-  } catch {
-    // ignore glob/scan failures — caller falls back to the item's own slug
-  }
-  return null;
-}
-
 export class IdentityResolver {
+  /**
+   * Per-pass alias index cache — populated for the duration of one
+   * `resolvePlanItems` call so a plan's items with the same entity type reuse a
+   * single `loadAliasIndex` result instead of repeating the DB query (and, for
+   * locations, the YAML glob + parse + upsert) for each item. Reset to `null`
+   * on entry/exit so a long-lived process never serves stale aliases.
+   */
+  private aliasIndexCache: Map<string, AliasIndex> | null = null;
+  /**
+   * Per-pass canonical-slug map cache (entityType → id → folder slug). Built
+   * once per type per pass so `resolveCanonicalSlug` doesn't re-glob and
+   * re-parse every YAML file for each matched item.
+   */
+  private canonicalSlugCache: Map<string, Map<string, string | null>> | null = null;
+
   private async loadAliasIndex(entityType: string): Promise<AliasIndex> {
+    const cached = this.aliasIndexCache?.get(entityType);
+    if (cached) return cached;
     const result = await queryOLTP<AliasRow>(
       `SELECT entity_id, alias, is_primary FROM entity_aliases WHERE entity_type = $1 ORDER BY is_primary DESC, alias ASC`,
       [entityType],
     );
-    const dbIndex = indexFromRows(result.rows);
+    let index = indexFromRows(result.rows);
 
     // Locations are file-only; latch YAML aliases so resolution covers them.
     if (entityType === 'location') {
       const locIndex = await syncLocationAliases();
-      return mergeIndexes(dbIndex, locIndex);
+      index = mergeIndexes(index, locIndex);
     }
-    return dbIndex;
+    this.aliasIndexCache?.set(entityType, index);
+    return index;
+  }
+
+  /**
+   * Find the canonical content slug (the per-folder name) for a matched entity by
+   * scanning the entity type's content folder for a file whose `id` matches
+   * `entityId`. The DB stores no slug — it is the folder name under
+   * content/<type>/ — so this is how we learn the real file path for a `matched`
+   * identity. Locations live under content/districts/…, so they fall back to a
+   * full-tree scan. Returns null when unknown (best-effort). The per-type
+   * id→slug map is built once per resolve pass and cached.
+   */
+  private async canonicalSlugFor(entityType: string, entityId: string): Promise<string | null> {
+    const cache = this.canonicalSlugCache ?? new Map();
+    let byId = cache.get(entityType);
+    if (!byId) {
+      byId = new Map<string, string | null>();
+      const contentDir = resolveContentDir();
+      const dir = TYPE_DIR[entityType];
+      // Locations (and any unknown type) are nested deeper and must be scanned
+      // across the whole tree to locate their file by id.
+      const pattern = dir && entityType !== 'location'
+        ? `${contentDir}/${dir}/*/*.yaml`
+        : `${contentDir}/**/*.yaml`;
+      try {
+        const files = await glob(pattern, { absolute: true });
+        for (const file of files) {
+          try {
+            const raw = await fs.readFile(file, 'utf-8');
+            const data: any = yaml.load(raw);
+            if (!data || typeof data !== 'object') continue;
+            const id = String(data.id ?? '');
+            if (!id || byId.has(id)) continue;
+            const folder = path.basename(path.dirname(file));
+            // The folder name is the slug `resolveFilePath` expects; only keep
+            // it if it would pass the slug validation.
+            if (/^[a-z0-9_]+$/.test(folder)) byId.set(id, folder);
+          } catch {
+            // skip files that fail to parse
+          }
+        }
+      } catch {
+        // ignore glob/scan failures — caller falls back to the item's own slug
+      }
+      if (!this.canonicalSlugCache) this.canonicalSlugCache = new Map();
+      this.canonicalSlugCache.set(entityType, byId);
+    }
+    return byId.get(entityId) ?? null;
   }
 
   /**
@@ -265,7 +302,7 @@ export class IdentityResolver {
   ): Promise<IdentityResolution> {
     const normalized = normalizeName(name);
     if (!normalized) {
-      const suggested = opts.description?.trim().slice(0, 60) || '&lt;unnamed&gt;';
+      const suggested = opts.description?.trim().slice(0, 60) || '<unnamed>';
       return { status: 'new_candidate', entityType, suggestedName: suggested };
     }
     const index = await this.loadAliasIndex(entityType);
@@ -300,7 +337,10 @@ export class IdentityResolver {
       alias: h.alias,
       name: existingLabel(h.entityId, h.alias),
     }));
-    alternatives.push({ kind: 'new', name: `new: ${suggestNextName(name)}` });
+    // Skip any new-variant suggestion that collides with an alias the queried
+    // name already maps to, so `new: Marcus III` never proposes an in-use name.
+    const used = new Set(deduped.map((h) => normalizeName(h.alias)));
+    alternatives.push({ kind: 'new', name: `new: ${suggestNextName(name, used)}` });
 
     return { status: 'ambiguous', entityType, alternatives };
   }
@@ -313,15 +353,25 @@ export class IdentityResolver {
    * else goes through the resolver so the LLM never silently dictates identity.
    */
   async resolvePlanItems(plan: ContentPlan): Promise<ContentPlan> {
-    const items: ContentPlanItem[] = [];
-    for (const item of plan.items) {
-      items.push(
-        item.action === 'update' && !!item.entity_id
-          ? item // already identity-stable; nothing to resolve
-          : await this.annotateNewItem(item),
-      );
+    // Fresh per-pass caches: fresh alias/slug indexes for every pass so a
+    // long-lived singleton never serves stale aliases, while avoiding repeated
+    // DB queries and YAML scans for items sharing an entity type.
+    this.aliasIndexCache = new Map();
+    this.canonicalSlugCache = new Map();
+    try {
+      const items: ContentPlanItem[] = [];
+      for (const item of plan.items) {
+        items.push(
+          item.action === 'update' && !!item.entity_id
+            ? item // already identity-stable; nothing to resolve
+            : await this.annotateNewItem(item),
+        );
+      }
+      return { ...plan, items };
+    } finally {
+      this.aliasIndexCache = null;
+      this.canonicalSlugCache = null;
     }
-    return { ...plan, items };
   }
 
   private async annotateNewItem(item: ContentPlanItem): Promise<ContentPlanItem> {
@@ -334,7 +384,7 @@ export class IdentityResolver {
       // switch to `update`; otherwise staging would target the LLM's alias slug
       // (e.g. `marcus`) which may not match the canonical folder, and fail with
       // "Cannot update non-existent file".
-      const canonicalSlug = await resolveCanonicalSlug(item.type, resolution.entityId);
+      const canonicalSlug = await this.canonicalSlugFor(item.type, resolution.entityId);
       if (canonicalSlug && canonicalSlug !== next.slug) next.slug = canonicalSlug;
 
       const aliases = existingAliasesFor(item.type, await this.loadAliasIndex(item.type), resolution);

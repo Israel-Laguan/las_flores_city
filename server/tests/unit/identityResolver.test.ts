@@ -93,7 +93,7 @@ describe('IdentityResolver', () => {
     }
   });
 
-  test('ambiguous — a single existing id plus a `new: <name> II` suggestion', async () => {
+  test('ambiguous — a `new: <name> II` suffix suggestion is offered for the next variant', async () => {
     // Two distinct entities sharing the exact alias "Marcus II" → ambiguous.
     const second = { entity_id: 'a1950000-3333-4111-8111-111111111111', alias: 'Marcus II', is_primary: true };
     mockQueryOLTP.mockResolvedValueOnce({
@@ -170,7 +170,6 @@ describe('IdentityResolver', () => {
     expect(item.resolution?.status).toBe('ambiguous');
     expect(item.action).toBe('create');        // NOT flipped to update
     expect(item.entity_id).toBeUndefined();     // NO stable id pinned
-    expect(item.resolution?.status).toBe('ambiguous');
     if (item.resolution?.status === 'ambiguous') {
       expect(item.resolution.alternatives.length).toBeGreaterThanOrEqual(2);
     }

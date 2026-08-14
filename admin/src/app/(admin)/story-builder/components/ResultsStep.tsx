@@ -190,12 +190,17 @@ function ConflictScopeSection({ planId, result }: { planId: string; result: Soli
       return;
     }
     let cancelled = false;
+    // Clear any stale report before starting the request so the previous plan's
+    // conflict report can never render as the current plan's.
+    setConflictReport(null);
     fetchVerificationReport(planId).then((res) => {
       if (cancelled) return;
-      if (res.success && res.data?.conflict_report) {
-        setConflictReport(res.data.conflict_report);
-      }
-    }).catch(() => { /* non-fatal */ });
+      // Only show a report when the request succeeded AND carried one;
+      // a success without a conflict_report (or a failure) clears any state.
+      setConflictReport(res.success ? res.data?.conflict_report ?? null : null);
+    }).catch(() => {
+      if (!cancelled) setConflictReport(null);
+    });
     return () => { cancelled = true; };
   }, [planId, result?.status]);
 

@@ -9,7 +9,8 @@ export interface AmbiguousItem {
   index: number;
   name: string;
   type: string;
-  resolution: IdentityResolution;
+  /** ReviewStep only surfaces items whose resolution is `ambiguous`. */
+  resolution: Extract<IdentityResolution, { status: 'ambiguous' }>;
 }
 
 interface IdentityResolutionPickerProps {
@@ -47,22 +48,20 @@ export default function IdentityResolutionPicker({
               <span className={styles.itemType}>{item.type.replace(/_/g, ' ')}</span>
               <span className={styles.itemName}>{item.name}</span>
             </div>
-            {item.resolution.status === 'ambiguous' && (
-              <div className={styles.options} role="group" aria-label={`Resolve identity for ${item.name}`}>
-                {item.resolution.alternatives.map((alt, i) => (
-                  <button
-                    key={`${item.index}-${i}`}
-                    type="button"
-                    className={cn(styles.option, alt.kind === 'new' && styles.optionNew)}
-                    disabled={loading}
-                    onClick={() => onResolve(item.index, alt)}
-                  >
-                    {alt.kind === 'new' ? '＋ ' : '↳ '}
-                    {alt.name}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className={styles.options} role="group" aria-label={`Resolve identity for ${item.name}`}>
+              {item.resolution.alternatives.map((alt, i) => (
+                <button
+                  key={`${item.index}-${i}`}
+                  type="button"
+                  className={cn(styles.option, alt.kind === 'new' && styles.optionNew)}
+                  disabled={loading}
+                  onClick={() => onResolve(item.index, alt)}
+                >
+                  {alt.kind === 'new' ? '＋ ' : '↳ '}
+                  {alt.name}
+                </button>
+              ))}
+            </div>
           </li>
         ))}
       </ul>

@@ -23,9 +23,28 @@ function newVariantName(alternativeName: string): string {
   return alternativeName.replace(/^new:\s*/i, '').trim() || 'Unnamed';
 }
 
-/** File-safe slug for a new-variant name (matches addItemFromRoster). */
-function slugify(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'untitled';
+/** Schema limit for item names (mirrors ContentPlanItemSchema.name). */
+const NAME_MAX_LENGTH = 100;
+
+/**
+ * File-safe slug for `name`, deduplicated against the plan's other items of the
+ * same type (`${type}:${slug}` key), so a chosen variant can never collide with
+ * an existing item of the same type (which would fail duplicate-slug
+ * validation on the next PUT). `skipItemId` lets the caller exclude the item
+ * currently being edited from the collision check.
+ */
+function uniqueSlug(plan: ContentPlan, type: string, name: string, skipItemId?: string): string {
+  const base = name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'untitled';
+  const taken = new Set(
+    plan.items.filter(i => i.id !== skipItemId).map(i => `${i.type}:${i.slug}`),
+  );
+  let candidate = base;
+  let counter = 2;
+  while (taken.has(`${type}:${candidate}`)) {
+    candidate = `${base}_${counter}`;
+    counter += 1;
+  }
+  return candidate;
 }
 
 /**
@@ -66,12 +85,16 @@ export function resolveItemIdentity(
   } else {
     // Author chose a new variant (e.g. `new: Marcus II`) — actually commit that
     // chosen name so the selected variant is created (name + slug), not the
-    // original LLM name.
-    const chosenName = newVariantName(alternative.name);
+    // original LLM name. Bound the name to the schema limit, force the action
+    // to `create` even if the ambiguous item arrived as an unverified `update`
+    // (the selected variant is brand-new and must be created), and deduplicate
+    // the slug against the plan so the next PUT cannot reject duplicate slugs.
+    const chosenName = newVariantName(alternative.name).slice(0, NAME_MAX_LENGTH);
     items[index] = {
       ...item,
+      action: 'create',
       name: chosenName,
-      slug: slugify(chosenName),
+      slug: uniqueSlug(plan, item.type, chosenName, item.id),
       resolution: {
         status: 'new_candidate',
         entityType: item.type,
@@ -164,15 +187,8 @@ export function addItemFromRoster(
     throw new Error(`Unsupported roster type: "${entity.type}". Supported types: ${[...VALID_CONTENT_TYPES].join(', ')}`);
   }
 
-  // Deduplicate slug by appending a numeric suffix if needed
-  let slug = entity.name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  const existingSlugs = new Set(plan.items.map(i => `${i.type}:${i.slug}`));
-  let candidateSlug = slug;
-  let counter = 2;
-  while (existingSlugs.has(`${entity.type}:${candidateSlug}`)) {
-    candidateSlug = `${slug}_${counter}`;
-    counter++;
-  }
+  // Deduplicate slug against existing plan items of the same type.
+  const slug = uniqueSlug(plan, entity.type, entity.name);
 
   const newItem: ContentPlanItem = {
     id: crypto.randomUUID(),
@@ -180,7 +196,7 @@ export function addItemFromRoster(
     action: 'create',
     name: entity.name,
     description: entity.description ?? '',
-    slug: candidateSlug,
+    slug,
     fields: { description: entity.description || 'TODO: Add description' },
     assetNeeds: [],
     dependsOn: [],

@@ -38,11 +38,14 @@ export class ContentPlanService {
 
     injectAssetNeeds(validated.items);
 
+    // Resolve identities BEFORE dispatching the background lore job so the lore
+    // job generates against the identity-resolved item set (canonical slug /
+    // entity_id / new_candidate) rather than the pre-resolution aliases.
+    await this.attachIdentityResolutions(validated);
+
     generateForPlan(validated, this.provider, context).catch(err => {
       console.warn(`[ContentPlanService] Lore generation failed: ${err.message}`);
     });
-
-    await this.attachIdentityResolutions(validated);
 
     return { plan: validated, usage };
   }
@@ -377,7 +380,15 @@ export class ContentPlanService {
    * is surfaced on `_meta.identity_summary`.
    */
   private async attachIdentityResolutions(plan: ContentPlan): Promise<void> {
-    const resolved = await identityResolver.resolvePlanItems(plan);
+    let resolved: ContentPlan;
+    try {
+      resolved = await identityResolver.resolvePlanItems(plan);
+    } catch (err) {
+      // Fail closed (matching prior behavior — an identity failure must not
+      // silently ship an un-resolved outline), but name the pass so the admin
+      // error is diagnosable instead of a bare DB/Filesystem rejection.
+      throw new Error(`Identity resolution pass failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
     plan.items = resolved.items;
 
     let matched = 0;

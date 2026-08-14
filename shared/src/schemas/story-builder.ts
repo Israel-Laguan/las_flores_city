@@ -33,6 +33,26 @@ export const ContentPlanItemSchema = z.object({
   entity_id: zodUuid().optional(),
   aliases: z.array(z.string()).optional(),
   resolution: IdentityResolutionSchema.optional(),
+}).superRefine((item, ctx) => {
+  // A `matched` resolution pins a stable identity, so the item's `entity_id`
+  // must actually be present and equal to the resolution's entityId. Allowing
+  // a mismatch would let one consumer update via `entity_id` while another
+  // follows resolution.entityId to a different entity.
+  if (item.resolution?.status === 'matched') {
+    if (!item.entity_id) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['entity_id'],
+        message: 'A matched resolution requires entity_id to be set',
+      });
+    } else if (item.entity_id !== item.resolution.entityId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['entity_id'],
+        message: 'entity_id must equal resolution.entityId when resolution is matched',
+      });
+    }
+  }
 });
 
 export const ContentLinkSchema = z.object({
