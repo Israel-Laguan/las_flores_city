@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { queryOLTP, queryOLAP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
+import { queryOLTP, queryOLAP, queryContent, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { getCache, invalidatePattern, closeRedis } from '@las-flores/infra';
 import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
@@ -57,7 +57,7 @@ async function buildExpectedCacheSuffix(
       ...mysteryIdsForPlayer,
     ]),
   ].sort();
-  const overlays = await queryOLTP<{ nodes: Record<string, DialogueNode>; updated_at: Date }>(
+  const overlays = await queryContent<{ nodes: Record<string, DialogueNode>; updated_at: Date }>(
     `SELECT nodes, updated_at
      FROM dialogue_overlays
      WHERE target_tree_id = $1
@@ -150,7 +150,7 @@ describe('DialogueResolver', () => {
        ON CONFLICT (id) DO UPDATE SET nodes = EXCLUDED.nodes`,
       [TEST_TREE_ID, 'test_resolver_tree', 'root', JSON.stringify(baseNodes)]
     );
-    const treeRow = await queryOLTP<{ updated_at: Date }>(
+    const treeRow = await queryContent<{ updated_at: Date }>(
       'SELECT updated_at FROM dialogue_trees WHERE id = $1',
       [TEST_TREE_ID]
     );

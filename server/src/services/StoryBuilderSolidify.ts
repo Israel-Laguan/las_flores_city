@@ -331,10 +331,18 @@ async function runMigrationStage(
   // propagate into the enclosing compensation handler and invert an already
   // successful, fully-committed migration.
   if (jobId) {
-    const run = await getJobRunById(jobId);
-    const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
-    await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } }).catch(() => {});
-    await commitStage(jobId, 'migrated').catch(() => {});
+    // Best-effort job_runs bookkeeping only: a failure here (including a
+    // getJobRunById lookup failure) must NOT propagate out of this stage and
+    // into the enclosing compensation handler, which would otherwise invert an
+    // already successful, fully-committed migration.
+    try {
+      const run = await getJobRunById(jobId);
+      const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
+      await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } });
+      await commitStage(jobId, 'migrated');
+    } catch {
+      // intentionally swallow — migration already committed successfully
+    }
   }
   state.migrationResult = migrationResult;
 }

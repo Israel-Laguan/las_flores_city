@@ -58,19 +58,20 @@ describe('claims-lifecycle', () => {
       // The evidence / claim_transitions immutability triggers block direct
       // DELETE/TRUNCATE by default. Bypass requires BOTH the GUC
       // (`claim_utils.allow_mutation = 'true'`) AND privilege (superuser OR
-      // `las_flores_claims_retention` role). Grant the retention role to the test
-      // session, then set the GUC within an explicit transaction for fixture cleanup.
-      // node-postgres disallows parameters across multiple statements in a
-      // single pooled query, so drive the transaction through a client and
-      // issue each statement separately.
+      // `las_flores_claims_retention` role). The dev/test connection role is
+      // typically the bootstrap superuser, which already satisfies
+      // mutation_allowed(), so no GRANT is needed here. We deliberately do NOT
+      // GRANT the retention role: doing so inside this transaction would COMMIT
+      // the membership into pg_auth_members permanently, persistently handing the
+      // app login role the audit-bypass privilege and weakening the immutability
+      // gate outside the test. Set only the session-local GUC within an explicit
+      // transaction for fixture cleanup. node-postgres disallows parameters across
+      // multiple statements in a single pooled query, so drive the transaction
+      // through a client and issue each statement separately.
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
         await client.query(`SET LOCAL claim_utils.allow_mutation = 'true'`);
-        // Grant the retention role to this session. The dev connection role is
-        // typically the bootstrap superuser which already satisfies mutation_allowed(),
-        // but explicitly granting the role ensures the gate is properly exercised.
-        await client.query(`GRANT las_flores_claims_retention TO CURRENT_USER`);
         if (CLAIM_IDS.length) {
           await client.query(
             `DELETE FROM claim_transitions WHERE claim_id = ANY($1::uuid[])`,

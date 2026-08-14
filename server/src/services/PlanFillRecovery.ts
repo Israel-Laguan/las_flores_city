@@ -91,12 +91,22 @@ export async function resetOrphanedFillJobs(
         const hasProcessed = items.some((i: any) => i.filled_fields?.length > 0);
 
         if (!hasProcessed) {
-          await queryOLTP(
-            'UPDATE content_plans SET status = $1, updated_at = NOW() WHERE id = $2',
-            ['failed', row.id],
+          const updateResult = await queryOLTP(
+            `UPDATE content_plans
+             SET status = 'failed', updated_at = NOW()
+             WHERE id = $1
+               AND status = 'draft'
+               AND updated_at < NOW() - INTERVAL '5 minutes'`,
+            [row.id],
           );
-          await deleteCache(`${GEN_CACHE_PREFIX}${row.id}`);
-          reset++;
+          // Only delete the cache and count the reset when this UPDATE actually
+          // affected the row we validated. A concurrent resume/edit may have
+          // changed the plan's status since the SELECT, and an unconditional
+          // UPDATE would otherwise overwrite an active plan with `failed`.
+          if (updateResult.rowCount && updateResult.rowCount > 0) {
+            await deleteCache(`${GEN_CACHE_PREFIX}${row.id}`);
+            reset++;
+          }
         }
       }
     } catch (err) {

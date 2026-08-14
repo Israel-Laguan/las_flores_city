@@ -134,29 +134,33 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Consolidated immutable guard: parameterized function for all four
--- trigger cases. Row-level triggers (UPDATE/DELETE) return COALESCE(NEW, OLD)
+-- Consolidated immutable guard: one trigger function for all four trigger
+-- cases. Trigger functions cannot declare formal parameters — PostgreSQL passes
+-- trigger arguments via TG_ARGV instead. The single argument is the table name
+-- (customizes the error message). TRUNCATE vs. row-level mutation is
+-- distinguished with TG_OP ('TRUNCATE' for the statement-level trigger, else
+-- UPDATE/DELETE). Row-level triggers (UPDATE/DELETE) return COALESCE(NEW, OLD)
 -- to skip the mutation; statement-level triggers (TRUNCATE) return NULL to
--- allow the statement. The table_name parameter customizes the error message.
-CREATE OR REPLACE FUNCTION claim_utils.block_immutable_mutation(
-  p_table_name TEXT,
-  p_is_truncate BOOLEAN DEFAULT false
-)
+-- allow the statement.
+CREATE OR REPLACE FUNCTION claim_utils.block_immutable_mutation()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_table_name TEXT := TG_ARGV[0];
+  v_is_truncate BOOLEAN := TG_OP = 'TRUNCATE';
 BEGIN
   IF claim_utils.mutation_allowed() THEN
     -- Row-level: return the row (COALESCE handles UPDATE vs DELETE);
     -- Statement-level (TRUNCATE): return NULL to proceed.
-    IF p_is_truncate THEN
+    IF v_is_truncate THEN
       RETURN NULL;
     ELSE
       RETURN COALESCE(NEW, OLD);
     END IF;
   END IF;
-  IF p_is_truncate THEN
-    RAISE EXCEPTION '% rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate', p_table_name;
+  IF v_is_truncate THEN
+    RAISE EXCEPTION '% rows are immutable and cannot be truncated; a privileged session must set claim_utils.allow_mutation to mutate', v_table_name;
   ELSE
-    RAISE EXCEPTION '% rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate', p_table_name;
+    RAISE EXCEPTION '% rows are immutable; a privileged session must set claim_utils.allow_mutation to mutate', v_table_name;
   END IF;
 END;
 $$ LANGUAGE plpgsql;
@@ -165,26 +169,26 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS evidence_immutable ON evidence;
 CREATE TRIGGER evidence_immutable
 BEFORE UPDATE OR DELETE ON evidence
-FOR EACH ROW EXECUTE FUNCTION claim_utils.block_immutable_mutation('evidence', false);
+FOR EACH ROW EXECUTE FUNCTION claim_utils.block_immutable_mutation('evidence');
 
 DROP TRIGGER IF EXISTS claim_transitions_immutable ON claim_transitions;
 CREATE TRIGGER claim_transitions_immutable
 BEFORE UPDATE OR DELETE ON claim_transitions
-FOR EACH ROW EXECUTE FUNCTION claim_utils.block_immutable_mutation('claim_transitions', false);
+FOR EACH ROW EXECUTE FUNCTION claim_utils.block_immutable_mutation('claim_transitions');
 
 -- Statement-level triggers (TRUNCATE): block truncate, return NULL on bypass
 -- TRUNCATE is statement-level and would otherwise bypass the row-level
 -- UPDATE/DELETE guards above and erase the whole audit history. Gate it with the
--- same privilege check so a non-privileged session cannot wipe the store.
+-- same privilege check; TG_OP distinguishes it from row-level ops.
 DROP TRIGGER IF EXISTS evidence_immutable_truncate ON evidence;
 CREATE TRIGGER evidence_immutable_truncate
 BEFORE TRUNCATE ON evidence
-EXECUTE FUNCTION claim_utils.block_immutable_mutation('evidence', true);
+EXECUTE FUNCTION claim_utils.block_immutable_mutation('evidence');
 
 DROP TRIGGER IF EXISTS claim_transitions_immutable_truncate ON claim_transitions;
 CREATE TRIGGER claim_transitions_immutable_truncate
 BEFORE TRUNCATE ON claim_transitions
-EXECUTE FUNCTION claim_utils.block_immutable_mutation('claim_transitions', true);
+EXECUTE FUNCTION claim_utils.block_immutable_mutation('claim_transitions');
 
 -- ------------------------------------------------------------------
 -- 5. Valid transition edges + claim-state consistency
@@ -212,6 +216,14 @@ BEGIN
   IF NEW.from_status IS NULL THEN
     IF NEW.to_status <> 'proposed' OR current_status <> 'proposed' THEN
       RAISE EXCEPTION 'Invalid initial transition from NULL to % for claim status %', NEW.to_status, current_status;
+    END IF;
+    -- Allow only the FIRST initial event: reject a second NULL->proposed row
+    -- (the append-only journal would otherwise admit duplicate lifecycle
+    -- starts while the claim is still `proposed`). The claim row is locked
+    -- above (FOR UPDATE), so this check is race-safe.
+    PERFORM 1 FROM claim_transitions WHERE claim_id = NEW.claim_id LIMIT 1;
+    IF FOUND THEN
+      RAISE EXCEPTION 'Duplicate initial transition for claim %: a transition already exists', NEW.claim_id;
     END IF;
     RETURN NEW;
   END IF;

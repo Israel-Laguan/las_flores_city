@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pg from 'pg';
-import { queryOLTP, queryOLAP } from '@las-flores/infra';
+import { queryOLTP, queryOLAP, withOLTPTransaction, withOLAPTransaction } from '@las-flores/infra';
+import type { PoolClient } from 'pg';
 import { migrateContent } from '../content/migrate.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -48,9 +48,8 @@ async function isApplied(dbName: string, version: string): Promise<boolean> {
   return result.rows[0].count > 0;
 }
 
-async function recordMigration(dbName: string, version: string, filename: string, checksum: string): Promise<void> {
-  const q = dbName === 'las_flores' ? queryOLTP : queryOLAP;
-  await q(
+async function recordMigration(client: PoolClient, dbName: string, version: string, filename: string, checksum: string): Promise<void> {
+  await client.query(
     `INSERT INTO schema_migrations (version, filename, checksum, database_name)
      VALUES ($1, $2, $3, $4)
      ON CONFLICT (version, database_name)
@@ -76,11 +75,9 @@ async function applySQLMigrations(): Promise<void> {
 
   await ensureSchemaMigrationsTable();
 
-  type QueryFn = <T extends pg.QueryResultRow = any>(text: string, params?: any[]) => Promise<pg.QueryResult<T> | null>;
-
-  const dbConfigs: Array<{ name: string; key: 'oltp' | 'olap'; queryFn: QueryFn }> = [
-    { name: 'las_flores', key: 'oltp', queryFn: queryOLTP },
-    { name: 'las_flores_analytics', key: 'olap', queryFn: queryOLAP },
+  const dbConfigs: Array<{ name: string; key: 'oltp' | 'olap' }> = [
+    { name: 'las_flores', key: 'oltp' },
+    { name: 'las_flores_analytics', key: 'olap' },
   ];
 
   for (const db of dbConfigs) {
@@ -111,8 +108,23 @@ async function applySQLMigrations(): Promise<void> {
       console.log(`[migrate] Applying ${filename} to ${db.name}...`);
 
       try {
-        await db.queryFn(sql);
-        await recordMigration(db.name, version, filename, checksum);
+        // Run the whole file in a single transaction so a failure (or an
+        // interrupted run) can never strand a half-applied migration — e.g. a
+        // partially-created PL/pgSQL function that would fail to recompile on
+        // the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
+        // The schema_migrations record is written inside the same transaction,
+        // so success and bookkeeping are atomic.
+        if (db.key === 'oltp') {
+          await withOLTPTransaction(async (client) => {
+            await client.query(sql);
+            await recordMigration(client, db.name, version, filename, checksum);
+          });
+        } else {
+          await withOLAPTransaction(async (client) => {
+            await client.query(sql);
+            await recordMigration(client, db.name, version, filename, checksum);
+          });
+        }
         console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
       } catch (err: any) {
         console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);

@@ -195,6 +195,12 @@ s3://las-flores/phone/app_mapa.png
 
 ### 404 on import endpoints
 - Make sure you're using the correct server URL (http://localhost:3000)
+
+### "Asset file not found" warnings during `schema:migrate` / `validate`
+- Entity `assets/` folders and `*.png` binaries are **gitignored** (see `.gitignore`: `*.png` and `content/**/assets/`). They are local-only working files and are published to MinIO/CDN out of band, never committed to git.
+- Because of this, CI (GitHub Actions) checks out the repo **without** any `__default.png` files. The `lorePathValidation` step logs a `Asset file not found: <slug>__default.png` **warning** for every location/character/etc., but this is non-fatal: `migrateContent` only fails on `filesFailed`/`errors` (not warnings), and `validateContent` only fails on `severity: 'error'` errors.
+- These warnings are therefore **expected in CI and should be ignored there**. They disappear locally once you generate the image and place it at `content/<type>/<slug>/assets/<slug>__default.png` (matching the YAML `asset_paths.image`). Do **not** force-add binaries to git to silence them — that contradicts the `.gitignore` policy.
+- If you need a fully clean local run, generate the missing assets locally; the warning is a local-authoring signal, not a CI gate.
 - Check that the assets-import route is mounted in server/src/index.ts
 
 ### Slow import
