@@ -36,7 +36,7 @@ function makePlan(items: Array<Record<string, any>>): ContentPlan {
 }
 
 const item = (overrides: Record<string, any>): Record<string, any> => ({
-  id: crypto.randomUUID ? crypto.randomUUID() : 'aaaaaaaa-0000-0000-0000-000000000000',
+  id: crypto.randomUUID(),
   type: 'character',
   action: 'create',
   name: 'Character',

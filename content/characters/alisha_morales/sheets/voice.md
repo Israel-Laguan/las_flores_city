@@ -70,7 +70,7 @@
 ### Venezuelan Speech Characteristics
 - **Voseo**: Uses "vos" (not "tú") in Spanish — "¿Vos cómo estás?"
 - **Diminutives**: Frequent use of "-ito", "-ica", "-ico" — "ahorita", "cervecita"
-- **Slang**: "chévere" (cool), "pana" (buddy), "¿Qué es la vaina?" (What's up?), "estar de'acteur" (acting cool)
+- **Slang**: "chévere" (cool), "pana" (buddy), "¿Qué es la vaina?" (What's up?), "estar de actor" (acting/putting on airs)
 - **Exclamations**: "¡Qué cosa!" (Wow!), "¡Válgame Dios!" (My God!), "¡No me jodas!" (No way!/Don't mess with me)
 - **Rhythm**: Fast, musical, with rising intonation at the end of questions
 
@@ -80,13 +80,13 @@
 > "Pana, ¿qué tal? ¡Qué cosa más loca este lugar! O sea, we come here and now it's all... *fancy*? ¿Dónde quedó el bar de antes? Este, tell me, ¿tú vas a pedir una cerveza o qué? Yo me voy por una Polar, bien fría. ¿Y vos?"
 
 **Gossiping with coworkers after hours:**
-> "Ay, mi amor, no te imaginas lo que pasó hoy. El tipo ese de Finanzas, ¿sabes? el que siempre andas con esa cara de *acteur*... Pues, resultó que no sabía ni cómo abrir un Excel. ¡Válgame Dios! *So*... I had to walk him through the whole thing. Pero mira, no se lo dije a nadie, ¿eh?"
+> "Ay, mi amor, no te imaginas lo que pasó hoy. El tipo ese de Finanzas, ¿sabes? el que siempre anda con esa cara de *actor*... Pues, resultó que no sabía ni cómo abrir un Excel. ¡Válgame Dios! *So*... I had to walk him through the whole thing. Pero mira, no se lo dije a nadie, ¿eh?"
 
 **Complaining about work:**
-> "Es que no aguantó más, María. El jefe ese me tiene hasta el *cuello* con reports. O sea, I understand we have deadlines, pero *por favor*. Y encima el aire acondicionado está roto. ¡Qué calor! ¿Vos crees que me van a pagar *overtime* por esto? *Please*."
+> "Es que no aguanto más, María. El jefe ese me tiene hasta el *cuello* con reports. O sea, I understand we have deadlines, pero *por favor*. Y encima el aire acondicionado está roto. ¡Qué calor! ¿Vos crees que me van a pagar *overtime* por esto? *Please*."
 
 **Excited about plans:**
-> "¡Ay, qué chévere!¿En serio nos vas a llevar a ese restaurante? Dicen que la comida está *divina*. Yo voy a pedir de todo, *pana*. ¡Y que me traigan un *chivo* bien frío! ¿A qué hora quedamos? O sea, I have to finish this thing first, pero *ahorita* voy. ¿Tú ya le dijiste a Javier?"
+> "¡Ay, qué chévere! ¿En serio nos vas a llevar a ese restaurante? Dicen que la comida está *divina*. Yo voy a pedir de todo, *pana*. ¡Y que me traigan una *birra* bien fría! ¿A qué hora quedamos? O sea, I have to finish this thing first, pero *ahorita* voy. ¿Tú ya le dijiste a Javier?"
 
 **Remembering home:**
 > "A veces extraño Maracaibo, ¿sabes? El calor, el ruido, la gente gritando en la calle. Aquí todo es... *too quiet*, ¿no? O sea, I love it here, no me malinterpretes. Pero a veces... *ay*. Y la comida, *Dios mío*, no es lo mismo. ¿Tú has probado hacer arepas aquí? No sabe igual, *pana*."
@@ -154,7 +154,7 @@
 - "¿Vos me entiendes?"
 - "Pana, no me jodas."
 - "¡Válgame Dios!"
-- "Estar de acteur" (when someone is pretending/acting tough)
+- "Estar de actor" (when someone is pretending/acting)
 - "Me tiene hasta el cuello" (I'm fed up to my neck)
 
 ### Hybrid Expressions (Semi-professional)

@@ -162,6 +162,10 @@ export class ContentPlanService {
     // 4. Validate
     const validated = ContentPlanSchema.parse(rawRefined);
 
+    // 5. Re-run the dedicated identity pass so refinements that add or rename an
+    //    item never bypass resolution (and existing names retain identity).
+    await this.attachIdentityResolutions(validated);
+
     // 6. Re-inject asset needs for any new items
     injectAssetNeeds(validated.items);
 
@@ -249,6 +253,10 @@ export class ContentPlanService {
     // 7. Validate
     const validated = ContentPlanSchema.parse(mergedPlan);
 
+    // 7b. Re-run the identity pass: item-scoped refinement must also resolve any
+    //     newly added/renamed identities instead of bypassing resolution.
+    await this.attachIdentityResolutions(validated);
+
     // 8. Re-inject asset needs
     injectAssetNeeds(validated.items);
 
@@ -312,6 +320,9 @@ export class ContentPlanService {
     // nothing to generate).
     const refined = ContentPlanSchema.parse(rawRefined);
     injectAssetNeeds(refined.items);
+    // Re-run the identity pass on the in-memory refine so new/renamed identities
+    // are resolved (and surfaced) here too, not only on the persisted paths.
+    await this.attachIdentityResolutions(refined);
     // The conflict re-scan is advisory (Moment 1) — a scan outage must not fail
     // the refinement. Fall back to an empty conflict list so the author still
     // receives the refined outline.
@@ -375,7 +386,9 @@ export class ContentPlanService {
     for (const item of resolved.items) {
       if (item.resolution?.status === 'matched') matched += 1;
       else if (item.resolution?.status === 'ambiguous') ambiguous += 1;
-      else newCandidates += 1;
+      // Only genuine new candidates count; items with no resolution status are
+      // pre-existing/identity-stable `update` references, not new entities.
+      else if (item.resolution?.status === 'new_candidate') newCandidates += 1;
     }
     plan._meta = {
       ...plan._meta,

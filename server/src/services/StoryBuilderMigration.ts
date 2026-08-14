@@ -190,7 +190,7 @@ export async function verifyPlan(planId: string): Promise<VerificationReport> {
   let boundedConflict: import('@las-flores/shared').ConflictReport | undefined;
   try {
     const audit = await queryOLTP<{ patch_id: string | null }>(
-      `SELECT patch_id FROM patches WHERE plan_id = $1 ORDER BY created_at DESC LIMIT 1`,
+      `SELECT id AS patch_id FROM patches WHERE plan_id = $1 ORDER BY created_at DESC LIMIT 1`,
       [planId],
     );
     boundedConflict = await conflictDetector.detectConflicts(plan, { patchId: audit.rows[0]?.patch_id ?? null });

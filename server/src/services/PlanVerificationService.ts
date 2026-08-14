@@ -324,8 +324,8 @@ function boundedConflictCheck(conflict: ConflictReport | undefined): CheckResult
     return {
       name: 'bounded-conflicts',
       description: 'Bounded neighborhood-scoped conflict detection.',
-      status: 'pass',
-      details: ['No bounded conflict report recorded for this run.'],
+      status: 'warn',
+      details: ['Conflict detection did not run (no report was recorded) — checked scope unavailable.'],
     };
   }
   const errors = conflict.findings.filter((f) => f.severity === 'error');
@@ -371,7 +371,11 @@ export async function verifyPlanCrossReferences(
   checks.push(await checkStoryBeatReferences(plan.items));
   checks.push(checkCrossPlanConsistency(plan));
   checks.push(checkAssetNeedStatus(plan.items));
-  if (boundedConflict) checks.push(boundedConflictCheck(boundedConflict));
+  // Always fold in the bounded-conflict check. When detection was skipped or
+  // failed (no report recorded), the zero-report row still tells the author an
+  // advisory check ran and that no conflict report was recorded, rather than
+  // silently omitting it.
+  checks.push(boundedConflictCheck(boundedConflict));
 
   const errors = checks
     .filter(c => c.status === 'fail')

@@ -18,6 +18,16 @@ export function updateItemField(plan: ContentPlan, index: number, fieldPath: str
   return { ...plan, items };
 }
 
+/** Strip the picker's `new: ` prefix from a new-variant alternative name. */
+function newVariantName(alternativeName: string): string {
+  return alternativeName.replace(/^new:\s*/i, '').trim() || 'Unnamed';
+}
+
+/** File-safe slug for a new-variant name (matches addItemFromRoster). */
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'untitled';
+}
+
 /**
  * M25 — resolve an ambiguous identity by explicit author choice. Resolving to
  * an existing entity marks the item `update` with a stable `entity_id`; choosing
@@ -32,27 +42,40 @@ export function resolveItemIdentity(
   const items = [...plan.items];
   const item = { ...items[index] };
 
-  if (alternative.kind === 'existing' && alternative.id) {
+  if (alternative.kind === 'existing') {
+    // An `existing` alternative must carry a stable id (enforced by the shared
+    // discriminated union). If a malformed choice somehow lacks one, refuse to
+    // act rather than silently collapsing it into a brand-new create proposal.
+    if (!alternative.id) {
+      throw new Error(`Existing identity alternative for "${item.name}" is missing its entity id.`);
+    }
     items[index] = {
       ...item,
       entity_id: alternative.id,
       action: 'update',
-      // Preserve the concrete matched identity instead of the ambiguous dispatch.
+      // Persist the entity's REAL canonical alias (not the picker display
+      // label `a193 Marcus`), so server-side alias lookups key on the actual
+      // stored spelling (e.g. `marcus`).
       resolution: {
         status: 'matched',
         entityType: item.type,
         entityId: alternative.id,
-        alias: alternative.name,
+        alias: alternative.alias,
       },
     };
   } else {
-    // Author chose a new variant — keep it a create proposal, drop ambiguity.
+    // Author chose a new variant (e.g. `new: Marcus II`) — actually commit that
+    // chosen name so the selected variant is created (name + slug), not the
+    // original LLM name.
+    const chosenName = newVariantName(alternative.name);
     items[index] = {
       ...item,
+      name: chosenName,
+      slug: slugify(chosenName),
       resolution: {
         status: 'new_candidate',
         entityType: item.type,
-        suggestedName: item.name,
+        suggestedName: chosenName,
       },
     };
   }

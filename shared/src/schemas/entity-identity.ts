@@ -27,13 +27,28 @@ export const EntityAliasSchema = z.object({
 export type EntityAlias = z.infer<typeof EntityAliasSchema>;
 
 /** A single alternative offered when an identity is ambiguous. */
-export const ResolutionAlternativeSchema = z.object({
-  kind: z.enum(['existing', 'new']),
-  /** Entity id when `kind === 'existing'`; absent for `new`. */
-  id: zodUuid().optional(),
-  /** Stable entity_type.slug short-name for the picker, e.g. `a193 Marcus`. */
-  name: z.string(),
-});
+export const ResolutionAlternativeSchema = z.discriminatedUnion('kind', [
+  // An already-existing entity the author can collapse to. `id` is the stable
+  // entity id (must be present), `alias` is the entity's real canonical alias
+  // (NOT the picker short-name) so server-side alias lookups key on the actual
+  // stored spelling.
+  z.object({
+    kind: z.literal('existing'),
+    /** Entity id — required; without it a choice is invalid and must never be
+     *  silently committed as a brand-new entity. */
+    id: zodUuid(),
+    /** Stable entity_type.slug short-name for the picker, e.g. `a193 Marcus`. */
+    name: z.string(),
+    /** The entity's canonical alias this picker option maps to (e.g. `Marcus`). */
+    alias: z.string(),
+  }),
+  // A brand-new variant the author wants to create (e.g. `Marcus II`). No id.
+  z.object({
+    kind: z.literal('new'),
+    /** Stable entity_type.slug short-name for the picker, e.g. `new: Marcus II`. */
+    name: z.string(),
+  }),
+]);
 
 export type ResolutionAlternative = z.infer<typeof ResolutionAlternativeSchema>;
 

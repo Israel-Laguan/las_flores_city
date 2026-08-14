@@ -108,7 +108,7 @@ describe('IdentityResolver', () => {
     }
   });
 
-  test('never silently decides: resolvePlanItems annotates an ambiguous item as-is', async () => {
+  test('resolvePlanItems flips a matched create item to update with a stable id', async () => {
     // One hit → not ambiguous here; but ensure matched items flip to update.
     mockQueryOLTP.mockResolvedValue({ rows: [EXISTING_MARCUS] });
 
@@ -137,5 +137,75 @@ describe('IdentityResolver', () => {
     expect(item.resolution?.status).toBe('matched');
     expect(item.action).toBe('update');
     expect(item.entity_id).toBe(EXISTING_MARCUS.entity_id);
+  });
+
+  test('never silently decides: an ambiguous item stays a create proposal with status ambiguous', async () => {
+    // Two distinct entities sharing the exact alias "Marcus" → ambiguous.
+    const secondMarcus = { entity_id: 'a1950000-7777-4111-8111-111111111111', alias: 'Marcus', is_primary: true };
+    mockQueryOLTP.mockResolvedValue({ rows: [EXISTING_MARCUS, secondMarcus] });
+
+    const plan: any = {
+      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+      description: 'plan',
+      status: 'draft',
+      links: [],
+      _meta: {},
+      items: [
+        {
+          id: '11111111-2222-3333-4444-555555555555',
+          type: 'character',
+          action: 'create',
+          name: 'Marcus',
+          slug: 'marcus',
+          fields: {},
+          assetNeeds: [],
+          dependsOn: [],
+        },
+      ],
+    };
+
+    const resolved = await identityResolver.resolvePlanItems(plan);
+    const item = resolved.items[0];
+    // A regression in the "never silently decides" guard (§15.3) would fail here.
+    expect(item.resolution?.status).toBe('ambiguous');
+    expect(item.action).toBe('create');        // NOT flipped to update
+    expect(item.entity_id).toBeUndefined();     // NO stable id pinned
+    expect(item.resolution?.status).toBe('ambiguous');
+    if (item.resolution?.status === 'ambiguous') {
+      expect(item.resolution.alternatives.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  test('resolvePlanItems demotes an unverified update that resolves to a new candidate into a create', async () => {
+    // Outline marks an item `update` but supplies no entity_id, and the name
+    // matches no existing entity → the stale update must not be kept as an
+    // `update` against a non-existent path; demote it to a create proposal.
+    mockQueryOLTP.mockResolvedValue({ rows: [] });
+
+    const plan: any = {
+      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+      description: 'plan',
+      status: 'draft',
+      links: [],
+      _meta: {},
+      items: [
+        {
+          id: '11111111-2222-3333-4444-555555555555',
+          type: 'character',
+          action: 'update',
+          name: 'Diego',
+          slug: 'diego',
+          fields: {},
+          assetNeeds: [],
+          dependsOn: [],
+        },
+      ],
+    };
+
+    const resolved = await identityResolver.resolvePlanItems(plan);
+    const item = resolved.items[0];
+    expect(item.resolution?.status).toBe('new_candidate');
+    expect(item.action).toBe('create');
+    expect(item.entity_id).toBeUndefined();
   });
 });

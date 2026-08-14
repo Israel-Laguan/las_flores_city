@@ -96,4 +96,59 @@ ON CONFLICT (entity_type, entity_id, lower(alias)) DO NOTHING;
 -- first resolve (see IdentityResolver.syncLocationAliases) so the file-based
 -- stores participate without a one-off backfill that could go stale.
 
+-- ------------------------------------------------------------------
+-- 4. Keep canonical aliases in sync going forward.
+--    The backfills above only cover rows that already exist at migration time.
+--    Any entity INSERTed or renamed (name/title) afterwards would otherwise
+--    never get its canonical alias, so the IdentityResolver would classify it
+--    as a brand-new candidate and could create duplicates. A trigger per
+--    canonical table upserts the primary alias on insert/rename, keeping the
+--    index complete for all DB-backed entity types.
+--
+--    Idempotent: the function is CREATE OR REPLACE and each trigger uses the
+--    DROP TRIGGER IF EXISTS pattern (per AGENTS.md) before creation.
+-- ------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION sync_entity_canonical_alias() RETURNS trigger AS $$
+DECLARE
+  ent_type TEXT := TG_ARGV[0];
+  name_col TEXT := TG_ARGV[1];
+  name_val TEXT;
+BEGIN
+  -- Dynamic reference to the canonical name column ('name' or 'title').
+  EXECUTE format('SELECT $1.%I::text', name_col) INTO name_val USING NEW;
+  IF name_val IS NOT NULL AND length(name_val) > 0 THEN
+    INSERT INTO entity_aliases (entity_type, entity_id, alias, source, is_primary)
+    VALUES (ent_type, NEW.id, name_val, 'canonical_name', TRUE)
+    ON CONFLICT (entity_type, entity_id, lower(alias))
+      DO UPDATE SET alias = EXCLUDED.alias, is_primary = TRUE;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_characters_canonical_alias ON characters;
+CREATE TRIGGER trg_characters_canonical_alias
+  AFTER INSERT OR UPDATE OF name ON characters
+  FOR EACH ROW EXECUTE FUNCTION sync_entity_canonical_alias('character', 'name');
+
+DROP TRIGGER IF EXISTS trg_scenes_canonical_alias ON scenes;
+CREATE TRIGGER trg_scenes_canonical_alias
+  AFTER INSERT OR UPDATE OF name ON scenes
+  FOR EACH ROW EXECUTE FUNCTION sync_entity_canonical_alias('scene', 'name');
+
+DROP TRIGGER IF EXISTS trg_dialogue_trees_canonical_alias ON dialogue_trees;
+CREATE TRIGGER trg_dialogue_trees_canonical_alias
+  AFTER INSERT OR UPDATE OF name ON dialogue_trees
+  FOR EACH ROW EXECUTE FUNCTION sync_entity_canonical_alias('dialogue', 'name');
+
+DROP TRIGGER IF EXISTS trg_dialogue_overlays_canonical_alias ON dialogue_overlays;
+CREATE TRIGGER trg_dialogue_overlays_canonical_alias
+  AFTER INSERT OR UPDATE OF name ON dialogue_overlays
+  FOR EACH ROW EXECUTE FUNCTION sync_entity_canonical_alias('overlay', 'name');
+
+DROP TRIGGER IF EXISTS trg_mysteries_canonical_alias ON mysteries;
+CREATE TRIGGER trg_mysteries_canonical_alias
+  AFTER INSERT OR UPDATE OF title ON mysteries
+  FOR EACH ROW EXECUTE FUNCTION sync_entity_canonical_alias('mission', 'title');
+
 COMMIT;

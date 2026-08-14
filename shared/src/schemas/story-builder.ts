@@ -30,7 +30,7 @@ export const ContentPlanItemSchema = z.object({
   // surfaced for this item, separate from the canonical identity. `resolution`
   // records the resolver's verdict (matched / new_candidate / ambiguous) so an
   // ambiguous identity is surfaced to the author instead of silently decided.
-  entity_id: z.string().optional(),
+  entity_id: zodUuid().optional(),
   aliases: z.array(z.string()).optional(),
   resolution: IdentityResolutionSchema.optional(),
 });

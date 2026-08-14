@@ -44,17 +44,19 @@ function norm(v: unknown): string {
 
 /**
  * Build the timeline neighborhood (story-beat order) best-effort from the DB.
- * Returns [] when beats are unavailable; the caller records that in scope.
+ * Returns `null` when beats are unavailable (query failure) so the caller can
+ * report the timeline scope as unavailable rather than as having no references.
  */
-async function loadBeatWindows(): Promise<BeatWindow[]> {
+async function loadBeatWindows(): Promise<BeatWindow[] | null> {
   try {
+    // `story_beats` orders by the quoted `"order"` column (migration 044).
     const result = await queryOLTP<{ slug: string; order: number }>(
-      `SELECT slug, order_value FROM story_beats ORDER BY order_value ASC`,
+      `SELECT slug, "order" FROM story_beats ORDER BY "order" ASC`,
       [],
     );
     return result.rows.map((r) => ({ slug: r.slug, order: r.order }));
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -101,14 +103,18 @@ export class ConflictDetector {
   private async checkLocationConflicts(plan: ContentPlan, checkedAt: string): Promise<RuleResult> {
     const sceneItems = plan.items.filter((i) => i.type === 'scene');
 
-    // Character home districts + entity ids for resolution provenance.
+    // Character home districts + entity ids for resolution provenance. Index by
+    // BOTH the display name and the entity_id so scene items that reference the
+    // character via the supported `character_id` form still find the home.
     const charHome = new Map<string, { entityId?: string; homeDistrict: string }>();
     for (const it of plan.items) {
       if (it.type !== 'character') continue;
       const raw = String(it.fields?.district ?? '').trim();
       const home = norm(raw);
       if (!home) continue;
-      charHome.set(norm(it.name), { entityId: it.entity_id, homeDistrict: raw });
+      const entry = { entityId: it.entity_id, homeDistrict: raw };
+      charHome.set(norm(it.name), entry);
+      if (it.entity_id) charHome.set(norm(it.entity_id), entry);
     }
 
     // Neighborhood: every scene item in the plan.
@@ -125,7 +131,11 @@ export class ConflictDetector {
       const refs = sceneRefs(scene);
       for (const refName of refs) {
         const home = charHome.get(norm(refName));
-        if (!home || !home.homeDistrict || home.homeDistrict === rawSceneDistrict) continue;
+        if (!home) continue;
+        const refDistrict = norm(home.homeDistrict);
+        // Compare normalized values — a case/whitespace variant of the same
+        // district is not a conflict.
+        if (!refDistrict || refDistrict === sceneDistrict) continue;
         findings.push({
           rule: 'location_conflict',
           severity: 'warning',
@@ -162,6 +172,22 @@ export class ConflictDetector {
     }
 
     const beats = await loadBeatWindows();
+
+    if (beats === null) {
+      // The timeline neighborhood could not be loaded — report the scope as
+      // unavailable rather than pretending the plan references no beats.
+      return {
+        scope: {
+          entityType: 'scene',
+          rule: 'timeline_overlap',
+          scopeDescriptor: 'story-beat timeline unavailable (query error)',
+          entityIdsChecked: [],
+          checkedAt,
+        },
+        findings: [],
+      };
+    }
+
     const orderBySlug = new Map(beats.map((b) => [b.slug, b.order]));
     const reachable = beats.filter((b) => referenced.has(b.slug));
 
@@ -296,8 +322,10 @@ export class ConflictDetector {
   }
 }
 
-/** Relationship types that are implicitly exclusive (monogamous lineage). */
-const EXCLUSIVE_SLOTS = new Set(['spouse', 'partner', 'sibling', 'mother', 'father', 'patron']);
+// Relationship types that are implicitly exclusive (monogamous lineage). Note
+// `sibling` is intentionally NOT exclusive — a character may legitimately have
+// many siblings, so multi-sibling families must not be flagged as conflicts.
+const EXCLUSIVE_SLOTS = new Set(['spouse', 'partner', 'mother', 'father', 'patron']);
 
 /** Extract story-beat slugs an item references (fields + lore_refs). */
 function collectBeatRefs(item: ContentPlanItem): string[] {

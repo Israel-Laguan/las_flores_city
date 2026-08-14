@@ -12,6 +12,7 @@
 // ============================================================
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import * as yaml from 'js-yaml';
 import { glob } from 'glob';
 import type { ContentPlan, ContentPlanItem, IdentityResolution, ResolutionAlternative } from '@las-flores/shared';
@@ -147,20 +148,93 @@ function existingAliasesFor(
 ): string[] {
   if (resolution.status !== 'matched') return [];
   const out: string[] = [];
-  const ordered = index[normalizeName(resolution.alias)] ?? [];
-  for (const c of ordered) {
-    if (c.entityId === resolution.entityId && !out.includes(c.alias)) {
-      out.push(c.alias);
+  // Scan EVERY normalized index entry so we pick up all of the matched entity's
+  // known names — including aliases that do not share the queried spelling
+  // (e.g. a match via the "Marcus" alias should also surface "M.A.R.C.U.S.").
+  for (const entries of Object.values(index)) {
+    for (const c of entries) {
+      if (c.entityId === resolution.entityId && !out.includes(c.alias)) {
+        out.push(c.alias);
+      }
     }
   }
   return out;
 }
 
+/** Roman suffix sequence used by `suggestNextName` (client names: I, II, III…). */
+const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'] as const;
+
 /** Derive a "name II" style suggestion for a new variant of an existing name. */
 function suggestNextName(name: string): string {
-  const trimmed = name.trim().replace(/\s+(II|III|IV|Jr\.?|Sr\.?)$/i, '');
-  if (!trimmed) return 'Unnamed';
-  return `${trimmed} II`;
+  // Split an existing trailing Roman/Jr./Sr. suffix off so we can increment it.
+  const match = name.trim().match(/^(.*?)\s*(II|III|IV|Jr\.?|Sr\.?)$/i);
+  let base: string;
+  let currentSuffix: string | undefined;
+  if (match) {
+    base = match[1].trim();
+    currentSuffix = match[2].toUpperCase();
+  } else {
+    base = name.trim();
+  }
+  if (!base) return 'Unnamed';
+
+  const idx = ROMAN_NUMERALS.indexOf(currentSuffix as (typeof ROMAN_NUMERALS)[number]);
+  const nextSuffix = idx >= 0 ? ((ROMAN_NUMERALS[idx + 1] ?? 'II') as string) : 'II';
+  return `${base} ${nextSuffix}`;
+}
+
+/** Folder directory for each content type (mirrors `resolveFilePath`'s dirMap). */
+const TYPE_DIR: Record<string, string> = {
+  character: 'characters',
+  dialogue: 'dialogues',
+  scene: 'scenes',
+  overlay: 'overlays',
+  mission: 'missions',
+  story: 'stories',
+  story_beat: 'story_beats',
+  shop_item: 'shop',
+  location: 'locations',
+  map_tile: 'maps',
+  gig: 'gigs',
+  vault: 'vault',
+};
+
+/**
+ * Find the canonical content slug (the per-folder name) for a matched entity by
+ * scanning the entity type's content folder for a file whose `id` matches
+ * `entityId`. The DB stores no slug — it is the folder name under
+ * content/<type>/ — so this is how we learn the real file path for a `matched`
+ * identity. Locations live under content/districts/…, so they fall back to a
+ * full-tree scan. Returns null when unknown (best-effort).
+ */
+async function resolveCanonicalSlug(entityType: string, entityId: string): Promise<string | null> {
+  const contentDir = resolveContentDir();
+  const dir = TYPE_DIR[entityType];
+  // Locations (and any unknown type) are nested deeper and must be scanned
+  // across the whole tree to locate their file by id.
+  const pattern = dir && entityType !== 'location'
+    ? `${contentDir}/${dir}/*/*.yaml`
+    : `${contentDir}/**/*.yaml`;
+  try {
+    const files = await glob(pattern, { absolute: true });
+    for (const file of files) {
+      try {
+        const raw = await fs.readFile(file, 'utf-8');
+        const data: any = yaml.load(raw);
+        if (!data || typeof data !== 'object') continue;
+        if (String(data.id ?? '') !== entityId) continue;
+        const folder = path.basename(path.dirname(file));
+        // The folder name is the slug `resolveFilePath` expects; only return
+        // if it would pass the slug validation.
+        if (/^[a-z0-9_]+$/.test(folder)) return folder;
+      } catch {
+        // skip files that fail to parse
+      }
+    }
+  } catch {
+    // ignore glob/scan failures — caller falls back to the item's own slug
+  }
+  return null;
 }
 
 export class IdentityResolver {
@@ -217,9 +291,13 @@ export class IdentityResolver {
     // Multiple distinct identities share this (normalized) name. Surface a
     // picker rather than guessing. Always include the option to create a new
     // variant, matching the milestone's `["a193 Marcus", "new: Marcus II"]`.
+    // The `existing` alternative carries the entity's REAL canonical alias so a
+    // caller resolving the ambiguity can persist the actual alias (not the
+    // picker short-name).
     const alternatives: ResolutionAlternative[] = deduped.map((h) => ({
       kind: 'existing',
       id: h.entityId,
+      alias: h.alias,
       name: existingLabel(h.entityId, h.alias),
     }));
     alternatives.push({ kind: 'new', name: `new: ${suggestNextName(name)}` });
@@ -230,14 +308,16 @@ export class IdentityResolver {
   /**
    * Annotate every plan item with its identity resolution. Matched items get
    * `entity_id` + inline aliases; ambiguous items keep `resolution.status ===
-   * 'ambiguous'` so the admin can pick. Never mutates identity silently.
+   * 'ambiguous'` so the admin can pick. Items already carrying a verified
+   * stable `entity_id` (real `update` references) are left untouched; everything
+   * else goes through the resolver so the LLM never silently dictates identity.
    */
   async resolvePlanItems(plan: ContentPlan): Promise<ContentPlan> {
     const items: ContentPlanItem[] = [];
     for (const item of plan.items) {
       items.push(
-        item.action === 'update'
-          ? item // existing references are already identity-stable; nothing to resolve
+        item.action === 'update' && !!item.entity_id
+          ? item // already identity-stable; nothing to resolve
           : await this.annotateNewItem(item),
       );
     }
@@ -250,19 +330,28 @@ export class IdentityResolver {
 
     if (resolution.status === 'matched') {
       next.entity_id = resolution.entityId;
+      // Point the item at the entity's canonical file slug before the action may
+      // switch to `update`; otherwise staging would target the LLM's alias slug
+      // (e.g. `marcus`) which may not match the canonical folder, and fail with
+      // "Cannot update non-existent file".
+      const canonicalSlug = await resolveCanonicalSlug(item.type, resolution.entityId);
+      if (canonicalSlug && canonicalSlug !== next.slug) next.slug = canonicalSlug;
+
       const aliases = existingAliasesFor(item.type, await this.loadAliasIndex(item.type), resolution);
       if (aliases.length > 0) next.aliases = aliases;
       // A matched entity is a first-class content item; swap `create` for
       // `update` so the author is explicitly extending existing canon rather
       // than creating a duplicate.
       if (item.action !== 'update') next.action = 'update';
+    } else if (resolution.status === 'new_candidate' && item.action === 'update') {
+      // An outline-marked `update` that resolves to a brand-new candidate has no
+      // existing entity to modify — reject the stale update by demoting it to a
+      // `create` proposal so it is never staged against a non-existent path.
+      next.action = 'create';
     }
-    if (resolution.status === 'ambiguous') {
-      // Do NOT set entity_id or flip action on an ambiguous identity — the
-      // author must resolve it first. Keep the item as a create proposal until
-      // then so nothing is silently merged.
-      next.resolution = resolution;
-    }
+    // `ambiguous` (and staying `create`) items keep their resolution attached and
+    // are NOT flipped: Never set entity_id or change action on an unclear identity
+    // — the author must resolve it first so nothing is silently merged.
     return next;
   }
 }

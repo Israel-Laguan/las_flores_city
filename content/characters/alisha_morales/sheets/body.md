@@ -108,7 +108,7 @@
 
 ### Standing — Back (Full Body)
 
-> Full body from behind, standing relaxed. Afro-Venezuelan woman of 26, underweight silhouette. Narrow shoulders, straight spine with minimal curvature, thin arms. Straight torso with no tapering, flat minimal buttocks, narrow hips. Thin legs with no fullness. Shoulder blades slightly visible through clothing. Clear deep brown skin. Long curly hair pulled back. Prominent collarbone line visible from behind. Simple clothing appears oversized. Smartphone quality, natural light. Grounded anatomy showing nutritional history. Zero conventional beauty templates. 8k.
+> Full body from behind, standing relaxed. Afro-Venezuelan woman of 26, underweight silhouette. Narrow shoulders, straight spine with minimal curvature and slightly visible vertebrae. Thin arms, straight torso with no tapering, flat minimal buttocks, narrow hips. Thin legs with no fullness. Prominent shoulder blades slightly visible through clothing. Clear deep brown skin. Long curly hair pulled back. Simple clothing appears oversized. Smartphone quality, natural light. Grounded anatomy showing nutritional history. Zero conventional beauty templates. 8k.
 
 ### Standing — Side Profile
 

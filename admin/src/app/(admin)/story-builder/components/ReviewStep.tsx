@@ -284,11 +284,13 @@ export default function ReviewStep({
 
       <CoverageSection unplannedEntities={unplannedEntities} onAddFromRoster={onAddFromRoster} />
 
-      <IdentityResolutionPicker
-        items={ambiguousItems}
-        loading={loading}
-        onResolve={onResolveIdentity ?? (() => {})}
-      />
+      {onResolveIdentity && ambiguousItems.length > 0 && (
+        <IdentityResolutionPicker
+          items={ambiguousItems}
+          loading={loading}
+          onResolve={onResolveIdentity}
+        />
+      )}
 
       <PlanItems
         plan={plan}

@@ -60,7 +60,7 @@ describe('resolveItemIdentity (M25)', () => {
         status: 'ambiguous',
         entityType: 'character',
         alternatives: [
-          { kind: 'existing', id: 'a1930000-1111-4111-8111-111111111111', name: 'a193 Alice' },
+          { kind: 'existing', id: 'a1930000-1111-4111-8111-111111111111', name: 'a193 Alice', alias: 'Alice' },
           { kind: 'new', name: 'new: Alice II' },
         ],
       },
@@ -68,23 +68,30 @@ describe('resolveItemIdentity (M25)', () => {
     return plan;
   }
 
-  it('resolving to an existing entity marks the item update with a stable entity_id', () => {
+  it('resolving to an existing entity marks the item update with a stable entity_id and real alias', () => {
     const plan = resolveItemIdentity(ambiguousPlan(), 0, {
       kind: 'existing',
       id: 'a1930000-1111-4111-8111-111111111111',
       name: 'a193 Alice',
+      alias: 'Alice',
     });
     const item = plan.items[0];
     expect(item.action).toBe('update');
     expect(item.entity_id).toBe('a1930000-1111-4111-8111-111111111111');
     expect(item.resolution?.status).toBe('matched');
+    // Persist the entity's real canonical alias, not the picker display label.
+    if (item.resolution?.status === 'matched') expect(item.resolution.alias).toBe('Alice');
   });
 
-  it('resolving to a new variant keeps the item a create (no silent merge)', () => {
+  it('resolving to a new variant commits the chosen name and keeps the item a create (no silent merge)', () => {
     const plan = resolveItemIdentity(ambiguousPlan(), 0, { kind: 'new', name: 'new: Alice II' });
     const item = plan.items[0];
     expect(item.action).toBe('create');
     expect(item.entity_id).toBeUndefined();
     expect(item.resolution?.status).toBe('new_candidate');
+    // The selected variant `Alice II` is what gets created (name + slug + metadata).
+    expect(item.name).toBe('Alice II');
+    expect(item.slug).toBe('alice_ii');
+    if (item.resolution?.status === 'new_candidate') expect(item.resolution.suggestedName).toBe('Alice II');
   });
 });
