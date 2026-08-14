@@ -50,7 +50,7 @@ export const ResolutionAlternativeSchema = z.discriminatedUnion('kind', [
     /** When true, the suffix space for this base name is exhausted and `name`
      *  is a human-readable "exhausted" notice, NOT a safe new variant. Callers
      *  must not commit it as a brand-new entity. Defaults to false. */
-    exhausted: z.boolean().optional(),
+    exhausted: z.boolean().default(false),
   }),
 ]);
 

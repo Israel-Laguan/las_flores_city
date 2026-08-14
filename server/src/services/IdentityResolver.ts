@@ -227,7 +227,7 @@ function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): s
     // full name.
     base = trimmed.slice(0, lastSpace).trim();
     startNumber = parsedRoman + 1;
-  } else if (/^Jr\.?$|^Sr\.?$/i.test(tail)) {
+  } else if (lastSpace >= 0 && /^Jr\.?$|^Sr\.?$/i.test(tail)) {
     // A Jr./Sr. suffix — start proposing "II" as the first distinct variant.
     base = lastSpace >= 0 ? trimmed.slice(0, lastSpace).trim() : '';
     startNumber = 2;
