@@ -96,7 +96,14 @@ export async function resetOrphanedFillJobs(
              SET status = 'failed', updated_at = NOW()
              WHERE id = $1
                AND status = 'draft'
-               AND updated_at < NOW() - INTERVAL '5 minutes'`,
+               AND updated_at < NOW() - INTERVAL '5 minutes'
+               AND NOT EXISTS (
+                 SELECT 1
+                 FROM job_runs
+                 WHERE plan_id = $1
+                   AND job_type = 'plan_fill'
+                   AND status = 'running'
+               )`,
             [row.id],
           );
           // Only delete the cache and count the reset when this UPDATE actually

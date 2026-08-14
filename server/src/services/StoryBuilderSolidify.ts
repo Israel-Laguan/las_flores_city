@@ -335,10 +335,22 @@ async function runMigrationStage(
     // getJobRunById lookup failure) must NOT propagate out of this stage and
     // into the enclosing compensation handler, which would otherwise invert an
     // already successful, fully-committed migration.
+    // Write the partial result best-effort. A failure here (including a
+    // getJobRunById lookup failure) must NOT prevent the durable `migrated`
+    // stage marker from being recorded below.
     try {
       const run = await getJobRunById(jobId);
       const partial = (run?.partialResult as Record<string, unknown> | undefined) ?? {};
       await updateJobRun(jobId, { partialResult: { ...partial, migration: migrationResult } });
+    } catch {
+      // intentionally swallow — migration already committed successfully
+    }
+    // Always attempt the stage commit so a successful migration still records
+    // its durable `migrated` marker even if the partial-result write above
+    // failed. Both writes are best-effort and must never propagate into the
+    // enclosing compensation handler, which would otherwise invert an already
+    // successful, fully-committed migration.
+    try {
       await commitStage(jobId, 'migrated');
     } catch {
       // intentionally swallow — migration already committed successfully

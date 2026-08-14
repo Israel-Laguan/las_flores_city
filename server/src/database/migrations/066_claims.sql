@@ -142,6 +142,19 @@ $$ LANGUAGE plpgsql;
 -- UPDATE/DELETE). Row-level triggers (UPDATE/DELETE) return COALESCE(NEW, OLD)
 -- to skip the mutation; statement-level triggers (TRUNCATE) return NULL to
 -- allow the statement.
+-- When this migration is reapplied to a database that already ran an earlier
+-- revision of this migration (which defined the previous `(TEXT, BOOLEAN)`
+-- overload), drop the old trigger objects and the old signature BEFORE the
+-- `CREATE OR REPLACE FUNCTION ... ()` below, so the zero-argument function is
+-- the only `block_immutable_mutation` overload and no stale executable schema
+-- object is left behind. Every statement is `IF EXISTS`, so these are no-ops on
+-- a fresh database.
+DROP TRIGGER IF EXISTS evidence_immutable ON evidence;
+DROP TRIGGER IF EXISTS claim_transitions_immutable ON claim_transitions;
+DROP TRIGGER IF EXISTS evidence_immutable_truncate ON evidence;
+DROP TRIGGER IF EXISTS claim_transitions_immutable_truncate ON claim_transitions;
+DROP FUNCTION IF EXISTS claim_utils.block_immutable_mutation(TEXT, BOOLEAN);
+
 CREATE OR REPLACE FUNCTION claim_utils.block_immutable_mutation()
 RETURNS TRIGGER AS $$
 DECLARE
