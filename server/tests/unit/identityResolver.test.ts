@@ -26,9 +26,9 @@ jest.mock('glob', () => ({
   glob: jest.fn(async () => []),
 }));
 
-const queryOLTP = jest.requireMock('@las-flores/infra').queryOLTP as jest.MockedFunction<any>;
-
 import { IdentityResolver, identityResolver } from '../../src/services/IdentityResolver.js';
+
+const queryOLTP: jest.MockedFunction<any> = (jest.requireMock('@las-flores/infra') as any).queryOLTP;
 
 const EXISTING_MARCUS = { entity_id: 'a1930000-1111-4111-8111-111111111111', alias: 'Marcus', is_primary: true };
 

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { zodUuid, zodUuidArray } from './uuid.js';
+import { zodUuid, zodUuidArray, UUID_REGEX } from './uuid.js';
 import { ContentTypeSchema } from './content-validation.js';
 import { IdentityResolutionSchema } from './entity-identity.js';
 
@@ -25,12 +25,20 @@ export const ContentPlanItemSchema = z.object({
   lore_refs: z.array(z.string()).optional(),  // LLM-suggested related lore items
   filled_fields: z.array(z.string()).optional(),  // dot-paths of fields filled by the LLM fill pass (provenance)
   // ── M25: entity identity resolution ──────────────────────────────────
-  // `entity_id` is the stable identity the item resolves to (present when the
-  // IdentityResolver returned `matched`). `aliases` are the known names/epithets
-  // surfaced for this item, separate from the canonical identity. `resolution`
-  // records the resolver's verdict (matched / new_candidate / ambiguous) so an
-  // ambiguous identity is surfaced to the author instead of silently decided.
-  entity_id: zodUuid().optional(),
+  // `entity_id` is the stable identity the item resolves to. For DB-backed
+  // entity types (character, scene, dialogue, …) it is a UUID; for the
+  // text-slug-PK types (`story`, `story_beat`) it is the canonical slug, e.g.
+  // `beat_sofia_intro`. Both forms are accepted so a pre-verified `update`
+  // reference to an existing story beat parses without forcing a UUID. The
+  // IdentityResolver only emits UUID `matched` entityIds (from `entity_aliases`),
+  // so the `matched` superRefine below stays UUID-to-UUID consistent.
+  entity_id: z
+    .string()
+    .refine(
+      (v) => UUID_REGEX.test(v) || /^[a-z0-9_]+$/.test(v),
+      { message: 'entity_id must be a UUID or a lowercase slug (a-z0-9_)' },
+    )
+    .optional(),
   aliases: z.array(z.string()).optional(),
   resolution: IdentityResolutionSchema.optional(),
 }).superRefine((item, ctx) => {

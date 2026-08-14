@@ -8,7 +8,7 @@ import { z } from 'zod';
  * hex-format UUIDs. This helper accepts the original relaxed pattern:
  *   ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
  */
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function zodUuid(message?: string) {
   return z.string().regex(UUID_REGEX, message ?? 'Invalid UUID');
