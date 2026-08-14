@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { queryOLTP, queryOLAP, withOLTPTransaction, withOLAPTransaction } from '@las-flores/infra';
+import { oltpPool, olapPool } from '@las-flores/infra';
 import type { PoolClient } from 'pg';
 import { migrateContent } from '../content/migrate.js';
 
@@ -24,35 +24,43 @@ interface MigrateTargets {
 }
 
 async function ensureSchemaMigrationsTable(): Promise<void> {
-  await queryOLTP(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      version TEXT NOT NULL,
-      filename TEXT NOT NULL,
-      checksum TEXT NOT NULL,
-      database_name TEXT NOT NULL,
-      applied_at TIMESTAMPTZ DEFAULT NOW(),
-      PRIMARY KEY (version, database_name)
-    )
-  `);
-  await queryOLAP(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      version TEXT NOT NULL,
-      filename TEXT NOT NULL,
-      checksum TEXT NOT NULL,
-      database_name TEXT NOT NULL,
-      applied_at TIMESTAMPTZ DEFAULT NOW(),
-      PRIMARY KEY (version, database_name)
-    )
-  `);
+  const oltp = await oltpPool.connect();
+  try {
+    await oltp.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        checksum TEXT NOT NULL,
+        database_name TEXT NOT NULL,
+        applied_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (version, database_name)
+      )
+    `);
+  } finally {
+    oltp.release();
+  }
+  const olap = await olapPool.connect();
+  try {
+    await olap.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version TEXT NOT NULL,
+        filename TEXT NOT NULL,
+        checksum TEXT NOT NULL,
+        database_name TEXT NOT NULL,
+        applied_at TIMESTAMPTZ DEFAULT NOW(),
+        PRIMARY KEY (version, database_name)
+      )
+    `);
+  } finally {
+    olap.release();
+  }
 }
 
-async function isApplied(dbName: string, version: string): Promise<boolean> {
-  const q = dbName === 'las_flores' ? queryOLTP : queryOLAP;
-  const result = await q(
+async function isAppliedOn(client: PoolClient, dbName: string, version: string): Promise<boolean> {
+  const result = await client.query(
     'SELECT COUNT(*)::int AS count FROM schema_migrations WHERE version = $1 AND database_name = $2',
     [version, dbName]
   );
-  if (!result) return false;
   return result.rows[0].count > 0;
 }
 
@@ -136,49 +144,70 @@ async function applySQLMigrations(): Promise<void> {
         continue;
       }
 
-      const lockKey = hashText(`migration:${db.name}`);
-      const acquireLock = db.key === 'oltp' ? queryOLTP : queryOLAP;
-      const withTx = db.key === 'oltp' ? withOLTPTransaction : withOLAPTransaction;
+      const pool = db.key === 'oltp' ? oltpPool : olapPool;
 
-      // Serialize runners (e.g. concurrent intake-worker instances) so two
-      // processes cannot apply the same migration simultaneously. The lock
-      // spans the isApplied check, SQL execution, and recordMigration, and is
-      // released (pg_advisory_unlock_all on session end / pool release) whether
-      // the migration succeeds or fails.
-      await acquireLock('SELECT pg_advisory_lock($1)', [lockKey]);
-
-      const alreadyApplied = await isApplied(db.name, version);
-      if (alreadyApplied) {
-        await acquireLock('SELECT pg_advisory_unlock($1)', [lockKey]);
-        continue;
-      }
-
-      const checksum = await calculateChecksum(filePath);
-      const rawSql = await fs.readFile(filePath, 'utf-8');
-      // Strip the file-level BEGIN/COMMIT so the wrapper's own transaction is
-      // the only one; schema changes and the schema_migrations record then
-      // commit atomically.
-      const sql = stripFileLevelTransactionControl(rawSql);
-
-      console.log(`[migrate] Applying ${filename} to ${db.name}...`);
-
+      // Pin ONE client for the entire check/apply/record sequence so the
+      // advisory lock and the migration transaction share the same session.
+      // A plain `pool.query` advisory lock would live on a different pooled
+      // session than the transaction client — PostgreSQL advisory locks are
+      // session-scoped, so that would NOT reliably serialize concurrent runners
+      // and an unlock could run on the wrong session.
+      //
+      // The lock is taken as a *transaction-scoped* advisory lock
+      // (pg_advisory_xact_lock) on this same pinned client: it is held for the
+      // duration of the transaction below and released automatically on COMMIT
+      // or ROLLBACK. This both serializes concurrent runners (e.g. multiple
+      // intake-worker instances) and guarantees the lock can never leak if the
+      // applied-check / checksum / file read throws before we reach the
+      // transaction — the pinning `try/finally` always releases the client.
+      const client = await pool.connect();
       try {
-        // Run the whole file in a single transaction so a failure (or an
-        // interrupted run) can never strand a half-applied migration — e.g. a
-        // partially-created PL/pgSQL function that would fail to recompile on
-        // the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
-        // The schema_migrations record is written inside the same transaction,
-        // so success and bookkeeping are atomic.
-        await withTx(async (client) => {
+        const lockKey = hashText(`migration:${db.name}`);
+
+        // Open a single transaction immediately and acquire the migration lock
+        // INSIDE it. A transaction-scoped advisory lock (pg_advisory_xact_lock)
+        // is only meaningful within a transaction — issuing it in autocommit
+        // mode would commit and release it instantly, defeating serialization.
+        // Running the applied-check, SQL apply, and recordMigration inside the
+        // same transaction also guarantees the lock (and the migration) release
+        // atomically on COMMIT/ROLLBACK and can never leak if any step throws.
+        await client.query('BEGIN');
+        try {
+          await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
+
+          const alreadyApplied = await isAppliedOn(client, db.name, version);
+          if (alreadyApplied) {
+            await client.query('COMMIT');
+            continue;
+          }
+
+          const checksum = await calculateChecksum(filePath);
+          const rawSql = await fs.readFile(filePath, 'utf-8');
+          // Strip the file-level BEGIN/COMMIT so the wrapper's own transaction
+          // is the only one; schema changes and the schema_migrations record
+          // then commit atomically.
+          const sql = stripFileLevelTransactionControl(rawSql);
+
+          console.log(`[migrate] Applying ${filename} to ${db.name}...`);
+
+          // Run the whole file in a single transaction so a failure (or an
+          // interrupted run) can never strand a half-applied migration — e.g. a
+          // partially-created PL/pgSQL function that would fail to recompile on
+          // the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
+          // The schema_migrations record is written inside the same transaction,
+          // so success and bookkeeping are atomic. The advisory lock is held for
+          // the duration of this transaction and released automatically on COMMIT.
           await client.query(sql);
           await recordMigration(client, db.name, version, filename, checksum);
-        });
-        await acquireLock('SELECT pg_advisory_unlock($1)', [lockKey]);
-        console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
-      } catch (err: any) {
-        await acquireLock('SELECT pg_advisory_unlock($1)', [lockKey]).catch(() => {});
-        console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
-        throw err;
+          await client.query('COMMIT');
+          console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
+        } catch (err: any) {
+          await client.query('ROLLBACK');
+          console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
+          throw err;
+        }
+      } finally {
+        client.release();
       }
     }
   }

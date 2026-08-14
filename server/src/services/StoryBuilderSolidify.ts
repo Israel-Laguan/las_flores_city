@@ -366,7 +366,18 @@ async function runVerifyAndTerminal(
   jobId: string | undefined,
   userId: string | undefined,
 ): Promise<boolean> {
-  if (jobId) await updateJobRun(jobId, { status: 'running', stage: 'verifying' });
+  if (jobId) {
+    // Best-effort: if job_runs writes are unavailable, a failure here must NOT
+    // propagate into the enclosing compensation handler (which would mark an
+    // already-committed migration/verification as `failed`). Verification is
+    // read-only and the DB row already carries the authoritative `migrated`
+    // state, so the run is safe to continue without the bookkeeping write.
+    try {
+      await updateJobRun(jobId, { status: 'running', stage: 'verifying' });
+    } catch {
+      // intentionally swallow — verification proceeds regardless
+    }
+  }
   await setJobStatus(planId, { status: 'verifying', stage: state.stageResult, publish: state.publishResult, migration: state.migrationResult });
   // NOTE: do NOT flip the DB row to `verifying` here. `verifyPlan` requires the
   // row to be `migrated` (StoryBuilderMigration.ts), so switching it to
