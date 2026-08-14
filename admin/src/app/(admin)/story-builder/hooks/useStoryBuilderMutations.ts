@@ -41,7 +41,9 @@ function uniqueSlug(plan: ContentPlan, type: string, name: string, skipItemId?: 
   let candidate = base;
   let counter = 2;
   while (taken.has(`${type}:${candidate}`)) {
-    candidate = `${base}_${counter}`;
+    // Truncate the base so base + "_N" stays within the schema's 100-char slug
+    // limit (otherwise the next PUT would reject the over-long slug).
+    candidate = `${base.slice(0, NAME_MAX_LENGTH - String(counter).length - 1)}_${counter}`;
     counter += 1;
   }
   return candidate;

@@ -169,7 +169,7 @@ function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): s
   // Split an existing trailing Roman/Jr./Sr. suffix off so we can increment it.
   // Longest-first alternation so e.g. "III" is not mis-parsed as "II"; covers the
   // full ROMAN_NUMERALS sequence (I, II, III, IV, V, VI, VII, VIII, IX, X) + Jr./Sr.
-  const match = name.trim().match(/^(.*?)\s*(VIII|VII|VI|IX|IV|III|II|I|X|V|Jr\.?|Sr\.?)$/i);
+  const match = name.trim().match(/^(.*?)\s+(VIII|VII|VI|IX|IV|III|II|I|X|V|Jr\.?|Sr\.?)$/i);
   let base: string;
   let currentSuffix: string | undefined;
   if (match) {
@@ -298,6 +298,20 @@ export class IdentityResolver {
    * or `ambiguous` (several plausible identities) — never a guess.
    */
   async resolve(
+    entityType: string,
+    name: string,
+    opts: { description?: string } = {},
+  ): Promise<IdentityResolution> {
+    return this.resolveWithCtx(this.createContext(), entityType, name, opts);
+  }
+
+  /**
+   * Context-aware resolution used internally by `resolvePlanItems`. The supplied
+   * `ctx` keeps the alias/slug caches local to a single resolve pass, so this
+   * method never touches shared singleton state (and concurrent passes cannot
+   * step on each other's caches).
+   */
+  private async resolveWithCtx(
     ctx: ResolveContext,
     entityType: string,
     name: string,
@@ -340,9 +354,11 @@ export class IdentityResolver {
       alias: h.alias,
       name: existingLabel(h.entityId, h.alias),
     }));
-    // Skip any new-variant suggestion that collides with an alias the queried
-    // name already maps to, so `new: Marcus III` never proposes an in-use name.
-    const used = new Set(deduped.map((h) => normalizeName(h.alias)));
+    // Build the set of all known normalized aliases for this type so the
+    // proposed new-variant name can never collide with ANY existing alias
+    // (not just the ones sharing the queried spelling), e.g. so
+    // `new: Marcus III` never proposes an already-in-use name.
+    const used = new Set(Object.keys(index));
     alternatives.push({ kind: 'new', name: `new: ${suggestNextName(name, used)}` });
 
     return { status: 'ambiguous', entityType, alternatives };
@@ -372,7 +388,7 @@ export class IdentityResolver {
   }
 
   private async annotateNewItem(ctx: ResolveContext, item: ContentPlanItem): Promise<ContentPlanItem> {
-    const resolution = await this.resolve(ctx, item.type, item.name, { description: item.description });
+    const resolution = await this.resolveWithCtx(ctx, item.type, item.name, { description: item.description });
     const next: ContentPlanItem = { ...item, resolution };
 
     if (resolution.status === 'matched') {

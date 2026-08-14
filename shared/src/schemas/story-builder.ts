@@ -42,6 +42,24 @@ export const ContentPlanItemSchema = z.object({
   aliases: z.array(z.string()).optional(),
   resolution: IdentityResolutionSchema.optional(),
 }).superRefine((item, ctx) => {
+  // A lowercase slug `entity_id` is only valid for the text-slug-PK types
+  // (`story`, `story_beat`), whose canonical identity is a slug rather than a
+  // UUID. For every other (DB-backed) entity type a slug `entity_id` would be
+  // accepted here and then treated by `IdentityResolver` as an already-verified
+  // stable id, silently bypassing identity resolution. Require a UUID for those.
+  if (
+    item.entity_id &&
+    !UUID_REGEX.test(item.entity_id) &&
+    item.type !== 'story' &&
+    item.type !== 'story_beat'
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['entity_id'],
+      message: 'A slug entity_id is only valid for story and story_beat items',
+    });
+  }
+
   // A `matched` resolution pins a stable identity, so the item's `entity_id`
   // must actually be present and equal to the resolution's entityId. Allowing
   // a mismatch would let one consumer update via `entity_id` while another
