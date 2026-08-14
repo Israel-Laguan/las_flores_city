@@ -97,3 +97,10 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.exhaustedNotice {
+  flex-basis: 100%;
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  color: var(--warning);
+}

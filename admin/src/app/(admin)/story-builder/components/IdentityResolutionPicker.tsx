@@ -49,23 +49,30 @@ export default function IdentityResolutionPicker({
               <span className={styles.itemName}>{item.name}</span>
             </div>
             <div className={styles.options} role="group" aria-label={`Resolve identity for ${item.name}`}>
-              {item.resolution.alternatives.map((alt, i) => (
-                <button
-                  key={`${item.index}-${i}`}
-                  type="button"
-                  className={cn(
-                    styles.option,
-                    alt.kind === 'new' && styles.optionNew,
-                    alt.kind === 'new' && alt.exhausted && styles.optionExhausted,
-                  )}
-                  disabled={loading || (alt.kind === 'new' && alt.exhausted)}
-                  title={alt.kind === 'new' && alt.exhausted ? 'All variants for this name are already in use — resolve the duplication or rename.' : undefined}
-                  onClick={() => onResolve(item.index, alt)}
-                >
-                  {alt.kind === 'new' ? '＋ ' : '↳ '}
-                  {alt.name}
-                </button>
-              ))}
+              {item.resolution.alternatives.map((alt, i) => {
+                const isExhausted = alt.kind === 'new' && alt.exhausted;
+                return (
+                  <button
+                    key={`${item.index}-${i}`}
+                    type="button"
+                    className={cn(
+                      styles.option,
+                      alt.kind === 'new' && styles.optionNew,
+                      isExhausted && styles.optionExhausted,
+                    )}
+                    disabled={loading || isExhausted}
+                    onClick={() => onResolve(item.index, alt)}
+                  >
+                    {alt.kind === 'new' ? '＋ ' : '↳ '}
+                    {alt.name}
+                  </button>
+                );
+              })}
+              {item.resolution.alternatives.some((alt) => alt.kind === 'new' && alt.exhausted) && (
+                <p className={styles.exhaustedNotice} role="note">
+                  All variants for this name are already in use — resolve the duplication or rename.
+                </p>
+              )}
             </div>
           </li>
         ))}

@@ -191,6 +191,45 @@ describe('IdentityResolver', () => {
     }
   });
 
+  test('ambiguous — a bare single Roman token (e.g. "I" or "X") is NOT treated as a suffix', async () => {
+    // Two entities already share the exact alias "X" → ambiguous. The proposed
+    // new variant must be "new: X II" (base stays "X"), NOT "new: II" / Unnamed.
+    const twoX = [
+      { entity_id: 'c1030000-e29b-41d4-a716-446655440010', alias: 'X', is_primary: true },
+      { entity_id: 'c1030000-e29b-41d4-a716-446655440011', alias: 'X', is_primary: true },
+    ];
+    queryOLTP.mockResolvedValueOnce({ rows: twoX });
+
+    const result = await identityResolver.resolve('character', 'X');
+
+    expect(result.status).toBe('ambiguous');
+    if (result.status === 'ambiguous') {
+      const newAlt = result.alternatives.find((a) => a.kind === 'new');
+      expect(newAlt?.name).toBe('new: X II');
+      expect(newAlt?.name).not.toMatch(/^new: II$/);
+    }
+  });
+
+  test('ambiguous — a "Jr." / "Sr." suffix produces a Roman variant, case-insensitively', async () => {
+    // Two entities already share the exact alias "Marcus Jr." → ambiguous. The
+    // proposed new variant must be "new: Marcus II" (the Jr. is dropped), not
+    // "new: Marcus Jr. II".
+    const rows = [
+      { entity_id: 'c1040000-e29b-41d4-a716-446655440010', alias: 'Marcus Jr.', is_primary: true },
+      { entity_id: 'c1040000-e29b-41d4-a716-446655440011', alias: 'Marcus Jr.', is_primary: true },
+    ];
+    queryOLTP.mockResolvedValueOnce({ rows });
+
+    const result = await identityResolver.resolve('character', 'Marcus Jr.');
+
+    expect(result.status).toBe('ambiguous');
+    if (result.status === 'ambiguous') {
+      const newAlt = result.alternatives.find((a) => a.kind === 'new');
+      expect(newAlt?.name).toBe('new: Marcus II');
+      expect(newAlt?.name).not.toMatch(/Jr\.|Sr\./);
+    }
+  });
+
   test('resolvePlanItems flips a matched create item to update with a stable id', async () => {
     // One hit → not ambiguous here; but ensure matched items flip to update.
     queryOLTP.mockResolvedValue({ rows: [EXISTING_MARCUS] });

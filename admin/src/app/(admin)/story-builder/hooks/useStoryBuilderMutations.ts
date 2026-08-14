@@ -88,7 +88,7 @@ export function resolveItemIdentity(
     // An `exhausted` new-variant is a human-readable notice ("all variants in
     // use"), NOT a committable name. Refuse to commit it as a brand-new entity:
     // the author must reconcile the duplicates (or rename) instead.
-    if (alternative.exhausted) {
+    if (alternative.exhausted === true) {
       throw new Error(
         `Cannot create "${alternative.name}": all variants for this base name are already in use. ` +
         `Resolve the duplication or rename before creating a new entity.`,

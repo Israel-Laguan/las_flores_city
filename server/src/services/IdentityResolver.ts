@@ -219,11 +219,15 @@ function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): s
   const parsedRoman = fromRoman(tail);
   let base: string;
   let startNumber: number;
-  if (parsedRoman > 0 && toRoman(parsedRoman) === tail) {
-    // A genuine trailing Roman numeral — increment past it.
-    base = lastSpace >= 0 ? trimmed.slice(0, lastSpace).trim() : '';
+  if (lastSpace >= 0 && parsedRoman > 0 && toRoman(parsedRoman) === tail) {
+    // A genuine trailing Roman numeral preceded by a separator — increment past
+    // it. The separator requirement keeps a bare single-Roman token such as `I`
+    // or `X` from being treated as a suffix (which would otherwise strip the
+    // whole name and return `Unnamed`); instead we base the suggestion on the
+    // full name.
+    base = trimmed.slice(0, lastSpace).trim();
     startNumber = parsedRoman + 1;
-  } else if (/^Jr\.?$|^Sr\.?$/.test(tail)) {
+  } else if (/^Jr\.?$|^Sr\.?$/i.test(tail)) {
     // A Jr./Sr. suffix — start proposing "II" as the first distinct variant.
     base = lastSpace >= 0 ? trimmed.slice(0, lastSpace).trim() : '';
     startNumber = 2;
