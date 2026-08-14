@@ -152,6 +152,45 @@ describe('IdentityResolver', () => {
     }
   });
 
+  test('ambiguous — a name ending in a numeral past X increments past it (no nested suffix)', async () => {
+    // Two entities already share the exact alias "Marcus XI". The resolver must
+    // propose the next variant as "Marcus XII" — NOT a nested "Marcus XI II".
+    const twoMarcusXI = [
+      { entity_id: 'c1010000-e29b-41d4-a716-446655440010', alias: 'Marcus XI', is_primary: true },
+      { entity_id: 'c1010000-e29b-41d4-a716-446655440011', alias: 'Marcus XI', is_primary: true },
+    ];
+    queryOLTP.mockResolvedValueOnce({ rows: twoMarcusXI });
+
+    const result = await identityResolver.resolve('character', 'Marcus XI');
+
+    expect(result.status).toBe('ambiguous');
+    if (result.status === 'ambiguous') {
+      const newAlt = result.alternatives.find((a) => a.kind === 'new');
+      expect(newAlt?.name).toBe('new: Marcus XII');
+      expect(newAlt?.name).not.toMatch(/XI II/);
+    }
+  });
+
+  test('ambiguous — suggests the first free numeral without probing past the ceiling', async () => {
+    // "Marcus II" ambiguous, and only "Marcus III" already taken. The next free
+    // variant must be "Marcus IV" (probed as soon as found, not at the cap).
+    const rows = [
+      { entity_id: 'c1020000-e29b-41d4-a716-446655440010', alias: 'Marcus II', is_primary: true },
+      { entity_id: 'c1020000-e29b-41d4-a716-446655440011', alias: 'Marcus II', is_primary: true },
+      { entity_id: 'c1020000-e29b-41d4-a716-446655440012', alias: 'Marcus III', is_primary: true },
+    ];
+    queryOLTP.mockResolvedValueOnce({ rows });
+
+    const result = await identityResolver.resolve('character', 'Marcus II');
+
+    expect(result.status).toBe('ambiguous');
+    if (result.status === 'ambiguous') {
+      const newAlt = result.alternatives.find((a) => a.kind === 'new');
+      expect(newAlt?.name).toBe('new: Marcus IV');
+      expect(newAlt?.exhausted).toBe(false);
+    }
+  });
+
   test('resolvePlanItems flips a matched create item to update with a stable id', async () => {
     // One hit → not ambiguous here; but ensure matched items flip to update.
     queryOLTP.mockResolvedValue({ rows: [EXISTING_MARCUS] });

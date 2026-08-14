@@ -186,6 +186,20 @@ function toRoman(n: number): string {
   return out;
 }
 
+/** Parse a canonical uppercase Roman numeral back to its integer value. */
+function fromRoman(s: string): number {
+  const values: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let total = 0;
+  let prev = 0;
+  for (let i = s.length - 1; i >= 0; i -= 1) {
+    const v = values[s[i]];
+    if (v === undefined) return 0; // not a Roman numeral
+    if (v < prev) total -= v;
+    else { total += v; prev = v; }
+  }
+  return total;
+}
+
 /**
  * Derive a "name N…" suggestion for a new variant of an existing name.
  *
@@ -194,27 +208,35 @@ function toRoman(n: number): string {
  * name; they should report exhaustion instead.
  */
 function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): string | null {
+  const trimmed = name.trim();
+  if (!trimmed) return 'Unnamed';
   // Split an existing trailing Roman/Jr./Sr. suffix off so we can increment it.
-  // Longest-first alternation so e.g. "III" is not mis-parsed as "II"; covers the
-  // full ROMAN_NUMERALS sequence (I, II, III, IV, V, VI, VII, VIII, IX, X) + Jr./Sr.
-  const match = name.trim().match(/^(.*?)\s+(VIII|VII|VI|IX|IV|III|II|I|X|V|Jr\.?|Sr\.?)$/i);
+  // We recognize EVERY canonical Roman numeral `toRoman` can emit (I, II, …, XI,
+  // XII, …) — not just the first ten — plus Jr./Sr. This keeps e.g. "Marcus XI"
+  // incrementing to "Marcus XII" instead of producing a nested "Marcus XI II".
+  const lastSpace = trimmed.lastIndexOf(' ');
+  const tail = (lastSpace >= 0 ? trimmed.slice(lastSpace + 1) : trimmed).toUpperCase();
+  const parsedRoman = fromRoman(tail);
   let base: string;
-  let currentSuffix: string | undefined;
-  if (match) {
-    base = match[1].trim();
-    currentSuffix = match[2].toUpperCase();
+  let startNumber: number;
+  if (parsedRoman > 0 && toRoman(parsedRoman) === tail) {
+    // A genuine trailing Roman numeral — increment past it.
+    base = lastSpace >= 0 ? trimmed.slice(0, lastSpace).trim() : '';
+    startNumber = parsedRoman + 1;
+  } else if (/^Jr\.?$|^Sr\.?$/.test(tail)) {
+    // A Jr./Sr. suffix — start proposing "II" as the first distinct variant.
+    base = lastSpace >= 0 ? trimmed.slice(0, lastSpace).trim() : '';
+    startNumber = 2;
   } else {
-    base = name.trim();
+    base = trimmed;
+    startNumber = 2;
   }
   if (!base) return 'Unnamed';
 
-  // If no known trailing suffix, we start proposing "II" (the first increment).
-  const startIdx = ROMAN_NUMERALS.indexOf(currentSuffix as (typeof ROMAN_NUMERALS)[number]);
-  const startNumber = startIdx >= 0 ? startIdx + 2 : 2; // II == 2
   // Walk the numeral sequence until the suggested name is not already in use.
   // Extends well past X (XI, XII, …) so exhausting the fixed list is no longer a
-  // collision: we keep searching until we hit `MAX_VARIANT_ATTEMPTS`.
-  for (let n = startNumber; n <= startNumber + MAX_VARIANT_ATTEMPTS; n += 1) {
+  // collision: we keep searching until we hit the `MAX_VARIANT_ATTEMPTS` ceiling.
+  for (let n = startNumber; n < startNumber + MAX_VARIANT_ATTEMPTS; n += 1) {
     const candidate = `${base} ${toRoman(n)}`;
     if (!used.has(normalizeName(candidate))) return candidate;
   }

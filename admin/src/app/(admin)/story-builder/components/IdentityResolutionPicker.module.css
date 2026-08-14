@@ -82,6 +82,17 @@
   color: var(--text-secondary);
 }
 
+.optionExhausted {
+  border-style: dotted;
+  color: var(--warning);
+  background: transparent;
+}
+
+.optionExhausted:hover {
+  background: transparent;
+  color: var(--warning);
+}
+
 .option:disabled {
   opacity: 0.6;
   cursor: not-allowed;

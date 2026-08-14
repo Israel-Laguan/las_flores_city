@@ -85,6 +85,15 @@ export function resolveItemIdentity(
       },
     };
   } else {
+    // An `exhausted` new-variant is a human-readable notice ("all variants in
+    // use"), NOT a committable name. Refuse to commit it as a brand-new entity:
+    // the author must reconcile the duplicates (or rename) instead.
+    if (alternative.exhausted) {
+      throw new Error(
+        `Cannot create "${alternative.name}": all variants for this base name are already in use. ` +
+        `Resolve the duplication or rename before creating a new entity.`,
+      );
+    }
     // Author chose a new variant (e.g. `new: Marcus II`) — actually commit that
     // chosen name so the selected variant is created (name + slug), not the
     // original LLM name. Bound the name to the schema limit, force the action

@@ -53,8 +53,13 @@ export default function IdentityResolutionPicker({
                 <button
                   key={`${item.index}-${i}`}
                   type="button"
-                  className={cn(styles.option, alt.kind === 'new' && styles.optionNew)}
-                  disabled={loading}
+                  className={cn(
+                    styles.option,
+                    alt.kind === 'new' && styles.optionNew,
+                    alt.kind === 'new' && alt.exhausted && styles.optionExhausted,
+                  )}
+                  disabled={loading || (alt.kind === 'new' && alt.exhausted)}
+                  title={alt.kind === 'new' && alt.exhausted ? 'All variants for this name are already in use — resolve the duplication or rename.' : undefined}
                   onClick={() => onResolve(item.index, alt)}
                 >
                   {alt.kind === 'new' ? '＋ ' : '↳ '}
