@@ -295,3 +295,29 @@
   background: var(--accent);
   color: var(--on-accent);
 }
+
+.critiqueSection {
+  margin: 18px 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--background) 98%, var(--accent));
+}
+
+.critiqueHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.critiqueTitle {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.critiqueCount {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-left: auto;
+}

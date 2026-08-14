@@ -38,6 +38,9 @@ const mockProvider: LLMProvider = {
   async refinePlanItems() { return { items: [] as any, usage: null }; },
   async generateLore() { return ''; },
   async generateFill() { return { fields: {} }; },
+  async extractEntities() { return { entities: [] }; },
+  async analyzeIntakeConflicts() { return { conflicts: [], usage: null }; },
+  async analyzePlanForConflicts() { return { annotations: [], usage: null }; },
 };
 
 beforeEach(() => {
@@ -80,6 +83,9 @@ describe('ContentPlanService', () => {
       async refinePlanItems() { return { items: [] as any, usage: null }; },
       async generateLore() { return ''; },
       async generateFill() { return { fields: {} }; },
+      async extractEntities() { return { entities: [] }; },
+      async analyzeIntakeConflicts() { return { conflicts: [], usage: null }; },
+      async analyzePlanForConflicts() { return { annotations: [], usage: null }; },
     };
     const service = new ContentPlanService(provider);
 
@@ -154,6 +160,9 @@ describe('generateOutline + validateAndRepairOutline', () => {
       async refinePlanItems() { return { items: [] as any, usage: null }; },
       async generateLore() { return ''; },
       async generateFill() { return { fields: {} }; },
+      async extractEntities() { return { entities: [] }; },
+      async analyzeIntakeConflicts() { return { conflicts: [], usage: null }; },
+      async analyzePlanForConflicts() { return { annotations: [], usage: null }; },
     };
 
     const service = new ContentPlanService(outlineProvider);

@@ -3,6 +3,7 @@
 import type { ContentPlan } from '@las-flores/shared';
 import type { IntakeConflictPreview } from '@las-flores/shared';
 import type { ResolutionAlternative } from '@las-flores/shared';
+import type { CritiqueAnnotation } from '@las-flores/shared';
 import { cn } from '@las-flores/ui';
 import type { GenerationStatus } from '../types';
 import * as api from '../hooks/useStoryBuilderApi';
@@ -11,6 +12,7 @@ import PlanSummary from './PlanSummary';
 import RefineSection from './RefineSection';
 import LinksSection from './LinksSection';
 import ConflictPreview from './ConflictPreview';
+import CritiqueOverlay from './CritiqueOverlay';
 import IdentityResolutionPicker, { type AmbiguousItem } from './IdentityResolutionPicker';
 import styles from './ReviewStep.module.css';
 
@@ -46,6 +48,11 @@ interface ReviewStepProps {
   onGenerateFullPlan?: () => void;
   onRefineInstead?: () => void;
   onResolveIdentity?: (index: number, chosen: ResolutionAlternative) => void;
+  // M26 — AI semantic critique (analyze panel + conflict overlays + dismiss)
+  critiqueAnnotations?: CritiqueAnnotation[];
+  onRunCritique?: (scope?: 'entity' | 'cross_entity') => void;
+  onDismissAnnotation?: (id: string) => void;
+  critiqueAnalyzeLoading?: boolean;
 }
 
 function ProgressSection({ genStatus }: { genStatus: import('../types').GenerationStatus }) {
@@ -236,6 +243,7 @@ export default function ReviewStep({
   onApproveAndShip, approving, genStatus,
   conflicts = [], fileConflicts = [], onGenerateFullPlan, onRefineInstead,
   onResolveIdentity,
+  critiqueAnnotations = [], onRunCritique, onDismissAnnotation, critiqueAnalyzeLoading,
 }: ReviewStepProps) {
   const items = plan?.items ?? [];
   const allNeeds = items.flatMap(item => item.assetNeeds ?? []);
@@ -277,6 +285,31 @@ export default function ReviewStep({
         onGenerateFullPlan={() => onGenerateFullPlan?.()}
         onRefineInstead={() => onRefineInstead?.()}
       />
+
+      {/* M26 — AI semantic critique */}
+      {planId && (
+        <section className={styles.critiqueSection}>
+          <div className={styles.critiqueHeader}>
+            <span className={styles.critiqueTitle}>AI Critique</span>
+            <button
+              className={cn(styles.button, styles.secondaryButton)}
+              disabled={critiqueAnalyzeLoading}
+              onClick={() => onRunCritique?.('entity')}
+            >
+              {critiqueAnalyzeLoading ? 'Analyzing…' : 'Analyze'}
+            </button>
+            {critiqueAnnotations.length > 0 && (
+              <span className={styles.critiqueCount}>
+                {critiqueAnnotations.length} annotation{critiqueAnnotations.length !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+          <CritiqueOverlay
+            annotations={critiqueAnnotations}
+            onDismiss={onDismissAnnotation}
+          />
+        </section>
+      )}
 
       {isGenerationActive && <ProgressSection genStatus={genStatus} />}
 

@@ -1,4 +1,4 @@
-import type { ContentPlan, ContentPlanItem, IntakeConflictPreview } from '@las-flores/shared';
+import type { ContentPlan, ContentPlanItem, IntakeConflictPreview, CritiqueAnnotation } from '@las-flores/shared';
 import type { EntityCandidate } from '../OutlineChunking.js';
 
 export interface ExistingLocation {
@@ -27,6 +27,9 @@ export interface LLMUsage {
   estimatedCostUsd?: number;
 }
 
+/** Which scope of critique to run: per-entity (cheap) vs cross-entity (deep). */
+export type CritiqueScopeType = 'entity' | 'cross_entity' | 'cross_mission';
+
 export interface LLMProvider {
   parseDescription(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
   generateOutline(description: string, context: ExistingContentContext): Promise<{ plan: ContentPlan; usage: LLMUsage | null }>;
@@ -36,4 +39,22 @@ export interface LLMProvider {
   generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }>;
   extractEntities(systemPrompt: string, chunk: string): Promise<{ entities: EntityCandidate[] }>;
   analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }>;
+
+  /**
+   * M26 — Deep semantic critique (Moment 3).
+   *
+   * Scans a plan for narrative contradictions and authoring suggestions within a
+   * bounded scope. Returns structured annotation nodes (`:Conflict` / `:Suggestion`)
+   * with evidence text excerpts.
+   *
+   * Two-model split:
+   *   - `scope = 'entity'` (cheap model): per-item scan for local contradictions.
+   *   - `scope = 'cross_entity'` (deep model): cross-item/cross-mission scan
+   *     for narrative arc, timeline, and relationship consistency.
+   */
+  analyzePlanForConflicts(
+    plan: ContentPlan,
+    context: ExistingContentContext,
+    scope: CritiqueScopeType,
+  ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }>;
 }

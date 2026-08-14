@@ -1,6 +1,7 @@
 'use client';
 
 import { useStoryBuilder } from './hooks/useStoryBuilder';
+import { useCritique } from './hooks/useCritiqueApi';
 import { cn } from '@las-flores/ui';
 import StepIndicator from './components/StepIndicator';
 import { useDraftManager } from './hooks/useDraftManager';
@@ -34,6 +35,13 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
     handleGenerateDrafts,
     handleChooseDraft,
   });
+
+  const {
+    annotations: critiqueAnnotations,
+    analyzeLoading: critiqueAnalyzeLoading,
+    runCritique: runCritiqueOnPlan,
+    dismiss: dismissCritiqueAnnotation,
+  } = useCritique(planId);
 
   return (
     <main className={styles.main}>
@@ -94,6 +102,10 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           onGenerateFullPlan={handleGenerateFullPlan}
           onRefineInstead={() => setShowRefine(true)}
           onResolveIdentity={resolveItemIdentity}
+          critiqueAnnotations={critiqueAnnotations}
+          onRunCritique={runCritiqueOnPlan}
+          onDismissAnnotation={dismissCritiqueAnnotation}
+          critiqueAnalyzeLoading={critiqueAnalyzeLoading}
         />
       )}
 

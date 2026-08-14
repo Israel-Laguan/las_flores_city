@@ -1,0 +1,133 @@
+.wrapper {
+  margin: 16px 0;
+}
+
+.heading {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--accent);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-left-width: 4px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--background);
+}
+
+.severity--error {
+  border-left-color: #d33;
+  color: #d33;
+}
+
+.severity--warning {
+  border-left-color: #e0a23c;
+  color: #e0a23c;
+}
+
+.severity--info {
+  border-left-color: #3a82d0;
+  color: #3a82d0;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.badge {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.scope {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.model {
+  font-size: 0.72rem;
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+.description {
+  margin: 0 0 8px;
+  color: var(--color-text, inherit);
+}
+
+.evidence {
+  margin-bottom: 6px;
+  color: var(--color-text, inherit);
+}
+
+.evidenceSummary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+
+.evidenceItem {
+  margin: 6px 0 0 8px;
+}
+
+.evidenceSource {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.quote {
+  margin: 4px 0 0;
+  padding: 4px 8px;
+  border-left: 2px solid color-mix(in srgb, currentColor 40%, transparent);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--color-text, inherit);
+  opacity: 0.9;
+}
+
+.related {
+  font-size: 0.78rem;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dismissBtn,
+.chatBtn {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.dismissBtn {
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  color: inherit;
+}
+
+.chatBtn {
+  border: 1px dashed color-mix(in srgb, currentColor 30%, transparent);
+  color: color-mix(in srgb, currentColor 60%, transparent);
+  cursor: not-allowed;
+  opacity: 0.7;
+}

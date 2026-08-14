@@ -1,5 +1,5 @@
 import type { ContentPlan, ContentPlanItem } from '@las-flores/shared';
-import type { ExistingContentContext } from './types/LLMTypes.js';
+import type { ExistingContentContext, CritiqueScopeType } from './types/LLMTypes.js';
 import { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES } from './LLMPromptExtractors.js';
 
 export { buildLorePrompt, buildEntityExtractionPrompt, CONTENT_TYPES };
@@ -365,6 +365,98 @@ ${JSON.stringify({
   ]
 }`;
 }
+
+// ── Semantic Critique Prompt Builder (Moment 3 / M26) ─────────────────────
+// Drives the deep AI critique. Two scopes — 'entity' (cheap model, per-item/local
+// contradictions) and 'cross_entity' (deep model, narrative/timeline/relationship
+// consistency). Returns structured annotation nodes with evidence text excerpts.
+
+export function buildSemanticCritiquePrompt(
+  plan: ContentPlan,
+  context: ExistingContentContext,
+  scope: CritiqueScopeType,
+): string {
+  const e = formatExistingContent(context);
+  const isCross = scope !== 'entity';
+
+  const scopeInstruction = isCross
+    ? `You are running a CROSS-ENTITY audit: compare plan items against EACH OTHER and
+against existing canon. Look for narrative arc problems, timeline clashes, and broken
+or conflicting relationships (e.g. two missions contradict each other's resolution;
+a character's role conflicts across items).`
+    : `You are running a PER-ENTITY audit: inspect each plan item in isolation against the
+existing canon it references. Look for local facts that contradict established lore
+(e.g. a character's faction/age/relationship contradicts an existing entry; a scene's
+district conflicts with the characters who appear there).`;
+
+  return `You are an AI semantic critique reviewer for Las Flores 2077, a narrative cyberpunk game.
+
+## Task
+Critically review the proposed content plan and return annotation nodes. Each annotation
+is either a ":Conflict" (a contradiction that should be fixed) or a ":Suggestion" (a
+quality improvement, advisory only).
+
+${scopeInstruction}
+
+## Proposed plan
+${JSON.stringify({
+    id: plan.id,
+    description: plan.description,
+    items: plan.items.map(i => ({
+      id: i.id,
+      type: i.type,
+      name: i.name,
+      slug: i.slug,
+      action: i.action,
+      description: i.description,
+      fields: i.fields,
+      dependsOn: i.dependsOn,
+      lore_refs: i.lore_refs,
+    })),
+  }, null, 2)}
+
+## Existing canon
+- Characters: ${e.chars}
+- Scenes: ${e.scenes}
+- Dialogues: ${e.dialogues}
+- Missions: ${e.missions}
+- Overlays: ${e.overlays}
+- Locations: ${e.locations}
+
+## Severity rules
+- "error": the contradiction MUST be fixed before this plan can be approved (e.g. directly
+  contradicts existing canon).
+- "warning": likely a problem, but the author should judge.
+- "info": a Suggestion (type="suggestion") quality note, never a blocker.
+
+## Rules
+1. Each annotation MUST include:
+   - type: "conflict" | "suggestion"
+   - severity: "error" | "warning" | "info"
+   - description: plain-language explanation of the problem/improvement.
+   - evidence: array of { nodeType, nodeId, slug, excerpt } — the text excerpts in the
+     plan or canon that prove the claim. ALWAYS include at least one excerpt. nodeId must
+     reference a plan item id (for proposed content) or an existing content id/slug.
+   - itemIds: plan item ids this annotation relates to (may be empty).
+2. Only use a "conflict" for contradictions you are confident about; prefer conservative,
+   high-confidence flags. Use "suggestion"/"info" for the rest.
+3. Every conflict must be backed by quoted evidence — never flag without one.
+4. Return ONLY a JSON object with an "annotations" key, no markdown fences or explanation.
+
+## Output format
+{
+  "annotations": [
+    {
+      "type": "conflict",
+      "severity": "error",
+      "description": "Brief human-readable explanation",
+      "evidence": [{ "nodeType": "character", "nodeId": "<item id>", "slug": "<slug>", "excerpt": "the relevant text" }],
+      "itemIds": ["<item id>"]
+    }
+  ]
+}`;
+}
+
 
 export function buildFillFieldsPrompt(
   item: ContentPlanItem,

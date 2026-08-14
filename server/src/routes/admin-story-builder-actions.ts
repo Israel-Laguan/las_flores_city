@@ -15,6 +15,7 @@ import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
+import { aiCritiqueService } from '../services/AICritiqueService.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
@@ -361,3 +362,70 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req: AuthRequest
 
 // GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
 adminStoryBuilderActionsRouter.get('/plans/:id/verification', handleGetVerificationReport);
+
+// POST /admin/story-builder/plans/:id/analyze — Run AI semantic critique (M26)
+// Body: { scope?: 'entity' | 'cross_entity'; force?: boolean }
+adminStoryBuilderActionsRouter.post('/plans/:id/analyze', async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params as Record<string, string>;
+    const scope = (req.body?.scope as string) || 'entity';
+    if (scope !== 'entity' && scope !== 'cross_entity' && scope !== 'cross_mission') {
+      res.status(400).json({ success: false, error: "scope must be 'entity', 'cross_entity', or 'cross_mission'", timestamp: new Date().toISOString() });
+      return;
+    }
+    const force = req.body?.force === true || req.body?.force === 'true';
+
+    const result = await aiCritiqueService.runCritique(id, scope, { forceReanalyze: force });
+
+    emitAdminEvent('plan_analyzed', { scope, cached: result.cached, annotationCount: result.annotations.length }, id, req.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[story-builder] POST /plans/:id/analyze error:', error);
+    const status = error.message?.includes('not found') ? 404 : 500;
+    res.status(status).json({
+      success: false,
+      error: error.message || 'Failed to run plan critique',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// GET /admin/story-builder/plans/:id/annotations — Fetch stored critique annotations
+adminStoryBuilderActionsRouter.get('/plans/:id/annotations', async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params as Record<string, string>;
+    const annotations = await aiCritiqueService.getAnnotations(id);
+    res.json({ success: true, data: { annotations }, timestamp: new Date().toISOString() });
+  } catch (error: any) {
+    console.error('[story-builder] GET /plans/:id/annotations error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to fetch annotations', timestamp: new Date().toISOString() });
+  }
+});
+
+// PATCH /admin/story-builder/plans/:id/annotations/:annotationId — Live override status
+// Body: { status: 'open' | 'addresses' | 'dismissed' }  (M26 dismiss, M29 addressed)
+adminStoryBuilderActionsRouter.patch('/plans/:id/annotations/:annotationId', async (req: AuthRequest, res) => {
+  try {
+    const { annotationId } = req.params as Record<string, string>;
+    const { status } = req.body || {};
+    if (status !== 'open' && status !== 'addressed' && status !== 'dismissed') {
+      res.status(400).json({ success: false, error: "status must be 'open', 'addressed', or 'dismissed'", timestamp: new Date().toISOString() });
+      return;
+    }
+
+    await aiCritiqueService.setAnnotationStatus(annotationId, status);
+    emitAdminEvent('plan_annotation_status', { annotationId, status }, req.userId ?? undefined);
+
+    res.json({ success: true, data: { annotationId, status }, timestamp: new Date().toISOString() });
+  } catch (error: any) {
+    console.error('[story-builder] PATCH /plans/:id/annotations/:annotationId error:', error);
+    const status = error.message?.includes('not found') ? 404 : 500;
+    res.status(status).json({ success: false, error: error.message || 'Failed to update annotation', timestamp: new Date().toISOString() });
+  }
+});
+

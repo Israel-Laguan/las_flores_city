@@ -1,7 +1,7 @@
-import { ContentPlanSchema, IntakeConflictPreviewSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation } from '@las-flores/shared';
+import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
-import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt } from './LLMPrompts.js';
+import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt } from './LLMPrompts.js';
 import { estimateCost } from './LLMCostEstimator.js';
 import { finiteInt } from '../utils/env.js';
 
@@ -337,6 +337,69 @@ export class LiteLLMProvider implements LLMProvider {
     }
 
     return { conflicts, usage };
+  }
+
+  /**
+   * M26 — Deep semantic critique (Moment 3).
+   *
+   * Two-model split: `scope='entity'` runs the per-item/local scan on the default
+   * (cheap) model; `scope='cross_entity'` runs the narrative/relationship audit on
+   * `LLM_DEEP_MODEL` (falling back to the default model when unset).
+   *
+   * Parses structured `:Conflict` / `:Suggestion` annotation nodes, keeping only
+   * entries that satisfy `CritiqueAnnotationSchema`. Returns empty on a malformed /
+   * unsupported model response (with a diagnostic warn), never throws.
+   */
+  async analyzePlanForConflicts(
+    plan: ContentPlan,
+    context: ExistingContentContext,
+    scope: CritiqueScopeType,
+  ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }> {
+    // Deep model only for the expensive cross-entity audit; per-entity stays cheap.
+    const deepModel = process.env.LLM_DEEP_MODEL;
+    const provider = scope !== 'entity' && deepModel && deepModel !== this.model
+      ? new LiteLLMProvider({ model: deepModel, timeoutMs: this.defaultTimeoutMs, retries: this.retries })
+      : this;
+
+    const systemPrompt = buildSemanticCritiquePrompt(plan, context, scope);
+    const maxTokens = finiteInt(process.env.LLM_CRITIQUE_MAX_TOKENS, 4096);
+    const { result, usage } = await provider.callLLM(systemPrompt, plan.description, undefined, maxTokens);
+
+    const isObject = result !== null && typeof result === 'object' && !Array.isArray(result);
+    const candidate = isObject ? result.annotations : undefined;
+    const raw = Array.isArray(candidate) ? candidate : [];
+
+    // Tolerate malformed entries — keep only those that pass the schema. The
+    // schema assigns a fresh id/createdAt/status so the raw model output is only
+    // the semantic fields (type, severity, description, evidence, itemIds, ...).
+    const annotations = raw
+      .map((a: any) => CritiqueAnnotationSchema.safeParse({
+        id: a?.id ?? crypto.randomUUID(),
+        type: a?.type,
+        severity: a?.severity,
+        description: a?.description,
+        evidence: a?.evidence ?? [],
+        relatedEntities: a?.relatedEntities ?? [],
+        scope,
+        aiModel: provider.model,
+        inputHash: a?.inputHash ?? '',
+        status: 'open',
+        planId: plan.id,
+        itemIds: a?.itemIds ?? [],
+        createdAt: new Date().toISOString(),
+      }))
+      .filter((r: any) => r.success)
+      .map((r: any) => r.data);
+
+    if (!isObject || !Array.isArray(candidate)) {
+      console.warn(`[LiteLLM] Semantic critique returned no "annotations" array; treating as empty (scope=${scope}, ` +
+        `plan: "${(plan.description || '').substring(0, 80)}", raw keys: ${isObject ? Object.keys(result).join(',') || '(none)' : '(non-object response)'})`);
+    } else if (raw.length > 0 && annotations.length === 0) {
+      console.warn('[LiteLLM] Semantic critique dropped all annotations as malformed; treating as empty. Raw preview: ' +
+        JSON.stringify(raw).substring(0, 300));
+    }
+
+    return { annotations, usage };
   }
 
 }

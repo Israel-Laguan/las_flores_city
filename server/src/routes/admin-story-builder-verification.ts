@@ -1,8 +1,10 @@
 import type { AuthRequest } from '../middleware/auth.js';
 import { queryOLTP } from '@las-flores/infra';
+import { aiCritiqueService } from '../services/AICritiqueService.js';
 
 // GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
-// and the latest bounded conflict report (M25: recorded checked-scope + findings).
+// and the latest bounded conflict report (M25: recorded checked-scope + findings),
+// plus stored AI critique annotations (M26: :Conflict / :Suggestion overlays).
 export async function handleGetVerificationReport(req: AuthRequest, res: any) {
   try {
     const { id } = req.params;
@@ -44,9 +46,23 @@ export async function handleGetVerificationReport(req: AuthRequest, res: any) {
       // Best-effort: absence of a conflict report must not fail the request.
     }
 
+    // M26 — stored AI critique annotations (:Conflict / :Suggestion). Best-effort
+    // so an unavailable annotations table (migration not yet applied) never fails
+    // the request.
+    let critique_annotations: any[] | null = null;
+    try {
+      critique_annotations = await aiCritiqueService.getAnnotations(id as string);
+    } catch {
+      critique_annotations = null;
+    }
+
     res.json({
       success: true,
-      data: { verification_report: result.rows[0].verification_report, conflict_report },
+      data: {
+        verification_report: result.rows[0].verification_report,
+        conflict_report,
+        critique_annotations,
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

@@ -59,7 +59,8 @@
     "066_claims.sql",
     "067_admin_events_audit.sql",
     "068_admin_events_audit_validate.sql",
-    "069_entity_identity.sql"
+    "069_entity_identity.sql",
+    "070_critique_annotations.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",
