@@ -107,6 +107,51 @@ describe('IdentityResolver', () => {
     }
   });
 
+  test('ambiguous — reports exhaustion instead of a colliding new variant when all Roman variants are used', async () => {
+    // Two entities already share the exact alias "Marcus II" → the query is
+    // ambiguous. Additionally, every downstream variant Marcus III.. is already
+    // taken, so the suffix space is exhausted: the resolver must NOT propose a
+    // colliding eleventh name; it must surface an exhausted `new` alternative.
+    // Stable synthetic UUIDs (collision-avoidance: dedicated block c100…).
+    const baseId = 'c1000000-e29b-41d4-a716-44665544';
+    const twoMarcusII = [
+      { entity_id: `${baseId}0010`, alias: 'Marcus II', is_primary: true },
+      { entity_id: `${baseId}0011`, alias: 'Marcus II', is_primary: true },
+    ];
+    // Local mirror of the resolver's Roman generator so filler aliases match
+    // exactly what `suggestNextName` will probe (Marcus III, Marcus IV, …).
+    const rtable: Array<[number, string]> = [
+      [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+      [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
+      [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I'],
+    ];
+    const toRoman = (num: number): string => {
+      let out = ''; let remaining = num;
+      for (const [value, symbol] of rtable) {
+        while (remaining >= value) { out += symbol; remaining -= value; }
+      }
+      return out;
+    };
+    // Fill Marcus III.. up past the search ceiling so no free variant exists.
+    const filler: Array<{ entity_id: string; alias: string; is_primary: boolean }> = [];
+    for (let n = 3; n <= 130; n += 1) {
+      filler.push({ entity_id: `${baseId}${String(n).padStart(4, '0')}`, alias: `Marcus ${toRoman(n)}`, is_primary: true });
+    }
+    queryOLTP.mockResolvedValueOnce({ rows: [...twoMarcusII, ...filler] });
+
+    const result = await identityResolver.resolve('character', 'Marcus II');
+
+    expect(result.status).toBe('ambiguous');
+    if (result.status === 'ambiguous') {
+      const newAlt = result.alternatives.find((a) => a.kind === 'new');
+      expect(newAlt).toBeDefined();
+      // Must NOT be a usable variant — it carries the exhausted flag.
+      expect((newAlt as any).exhausted).toBe(true);
+      // The name must not look like a committable new variant.
+      expect((newAlt as any).name).not.toMatch(/^new: Marcus \w+$/);
+    }
+  });
+
   test('resolvePlanItems flips a matched create item to update with a stable id', async () => {
     // One hit → not ambiguous here; but ensure matched items flip to update.
     queryOLTP.mockResolvedValue({ rows: [EXISTING_MARCUS] });

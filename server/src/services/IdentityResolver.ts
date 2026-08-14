@@ -164,8 +164,36 @@ function existingAliasesFor(
 /** Roman suffix sequence used by `suggestNextName` (client names: I, II, III…). */
 const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'] as const;
 
-/** Derive a "name N…" suggestion for a new variant of an existing name. */
-function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): string {
+/** Hard ceiling on how many variants we will ever propose for one base name. */
+const MAX_VARIANT_ATTEMPTS = 100;
+
+/** Convert a positive integer to an uppercase Roman numeral (1 → I, 11 → XI…). */
+function toRoman(n: number): string {
+  if (n >= 1 && n <= ROMAN_NUMERALS.length) return ROMAN_NUMERALS[n - 1];
+  const table: Array<[number, string]> = [
+    [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+    [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
+    [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I'],
+  ];
+  let out = '';
+  let remaining = n;
+  for (const [value, symbol] of table) {
+    while (remaining >= value) {
+      out += symbol;
+      remaining -= value;
+    }
+  }
+  return out;
+}
+
+/**
+ * Derive a "name N…" suggestion for a new variant of an existing name.
+ *
+ * Returns `null` when no unused variant can be found within `MAX_VARIANT_ATTEMPTS`
+ * — i.e. the suffix space is exhausted. Callers must NOT fabricate a colliding
+ * name; they should report exhaustion instead.
+ */
+function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): string | null {
   // Split an existing trailing Roman/Jr./Sr. suffix off so we can increment it.
   // Longest-first alternation so e.g. "III" is not mis-parsed as "II"; covers the
   // full ROMAN_NUMERALS sequence (I, II, III, IV, V, VI, VII, VIII, IX, X) + Jr./Sr.
@@ -182,15 +210,16 @@ function suggestNextName(name: string, used: ReadonlySet<string> = new Set()): s
 
   // If no known trailing suffix, we start proposing "II" (the first increment).
   const startIdx = ROMAN_NUMERALS.indexOf(currentSuffix as (typeof ROMAN_NUMERALS)[number]);
-  let cursor = startIdx >= 0 ? startIdx + 1 : ROMAN_NUMERALS.indexOf('II');
+  const startNumber = startIdx >= 0 ? startIdx + 2 : 2; // II == 2
   // Walk the numeral sequence until the suggested name is not already in use.
-  for (let offset = 0; offset < ROMAN_NUMERALS.length; offset += 1) {
-    const candidate = `${base} ${ROMAN_NUMERALS[cursor % ROMAN_NUMERALS.length]}`;
+  // Extends well past X (XI, XII, …) so exhausting the fixed list is no longer a
+  // collision: we keep searching until we hit `MAX_VARIANT_ATTEMPTS`.
+  for (let n = startNumber; n <= startNumber + MAX_VARIANT_ATTEMPTS; n += 1) {
+    const candidate = `${base} ${toRoman(n)}`;
     if (!used.has(normalizeName(candidate))) return candidate;
-    cursor += 1;
   }
-  // Bounded walk exhausted; return the next candidate regardless.
-  return `${base} ${ROMAN_NUMERALS[cursor % ROMAN_NUMERALS.length]}`;
+  // Suffix space exhausted; report it instead of returning a colliding name.
+  return null;
 }
 
 /** Folder directory for each content type (mirrors `resolveFilePath`'s dirMap). */
@@ -359,7 +388,19 @@ export class IdentityResolver {
     // (not just the ones sharing the queried spelling), e.g. so
     // `new: Marcus III` never proposes an already-in-use name.
     const used = new Set(Object.keys(index));
-    alternatives.push({ kind: 'new', name: `new: ${suggestNextName(name, used)}` });
+    const next = suggestNextName(name, used);
+    if (next) {
+      alternatives.push({ kind: 'new', name: `new: ${next}`, exhausted: false });
+    } else {
+      // Every variant of this base name is already taken. Do NOT fabricate a
+      // colliding option — surface exhaustion so the author must reconcile the
+      // duplicates (or rename) rather than create a duplicate variant.
+      alternatives.push({
+        kind: 'new',
+        name: `new: ${name} (all variants in use)`,
+        exhausted: true,
+      });
+    }
 
     return { status: 'ambiguous', entityType, alternatives };
   }
