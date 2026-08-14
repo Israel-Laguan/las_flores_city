@@ -209,24 +209,27 @@ const TYPE_DIR: Record<string, string> = {
   vault: 'vault',
 };
 
-export class IdentityResolver {
-  /**
-   * Per-pass alias index cache — populated for the duration of one
-   * `resolvePlanItems` call so a plan's items with the same entity type reuse a
-   * single `loadAliasIndex` result instead of repeating the DB query (and, for
-   * locations, the YAML glob + parse + upsert) for each item. Reset to `null`
-   * on entry/exit so a long-lived process never serves stale aliases.
-   */
-  private aliasIndexCache: Map<string, AliasIndex> | null = null;
-  /**
-   * Per-pass canonical-slug map cache (entityType → id → folder slug). Built
-   * once per type per pass so `resolveCanonicalSlug` doesn't re-glob and
-   * re-parse every YAML file for each matched item.
-   */
-  private canonicalSlugCache: Map<string, Map<string, string | null>> | null = null;
+/**
+ * Per-invocation resolution context. The caches are confined to a single
+ * `resolvePlanItems` call (never the singleton) so concurrent requests can
+ * never share or clear each other's alias/slug indexes.
+ */
+interface ResolveContext {
+  aliasIndexCache: Map<string, AliasIndex>;
+  canonicalSlugCache: Map<string, Map<string, string | null>>;
+}
 
-  private async loadAliasIndex(entityType: string): Promise<AliasIndex> {
-    const cached = this.aliasIndexCache?.get(entityType);
+export class IdentityResolver {
+  /** Build a fresh per-invocation context for one resolve pass. */
+  private createContext(): ResolveContext {
+    return {
+      aliasIndexCache: new Map(),
+      canonicalSlugCache: new Map(),
+    };
+  }
+
+  private async loadAliasIndex(ctx: ResolveContext, entityType: string): Promise<AliasIndex> {
+    const cached = ctx.aliasIndexCache.get(entityType);
     if (cached) return cached;
     const result = await queryOLTP<AliasRow>(
       `SELECT entity_id, alias, is_primary FROM entity_aliases WHERE entity_type = $1 ORDER BY is_primary DESC, alias ASC`,
@@ -239,7 +242,7 @@ export class IdentityResolver {
       const locIndex = await syncLocationAliases();
       index = mergeIndexes(index, locIndex);
     }
-    this.aliasIndexCache?.set(entityType, index);
+    ctx.aliasIndexCache.set(entityType, index);
     return index;
   }
 
@@ -252,8 +255,8 @@ export class IdentityResolver {
    * full-tree scan. Returns null when unknown (best-effort). The per-type
    * id→slug map is built once per resolve pass and cached.
    */
-  private async canonicalSlugFor(entityType: string, entityId: string): Promise<string | null> {
-    const cache = this.canonicalSlugCache ?? new Map();
+  private async canonicalSlugFor(ctx: ResolveContext, entityType: string, entityId: string): Promise<string | null> {
+    const cache = ctx.canonicalSlugCache;
     let byId = cache.get(entityType);
     if (!byId) {
       byId = new Map<string, string | null>();
@@ -284,8 +287,7 @@ export class IdentityResolver {
       } catch {
         // ignore glob/scan failures — caller falls back to the item's own slug
       }
-      if (!this.canonicalSlugCache) this.canonicalSlugCache = new Map();
-      this.canonicalSlugCache.set(entityType, byId);
+      cache.set(entityType, byId);
     }
     return byId.get(entityId) ?? null;
   }
@@ -296,6 +298,7 @@ export class IdentityResolver {
    * or `ambiguous` (several plausible identities) — never a guess.
    */
   async resolve(
+    ctx: ResolveContext,
     entityType: string,
     name: string,
     opts: { description?: string } = {},
@@ -305,7 +308,7 @@ export class IdentityResolver {
       const suggested = opts.description?.trim().slice(0, 60) || '<unnamed>';
       return { status: 'new_candidate', entityType, suggestedName: suggested };
     }
-    const index = await this.loadAliasIndex(entityType);
+    const index = await this.loadAliasIndex(ctx, entityType);
     const deduped = dedupeCandidates(index[normalized] ?? []);
 
     if (deduped.length === 0) {
@@ -353,29 +356,23 @@ export class IdentityResolver {
    * else goes through the resolver so the LLM never silently dictates identity.
    */
   async resolvePlanItems(plan: ContentPlan): Promise<ContentPlan> {
-    // Fresh per-pass caches: fresh alias/slug indexes for every pass so a
-    // long-lived singleton never serves stale aliases, while avoiding repeated
-    // DB queries and YAML scans for items sharing an entity type.
-    this.aliasIndexCache = new Map();
-    this.canonicalSlugCache = new Map();
-    try {
-      const items: ContentPlanItem[] = [];
-      for (const item of plan.items) {
-        items.push(
-          item.action === 'update' && !!item.entity_id
-            ? item // already identity-stable; nothing to resolve
-            : await this.annotateNewItem(item),
-        );
-      }
-      return { ...plan, items };
-    } finally {
-      this.aliasIndexCache = null;
-      this.canonicalSlugCache = null;
+    // Fresh per-invocation context: alias/slug indexes are confined to this
+    // single pass, so a long-lived singleton never serves stale aliases and
+    // concurrent requests never share or clear each other's indexes.
+    const ctx = this.createContext();
+    const items: ContentPlanItem[] = [];
+    for (const item of plan.items) {
+      items.push(
+        item.action === 'update' && !!item.entity_id
+          ? item // already identity-stable; nothing to resolve
+          : await this.annotateNewItem(ctx, item),
+      );
     }
+    return { ...plan, items };
   }
 
-  private async annotateNewItem(item: ContentPlanItem): Promise<ContentPlanItem> {
-    const resolution = await this.resolve(item.type, item.name, { description: item.description });
+  private async annotateNewItem(ctx: ResolveContext, item: ContentPlanItem): Promise<ContentPlanItem> {
+    const resolution = await this.resolve(ctx, item.type, item.name, { description: item.description });
     const next: ContentPlanItem = { ...item, resolution };
 
     if (resolution.status === 'matched') {
@@ -384,10 +381,10 @@ export class IdentityResolver {
       // switch to `update`; otherwise staging would target the LLM's alias slug
       // (e.g. `marcus`) which may not match the canonical folder, and fail with
       // "Cannot update non-existent file".
-      const canonicalSlug = await this.canonicalSlugFor(item.type, resolution.entityId);
+      const canonicalSlug = await this.canonicalSlugFor(ctx, item.type, resolution.entityId);
       if (canonicalSlug && canonicalSlug !== next.slug) next.slug = canonicalSlug;
 
-      const aliases = existingAliasesFor(item.type, await this.loadAliasIndex(item.type), resolution);
+      const aliases = existingAliasesFor(item.type, await this.loadAliasIndex(ctx, item.type), resolution);
       if (aliases.length > 0) next.aliases = aliases;
       // A matched entity is a first-class content item; swap `create` for
       // `update` so the author is explicitly extending existing canon rather

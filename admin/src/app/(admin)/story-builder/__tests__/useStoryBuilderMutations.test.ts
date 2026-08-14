@@ -110,4 +110,22 @@ describe('resolveItemIdentity (M25)', () => {
     expect(item.slug).toBe('alice_ii');
     if (item.resolution?.status === 'new_candidate') expect(item.resolution.suggestedName).toBe('Alice II');
   });
+
+  it('clears a stale entity_id when the new-variant choice was previously matched', () => {
+    // An ambiguous item that arrived as a resolved `update` carrying an old
+    // stable entity_id must NOT keep that id once the author chooses a brand-new
+    // variant — otherwise the new variant would be persisted with a foreign id.
+    const source = ambiguousPlan();
+    source.items[0] = {
+      ...source.items[0],
+      action: 'update',
+      entity_id: 'a1930000-1111-4111-8111-111111111111',
+    };
+    const plan = resolveItemIdentity(source, 0, { kind: 'new', name: 'new: Alice II' });
+    const item = plan.items[0];
+    expect(item.action).toBe('create');
+    expect(item.entity_id).toBeUndefined();
+    expect(item.name).toBe('Alice II');
+    expect(item.resolution?.status).toBe('new_candidate');
+  });
 });

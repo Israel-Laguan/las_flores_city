@@ -92,6 +92,7 @@ export function resolveItemIdentity(
     const chosenName = newVariantName(alternative.name).slice(0, NAME_MAX_LENGTH);
     items[index] = {
       ...item,
+      entity_id: undefined,
       action: 'create',
       name: chosenName,
       slug: uniqueSlug(plan, item.type, chosenName, item.id),

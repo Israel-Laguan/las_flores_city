@@ -32,6 +32,15 @@ const queryOLTP: jest.MockedFunction<any> = (jest.requireMock('@las-flores/infra
 
 const EXISTING_MARCUS = { entity_id: 'a1930000-1111-4111-8111-111111111111', alias: 'Marcus', is_primary: true };
 
+// Build a fresh per-invocation context as `resolve` now requires (the caches
+// are confined to a single resolve pass, not the singleton).
+function makeCtx() {
+  return {
+    aliasIndexCache: new Map(),
+    canonicalSlugCache: new Map(),
+  };
+}
+
 describe('IdentityResolver', () => {
   beforeEach(() => {
     queryOLTP.mockReset();
@@ -44,7 +53,7 @@ describe('IdentityResolver', () => {
   test('matched — a single exact normalized alias resolves to its stable id', async () => {
     queryOLTP.mockResolvedValueOnce({ rows: [EXISTING_MARCUS] });
 
-    const result = await identityResolver.resolve('character', 'Marcus');
+    const result = await (identityResolver as any).resolve(makeCtx(), 'character', 'Marcus');
 
     expect(result).toEqual({
       status: 'matched',
@@ -57,7 +66,7 @@ describe('IdentityResolver', () => {
   test('matched — case/punctuation-insensitive matching (emit NormalizedName contract)', async () => {
     queryOLTP.mockResolvedValueOnce({ rows: [EXISTING_MARCUS] });
 
-    const result = await identityResolver.resolve('character', '  MAR-CUS! ');
+    const result = await (identityResolver as any).resolve(makeCtx(), 'character', '  MAR-CUS! ');
     expect(result.status).toBe('matched');
     if (result.status === 'matched') expect(result.entityId).toBe(EXISTING_MARCUS.entity_id);
   });
@@ -65,7 +74,7 @@ describe('IdentityResolver', () => {
   test('new_candidate — no alias hits surfaces a create proposal', async () => {
     queryOLTP.mockResolvedValueOnce({ rows: [] });
 
-    const result = await identityResolver.resolve('character', 'Diego');
+    const result = await (identityResolver as any).resolve(makeCtx(), 'character', 'Diego');
     expect(result).toEqual({
       status: 'new_candidate',
       entityType: 'character',
@@ -77,7 +86,7 @@ describe('IdentityResolver', () => {
     const secondMarcus = { entity_id: 'a1940000-2222-4111-8111-111111111111', alias: 'Marcus', is_primary: true };
     queryOLTP.mockResolvedValueOnce({ rows: [EXISTING_MARCUS, secondMarcus] });
 
-    const result = await identityResolver.resolve('character', 'Marcus');
+    const result = await (identityResolver as any).resolve(makeCtx(), 'character', 'Marcus');
 
     expect(result.status).toBe('ambiguous');
     if (result.status === 'ambiguous') {
@@ -99,7 +108,7 @@ describe('IdentityResolver', () => {
       rows: [{ entity_id: EXISTING_MARCUS.entity_id, alias: 'Marcus II', is_primary: true }, second],
     });
 
-    const result = await identityResolver.resolve('character', 'Marcus II');
+    const result = await (identityResolver as any).resolve(makeCtx(), 'character', 'Marcus II');
 
     expect(result.status).toBe('ambiguous');
     if (result.status === 'ambiguous') {
@@ -205,5 +214,51 @@ describe('IdentityResolver', () => {
     expect(item.resolution?.status).toBe('new_candidate');
     expect(item.action).toBe('create');
     expect(item.entity_id).toBeUndefined();
+  });
+
+  test('concurrent resolvePlanItems calls keep independent caches', async () => {
+    // Two overlapping passes must not share/step on each other's per-pass
+    // caches. Simulate this by running two passes whose alias queries return
+    // different rows; each pass must resolve against its own result set.
+    const marcusRow = { entity_id: 'a1930000-1111-4111-8111-111111111111', alias: 'Marcus', is_primary: true };
+    const otherRow = { entity_id: 'b1930000-1111-4111-8111-111111111111', alias: 'Marcus', is_primary: true };
+
+    const planMarcus: any = {
+      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+      description: 'plan',
+      status: 'draft',
+      links: [],
+      _meta: {},
+      items: [{ id: '11111111-2222-3333-4444-555555555555', type: 'character', action: 'create', name: 'Marcus', slug: 'marcus', fields: {}, assetNeeds: [], dependsOn: [] }],
+    };
+    const planOther: any = {
+      id: 'c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f',
+      description: 'plan',
+      status: 'draft',
+      links: [],
+      _meta: {},
+      items: [{ id: '22222222-3333-4444-5555-666666666666', type: 'character', action: 'create', name: 'Marcus', slug: 'marcus', fields: {}, assetNeeds: [], dependsOn: [] }],
+    };
+
+    // Interleave: the first pass's query is answered for the second pass, and
+    // vice versa, so any shared-cache bug surfaces as the wrong entity id.
+    queryOLTP
+      .mockResolvedValueOnce({ rows: [marcusRow] })  // pass A load
+      .mockResolvedValueOnce({ rows: [otherRow] })   // pass B load
+      .mockResolvedValue({ rows: [] });
+
+    const [resolvedA, resolvedB] = await Promise.all([
+      identityResolver.resolvePlanItems(planMarcus),
+      identityResolver.resolvePlanItems(planOther),
+    ]);
+
+    expect(resolvedA.items[0].resolution?.status).toBe('matched');
+    if (resolvedA.items[0].resolution?.status === 'matched') {
+      expect(resolvedA.items[0].resolution.entityId).toBe(marcusRow.entity_id);
+    }
+    expect(resolvedB.items[0].resolution?.status).toBe('matched');
+    if (resolvedB.items[0].resolution?.status === 'matched') {
+      expect(resolvedB.items[0].resolution.entityId).toBe(otherRow.entity_id);
+    }
   });
 });
