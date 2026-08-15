@@ -22,7 +22,7 @@ import { createLLMProvider } from './LLMService.js';
 import { postgresNeighborhoodProvider } from './NeighborhoodProvider.js';
 import { boundedPlanItems, serializeCritiqueContext } from './LLMPrompts.js';
 import type { LLMProvider, CritiqueScopeType, ExistingContentContext } from './types/LLMTypes.js';
-import type { CritiqueAnnotation, CritiqueAnnotationsResult } from '@las-flores/shared';
+import type { CritiqueAnnotation, CritiqueAnnotationsResult, ContentPlan } from '@las-flores/shared';
 
 const LOG_PREFIX = '[AICritiqueService]';
 
@@ -42,6 +42,11 @@ export class AICritiqueService {
    * character's role — changes the hash and triggers a re-analyze instead of
    * returning stale cached annotations. Every context entry is included (no
    * per-category cap) so adding a canon entity also invalidates the cache.
+   *
+   * `itemCount` (total plan items) is included even though only the first
+   * PLAN_ITEM_CAP items are serialized — adding or removing an omitted item
+   * changes the prompt (the "[N additional item(s) omitted]" note) but would
+   * not change the hash without this field, causing stale cache hits.
    */
   private buildInputHash(
     plan: { id: string; items: Array<any>; description?: string },
@@ -53,6 +58,7 @@ export class AICritiqueService {
         id: plan.id,
         description: plan.description,
         items: boundedPlanItems(plan.items as any[]),
+        itemCount: plan.items.length,
       },
       context: serializeCritiqueContext(context),
       scope,
@@ -64,30 +70,42 @@ export class AICritiqueService {
    * Run a full semantic critique.
    *
    * @param planId - the content plan to analyze
-   * @param scope  - 'entity' (cheap per-item) | 'cross_entity' (deep full-plan)
-   * @param opts   - forceReanalyze: ignore cache; neighborhood: optional override
+   * @param scope  - 'entity' (cheap per-item) | 'cross_entity' (deep full-plan) | 'cross_mission'
+   * @param opts   - forceReanalyze: ignore cache; neighborhood: optional override;
+   *                 planJson: validated plan (e.g. from the admin's unsaved edits);
+   *                 when provided, the plan is used directly instead of loading
+   *                 plan_json from the DB, so unsaved edits are critiqued.
    * @returns      - annotations + whether they came from cache
    */
   async runCritique(
     planId: string,
     scope: CritiqueScopeType = 'entity',
-    opts: { forceReanalyze?: boolean; neighborhood?: ExistingContentContext } = {},
+    opts: { forceReanalyze?: boolean; neighborhood?: ExistingContentContext; planJson?: ContentPlan } = {},
   ): Promise<CritiqueAnnotationsResult> {
-    // 1. Load plan from DB
-    const planResult = await queryOLTP<{ plan_json: any; description: string }>(
-      'SELECT plan_json, description FROM content_plans WHERE id = $1',
-      [planId],
-    );
-    if (planResult.rows.length === 0) {
-      throw new Error(`Plan not found: ${planId}`);
-    }
+    let plan: any;
 
-    const plan = planResult.rows[0].plan_json;
-    if (!plan || !Array.isArray(plan.items)) {
-      throw new Error(`Plan ${planId} has no items — nothing to critique`);
+    if (opts.planJson) {
+      // Use the author's validated plan directly (may contain unsaved edits).
+      plan = opts.planJson;
+      plan.id = planId;
+    } else {
+      // 1. Load plan from DB
+      const planResult = await queryOLTP<{ plan_json: any; description: string }>(
+        'SELECT plan_json, description FROM content_plans WHERE id = $1',
+        [planId],
+      );
+      if (planResult.rows.length === 0) {
+        throw new Error(`Plan not found: ${planId}`);
+      }
+
+      const row = planResult.rows[0];
+      plan = row.plan_json;
+      if (!plan || !Array.isArray(plan.items)) {
+        throw new Error(`Plan ${planId} has no items — nothing to critique`);
+      }
+      plan.description = row.description;
+      plan.id = planId;
     }
-    plan.description = planResult.rows[0].description;
-    plan.id = planId;
 
     // 2. Gather canon context
     const context = opts.neighborhood ?? await postgresNeighborhoodProvider.gatherContext();
@@ -233,12 +251,25 @@ export class AICritiqueService {
    *
    * When the LLM finds no conflicts, we still persist a single `is_marker` row
    * so the next unchanged analysis is a cache hit rather than re-calling the LLM.
+   *
+   * Before persisting, any prior OPEN annotations for the same (plan, scope) are
+   * retired (deleted) so the new run cleanly replaces the old one. Dismissed
+   * and addressed annotations are preserved — they represent author actions
+   * that remain valid across re-analyses.
    */
   private async persistAnnotations(
     annotations: CritiqueAnnotation[],
     meta: { planId: string; scope: CritiqueScopeType; inputHash: string; model: string },
   ): Promise<void> {
     await withOLTPTransaction(async (client) => {
+      // Retire prior OPEN annotations for this (plan, scope) so the new run
+      // cleanly replaces the old one. Dismissed/addressed annotations are
+      // preserved — they represent author actions that survive re-analysis.
+      await client.query(
+        `DELETE FROM critique_annotations WHERE plan_id = $1 AND scope = $2 AND status = 'open'`,
+        [meta.planId, meta.scope],
+      );
+
       for (const annotation of annotations) {
         await client.query(
           `INSERT INTO critique_annotations

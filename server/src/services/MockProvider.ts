@@ -303,15 +303,16 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         itemIds: [item.id],
         createdAt: new Date().toISOString(),
       });
-    }
+      }
 
-    // A deterministic cross-entity :Suggestion to demonstrate the two-model split.
+    // A deterministic cross-entity/cross-mission :Suggestion to demonstrate the two-model split.
     if (scope !== 'entity') {
+      const scopeLabel = scope === 'cross_mission' ? 'cross-mission' : 'cross-entity';
       annotations.push({
         id: crypto.randomUUID(),
         type: 'suggestion',
         severity: 'info',
-        description: 'No cross-mission contradictions detected by the mock; consider a human narrative review before approve.',
+        description: `No ${scopeLabel} contradictions detected by the mock; consider a human narrative review before approve.`,
         evidence: [],
         relatedEntities: [],
         scope,

@@ -103,11 +103,28 @@ export type CritiqueAnnotationsResult = z.infer<typeof CritiqueAnnotationsResult
 /**
  * Input payload to persist an annotation after an AI critique run (before the
  * DB row exists — server assigns the UUID + createdAt).
+ *
+ * Built from `CritiqueAnnotationSchema` (not the base object) so the same
+ * anti-hallucination refinement is enforced here: a `conflict` without at
+ * least one evidence excerpt is rejected at every persistence input.
  */
+// `.omit()` cannot be applied to a schema that carries a `superRefine`
+// refinement, so we omit from the base object and re-apply the same
+// anti-hallucination check. This keeps the draft validation identical to the
+// persisted annotation: a `conflict` without at least one evidence excerpt is
+// rejected at every persistence input.
 export const CritiqueAnnotationDraftSchema = CritiqueAnnotationBase.omit({
   id: true,
   createdAt: true,
   status: true,
+}).superRefine((annotation, ctx) => {
+  if (annotation.type === 'conflict' && annotation.evidence.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'conflicts must include at least one evidence excerpt',
+      path: ['evidence'],
+    });
+  }
 });
 
 export type CritiqueAnnotationDraft = z.infer<typeof CritiqueAnnotationDraftSchema>;

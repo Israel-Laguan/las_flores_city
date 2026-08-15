@@ -15,19 +15,20 @@
 --    that includes ai_model, matching every cache predicate.
 --
 -- Idempotent: IF EXISTS / IF NOT EXISTS guards make re-runs safe.
+--
+-- This migration is registered as NONTRANSACTIONAL in migration-targets.json
+-- because CREATE/DROP INDEX CONCURRENTLY cannot execute inside a transaction
+-- block. The migration runner executes this file in autocommit mode.
 -- ============================================================
-
-BEGIN;
 
 -- 1. Marker column for clean-plan cache hits.
 ALTER TABLE critique_annotations
   ADD COLUMN IF NOT EXISTS is_marker BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- 2. Replace the cache index so it covers the model predicate too.
-DROP INDEX IF EXISTS idx_critique_annotations_plan_scope_hash;
+--    CONCURRENTLY avoids blocking writes during the rebuild.
+DROP INDEX IF EXISTS CONCURRENTLY idx_critique_annotations_plan_scope_hash;
 
-CREATE INDEX IF NOT EXISTS idx_critique_annotations_cache
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_critique_annotations_cache
   ON critique_annotations (plan_id, scope, input_hash, ai_model)
   WHERE status <> 'dismissed';
-
-COMMIT;

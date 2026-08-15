@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { queryOLTP, queryOLAP, queryContent, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { getCache, invalidatePattern, closeRedis } from '@las-flores/infra';
-import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
+import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
+import { DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
 import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';

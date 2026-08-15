@@ -92,6 +92,10 @@ export function useCritique(planId: string | null): CritiqueApiResult {
       if (res.success) {
         // Reload the full stored annotation set rather than trusting the partial
         // list the analyze endpoint returns (it only covers this scope+hash run).
+        // Clear analyzeLoading *before* the reload — fetchAnnotations increments
+        // the shared seqRef, so if we cleared in `finally` the check
+        // `seq === seqRef.current` would fail and leave the button stuck.
+        setAnalyzeLoading(false);
         await fetchAnnotations();
       } else {
         setError(res.error || 'Analyze failed');

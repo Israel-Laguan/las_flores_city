@@ -1,6 +1,7 @@
 import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { closeRedis, invalidatePattern } from '@las-flores/infra';
-import { DialogueResolver, deepMergeNodes } from '../../src/services/DialogueResolver.js';
+import { DialogueResolver } from '../../src/services/DialogueResolver.js';
+import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
 import type { DialogueNode } from '@las-flores/shared';
 import fs from 'fs';
 import path from 'path';

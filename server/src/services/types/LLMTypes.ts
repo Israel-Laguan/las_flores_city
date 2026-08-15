@@ -14,7 +14,7 @@ export interface ExistingContentContext {
   characters: Array<{ id: string; name: string; role?: string; faction?: string; personality?: string; description?: string }>;
   scenes: Array<{ id: string; name: string; district: string; mood?: string; description?: string }>;
   dialogues: Array<{ id: string; name: string }>;
-  missions: Array<{ id: string; title: string }>;
+  missions: Array<{ id: string; title: string; description?: string }>;
   overlays: Array<{ id: string; name: string }>;
   locations: ExistingLocation[];
 }

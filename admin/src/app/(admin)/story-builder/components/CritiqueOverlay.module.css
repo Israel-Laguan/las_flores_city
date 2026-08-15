@@ -24,18 +24,18 @@
 }
 
 .severity--error {
-  border-left-color: #d33;
-  color: #d33;
+  border-left-color: var(--status-error);
+  color: var(--status-error);
 }
 
 .severity--warning {
-  border-left-color: #e0a23c;
-  color: #e0a23c;
+  border-left-color: var(--status-warn);
+  color: var(--status-warn);
 }
 
 .severity--info {
-  border-left-color: #3a82d0;
-  color: #3a82d0;
+  border-left-color: var(--info);
+  color: var(--info);
 }
 
 .cardHeader {

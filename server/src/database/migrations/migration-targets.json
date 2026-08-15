@@ -60,9 +60,13 @@
     "067_admin_events_audit.sql",
     "068_admin_events_audit_validate.sql",
     "069_entity_identity.sql",
-    "070_critique_annotations.sql",
+         "070_critique_annotations.sql",
     "071_admin_events_critique.sql",
-    "072_admin_events_critique_validate.sql"
+    "072_admin_events_critique_validate.sql",
+    "073_critique_cache_marker.sql"
+  ],
+  "nontransactional": [
+    "073_critique_cache_marker.sql"
   ],
   "olap": [
     "000_schema_migrations.sql",

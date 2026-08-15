@@ -76,9 +76,10 @@ CREATE INDEX IF NOT EXISTS idx_critique_annotations_status
   ON critique_annotations (status);
 
 -- Cache lookup performed by AICritiqueService.findCachedAnnotations:
--- (plan_id, scope, input_hash) + a status filter. Leading columns match the
--- query shape; `ai_model` is not filtered, so it does not belong in the leading
--- position.
+-- (plan_id, scope, input_hash, ai_model) + a status filter. Leading columns
+-- match the query shape and ai_model IS filtered (see findCachedAnnotations),
+-- so it belongs in the index. This index is superseded by migration 073,
+-- which recreates the cache index with all four columns.
 CREATE INDEX IF NOT EXISTS idx_critique_annotations_plan_scope_hash
   ON critique_annotations (plan_id, scope, input_hash);
 
