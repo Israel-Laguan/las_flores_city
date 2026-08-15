@@ -265,6 +265,26 @@ export type {
 } from './schemas/entity-identity.js';
 
 export { JobRunSchema, JobTypeSchema, JobStatusSchema } from './schemas/job-run.js';
+
+export {
+  CritiqueAnnotationSchema,
+  CritiqueEvidenceSchema,
+  CritiqueRelatedEntitySchema,
+  CritiqueAnnotationsResultSchema,
+  CritiqueScopeSchema,
+  CritiqueStatusSchema,
+  CritiqueAnnotationDraftSchema,
+} from './schemas/critique-annotation.js';
+export type {
+  CritiqueAnnotation,
+  CritiqueEvidence,
+  CritiqueRelatedEntity,
+  CritiqueAnnotationsResult,
+  CritiqueScope,
+  CritiqueStatus,
+  CritiqueAnnotationDraft,
+} from './schemas/critique-annotation.js';
+
 export type { JobRun, JobType, JobStatus } from './schemas/job-run.js';
 
 export {

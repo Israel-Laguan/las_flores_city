@@ -21,6 +21,8 @@ const CONTENT_DIR = path.resolve(__dirname, '../../../content');
 interface MigrateTargets {
   oltp: string[];
   olap: string[];
+  /** Migrations that must run OUTSIDE a transaction (e.g. CREATE INDEX CONCURRENTLY). */
+  nontransactional?: string[];
 }
 
 async function ensureSchemaMigrationsTable(): Promise<void> {
@@ -134,6 +136,11 @@ async function applySQLMigrations(): Promise<void> {
       return va - vb;
     });
 
+    // Nontransactional migrations (e.g. 073) cannot run inside a transaction
+    // block because they use CREATE/DROP INDEX CONCURRENTLY. They are executed
+    // in autocommit mode with a session-level advisory lock instead.
+    const nontransactionalFiles = new Set(targets.nontransactional || []);
+
     for (const filename of sorted) {
       const version = parseVersion(filename);
       const filePath = path.join(MIGRATIONS_DIR, filename);
@@ -145,6 +152,7 @@ async function applySQLMigrations(): Promise<void> {
       }
 
       const pool = db.key === 'oltp' ? oltpPool : olapPool;
+      const isNonTxn = nontransactionalFiles.has(filename);
 
       // Pin ONE client for the entire check/apply/record sequence so the
       // advisory lock and the migration transaction share the same session.
@@ -152,59 +160,78 @@ async function applySQLMigrations(): Promise<void> {
       // session than the transaction client — PostgreSQL advisory locks are
       // session-scoped, so that would NOT reliably serialize concurrent runners
       // and an unlock could run on the wrong session.
-      //
-      // The lock is taken as a *transaction-scoped* advisory lock
-      // (pg_advisory_xact_lock) on this same pinned client: it is held for the
-      // duration of the transaction below and released automatically on COMMIT
-      // or ROLLBACK. This both serializes concurrent runners (e.g. multiple
-      // intake-worker instances) and guarantees the lock can never leak if the
-      // applied-check / checksum / file read throws before we reach the
-      // transaction — the pinning `try/finally` always releases the client.
       const client = await pool.connect();
       try {
         const lockKey = hashText(`migration:${db.name}`);
 
-        // Open a single transaction immediately and acquire the migration lock
-        // INSIDE it. A transaction-scoped advisory lock (pg_advisory_xact_lock)
-        // is only meaningful within a transaction — issuing it in autocommit
-        // mode would commit and release it instantly, defeating serialization.
-        // Running the applied-check, SQL apply, and recordMigration inside the
-        // same transaction also guarantees the lock (and the migration) release
-        // atomically on COMMIT/ROLLBACK and can never leak if any step throws.
-        await client.query('BEGIN');
-        try {
-          await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
+        if (isNonTxn) {
+          // Nontransactional migration: acquire a *session-level* advisory lock
+          // (pg_advisory_lock) so concurrent runners still serialize, then run
+          // the file in autocommit mode. CREATE/DROP INDEX CONCURRENTLY is
+          // illegal inside a transaction, so we deliberately do NOT open one.
+          await client.query('SELECT pg_advisory_lock($1)', [lockKey]);
+          try {
+            const alreadyApplied = await isAppliedOn(client, db.name, version);
+            if (alreadyApplied) continue;
 
-          const alreadyApplied = await isAppliedOn(client, db.name, version);
-          if (alreadyApplied) {
-            await client.query('COMMIT');
-            continue;
+            const checksum = await calculateChecksum(filePath);
+            const rawSql = await fs.readFile(filePath, 'utf-8');
+            // Strip the file-level BEGIN/COMMIT so autocommit mode owns the
+            // statements (each auto-commits independently).
+            const sql = stripFileLevelTransactionControl(rawSql);
+
+            console.log(`[migrate] Applying ${filename} to ${db.name} (nontransactional)...`);
+            await client.query(sql);
+            await recordMigration(client, db.name, version, filename, checksum);
+            console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
+          } finally {
+            await client.query('SELECT pg_advisory_unlock($1)', [lockKey]);
           }
+        } else {
+          // Transactional migration: open a single transaction immediately and
+          // acquire the migration lock INSIDE it. A transaction-scoped advisory
+          // lock (pg_advisory_xact_lock) is only meaningful within a transaction
+          // — issuing it in autocommit mode would commit and release it
+          // instantly, defeating serialization. Running the applied-check, SQL
+          // apply, and recordMigration inside the same transaction also
+          // guarantees the lock (and the migration) release atomically on
+          // COMMIT/ROLLBACK and can never leak if any step throws.
+          await client.query('BEGIN');
+          try {
+            await client.query('SELECT pg_advisory_xact_lock($1)', [lockKey]);
 
-          const checksum = await calculateChecksum(filePath);
-          const rawSql = await fs.readFile(filePath, 'utf-8');
-          // Strip the file-level BEGIN/COMMIT so the wrapper's own transaction
-          // is the only one; schema changes and the schema_migrations record
-          // then commit atomically.
-          const sql = stripFileLevelTransactionControl(rawSql);
+            const alreadyApplied = await isAppliedOn(client, db.name, version);
+            if (alreadyApplied) {
+              await client.query('COMMIT');
+              continue;
+            }
 
-          console.log(`[migrate] Applying ${filename} to ${db.name}...`);
+            const checksum = await calculateChecksum(filePath);
+            const rawSql = await fs.readFile(filePath, 'utf-8');
+            // Strip the file-level BEGIN/COMMIT so the wrapper's own transaction
+            // is the only one; schema changes and the schema_migrations record
+            // then commit atomically.
+            const sql = stripFileLevelTransactionControl(rawSql);
 
-          // Run the whole file in a single transaction so a failure (or an
-          // interrupted run) can never strand a half-applied migration — e.g. a
-          // partially-created PL/pgSQL function that would fail to recompile on
-          // the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
-          // The schema_migrations record is written inside the same transaction,
-          // so success and bookkeeping are atomic. The advisory lock is held for
-          // the duration of this transaction and released automatically on COMMIT.
-          await client.query(sql);
-          await recordMigration(client, db.name, version, filename, checksum);
-          await client.query('COMMIT');
-          console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
-        } catch (err: any) {
-          await client.query('ROLLBACK');
-          console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
-          throw err;
+            console.log(`[migrate] Applying ${filename} to ${db.name}...`);
+
+            // Run the whole file in a single transaction so a failure (or an
+            // interrupted run) can never strand a half-applied migration — e.g.
+            // a partially-created PL/pgSQL function that would fail to recompile
+            // on the next `CREATE OR REPLACE` and surface as a `pl_comp.c` error.
+            // The schema_migrations record is written inside the same
+            // transaction, so success and bookkeeping are atomic. The advisory
+            // lock is held for the duration of this transaction and released
+            // automatically on COMMIT.
+            await client.query(sql);
+            await recordMigration(client, db.name, version, filename, checksum);
+            await client.query('COMMIT');
+            console.log(`[migrate] ✓ ${filename} applied to ${db.name}`);
+          } catch (err: any) {
+            await client.query('ROLLBACK');
+            console.error(`[migrate] ✗ ${filename} failed on ${db.name}: ${err.message}`);
+            throw err;
+          }
         }
       } finally {
         client.release();

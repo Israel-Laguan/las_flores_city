@@ -20,7 +20,7 @@
     "024_marketplace.sql",
     "026_vault_signed_urls.sql",
     "027_aftermath.sql",
-    "028_metaplot_alignment.sql",
+    "028_metaplot_oltp.sql",
     "029_player_state_decoupling.sql",
     "030_dialogue_chunks.sql",
     "031_allow_player_state_credit_overdraft.sql",
@@ -59,8 +59,13 @@
     "066_claims.sql",
     "067_admin_events_audit.sql",
     "068_admin_events_audit_validate.sql",
-    "069_entity_identity.sql"
+    "069_entity_identity.sql",
+         "070_critique_annotations.sql",
+    "071_admin_events_critique.sql",
+    "072_admin_events_critique_validate.sql",
+    "073_critique_cache_marker.sql"
   ],
+  "nontransactional": [],
   "olap": [
     "000_schema_migrations.sql",
     "002_analytics_schema.sql",
@@ -71,9 +76,6 @@
     "019_add_vault_event_type.sql",
     "020_add_mystery_solved_event_type.sql",
     "025_marketplace_olap.sql",
-    "028_metaplot_alignment.sql"
-  ],
-  "both": [
-    "000_schema_migrations.sql"
+    "028_metaplot_olap.sql"
   ]
 }

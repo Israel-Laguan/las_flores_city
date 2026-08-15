@@ -15,11 +15,14 @@ import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
 import { contentPlanService } from '../services/ContentPlanService.js';
 import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
+import { adminStoryBuilderCritiqueRouter } from './admin-story-builder-critique.js';
 
 export const adminStoryBuilderActionsRouter = express.Router();
 
 // Generate endpoint (outline → scaffold → async fill) lives in admin-story-builder-generate.ts
 adminStoryBuilderActionsRouter.use(adminStoryBuilderGenerateRouter);
+// M26 — AI semantic critique handlers live in admin-story-builder-critique.ts
+adminStoryBuilderActionsRouter.use(adminStoryBuilderCritiqueRouter);
 
 // POST /admin/story-builder/plans/:id/refine — Refine plan with AI feedback
 adminStoryBuilderActionsRouter.post('/plans/:id/refine', async (req: AuthRequest, res) => {
@@ -361,3 +364,4 @@ adminStoryBuilderActionsRouter.post('/plans/:id/verify', async (req: AuthRequest
 
 // GET /admin/story-builder/plans/:id/verification — Fetch saved verification report
 adminStoryBuilderActionsRouter.get('/plans/:id/verification', handleGetVerificationReport);
+

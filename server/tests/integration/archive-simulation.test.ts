@@ -1,6 +1,7 @@
 import { queryOLTP, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { closeRedis, invalidatePattern } from '@las-flores/infra';
-import { DialogueResolver, deepMergeNodes } from '../../src/services/DialogueResolver.js';
+import { DialogueResolver } from '../../src/services/DialogueResolver.js';
+import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
 import type { DialogueNode } from '@las-flores/shared';
 import fs from 'fs';
 import path from 'path';
@@ -87,7 +88,7 @@ describe('Archive Simulation', () => {
     await applyMigration('005_dialogue_service.sql');
     await applyMigration('017_mystery_state.sql');
     await applyMigration('027_aftermath.sql');
-    await applyMigration('028_metaplot_alignment.sql');
+    await applyMigration('028_metaplot_oltp.sql');
 
     // Seed test user.
     await queryOLTP(

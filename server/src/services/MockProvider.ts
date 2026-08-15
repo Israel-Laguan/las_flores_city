@@ -1,5 +1,5 @@
-import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview } from '@las-flores/shared';
-import type { LLMProvider, ExistingContentContext, LLMUsage } from './types/LLMTypes.js';
+import { ContentPlanSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation } from '@las-flores/shared';
+import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
 
 const MOCK_IDS = {
@@ -201,22 +201,34 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     return { entities };
   }
 
+  /**
+   * Build a normalized existing-canon name map (case-insensitive, trimmed,
+   * first-occurrence wins) shared by the intake-conflict and semantic-critique
+   * mocks so the two never diverge. Preserves the matched entity's type and
+   * display name so conflict annotations can reference the *canon* entity's
+   * type (not the proposed item's type) and canonical slug.
+   */
+  private buildExistingNameMap(context: ExistingContentContext): Map<string, { type: string; name: string }> {
+    const existingByName = new Map<string, { type: string; name: string }>();
+    const add = (type: string, name: string) => {
+      const norm = (name || '').toLowerCase().trim();
+      if (norm && !existingByName.has(norm)) existingByName.set(norm, { type, name: (name || '').trim() });
+    };
+    context.characters.forEach((c) => add('character', c.name));
+    context.scenes.forEach((s) => add('scene', s.name));
+    context.dialogues.forEach((d) => add('dialogue', d.name));
+    context.missions.forEach((m) => add('mission', m.title));
+    context.overlays.forEach((o) => add('overlay', o.name));
+    context.locations.forEach((l) => add('location', l.name));
+    return existingByName;
+  }
+
   async analyzeIntakeConflicts(plan: ContentPlan, context: ExistingContentContext): Promise<{ conflicts: IntakeConflictPreview[]; usage: LLMUsage | null }> {
     const conflicts: IntakeConflictPreview[] = [];
     // Build a normalized-name -> existing display name map. Names are trimmed on
     // both sides so equivalent names with surrounding whitespace are detected
     // consistently (plan names are trimmed before comparison).
-    const existingByName = new Map<string, string>();
-    const add = (name: string) => {
-      const norm = (name || '').toLowerCase().trim();
-      if (norm && !existingByName.has(norm)) existingByName.set(norm, (name || '').trim());
-    };
-    context.characters.forEach((c) => add(c.name));
-    context.scenes.forEach((s) => add(s.name));
-    context.dialogues.forEach((d) => add(d.name));
-    context.missions.forEach((m) => add(m.title));
-    context.overlays.forEach((o) => add(o.name));
-    context.locations.forEach((l) => add(l.name));
+    const existingByName = this.buildExistingNameMap(context);
 
     // Deterministic surrogate: flag plan items whose name collides with existing
     // canon. Only `create` items allocate a new slug, so an `update` that
@@ -229,16 +241,96 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         conflicts.push({
           type: 'duplicate_name',
           severity: 'error',
-          description: `"${item.name}" matches an existing entity "${matched}" in canon.`,
+          description: `"${item.name}" matches an existing entity "${matched.name}" in canon.`,
           relatedItems: [item.id],
           // Preserve the matched existing display name so consumers can identify
           // the canon entity (not the proposed spelling).
-          relatedExisting: [matched],
+          relatedExisting: [matched.name],
         });
       }
     }
 
     return { conflicts, usage: null };
+  }
+
+  /**
+   * M26 — Deterministic mock of the deep semantic critique.
+   *
+   * Mirrors the intake duplicate-name detection but returns structured
+   * `:Conflict` / `:Suggestion` annotation nodes with evidence excerpts, so the
+   * AICritiqueService + admin overlays can be exercised end-to-end without an LLM.
+   */
+  async analyzePlanForConflicts(
+    plan: ContentPlan,
+    context: ExistingContentContext,
+    scope: CritiqueScopeType,
+  ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }> {
+    const annotations: CritiqueAnnotation[] = [];
+
+    // Build a normalized existing-name map (case-insensitive, trimmed) the same
+    // way the intake mock does.
+    const existingByName = this.buildExistingNameMap(context);
+
+    // Deterministic surrogate (same rule as intake): flag a *create* item whose
+    // name collides with existing canon as a high-confidence :Conflict.
+    for (const item of plan.items) {
+      if (item.action !== 'create') continue;
+      const norm = (item.name || '').toLowerCase().trim();
+      const matched = norm ? existingByName.get(norm) : undefined;
+      if (!matched) continue;
+
+      const excerpt = `${item.name} — ${(item.description || item.fields?.description || '').toString().substring(0, 160)}`.substring(0, 200);
+      annotations.push({
+        id: crypto.randomUUID(),
+        type: 'conflict',
+        severity: 'error',
+        description: `"${item.name}" collides with existing "${matched.name}" in canon. This create item would allocate a duplicate entity.`,
+        evidence: [{
+          nodeType: item.type,
+          nodeId: item.id,
+          slug: item.slug || '',
+          excerpt,
+          field: 'name',
+        }],
+        // Reference the canon entity's own type + canonical slug, not the proposed
+        // item's type (a duplicate name may belong to a different category).
+        relatedEntities: [{ entityType: matched.type, slug: matched.name.toLowerCase().replace(/\s+/g, '_') }],
+        scope,
+        aiModel: 'mock',
+        inputHash: '',
+        status: 'open',
+        planId: plan.id,
+        itemIds: [item.id],
+        createdAt: new Date().toISOString(),
+      });
+      }
+
+    // A deterministic cross-entity/cross-mission :Suggestion to demonstrate the two-model split.
+    if (scope !== 'entity') {
+      const scopeLabel = scope === 'cross_mission' ? 'cross-mission' : 'cross-entity';
+      annotations.push({
+        id: crypto.randomUUID(),
+        type: 'suggestion',
+        severity: 'info',
+        description: `No ${scopeLabel} contradictions detected by the mock; consider a human narrative review before approve.`,
+        evidence: [],
+        relatedEntities: [],
+        scope,
+        aiModel: 'mock',
+        inputHash: '',
+        status: 'open',
+        planId: plan.id,
+        itemIds: [],
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    return { annotations, usage: null };
+  }
+
+  /** The mock always uses a single fixed model for every scope. */
+  critiqueModel(_scope: CritiqueScopeType): string {
+    return 'mock';
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {

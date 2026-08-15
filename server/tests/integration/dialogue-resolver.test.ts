@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { queryOLTP, queryOLAP, queryContent, withOLTPTransaction, closeConnections } from '@las-flores/infra';
 import { getCache, invalidatePattern, closeRedis } from '@las-flores/infra';
-import { deepMergeNodes, DialogueResolver } from '../../src/services/DialogueResolver.js';
+import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
+import { DialogueResolver } from '../../src/services/DialogueResolver.js';
 import type { DialogueNode } from '@las-flores/shared';
 import express from 'express';
 import { withSchemaLock } from '../helpers/schemaLock.js';
@@ -124,7 +125,7 @@ describe('DialogueResolver', () => {
     await applyMigration('001_initial_schema.sql');
     await applyMigration('005_dialogue_service.sql');
     await applyMigration('017_mystery_state.sql');
-    await applyMigration('028_metaplot_alignment.sql');
+    await applyMigration('028_metaplot_oltp.sql');
 
     // Ensure TEST_USER_ID exists in users (api-contract.test.ts
     // deletes it in its afterAll; we need it for FK constraints

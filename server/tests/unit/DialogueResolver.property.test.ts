@@ -39,7 +39,8 @@ jestGlobals.mock('@las-flores/infra', () => ({
 
 // ── Imports (after mocks) ─────────────────────────────────────
 
-import { DialogueResolver, deepMergeNodes } from '../../src/services/DialogueResolver.js';
+import { DialogueResolver } from '../../src/services/DialogueResolver.js';
+import { deepMergeNodes } from '../../src/services/dialogueResolverUtils.js';
 import { queryOLTP, queryContent } from '@las-flores/infra';
 import { closeRedis } from '@las-flores/infra';
 import type { DialogueNode, Leaf } from '@las-flores/shared';
