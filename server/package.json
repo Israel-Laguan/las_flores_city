@@ -25,6 +25,7 @@
     "seed:players": "tsx src/database/seedPlayers.ts",
     "seed:graph": "tsx scripts/seed-graph.ts",
     "seed:all": "npm run seed:dev && npm run seed:players",
+    "backfill:critique-graph": "tsx scripts/backfill-critique-graph.ts",
     "fill-todos": "tsx src/scripts/fillExistingTodos.ts"
   },
   "dependencies": {

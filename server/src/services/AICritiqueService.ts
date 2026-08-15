@@ -19,18 +19,26 @@
 import crypto from 'node:crypto';
 import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
-import { postgresNeighborhoodProvider } from './NeighborhoodProvider.js';
 import { boundedPlanItems, serializeCritiqueContext } from './LLMPrompts.js';
 import type { LLMProvider, CritiqueScopeType, ExistingContentContext } from './types/LLMTypes.js';
 import type { CritiqueAnnotation, CritiqueAnnotationsResult, ContentPlan } from '@las-flores/shared';
+import { postgresNeighborhoodProvider, neo4jNeighborhoodProvider, type NeighborhoodProvider } from './NeighborhoodProvider.js';
+import { isNeo4jEnabled } from './Neo4jClient.js';
+import { graphCritiqueService, type GraphCritiqueService } from './GraphCritiqueService.js';
 
 const LOG_PREFIX = '[AICritiqueService]';
 
 export class AICritiqueService {
   private provider: LLMProvider;
+  private neighborhoodProvider: NeighborhoodProvider;
+  private graph: GraphCritiqueService;
 
-  constructor(provider?: LLMProvider) {
+  constructor(provider?: LLMProvider, graph?: GraphCritiqueService) {
     this.provider = provider || createLLMProvider();
+    this.graph = graph ?? graphCritiqueService;
+    // M27-b: swap the neighborhood seam to the Neo4j traversal when the authoring
+    // graph is enabled; Postgres gatherer remains the default/fallback.
+    this.neighborhoodProvider = isNeo4jEnabled() ? neo4jNeighborhoodProvider : postgresNeighborhoodProvider;
   }
 
   /**
@@ -108,7 +116,7 @@ export class AICritiqueService {
     }
 
     // 2. Gather canon context
-    const context = opts.neighborhood ?? await postgresNeighborhoodProvider.gatherContext();
+    const context = opts.neighborhood ?? await this.neighborhoodProvider.gatherContext();
 
     // 3. Build input hash for caching
     const inputHash = this.buildInputHash(plan, context, scope);
@@ -118,7 +126,11 @@ export class AICritiqueService {
 
     // 4. Check cache (skip if forceReanalyze)
     if (!opts.forceReanalyze) {
-      const cached = await this.findCachedAnnotations(planId, scope, inputHash, model);
+      // M27-b: when the graph is enabled the `(ai_model, input_hash)` cache is
+      // served from the graph; otherwise the Postgres marker/row path is used.
+      const cached = isNeo4jEnabled()
+        ? await this.graph.findCached(planId, scope, inputHash, model)
+        : await this.findCachedAnnotations(planId, scope, inputHash, model);
       if (cached) {
         console.log(`${LOG_PREFIX} Cache hit for plan ${planId} (scope=${scope}, hash=${inputHash.substring(0, 12)}…)`);
         return cached;
@@ -150,11 +162,11 @@ export class AICritiqueService {
     return { annotations, cached: false, model: usage?.model || model };
   }
   /**
-   * Fetch all non-dismissed annotations for a plan, ordered by recency.
+   * Postgres path for getAnnotations (durable source of truth / fallback).
    * Cache markers (clean-plan runs) are excluded — they are internal to the
    * cache, never shown to authors.
    */
-  async getAnnotations(planId: string): Promise<CritiqueAnnotation[]> {
+  private async postgresGetAnnotations(planId: string): Promise<CritiqueAnnotation[]> {
     const result = await queryOLTP<Record<string, unknown>>(
       `SELECT id, type, severity, description, evidence, related_entities,
                scope, ai_model, input_hash, status, plan_id, item_ids, created_at
@@ -167,9 +179,24 @@ export class AICritiqueService {
   }
 
   /**
-   * Fetch a single annotation by id.
+   * M27-b: read annotations for a plan. When the authoring graph is enabled the
+   * admin overlays read the graph; on a graph failure we degrade to the durable
+   * Postgres rows rather than surfacing an error.
    */
-  async getAnnotation(annotationId: string): Promise<CritiqueAnnotation | null> {
+  async getAnnotations(planId: string): Promise<CritiqueAnnotation[]> {
+    if (!isNeo4jEnabled()) return this.postgresGetAnnotations(planId);
+    try {
+      return await this.graph.getAnnotations(planId);
+    } catch (err) {
+      console.warn('[AICritiqueService] graph read degraded to Postgres:', (err as Error).message);
+      return this.postgresGetAnnotations(planId);
+    }
+  }
+
+  /**
+   * Fetch a single annotation by id. Graph-backed when enabled, Postgres fallback.
+   */
+  private async postgresGetAnnotation(annotationId: string): Promise<CritiqueAnnotation | null> {
     const result = await queryOLTP<Record<string, unknown>>(
       `SELECT id, type, severity, description, evidence, related_entities,
               scope, ai_model, input_hash, status, plan_id, item_ids, created_at
@@ -181,8 +208,22 @@ export class AICritiqueService {
   }
 
   /**
+   * Fetch a single annotation by id. Graph-backed when enabled, Postgres fallback.
+   */
+  async getAnnotation(annotationId: string): Promise<CritiqueAnnotation | null> {
+    if (!isNeo4jEnabled()) return this.postgresGetAnnotation(annotationId);
+    try {
+      return await this.graph.getAnnotation(annotationId);
+    } catch (err) {
+      console.warn('[AICritiqueService] graph read degraded to Postgres:', (err as Error).message);
+      return this.postgresGetAnnotation(annotationId);
+    }
+  }
+
+  /**
    * Live override: update the status of an annotation.
-   * 'dismissed' = author judges false-positive (M26). 'addressed' is set by M29.
+   * 'dismissed' = author judges false-positive (M26). 'addressed' is set by M29
+   * (and mirrored as `markAddressed` on the graph in M27-b).
    */
   async setAnnotationStatus(annotationId: string, status: 'open' | 'addressed' | 'dismissed'): Promise<void> {
     const result = await queryOLTP(
@@ -191,6 +232,15 @@ export class AICritiqueService {
     );
     if (result.rowCount === 0) {
       throw new Error(`Annotation not found: ${annotationId}`);
+    }
+    // M27-b: keep the graph conflict in sync (best-effort; a stale graph status
+    // is rebuildable from the durable Postgres row).
+    if (isNeo4jEnabled()) {
+      try {
+        await this.graph.setAnnotationStatus(annotationId, status);
+      } catch (err) {
+        console.warn('[AICritiqueService] graph status update degraded (Postgres kept):', (err as Error).message);
+      }
     }
   }
 
@@ -202,6 +252,14 @@ export class AICritiqueService {
       `DELETE FROM critique_annotations WHERE plan_id = $1`,
       [planId],
     );
+    // M27-b: also detach-delete the plan's graph annotation nodes (best-effort).
+    if (isNeo4jEnabled()) {
+      try {
+        await this.graph.clearAnnotations(planId);
+      } catch (err) {
+        console.warn('[AICritiqueService] graph clear degraded (Postgres kept):', (err as Error).message);
+      }
+    }
   }
 
   /**
@@ -320,7 +378,21 @@ export class AICritiqueService {
         );
       }
     });
-    console.log(`${LOG_PREFIX} Persisted ${annotations.length} annotation(s)`);
+    console.log(`${LOG_PREFIX} Persisted ${annotations.length} annotation(s) to Postgres`);
+
+    // M27-b: mirror the durable Postgres rows into the authoring graph. The graph
+    // is disposable IR — a failed write only leaves overlays stale (rebuildable
+    // from the rows), never fails the analyze or blocks approval.
+    if (isNeo4jEnabled()) {
+      try {
+        await this.graph.writeAnnotations(annotations, meta);
+      } catch (err) {
+        console.warn(
+          `${LOG_PREFIX} Graph critique write failed (overlays stale; durable Postgres rows kept):`,
+          (err as Error).message,
+        );
+      }
+    }
   }
 
   /**
