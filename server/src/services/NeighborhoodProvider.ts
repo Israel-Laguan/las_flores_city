@@ -12,6 +12,21 @@
 //
 // The returned `ExistingContentContext` is also the cache-key input: two runs
 // with an identical canon neighborhood hash are treated as the same subgraph.
+//
+// ── M27-b ADJACENCY (substrate contract — MUST stay true) ──────────────────
+// The future `Neo4jNeighborhoodProvider` must reproduce the EXACT
+// `ExistingContentContext` shape in `types/LLMTypes.ts`:
+//   { characters: {id,name,role?,faction?,personality?,description?}[]
+//     scenes:     {id,name,district,mood?,description?}[]
+//     dialogues:  {id,name}[]
+//     missions:   {id,title,description?}[]
+//     overlays:   {id,name}[]
+//     locations:  {id,name,district?,daytime?,nightlife?,history?}[] }
+// The M27 base graph seeds the `(:Content)` nodes that map 1:1 onto these
+// buckets (nodeType: Character, Scene, Dialogue, Mission, Overlay, Location),
+// so a bounded Cypher traversal can gather exactly this shape. Because the
+// provider is the ONLY consumer of that shape for the LLM prompt + input-hash,
+// swapping the implementation must not change the prompt/cache logic at all.
 // ============================================================
 
 import { contentPlanService } from './ContentPlanService.js';

@@ -1,0 +1,109 @@
+// ============================================================
+// GraphDeltaService — plan delta model (ADD / MODIFY / DELETE)
+//
+// Plans (READ path this milestone; write/merge is M28) are expressed as deltas
+// tagged with `plan_id` referencing `content_plans(id)`:
+//   - ADD     : a new `:ContentDelta` node (no canonical `:Content` yet)
+//   - MODIFY  : a shadow `:ContentDelta` node (same `(nodeType, nodeId)` as the
+//               canonical node) carrying the proposed changed fields
+//   - DELETE  : a tombstone `:ContentDelta` node marking canonical for removal
+//
+// Deltas live under the `:ContentDelta` label keyed `(nodeType, nodeId, planId)`
+// so plan shadows never collide with canonical `:Content` nodes. All methods
+// no-op (return empty) when NEO4J_ENABLED is off.
+// ============================================================
+
+import { GraphDeltaSchema, type GraphDelta } from '@las-flores/shared';
+import { isNeo4jEnabled, runNeo4jQuery } from './Neo4jClient.js';
+
+/** A raw Neo4j node object exposes `properties`. */
+interface Neo4jNodeLike {
+  properties: Record<string, unknown>;
+}
+
+/** Coerce a raw `:ContentDelta` [d] value into a validated shared delta. */
+function toGraphDelta(nodeLike: unknown): GraphDelta {
+  const props = (nodeLike as Neo4jNodeLike)?.properties ?? {};
+  let fields: Record<string, unknown> = {};
+  const raw = props.fieldsJson;
+  if (typeof raw === 'string') {
+    try {
+      fields = JSON.parse(raw);
+    } catch {
+      fields = {};
+    }
+  } else if (raw && typeof raw === 'object') {
+    fields = raw as Record<string, unknown>;
+  }
+  return GraphDeltaSchema.parse({
+    id: props.id as string,
+    planId: props.planId as string,
+    nodeType: props.nodeType as string,
+    nodeId: props.nodeId as string,
+    op: props.op as string,
+    fields,
+    createdAt: props.createdAt as string,
+  });
+}
+
+/**
+ * Persist one plan delta (upsert by `(nodeType, nodeId, planId)`; the latest
+ * write for the same key wins). No-op when Neo4j is disabled.
+ */
+export async function applyDelta(delta: GraphDelta): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  const { id, planId, nodeType, nodeId, op, fields, createdAt } = delta;
+  const name = typeof fields.name === 'string' ? fields.name : null;
+  await runNeo4jQuery(
+    `
+    MERGE (d:ContentDelta { key: $key })
+    ON CREATE SET d.nodeType = $nodeType, d.nodeId = $nodeId, d.planId = $planId,
+                  d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson,
+                  d.createdAt = $createdAt, d.id = $id
+    ON MATCH SET  d.nodeType = $nodeType, d.nodeId = $nodeId,
+                  d.op = $op, d.name = $name, d.fieldsJson = $fieldsJson, d.id = $id
+    `,
+    // Surrogate unique key (Community Edition can't NODE KEY on 3 props).
+    // Neo4j properties can't be maps, so fields are stored as a JSON string.
+    { key: `${nodeType}:${nodeId}:${planId}`, nodeType, nodeId, planId, op, name, fieldsJson: JSON.stringify(fields), createdAt, id },
+  );
+}
+
+/** Fetch all deltas belonging to one plan, ordered by creation time. */
+export async function getDeltasForPlan(planId: string): Promise<GraphDelta[]> {
+  if (!isNeo4jEnabled()) return [];
+  const rows = await runNeo4jQuery<{ d: unknown }>(
+    `MATCH (d:ContentDelta { planId: $planId }) RETURN d ORDER BY d.createdAt ASC`,
+    { planId },
+  );
+  return rows.map((r) => toGraphDelta(r.d));
+}
+
+/** Remove every delta for a plan (e.g. on discard). No-op when disabled. */
+export async function clearDeltasForPlan(planId: string): Promise<void> {
+  if (!isNeo4jEnabled()) return;
+  await runNeo4jQuery(
+    `MATCH (d:ContentDelta { planId: $planId }) DELETE d`,
+    { planId },
+  );
+}
+
+/** Count of deltas on a plan (verification/telemetry helper). */
+export async function countDeltasForPlan(planId: string): Promise<number> {
+  if (!isNeo4jEnabled()) return 0;
+  const rows = await runNeo4jQuery<{ count: unknown }>(
+    `MATCH (d:ContentDelta { planId: $planId }) RETURN count(d) AS count`,
+    { planId },
+  );
+  return rows[0]?.count != null ? Number(rows[0].count) : 0;
+}
+
+/** Aggregate summary of the deltas on a plan (op → per nodeType counts). */
+export async function summarizeDeltasForPlan(planId: string): Promise<{ total: number; byOp: Record<string, number> }> {
+  const deltas = await getDeltasForPlan(planId);
+  const byOp: Record<string, number> = {};
+  for (const d of deltas) {
+    byOp[d.op] = (byOp[d.op] ?? 0) + 1;
+  }
+  return { total: deltas.length, byOp };
+}
