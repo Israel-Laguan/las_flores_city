@@ -52,7 +52,13 @@ export type CritiqueStatus = z.infer<typeof CritiqueStatusSchema>;
  * A single AI semantic-critique annotation — a `:Conflict` (type='conflict') or
  * `:Suggestion` (type='suggestion') node before it exists in the graph.
  */
-export const CritiqueAnnotationSchema = z.object({
+// Cache-key shape: empty (stamped by the service) or a 64-char sha256 hex. The
+// model must never control this — a malformed value would either overflow the
+// column or break the computed-cache match, so we restrict it and always stamp
+// the service's computed hash on persist.
+const InputHashSchema = z.string().regex(/^$|^[0-9a-f]{64}$/).default('');
+
+const CritiqueAnnotationBase = z.object({
   id: zodUuid(),
   type: z.enum(['conflict', 'suggestion']),
   severity: z.enum(['error', 'warning', 'info']),
@@ -64,9 +70,24 @@ export const CritiqueAnnotationSchema = z.object({
   status: CritiqueStatusSchema.default('open'),
   planId: zodUuid(),
   itemIds: z.array(z.string()).default([]),
-  inputHash: z.string().default(''),   // sha256 of serialized subgraph (cache key); empty until the service stamps it
+  inputHash: InputHashSchema,      // sha256 of serialized subgraph (cache key); empty until the service stamps it
   createdAt: z.string(),           // ISO timestamp
 });
+
+// A `:Conflict` is a hard contradiction that blocks approve, so it MUST cite the
+// canon/plan text it contradicts (anti-hallucination). Evidence-free conflicts are
+// rejected at parse time so they are never persisted.
+export const CritiqueAnnotationSchema = CritiqueAnnotationBase.superRefine(
+  (annotation, ctx) => {
+    if (annotation.type === 'conflict' && annotation.evidence.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'conflicts must include at least one evidence excerpt',
+        path: ['evidence'],
+      });
+    }
+  },
+);
 
 export type CritiqueAnnotation = z.infer<typeof CritiqueAnnotationSchema>;
 
@@ -83,7 +104,7 @@ export type CritiqueAnnotationsResult = z.infer<typeof CritiqueAnnotationsResult
  * Input payload to persist an annotation after an AI critique run (before the
  * DB row exists — server assigns the UUID + createdAt).
  */
-export const CritiqueAnnotationDraftSchema = CritiqueAnnotationSchema.omit({
+export const CritiqueAnnotationDraftSchema = CritiqueAnnotationBase.omit({
   id: true,
   createdAt: true,
   status: true,

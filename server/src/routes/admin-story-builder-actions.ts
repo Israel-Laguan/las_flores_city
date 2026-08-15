@@ -13,7 +13,7 @@ import { isPlanNotFoundError, isPlanStatusError } from '../services/errors.js';
 import { handleGetVerificationReport } from './admin-story-builder-verification.js';
 import { emitAdminEvent } from '../services/AdminEventEmitter.js';
 import { loadPlanForStaging, runStagingPipeline } from './admin-story-builder-staging.js';
-import { contentPlanService } from '../services/ContentPlanService.js';
+import { contentPlanService, ContentPlanService } from '../services/ContentPlanService.js';
 import { adminStoryBuilderGenerateRouter } from './admin-story-builder-generate.js';
 import { aiCritiqueService } from '../services/AICritiqueService.js';
 
@@ -374,6 +374,16 @@ adminStoryBuilderActionsRouter.post('/plans/:id/analyze', async (req: AuthReques
       return;
     }
     const force = req.body?.force === true || req.body?.force === 'true';
+
+    // Persist the current plan_json before critiquing so an author's unsaved
+    // edits are analyzed (not the last-persisted snapshot).
+    if (req.body?.plan_json) {
+      try {
+        await ContentPlanService.updatePlanJson(id, req.body.plan_json);
+      } catch (err: any) {
+        console.warn(`[story-builder] analyze could not persist plan_json for ${id}: ${err?.message || err}`);
+      }
+    }
 
     const result = await aiCritiqueService.runCritique(id, scope, { forceReanalyze: force });
 

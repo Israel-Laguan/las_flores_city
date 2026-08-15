@@ -39,7 +39,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
   const {
     annotations: critiqueAnnotations,
     analyzeLoading: critiqueAnalyzeLoading,
-    runCritique: runCritiqueOnPlan,
+    runCritique,
     dismiss: dismissCritiqueAnnotation,
     error: critiqueError,
   } = useCritique(planId);
@@ -105,7 +105,7 @@ export default function StoryBuilder({ initialPlanId }: StoryBuilderProps) {
           onRefineInstead={() => setShowRefine(true)}
           onResolveIdentity={resolveItemIdentity}
           critiqueAnnotations={critiqueAnnotations}
-          onRunCritique={runCritiqueOnPlan}
+          onRunCritique={(scope) => runCritique(scope, plan)}
           onDismissAnnotation={dismissCritiqueAnnotation}
           critiqueAnalyzeLoading={critiqueAnalyzeLoading}
         />

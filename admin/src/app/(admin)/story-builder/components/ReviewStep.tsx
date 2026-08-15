@@ -50,7 +50,7 @@ interface ReviewStepProps {
   onResolveIdentity?: (index: number, chosen: ResolutionAlternative) => void;
   // M26 — AI semantic critique (analyze panel + conflict overlays + dismiss)
   critiqueAnnotations?: CritiqueAnnotation[];
-  onRunCritique?: (scope?: 'entity' | 'cross_entity') => void;
+  onRunCritique?: (scope?: 'entity' | 'cross_entity', plan?: unknown) => void;
   onDismissAnnotation?: (id: string) => void;
   critiqueAnalyzeLoading?: boolean;
 }
@@ -294,7 +294,7 @@ export default function ReviewStep({
             <button
               className={cn(styles.button, styles.secondaryButton)}
               disabled={critiqueAnalyzeLoading}
-              onClick={() => onRunCritique?.('entity')}
+              onClick={() => onRunCritique?.('entity', plan)}
               title="Per-item/local critique (cheap model)"
             >
               {critiqueAnalyzeLoading ? 'Analyzing…' : 'Analyze'}
@@ -302,7 +302,7 @@ export default function ReviewStep({
             <button
               className={cn(styles.button, styles.secondaryButton)}
               disabled={critiqueAnalyzeLoading}
-              onClick={() => onRunCritique?.('cross_entity')}
+              onClick={() => onRunCritique?.('cross_entity', plan)}
               title="Cross-entity narrative/timeline critique (deep model)"
             >
               {critiqueAnalyzeLoading ? 'Analyzing…' : 'Deep Analyze'}

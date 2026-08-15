@@ -58,4 +58,12 @@ export interface LLMProvider {
     context: ExistingContentContext,
     scope: CritiqueScopeType,
   ): Promise<{ annotations: CritiqueAnnotation[]; usage: LLMUsage | null }>;
+
+  /**
+   * Resolve the model that `analyzePlanForConflicts` will actually use for a
+   * given scope (the deep-model split for cross-entity audits). The critique
+   * cache key must include this so a model change forces a re-analyze rather
+   * than returning another model's annotations.
+   */
+  critiqueModel(scope: CritiqueScopeType): string;
 }

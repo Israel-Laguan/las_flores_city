@@ -382,7 +382,7 @@ const PLAN_FIELD_CAP = 2400;
  * finish_reason=length). Item count is capped and oversized `fields` objects are
  * truncated to a display-safe preview (the prompt is never re-parsed).
  */
-function boundedPlanItems(items: ContentPlanItem[]): Array<Record<string, unknown>> {
+export function boundedPlanItems(items: ContentPlanItem[]): Array<Record<string, unknown>> {
   return items.slice(0, PLAN_ITEM_CAP).map((i) => {
     let fields: unknown = i.fields;
     if (fields !== undefined && fields !== null) {
@@ -405,12 +405,44 @@ function boundedPlanItems(items: ContentPlanItem[]): Array<Record<string, unknow
   });
 }
 
+/** Truncate a canon description to keep the critique prompt + cache hash bounded. */
+const CANON_DESC_CAP = 240;
+
+/**
+ * Deterministic serialization of the existing-canon context fed to the semantic
+ * critique prompt AND the critique cache hash. Including the relevant fields
+ * (role, faction, district, mood, bounded description, …) lets the model produce
+ * reliable evidence for existing-canon conflicts, and because the hash reuses the
+ * exact same serialization, editing a canon field or adding a canon entity changes
+ * both the prompt and the hash — so stale annotations are never served from cache.
+ */
+export function serializeCritiqueContext(context: ExistingContentContext): Record<string, Array<Record<string, unknown>>> {
+  const cap = (s?: string) => (s ? s.substring(0, CANON_DESC_CAP) : null);
+  return {
+    characters: context.characters.map((c) => ({
+      id: c.id, name: c.name,
+      role: c.role ?? null, faction: c.faction ?? null, description: cap(c.description),
+    })),
+    scenes: context.scenes.map((s) => ({
+      id: s.id, name: s.name,
+      district: s.district ?? null, mood: s.mood ?? null, description: cap(s.description),
+    })),
+    dialogues: context.dialogues.map((d) => ({ id: d.id, name: d.name })),
+    missions: context.missions.map((m) => ({ id: m.id, title: m.title, description: cap((m as any).description) })),
+    overlays: context.overlays.map((o) => ({ id: o.id, name: o.name, description: cap((o as any).description) })),
+    locations: context.locations.map((l) => ({
+      id: l.id, name: l.name,
+      district: l.district ?? null, description: cap(l.history ?? (l as any).description),
+    })),
+  };
+}
+
 export function buildSemanticCritiquePrompt(
   plan: ContentPlan,
   context: ExistingContentContext,
   scope: CritiqueScopeType,
 ): string {
-  const e = formatExistingContent(context);
+  const e = serializeCritiqueContext(context);
 
   let scopeInstruction: string;
   if (scope === 'entity') {
@@ -448,12 +480,7 @@ ${JSON.stringify({
 ${plan.items.length > PLAN_ITEM_CAP ? `\n[NOTE: ${plan.items.length - PLAN_ITEM_CAP} additional plan item(s) omitted to keep the prompt within the model context window.]\n` : ''}
 
 ## Existing canon
-- Characters: ${e.chars}
-- Scenes: ${e.scenes}
-- Dialogues: ${e.dialogues}
-- Missions: ${e.missions}
-- Overlays: ${e.overlays}
-- Locations: ${e.locations}
+${JSON.stringify(e, null, 2)}
 
 ## Severity rules
 - "error": the contradiction MUST be fixed before this plan can be approved (e.g. directly

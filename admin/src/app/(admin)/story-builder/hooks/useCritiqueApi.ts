@@ -9,7 +9,7 @@ interface CritiqueApiResult {
   loading: boolean;
   error: string | null;
   analyzeLoading: boolean;
-  runCritique: (scope?: 'entity' | 'cross_entity') => Promise<unknown>;
+  runCritique: (scope?: 'entity' | 'cross_entity', plan?: unknown) => Promise<unknown>;
   fetchAnnotations: () => Promise<void>;
   dismiss: (id: string) => Promise<void>;
 }
@@ -18,7 +18,9 @@ interface CritiqueApiResult {
  * M26 — AI critique state + actions for a content plan.
  *
  * `runCritique` POSTs the analyze endpoint (LLM writes :Conflict/:Suggestion
- * annotations), then reloads the stored annotations. `dismiss` issues the live
+ * annotations), sending the current plan_json so unsaved edits are critiqued,
+ * then reloads the *full* stored annotation set from the DB (GET annotations) —
+ * never the partial list the analyze endpoint returns. `dismiss` issues the live
  * override (false-positive). Reads always come from the DB via GET annotations.
  *
  * Requests are invalidated on plan change: the current AbortController is
@@ -71,7 +73,7 @@ export function useCritique(planId: string | null): CritiqueApiResult {
     }
   }, [planId]);
 
-  const runCritique = useCallback(async (scope: 'entity' | 'cross_entity' = 'entity') => {
+  const runCritique = useCallback(async (scope: 'entity' | 'cross_entity' = 'entity', plan?: unknown) => {
     if (!planId) return;
     const seq = ++seqRef.current;
     abortRef.current?.abort();
@@ -82,11 +84,18 @@ export function useCritique(planId: string | null): CritiqueApiResult {
     try {
       const res = await adminFetch<{ success: boolean; data?: { annotations: CritiqueAnnotation[] }; error?: string }>(
         `/admin/story-builder/plans/${planId}/analyze`,
-        { method: 'POST', body: JSON.stringify({ scope }), signal: controller.signal },
+        // Send the current plan_json so the critique runs against the author's
+        // latest edits (the server persists it before analyzing).
+        { method: 'POST', body: JSON.stringify({ scope, plan_json: plan ?? null }), signal: controller.signal },
       );
       if (seq !== seqRef.current) return;
-      if (res.success && res.data) setAnnotations(res.data.annotations ?? []);
-      else setError(res.error || 'Analyze failed');
+      if (res.success) {
+        // Reload the full stored annotation set rather than trusting the partial
+        // list the analyze endpoint returns (it only covers this scope+hash run).
+        await fetchAnnotations();
+      } else {
+        setError(res.error || 'Analyze failed');
+      }
     } catch (err: any) {
       if (seq !== seqRef.current) return;
       if (err?.name === 'AbortError') return;
@@ -94,7 +103,7 @@ export function useCritique(planId: string | null): CritiqueApiResult {
     } finally {
       if (seq === seqRef.current) setAnalyzeLoading(false);
     }
-  }, [planId]);
+  }, [planId, fetchAnnotations]);
 
   const dismiss = useCallback(async (id: string) => {
     if (!planId) return;

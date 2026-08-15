@@ -60,7 +60,7 @@ describe('buildSemanticCritiquePrompt', () => {
     const prompt = buildSemanticCritiquePrompt(makePlan(), makeContext(), 'entity');
     expect(prompt).toContain('excerpt');
     // The prompt should explicitly require at least one excerpt per annotation
-    expect(prompt).toMatch(/ALWAYS|must/);
+    expect(prompt).toMatch(/ALWAYS include at least one excerpt/);
   });
 
   it('includes distinct instruction for entity scope (per-item/local)', () => {

@@ -204,20 +204,22 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
   /**
    * Build a normalized existing-canon name map (case-insensitive, trimmed,
    * first-occurrence wins) shared by the intake-conflict and semantic-critique
-   * mocks so the two never diverge.
+   * mocks so the two never diverge. Preserves the matched entity's type and
+   * display name so conflict annotations can reference the *canon* entity's
+   * type (not the proposed item's type) and canonical slug.
    */
-  private buildExistingNameMap(context: ExistingContentContext): Map<string, string> {
-    const existingByName = new Map<string, string>();
-    const add = (name: string) => {
+  private buildExistingNameMap(context: ExistingContentContext): Map<string, { type: string; name: string }> {
+    const existingByName = new Map<string, { type: string; name: string }>();
+    const add = (type: string, name: string) => {
       const norm = (name || '').toLowerCase().trim();
-      if (norm && !existingByName.has(norm)) existingByName.set(norm, (name || '').trim());
+      if (norm && !existingByName.has(norm)) existingByName.set(norm, { type, name: (name || '').trim() });
     };
-    context.characters.forEach((c) => add(c.name));
-    context.scenes.forEach((s) => add(s.name));
-    context.dialogues.forEach((d) => add(d.name));
-    context.missions.forEach((m) => add(m.title));
-    context.overlays.forEach((o) => add(o.name));
-    context.locations.forEach((l) => add(l.name));
+    context.characters.forEach((c) => add('character', c.name));
+    context.scenes.forEach((s) => add('scene', s.name));
+    context.dialogues.forEach((d) => add('dialogue', d.name));
+    context.missions.forEach((m) => add('mission', m.title));
+    context.overlays.forEach((o) => add('overlay', o.name));
+    context.locations.forEach((l) => add('location', l.name));
     return existingByName;
   }
 
@@ -239,11 +241,11 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         conflicts.push({
           type: 'duplicate_name',
           severity: 'error',
-          description: `"${item.name}" matches an existing entity "${matched}" in canon.`,
+          description: `"${item.name}" matches an existing entity "${matched.name}" in canon.`,
           relatedItems: [item.id],
           // Preserve the matched existing display name so consumers can identify
           // the canon entity (not the proposed spelling).
-          relatedExisting: [matched],
+          relatedExisting: [matched.name],
         });
       }
     }
@@ -282,7 +284,7 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
         id: crypto.randomUUID(),
         type: 'conflict',
         severity: 'error',
-        description: `"${item.name}" collides with existing "${matched}" in canon. This create item would allocate a duplicate entity.`,
+        description: `"${item.name}" collides with existing "${matched.name}" in canon. This create item would allocate a duplicate entity.`,
         evidence: [{
           nodeType: item.type,
           nodeId: item.id,
@@ -290,7 +292,9 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
           excerpt,
           field: 'name',
         }],
-        relatedEntities: [{ entityType: item.type, slug: matched.toLowerCase().replace(/\s+/g, '_') }],
+        // Reference the canon entity's own type + canonical slug, not the proposed
+        // item's type (a duplicate name may belong to a different category).
+        relatedEntities: [{ entityType: matched.type, slug: matched.name.toLowerCase().replace(/\s+/g, '_') }],
         scope,
         aiModel: 'mock',
         inputHash: '',
@@ -321,6 +325,11 @@ ${description || `${name} is a ${item.type} in the world of Las Flores 2077.`}
     }
 
     return { annotations, usage: null };
+  }
+
+  /** The mock always uses a single fixed model for every scope. */
+  critiqueModel(_scope: CritiqueScopeType): string {
+    return 'mock';
   }
 
   async generateFill(prompt: string): Promise<{ fields: Record<string, string>; lore_refs?: string[] }> {

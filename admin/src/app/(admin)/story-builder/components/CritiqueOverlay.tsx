@@ -42,6 +42,9 @@ export default function CritiqueOverlay({ annotations, onDismiss, onCopyToChat }
               <span className={styles.badge}>{SEVERITY_LABEL[a.severity] || a.type}</span>
               <span className={styles.scope}>[{a.scope}]</span>
               <span className={styles.model}>{a.aiModel}</span>
+              <time className={styles.timestamp} dateTime={a.createdAt} title={a.createdAt}>
+                {new Date(a.createdAt).toLocaleString()}
+              </time>
             </div>
 
             <p className={styles.description}>{a.description}</p>

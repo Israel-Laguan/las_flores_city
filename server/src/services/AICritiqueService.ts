@@ -20,13 +20,11 @@ import crypto from 'node:crypto';
 import { queryOLTP, withOLTPTransaction } from '@las-flores/infra';
 import { createLLMProvider } from './LLMService.js';
 import { postgresNeighborhoodProvider } from './NeighborhoodProvider.js';
+import { boundedPlanItems, serializeCritiqueContext } from './LLMPrompts.js';
 import type { LLMProvider, CritiqueScopeType, ExistingContentContext } from './types/LLMTypes.js';
 import type { CritiqueAnnotation, CritiqueAnnotationsResult } from '@las-flores/shared';
 
 const LOG_PREFIX = '[AICritiqueService]';
-
-/** Number of existing-context entries to include in the hash (keep stable). */
-const HASH_CONTEXT_LIMIT = 500;
 
 export class AICritiqueService {
   private provider: LLMProvider;
@@ -36,37 +34,27 @@ export class AICritiqueService {
   }
 
   /**
-   * Build a stable deterministic hash from the plan + context that will be sent
-   * to the LLM. Two runs with identical canon produce the same hash; any edit to
-   * plan items or a change in existing canon produces a different hash, triggering
-   * a re-analyze.
+   * Build a stable deterministic hash from the exact inputs sent to the LLM.
    *
-   * The context is sliced to HASH_CONTEXT_LIMIT items per category so a growing
-   * canon does not cause constant cache misses for stable plans.
+   * The hash mirrors the prompt serialization used by `buildSemanticCritiquePrompt`
+   * (same bounded plan items + same canonical-context fields), so any edit to a
+   * plan item or a change in existing canon — including canon *fields* such as a
+   * character's role — changes the hash and triggers a re-analyze instead of
+   * returning stale cached annotations. Every context entry is included (no
+   * per-category cap) so adding a canon entity also invalidates the cache.
    */
   private buildInputHash(
-    plan: { id: string; items: Array<{ id: string; name: string; type: string; action: string; fields?: any; slug?: string }> },
+    plan: { id: string; items: Array<any>; description?: string },
     context: ExistingContentContext,
     scope: CritiqueScopeType,
   ): string {
     const stable = {
-      planId: plan.id,
-      items: plan.items.map((i) => ({
-        id: i.id,
-        name: i.name,
-        type: i.type,
-        action: i.action,
-        slug: i.slug,
-        fields: i.fields ? JSON.parse(JSON.stringify(i.fields)) : null,
-      })),
-      context: {
-        characters: context.characters.slice(0, HASH_CONTEXT_LIMIT).map((c) => `${c.id}:${c.name}`).sort(),
-        scenes: context.scenes.slice(0, HASH_CONTEXT_LIMIT).map((s) => `${s.id}:${s.name}`).sort(),
-        dialogues: context.dialogues.slice(0, HASH_CONTEXT_LIMIT).map((d) => `${d.id}:${d.name}`).sort(),
-        missions: context.missions.slice(0, HASH_CONTEXT_LIMIT).map((m) => `${m.id}:${m.title}`).sort(),
-        overlays: context.overlays.slice(0, HASH_CONTEXT_LIMIT).map((o) => `${o.id}:${o.name}`).sort(),
-        locations: context.locations.slice(0, HASH_CONTEXT_LIMIT).map((l) => `${l.id}:${l.name}`).sort(),
+      plan: {
+        id: plan.id,
+        description: plan.description,
+        items: boundedPlanItems(plan.items as any[]),
       },
+      context: serializeCritiqueContext(context),
       scope,
     };
     return crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex');
@@ -106,10 +94,13 @@ export class AICritiqueService {
 
     // 3. Build input hash for caching
     const inputHash = this.buildInputHash(plan, context, scope);
+    // The model the LLM will actually use for this scope (deep-model split).
+    // It is part of the cache key so a model change forces a re-analyze.
+    const model = this.provider.critiqueModel(scope);
 
     // 4. Check cache (skip if forceReanalyze)
     if (!opts.forceReanalyze) {
-      const cached = await this.findCachedAnnotations(planId, scope, inputHash);
+      const cached = await this.findCachedAnnotations(planId, scope, inputHash, model);
       if (cached) {
         console.log(`${LOG_PREFIX} Cache hit for plan ${planId} (scope=${scope}, hash=${inputHash.substring(0, 12)}…)`);
         return cached;
@@ -124,32 +115,34 @@ export class AICritiqueService {
       scope,
     );
 
-    // Assign the correct input hash (the mock provider leaves inputHash empty)
+    // Always stamp the service's computed input hash — the model never controls it.
     const annotations = rawAnnotations.map((a) => ({
       ...a,
-      inputHash: a.inputHash || inputHash,
+      inputHash,
     }));
 
     console.log(`${LOG_PREFIX} LLM returned ${annotations.length} annotations for plan ${planId} (scope=${scope})`);
 
-    // 6. Persist annotations
-    await this.persistAnnotations(annotations);
+    // 6. Persist annotations (or a cache marker when the plan is clean)
+    await this.persistAnnotations(annotations, { planId, scope, inputHash, model });
     if (usage) {
       console.log(`${LOG_PREFIX} Usage: ${JSON.stringify(usage)}`);
     }
 
-    return { annotations, cached: false, model: usage?.model || '' };
+    return { annotations, cached: false, model: usage?.model || model };
   }
   /**
    * Fetch all non-dismissed annotations for a plan, ordered by recency.
+   * Cache markers (clean-plan runs) are excluded — they are internal to the
+   * cache, never shown to authors.
    */
   async getAnnotations(planId: string): Promise<CritiqueAnnotation[]> {
     const result = await queryOLTP<Record<string, unknown>>(
       `SELECT id, type, severity, description, evidence, related_entities,
-              scope, ai_model, input_hash, status, plan_id, item_ids, created_at
-         FROM critique_annotations
-        WHERE plan_id = $1 AND status <> 'dismissed'
-        ORDER BY created_at DESC`,
+               scope, ai_model, input_hash, status, plan_id, item_ids, created_at
+          FROM critique_annotations
+         WHERE plan_id = $1 AND status <> 'dismissed' AND is_marker = FALSE
+         ORDER BY created_at DESC`,
       [planId],
     );
     return result.rows.map(r => this.rowToAnnotation(r));
@@ -201,24 +194,31 @@ export class AICritiqueService {
     planId: string,
     scope: string,
     inputHash: string,
+    model: string,
   ): Promise<CritiqueAnnotationsResult | null> {
     const result = await queryOLTP<Record<string, unknown>>(
       `SELECT id, type, severity, description, evidence, related_entities,
-              scope, ai_model, input_hash, status, plan_id, item_ids, created_at
-         FROM critique_annotations
-        WHERE plan_id = $1
-          AND scope = $2
-          AND input_hash = $3
-          AND status <> 'dismissed'
-        ORDER BY created_at DESC`,
-      [planId, scope, inputHash],
+               scope, ai_model, input_hash, status, plan_id, item_ids, created_at, is_marker
+          FROM critique_annotations
+         WHERE plan_id = $1
+           AND scope = $2
+           AND input_hash = $3
+           AND ai_model = $4
+           AND status <> 'dismissed'
+         ORDER BY created_at DESC`,
+      [planId, scope, inputHash, model],
     );
     if (result.rows.length === 0) return null;
 
-    // Select the full rows so the cached result is scoped to (plan, scope,
-    // input_hash) — never a plan-wide superset via getAnnotations.
+    // The result is scoped to (plan, scope, input_hash, model) — never a
+    // plan-wide superset, and never a stale annotation from another scope/hash.
+    // A single cache-marker row (clean-plan run) may be present; it proves the
+    // hit but is excluded from the annotations returned to the caller.
+    const annotations = result.rows
+      .filter((r) => !r.is_marker)
+      .map((r) => this.rowToAnnotation(r));
     return {
-      annotations: result.rows.map((r) => this.rowToAnnotation(r)),
+      annotations,
       cached: true,
       model: result.rows[0].ai_model as string,
     };
@@ -226,17 +226,25 @@ export class AICritiqueService {
 
   /**
    * Persist annotation rows to the critique_annotations table.
+   *
+   * All real annotations (plus an optional cache marker for a clean plan) are
+   * written inside one transaction so the batch commits or rolls back
+   * atomically — a partial insert could otherwise masquerade as a cache hit.
+   *
+   * When the LLM finds no conflicts, we still persist a single `is_marker` row
+   * so the next unchanged analysis is a cache hit rather than re-calling the LLM.
    */
-  private async persistAnnotations(annotations: CritiqueAnnotation[]): Promise<void> {
-    // All inserts run inside one transaction so the batch commits or rolls back
-    // atomically (a partial insert could otherwise masquerade as a cache hit).
+  private async persistAnnotations(
+    annotations: CritiqueAnnotation[],
+    meta: { planId: string; scope: CritiqueScopeType; inputHash: string; model: string },
+  ): Promise<void> {
     await withOLTPTransaction(async (client) => {
       for (const annotation of annotations) {
         await client.query(
           `INSERT INTO critique_annotations
-             (id, type, severity, description, evidence, related_entities,
-              scope, ai_model, input_hash, status, plan_id, item_ids, created_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+              (id, type, severity, description, evidence, related_entities,
+               scope, ai_model, input_hash, status, plan_id, item_ids, created_at, is_marker)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, FALSE)`,
           [
             annotation.id,
             annotation.type,
@@ -256,8 +264,32 @@ export class AICritiqueService {
           ],
         );
       }
+
+      if (annotations.length === 0) {
+        await client.query(
+          `INSERT INTO critique_annotations
+              (id, type, severity, description, evidence, related_entities,
+               scope, ai_model, input_hash, status, plan_id, item_ids, created_at, is_marker)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, TRUE)`,
+          [
+            crypto.randomUUID(),
+            'suggestion',
+            'info',
+            'No conflicts found — critique ran clean for this scope.',
+            JSON.stringify([]),
+            JSON.stringify([]),
+            meta.scope,
+            meta.model,
+            meta.inputHash,
+            'open',
+            meta.planId,
+            [],
+            new Date().toISOString(),
+          ],
+        );
+      }
     });
-    console.log(`${LOG_PREFIX} Persisted ${annotations.length} annotations`);
+    console.log(`${LOG_PREFIX} Persisted ${annotations.length} annotation(s)`);
   }
 
   /**

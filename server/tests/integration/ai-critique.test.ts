@@ -85,10 +85,11 @@ describe('AICritiqueService (Postgres-backed, M26)', () => {
            input_hash VARCHAR(64) NOT NULL,
            status VARCHAR(20) NOT NULL DEFAULT 'open'
              CHECK (status IN ('open', 'addressed', 'dismissed')),
-           plan_id UUID NOT NULL REFERENCES content_plans(id) ON DELETE CASCADE,
-           item_ids TEXT[] DEFAULT '{}',
-           created_at TIMESTAMPTZ DEFAULT NOW()
-         )`,
+            plan_id UUID NOT NULL REFERENCES content_plans(id) ON DELETE CASCADE,
+            item_ids TEXT[] DEFAULT '{}',
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            is_marker BOOLEAN NOT NULL DEFAULT FALSE
+          )`,
       );
     });
 

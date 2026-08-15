@@ -1,4 +1,4 @@
-import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation } from '@las-flores/shared';
+import { ContentPlanSchema, IntakeConflictPreviewSchema, CritiqueAnnotationSchema, CritiqueEvidenceSchema, CritiqueRelatedEntitySchema, type ContentPlan, type ContentPlanItem, type IntakeConflictPreview, type CritiqueAnnotation } from '@las-flores/shared';
 import type { LLMProvider, ExistingContentContext, LLMUsage, CritiqueScopeType } from './types/LLMTypes.js';
 import type { EntityCandidate } from './OutlineChunking.js';
 import { buildLorePrompt, buildRefinementPrompt, buildItemScopedRefinementPrompt, buildSystemPrompt, buildOutlinePrompt, buildIntakeConflictPrompt, buildSemanticCritiquePrompt } from './LLMPrompts.js';
@@ -377,22 +377,45 @@ export class LiteLLMProvider implements LLMProvider {
     // Cryptic model-supplied ids/inputHash are never trusted: a non-UUID id would
     // invalidate the node (dropping its evidence) and a non-empty inputHash would
     // break the change-detection cache, so always regenerate both.
+    //
+    // Sub-arrays (evidence, relatedEntities) are validated element-by-element
+    // first: a single bad excerpt must not sink the whole annotation, so each
+    // element is kept only if it parses, and a partial drop is warned.
     const annotations = raw
-      .map((a: any) => CritiqueAnnotationSchema.safeParse({
-        id: crypto.randomUUID(),
-        type: a?.type,
-        severity: a?.severity,
-        description: a?.description,
-        evidence: a?.evidence ?? [],
-        relatedEntities: a?.relatedEntities ?? [],
-        scope,
-        aiModel: provider.model,
-        inputHash: '',
-        status: 'open',
-        planId: plan.id,
-        itemIds: a?.itemIds ?? [],
-        createdAt: new Date().toISOString(),
-      }))
+      .map((a: any) => {
+        const evidenceIn = Array.isArray(a?.evidence) ? a.evidence : [];
+        const relatedIn = Array.isArray(a?.relatedEntities) ? a.relatedEntities : [];
+        const evidence = evidenceIn
+          .map((e: any) => CritiqueEvidenceSchema.safeParse(e))
+          .filter((r: any) => r.success)
+          .map((r: any) => r.data);
+        const relatedEntities = relatedIn
+          .map((e: any) => CritiqueRelatedEntitySchema.safeParse(e))
+          .filter((r: any) => r.success)
+          .map((r: any) => r.data);
+        const droppedEvidence = evidenceIn.length - evidence.length;
+        const droppedRelated = relatedIn.length - relatedEntities.length;
+        if ((droppedEvidence > 0 || droppedRelated > 0)) {
+          console.warn(`[LiteLLM] Semantic critique dropped ${droppedEvidence} evidence / ${droppedRelated} relatedEntities entry/entries as malformed for an annotation (scope=${scope}).`);
+        }
+        return CritiqueAnnotationSchema.safeParse({
+          id: crypto.randomUUID(),
+          type: a?.type,
+          severity: a?.severity,
+          description: a?.description,
+          evidence,
+          relatedEntities,
+          scope,
+          aiModel: provider.model,
+          // The model-controlled inputHash is discarded; the service always
+          // stamps its own computed hash so cache keys never diverge.
+          inputHash: '',
+          status: 'open',
+          planId: plan.id,
+          itemIds: a?.itemIds ?? [],
+          createdAt: new Date().toISOString(),
+        });
+      })
       .filter((r: any) => r.success)
       .map((r: any) => r.data);
 
@@ -405,6 +428,16 @@ export class LiteLLMProvider implements LLMProvider {
     }
 
     return { annotations, usage };
+  }
+
+  /**
+   * Resolve the model `analyzePlanForConflicts` will use for `scope` — mirrors
+   * the deep-model split above so the critique cache key matches the model that
+   * actually produces the annotations.
+   */
+  critiqueModel(scope: CritiqueScopeType): string {
+    const deepModel = (process.env.LLM_DEEP_MODEL || '').trim() || undefined;
+    return scope !== 'entity' && deepModel && deepModel !== this.model ? deepModel : this.model;
   }
 
 }
