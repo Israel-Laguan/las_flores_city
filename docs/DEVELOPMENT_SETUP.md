@@ -9,9 +9,11 @@ The development stack consists of:
 - **PostgreSQL OLAP** (port 5433) - Analytics database  
 - **Redis** (port 6379) - Session and cache store
 - **MinIO** (ports 9000-9001) - Object storage for assets
+- **Neo4j** (ports 7474/7687) - Graph authoring canvas (M27; internal-only, optional)
 - **LiteLLM** (port 4000) - LLM proxy for story builder (runs on host)
-- **Server** (port 3000) - Backend API
-- **Admin UI** (port 3002 via `start-stack.sh`) - Next.js admin interface
+- **intake-worker** (port 3001) - Migration owner + admin/AI/content engine (the only process that runs migrations)
+- **Server** (port 3000) - Game-server API (reads content tables the intake-worker creates)
+- **Admin UI** (port 3002) - Next.js admin interface (talks to intake-worker:3001)
 
 ## Prerequisites
 
@@ -57,7 +59,7 @@ docker compose up -d
 docker exec las-flores-server npm run schema:migrate
 ```
 
-`docker-compose.yml` defines: `postgres-oltp` (5434), `postgres-olap` (5433), `redis` (6379), `minio` (9000-9001), `server` (3000), `admin` (3002), `litellm`, `playwright`.
+`docker-compose.yml` defines: `postgres-oltp` (5434), `postgres-olap` (5433), `redis` (6379), `minio` (9000-9001), `neo4j` (7474/7687), `server` (3000), `intake-worker` (3001, migration owner + admin/AI/content), `admin` (3002), `litellm`, `playwright`.
 
 Access the services:
 - **Server API:** http://localhost:3000
@@ -81,10 +83,11 @@ cd /path/to/las_flores_city
 
 The script will:
 1. Create the podman network and volumes (one-time)
-2. Start backing services (PostgreSQL, Redis, MinIO)
-3. Build and start the server
-4. Start the admin panel
-5. Output service URLs
+2. Start backing services (PostgreSQL, Redis, MinIO, Neo4j)
+3. Build the server image and start the `intake-worker` (migration owner, port 3001)
+4. Wait for the intake-worker to be healthy, then start the game-server (port 3000)
+5. Start the admin panel (talks to intake-worker:3001)
+6. Output service URLs
 
 Access the services:
 - **Server API:** http://localhost:3000
@@ -290,78 +293,141 @@ OLTP_IP=$(podman inspect las-flores-postgres-oltp 2>/dev/null | jq -r '.[] | .Ne
 OLAP_IP=$(podman inspect las-flores-postgres-olap 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
 REDIS_IP=$(podman inspect las-flores-redis 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
 MINIO_IP=$(podman inspect las-flores-minio 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
+NEO4J_IP=$(podman inspect las-flores-neo4j 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
 
-echo "OLTP: $OLTP_IP, OLAP: $OLAP_IP, REDIS: $REDIS_IP, MINIO: $MINIO_IP"
+echo "OLTP: $OLTP_IP, OLAP: $OLAP_IP, REDIS: $REDIS_IP, MINIO: $MINIO_IP, Neo4j: $NEO4J_IP"
 ```
 
-### 4. Build and Start Server
+### 4. Build and Start `intake-worker` FIRST (migration owner, port 3001)
+
+The `intake-worker` is the **only** process that runs `runAllMigrations()` (SQL schema **and** `migrateContent()` content migration). The game-server (Step 5) never migrates — it reads the content tables the intake-worker creates. Start the intake-worker first and wait for its `/health` before starting the game-server.
 
 ```bash
-# Build the server image
+# Build the single server image (runs BOTH server + intake-worker)
 podman build -t las-flores-server -f server/Dockerfile .
 
-# Run the server with host mappings for DNS resolution
+podman run -d \
+  --name las-flores-intake-worker \
+  --network las-flores-net \
+  --add-host="host.containers.internal:host-gateway" \
+  -p 3001:3001 \
+  -v ./server/src:/app/server/src \
+  -v ./shared:/app/shared \
+  -v ./infra:/app/infra \
+  -v ./content:/app/content \
+  -v ./docs:/app/docs:ro \
+  -e NODE_ENV=development \
+  -e PORT=3001 \
+  -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@$OLTP_IP:5432/las_flores" \
+  -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@$OLAP_IP:5432/las_flores_analytics" \
+  -e REDIS_URL="redis://$REDIS_IP:6379" \
+  -e MINIO_ENDPOINT="$MINIO_IP" \
+  -e MINIO_PORT="9000" \
+  -e MINIO_PUBLIC_URL="http://localhost:9000" \
+  -e MINIO_ACCESS_KEY="minioadmin" \
+  -e MINIO_SECRET_KEY="minioadmin" \
+  -e NEO4J_URI="bolt://$NEO4J_IP:7687" \
+  -e NEO4J_USER="neo4j" \
+  -e NEO4J_PASSWORD="lasfloresdev123" \
+  -e NEO4J_ENABLED="true" \
+  -e JWT_SECRET="dev-secret" \
+  -e LITELLM_BASE_URL="http://host.containers.internal:4000" \
+  -e LITELLM_API_KEY="local-key" \
+  -e LLM_MODEL="poolside/laguna-m.1" \
+  -e LLM_PROVIDER="litellm" \
+  las-flores-server npm run dev:intake --workspace=server
+```
+
+Wait until healthy (in-container `wget`; the alpine image has no `curl`):
+
+```bash
+podman exec las-flores-intake-worker wget -qO- http://localhost:3001/health
+# expected: {"success":true,...}  (content tables now exist)
+```
+
+### 5. Build and Start the Game-Server (port 3000)
+
+Same environment as the intake-worker, but the default CMD (`npm run dev`), no `PORT` override, host port 3000, and container name `las-flores-server`.
+
+```bash
 podman run -d \
   --name las-flores-server \
   --network las-flores-net \
-  --add-host="las-flores-postgres-oltp:$OLTP_IP" \
-  --add-host="las-flores-postgres-olap:$OLAP_IP" \
-  --add-host="las-flores-redis:$REDIS_IP" \
-  --add-host="las-flores-minio:$MINIO_IP" \
+  --add-host="host.containers.internal:host-gateway" \
   -p 3000:3000 \
   -v ./server/src:/app/server/src \
   -v ./shared:/app/shared \
+  -v ./infra:/app/infra \
   -v ./content:/app/content \
   -v ./docs:/app/docs:ro \
-  -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@las-flores-postgres-oltp:5432/las_flores" \
-  -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@las-flores-postgres-olap:5432/las_flores_analytics" \
-  -e REDIS_URL="redis://las-flores-redis:6379" \
-  -e MINIO_ENDPOINT="las-flores-minio" \
+  -e NODE_ENV=development \
+  -e DATABASE_URL="postgresql://las_flores:las_flores_dev_password@$OLTP_IP:5432/las_flores" \
+  -e ANALYTICS_DATABASE_URL="postgresql://las_flores_analytics:las_flores_analytics_dev_password@$OLAP_IP:5432/las_flores_analytics" \
+  -e REDIS_URL="redis://$REDIS_IP:6379" \
+  -e MINIO_ENDPOINT="$MINIO_IP" \
   -e MINIO_PORT="9000" \
+  -e MINIO_PUBLIC_URL="http://localhost:9000" \
   -e MINIO_ACCESS_KEY="minioadmin" \
   -e MINIO_SECRET_KEY="minioadmin" \
-  -e JWT_SECRET="your-jwt-secret-change-in-production" \
-  -e PROMPT_ROOT="/app/content" \
+  -e NEO4J_URI="bolt://$NEO4J_IP:7687" \
+  -e NEO4J_USER="neo4j" \
+  -e NEO4J_PASSWORD="lasfloresdev123" \
+  -e NEO4J_ENABLED="true" \
+  -e JWT_SECRET="dev-secret" \
+  -e LITELLM_BASE_URL="http://host.containers.internal:4000" \
+  -e LITELLM_API_KEY="local-key" \
+  -e LLM_MODEL="poolside/laguna-m.1" \
+  -e LLM_PROVIDER="litellm" \
   las-flores-server
 ```
 
-**Important:** The `PROMPT_ROOT` environment variable must point to `/app/content` because the server's working directory is `/app/server`, and without this explicit setting it would look for `/app/server/content` (which doesn't exist). The modern pipeline scans `content/characters/*`, `content/locations/*`, `content/scenes/*`, etc. for prompt files.
+The `PROMPT_ROOT` environment variable is **not** required: the app default
+`resolveContentDir()` already resolves to `/app/content` inside the container (the
+workspace script runs from `/app/server`), matching `docker-compose.yml`.
 
-### 5. Build and Start Admin UI
+### 6. Build and Start Admin UI
+
+The admin panel talks to the **intake-worker (port 3001)**, not the game-server. The browser uses `NEXT_PUBLIC_SERVER_URL` (`localhost:3001`) and the server-side route handlers use `INTERNAL_SERVER_URL` (`intake-worker:3001`, resolved via `--add-host`).
 
 ```bash
 # Build the admin image
 podman build -t las-flores-admin -f admin/Dockerfile .
 
 # Run the admin container
-SERVER_IP=$(podman inspect las-flores-server 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
+INTAKE_IP=$(podman inspect las-flores-intake-worker 2>/dev/null | jq -r '.[] | .NetworkSettings.Networks["las-flores-net"].IPAddress')
 podman run -d \
   --name las-flores-admin \
   --network las-flores-net \
-  --add-host="las-flores-server:$SERVER_IP" \
+  --add-host="las-flores-intake-worker:$INTAKE_IP" \
   -p 3002:3000 \
-  -v ./admin:/app/admin \
+  -v ./admin/src:/app/admin/src \
   -v ./shared:/app/shared \
   -e NODE_ENV=development \
-  -e NEXT_PUBLIC_SERVER_URL=http://las-flores-server:3000 \
+  -e NEXT_PUBLIC_SERVER_URL=http://localhost:3001 \
+  -e INTERNAL_SERVER_URL=http://las-flores-intake-worker:3001 \
   las-flores-admin
 ```
 
-### 6. Apply Database Migrations
+### 7. Verify Migrations
+
+`./scripts/apply-migrations.sh` is a **SQL-only** verify tool (it `podman exec` psql
+directly into the databases). The content migration (`migrateContent()`) runs inside
+the `intake-worker` at boot, so it is **not** part of this script. After the
+intake-worker is healthy:
 
 ```bash
-./scripts/apply-migrations.sh both
+./scripts/apply-migrations.sh verify
 ```
-
-Note: The migration script uses `podman` (not `docker`). If you see `docker: command not found` errors, the script needs to be updated.
 
 ## Service URLs
 
 | Service | URL | Port |
 |---------|-----|------|
-| Server API | http://localhost:3000 | 3000 |
+| intake-worker API | http://localhost:3001 | 3001 |
+| Server (game) API | http://localhost:3000 | 3000 |
 | Server Health | http://localhost:3000/health | 3000 |
 | Admin UI | http://localhost:3002 | 3002 |
+| Neo4j Browser | http://localhost:7474 | 7474 |
 | PostgreSQL OLTP | localhost:5434 | 5434 |
 | PostgreSQL OLAP | localhost:5433 | 5433 |
 | Redis | localhost:6379 | 6379 |
@@ -509,24 +575,30 @@ las_flores_city/
 |----------|-------|-------------|
 | DATABASE_URL | postgresql://... | OLTP database connection |
 | ANALYTICS_DATABASE_URL | postgresql://... | OLAP database connection |
-| REDIS_URL | redis://las-flores-redis:6379 | Redis connection |
-| MINIO_ENDPOINT | las-flores-minio | MinIO host |
+| REDIS_URL | redis://<ip>:6379 | Redis connection |
+| MINIO_ENDPOINT | <ip> | MinIO host IP (raw container IP) |
 | MINIO_PORT | 9000 | MinIO port |
+| MINIO_PUBLIC_URL | http://localhost:9000 | Browser-reachable MinIO origin for presigned URLs |
 | MINIO_ACCESS_KEY | minioadmin | MinIO access key |
 | MINIO_SECRET_KEY | minioadmin | MinIO secret key |
-| JWT_SECRET | your-jwt-secret... | JWT signing secret |
-| PROMPT_ROOT | /app/content | Path to content root |
+| NEO4J_URI | bolt://<ip>:7687 | Neo4j bolt connection (graph authoring canvas) |
+| NEO4J_USER | neo4j | Neo4j user |
+| NEO4J_PASSWORD | lasfloresdev123 | Neo4j password (the default `neo4j/neo4j` is rejected by the image) |
+| NEO4J_ENABLED | `true` or `false` | Enables the Neo4j graph (defaults to `false`; boot never aborts when down) |
+| JWT_SECRET | dev-secret | JWT signing secret (use `dev-secret` for local dev-login) |
 | LLM_PROVIDER | `mock` or `litellm` | LLM backend (default: `mock`) |
-| LITELLM_BASE_URL | http://host.containers.internal:4000 | LiteLLM gateway URL |
+| LITELLM_BASE_URL | http://host.containers.internal:4000 | LiteLLM gateway URL (LiteLLM runs on the HOST) |
 | LITELLM_API_KEY | local-key | LiteLLM auth key |
 | LLM_MODEL | poolside/laguna-m.1 | Model name for plan generation |
+
+> `PROMPT_ROOT` is intentionally **not** set: the app default `resolveContentDir()` resolves to `/app/content` inside the container, matching `docker-compose.yml`.
 
 ### Admin Environment Variables
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| `NEXT_PUBLIC_SERVER_URL` | `http://localhost:3000` | Server URL for client-side API calls |
-| `INTERNAL_SERVER_URL` | `http://<SERVER_IP>:3000` | Server URL for server-side API calls (must be container IP) |
+| `NEXT_PUBLIC_SERVER_URL` | `http://localhost:3001` | Browser-facing intake-worker URL (host:3001) |
+| `INTERNAL_SERVER_URL` | `http://las-flores-intake-worker:3001` | Server-side URL the admin container uses to reach the intake-worker (container network) |
 | `NODE_ENV` | development | Node.js environment |
 
 ### Admin Dev Login
