@@ -283,6 +283,23 @@ DROP TRIGGER IF EXISTS trigger_name ON table_name;
 CREATE TRIGGER trigger_name ...;
 ```
 
+#### One SQL migration file = one database (target arrays)
+
+`server/src/database/migrations/migration-targets.json` is the canonical registry. Each `.sql` migration must be listed in **exactly one** target array:
+
+- `oltp` — player read/write schema (`las_flores`)
+- `olap` — analytics schema (`las_flores_analytics`)
+- `nontransactional` — migrations that must run outside a transaction (e.g. `CREATE INDEX CONCURRENTLY`). Prefer making the migration transactional and removing it from here rather than relying on it; the runner executes the whole file as one implicit transaction.
+
+**Hard rule:** a single migration file must NEVER target both databases, and there is **no `both` key** in `migration-targets.json` — do not add one. `migrate.ts` only reads `oltp`, `olap`, and `nontransactional`; a `both` entry is dead code.
+
+If a change touches both OLTP and OLAP schema, file **two migrations with the same version prefix**, one per array. Precedent: the former `028_metaplot_alignment.sql` used a single file with a `current_database()` dispatch; that fragile pattern (hardcoded DB names fails on any differently-named scratch/CI/staging DB, and the untargeted branch was never tested) was split into `028_metaplot_oltp.sql` (`oltp`) + `028_metaplot_olap.sql` (`olap`). Do not reintroduce `current_database()` inside migration SQL:
+
+- ✅ `028_metaplot_oltp.sql` (in `oltp`) + `028_metaplot_olap.sql` (in `olap`)
+- ❌ one file in both arrays dispatching on `current_database()`
+
+Keeping the shared version prefix matters: `parseVersion` extracts the leading digits, and `schema_migrations` keys on `(version, database_name)`. An already-migrated DB skips the file via the runner's `isAppliedOn` version-presence check, so both files sharing `028` correctly no-op on databases that already recorded `028` for their respective `database_name`.
+
 ---
 
 ### Test isolation rules (anti-flakiness)

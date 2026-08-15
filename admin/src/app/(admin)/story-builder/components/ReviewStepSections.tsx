@@ -30,7 +30,7 @@ function computeUnplannedEntities(plan: import('@las-flores/shared').ContentPlan
 }
 
 function collectAmbiguousItems(items: import('@las-flores/shared').ContentPlan['items']) {
-  const result: Array<{ index: number; name: string; type: string; resolution: NonNullable<import('@las-flores/shared').ContentPlan['items'][number]['resolution']> }> = [];
+  const result: import('./IdentityResolutionPicker').AmbiguousItem[] = [];
   for (let i = 0; i < items.length; i++) {
     const res = items[i].resolution;
     if (res && res.status === 'ambiguous') {

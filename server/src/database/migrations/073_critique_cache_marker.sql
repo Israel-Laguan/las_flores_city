@@ -16,9 +16,12 @@
 --
 -- Idempotent: IF EXISTS / IF NOT EXISTS guards make re-runs safe.
 --
--- This migration is registered as NONTRANSACTIONAL in migration-targets.json
--- because CREATE/DROP INDEX CONCURRENTLY cannot execute inside a transaction
--- block. The migration runner executes this file in autocommit mode.
+-- This runs as a normal transactional migration. It intentionally does NOT use
+-- CREATE/DROP INDEX CONCURRENTLY: the migration runner executes the file as one
+-- multi-statement query, which PostgreSQL treats as a single implicit
+-- transaction, and CONCURRENTLY cannot execute inside a transaction block.
+-- The critique_annotations table is small, so a regular index swap during a
+-- deploy is acceptable (same pattern as migration 070).
 -- ============================================================
 
 -- 1. Marker column for clean-plan cache hits.
@@ -26,9 +29,8 @@ ALTER TABLE critique_annotations
   ADD COLUMN IF NOT EXISTS is_marker BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- 2. Replace the cache index so it covers the model predicate too.
---    CONCURRENTLY avoids blocking writes during the rebuild.
-DROP INDEX IF EXISTS CONCURRENTLY idx_critique_annotations_plan_scope_hash;
+DROP INDEX IF EXISTS idx_critique_annotations_plan_scope_hash;
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_critique_annotations_cache
+CREATE INDEX IF NOT EXISTS idx_critique_annotations_cache
   ON critique_annotations (plan_id, scope, input_hash, ai_model)
   WHERE status <> 'dismissed';

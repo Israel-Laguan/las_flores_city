@@ -68,7 +68,7 @@ beforeAll(async () => {
   await applyMigration('001_initial_schema.sql');
   await applyMigration('005_dialogue_service.sql');
   await applyMigration('017_mystery_state.sql');
-  await applyMigration('028_metaplot_alignment.sql');
+  await applyMigration('028_metaplot_oltp.sql');
   await applyMigration('018_vault_system.sql');
   await applyMigration('026_vault_signed_urls.sql');
 
